@@ -2554,6 +2554,8 @@
       
         
       
+        
+      
     
     
     
@@ -3673,6 +3675,8 @@
       
         
           
+        
+      
         
       
         
@@ -5706,6 +5710,18 @@ already exist outside any step; the slices move them in.</p>
   <code>object-id-forms</code> copies are gone. The count can only go down; the baseline is re-written after a
   slice moves a copy into the step, never to make a failure pass.</li>
 </ul>
+<p><strong>Progress, 2026-10-27 late.</strong> Slices 1-3 are built on local <code>feat/write-intent</code> (<code>2b9d3687</code>, <code>84e21a66</code>,
+<code>f0d51ee7</code>, <code>a0e7fcac</code>), each with G1 at 0 of 360 cells. The slice list below is revised: slice 3 covers
+the socket's generic <code>dbAdd</code> (entries, food, activity) and <code>dbRemove</code> (all six); a new slice 6 takes the
+socket's <code>dbAdd</code> for treatments, devicestatus and profile (the <code>near</code> match, WRITE_VALIDATION, BF-194, the
+<code>refused</code>/<code>failed</code> slots) plus <code>dbUpdate</code>/<code>dbUpdateUnset</code>, retiring <code>idMatch</code> (new question <strong>Q-I</strong>: until
+then the step's <code>id-match</code> duplicates it). Matrix gaps found: no form PUTs over a stored string twin, reads
+an <code>_id</code> that fails, or removes by a custom or numeric <code>_id</code>; those are covered by unit tests only.</p>
+<p><strong>Release-1 answers (maintainer, 2026-10-27).</strong> For release 1 (Q6 (a): no behaviour change), Q-A to Q-I
+are answered "keep today's behaviour, unify in release 2": the step encodes each path's current way as
+data, and G1 proves nothing moved. Each becomes a deliberate change, with its own decision, in release 2.
+Slice 5 proceeds; slices 4 (v3) and 6 (the socket's treatment handling and updates) are held until the
+maintainer has reviewed the explanation of the questions.</p>
 <h2 id="1-placement-two-layers-not-one">1. Placement: two layers, not one<a class="headerlink" href="#1-placement-two-layers-not-one" title="Permanent link">&para;</a></h2>
 <p>The spec (§2.1) puts <code>write(intent)</code> in <code>lib/storage/write-step.js</code>, "applied in <code>collectionFor</code>
 above both adapters". On <code>db3b9e4e</code> that file name is taken by a different layer, and
@@ -5982,7 +5998,7 @@ Results in this scratch directory.</p>
   <code>--dry-run</code> counts 4,753 tests, consistent. A dry run at <code>ca1652d6</code> counts 4,707, so the brief's
   "4,750 at ca1652d6" figure must have been taken at a later tree; BF-194 added 46 tests in two
   new files (<code>api.treatments-tt-units</code> 34, <code>websocket.tt-units</code> 12).</li>
-<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d5718e10b2b3d3cc0ef1bc40612f6b06c77411f5/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
+<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d68e393dad118b1219153d8dcdb000d307f2a650/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
   (336 + 24 Temporary Target), 0 INVALID, 20 n/a, <code>write_validation</code> off. <code>--compare</code>: <strong>0
   differing cells</strong>, the known racy <code>cache</code> field included. Two more runs of a scratch copy of the
   harness that also records <code>storage-write-committed</code> per cell (<code>tools/wc-matrix-commit.js</code>,

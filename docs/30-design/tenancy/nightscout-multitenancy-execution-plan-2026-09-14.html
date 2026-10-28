@@ -2521,6 +2521,8 @@
       
         
       
+        
+      
     
     
     
@@ -3249,6 +3251,34 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-config-schema-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG)
   
 
     
@@ -5620,14 +5650,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>0c9ee69a4</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>bc71d8405</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D21 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d5718e10b2b3d3cc0ef1bc40612f6b06c77411f5/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d68e393dad118b1219153d8dcdb000d307f2a650/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -7096,7 +7126,7 @@ and Ory uses to turn its public and admin listeners on and off (<code>serve publ
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
 change) and PLAT-SERVE (the hosted roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d5718e10b2b3d3cc0ef1bc40612f6b06c77411f5/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/d68e393dad118b1219153d8dcdb000d307f2a650/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
 <h3 id="213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27">2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)<a class="headerlink" href="#213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27" title="Permanent link">&para;</a></h3>
 <p>The census (<a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">re-measured on dev</a>) classes each of
@@ -7109,7 +7139,7 @@ model.</p>
 <p><strong>The layers.</strong></p>
 <ol>
 <li><strong>Project floors</strong>, in code, under <code>TENANCY_MODE=multi</code> only. The server refuses to start, or refuses to
-   save a policy or a value, that breaks one. Decided as four groups:</li>
+   save a policy or a value, that breaks one. Decided as five groups (the fifth added the same day):</li>
 <li><strong>no deployment secrets</strong>: <code>API_SECRET</code> and <code>API_SECRET_FILE</code> refused (D13 as a check);
      <code>API3_SECURITY_ENABLE=false</code> refused;</li>
 <li><strong>no anonymous writes</strong>: default roles only from <code>denied</code>, <code>readable</code> and <code>status-only</code>;
@@ -7193,6 +7223,23 @@ component being up.</p>
 image. Its first adapter is a <strong>built-in signer</strong>: keys encrypted under a master key supplied only to that
 container, for development and small operators; in Docker Compose it is one more service with one mounted
 secret. Vault transit and a cloud key service are the production adapters, behind the same interface.</p>
+<p><strong>Two schema answers, decided 2026-10-27 (maintainer), from the T30-SCHEMA-CONFIG lab's questions
+(<a href="tenant-config-schema-2026-10-27.html">schema spec</a> §10b, §11):</strong></p>
+<ul>
+<li><strong>Deployment-level (class D) values live in each role's environment</strong>, not in <code>deployment_policy</code>.
+  <code>TRUST_PROXY</code>, <code>DEBUG_LOGGING</code>, ports, storage URIs and the release-driven compatibility switches are
+  environment variables of the role that reads them. D15 reads as: no <em>per-tenant</em> configuration comes
+  from the environment. <code>deployment_policy</code> holds only the operator's tenant-facing defaults, modes and
+  constraints. (Settles mismatches M4 and M5.)</li>
+<li><strong><code>tenant_members</code> identifies a person by provider and subject, as text</strong>: two columns, unique
+  together, with no foreign key to any identity table of Nightscout's, so Kratos, Clerk or any OIDC
+  subject fits (D17 as amended). (Settles M2.)</li>
+<li><strong>An owner's rollback to an earlier version of their own configuration is refused whole</strong> when the
+  operator has since pinned or narrowed a setting that version used. The refusal names each blocked
+  setting and the operator rule behind it; nothing is applied in part. A "version" here is a version of
+  the tenant's configuration (D22's numbered changes), not of the software. (Schema spec Q3; the lab's
+  working choice confirmed.)</li>
+</ul>
 <p><strong>Not decided.</strong> The twelve contested settings re-stated under D22 are drafted for
 review in <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">census §3a</a>; row 7 decided the same
 day: the strict settings read (<code>API3_SETTINGS_STRICT_READ_ENABLED</code>) is a floor, always on under <code>multi</code>.</p>

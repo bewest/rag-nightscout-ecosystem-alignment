@@ -1109,6 +1109,10 @@
          <lastmod>2026-10-28</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/guides/write-intent.html</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/spec/index.html</loc>
          <lastmod>2026-10-28</lastmod>
     </url>
@@ -1234,6 +1238,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.html</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/tenant-config-schema-2026-10-27.html</loc>
          <lastmod>2026-10-28</lastmod>
     </url>
     <url>
@@ -3573,6 +3581,10 @@
          <lastmod>2026-10-28</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/migration-tooling-plan-2026-10-27.html</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/60-research/tenancy/multitenancy-k-and-residency-2026-09-14.html</loc>
          <lastmod>2026-10-28</lastmod>
     </url>
@@ -5646,6 +5658,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/tenant-config-callpath/index.html</loc>
+         <lastmod>2026-10-28</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/tenant-config-schema/index.html</loc>
          <lastmod>2026-10-28</lastmod>
     </url>
     <url>

@@ -1,0 +1,5942 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/tenant-config-schema-2026-10-27.html">
+      
+      
+        <link rel="prev" href="nightscout-storage-seam-interface-2026-09-14.html">
+      
+      
+        <link rel="next" href="tenant-owner-config-surface-2026-09-15.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG) - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tenant-configuration-schema-for-hosted-nightscout-t30-schema-config" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke adoption across projects: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../platform/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_15" id="__nav_5_24_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_15_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-configuration-and-delegation-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings, extensibility, new data, and delegated access: four open questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-control-plane-reconciliation-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The earlier control-plane draft and the specifications proposed to supersede it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployable components: entrypoints, program structure, and what an operator actually runs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout multitenancy: evidence and options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy execution plan: decisions, tasks, and the context each one needs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-seam-ordering-translation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design — how ordering crosses the storage seam
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-storage-seam-interface-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="tenant-config-schema-2026-10-27.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-this-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What this is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-tables-and-why-each-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The tables, and why each exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The tables, and why each exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-merge-rule-and-where-it-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The merge rule, and where it runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-project-floors-the-database-or-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Project floors: the database or the application
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-census-3a-row-by-row" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Census §3a, row by row
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-alarm-thresholds-and-the-a3-hazard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Alarm thresholds and the §A.3 hazard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-versions-and-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Versions and rollback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-integrations-and-secret-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Integrations and secret references
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-rls-on-every-tenant-scoped-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. RLS on every tenant-scoped table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-single-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. single mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10a-comparison-with-nocturne" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10a. Comparison with Nocturne
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10b-mismatches-found-stop-and-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10b. Mismatches found (stop-and-report)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-open-questions-for-the-maintainer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Open questions for the maintainer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-owner-config-surface-2026-09-15.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The tenant-owner configuration surface — T3.0's missing schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="write-contract-spec-2026-10-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WRITE-CONTRACT: the measured write matrix, and one write step behind the storage interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-this-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What this is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-tables-and-why-each-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The tables, and why each exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. The tables, and why each exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-merge-rule-and-where-it-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The merge rule, and where it runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-project-floors-the-database-or-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Project floors: the database or the application
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-census-3a-row-by-row" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Census §3a, row by row
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-alarm-thresholds-and-the-a3-hazard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Alarm thresholds and the §A.3 hazard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-versions-and-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Versions and rollback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-integrations-and-secret-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Integrations and secret references
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-rls-on-every-tenant-scoped-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. RLS on every tenant-scoped table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-single-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. single mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10a-comparison-with-nocturne" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10a. Comparison with Nocturne
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10b-mismatches-found-stop-and-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10b. Mismatches found (stop-and-report)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-open-questions-for-the-maintainer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Open questions for the maintainer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="tenant-configuration-schema-for-hosted-nightscout-t30-schema-config">Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG)<a class="headerlink" href="#tenant-configuration-schema-for-hosted-nightscout-t30-schema-config" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-10-27. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Contributor-facing. Draft of 2026-10-27, for the maintainer's review. Queue item
+<code>T30-SCHEMA-CONFIG</code>. It builds on D22 (<a href="nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan
+§2.13</a>), the <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">census re-measured on
+dev</a> (§3a), and the <a href="tenant-owner-config-surface-2026-09-15.html">configuration-surface
+document</a> (§A, §A.3, §B.3, §C, §E, §F.1). The schema
+runs in <a href="../../../tools/lab/tenant-config-schema/index.html"><code>tools/lab/tenant-config-schema/</code></a>,
+which holds 57 tests and 72 controls. Nothing here decides a question those documents leave
+open: such questions are listed in §11.</em></p>
+<p>Marks: <strong>[M]</strong> means measured by the lab, in the run recorded in its <code>results.json</code> (PostgreSQL
+16.15). <strong>[R]</strong> means read or reasoned, not measured. Test ids (<code>ISO-…</code>, <code>FLOOR-…</code>) name the
+lab's tests.</p>
+<h2 id="1-what-this-is">1. What this is<a class="headerlink" href="#1-what-this-is" title="Permanent link">&para;</a></h2>
+<p>Under <code>TENANCY_MODE=multi</code>, a tenant's configuration decides what a person's site shows, who
+may read it, what it connects to and, once multi-mode alarms pass the gate in §7a, when an
+alarm fires. D22 gives that configuration three layers:</p>
+<ol>
+<li>project floors, which are fixed in code;</li>
+<li>the operator's policy, written on the operator plane;</li>
+<li>the owner's values, written on the tenant-owner listener.</li>
+</ol>
+<p>D22 also says that integrations are typed records, that credentials live in a separate
+secrets component, and that every change is versioned and can be rolled back.</p>
+<p>This document gives those decisions a PostgreSQL schema. It has three design goals:</p>
+<ul>
+<li>a wrong value fails loudly at the moment it is written, and is never stored and then
+  silently rewritten;</li>
+<li>a forgotten tenant filter returns nothing (D3);</li>
+<li>no table holds secret material.</li>
+</ul>
+<h2 id="2-the-tables-and-why-each-exists">2. The tables, and why each exists<a class="headerlink" href="#2-the-tables-and-why-each-exists" title="Permanent link">&para;</a></h2>
+<p>Two tables already exist on the seam branch (<code>81a1f6ce:lib/admin/platform.sql</code>), and this
+schema leaves both unchanged:</p>
+<ul>
+<li><code>tenants</code> has no RLS, because it is read before a tenant context exists.</li>
+<li><code>tenant_members</code> has RLS.</li>
+</ul>
+<p>The lab's migration <code>0001</code> is that file byte for byte. [M]</p>
+<table>
+<thead>
+<tr>
+<th>table</th>
+<th>tenant-scoped</th>
+<th>written by</th>
+<th>why it exists</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config_setting</code></td>
+<td>no</td>
+<td>migrations only</td>
+<td>The catalogue of setting names hosted configuration may carry. It records each setting's type, whether the owner may set it, whether it is an alarm setting, whether it needs a deletion confirmation, and its <strong>project floor</strong>. A name missing from here cannot appear in any policy or owner row, because foreign keys forbid it. That absence is how the "not offered" floors reach the database.</td>
+</tr>
+<tr>
+<td><code>integration_kind</code></td>
+<td>no</td>
+<td>migrations only</td>
+<td>The driver catalogue. For each kind: the schema its settings must satisfy, the hosts a driver may call, and the <em>names</em> of the credential parts the owner and the operator each supply.</td>
+</tr>
+<tr>
+<td><code>deployment_policy</code></td>
+<td>no</td>
+<td>operator</td>
+<td>D22's one deployment policy: per setting, a default, a mode (<code>open</code>, <code>bounded</code> or <code>pinned</code>), a constraint and a pin.</td>
+</tr>
+<tr>
+<td><code>tenant_policy_override</code></td>
+<td>yes</td>
+<td>operator, with the tenant bound</td>
+<td>D22's operator overrides for individual tenants. A row replaces the deployment row for that tenant and setting.</td>
+</tr>
+<tr>
+<td><code>tenant_setting_value</code></td>
+<td>yes</td>
+<td>tenant-owner listener</td>
+<td>The owner's values, accepted only within the governing policy row and the floor.</td>
+</tr>
+<tr>
+<td><code>tenant_alarm_thresholds</code></td>
+<td>yes</td>
+<td>nobody yet (see §5)</td>
+<td>The owner's four glucose thresholds, as typed <code>NOT NULL</code> integer columns in mg/dL. It exists so the §A.3 hazard cannot be expressed. See §6.</td>
+</tr>
+<tr>
+<td><code>tenant_config_version</code></td>
+<td>yes</td>
+<td>tenant-owner listener (insert only)</td>
+<td>One numbered, append-only row per change. It records the plane, the identity provider's subject, the time, the kind (<code>change</code>, <code>rollback</code>, <code>bootstrap</code>, <code>import</code>) and the full owner-scope state after the change.</td>
+</tr>
+<tr>
+<td><code>deployment_integration</code></td>
+<td>no</td>
+<td>operator</td>
+<td>The operator's part of a kind's credential (for example a push service's application token), held as a <strong>reference</strong>.</td>
+</tr>
+<tr>
+<td><code>tenant_integration</code></td>
+<td>yes</td>
+<td>tenant-owner listener</td>
+<td>One record per connector, webhook or push target. Each has a kind, settings validated by the kind's schema, a reference to the owner's credential, and an <code>enabled</code> flag.</td>
+</tr>
+<tr>
+<td><code>tenant_integration_status</code></td>
+<td>yes</td>
+<td>consumer and connector roles</td>
+<td>The last success and last error. They are kept apart so that a connector's polling never creates a configuration version.</td>
+</tr>
+</tbody>
+</table>
+<p>Three functions carry the write path. All are <code>SECURITY INVOKER</code>, so RLS and table grants apply
+to everything they do:</p>
+<ul>
+<li><code>cfg_apply(tenant, changes, plane, subject, …)</code> is the single write path for owner-scope
+  state.</li>
+<li><code>cfg_rollback(tenant, version, …)</code> restores an earlier version.</li>
+<li><code>cfg_policy_for(tenant, key)</code> returns the governing policy row: the override, else the
+  deployment row, else the catalogue default.</li>
+</ul>
+<h3 id="21-roles">2.1 Roles<a class="headerlink" href="#21-roles" title="Permanent link">&para;</a></h3>
+<p>The lab's roles are <code>cfg_owner</code>, <code>ns_operator</code>, <code>ns_tenant_admin</code> and <code>ns_api</code>.</p>
+<ul>
+<li><code>cfg_owner</code> runs the migrations and owns every table. It is <code>NOSUPERUSER NOBYPASSRLS</code>.</li>
+<li>The other three own nothing. They map to D7's operator plane, D16's tenant-owner listener,
+  and D5/D21's consumer, evaluator and connector roles.</li>
+</ul>
+<p>The grants are in <code>0007_grants.up.sql</code>.</p>
+<p><strong>Measured, and in tension with a claim in the seam's code (§10, M7):</strong> the tables are owned by
+a role that is not the application role. RLS is still active for every application role, with
+<code>row_security_active()</code> true on all seven tenant tables (<code>ISO-roles</code>, <code>ISO-&lt;table&gt;</code>). [M]</p>
+<h2 id="3-the-merge-rule-and-where-it-runs">3. The merge rule, and where it runs<a class="headerlink" href="#3-the-merge-rule-and-where-it-runs" title="Permanent link">&para;</a></h2>
+<p><strong>Rule (D22).</strong> For each setting, the effective value is:</p>
+<ol>
+<li>the <strong>code default</strong>;</li>
+<li>replaced by the <strong>operator default</strong>, if the governing row has one;</li>
+<li>replaced by the <strong>owner value</strong>, if:</li>
+<li>the catalogue marks the setting owner-settable,</li>
+<li>the value is well typed,</li>
+<li>it satisfies the floor,</li>
+<li>the mode is not <code>pinned</code>,</li>
+<li>and, where the mode is <code>bounded</code>, the constraint accepts it;</li>
+<li>replaced by the <strong>operator pin</strong>, if the mode is <code>pinned</code>.</li>
+</ol>
+<p>An owner value that fails step 3 is not used, and it is <strong>reported</strong> in
+<code>ignoredOwnerValues</code> with the reason (<code>MERGE-override-narrows</code>, <code>MERGE-pin-beats-owner</code>). [M]</p>
+<p>A floor is checked once more on the effective value. For example, with no operator row,
+<code>WRITE_VALIDATION</code> falls back to the code default <code>off</code>, which breaks the floor. The merge
+reports this so that the process refuses to serve (<code>MERGE-floor-on-effective</code>). [M]</p>
+<p>The thresholds are merged as a set:</p>
+<ul>
+<li>the owner's row if one exists;</li>
+<li>otherwise the effective <code>BG_*</code> values, key by key.</li>
+</ul>
+<p>A set that is out of order is reported. It is <strong>never nudged</strong>, unlike dev's <code>verifyThresholds</code>
+(<code>lib/settings.js:311-334</code> on <code>db3b9e4e</code>, BF-67) (<code>MERGE-thresholds-refused-not-rewritten</code>). [M]</p>
+<p><strong>Where it runs.</strong> The merge runs in <strong>application code</strong> (<code>lib/merge.js</code> in the lab). The
+<strong>write-time</strong> checks run in the <strong>database</strong>, as triggers. There are four reasons. [R]</p>
+<ol>
+<li>The code defaults live in the code (<code>lib/settings.js</code>, <code>lib/server/env.js</code>). A merge in
+   SQL would need them passed in, or copied into the database, and a second copy can drift.</li>
+<li>The process environment is visible only to code. D22 says floors are "enforced in code
+   under <code>multi</code>", and several of them are process-level (§4).</li>
+<li>D22's "saving invalidates the tenant's cached settings" implies that the merged result is
+   cached in the process. The merge is computed on a cache miss, and the result is what the
+   evaluator and the API use.</li>
+<li>An operator or owner can write rows through a path other than the intended code. A wrong
+   row must not be storable at all, so acceptance (type, floor, mode, constraint) is checked
+   by triggers on every write.</li>
+</ol>
+<p>Two spellings of one rule can drift. The lab therefore runs a differential test: 30 cases go
+through the JavaScript acceptance rule and the SQL one, and the test requires agreement. Its
+control plants an off-by-one in the JavaScript ordinal minimum, and the test goes red
+(<code>MERGE-differential</code>). [M] A release should generate both rules from one source, or keep this
+differential in CI. [R]</p>
+<h2 id="4-project-floors-the-database-or-the-application">4. Project floors: the database or the application<a class="headerlink" href="#4-project-floors-the-database-or-the-application" title="Permanent link">&para;</a></h2>
+<p>D22 lists five floor groups.</p>
+<blockquote>
+<p><strong>Mismatch noted (§10, M1):</strong> the execution plan's §2.13 still introduces them as "Decided as
+four groups".</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>group</th>
+<th>floor</th>
+<th>where</th>
+<th>test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no deployment secrets</td>
+<td><code>API_SECRET</code>, <code>API_SECRET_FILE</code> refused at start</td>
+<td><strong>application</strong>: only code sees the environment</td>
+<td><code>FLOOR-app-process</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td>neither name can be a setting</td>
+<td><strong>database</strong>: absent from <code>config_setting</code>, so a foreign key refuses any row naming them</td>
+<td><code>FLOOR-not-offered</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td>no credential-like name can enter the catalogue, even through a migration</td>
+<td><strong>database</strong>: <code>config_setting_no_secret_names</code> CHECK</td>
+<td><code>FLOOR-catalogue-no-secret-names</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td><code>API3_SECURITY_ENABLE=false</code> refused at start</td>
+<td><strong>application</strong></td>
+<td><code>FLOOR-app-process</code> [M]</td>
+</tr>
+<tr>
+<td>no anonymous writes</td>
+<td>default roles only from <code>denied</code>, <code>readable</code> and <code>status-only</code></td>
+<td><strong>database</strong>: the catalogue floor checks owner values even when the policy is <code>open</code>, and checks operator defaults, pins and allowed lists</td>
+<td><code>FLOOR-anon-roles-owner</code>, <code>FLOOR-anon-roles-policy</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td><code>TREATMENTS_AUTH</code> not offered</td>
+<td><strong>database</strong>: absent from the catalogue</td>
+<td><code>FLOOR-not-offered</code> [M]</td>
+</tr>
+<tr>
+<td>network safety</td>
+<td><code>TRUST_PROXY</code> a hop count or CIDR, never empty</td>
+<td><strong>application</strong>: a listener property of the process (census row 5: never a tenant row)</td>
+<td><code>FLOOR-app-process</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td>webhooks to public addresses only</td>
+<td><strong>both</strong>. The database refuses non-https URLs, URLs with user-info, literal private, loopback, link-local, shared or multicast IPs, and local-only names. The <strong>application</strong> must check the resolved address at send time, which the database cannot see (DNS)</td>
+<td><code>FLOOR-webhook-public</code> [M]; send-time check [R], not built</td>
+</tr>
+<tr>
+<td></td>
+<td>connector endpoints only on driver-defined hosts</td>
+<td><strong>database</strong>: a URL field marked <code>hosts: driver</code> accepts only the kind's <code>driver_hosts</code></td>
+<td><code>FLOOR-connector-driver-hosts</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td><code>BASE_URL</code> derived from the slug</td>
+<td><strong>database</strong>: absent from the catalogue. The derivation itself is application code (D10).</td>
+<td><code>FLOOR-not-offered</code> [M]</td>
+</tr>
+<tr>
+<td>app settings stay private</td>
+<td>reading an app's settings record by identifier needs <code>api:settings:admin</code></td>
+<td><strong>application</strong>: a route check, with <code>API3_SETTINGS_STRICT_READ_ENABLED</code> absent from the catalogue</td>
+<td><code>FLOOR-app-settings-private</code>, <code>FLOOR-not-offered</code> [M]</td>
+</tr>
+<tr>
+<td>data and log safety</td>
+<td><code>WRITE_VALIDATION</code> at least <code>log</code></td>
+<td><strong>database</strong> (owner values, operator defaults, pins) <strong>and application</strong> (on the effective value, when no operator row exists)</td>
+<td><code>FLOOR-write-validation</code>, <code>MERGE-floor-on-effective</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td><code>DEBUG_LOGGING</code> off</td>
+<td><strong>application</strong>: process-level; absent from the catalogue</td>
+<td><code>FLOOR-app-process</code>, <code>FLOOR-not-offered</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td><code>IMPORT_CONFIG</code> ignored, with a warning</td>
+<td><strong>application</strong></td>
+<td><code>FLOOR-app-process</code> [M]</td>
+</tr>
+<tr>
+<td></td>
+<td>permanent autoprune needs an explicit confirmation, with an export offered first</td>
+<td><strong>both</strong>. The <strong>database</strong> refuses an <code>API3_AUTOPRUNE_*</code> value without <code>confirmed_at</code> and <code>export_offered_at</code>. The <strong>application</strong> must actually offer the export; the database can only see that one was recorded.</td>
+<td><code>FLOOR-autoprune-confirmation</code> [M]</td>
+</tr>
+<tr>
+<td><em>(D22, alarm decision)</em></td>
+<td>alarm settings hidden until §7a's gate</td>
+<td><strong>database</strong>: the owner listener has no write grant on <code>tenant_alarm_thresholds</code>, alarm keys are not owner-settable, and a CHECK forbids making them so</td>
+<td><code>FLOOR-alarms-hidden</code> [M]</td>
+</tr>
+</tbody>
+</table>
+<p>The rule behind the split [R]:</p>
+<ul>
+<li>A floor goes in the <strong>database</strong> when it is a property of a row, so that no tool, script or
+  future endpoint can store a row that breaks it. Each such check is in a trigger or CHECK that
+  the application roles cannot alter: <code>FLOOR-catalogue-readonly</code> shows the catalogue is
+  read-only to all three. [M]</li>
+<li>A floor goes in the <strong>application</strong> when its input is something the database cannot see:</li>
+<li>the process environment;</li>
+<li>a DNS answer at send time;</li>
+<li>whether the person was actually shown an export offer;</li>
+<li>the merged value when no row exists.</li>
+</ul>
+<h2 id="5-census-3a-row-by-row">5. Census §3a, row by row<a class="headerlink" href="#5-census-3a-row-by-row" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>settings</th>
+<th>how the schema expresses it</th>
+<th>evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>AUTH_DEFAULT_ROLES</code>, <code>TREATMENTS_AUTH</code></td>
+<td><code>AUTH_DEFAULT_ROLES</code> is a <code>role_list</code> with floor <code>{"allowed": ["denied","readable","status-only"]}</code>. The catalogue ships it <code>bounded</code> within the floor. The operator may narrow it per deployment or per tenant. <code>TREATMENTS_AUTH</code> is absent.</td>
+<td><code>FLOOR-anon-roles-*</code>, <code>POLICY-bounded</code>, <code>POLICY-per-tenant-override</code> [M]</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>API_SECRET</code>, <code>API_SECRET_FILE</code></td>
+<td>absent from the catalogue; refused at start</td>
+<td><code>FLOOR-not-offered</code>, <code>FLOOR-app-process</code> [M]</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>IMPORT_CONFIG</code></td>
+<td>absent; warned and ignored at start</td>
+<td>same [M]</td>
+</tr>
+<tr>
+<td>4</td>
+<td>outbound endpoints</td>
+<td>Not scalar settings. They become <code>tenant_integration</code> records of kind <code>webhook</code> or <code>cgm-connector</code> (driver hosts only). The operator's switches are policy rows: <code>INTEGRATION_MAX:&lt;kind&gt;</code> (0 disables a kind; otherwise the per-tenant count) and the optional webhook allow-list <code>INTEGRATION_HOSTS:webhook</code>. <code>BASE_URL</code> is absent.</td>
+<td><code>FLOOR-webhook-public</code>, <code>FLOOR-connector-driver-hosts</code>, <code>INTEGRATION-kind-limits</code>, <code>POLICY-webhook-allowlist</code> [M]</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>TRUST_PROXY</code></td>
+<td>absent from the catalogue; refused at start unless it is a hop count or CIDR</td>
+<td><code>FLOOR-app-process</code> [M]</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>WRITE_VALIDATION</code></td>
+<td>an <code>ordinal</code> (<code>off</code> &lt; <code>log</code> &lt; <code>reject</code>) with floor <code>{"min": "log"}</code>. The catalogue ships <code>bounded {"min": "log"}</code>; an operator may raise the minimum, and the owner may tighten above it.</td>
+<td><code>FLOOR-write-validation</code>, <code>MERGE-floor-on-effective</code> [M]</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>API3_SETTINGS_STRICT_READ_ENABLED</code></td>
+<td>absent; always on under multi, in code</td>
+<td><code>FLOOR-app-settings-private</code> [M]</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>API3_SECURITY_ENABLE</code></td>
+<td>absent; refused at start if false</td>
+<td><code>FLOOR-app-process</code> [M]</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>API3_AUTOPRUNE_*</code> (six names, <code>lib/server/env.js:286-293</code>)</td>
+<td>Integers in days, floor <code>{"min": 1}</code>, <code>needs_confirmation</code>. The catalogue ships them <code>pinned</code> with no pin, so they are <strong>off</strong> until the operator writes a policy. The operator's minimum retention is the <code>bounded</code> constraint's <code>min</code>. Turning one on needs a fresh confirmation, also on rollback.</td>
+<td><code>FLOOR-autoprune-confirmation</code>, <code>POLICY-bounded</code>, <code>VERSION-rollback-needs-fresh-confirmation</code> [M]</td>
+</tr>
+<tr>
+<td>10</td>
+<td>alarm thresholds and enables</td>
+<td><strong>Hidden</strong> (see §4). <code>BG_HIGH</code>, <code>BG_TARGET_TOP</code>, <code>BG_TARGET_BOTTOM</code> and <code>BG_LOW</code> are operator-only integers in mg/dL, with floor <code>{"min": 20, "max": 600}</code>. <code>ALARM_URGENT_HIGH</code>, <code>ALARM_HIGH</code>, <code>ALARM_LOW</code> and <code>ALARM_URGENT_LOW</code> are operator-only booleans. The owner's own thresholds go in <code>tenant_alarm_thresholds</code> (§6) once the gate passes.</td>
+<td><code>FLOOR-alarms-hidden</code>, <code>MMOL-*</code> [M]</td>
+</tr>
+<tr>
+<td>11</td>
+<td>plugin credentials</td>
+<td>Never in a settings row. Each kind names its credential <strong>parts</strong>. The owner's parts are referenced from <code>tenant_integration.owner_secret_ref</code>, and the operator's from <code>deployment_integration.operator_secret_ref</code>. The owner listener can see <em>that</em> the operator's part exists, not its reference.</td>
+<td><code>SECRETS-*</code>, <code>INTEGRATION-credential-parts</code> [M]</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>DEBUG_LOGGING</code>, <code>DBSIZE_*</code></td>
+<td>absent; <code>DEBUG_LOGGING</code> refused at start</td>
+<td><code>FLOOR-not-offered</code>, <code>FLOOR-app-process</code> [M]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The eight names new on dev:</strong></p>
+<ul>
+<li><code>API_V3_DATA_WARNINGS</code> is catalogued as <code>scope = 'deployment'</code>. It can only be a pinned
+  deployment row, never an override or an owner value (<code>FLOOR-deployment-scope</code>). [M]
+  <code>API_V1_COUNT_LEADING_NUMBER</code> and <code>API_V1_COUNT_ZERO_WINDOW</code> would be catalogued the same
+  way. [R]</li>
+<li><code>SHOW_SECONDS</code> is open to the owner. [M]</li>
+<li>The two <code>CUSTOMCONNSTR_*</code> spellings are absent. [R]</li>
+</ul>
+<p>The lab's catalogue (<code>0003</code>) covers these rows plus <code>SHOW_SECONDS</code> and <code>DISPLAY_UNITS</code>. It does
+not cover the remaining class-T names. A release would generate the catalogue from the census
+(J7). [R]</p>
+<h2 id="6-alarm-thresholds-and-the-a3-hazard">6. Alarm thresholds and the §A.3 hazard<a class="headerlink" href="#6-alarm-thresholds-and-the-a3-hazard" title="Permanent link">&para;</a></h2>
+<p>§A.2 drafted the thresholds as keys inside a JSON settings object, guarded by one CHECK. §A.3
+predicted, from PostgreSQL's documentation, that a partial mmol override would pass that CHECK
+on SQL NULL. The lab applied §A.2's <code>tenant_settings</code> verbatim (<code>old-shape/</code>) and measured it
+(<code>MMOL-old-shape-profile</code>). [M]</p>
+<table>
+<thead>
+<tr>
+<th>input</th>
+<th>§A.2 draft</th>
+<th>this schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>partial <code>{"bgHigh": 14}</code></td>
+<td><strong>accepted</strong></td>
+<td>refused: all four are written together (and the columns are <code>NOT NULL</code>)</td>
+</tr>
+<tr>
+<td>complete mmol <code>{3.1, 4.5, 10, 14}</code></td>
+<td>refused (<code>23514</code>)</td>
+<td>refused: not a whole mg/dL value; convert mmol/L at the write boundary</td>
+</tr>
+<tr>
+<td>integer mmol-looking <code>{3, 5, 10, 14}</code></td>
+<td>refused</td>
+<td>refused: <code>tenant_alarm_thresholds_plausible_mgdl</code></td>
+</tr>
+<tr>
+<td>misordered <code>{80, 55, 180, 260}</code></td>
+<td>refused</td>
+<td>refused: <code>tenant_alarm_thresholds_ordered</code>. It is not rewritten (contrast BF-67).</td>
+</tr>
+<tr>
+<td>string <code>{"x", 80, 180, 260}</code></td>
+<td>refused, <code>23514</code> (the read-derived cast error did not reproduce on this input)</td>
+<td>refused: must be a number</td>
+</tr>
+<tr>
+<td>valid <code>{56, 81, 180, 252}</code></td>
+<td>accepted</td>
+<td>accepted, stored exactly</td>
+</tr>
+</tbody>
+</table>
+<p>The draft's CHECK works when all four keys are present. It fails only on the NULL path. In
+this schema the NULL path does not exist, because each threshold is its own <code>NOT NULL</code>
+column. <code>MMOL-stored-safely</code> is green on the new shape. It goes red on the old shape, and red
+again when the new shape's range CHECK is dropped and the columns are made nullable. [M]</p>
+<p>The <strong>write boundary</strong> is the application's. It converts mmol/L with dev's factor 18.01559
+(<code>lib/constants.json:10</code>), stores mg/dL, keeps <code>entered_units</code>, and echoes the stored numbers
+back (§A.3 defence 2). The lab's <code>thresholdsForStorage</code> turns 3.1/4.5/10/14 mmol/L into
+56/81/180/252. Its control skips the conversion, and the database then refuses the write
+(<code>MMOL-converted-and-echoed</code>). [M]</p>
+<p>Refusing partial input follows J11's recommendation, and <strong>J11 is still open</strong>. A
+nullable-per-column variant would also refuse a lone mmol <code>bgHigh</code> on range. Its ordering
+could then only be checked after the merge, in code. [R]</p>
+<h2 id="7-versions-and-rollback">7. Versions and rollback<a class="headerlink" href="#7-versions-and-rollback" title="Permanent link">&para;</a></h2>
+<p><strong>Recording.</strong> <code>cfg_apply</code> takes a per-tenant transaction advisory lock, applies the changes,
+and appends version <em>N+1</em> with the state after the change.</p>
+<ul>
+<li>Two owner sessions saving at once get consecutive versions. Without the lock, the second
+  fails with a duplicate version (<code>VERSION-concurrent-writers</code>). [M]</li>
+<li>A deferred constraint trigger requires, at commit, that the tenant's live owner-scope state
+  equals its newest version's state. A direct <code>UPDATE</code>, <code>INSERT</code> or <code>DELETE</code> that skips
+  <code>cfg_apply</code> cannot commit (<code>VERSION-unversioned-write-refused</code>). [M]</li>
+<li><strong>Limit:</strong> this guard compares the live state with the version through the same
+  <code>cfg_current_state</code> function. If that function were wrong, the guard would not notice; the
+  test did (<code>VERSION-numbered</code>, control). [M]</li>
+<li>Versions are append-only:</li>
+<li>the owner listener has no <code>UPDATE</code> or <code>DELETE</code> grant;</li>
+<li>a trigger refuses both, even to the owning migration role (<code>VERSION-append-only</code>);</li>
+<li>the one exception is the cascade from deleting the tenant. [M]</li>
+</ul>
+<p><strong>Rollback.</strong> <code>cfg_rollback(tenant, N)</code> computes the changes that make the live state equal
+version <em>N</em>. It applies them through <code>cfg_apply</code> as a new version, with kind <code>rollback</code> and
+<code>rollback_of N</code>. Values, thresholds and integrations are all restored
+(<code>VERSION-rollback-restores</code>). [M]</p>
+<p><strong>Rollback against a policy that has changed since version <em>N</em>.</strong> Every restored row passes
+the same checks as a fresh write, against the <strong>current</strong> policy and floors.</p>
+<ul>
+<li>In the lab, if the operator has since pinned or narrowed a setting that the rollback would
+  restore, the <strong>whole rollback is refused</strong>. The error names the setting, nothing changes,
+  and no version is written (<code>VERSION-rollback-vs-new-pin</code>). [M]</li>
+<li>A rollback to a version with permanent deletion turned on needs a <strong>fresh</strong> confirmation.
+  The old confirmation is not part of the version state and is not carried forward
+  (<code>VERSION-rollback-needs-fresh-confirmation</code>). [M]</li>
+</ul>
+<p>Refusing the whole rollback was chosen by the lab, not by any decision. The alternatives are
+in §11 (Q3).</p>
+<p><strong>What is versioned.</strong> Owner-scope state is versioned: owner values, thresholds and
+integration records. Integration status is not. Operator policy changes are not versioned
+here, so whether they need history is open (Q5). Saving a new version should invalidate the
+tenant's cached merge; how the hosted processes learn of that (D6's feed, or a version-number
+check) is not built here. [R]</p>
+<h2 id="8-integrations-and-secret-references">8. Integrations and secret references<a class="headerlink" href="#8-integrations-and-secret-references" title="Permanent link">&para;</a></h2>
+<p><code>tenant_integration</code> has these guarantees:</p>
+<ul>
+<li>Settings are validated against the kind's schema: required fields, no unknown fields, enums,
+  types, lengths and host rules (<code>INTEGRATION-settings-schema</code>). [M]</li>
+<li>The operator controls which kinds are enabled and how many each tenant may have
+  (<code>INTEGRATION-kind-limits</code>). [M]</li>
+<li>A kind's owner credential parts require a reference. A kind with an operator part is
+  refused until the operator has configured that part (<code>INTEGRATION-credential-parts</code>). [M]</li>
+</ul>
+<p><strong>No plaintext secret column anywhere</strong> (<code>SECRETS-schema-scan</code>). [M] The test scans
+<code>information_schema</code> and requires:</p>
+<ul>
+<li>no column named like a credential, except <code>*_ref</code> and <code>*_parts</code>;</li>
+<li>no <code>bytea</code> column;</li>
+<li>that every <code>*_ref</code> column is guarded by the reference-format CHECK.</li>
+</ul>
+<p>Three controls each add an offending column, and the test goes red each time. Two more checks
+close the gaps around the scan:</p>
+<ul>
+<li>Settings cannot smuggle a credential. An unknown field such as <code>password</code> is refused, and
+  no kind's schema may declare a credential-like field (<code>SECRETS-not-in-settings</code>). [M]</li>
+<li>A pasted plaintext value in a reference column is refused by the format check
+  (<code>SECRETS-reference-format</code>). [M]</li>
+</ul>
+<p>The reference format <code>sref:v1:&lt;backend&gt;:&lt;opaque id&gt;</code> is a lab placeholder. The format CHECK
+catches accidents only: a plaintext value shaped like a reference would pass it. Whether a
+reference belongs to the tenant can only be checked by the secrets component, which holds the
+keys (D22: keys never leave it). [R]</p>
+<h2 id="9-rls-on-every-tenant-scoped-table">9. RLS on every tenant-scoped table<a class="headerlink" href="#9-rls-on-every-tenant-scoped-table" title="Permanent link">&para;</a></h2>
+<p>Every tenant-scoped table has RLS enabled and forced, with the seam's predicate copied
+character for character:
+<code>tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid</code>, in both
+<code>USING</code> and <code>WITH CHECK</code>.</p>
+<p><code>ISO-complete</code> discovers tables by their <code>tenant_id</code> column, as the seam's
+<code>tenantScopedTables</code> does, and requires all three properties. Its control adds an unprotected
+table, and the test goes red. [M]</p>
+<p>For each of the seven tables, the role bound to tenant A:</p>
+<ul>
+<li>reads only A's rows;</li>
+<li>reads nothing when unbound;</li>
+<li>updates none of B's rows;</li>
+<li>is refused (<code>42501</code>) when inserting a row for B.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>table</th>
+<th>reader in the test</th>
+<th>cross-tenant insert attempted by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tenant_members</code></td>
+<td><code>ns_api</code></td>
+<td><code>ns_tenant_admin</code></td>
+</tr>
+<tr>
+<td><code>tenant_policy_override</code></td>
+<td><code>ns_api</code></td>
+<td><code>ns_operator</code></td>
+</tr>
+<tr>
+<td><code>tenant_setting_value</code></td>
+<td><code>ns_api</code></td>
+<td><code>ns_tenant_admin</code></td>
+</tr>
+<tr>
+<td><code>tenant_alarm_thresholds</code></td>
+<td><code>ns_api</code></td>
+<td><code>ns_tenant_admin</code> (with the post-gate grant)</td>
+</tr>
+<tr>
+<td><code>tenant_config_version</code></td>
+<td><code>ns_api</code></td>
+<td><code>ns_tenant_admin</code></td>
+</tr>
+<tr>
+<td><code>tenant_integration</code></td>
+<td><code>ns_api</code></td>
+<td><code>ns_tenant_admin</code></td>
+</tr>
+<tr>
+<td><code>tenant_integration_status</code></td>
+<td><code>ns_api</code></td>
+<td><code>ns_api</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each table has two controls, RLS disabled and the same reads done as the container superuser.
+All 14 go red. [M]</p>
+<p>The operator writes per-tenant overrides with the tenant bound, which is J12's option 1 shape
+applied to a new table. <strong>J12 is still open.</strong> [R]</p>
+<h2 id="10-single-mode">10. <code>single</code> mode<a class="headerlink" href="#10-single-mode" title="Permanent link">&para;</a></h2>
+<p>Nothing changes. <code>single</code> reads the process environment, as today (D15, D1). It does not
+create or read these tables, does not run these migrations, and does not apply the floors
+above. The floors are <code>multi</code>-only (D22). The environment names keep their meaning, including
+<code>CONNECT_*</code>, <code>BRIDGE_*</code>, <code>WEBHOOK_*</code> and <code>PUSHOVER_*</code> as aliases (D22). The lab's
+<code>settingsReadByIdPermission</code> keeps dev's behaviour for <code>single</code>, and <code>FLOOR-app-settings-private</code>
+checks it. [M]</p>
+<h2 id="10a-comparison-with-nocturne">10a. Comparison with Nocturne<a class="headerlink" href="#10a-comparison-with-nocturne" title="Permanent link">&para;</a></h2>
+<p>Nocturne at <code>42275c812</code> was read for comparison. [R]</p>
+<ul>
+<li>Generic settings are rows keyed by tenant and key, with a value (<code>SettingsEntity</code>).</li>
+<li>Thresholds are alert rules with JSON parameters (<code>AlertRuleEntity.condition_params</code>).</li>
+<li><code>TenantAlertSettingsEntity</code> holds a do-not-disturb schedule, not thresholds.</li>
+<li>Connector configuration keeps its secret properties encrypted in a <code>secrets</code> JSON column on
+  the same row (<code>ConnectorConfigurationEntity.SecretsJson</code>, AES-256-GCM per its comment).</li>
+<li>Migrations are EF Core migrations, run at start under a dedicated migrator role, separate
+  from the application role (<code>DatabaseInitializationExtensions.cs:80-113</code>).</li>
+</ul>
+<p>The two designs agree in several places:</p>
+<ul>
+<li>a generic key/value layer;</li>
+<li>typed side-tables where constraints matter;</li>
+<li>a migrator role separate from the application role.</li>
+</ul>
+<p>They differ in one place. D22 moves secret material into a separate component, so this schema
+holds references only, where Nocturne keeps ciphertext beside the configuration it belongs to.
+That difference follows from D22's keys-stay decision. It is not a judgement on Nocturne's
+choice. [R]</p>
+<h2 id="10b-mismatches-found-stop-and-report">10b. Mismatches found (stop-and-report)<a class="headerlink" href="#10b-mismatches-found-stop-and-report" title="Permanent link">&para;</a></h2>
+<p>These are inconsistencies between decisions, documents and code. None was resolved by this
+work.</p>
+<ul>
+<li><strong>M1.</strong> The execution plan's §2.13 lists five floor groups, the fifth added on 2026-10-27,
+  but introduces them as "Decided as four groups". The decision row D22 does not count them.
+  [R]</li>
+<li><strong>M2.</strong> D17 as amended makes the identity provider interchangeable and
+  <code>tenant_members.subject_id</code> the provider's subject, with no foreign key. Two places do not
+  fit that:</li>
+<li>On the seam (<code>81a1f6ce</code>), the column is <code>uuid NOT NULL</code>. A provider whose subjects are not
+    UUIDs cannot be stored.</li>
+<li>On <code>seam/t30-schema-cred</code> (<code>65ce54b9</code>), the column became <code>text</code> <strong>with</strong> a composite
+    foreign key to <code>tenant_subject</code>, against "no foreign key".</li>
+</ul>
+<p>This schema leaves <code>tenant_members</code> unchanged and records actors as text with no foreign key
+  (<code>tenant_config_version.actor_subject</code>). [R]
+- <strong>M3.</strong> <code>tenant_secret</code> stores <code>material bytea</code> in the platform schema. It is drafted in
+  config-surface §A.2 and §C.5 (J4) and built on <code>65ce54b9</code>. D22's later decisions say keys
+  never leave the secrets component. They do not say where the built-in signer keeps its
+  encrypted keys. This schema holds references only, and <code>SECRETS-schema-scan</code> forbids <code>bytea</code>
+  in it. If the built-in signer's store is to live in the same schema, that check needs a
+  defined scope. [R]
+- <strong>M4.</strong> Census §3a row 5 says <code>TRUST_PROXY</code> is "never a tenant row", and row 12 gives
+  <code>DEBUG_LOGGING</code> no policy. The call-path lab's <code>lib/policy.js</code> models both as per-tenant
+  pinned policy rows. That lab is evidence for the call path, not for the setting model, but
+  the two disagree. [R]
+- <strong>M5.</strong> Config-surface §B.3 says class D settings are read from <code>process.env</code> under <code>multi</code>,
+  "as today". D22 and census §3a describe release-driven D names as "deployment values the
+  operator pins", which is a policy row. D15 says env-sourced configuration must not reach the
+  multi path. Where D values live under <code>multi</code> is therefore not stated consistently. This
+  schema supports pinned deployment rows (<code>scope = 'deployment'</code>), and the process-level floors
+  read the environment. [R]
+- <strong>M6.</strong> Config-surface §A.3 cites <code>settings.js:290-296</code> and a <code>bgHigh &lt; 50</code> heuristic.
+  Dev at <code>db3b9e4e</code> converts each threshold on its own when it is below 30
+  (<code>lib/settings.js:292-305</code>). The silent rewriter BF-67 is still present
+  (<code>lib/settings.js:311-334</code>). The citations are stale, and the hazard remains. [R]
+- <strong>M7.</strong> The seam's comments say the connecting role must own the tables, or "a setup step
+  run as a superuser would leave the policy quietly unenforced"
+  (<code>81a1f6ce:lib/storage/postgres-storage.js:290-293</code>, <code>lib/storage/ack-store.js:199-203</code>).
+  Measured here: with the tables owned by a separate non-superuser migration role, RLS is
+  active for every non-owner application role (<code>ISO-roles</code>). <code>FORCE</code> matters only for the
+  owner. [M] The danger the comment names is real only if the application itself connects as
+  a superuser. This bears on who runs migrations (<a href="../../60-research/tenancy/migration-tooling-plan-2026-10-27.html">plan</a> §4).
+- <strong>M8.</strong> The queue item's note says Nocturne's <code>TenantAlertSettingsEntity</code> is a typed
+  side-table "where constraints matter". At <code>42275c812</code> it holds a do-not-disturb schedule;
+  Nocturne's thresholds are JSON parameters on alert rules (§10a). [R]</p>
+<h2 id="11-open-questions-for-the-maintainer">11. Open questions for the maintainer<a class="headerlink" href="#11-open-questions-for-the-maintainer" title="Permanent link">&para;</a></h2>
+<p>The lab made a working choice for each question below, so that it could run. None of these
+choices is a decision.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>question</th>
+<th>lab's working choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td>Does an operator override replace the deployment row whole, or field by field?</td>
+<td>whole row</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>When the operator has written no row, what applies? Is there a project-shipped default policy?</td>
+<td>the catalogue's shipped mode and constraint. Autoprune and alarm keys are pinned off, ordinary T settings open, contested rows bounded within the floor</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>Rollback against a changed policy: refuse it whole, apply it partly with a report, or restore values the merge then ignores?</td>
+<td>refuse whole, naming the setting</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td>When an operator narrows or pins a setting, owners' stored values fall outside it. Who tells the owner, and how? D22's "review list, never dropped silently" covers migration only.</td>
+<td>the merge ignores and reports them; nothing tells the owner</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td>Are operator policy changes, at deployment and per tenant, versioned or audited? How do they invalidate tenants' caches?</td>
+<td>not versioned</td>
+</tr>
+<tr>
+<td>Q6</td>
+<td>J11: refuse partial threshold input, or allow it per key with nullable typed columns?</td>
+<td>refuse partial (J11's recommendation)</td>
+</tr>
+<tr>
+<td>Q7</td>
+<td>Threshold bounds: §A.2 uses 20 to 600 mg/dL. Dev now treats values below 30 as mmol/L. Which bounds, after clinical review?</td>
+<td>20 to 600</td>
+</tr>
+<tr>
+<td>Q8</td>
+<td>The secret-reference format, and how a reference is bound to its tenant.</td>
+<td>placeholder format; binding left to the secrets component</td>
+</tr>
+<tr>
+<td>Q9</td>
+<td>Where does the built-in signer keep encrypted keys: in this database (separate schema and role) or outside it? (M3)</td>
+<td>outside this schema</td>
+</tr>
+<tr>
+<td>Q10</td>
+<td><code>tenant_members.subject_id</code> type and foreign key under D17 as amended (M2; J1, I.2)</td>
+<td>unchanged from <code>81a1f6ce</code></td>
+</tr>
+<tr>
+<td>Q11</td>
+<td>Under <code>multi</code>, do class D values live in the environment or as pinned deployment rows? (M5)</td>
+<td>both supported</td>
+</tr>
+<tr>
+<td>Q12</td>
+<td>Export and deletion: which configuration tables are "tenant data" for <code>tenantScopedTables</code> and <code>NOT_TENANT_DATA</code>? Owner values, versions and integrations are the owner's. Overrides are the operator's.</td>
+<td>not addressed</td>
+</tr>
+<tr>
+<td>Q13</td>
+<td>An integration restored by rollback may reference a secret since deleted or rotated, and an operator may lower a kind's maximum below a tenant's current count. What happens in each case?</td>
+<td>neither handled</td>
+</tr>
+<tr>
+<td>Q14</td>
+<td>May the operator plane read owner values (for support)?</td>
+<td>no grant</td>
+</tr>
+<tr>
+<td>Q15</td>
+<td>The post-gate change for alarm settings, a migration that grants the owner listener writes and drops the hidden CHECK: is a reviewed migration the intended switch?</td>
+<td>yes, as a migration</td>
+</tr>
+<tr>
+<td>Q16</td>
+<td>The send-time webhook check (DNS resolution, pinning the resolved address): where does it live?</td>
+<td>not built</td>
+</tr>
+<tr>
+<td>Q17</td>
+<td>Generate the catalogue from the census gate (J7)?</td>
+<td>hand-written <code>0003</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="12-evidence">12. Evidence<a class="headerlink" href="#12-evidence" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Lab: <code>tools/lab/tenant-config-schema/</code>: <code>README.md</code> (how to run, the full results table) and
+  <code>results.json</code> (each control's error and observation).</li>
+<li>Migration tooling: <a href="../../60-research/tenancy/migration-tooling-plan-2026-10-27.html"><code>docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md</code></a>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

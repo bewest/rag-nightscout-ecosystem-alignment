@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>ef774198e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>a5058a196</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3226,7 +3226,7 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>308</td>
+<td>317</td>
 </tr>
 <tr>
 <td>runnable gates</td>
@@ -3234,11 +3234,11 @@
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>343</td>
+<td>352</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 720 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 352 of the 729 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3251,13 +3251,13 @@
 <tbody>
 <tr>
 <td><code>not-started</code></td>
-<td>62</td>
-<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
+<td>70</td>
+<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>6</td>
-<td>BFQ-178, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM</td>
+<td>7</td>
+<td>BFQ-178, T30-SCHEMA-CONFIG, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -18355,7 +18355,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Notes.</strong> 2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the merge of #8598; tree c53c2c7f = dev 4bca2ac2). Found by RC run 019 (04a873ce, trace T1) as the cause of BF-133; the IOB/COB omission was found while tracing it. Maintainer decision 2026-09-26: "fix as appropriate". 2026-09-26 - FIXED on bf/api3-cache-derived-fields db99bba4 (local, not pushed), one commit on official/dev 699eb5fa. Break-it: deriving and then dropping mills gives the same 7 red; deriving only on create gives the PATCH/PUT test red. same-time- carbs, same-time-resend-shapes, retry-keeps-srvcreated and v1-writes-v3-history give the same output on 699eb5fa and db99bba4 (v1-writes-v3-history exit 1 on its v1 DELETE arm on both). PR body draft: reports/phase0-pr-bodies/api3-cache-derived-fields.md. 2026-09-26 (maintainer): extend the fix to device status for consistency. Second commit d235bdf6 on the same branch (not pushed): device status goes through the same helper. The only change to the in-memory v1 read is placement: the same records for the whole held set, the late v3 status first instead of last, so for a smaller count it is now inside the window. Dataloader, pills and page data unchanged (they already derived mills). Entries measured and left as they are. 6 new tests (3 red on 699eb5fa, 92d08342 and db99bba4); break-its red; suite 3473/0/3; the four probes unchanged against db99bba4. 2026-09-26 - MERGED into dev as ce30a94d (#8784, head d235bdf6; GitHub merge time 2026-09-27 05:32Z). Not released; goes into 15.0.9. RC run 020 is the run on ce30a94d.</p>
 <hr />
 <h2 id="multitenancy-programme">Multitenancy programme<a class="headerlink" href="#multitenancy-programme" title="Permanent link">&para;</a></h2>
-<p><code>parcel: tenancy</code> &mdash; 37 items</p>
+<p><code>parcel: tenancy</code> &mdash; 46 items</p>
 <p>T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.</p>
 <table>
@@ -18397,7 +18397,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tr>
 <td><code>T30-SCHEMA-CONFIG</code></td>
 <td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td><code>-</code></td>
 <td>n/a</td>
 <td>1 run + 2 no-gate</td>
@@ -18529,6 +18529,78 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>feat/write-intent</code></td>
 <td>patch</td>
 <td>2 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R2-QA</code></td>
+<td>Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>minor</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R2-QB</code></td>
+<td>Release 2: One timing for removing a stored string-form _id twin on every path</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R2-QC</code></td>
+<td>Release 2: Separate source labels for API v1 and in-process callers</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R2-QD</code></td>
+<td>Release 2: One rule for a non-hex _id on in-process create and save</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>minor</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R2-QE</code></td>
+<td>Release 2: Answer an identical re-send as unchanged (nothing written, no srvModified, no event), per spec U2 / Q2</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>minor</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R2-QF</code></td>
+<td>Release 2: Move the lower half of write validation into the step, or decide it stays at the persistence boundary</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R2-QH</code></td>
+<td>Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-match (spec Q1)</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>minor</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R1-QG</code></td>
+<td>Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>WC-R1-QI</code></td>
+<td>Retire websocket.js idMatch when the socket update slice moves into the step</td>
+<td><code>not-started</code></td>
+<td><code>feat/write-intent</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>ID-FIRST-MATCH</code></td>
@@ -18855,7 +18927,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -18902,7 +18974,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md</code></li>
 <li><code>docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Two different blockers. T30-RESEARCH blocks the configuration table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY- PROOF blocks the human-identity columns, because D17 row 2 is direction of travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here; if it does not, these tables carry credentials, recovery and MFA. Those are different schemas. If this item is claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns. 2026-10-07: T30-ORY-PROOF is done and its condition held. The identity half still waits on two maintainer decisions: adopting D17 row 2, and the cookie scope (apex cookie, or a per-tenant OAuth client, which adds tenants.oauth_client_id). Under row 2, tenant_members.subject_id holds the Kratos identity UUID with no foreign key, and no credential, recovery or MFA columns are ours (docs/60-research/tenancy/ory-proof-2026-10-07.md §7). D17 row 2 adopted in principle, gated, and its cookie scope decided (maintainer, 2026-10-12): E, the apex cookie behind a hardened edge (docs/60-research/tenancy/ory-cookie- variants-2026-10-12.md). Hydra stays deferred, so the identity half needs no per-tenant OAuth client column. The edge passes a short-lived assertion bound to the tenant, which the exchange verifies. Before real identities exist, four things must be measured over https behind the production edge: the cookie strip, the origin check on writes and WebSocket upgrades, every path to a tenant going through the edge, and the compliance question having an owner.</p>
+<p><strong>Notes.</strong> 2026-10-27 (session -4f's agent; scope and secrets re-checked by -4f): built as a spec plus PostgreSQL lab in this repository, to port to dev with ST- PG/TEN-RESOLVE (maintainer: this repo or the seam line). Spec docs/30-design/tenancy/tenant-config-schema-2026-10-27.md; lab tools/lab/tenant-config-schema/ (migrations 0001-0007, 0001 = the seam's platform.sql at 81a1f6ce unchanged); 57 tests green, 72 of 72 controls red, PostgreSQL 16.15, as a non-superuser application role. The §A.2 partial-mmol hazard reproduced on the old shape and is refused by the new one. Migration tooling plan (both stores): docs/60-research/tenancy/migration-tooling- plan-2026-10-27.md, umzug measured (needs one transaction per migration plus ledger row, and an advisory lock). Eight mismatches (spec §10b; M1 fixed) and 17 open questions (spec §11) for the maintainer. Two different blockers. T30-RESEARCH blocks the configuration table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY-PROOF blocks the human- identity columns, because D17 row 2 is direction of travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here; if it does not, these tables carry credentials, recovery and MFA. Those are different schemas. If this item is claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns. 2026-10-07: T30-ORY-PROOF is done and its condition held. The identity half still waits on two maintainer decisions: adopting D17 row 2, and the cookie scope (apex cookie, or a per-tenant OAuth client, which adds tenants.oauth_client_id). Under row 2, tenant_members.subject_id holds the Kratos identity UUID with no foreign key, and no credential, recovery or MFA columns are ours (docs/60-research/tenancy/ory-proof-2026-10-07.md §7). D17 row 2 adopted in principle, gated, and its cookie scope decided (maintainer, 2026-10-12): E, the apex cookie behind a hardened edge (docs/60-research/tenancy/ory-cookie-variants-2026-10-12.md). Hydra stays deferred, so the identity half needs no per-tenant OAuth client column. The edge passes a short-lived assertion bound to the tenant, which the exchange verifies. Before real identities exist, four things must be measured over https behind the production edge: the cookie strip, the origin check on writes and WebSocket upgrades, every path to a tenant going through the edge, and the compliance question having an owner.</p>
 <h3 id="t30-ory-proof--stand-up-kratos-1x-and-hydra-2x-and-try-to-make-one-pool-serve-two-tenants"><code>T30-ORY-PROOF</code> &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants<a class="headerlink" href="#t30-ory-proof--stand-up-kratos-1x-and-hydra-2x-and-try-to-make-one-pool-serve-two-tenants" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -19811,7 +19883,501 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev- db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write- intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc- step-design-note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.</p>
+<p><strong>Notes.</strong> Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.</p>
+<h3 id="wc-r2-qa--release-2-re-express-api-v3-writes-as-filter-writes-under-the-step-or-keep-two-adapter-method-families"><code>WC-R2-QA</code> &mdash; Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families<a class="headerlink" href="#wc-r2-qa--release-2-re-express-api-v3-writes-as-filter-writes-under-the-step-or-keep-two-adapter-method-families" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; decided on its own, as a deliberate change with a release note</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/api3/generic/{create,update,patch,delete}, lib/api3/storage, lib/storage/write-intent.js. Today: v3 writes by identifier through its own cached methods; v1 and the socket write by filter.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>minor</code>.</strong> changes which cache events v3 writes emit</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+<li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-A. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the cache events and data-update emissions for v3 writes.</p>
+<h3 id="wc-r2-qb--release-2-one-timing-for-removing-a-stored-string-form-_id-twin-on-every-path"><code>WC-R2-QB</code> &mdash; Release 2: One timing for removing a stored string-form _id twin on every path<a class="headerlink" href="#wc-r2-qb--release-2-one-timing-for-removing-a-stored-string-form-_id-twin-on-every-path" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; decided on its own, as a deliberate change with a release note</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/storage/write-intent.js rule table (remove-string-forms vs remove-string- forms-after). Today: string-form twin removal is appended to the bulk write on some paths and a separate call on others.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>patch</code>.</strong> internal event count only; no reply or stored state changes, to be confirmed by G1</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+<li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-B. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the number of commit events per write.</p>
+<h3 id="wc-r2-qc--release-2-separate-source-labels-for-api-v1-and-in-process-callers"><code>WC-R2-QC</code> &mdash; Release 2: Separate source labels for API v1 and in-process callers<a class="headerlink" href="#wc-r2-qc--release-2-separate-source-labels-for-api-v1-and-in-process-callers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; decided on its own, as a deliberate change with a release note</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/storage/write-intent.js, lib/storage/write-step.js. Today: v1 and in- process writes share the v1/internal source label.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>patch</code>.</strong> internal event field only (the event is internal and unstable)</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+<li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-C. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the commit event source field.</p>
+<h3 id="wc-r2-qd--release-2-one-rule-for-a-non-hex-_id-on-in-process-create-and-save"><code>WC-R2-QD</code> &mdash; Release 2: One rule for a non-hex _id on in-process create and save<a class="headerlink" href="#wc-r2-qd--release-2-one-rule-for-a-non-hex-_id-on-in-process-create-and-save" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; decided on its own, as a deliberate change with a release note</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/server/{food,activity}.js through the step. Today: an in-process save with a non-hex _id gets a fresh ObjectId while create keeps the id.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>minor</code>.</strong> changes a stored id form for an in-process caller</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+<li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-D. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the stored _id for in-process saves with a non-hex _id.</p>
+<h3 id="wc-r2-qe--release-2-answer-an-identical-re-send-as-unchanged-nothing-written-no-srvmodified-no-event-per-spec-u2--q2"><code>WC-R2-QE</code> &mdash; Release 2: Answer an identical re-send as unchanged (nothing written, no srvModified, no event), per spec U2 / Q2<a class="headerlink" href="#wc-r2-qe--release-2-answer-an-identical-re-send-as-unchanged-nothing-written-no-srvmodified-no-event-per-spec-u2--q2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; decided on its own, as a deliberate change with a release note</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/storage/write-intent.js outcome rule. Today: re-sends are labelled replaced and rewritten; unchanged waits for release 2.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>minor</code>.</strong> clients syncing by srvModified stop seeing identical re-sends (spec Q2 decided b1 status quo per path; reopen with this item)</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+<li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-E. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: srvModified, v3 history and events for identical re-sends.</p>
+<h3 id="wc-r2-qf--release-2-move-the-lower-half-of-write-validation-into-the-step-or-decide-it-stays-at-the-persistence-boundary"><code>WC-R2-QF</code> &mdash; Release 2: Move the lower half of write validation into the step, or decide it stays at the persistence boundary<a class="headerlink" href="#wc-r2-qf--release-2-move-the-lower-half-of-write-validation-into-the-step-or-decide-it-stays-at-the-persistence-boundary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; decided on its own, as a deliberate change with a release note</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/storage/write-step.js, lib/storage/validated-update.js, lib/storage/write- intent.js. Today: half of WRITE_VALIDATION sits below the storage interface in write-step.js and validated-update.js.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>patch</code>.</strong> placement only, held by G1</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+<li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-F. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: none intended; placement only.</p>
+<h3 id="wc-r2-qh--release-2-decide-whether-v1-create-keeps-replace-on-match-or-follows-merge-on-match-spec-q1"><code>WC-R2-QH</code> &mdash; Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-match (spec Q1)<a class="headerlink" href="#wc-r2-qh--release-2-decide-whether-v1-create-keeps-replace-on-match-or-follows-merge-on-match-spec-q1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>minor</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; decided on its own, as a deliberate change with a release note</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/server/*.js create paths through the step. Today: v1 create has always been allowed to replace a matched record.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>minor</code>.</strong> a v1 re-POST no longer removes omitted fields (spec U3)</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+<li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-H. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: stored fields of a v1 re-POST that omits fields.</p>
+<h3 id="wc-r1-qg--refresh-the-write-contract-specs-matrix-tables-against-the-dev-db3b9e4e-pin"><code>WC-R1-QG</code> &mdash; Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin<a class="headerlink" href="#wc-r1-qg--refresh-the-write-contract-specs-matrix-tables-against-the-dev-db3b9e4e-pin" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>rag-nightscout-ecosystem-alignment</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>main</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> docs/30-design/tenancy/write-contract-spec-2026-10-07.md section 1.3 and the appendix; tools/qc/write-contract-ablate.sh's expected lists (they predate the Temporary Target cells).</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> documentation and tooling</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; The spec's tables are prose generated from a run; a gate would regenerate them from the pin and diff. Today they differ from the pin in 65 cells (design note Q-G).</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-G. Not a behaviour change.</p>
+<h3 id="wc-r1-qi--retire-websocketjs-idmatch-when-the-socket-update-slice-moves-into-the-step"><code>WC-R1-QI</code> &mdash; Retire websocket.js idMatch when the socket update slice moves into the step<a class="headerlink" href="#wc-r1-qi--retire-websocketjs-idmatch-when-the-socket-update-slice-moves-into-the-step" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>feat/write-intent</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@db3b9e4e</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/server/websocket.js idMatch (still used by dbUpdate and dbUpdateUnset) and the step's id-match target, which duplicates it.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> part of release 1 (WC-STEP-PATCH slice 6); no behaviour change</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Held by WC-STEP-PATCH's G1 and the write-rule-copies gate once slice 6 moves dbUpdate; until then the two copies can drift.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Design note question Q-I. Inside release 1, slice 6.</p>
 <h3 id="id-first-match--release-2-minor-identifier-first-matching-for-entries-devicestatus-and-socket-dbadd-with-the-q1-adoption-rule"><code>ID-FIRST-MATCH</code> &mdash; Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule<a class="headerlink" href="#id-first-match--release-2-minor-identifier-first-matching-for-entries-devicestatus-and-socket-dbadd-with-the-q1-adoption-rule" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
