@@ -17,9 +17,9 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 | | on dev `e1f7ac41` (ships in 16.0.0) | in review (draft PRs) | not started |
 |---|---|---|---|
-| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | ST-V3-DECOUPLE, in #8865; WC-STEP-PATCH, draft #8874; ST-VIEWS, draft #8875 | `write(intent)` (in progress), ST-EVENT (decision deferred, research continuing), computed views, backend-selectable harness, PostgreSQL |
+| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | ST-V3-DECOUPLE, in #8865; WC-STEP-PATCH, draft #8874; ST-VIEWS, draft #8875 (`a0470a72`) | `write(intent)` (in progress), ST-EVENT (decision deferred, research continuing), computed views, backend-selectable harness, PostgreSQL |
 | Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | — | identifier-first on every path, unique index |
-| Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857: S0, S1, S2, S5, off by default (`f7a43fed`, 64 behind dev, conflicts) | typed writes (S3), projected views (S4) |
+| Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857: S0, S1, S2, S5, off by default (`f7a43fed`, 78 behind dev, conflicts) | typed writes (S3), projected views (S4) |
 | Tenancy | nothing | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`fcd305ae`, base dev, open, in the 16.0.0 merge list; #8862 closed as superseded) | tenant configuration, resolution, tenant-scoped auth, multitenant lab |
 
 ## 2. Why the tracks meet at the write step
@@ -60,7 +60,7 @@ Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRIT
 | ST-V3-DECOUPLE | in review in #8865: API v3 without API v1's modules, the socket and the cache, so `serve api` serves it alone (M3) | ST-WRITES, PLAT-SERVE | `serve api` passes the API v3 suites (634 pass, 0 fail, 108 single-only pending, as reported at `9f7f84f8`); `single` unchanged |
 | ST-EVENT | the commit event names the records of each write, from WriteResult.items[] | WC-STEP-PATCH, D-EVENT (deferred) | each stored record named once per write |
 | ST-HARNESS | backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
-| ST-VIEWS | draft #8875, not wired in; device-status bound fixed by fixture, pending review: computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
+| ST-VIEWS | draft #8875 at `a0470a72`, not wired in; device-status bound fixed by fixture (harness 198/0), in review: computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
 | ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
 
 The September seam chain is kept as reference for ST-HARNESS, ST-PG and TEN-RESOLVE (commits named on each item); it is not merged as it stands.
@@ -132,7 +132,7 @@ Select **Show on the map** on a card to see which items it holds up. Release que
 
 ## 7. Sources
 
-- cgm-remote-monitor dev `ca1652d6`; open PR heads read with `gh pr view` on 2026-10-27.
+- cgm-remote-monitor dev `e1f7ac41`; open PR heads read with `gh pr view` on 2026-10-28.
 - [Storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md), [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md), [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md), [#8854 alignment brief](../modernization/pr-8854-alignment-2026-10-26.md).
 - [Registration specification](spec/registration.md), [identity specification](spec/identity.md), [records specification](spec/records.md).
 - Nocturne `970031f6`, re-checked at `36d5ef4a2`. Tenant scope is an `ITenantScoped` marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves `identifier` equal to `_id` (issue #1932).
