@@ -7363,6 +7363,13 @@ and the <code>EPUSHOVER_*</code> error codes. Not on dev: <code>QUERY_REGEX_*</c
 <code>API3_*</code>, <code>WEBHOOK_*</code> and <code>CI</code> are now read in <code>env.js</code> (<code>readApi3Settings</code> <code>:309-326</code>,
 <code>readWebhookSettings</code> <code>:329-336</code>), which closes the document's gaps 1 to 3 on dev.</p>
 <h2 id="3-contested-settings-for-the-maintainer">3. Contested settings, for the maintainer<a class="headerlink" href="#3-contested-settings-for-the-maintainer" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Decided in principle 2026-10-27 (maintainer), as D22</strong> (<a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan §2.13</a>):
+a per-setting operator policy (default, open/bounded/pinned, constraint) over owner values, under
+project floors that no operator can loosen. Items 2, 3, 5 and 8 and parts of 1, 4, 6 and 12 become
+floors; the rest become policy rows. Each item re-stated under D22 is still owed. The proposals below
+are as written before the decision.</p>
+</blockquote>
 <ol>
 <li><strong><code>AUTH_DEFAULT_ROLES</code>, <code>TREATMENTS_AUTH</code> (T today).</strong></li>
 <li>Options: free T; T limited to a hoster list (<code>denied</code>, <code>readable</code>, <code>status-only</code>) with <code>denied</code> as
@@ -7415,6 +7422,130 @@ and the <code>EPUSHOVER_*</code> error codes. Not on dev: <code>QUERY_REGEX_*</c
     layer returns under multi is not checked). Proposed: X under multi until storage is accounted per
     tenant.</li>
 </ol>
+<h2 id="3a-the-twelve-re-stated-under-d22-draft-for-the-maintainer-2026-10-27">3a. The twelve re-stated under D22 (draft for the maintainer, 2026-10-27)<a class="headerlink" href="#3a-the-twelve-re-stated-under-d22-draft-for-the-maintainer-2026-10-27" title="Permanent link">&para;</a></h2>
+<p><em>Draft, reviewed 2026-10-27: the maintainer made row 7 a floor; the other rows stand as drafted. Each row applies D22 (<a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan §2.13</a>)
+to one contested item: </em><em>floor</em><em> is enforced in code under <code>multi</code> and no operator can loosen it; </em><em>policy</em><em>
+is the operator's per-setting row (default, mode, constraint), which an operator may override per tenant;
+</em><em>owner</em><em> is what the tenant owner sets within it. Rows marked </em><em>check</em><em> carry a choice the decisions so
+far do not settle.</em></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>settings</th>
+<th>floor (code, <code>multi</code> only)</th>
+<th>operator policy</th>
+<th>owner</th>
+<th>check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>AUTH_DEFAULT_ROLES</code>, <code>TREATMENTS_AUTH</code></td>
+<td>default roles only from <code>denied</code>, <code>readable</code>, <code>status-only</code>; <code>TREATMENTS_AUTH</code> not offered (it would append <code>careportal</code> for anonymous visitors)</td>
+<td>bounded: allowed list within the floor's three (an operator may narrow it); default <code>denied</code></td>
+<td>picks from the operator's list</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>API_SECRET</code>, <code>API_SECRET_FILE</code></td>
+<td>refuse to start while either is set</td>
+<td>none</td>
+<td>none (each tenant's root credential is in the secrets component, D13)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>IMPORT_CONFIG</code></td>
+<td>ignored, with a warning naming it</td>
+<td>none</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>4</td>
+<td>outbound endpoints: <code>CONNECT_*</code>, <code>WEBHOOK_*</code>, <code>BASE_URL</code>, the connect / webhook / maker / pushover enables</td>
+<td>connector endpoints only the hosts a driver defines; webhooks to public addresses only; <code>BASE_URL</code> derived from the tenant slug, never set</td>
+<td>which integration kinds are enabled, how many of each per tenant, and an optional host allow-list for webhooks</td>
+<td>adds, tests and removes integration records (D22: typed records)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>TRUST_PROXY</code></td>
+<td>refuse to start while empty; a hop count or CIDR</td>
+<td>a deployment value, pinned; never a tenant row</td>
+<td>none</td>
+<td>dev's default is empty, so every operator must set it</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>WRITE_VALIDATION</code></td>
+<td>at least <code>log</code></td>
+<td>bounded: <code>log</code> or <code>reject</code>; the operator sets the default</td>
+<td>may tighten (<code>log</code> to <code>reject</code>), never loosen below the operator's value</td>
+<td>dev's default is <code>off</code>, so every operator must set it</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>API3_SETTINGS_STRICT_READ_ENABLED</code></td>
+<td>always on under <code>multi</code> (decided 2026-10-27): reading an app's settings record by identifier needs <code>api:settings:admin</code>, as search and history do</td>
+<td>none</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>API3_SECURITY_ENABLE</code></td>
+<td>refuse to start if false</td>
+<td>none</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>API3_AUTOPRUNE_*</code> (permanent deletion)</td>
+<td>an explicit confirmation, with an export offered first</td>
+<td>bounded: a minimum retention per collection; default off</td>
+<td>may turn pruning on above the operator's minimum</td>
+<td>—</td>
+</tr>
+<tr>
+<td>10</td>
+<td>alarm thresholds and enables</td>
+<td><strong>hidden, with a plain-language explanation, until multi-mode alarms pass the alarm gate</strong> (decided 2026-10-27; execution plan §7a)</td>
+<td>after the gate: open, with an operator default per threshold</td>
+<td>after the gate: sets thresholds, stored in mg/dL; a partial mmol override must not be rewritten silently (BF-67) first</td>
+<td>—</td>
+</tr>
+<tr>
+<td>11</td>
+<td>plugin credentials: <code>PUSHOVER_*</code>, <code>LOOP_APNS_*</code>, connector logins</td>
+<td>encrypted at rest; decrypted only by the consuming process; the operator plane never reveals</td>
+<td>which integration kinds are enabled; an operator-owned part where a kind declares one (the Pushover application token)</td>
+<td>owner-owned parts (Pushover user and alarm keys, APNs key and team, connector logins), revealed only through the logged reveal</td>
+<td>—</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>DEBUG_LOGGING</code>; <code>DBSIZE_*</code></td>
+<td><code>DEBUG_LOGGING</code> off; <code>dbsize</code> not offered until storage is accounted per tenant</td>
+<td>none</td>
+<td>none</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The eight names new on dev</strong> (§2) under the same rules: <code>WRITE_VALIDATION</code> is row 6;
+<code>API_V3_DATA_WARNINGS</code>, <code>API_V1_COUNT_LEADING_NUMBER</code> and <code>API_V1_COUNT_ZERO_WINDOW</code> are deployment values the
+operator pins (release-driven compatibility switches); <code>API3_SETTINGS_STRICT_READ_ENABLED</code> is row 7 (a floor);
+<code>SHOW_SECONDS</code> is open to the owner; <code>CUSTOMCONNSTR_API3_MAX_LIMIT</code> and
+<code>CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY</code> are not offered under <code>multi</code>.</p>
+<p><strong>What follows for the schema.</strong> Rows 2, 3, 5, 8 and 12 are not policy rows at all. Rows 4 and 11 move out
+of the settings table into integration records and the secrets component. Row 7 is a floor. That leaves policy rows for
+1, 6, 9 and 10 among the twelve.</p>
 <h2 id="4-stale-in-the-configuration-surface-document">4. Stale in the configuration-surface document<a class="headerlink" href="#4-stale-in-the-configuration-surface-document" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>B.4's totals</strong> (277, and the transcript's union of 247) are true of <code>81a1f6ce</code> only; dev measures 264

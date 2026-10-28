@@ -2371,6 +2371,8 @@
       
         
       
+        
+      
     
     
     
@@ -3437,6 +3439,34 @@
     
   
     API v4 typed record paths: Nocturne's routes with our rules, or paths of our own
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wc-step-design-note-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WC-STEP-PATCH: mapping the write step onto dev db3b9e4e
   
 
     
@@ -5903,6 +5933,11 @@ credential-free plane.</p>
 <h1 id="8865-serves-only-v3-and-the-v2-authorization-router-reading-the-environment-v1-is-absent">8865 serves only v3 and the v2 authorization router, reading the environment. v1 is absent<a class="headerlink" href="#8865-serves-only-v3-and-the-v2-authorization-router-reading-the-environment-v1-is-absent" title="Permanent link">&para;</a></h1>
 <p>until ST-V3-DECOUPLE (M3), which is also why 81 API v3 suites fail under <code>serve api</code>.</p>
 </li>
+<li><strong>Decided 2026-10-27 (maintainer):</strong> <code>serve api</code> serves API v1, API v3, the v2 summary and
+     authorization, and tenant resolution, as {C} §2.1 says. v1 joins once its storage paths run without the
+     in-memory cache. The socket stays with the realtime role (question 3 below is unchanged). As a
+     consequence, the 15 API v3 tests that write to a record created through API v1 keep running under
+     <code>serve api</code>.</li>
 <li><strong>The socket's listener and its writes.</strong> The sources disagree on where the socket lives:</li>
 <li>CM28 puts it "on the hub's existing listener".</li>
 <li>D16 groups <code>ns-api</code> and <code>ns-realtime</code> in one row.</li>

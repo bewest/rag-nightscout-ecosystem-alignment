@@ -2369,6 +2369,8 @@
       
         
       
+        
+      
     
     
     
@@ -3084,6 +3086,17 @@
     <span class="md-ellipsis">
       
         2.12 D21 — one entrypoint, serve &lt;roles&gt; (maintainer, 2026-10-26)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)
       
     </span>
   </a>
@@ -5484,6 +5497,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5596,14 +5620,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>af403e09e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>b27548649</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D21 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/21641d9c27d0f378932e2bfab0b3441b1c9ee839/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f4cda86f60c02fa154cb122e21778f899a37ffda/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5832,7 +5856,7 @@ preference.</p>
 </tr>
 <tr>
 <td><strong>D7</strong></td>
-<td><strong>The platform-admin plane gets its own entrypoint on its own network interface</strong>, ORY-style, secured by unreachability rather than a credential. Tenant admin stays on the consumer interface under RLS. A deliberate departure from Nocturne</td>
+<td><strong>The platform-admin plane gets its own entrypoint on its own network interface</strong>, ORY-style, secured by unreachability rather than a credential. Tenant admin stays on the consumer interface under RLS <em>(superseded in part by D16: tenant admin has its own listener, <code>ns-tenant-admin</code>, reachable by owners; noted 2026-10-27)</em>. A deliberate departure from Nocturne</td>
 <td>maintainer, 2026-09-14 — §2</td>
 </tr>
 <tr>
@@ -5904,6 +5928,11 @@ preference.</p>
 <td><strong>D21</strong></td>
 <td><strong>One executable, and roles are served by <code>nightscout serve &lt;roles&gt;</code>.</strong> <code>bin/nightscout.js</code> (Node, not a shell script) is the container <code>ENTRYPOINT</code> and dispatches subcommands, as Consul and node-multienv's <code>start_container.sh</code> do. <code>nightscout single</code> is today's server, and every existing way of starting it (<code>Procfile</code>, <code>npm start</code>, <code>server.js</code>, iisnode's <code>web.config</code>, <code>start.sh</code>, the image's <code>CMD</code>) stays equal to it (D1). Hosted roles — D5's <code>api</code>, <code>evaluator</code>, <code>realtime</code>, <code>vcpool</code> and D16's <code>tenant-admin</code> and <code>admin</code> — are started as <code>nightscout serve &lt;role&gt;[,&lt;role&gt;…]</code>; several roles may share one process, and each listener has its own bind address, so <code>admin</code> stays off the consumer interface (D7), as Ory's <code>serve public|admin|all</code> does. Subcommands an operator runs against a deployed site (<code>diagnose data</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code>, later <code>migrate</code>) live in the same dispatcher; developer tooling stays in <code>scripts/</code>. The dispatcher selects the bootstrap and keeps D15's split. Reorganising the repository into packages ({C} §3) is a separate, later track. <strong>Open:</strong> whether a composed <code>serve</code> of every role is part of the multi target or only a small-hoster convenience</td>
 <td>maintainer, 2026-10-26 — §2.12</td>
+</tr>
+<tr>
+<td><strong>D22</strong></td>
+<td><strong>Tenant configuration is a per-setting policy over owner values, under project floors.</strong> The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of <strong>project floors</strong> is enforced in code under <code>multi</code>, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them</td>
+<td>maintainer, 2026-10-27 — §2.13</td>
 </tr>
 </tbody>
 </table>
@@ -7067,8 +7096,89 @@ and Ory uses to turn its public and admin listeners on and off (<code>serve publ
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
 change) and PLAT-SERVE (the hosted roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/21641d9c27d0f378932e2bfab0b3441b1c9ee839/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f4cda86f60c02fa154cb122e21778f899a37ffda/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
+<h3 id="213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27">2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)<a class="headerlink" href="#213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27" title="Permanent link">&para;</a></h3>
+<p>The census (<a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">re-measured on dev</a>) classes each of
+dev's 264 settings as T, TS, D, B or X. Twelve resisted the classes (§3 there). Eight of the twelve were "the
+owner sets it, within a constraint the operator chooses", and the other four were rules that multi mode itself
+must hold. The hosted setups used for comparison (read 2026-10-27) keep one flat set of environment variables
+per tenant, which the owner's dashboard may change key by key, and they hold operator control in
+infrastructure, driver code and database rules rather than in a settings model. D22 makes that control one
+model.</p>
+<p><strong>The layers.</strong></p>
+<ol>
+<li><strong>Project floors</strong>, in code, under <code>TENANCY_MODE=multi</code> only. The server refuses to start, or refuses to
+   save a policy or a value, that breaks one. Decided as four groups:</li>
+<li><strong>no deployment secrets</strong>: <code>API_SECRET</code> and <code>API_SECRET_FILE</code> refused (D13 as a check);
+     <code>API3_SECURITY_ENABLE=false</code> refused;</li>
+<li><strong>no anonymous writes</strong>: default roles only from <code>denied</code>, <code>readable</code> and <code>status-only</code>;
+     <code>TREATMENTS_AUTH=off</code> and any anonymous write role not offered;</li>
+<li><strong>network safety</strong>: <code>TRUST_PROXY</code> must be a hop count or CIDR, never empty; outbound webhooks to public
+     addresses only; connector endpoints only the hosts a driver defines; <code>BASE_URL</code> derived from the tenant
+     slug;</li>
+<li><strong>app settings stay private</strong>: reading an app's settings record by identifier needs
+     <code>api:settings:admin</code>, as search and history do (<code>API3_SETTINGS_STRICT_READ_ENABLED</code> always on; added
+     2026-10-27);</li>
+<li><strong>data and log safety</strong>: <code>WRITE_VALIDATION</code> at least <code>log</code> (an owner may tighten it); <code>DEBUG_LOGGING</code>
+     off; <code>IMPORT_CONFIG</code> ignored; a permanent autoprune needs an explicit confirmation and an export offered
+     first.</li>
+<li><strong>Operator policy</strong>, per setting, keyed by the census's setting names: a default, a mode (<code>open</code>,
+   <code>bounded</code>, <code>pinned</code>) and a constraint. Written on the operator plane (D7).</li>
+<li><strong>Owner values</strong>, written on the tenant-owner listener (D16) and accepted only within the policy.</li>
+</ol>
+<p>Effective value: code default → operator default → owner value (if the mode allows it and the constraint
+accepts it) → operator pin.</p>
+<p><strong>Legacy names.</strong> Policy rows use the names the census already maps, so <code>single</code> is unchanged: it reads
+the environment as today, with no policy layer (D15). A hosted operator moving from a per-tenant launcher
+maps the launch environment to operator defaults and each tenant's environment file to owner values; a key
+the owner may no longer set goes to a review list, never dropped silently.</p>
+<p><strong>Secrets.</strong> A secrets component holds each tenant's root credential (D13), token-signing key (D14),
+connector logins, push keys and webhook signing secrets. Each is encrypted at rest. A pluggable backend
+(a cloud key service, Vault, or an encrypted column whose key is held outside the database) follows D17's
+"bring your own" shape. Only the process that uses a secret decrypts it. The owner dashboard never holds a
+decryption key: it calls a separate, logged <strong>reveal</strong> operation. Initial policy: a valid owner session may
+reveal the owner's own credential. Target: reveal also needs a fresh re-authentication. Moving from the first
+to the second changes one operation's policy, with no data migration or re-keying. The operator plane never
+reveals. This answers the config-surface document's open §C.5 in direction; the backend is not chosen.</p>
+<p><strong>Decided the same day (maintainer, 2026-10-27, second round).</strong></p>
+<ul>
+<li><strong>Integrations are typed records.</strong> Connectors, webhooks, push targets and other services are not scalar
+  settings. Each is a record: a kind from a driver catalogue, settings validated by that kind's schema, a
+  reference to its credential in the secrets component, and a status (last success, last error). The owner
+  dashboard lists, adds, tests and removes them, and a tenant may hold several of one kind. Operator policy
+  says which kinds are enabled and their limits. The environment keys (<code>CONNECT_*</code>, <code>BRIDGE_*</code>,
+  <code>WEBHOOK_*</code>, <code>PUSHOVER_*</code>) stay as aliases in <code>single</code>.</li>
+<li><strong>A change takes effect live, and is versioned.</strong> Each change is a numbered version recording who, when
+  and what, and the owner can roll back. Saving invalidates the tenant's cached settings. The next request
+  for that tenant uses the new version. A background loop (alarm evaluation, connector polling) uses it at
+  that tenant's next cycle. No restart. Alarm-related settings are confirmed with a preview first.</li>
+<li><strong>An integration's credential can be split between operator and owner.</strong> A kind declares which parts
+  belong to the operator (for example a Pushover application token, held in the operator's scope of the
+  secrets component and shared by every tenant) and which belong to the owner (the user and alarm keys).
+  The owner never sees the operator's part.</li>
+<li><strong>Operator policy varies per tenant by override.</strong> One deployment policy, plus operator overrides on
+  individual tenants. The project floors apply to every tenant whatever the overrides say. How tenants are
+  grouped, sold or assigned is the operator's business logic, outside Nightscout.</li>
+</ul>
+<p><strong>The call path, decided 2026-10-27 (maintainer): owner token end to end, provisioning on the operator
+plane.</strong> The owner dashboard exchanges the owner's login for a per-tenant owner token (D14, D17) and calls
+<code>ns-tenant-admin</code> with it; that listener verifies the token and enforces policy and floors. Provisioning
+and suspension go through an orchestrator that exists only on the operator plane (D7) and is never
+reachable from the dashboard. No component on the dashboard's path holds a credential for every tenant.
+Evidence: <a href="../../../tools/lab/tenant-config-callpath/index.html"><code>tools/lab/tenant-config-callpath/</code></a>
+(designs A, B0, B1, C; 33 controls). A trusted orchestrator writing for owners (B) gave one component on
+the dashboard's path read, write and reveal over every tenant, and an audit log that cannot name a
+verified human. Under A, a token used on another tenant fails as a signature failure. Remaining
+all-tenant components: the tenant-owner listener (it fetches every signing key), the identity provider
+and the operator plane. Next: a lab arm in which the secrets component signs and verifies, so keys never
+leave it.</p>
+<p><strong>Alarm settings, decided 2026-10-27 (maintainer):</strong> hidden from the owner, with a plain-language
+explanation, until multi-mode alarms pass the gate in §7a. Settings that do nothing on an alarm path
+would invite false trust.</p>
+<p><strong>Not decided.</strong> The secrets backend; the twelve contested settings re-stated under D22 are drafted for
+review in <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">census §3a</a>; row 7 decided the same
+day: the strict settings read (<code>API3_SETTINGS_STRICT_READ_ENABLED</code>) is a floor, always on under <code>multi</code>.</p>
 <h2 id="3-d8--the-query-surface">3. D8 — the query surface<a class="headerlink" href="#3-d8--the-query-surface" title="Permanent link">&para;</a></h2>
 <h3 id="31-v3-is-closed-v1-is-open">3.1 v3 is closed, v1 is open<a class="headerlink" href="#31-v3-is-closed-v1-is-open" title="Permanent link">&para;</a></h3>
 <table>

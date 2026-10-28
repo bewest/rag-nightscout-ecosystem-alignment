@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>7485d54db</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>f4cda86f6</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3230,7 +3230,7 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>375</td>
+<td>377</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3238,7 +3238,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 718 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 720 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3251,13 +3251,13 @@
 <tbody>
 <tr>
 <td><code>not-started</code></td>
-<td>63</td>
-<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-STEP-PATCH, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
+<td>62</td>
+<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-SCHEMA-CONFIG, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>5</td>
-<td>BFQ-178, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM</td>
+<td>6</td>
+<td>BFQ-178, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -18525,10 +18525,10 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tr>
 <td><code>WC-STEP-PATCH</code></td>
 <td>Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply</td>
-<td><code>not-started</code></td>
-<td><code>-</code></td>
+<td><code>in-progress</code></td>
+<td><code>feat/write-intent</code></td>
 <td>patch</td>
-<td>0 run + 1 no-gate</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>ID-FIRST-MATCH</code></td>
@@ -18726,7 +18726,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></li>
 <li><code>docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md</code></li>
 </ul>
-<p><strong>Notes.</strong> T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it is the maintainer decisions the document defers, and the harnesses that would turn its numbers into measurements. The three decisions with the longest reach are where the tenant- owner API lives, what issues and verifies a tenant-owner credential, and whether D7's credential-free platform plane holds against Nocturne's design, which puts platform admin on the consumer API behind a platform_admin role instead. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).</p>
+<p><strong>Notes.</strong> 2026-10-27 (maintainer, recorded by session -4f): D22 decided. Tenant configuration is a per-setting operator policy (default, mode open / bounded / pinned, constraint) over owner values, under project floors enforced in code under multi (four groups: no deployment secrets, no anonymous writes, network safety, data and log safety). Secrets are a component: encrypted at rest, decrypted only by the consuming process, a logged reveal operation (initial policy: an owner session; target: re-authentication). Open: policy by plan or cohort; the dashboard call path (lab of three designs briefed); the twelve contested settings re-stated under D22. Execution plan §2.13; census §3. Second round, same day: integrations (connectors, webhooks, push) are typed records with a credential reference and status; a change takes effect live, versioned with rollback, at the tenant's next request or loop cycle; operator policy varies per tenant by operator override, floors over all. Call path decided (maintainer, same day): owner token end to end to ns-tenant-admin, provisioning and suspension through an orchestrator on the operator plane only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and §F.1 / D17 wording contradictions the lab found are noted in place. T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it is the maintainer decisions the document defers, and the harnesses that would turn its numbers into measurements. The three decisions with the longest reach are where the tenant- owner API lives, what issues and verifies a tenant-owner credential, and whether D7's credential-free platform plane holds against Nocturne's design, which puts platform admin on the consumer API behind a platform_admin role instead. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).</p>
 <h3 id="t30-auth--the-auth-plane---ory-kratoshydra-against-building-it-ourselves-and-the-three-interface-split"><code>T30-AUTH</code> &mdash; The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split<a class="headerlink" href="#t30-auth--the-auth-plane---ory-kratoshydra-against-building-it-ourselves-and-the-three-interface-split" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -19758,7 +19758,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -19766,15 +19766,15 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>-</code></td>
+<td><code>feat/write-intent</code></td>
 </tr>
 <tr>
 <td>base</td>
-<td><code>official/dev@7ad3a67f</code></td>
+<td><code>official/dev@db3b9e4e</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/work/crm-seam</code></td>
+<td><code>externals/work/crm-wc-step</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -19799,6 +19799,10 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Why <code>patch</code>.</strong> Spec Q6 (a), decided 2026-10-12: the step lands with today's write-contract matrix pinned (gate G1, "no cell changed"); BF-165 adds a field a client already expects.</p>
 <p><strong>Gates.</strong></p>
 <ul>
+<li><code>[static]</code> <code>node tools/queue/gates/write-rule-copies.js --ref official/dev</code></li>
+<li>No write rule (merge-patch, BF-194 units, write-validation, validated-update, srv-dates, object-id-forms, the treatment fallback key) gains a new (rule, file) pair or a larger count outside lib/storage/write-intent.js, against write-rule-copies.baseline.json (47 pairs at dev db3b9e4e; 45 on feat/write-intent after slice 1). Holds the maintainer's rule of 2026-10-27: a new write rule goes into the step, not a route.</li>
+<li><code>[static]</code> <code>bash tools/queue/gates/write-rule-copies-control.sh</code></li>
+<li>Control for the gate above: an exported copy of official/dev passes, and the same copy with one planted call to the BF-194 helper in lib/server/food.js fails naming only that pair.</li>
 <li><strong>NO GATE</strong> &mdash; Not started; its blocker ARCH-8854 is merged (dev c08cbe03). Its gate is spec G1: tools/qc/write-contract-matrix.js run through every path with every cell equal to the pinned dev matrix except BF-165's two cells (treatments v1/inproc resend-identity gain _id); control: each of the spec's six one-line ablations turns its predicted cells red.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
@@ -19807,7 +19811,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 <li><code>tools/qc/write-contract-matrix.js</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE- CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.</p>
+<p><strong>Notes.</strong> 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev- db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write- intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc- step-design-note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.</p>
 <h3 id="id-first-match--release-2-minor-identifier-first-matching-for-entries-devicestatus-and-socket-dbadd-with-the-q1-adoption-rule"><code>ID-FIRST-MATCH</code> &mdash; Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule<a class="headerlink" href="#id-first-match--release-2-minor-identifier-first-matching-for-entries-devicestatus-and-socket-dbadd-with-the-q1-adoption-rule" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -24479,8 +24483,9 @@ reproduced ones.</p>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md</code></li>
+<li><code>tools/lab/image-start-forms/README.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27 late (from session -2e; not re-run by the recording session): #8865 head 9bb1f0b4 on official, a fast-forward of 4d243590 pushed by the maintainer; open, not draft, base dev, mergeable. Two commits. 9f4bd874: the image keeps the node base entrypoint with CMD ["nightscout","single"]; an explicit <code>docker run</code> command replaces CMD and is exec'd by docker- entrypoint.sh, so the image no longer routes explicit commands through the dispatcher (one process, as on dev; env unchanged; image 52 MB smaller). The dispatcher's passthrough itself stays: lib/cli/index.js still runs a non- subcommand first argument as a program (<code>nightscout node lib/server/server.js</code>, covered by start-paths). Only the <code>version</code> shorthand without <code>nightscout</code> is lost; <code>nightscout version</code> works. 9bb1f0b4: lib/server/server.js handles SIGTERM and SIGINT through the bus teardown and exits 0, bounded at 8 s (exit 1 past it), so every start path (Procfile, npm start, server.js, the image) gets it. Measured on the image with MongoDB 7.0: docker stop 10.2 s force-killed (137) on dev, 0.16-0.20 s exit 0 on 9bb1f0b4, in every start case, with or without a connected websocket client. npm test 4757/0/3; start-paths 13 passing; the 2 new SIGTERM tests fail on the parent (death by signal). 2026-10-26, later: draft #8865 at 1dafe2a5, stacked on #8863 (base feat/storage-writes) with #8862 merged in. Env per role: <PREFIX><em>HOSTNAME / _PORT (API</em>, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization under tenant-admin, migrate owning indexes, one context per process. 2026-10-26 (D21). Open: whether a composed <code>serve</code> of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.</p>
+<p><strong>Notes.</strong> 2026-10-27 night (session -00): #8865 head f01d67e6, pushed by the maintainer, a fast-forward of 9f7f84f8 (-2e's three API v3 test commits and a dev merge, folding in the harness above). f01d67e6 fixes CodeQL alert 138 (js/disabling- certificate-validation, high) in lib/cli/commands/healthcheck.js, present since #8862's commits: the probe set rejectUnauthorized: false, for its loopback target and for --url alike. Now its own target requires the certificate SSL_CERT names (the chain verifies against SSL_CERT, SSL_CA and the system roots; the peer's fingerprint replaces the hostname check), and --url is checked as any client checks it; an unreadable SSL_CERT or SSL_CA is unhealthy. Tests: green for the configured certificate on loopback; red for another certificate on the port (tests/fixtures/ healthcheck-other.*), an unreadable SSL_CERT and a self-signed --url, the three failing on 9f7f84f8's healthcheck.js (19/3) and passing with the fix (22/0). start-paths + CLI 35 passing on MongoDB 8.0; unit tier 1585/0. CodeQL then marked alert 138 fixed on the PR's merge ref (0 open alerts; the CodeQL check passes). Image start forms measured the same night (tools/lab/image-start-forms, 8dd7c563c; dev dcf20bfb against 9bb1f0b4): every form that started a server on dev starts the same server (status.json identical apart from server time, one node process, same entrypoint, user, workdir, no HEALTHCHECK); differences are stop and signals (docker stop 10.1 s/137 to 0.13 s/0; SIGINT and SIGTERM, ignored by node as PID 1 on dev, exit 0), and <code>nightscout single</code> and <code>nightscout healthcheck</code> working as commands. Not covered: restart: on-failure after an outside SIGTERM (the site used to keep running; it now exits 0 and stays down), and tooling matching PID 1's command line. #8862 is superseded: its four commits are in #8865. 2026-10-27 (maintainer, recorded by session -4f): serve api's scope is v1 + v3 + the v2 summary and authorization + tenant resolution (interface-ownership §4 item 4); v1 joins once its storage paths run without the cache. Session -2e's ST-V3-DECOUPLE harness (feat/v3-role- harness 88f37427, three test-only commits on 9bb1f0b4; single 742/0, serve-api 634/0/108 pending, npm test 4757/0/3, as reported by -2e) is to be folded into #8865, not stacked. The 15 v3 tests on v1-created records keep running under serve-api. 2026-10-27 late (from session -2e; not re-run by the recording session): #8865 head 9bb1f0b4 on official, a fast-forward of 4d243590 pushed by the maintainer; open, not draft, base dev, mergeable. Two commits. 9f4bd874: the image keeps the node base entrypoint with CMD ["nightscout","single"]; an explicit <code>docker run</code> command replaces CMD and is exec'd by docker-entrypoint.sh, so the image no longer routes explicit commands through the dispatcher (one process, as on dev; env unchanged; image 52 MB smaller). The dispatcher's passthrough itself stays: lib/cli/index.js still runs a non-subcommand first argument as a program (<code>nightscout node lib/server/server.js</code>, covered by start-paths). Only the <code>version</code> shorthand without <code>nightscout</code> is lost; <code>nightscout version</code> works. 9bb1f0b4: lib/server/server.js handles SIGTERM and SIGINT through the bus teardown and exits 0, bounded at 8 s (exit 1 past it), so every start path (Procfile, npm start, server.js, the image) gets it. Measured on the image with MongoDB 7.0: docker stop 10.2 s force-killed (137) on dev, 0.16-0.20 s exit 0 on 9bb1f0b4, in every start case, with or without a connected websocket client. npm test 4757/0/3; start-paths 13 passing; the 2 new SIGTERM tests fail on the parent (death by signal). 2026-10-26, later: draft #8865 at 1dafe2a5, stacked on #8863 (base feat/storage-writes) with #8862 merged in. Env per role: <PREFIX><em>HOSTNAME / _PORT (API</em>, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization under tenant-admin, migrate owning indexes, one context per process. 2026-10-26 (D21). Open: whether a composed <code>serve</code> of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.</p>
 <hr />
 <p><em>End of generated view. Source: <code>queue/work-queue.yaml</code>.</em></p>
 

@@ -2371,6 +2371,8 @@
       
         
       
+        
+      
     
     
     
@@ -3356,6 +3358,34 @@
     
   
     API v4 typed record paths: Nocturne's routes with our rules, or paths of our own
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wc-step-design-note-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WC-STEP-PATCH: mapping the write step onto dev db3b9e4e
   
 
     
@@ -5763,17 +5793,17 @@ order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between
 </tr>
 <tr>
 <td>PLAT-ENTRY (#8862)</td>
-<td>draft <code>b63d9b7f</code>, 64 commits behind <code>dev</code></td>
-<td>minor-class (question 9); the image start changes form</td>
-<td>every Docker site</td>
-<td>16.1.0, unless Q2 (a) is still wanted: then merged before the quiet period starts, with a Docker-host cohort check</td>
+<td>superseded by #8865, which carries its four commits (2026-10-27 night)</td>
+<td>minor-class (question 9)</td>
+<td>—</td>
+<td>lands with #8865</td>
 </tr>
 <tr>
 <td>PLAT-SERVE (#8865)</td>
-<td>draft <code>1dafe2a5</code> on base <code>feat/storage-writes</code>, which is merged; needs retargeting to <code>dev</code> and a <code>dev</code> merge (55 behind) before any re-measurement</td>
+<td>open, base <code>dev</code>, head <code>f01d67e6</code> (2026-10-27 night): CodeQL alert 138 fixed (CodeQL marks it fixed on the PR); image start forms measured unchanged against <code>dev</code> apart from stop and signals (<code>tools/lab/image-start-forms</code>)</td>
 <td>minor-class</td>
-<td>nobody under <code>single</code></td>
-<td>16.1.0, labelled alpha (Q12a)</td>
+<td>every Docker site: same start, clean stop; <code>serve api</code> nobody under <code>single</code></td>
+<td>16.0.0 if it joins the merge list (Q13), otherwise 16.1.0; <code>serve</code> labelled alpha</td>
 </tr>
 <tr>
 <td>WC-STEP-PATCH, ID-BATCH (M2)</td>
@@ -6377,16 +6407,22 @@ release soaks them; and how does that weigh against releasing as soon as the can
 <li><strong>Effect on tenancy.</strong> 16.1.0 work (ST-V3-DECOUPLE, registration, and PLAT-SERVE unless it joins
   the merge list) builds on branches and merges when <code>dev</code> reopens.</li>
 </ul>
-<h3 id="b8-take-8862-into-1600-first">B8. Take #8862 into 16.0.0 first<a class="headerlink" href="#b8-take-8862-into-1600-first" title="Permanent link">&para;</a></h3>
+<h3 id="b8-take-8865-into-1600-it-supersedes-8862">B8. Take #8865 into 16.0.0 (it supersedes #8862)<a class="headerlink" href="#b8-take-8865-into-1600-it-supersedes-8862" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>What happens.</strong> #8862 is brought up to <code>dev</code> (64 behind), reviewed and merged; the quiet period
-  starts after it.</li>
-<li><strong>Who it reaches.</strong> Every Docker site: the image gains an ENTRYPOINT and the <code>single</code> command.
-  Its seven measured start paths are equal to <code>nightscout single</code> at <code>b63d9b7f</code>; they are not
-  re-measured on <code>ca1652d6</code>.</li>
-<li><strong>Measure first.</strong> The start paths on the merged tree, and a Docker-host cohort (a hosting
-  provider or a self-hoster running the image) starting the new image with their own command.</li>
-<li><strong>Trade.</strong> One less change of start form in 16.1.0, against a later quiet period.</li>
+<li><strong>What happens.</strong> #8865 joins the 16.0.0 merge list (Q13) and merges before the list closes;
+  #8862 is closed as superseded.</li>
+<li><strong>Who it reaches.</strong> Every Docker site. Measured 2026-10-27 night on images built from <code>dev</code>
+  <code>dcf20bfb</code> and #8865 <code>9bb1f0b4</code> (<code>tools/lab/image-start-forms</code>): every <code>docker run</code> form that
+  started a server on <code>dev</code> starts the same server, with the same entrypoint, user, workdir and
+  environment, one node process and no HEALTHCHECK; <code>status.json</code> is identical apart from the server
+  time. What changes: <code>docker stop</code> takes 0.13 s and exits 0 instead of 10.1 s and 137; SIGINT and
+  SIGTERM, ignored by node as PID 1 on <code>dev</code>, now shut the server down; <code>nightscout single</code> and
+  <code>nightscout healthcheck</code> work as commands.</li>
+<li><strong>Measure first.</strong> Nothing left to measure on the image. The release notes name the one case the
+  lab cannot reach: a supervisor that sends SIGTERM itself under <code>restart: on-failure</code> (the site used
+  to keep running; it now exits 0 and stays down), and tooling that matches PID 1's command line.</li>
+<li><strong>Trade.</strong> A cleaner stop for every Docker site in the major, against one more PR in the merge
+  list; <code>serve api</code> ships labelled alpha.</li>
 </ul>
 <h3 id="b9-hosted-roles-in-1600-as-alpha">B9. Hosted roles in 16.0.0 as alpha<a class="headerlink" href="#b9-hosted-roles-in-1600-as-alpha" title="Permanent link">&para;</a></h3>
 <ul>

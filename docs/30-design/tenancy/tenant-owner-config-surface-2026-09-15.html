@@ -2369,6 +2369,8 @@
       
         
       
+        
+      
     
     
     
@@ -7722,6 +7724,11 @@ non-zero exit</strong>, not a warning.</p>
 </tr>
 </tbody>
 </table>
+<p><em>Amended 2026-10-27 (maintainer, D22 call path):</em> a human owner's credential on <code>ns-tenant-admin</code> is the
+per-tenant owner token Nightscout mints after the identity provider's login (D14, D17 as amended), carried
+end to end from the owner dashboard. The tenant's root credential (§C.2b) stays the credential for devices
+and for recovery, not for the dashboard. Provisioning and suspension go through an orchestrator on the
+operator plane only. Evidence: the call-path lab, <code>tools/lab/tenant-config-callpath/</code>.</p>
 <p>Two specific refusals worth naming because they will be asked for:</p>
 <ul>
 <li><strong>A tenant owner cannot change their own <code>slug</code>.</strong> <code>slug</code> is a host label (D10) and the hoster's
