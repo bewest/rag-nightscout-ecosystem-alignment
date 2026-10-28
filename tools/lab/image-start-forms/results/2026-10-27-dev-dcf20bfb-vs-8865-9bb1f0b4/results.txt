@@ -1,0 +1,17 @@
+dev|default|status=200|up=1.189s|pid1=node lib/server/server.js |node_or_npm_procs=1|stop=10.14s|exit=137|
+dev|node|status=200|up=.6226s|pid1=node lib/server/server.js |node_or_npm_procs=1|stop=10.14s|exit=137|
+dev|npm|exited before serving|exit=1|Error: Cannot find module '/opt/app/npm'
+dev|shc|status=200|up=.6206s|pid1=node lib/server/server.js |node_or_npm_procs=1|stop=10.16s|exit=137|
+dev|nssingle|exited before serving|exit=1|Error: Cannot find module '/opt/app/nightscout'
+dev|env-keys|HOME HOSTNAME NODE_ENV NODE_VERSION PATH PWD SHLVL YARN_VERSION 
+dev|node-version|v24.22.1
+pr8865|default|status=200|up=.6255s|pid1=node /usr/local/bin/nightscout single |node_or_npm_procs=1|stop=.1272s|exit=0|healthcheck_exit=0
+pr8865|node|status=200|up=.6177s|pid1=node lib/server/server.js |node_or_npm_procs=1|stop=.1261s|exit=0|healthcheck_exit=0
+pr8865|npm|exited before serving|exit=1|Error: Cannot find module '/opt/app/npm'
+pr8865|shc|status=200|up=.6308s|pid1=node lib/server/server.js |node_or_npm_procs=1|stop=.1490s|exit=0|healthcheck_exit=0
+pr8865|nssingle|status=200|up=.6240s|pid1=node /usr/local/bin/nightscout single |node_or_npm_procs=1|stop=.1336s|exit=0|healthcheck_exit=0
+pr8865|env-keys|HOME HOSTNAME NODE_ENV NODE_VERSION PATH PWD SHLVL YARN_VERSION 
+pr8865|node-version|v24.22.1
+dev|SIGINT|still running 4 min after docker kill -s INT (node as PID 1 installs no handler); removed by force
+pr8865|SIGINT|exit=0 after 0.13s
+status.json (serverTime fields removed): 0 keys differ between dev and pr8865 default starts
