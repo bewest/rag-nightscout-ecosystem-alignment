@@ -1063,6 +1063,12 @@ secret. Vault transit and a cloud key service are the production adapters, behin
   migrate at boot under the lock, hosted operators run `nightscout migrate up` before the roles start.
   Confirmed only after the verification item `MIG-VV` (queue) measures MongoDB on a replica set and on
   the oldest MongoDB dev supports. Evidence: [migration-tooling plan](../../60-research/tenancy/migration-tooling-plan-2026-10-27.md).
+  **Confirmed 2026-10-27 (maintainer) after MIG-VV** (8.0.34 and 5.0.32, standalone and replica set,
+  a primary step-down mid-migration with nothing lost). Added: a migration marked `transactional: true`
+  runs in a transaction when the server supports one (replica set or `mongos`) and on the plain path
+  otherwise; every MongoDB migration is still written to be safe to re-run (standalone self-hosters,
+  index builds). Review rules for transactional migrations: build indexes before writing to a new
+  collection, keep `listCollections` outside the transaction, tolerate a second run of the body.
 
 **Not decided.** The twelve contested settings re-stated under D22 are drafted for
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same

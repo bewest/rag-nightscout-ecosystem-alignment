@@ -7941,7 +7941,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
+**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 
 ### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
 
