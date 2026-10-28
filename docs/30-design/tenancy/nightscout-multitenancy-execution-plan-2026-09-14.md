@@ -1040,6 +1040,11 @@ secret. Vault transit and a cloud key service are the production adapters, behin
 - **`tenant_members` identifies a person by provider and subject, as text**: two columns, unique
   together, with no foreign key to any identity table of Nightscout's, so Kratos, Clerk or any OIDC
   subject fits (D17 as amended). (Settles M2.)
+- **An owner's rollback to an earlier version of their own configuration is refused whole** when the
+  operator has since pinned or narrowed a setting that version used. The refusal names each blocked
+  setting and the operator rule behind it; nothing is applied in part. A "version" here is a version of
+  the tenant's configuration (D22's numbered changes), not of the software. (Schema spec Q3; the lab's
+  working choice confirmed.)
 
 **Not decided.** The twelve contested settings re-stated under D22 are drafted for
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
