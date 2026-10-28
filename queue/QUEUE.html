@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>a5058a196</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>5fd5241c2</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3226,7 +3226,7 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>317</td>
+<td>321</td>
 </tr>
 <tr>
 <td>runnable gates</td>
@@ -3234,11 +3234,11 @@
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>352</td>
+<td>356</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 352 of the 729 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 356 of the 733 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3251,8 +3251,8 @@
 <tbody>
 <tr>
 <td><code>not-started</code></td>
-<td>70</td>
-<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
+<td>74</td>
+<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-204, BFQ-205, BFQ-206, BFQ-207, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
 </tr>
 <tr>
 <td><code>in-progress</code></td>
@@ -3398,6 +3398,10 @@
 <li><strong>BFQ-188</strong> BF-188 - with no client bundle the server exits at boot with an unexplained module error</li>
 <li><strong>BFQ-190</strong> BF-190 - an alarm on a page without a current reading cannot be silenced from the page</li>
 <li><strong>BFQ-191</strong> BF-191 - a stored treatment can stop the server process, and keeps doing so after a restart (mechanism only)</li>
+<li><strong>BFQ-204</strong> BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time</li>
+<li><strong>BFQ-205</strong> BF-205 - same-timestamp records are ordered differently between in-memory loads</li>
+<li><strong>BFQ-206</strong> BF-206 - a device IOB without a timestamp is dated by the server clock</li>
+<li><strong>BFQ-207</strong> BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended</li>
 <li><strong>BFQ-193</strong> BF-193 - the realtime socket and other write paths log every record written through them</li>
 <li><strong>BFQ-194</strong> BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL</li>
 <li><strong>BFQ-195</strong> BF-195 - a stale profile is pushed over the socket after a profile re-send</li>
@@ -8319,7 +8323,7 @@ that costs.</p>
 <p><strong>Notes.</strong> Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id. Decisions: - 2026-09-26 (maintainer): after 15.0.9.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 143 items</p>
+<p><code>parcel: register-open</code> &mdash; 147 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9302,6 +9306,38 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>tooling/jsconfig-watch-scope</code></td>
 <td>n/a</td>
 <td>2 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-204</code></td>
+<td>BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-205</code></td>
+<td>BF-205 - same-timestamp records are ordered differently between in-memory loads</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-206</code></td>
+<td>BF-206 - a device IOB without a timestamp is dated by the server clock</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-207</code></td>
+<td>BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-192</code></td>
@@ -17027,6 +17063,242 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-27 22:51:12Z: #8871 MERGED to dev by the maintainer as dcf20bfb (head 57f1d37c). Developer tooling only; nothing an operator sees. Recorded by session -4f. 2026-10-27, 22:21:20Z: #8871 opened by the maintainer into dev, head f28d40bb. 2026-10-27: draft e737d310 by the maintainer through session -a7 (437,239 against 5,616 watches in its probe), re-measured by session -e4 and dev 7abe1cf6 merged in as f28d40bb. tsc -p jsconfig.json --listFilesOnly lists lib/server/app.js; test:tiers 401 files ok; npm test on dev 9668b179 plus the file 4700 passing, 0 failing, 3 pending. No tooling PR is open, so it starts the next one. The editor-side companion of BF-201.</p>
+<h3 id="bfq-204--bf-204---api-v2-data-snapshot-route-returns-the-live-48-hours-not-data-framed-at-the-requested-time"><code>BFQ-204</code> &mdash; BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time<a class="headerlink" href="#bfq-204--bf-204---api-v2-data-snapshot-route-returns-the-live-48-hours-not-data-framed-at-the-requested-time" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@db3b9e4e</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-204</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/data/endpoints.js and the cache merge in lib/data/dataloader.js (insertDataRef).</p>
+<p><strong>What an operator sees.</strong> A report or tool asking Nightscout for how things looked at an earlier time gets the current last two days instead, with no warning.</p>
+<p><strong>Why <code>patch</code>.</strong> a read endpoint starts answering what it documents</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.</p>
+<h3 id="bfq-205--bf-205---same-timestamp-records-are-ordered-differently-between-in-memory-loads"><code>BFQ-205</code> &mdash; BF-205 - same-timestamp records are ordered differently between in-memory loads<a class="headerlink" href="#bfq-205--bf-205---same-timestamp-records-are-ordered-differently-between-in-memory-loads" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@db3b9e4e</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-205</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/data/dataloader.js sort (:116-121); processDurations first-per-mills (lib/data/ddata.js:237-241).</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>patch</code>.</strong> a deterministic order for ties; no documented order changes</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.</p>
+<h3 id="bfq-206--bf-206---a-device-iob-without-a-timestamp-is-dated-by-the-server-clock"><code>BFQ-206</code> &mdash; BF-206 - a device IOB without a timestamp is dated by the server clock<a class="headerlink" href="#bfq-206--bf-206---a-device-iob-without-a-timestamp-is-dated-by-the-server-clock" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@db3b9e4e</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-206</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/plugins/iob.js fromDeviceStatus (:124,131).</p>
+<p><strong>What an operator sees.</strong> If an uploader sends insulin-on-board without its own time, Nightscout may treat an old value as current. Talk to your care team before relying on IOB shown by Nightscout for decisions.</p>
+<p><strong>Why <code>patch</code>.</strong> an undated IOB is dated by its device status instead of the server clock</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.</p>
+<h3 id="bfq-207--bf-207---sensor-age-keeps-the-earliest-of-a-same-hour-burst-of-sensor-starts-the-newest-is-intended"><code>BFQ-207</code> &mdash; BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended<a class="headerlink" href="#bfq-207--bf-207---sensor-age-keeps-the-earliest-of-a-same-hour-burst-of-sensor-starts-the-newest-is-intended" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@db3b9e4e</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; alarm path, checked against the alarm fixtures</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-207</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/plugins/sensorage.js (:84-100), the event-replacement rule.</p>
+<p><strong>What an operator sees.</strong> If a sensor start is entered several times within a few seconds, the sensor age shown, and the sensor-age warnings, can count from the first entry instead of the last. Check the sensor age shown after restarting a sensor.</p>
+<p><strong>Why <code>patch</code>.</strong> the intended value, decided by the maintainer; a sensor-age alarm can move by up to the burst's spread</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Observed 2026-10-27 by session -65's ST-VIEWS census on a corpus fixture. A gate replays a same-hour burst, and one crossing an hour boundary, and asserts the newest start is reported; dev db3b9e4e is its failing control.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.</p>
 <h3 id="bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression"><code>BFQ-192</code> &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)<a class="headerlink" href="#bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
