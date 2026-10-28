@@ -1029,6 +1029,18 @@ image. Its first adapter is a **built-in signer**: keys encrypted under a master
 container, for development and small operators; in Docker Compose it is one more service with one mounted
 secret. Vault transit and a cloud key service are the production adapters, behind the same interface.
 
+**Two schema answers, decided 2026-10-27 (maintainer), from the T30-SCHEMA-CONFIG lab's questions
+([schema spec](tenant-config-schema-2026-10-27.md) §10b, §11):**
+
+- **Deployment-level (class D) values live in each role's environment**, not in `deployment_policy`.
+  `TRUST_PROXY`, `DEBUG_LOGGING`, ports, storage URIs and the release-driven compatibility switches are
+  environment variables of the role that reads them. D15 reads as: no *per-tenant* configuration comes
+  from the environment. `deployment_policy` holds only the operator's tenant-facing defaults, modes and
+  constraints. (Settles mismatches M4 and M5.)
+- **`tenant_members` identifies a person by provider and subject, as text**: two columns, unique
+  together, with no foreign key to any identity table of Nightscout's, so Kratos, Clerk or any OIDC
+  subject fits (D17 as amended). (Settles M2.)
+
 **Not decided.** The twelve contested settings re-stated under D22 are drafted for
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
 day: the strict settings read (`API3_SETTINGS_STRICT_READ_ENABLED`) is a floor, always on under `multi`.
