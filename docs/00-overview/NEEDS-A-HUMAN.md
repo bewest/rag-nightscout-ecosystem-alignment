@@ -35,6 +35,10 @@ every item that was `merged-upstream` then is `released`.
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
+| `BFQ-204` | `in-flight-upstream` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed a | #8873 |
+| `BFQ-205` | `in-flight-upstream` | BF-205 - same-timestamp records are ordered differently between in-memory loads | #8873 |
+| `BFQ-206` | `in-flight-upstream` | BF-206 - a device IOB without a timestamp is dated by the server clock | #8873 |
+| `BFQ-207` | `in-flight-upstream` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; th | #8873 |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -48,10 +52,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-204` | `ready-to-push` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed a | &mdash; |
-| `BFQ-205` | `ready-to-push` | BF-205 - same-timestamp records are ordered differently between in-memory loads | &mdash; |
-| `BFQ-206` | `ready-to-push` | BF-206 - a device IOB without a timestamp is dated by the server clock | &mdash; |
-| `BFQ-207` | `ready-to-push` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; th | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -82,6 +82,10 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
+| **#8873** | `BFQ-204` | `bf/16.0.0-views-data` | BF-204 - API v2 data-snapshot route returns the live 48 hour | Maintainer |
+| **#8873** | `BFQ-205` | `bf/16.0.0-views-data` | BF-205 - same-timestamp records are ordered differently betw | Maintainer |
+| **#8873** | `BFQ-206` | `bf/16.0.0-views-data` | BF-206 - a device IOB without a timestamp is dated by the se | Maintainer |
+| **#8873** | `BFQ-207` | `bf/16.0.0-views-data` | BF-207 - sensor age keeps the earliest of a same-hour burst  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

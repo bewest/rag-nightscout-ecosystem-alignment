@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-205
+# Review packet — BFQ-205 (PR #8873)
 
 **BF-205 - same-timestamp records are ordered differently between in-memory
 loads**
@@ -21,7 +21,7 @@ loads**
 | repository | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-205` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-205` is the measurement |
 | semver | `patch` |
 | register entries | `BF-205` |
 | operator exposure | **reaches an operator on today's release** |
@@ -62,13 +62,16 @@ NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 ## Notes carried on the item
 
-2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
-df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the
-maintainer asked for a branch and PR). The four new test files, re-run by
-session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/
-at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by
-session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views
-may be the fix's home.
+2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data
+(head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which
+had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not
+pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65
+(commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not
+pushed; the maintainer asked for a branch and PR). The four new test files,
+re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing
+with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27
+by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded
+views may be the fix's home.
 
 ---
 

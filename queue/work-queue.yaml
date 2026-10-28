@@ -17497,8 +17497,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
       lib/data/endpoints.js and the cache merge in lib/data/dataloader.js (insertDataRef).
@@ -17524,6 +17524,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 02:26Z: PR #8873 opened by the maintainer for
+      bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
+      AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
+      regenerated in 650a8ca1 (local, not pushed).
+
       2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
       6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
       the maintainer asked for a branch and PR). The four new test files,
@@ -17539,8 +17544,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
       lib/data/dataloader.js sort (:116-121); processDurations first-per-mills (lib/data/ddata.js:237-241).
@@ -17565,6 +17570,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 02:26Z: PR #8873 opened by the maintainer for
+      bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
+      AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
+      regenerated in 650a8ca1 (local, not pushed).
+
       2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
       df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
       the maintainer asked for a branch and PR). The four new test files,
@@ -17580,8 +17590,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/iob.js fromDeviceStatus (:124,131).
@@ -17607,6 +17617,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 02:26Z: PR #8873 opened by the maintainer for
+      bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
+      AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
+      regenerated in 650a8ca1 (local, not pushed).
+
       2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
       675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
       the maintainer asked for a branch and PR). The four new test files,
@@ -17622,8 +17637,8 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-views-data
     base: official/dev@db3b9e4e
-    state: ready-to-push
-    pr: []
+    state: in-flight-upstream
+    pr: [8873]
     ships_to_operators_today: true
     blast_radius: >
       lib/plugins/sensorage.js (:84-100), the event-replacement rule.
@@ -17651,6 +17666,11 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-28 02:26Z: PR #8873 opened by the maintainer for
+      bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the
+      AndroidAPS IOB pill golden, which had recorded BF-206; the golden is
+      regenerated in 650a8ca1 (local, not pushed).
+
       2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit
       80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed;
       the maintainer asked for a branch and PR). The four new test files,

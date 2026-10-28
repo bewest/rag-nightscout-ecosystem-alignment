@@ -44,9 +44,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `not-started` | 73 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-VV, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 7 | BFQ-178, T30-SCHEMA-CONFIG, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 7 | P0-C-REMEDIATE, T30-AUTH, BFQ-204, BFQ-205, BFQ-206, BFQ-207, WS-LAB |
+| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 4 | BFQ-72, BFQ-161, PLAT-ENTRY, PLAT-SERVE |
+| `in-flight-upstream` | 8 | BFQ-72, BFQ-161, BFQ-204, BFQ-205, BFQ-206, BFQ-207, PLAT-ENTRY, PLAT-SERVE |
 | `merged-upstream` | 59 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 11 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -2822,10 +2822,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
 | `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
 | `BFQ-203` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json | `merged-upstream` | `tooling/jsconfig-watch-scope` | n/a | 2 run + 1 no-gate |
-| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
-| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
-| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
-| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `in-flight-upstream` | `bf/16.0.0-views-data` | patch | 1 run |
 | `BFQ-208` | BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed | `not-started` | `-` | patch | 1 run |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
@@ -6826,7 +6826,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6851,13 +6851,13 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 6b47afa9; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-205` &mdash; BF-205 - same-timestamp records are ordered differently between in-memory loads
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6882,13 +6882,13 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit df95900f; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-206` &mdash; BF-206 - a device IOB without a timestamp is dated by the server clock
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6913,13 +6913,13 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 675560ab; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to ST-VIEWS, whose bounded views may be the fix's home.
 
 ### `BFQ-207` &mdash; BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-views-data` |
 | base | `official/dev@db3b9e4e` |
@@ -6944,7 +6944,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.
+**Notes.** 2026-10-28 02:26Z: PR #8873 opened by the maintainer for bf/16.0.0-views-data (head 80a414c7). Three CI jobs failed on the AndroidAPS IOB pill golden, which had recorded BF-206; the golden is regenerated in 650a8ca1 (local, not pushed). 2026-10-27: fixed on local bf/16.0.0-views-data by session -65 (commit 80a414c7; branch head 80a414c7, four commits on dev db3b9e4e, not pushed; the maintainer asked for a branch and PR). The four new test files, re-run by session -4f in its own worktree: 39 passing on the branch, 7 failing with lib/ at db3b9e4e. Corrections are in the register entry. Filed 2026-10-27 by session -4f. Intended behaviour ("latest is correct") decided by the maintainer in session -65, relayed. ST-VIEWS' bounded view differs from the resident value here by design.
 
 ### `BFQ-208` &mdash; BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed
 

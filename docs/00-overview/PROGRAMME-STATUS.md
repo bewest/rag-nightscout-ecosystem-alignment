@@ -178,10 +178,10 @@ cover more than one `BF-`:
 | `BFQ-194` | `merged-upstream` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets  |
 | `BFQ-195` | `merged-upstream` | BF-195 - a stale profile is pushed over the socket after a profile re-send |
 | `BFQ-196` | `not-started` | BF-196 to BF-199 - API v1 error paths and the README's read window, found by PR #8858's ro |
-| `BFQ-204` | `ready-to-push` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requ |
-| `BFQ-205` | `ready-to-push` | BF-205 - same-timestamp records are ordered differently between in-memory loads |
-| `BFQ-206` | `ready-to-push` | BF-206 - a device IOB without a timestamp is dated by the server clock |
-| `BFQ-207` | `ready-to-push` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest i |
+| `BFQ-204` | `in-flight-upstream` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requ |
+| `BFQ-205` | `in-flight-upstream` | BF-205 - same-timestamp records are ordered differently between in-memory loads |
+| `BFQ-206` | `in-flight-upstream` | BF-206 - a device IOB without a timestamp is dated by the server clock |
+| `BFQ-207` | `in-flight-upstream` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest i |
 | `BFQ-208` | `not-started` | BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while not |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
@@ -219,7 +219,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 |  | 1 |  | 1 |  | 18 | 15 | 2 | 1 |  |  | 4 | **50** |
-| `register-open` | 29 | 3 | 1 | 5 | 3 | 2 | 38 | 58 | 5 |  |  | 4 |  | **148** |
+| `register-open` | 29 | 3 | 1 | 1 | 3 | 6 | 38 | 58 | 5 |  |  | 4 |  | **148** |
 | `tenancy` | 18 | 3 |  | 1 | 12 |  | 3 |  | 4 | 3 | 1 |  | 3 | **48** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
