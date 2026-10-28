@@ -5800,7 +5800,7 @@ order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between
 </tr>
 <tr>
 <td>PLAT-SERVE (#8865)</td>
-<td>open, base <code>dev</code>, head <code>f01d67e6</code> (2026-10-27 night): CodeQL alert 138 fixed (CodeQL marks it fixed on the PR); image start forms measured unchanged against <code>dev</code> apart from stop and signals (<code>tools/lab/image-start-forms</code>)</td>
+<td><strong>in the 16.0.0 merge list (maintainer, 2026-10-27 night)</strong>; open, base <code>dev</code>, head <code>53ba192a</code> (2026-10-27 night): CodeQL alert 138 fixed (CodeQL marks it fixed on the PR); image start forms measured unchanged against <code>dev</code> apart from stop and signals (<code>tools/lab/image-start-forms</code>)</td>
 <td>minor-class</td>
 <td>every Docker site: same start, clean stop; <code>serve api</code> nobody under <code>single</code></td>
 <td>16.0.0 if it joins the merge list (Q13), otherwise 16.1.0; <code>serve</code> labelled alpha</td>
@@ -5925,13 +5925,13 @@ the loudest row's (R3).</p>
 <tr>
 <td>16.0.0</td>
 <td>modernization, the write boundary, one read and write path</td>
-<td>what is on <code>dev</code> <code>ca1652d6</code> (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161 and any release fix found in the quiet period; #8862 only if Q2 (a) and Q13 allow it</td>
+<td>what is on <code>dev</code> <code>ca1652d6</code> (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161, #8865 (decided 2026-10-27 night; <code>single</code> supported, <code>serve api</code> alpha) and any release fix found in the quiet period</td>
 <td>major (already)</td>
 </tr>
 <tr>
 <td>16.1.0</td>
-<td>one executable, multitenant roles as alpha, registration readable</td>
-<td>#8862 and #8865 (one executable, <code>serve api</code>) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
+<td>registration readable</td>
+<td>#8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
 <td>minor</td>
 </tr>
 <tr>
@@ -6139,7 +6139,7 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 <td>Q13</td>
 <td>When does the quiet period start?</td>
 <td><em>Corrected by the maintainer, 2026-10-27:</em> not now; merging is still under way. Proposed: it starts when the 16.0.0 merge list is closed: what is in flight for 16.0.0 (#8872 BF-194, merged 2026-10-27 as <code>db3b9e4e</code>; #8855 translations, BF-72 and BF-161 through their forks) plus whatever the maintainer adds to it, with #8865 decided either way. Until then <code>dev</code> keeps taking 16.0.0 work, and the cohort requests (Q14) start now, because M1 and #8859 are already on <code>dev</code></td>
-<td>open: the content of the merge list, and #8865 in or out</td>
+<td><em>#8865 in (maintainer, 2026-10-27 night).</em> Open: the rest of the merge list</td>
 <td>the tag date; #8865, #8857 merge dates</td>
 </tr>
 <tr>
@@ -6407,7 +6407,7 @@ release soaks them; and how does that weigh against releasing as soon as the can
 <li><strong>Effect on tenancy.</strong> 16.1.0 work (ST-V3-DECOUPLE, registration, and PLAT-SERVE unless it joins
   the merge list) builds on branches and merges when <code>dev</code> reopens.</li>
 </ul>
-<h3 id="b8-take-8865-into-1600-it-supersedes-8862">B8. Take #8865 into 16.0.0 (it supersedes #8862)<a class="headerlink" href="#b8-take-8865-into-1600-it-supersedes-8862" title="Permanent link">&para;</a></h3>
+<h3 id="b8-take-8865-into-1600-it-supersedes-8862--decided-2026-10-27-night">B8. Take #8865 into 16.0.0 (it supersedes #8862) — decided 2026-10-27 night<a class="headerlink" href="#b8-take-8865-into-1600-it-supersedes-8862--decided-2026-10-27-night" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>What happens.</strong> #8865 joins the 16.0.0 merge list (Q13) and merges before the list closes;
   #8862 is closed as superseded.</li>

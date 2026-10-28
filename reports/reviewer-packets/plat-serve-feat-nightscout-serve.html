@@ -3056,7 +3056,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>f4cda86f6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>ef774198e</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3142,9 +3142,14 @@ the in-memory data layer.</p>
 <li><a href="../../tools/lab/image-start-forms/index.html"><code>tools/lab/image-start-forms/README.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-27 night (session -00): #8865 head f01d67e6, pushed by the maintainer,
-a fast-forward of 9f7f84f8 (-2e's three API v3 test commits and a dev merge,
-folding in the harness above). f01d67e6 fixes CodeQL alert 138 (js/disabling-
+<p>2026-10-27 night (maintainer): #8865 joins the 16.0.0 merge list. Only
+<code>single</code> is supported; <code>serve api</code> ships labelled alpha; the other roles
+(evaluator, realtime, vcpool, tenant-admin, admin) exit 64 as not yet
+available. #8862 is superseded. Head 53ba192a (README and CLI help say
+"multitenant roles"); every check passing; no human review yet. 2026-10-27
+night (session -00): #8865 head f01d67e6, pushed by the maintainer, a fast-
+forward of 9f7f84f8 (-2e's three API v3 test commits and a dev merge, folding
+in the harness above). f01d67e6 fixes CodeQL alert 138 (js/disabling-
 certificate-validation, high) in lib/cli/commands/healthcheck.js, present
 since #8862's commits: the probe set rejectUnauthorized: false, for its
 loopback target and for --url alike. Now its own target requires the
