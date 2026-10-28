@@ -22420,6 +22420,15 @@ items:
     evidence:
       - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
     notes: >
+      2026-10-27 (maintainer, recorded by session -4f): serve api's scope is
+      v1 + v3 + the v2 summary and authorization + tenant resolution
+      (interface-ownership §4 item 4); v1 joins once its storage paths run
+      without the cache. Session -2e's ST-V3-DECOUPLE harness
+      (feat/v3-role-harness 88f37427, three test-only commits on 9bb1f0b4;
+      single 742/0, serve-api 634/0/108 pending, npm test 4757/0/3, as
+      reported by -2e) is to be folded into #8865, not stacked. The 15 v3
+      tests on v1-created records keep running under serve-api.
+
       2026-10-27 late (from session -2e; not re-run by the recording
       session): #8865 head 9bb1f0b4 on official, a fast-forward of 4d243590
       pushed by the maintainer; open, not draft, base dev, mergeable. Two

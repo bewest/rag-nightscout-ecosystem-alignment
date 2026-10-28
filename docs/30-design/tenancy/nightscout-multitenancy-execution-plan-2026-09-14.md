@@ -981,6 +981,10 @@ reveals. This answers the config-surface document's open §C.5 in direction; the
   and what, and the owner can roll back. Saving invalidates the tenant's cached settings. The next request
   for that tenant uses the new version. A background loop (alarm evaluation, connector polling) uses it at
   that tenant's next cycle. No restart. Alarm-related settings are confirmed with a preview first.
+- **An integration's credential can be split between operator and owner.** A kind declares which parts
+  belong to the operator (for example a Pushover application token, held in the operator's scope of the
+  secrets component and shared by every tenant) and which belong to the owner (the user and alarm keys).
+  The owner never sees the operator's part.
 - **Operator policy varies per tenant by override.** One deployment policy, plus operator overrides on
   individual tenants. The project floors apply to every tenant whatever the overrides say. How tenants are
   grouped, sold or assigned is the operator's business logic, outside Nightscout.

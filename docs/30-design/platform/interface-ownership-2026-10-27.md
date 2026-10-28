@@ -112,6 +112,11 @@ State: **dev** (on `official/dev` `7abe1cf6`), **PR** (in a draft PR), **propose
    - {C} §2.1 says v3, v1, v2 summary, auth and tenant resolution.
    - #8865 serves only v3 and the v2 authorization router, reading the environment. v1 is absent
      until ST-V3-DECOUPLE (M3), which is also why 81 API v3 suites fail under `serve api`.
+   - **Decided 2026-10-27 (maintainer):** `serve api` serves API v1, API v3, the v2 summary and
+     authorization, and tenant resolution, as {C} §2.1 says. v1 joins once its storage paths run without the
+     in-memory cache. The socket stays with the realtime role (question 3 below is unchanged). As a
+     consequence, the 15 API v3 tests that write to a record created through API v1 keep running under
+     `serve api`.
 5. **The socket's listener and its writes.** The sources disagree on where the socket lives:
    - CM28 puts it "on the hub's existing listener".
    - D16 groups `ns-api` and `ns-realtime` in one row.
