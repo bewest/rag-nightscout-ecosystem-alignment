@@ -45,6 +45,17 @@ data, and G1 proves nothing moved. Each becomes a deliberate change, with its ow
 Slice 5 proceeds; slices 4 (v3) and 6 (the socket's treatment handling and updates) are held until the
 maintainer has reviewed the explanation of the questions.
 
+**Progress, 2026-10-28.** Slice 5 is built: treatments, entries, devicestatus and profile on API v1 and
+in-process (`5d97fb59`, `869a7de1`, `6115c755`, `daaa3db9`), plus `0671b430` marking every release-2 variant
+in the rule table. G1 holds on both pins (on v2, only the two racy `cache` cells differ). The step gained
+`plan()` (synchronous rules at the moment the module ran them, so a bad `eventTime` still throws) and
+`check()` (WRITE_VALIDATION); treatments create has three forms (`batch`, `one`, `prebolus`); entries and
+treatments share one `_id` rule (they were identical). New questions for release 2: **Q-J** (a re-send not
+written is `refused` for devicestatus, `unchanged` for profile), **Q-K** (keep `plan()`'s synchronous throws, or
+make every rule error an asynchronous refusal), **Q-L** (devicestatus on v1 has no natural key), **Q-M** (the
+treatments fallback key reads `created_at` two ways), **Q-N** (the shared `_id` rule), **Q-O** (devicestatus
+inserts unordered, profile ordered), **Q-P** (does an authorization input, `canUpdate`, belong in an intent).
+
 ## 1. Placement: two layers, not one
 
 The spec (§2.1) puts `write(intent)` in `lib/storage/write-step.js`, "applied in `collectionFor`

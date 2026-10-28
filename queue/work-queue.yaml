@@ -7028,6 +7028,23 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent
+      test files (169 passing), G2 and the copies gate re-checked by -4f, and
+      G1 re-run by -4f against the v2 pin): local feat/write-intent 5d97fb59
+      (treatments), 869a7de1 (entries), 6115c755 (devicestatus), daaa3db9
+      (profile), 0671b430 (release-2 comments). G1 on the 360-cell pin: 0
+      cells and 0 commit events per collection; on the v2 pin (456 cells):
+      2 cells differ in the racy cache field only, the same two that vary
+      between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0
+      cells, suites 608/0 before and after. npm test 4919/0/3; test:all
+      passes. Write-rule copies 37 (baseline 47). G2 enrols 7 entries. A new
+      test file runs the db3b9e4e modules and the step side by side over a
+      recording driver (calls, events, emissions, log lines, replies), the
+      only check on preBolus, UUID_HANDLING, the profile permission and log
+      lines. New questions Q-J..Q-P (design note). Slices left: 4 (v3) and 6
+      (socket treatments, devicestatus, profile adds and updates), held for
+      the maintainer's review.
+
       2026-10-27: G1's pin is now dev-db3b9e4e-v2.json (456 cells: the 360
       of the first pin, identical, plus update-twin, idread-fail,
       harddelete-custom and harddelete-num; b6c19bc5a). Slices 1-3
