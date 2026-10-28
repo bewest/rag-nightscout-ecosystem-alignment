@@ -1,6 +1,7 @@
--- 0004: operator policy (D22 layer 2), written on the operator plane (D7).
+-- 0005: operator policy (D22 layer 2), written on the operator plane (D7).
 --
--- deployment_policy      -- one deployment policy: per setting, a default, a
+-- deployment_policy      -- one deployment policy of TENANT-FACING settings:
+--                           per setting, a default, a
 --                           mode (open, bounded, pinned), a constraint, a pin.
 -- tenant_policy_override -- operator overrides on individual tenants. An
 --                           override row REPLACES the deployment row for that
@@ -50,13 +51,6 @@ BEGIN
   SELECT * INTO s FROM config_setting WHERE key = NEW.setting_key;
   IF NOT FOUND THEN
     RAISE EXCEPTION 'policy: % is not a hosted setting', NEW.setting_key USING ERRCODE = '23503';
-  END IF;
-  IF TG_TABLE_NAME = 'tenant_policy_override' AND s.scope <> 'tenant' THEN
-    RAISE EXCEPTION 'policy: % is a deployment value and cannot be overridden per tenant', s.key
-      USING ERRCODE = '23514';
-  END IF;
-  IF s.scope = 'deployment' AND NEW.mode <> 'pinned' THEN
-    RAISE EXCEPTION 'policy: % is a deployment value and must be pinned', s.key USING ERRCODE = '23514';
   END IF;
   IF NOT cfg_constraint_ok(s.value_type, s.enum_values, NEW.constraint_spec) THEN
     RAISE EXCEPTION 'policy: malformed constraint for %', s.key USING ERRCODE = '23514';

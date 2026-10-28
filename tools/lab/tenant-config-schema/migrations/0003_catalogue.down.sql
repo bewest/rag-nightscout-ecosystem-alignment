@@ -1,4 +1,4 @@
--- 0002 down.
+-- 0003 down.
 DROP TABLE integration_kind;
 DROP TABLE config_setting;
 DROP FUNCTION cfg_schema_fields_not_secret(jsonb);

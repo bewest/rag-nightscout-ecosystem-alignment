@@ -6,8 +6,13 @@
 dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md) (§3a), and the [configuration-surface
 document](tenant-owner-config-surface-2026-09-15.md) (§A, §A.3, §B.3, §C, §E, §F.1). The schema
 runs in [`tools/lab/tenant-config-schema/`](../../../tools/lab/tenant-config-schema/README.md),
-which holds 57 tests and 72 controls. Nothing here decides a question those documents leave
+which holds 59 tests and 77 controls. Nothing here decides a question those documents leave
 open: such questions are listed in §11.*
+
+*Revised the same day after three maintainer answers: class D values live in each role's
+environment; `tenant_members` names a person by provider and subject; and rollback against a
+changed policy is refused whole (Q3, now decided). The first round's migrations `0002` to
+`0007` are now `0003` to `0008`.*
 
 Marks: **[M]** means measured by the lab, in the run recorded in its `results.json` (PostgreSQL
 16.15). **[R]** means read or reasoned, not measured. Test ids (`ISO-…`, `FLOOR-…`) name the
@@ -35,11 +40,21 @@ This document gives those decisions a PostgreSQL schema. It has three design goa
 
 ## 2. The tables, and why each exists
 
-Two tables already exist on the seam branch (`81a1f6ce:lib/admin/platform.sql`), and this
-schema leaves both unchanged:
+Two tables already exist on the seam branch (`81a1f6ce:lib/admin/platform.sql`):
 
-- `tenants` has no RLS, because it is read before a tenant context exists.
-- `tenant_members` has RLS.
+- `tenants` has no RLS, because it is read before a tenant context exists. This schema leaves
+  it unchanged.
+- `tenant_members` has RLS. Migration `0002` changes it as the maintainer decided on
+  2026-10-27: a person is identified by **identity provider and subject, both text, unique
+  together**, with no foreign key to any identity table of Nightscout's, so a Kratos, Clerk or
+  any OIDC subject fits (D17 as amended).
+  - The lab makes the pair unique **within a tenant**, as `(tenant_id, provider, subject_id)`,
+    so that one person can be a member of two tenants.
+  - The column keeps the seam's name, `subject_id`, so seam code still reads it.
+  - `0002` refuses to run while the table holds rows, because nothing records which provider
+    issued them.
+
+  `MEMBER-identity` and `MEMBER-migration-refuses-rows` cover this, with three controls. [M]
 
 The lab's migration `0001` is that file byte for byte. [M]
 
@@ -47,11 +62,11 @@ The lab's migration `0001` is that file byte for byte. [M]
 |---|---|---|---|
 | `config_setting` | no | migrations only | The catalogue of setting names hosted configuration may carry. It records each setting's type, whether the owner may set it, whether it is an alarm setting, whether it needs a deletion confirmation, and its **project floor**. A name missing from here cannot appear in any policy or owner row, because foreign keys forbid it. That absence is how the "not offered" floors reach the database. |
 | `integration_kind` | no | migrations only | The driver catalogue. For each kind: the schema its settings must satisfy, the hosts a driver may call, and the *names* of the credential parts the owner and the operator each supply. |
-| `deployment_policy` | no | operator | D22's one deployment policy: per setting, a default, a mode (`open`, `bounded` or `pinned`), a constraint and a pin. |
+| `deployment_policy` | no | operator | D22's one deployment policy of **tenant-facing** settings: per setting, a default, a mode (`open`, `bounded` or `pinned`), a constraint and a pin. Deployment-level (class D) values are not here: they are environment variables of the role that reads them (maintainer, 2026-10-27). |
 | `tenant_policy_override` | yes | operator, with the tenant bound | D22's operator overrides for individual tenants. A row replaces the deployment row for that tenant and setting. |
 | `tenant_setting_value` | yes | tenant-owner listener | The owner's values, accepted only within the governing policy row and the floor. |
 | `tenant_alarm_thresholds` | yes | nobody yet (see §5) | The owner's four glucose thresholds, as typed `NOT NULL` integer columns in mg/dL. It exists so the §A.3 hazard cannot be expressed. See §6. |
-| `tenant_config_version` | yes | tenant-owner listener (insert only) | One numbered, append-only row per change. It records the plane, the identity provider's subject, the time, the kind (`change`, `rollback`, `bootstrap`, `import`) and the full owner-scope state after the change. |
+| `tenant_config_version` | yes | tenant-owner listener (insert only) | One numbered, append-only row per change. It records the plane, the identity provider (required for an owner) and its subject, the time, the kind (`change`, `rollback`, `bootstrap`, `import`) and the full owner-scope state after the change. |
 | `deployment_integration` | no | operator | The operator's part of a kind's credential (for example a push service's application token), held as a **reference**. |
 | `tenant_integration` | yes | tenant-owner listener | One record per connector, webhook or push target. Each has a kind, settings validated by the kind's schema, a reference to the owner's credential, and an `enabled` flag. |
 | `tenant_integration_status` | yes | consumer and connector roles | The last success and last error. They are kept apart so that a connector's polling never creates a configuration version. |
@@ -73,7 +88,7 @@ The lab's roles are `cfg_owner`, `ns_operator`, `ns_tenant_admin` and `ns_api`.
 - The other three own nothing. They map to D7's operator plane, D16's tenant-owner listener,
   and D5/D21's consumer, evaluator and connector roles.
 
-The grants are in `0007_grants.up.sql`.
+The grants are in `0008_grants.up.sql`.
 
 **Measured, and in tension with a claim in the seam's code (§10, M7):** the tables are owned by
 a role that is not the application role. RLS is still active for every application role, with
@@ -132,8 +147,8 @@ differential in CI. [R]
 
 D22 lists five floor groups.
 
-> **Mismatch noted (§10, M1):** the execution plan's §2.13 still introduces them as "Decided as
-> four groups".
+> The execution plan's §2.13 now says five as well. It said "four groups" when this document
+> was first drafted (M1, fixed on main in `2222116ea`).
 
 | group | floor | where | test |
 |---|---|---|---|
@@ -183,16 +198,22 @@ The rule behind the split [R]:
 | 11 | plugin credentials | Never in a settings row. Each kind names its credential **parts**. The owner's parts are referenced from `tenant_integration.owner_secret_ref`, and the operator's from `deployment_integration.operator_secret_ref`. The owner listener can see *that* the operator's part exists, not its reference. | `SECRETS-*`, `INTEGRATION-credential-parts` [M] |
 | 12 | `DEBUG_LOGGING`, `DBSIZE_*` | absent; `DEBUG_LOGGING` refused at start | `FLOOR-not-offered`, `FLOOR-app-process` [M] |
 
+**Class D values (decided 2026-10-27).** Deployment-level values live in each role's
+**environment**. This covers `TRUST_PROXY`, `DEBUG_LOGGING`, ports, storage URIs and the
+release-driven compatibility switches. None is in the catalogue, so the database refuses each
+of them as a deployment policy row or a per-tenant override. The lab's
+`deploymentValues(env)` reads them from the role's own environment, so two roles can differ.
+`CLASSD-environment` covers both halves. Its two controls add `API_V3_DATA_WARNINGS` to the
+catalogue, and make the roles ignore their environment. [M]
+
 **The eight names new on dev:**
 
-- `API_V3_DATA_WARNINGS` is catalogued as `scope = 'deployment'`. It can only be a pinned
-  deployment row, never an override or an owner value (`FLOOR-deployment-scope`). [M]
-  `API_V1_COUNT_LEADING_NUMBER` and `API_V1_COUNT_ZERO_WINDOW` would be catalogued the same
-  way. [R]
+- `API_V3_DATA_WARNINGS`, `API_V1_COUNT_LEADING_NUMBER` and `API_V1_COUNT_ZERO_WINDOW` are
+  class D: environment variables of the role that reads them (`CLASSD-environment`). [M]
 - `SHOW_SECONDS` is open to the owner. [M]
 - The two `CUSTOMCONNSTR_*` spellings are absent. [R]
 
-The lab's catalogue (`0003`) covers these rows plus `SHOW_SECONDS` and `DISPLAY_UNITS`. It does
+The lab's catalogue (`0004`) covers these rows plus `SHOW_SECONDS` and `DISPLAY_UNITS`. It does
 not cover the remaining class-T names. A release would generate the catalogue from the census
 (J7). [R]
 
@@ -253,15 +274,27 @@ version *N*. It applies them through `cfg_apply` as a new version, with kind `ro
 **Rollback against a policy that has changed since version *N*.** Every restored row passes
 the same checks as a fresh write, against the **current** policy and floors.
 
-- In the lab, if the operator has since pinned or narrowed a setting that the rollback would
-  restore, the **whole rollback is refused**. The error names the setting, nothing changes,
-  and no version is written (`VERSION-rollback-vs-new-pin`). [M]
+- **Decided (maintainer, 2026-10-27; Q3).** An owner's rollback to an earlier version is
+  **refused whole** when the operator has since pinned or narrowed a setting that version
+  used. The error names **each** blocked setting and the operator rule behind it. Nothing
+  changes, and no version is written.
+  - `cfg_rollback` pre-checks every value it would restore with the same function the write
+    trigger uses (`cfg_owner_value_error`), and raises one error listing all of them.
+  - Measured message, with one deployment pin and one per-tenant narrowing:
+    `rollback to version 1 refused; 2 setting(s) blocked: policy: AUTH_DEFAULT_ROLES =
+    ["readable"] is outside the operator's constraint (override rule: bounded {"allowed":
+    ["denied"]}); policy: SHOW_SECONDS is pinned by the operator (deployment rule: pinned to
+    false)`.
+  - The test is `VERSION-rollback-vs-new-policy`. Its two controls remove the checks, and
+    report only the first blocked setting. [M]
+  - The first round's lab stopped at the first blocked setting. That did not meet the
+    decision, and is fixed.
+  - Integration records restored by a rollback are still checked one at a time by their
+    trigger, so a blocked integration is reported alone (Q13). [R]
 - A rollback to a version with permanent deletion turned on needs a **fresh** confirmation.
   The old confirmation is not part of the version state and is not carried forward
   (`VERSION-rollback-needs-fresh-confirmation`). [M]
 
-Refusing the whole rollback was chosen by the lab, not by any decision. The alternatives are
-in §11 (Q3).
 
 **What is versioned.** Owner-scope state is versioned: owner values, thresholds and
 integration records. Integration status is not. Operator policy changes are not versioned
@@ -369,12 +402,12 @@ choice. [R]
 ## 10b. Mismatches found (stop-and-report)
 
 These are inconsistencies between decisions, documents and code. None was resolved by this
-work.
+work. M1, M2, M4 and M5 were settled on 2026-10-27, as each entry says.
 
-- **M1.** The execution plan's §2.13 lists five floor groups, the fifth added on 2026-10-27,
-  but introduces them as "Decided as four groups". The decision row D22 does not count them.
-  [R]
-- **M2.** D17 as amended makes the identity provider interchangeable and
+- **M1.** *(Fixed on main in `2222116ea`.)* The execution plan's §2.13 listed five floor
+  groups but introduced them as "Decided as four groups". [R]
+- **M2.** *(Settled 2026-10-27: provider and subject, both text, unique together, no foreign
+  key. Migration `0002`.)* D17 as amended makes the identity provider interchangeable and
   `tenant_members.subject_id` the provider's subject, with no foreign key. Two places do not
   fit that:
   - On the seam (`81a1f6ce`), the column is `uuid NOT NULL`. A provider whose subjects are not
@@ -382,23 +415,26 @@ work.
   - On `seam/t30-schema-cred` (`65ce54b9`), the column became `text` **with** a composite
     foreign key to `tenant_subject`, against "no foreign key".
 
-  This schema leaves `tenant_members` unchanged and records actors as text with no foreign key
-  (`tenant_config_version.actor_subject`). [R]
+  The first round left `tenant_members` unchanged. [R]
 - **M3.** `tenant_secret` stores `material bytea` in the platform schema. It is drafted in
   config-surface §A.2 and §C.5 (J4) and built on `65ce54b9`. D22's later decisions say keys
   never leave the secrets component. They do not say where the built-in signer keeps its
   encrypted keys. This schema holds references only, and `SECRETS-schema-scan` forbids `bytea`
   in it. If the built-in signer's store is to live in the same schema, that check needs a
   defined scope. [R]
-- **M4.** Census §3a row 5 says `TRUST_PROXY` is "never a tenant row", and row 12 gives
+- **M4.** *(Settled 2026-10-27: class D values live in the environment, so neither is a
+  policy row.)* Census §3a row 5 says `TRUST_PROXY` is "never a tenant row", and row 12 gives
   `DEBUG_LOGGING` no policy. The call-path lab's `lib/policy.js` models both as per-tenant
   pinned policy rows. That lab is evidence for the call path, not for the setting model, but
   the two disagree. [R]
-- **M5.** Config-surface §B.3 says class D settings are read from `process.env` under `multi`,
+- **M5.** *(Settled 2026-10-27: each role's environment; `deployment_policy` holds only
+  tenant-facing defaults, modes and constraints; D15 reads as "no per-tenant configuration from
+  the environment". The `scope` column and the deployment-scope row were removed.)*
+  Config-surface §B.3 says class D settings are read from `process.env` under `multi`,
   "as today". D22 and census §3a describe release-driven D names as "deployment values the
   operator pins", which is a policy row. D15 says env-sourced configuration must not reach the
-  multi path. Where D values live under `multi` is therefore not stated consistently. This
-  schema supports pinned deployment rows (`scope = 'deployment'`), and the process-level floors
+  multi path. Where D values live under `multi` is therefore not stated consistently. The
+  first round supported pinned deployment rows (`scope = 'deployment'`), and the process-level floors
   read the environment. [R]
 - **M6.** Config-surface §A.3 cites `settings.js:290-296` and a `bgHigh < 50` heuristic.
   Dev at `db3b9e4e` converts each threshold on its own when it is below 30
@@ -417,31 +453,36 @@ work.
 
 ## 11. Open questions for the maintainer
 
-The lab made a working choice for each question below, so that it could run. None of these
-choices is a decision.
+The lab made a working choice for each question below, so that it could run. Rows marked
+**decided** were answered by the maintainer on 2026-10-27. For the others, the working choice
+is not a decision.
 
 | # | question | lab's working choice |
 |---|---|---|
 | Q1 | Does an operator override replace the deployment row whole, or field by field? | whole row |
 | Q2 | When the operator has written no row, what applies? Is there a project-shipped default policy? | the catalogue's shipped mode and constraint. Autoprune and alarm keys are pinned off, ordinary T settings open, contested rows bounded within the floor |
-| Q3 | Rollback against a changed policy: refuse it whole, apply it partly with a report, or restore values the merge then ignores? | refuse whole, naming the setting |
+| Q3 | Rollback against a changed policy: refuse it whole, apply it partly with a report, or restore values the merge then ignores? | **decided:** refused whole, naming each blocked setting and the operator rule behind it (§7) |
 | Q4 | When an operator narrows or pins a setting, owners' stored values fall outside it. Who tells the owner, and how? D22's "review list, never dropped silently" covers migration only. | the merge ignores and reports them; nothing tells the owner |
 | Q5 | Are operator policy changes, at deployment and per tenant, versioned or audited? How do they invalidate tenants' caches? | not versioned |
 | Q6 | J11: refuse partial threshold input, or allow it per key with nullable typed columns? | refuse partial (J11's recommendation) |
 | Q7 | Threshold bounds: §A.2 uses 20 to 600 mg/dL. Dev now treats values below 30 as mmol/L. Which bounds, after clinical review? | 20 to 600 |
 | Q8 | The secret-reference format, and how a reference is bound to its tenant. | placeholder format; binding left to the secrets component |
 | Q9 | Where does the built-in signer keep encrypted keys: in this database (separate schema and role) or outside it? (M3) | outside this schema |
-| Q10 | `tenant_members.subject_id` type and foreign key under D17 as amended (M2; J1, I.2) | unchanged from `81a1f6ce` |
-| Q11 | Under `multi`, do class D values live in the environment or as pinned deployment rows? (M5) | both supported |
+| Q10 | `tenant_members.subject_id` type and foreign key under D17 as amended (M2; J1, I.2) | **decided:** provider and subject, both text, unique together, no foreign key (`0002`) |
+| Q11 | Under `multi`, do class D values live in the environment or as pinned deployment rows? (M5) | **decided:** each role's environment |
 | Q12 | Export and deletion: which configuration tables are "tenant data" for `tenantScopedTables` and `NOT_TENANT_DATA`? Owner values, versions and integrations are the owner's. Overrides are the operator's. | not addressed |
 | Q13 | An integration restored by rollback may reference a secret since deleted or rotated, and an operator may lower a kind's maximum below a tenant's current count. What happens in each case? | neither handled |
 | Q14 | May the operator plane read owner values (for support)? | no grant |
 | Q15 | The post-gate change for alarm settings, a migration that grants the owner listener writes and drops the hidden CHECK: is a reviewed migration the intended switch? | yes, as a migration |
 | Q16 | The send-time webhook check (DNS resolution, pinning the resolved address): where does it live? | not built |
-| Q17 | Generate the catalogue from the census gate (J7)? | hand-written `0003` |
+| Q17 | Generate the catalogue from the census gate (J7)? | hand-written `0004` |
+| Q18 | Existing `tenant_members` rows have no recorded provider. Should they be backfilled with a stated provider (the seam's rows came from the Kratos proof), or the table emptied? | `0002` refuses to run while rows exist |
+| Q19 | Is "unique together" per tenant (one person, several tenants) or global? Should `subject_id` be renamed `subject`? | per tenant; name kept for seam compatibility |
+| Q20 | Should a `nightscout serve` role refuse to start when a class D value it needs is missing, as the floors already do for `TRUST_PROXY`? | only the floors refuse |
 
 ## 12. Evidence
 
 - Lab: `tools/lab/tenant-config-schema/`: `README.md` (how to run, the full results table) and
   `results.json` (each control's error and observation).
+- Migration-tool comparison: `tools/lab/tenant-config-schema/compare.js` and `compare-results.json` (umzug, node-pg-migrate and migrate-mongo, on PostgreSQL 16.15 and a standalone MongoDB 8.0.34).
 - Migration tooling: [`docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`](../../60-research/tenancy/migration-tooling-plan-2026-10-27.md).

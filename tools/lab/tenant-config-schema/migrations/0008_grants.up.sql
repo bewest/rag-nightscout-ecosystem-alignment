@@ -1,4 +1,4 @@
--- 0007: what each role may touch. The roles are created outside migrations
+-- 0008: what each role may touch. The roles are created outside migrations
 -- (bootstrap/roles.sql, run once by a database administrator), like the seam's
 -- platform.sql operational note: a migration that could create or widen roles
 -- would let the schema grant itself access.

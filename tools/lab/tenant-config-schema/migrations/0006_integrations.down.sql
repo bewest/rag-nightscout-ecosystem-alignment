@@ -1,4 +1,4 @@
--- 0005 down. Destroys every tenant's integration records (references only).
+-- 0006 down. Destroys every tenant's integration records (references only).
 DROP TABLE tenant_integration_status;
 DROP TABLE tenant_integration;
 DROP TABLE deployment_integration;

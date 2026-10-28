@@ -1,12 +1,12 @@
 {
   "summary": {
-    "when": "2026-10-28T01:21:51.310Z",
+    "when": "2026-10-28T01:54:52.700Z",
     "server": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) (container cfgschema-pg, postgres:16)",
     "node": "v22.23.4",
-    "tests": 57,
-    "pass": 57,
-    "controls": 72,
-    "controlsRed": 72
+    "tests": 59,
+    "pass": 59,
+    "controls": 77,
+    "controlsRed": 77
   },
   "results": [
     {
@@ -22,12 +22,14 @@
         {
           "title": "RLS disabled on the table",
           "red": true,
+          "setupError": false,
           "error": "bound to A, ns_api saw tenant B's rows in tenant_members",
           "obs": []
         },
         {
           "title": "same reads as the container superuser (RLS bypassed)",
           "red": true,
+          "setupError": false,
           "error": "bound to A, superuser saw tenant B's rows in tenant_members",
           "obs": []
         }
@@ -46,12 +48,14 @@
         {
           "title": "RLS disabled on the table",
           "red": true,
+          "setupError": false,
           "error": "bound to A, ns_api saw tenant B's rows in tenant_policy_override",
           "obs": []
         },
         {
           "title": "same reads as the container superuser (RLS bypassed)",
           "red": true,
+          "setupError": false,
           "error": "bound to A, superuser saw tenant B's rows in tenant_policy_override",
           "obs": []
         }
@@ -70,12 +74,14 @@
         {
           "title": "RLS disabled on the table",
           "red": true,
+          "setupError": false,
           "error": "bound to A, ns_api saw tenant B's rows in tenant_setting_value",
           "obs": []
         },
         {
           "title": "same reads as the container superuser (RLS bypassed)",
           "red": true,
+          "setupError": false,
           "error": "bound to A, superuser saw tenant B's rows in tenant_setting_value",
           "obs": []
         }
@@ -94,12 +100,14 @@
         {
           "title": "RLS disabled on the table",
           "red": true,
+          "setupError": false,
           "error": "bound to A, ns_api saw tenant B's rows in tenant_alarm_thresholds",
           "obs": []
         },
         {
           "title": "same reads as the container superuser (RLS bypassed)",
           "red": true,
+          "setupError": false,
           "error": "bound to A, superuser saw tenant B's rows in tenant_alarm_thresholds",
           "obs": []
         }
@@ -118,12 +126,14 @@
         {
           "title": "RLS disabled on the table",
           "red": true,
+          "setupError": false,
           "error": "bound to A, ns_api saw tenant B's rows in tenant_config_version",
           "obs": []
         },
         {
           "title": "same reads as the container superuser (RLS bypassed)",
           "red": true,
+          "setupError": false,
           "error": "bound to A, superuser saw tenant B's rows in tenant_config_version",
           "obs": []
         }
@@ -142,12 +152,14 @@
         {
           "title": "RLS disabled on the table",
           "red": true,
+          "setupError": false,
           "error": "bound to A, ns_api saw tenant B's rows in tenant_integration",
           "obs": []
         },
         {
           "title": "same reads as the container superuser (RLS bypassed)",
           "red": true,
+          "setupError": false,
           "error": "bound to A, superuser saw tenant B's rows in tenant_integration",
           "obs": []
         }
@@ -166,12 +178,14 @@
         {
           "title": "RLS disabled on the table",
           "red": true,
+          "setupError": false,
           "error": "bound to A, ns_api saw tenant B's rows in tenant_integration_status",
           "obs": []
         },
         {
           "title": "same reads as the container superuser (RLS bypassed)",
           "red": true,
+          "setupError": false,
           "error": "bound to A, superuser saw tenant B's rows in tenant_integration_status",
           "obs": []
         }
@@ -190,12 +204,14 @@
         {
           "title": "include the container superuser among the roles",
           "red": true,
+          "setupError": false,
           "error": "postgres is superuser or bypassrls",
           "obs": []
         },
         {
           "title": "NO FORCE on one table: the owning migration role escapes RLS",
           "red": true,
+          "setupError": false,
           "error": "RLS is not active for cfg_owner on tenant_setting_value",
           "obs": []
         }
@@ -214,7 +230,53 @@
         {
           "title": "a new tenant table without RLS",
           "red": true,
+          "setupError": false,
           "error": "unprotected tenant tables: tenant_notes",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MEMBER-identity",
+      "group": "isolation",
+      "title": "tenant_members names a person by (provider, subject) as text: any provider's subject fits, the pair is unique within a tenant, the same person may join two tenants, and no foreign key names an identity table",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "the pair's unique constraint dropped",
+          "red": true,
+          "setupError": false,
+          "error": "expected a refusal matching /tenant_members_identity/, but it was accepted",
+          "obs": []
+        },
+        {
+          "title": "the seam's shape (0001 only: subject_id uuid, no provider)",
+          "red": true,
+          "setupError": false,
+          "error": "42703 column \"provider\" of relation \"tenant_members\" does not exist",
+          "obs": []
+        }
+      ]
+    },
+    {
+      "id": "MEMBER-migration-refuses-rows",
+      "group": "migrate",
+      "title": "0002 refuses to run while tenant_members holds rows whose provider nobody recorded, and its row count is not blinded by FORCE RLS",
+      "verdict": "PASS",
+      "pass": {
+        "ok": true,
+        "obs": []
+      },
+      "controls": [
+        {
+          "title": "0002 without the NO FORCE around its count",
+          "red": true,
+          "setupError": false,
+          "error": "refused for the wrong reason: Migration 0002_member_identity (up) failed: Original error: column \"provider\" of relation \"tenant_members\" contains null values",
           "obs": []
         }
       ]
@@ -232,6 +294,7 @@
         {
           "title": "merge ignores per-tenant overrides",
           "red": true,
+          "setupError": false,
           "error": "DISPLAY_UNITS (A's override) {\"value\":\"mg/dl\",\"source\":\"code\"}",
           "obs": []
         }
@@ -250,6 +313,7 @@
         {
           "title": "merge ignores per-tenant overrides",
           "red": true,
+          "setupError": false,
           "error": "B AUTH_DEFAULT_ROLES {\"value\":[\"readable\"],\"source\":\"owner\"}",
           "obs": []
         }
@@ -268,6 +332,7 @@
         {
           "title": "merge applies the pin before the owner value",
           "red": true,
+          "setupError": false,
           "error": "A {\"value\":true,\"source\":\"owner\"}",
           "obs": []
         }
@@ -286,6 +351,7 @@
         {
           "title": "floors skipped in the merge",
           "red": true,
+          "setupError": false,
           "error": "no violation: []",
           "obs": []
         }
@@ -304,6 +370,7 @@
         {
           "title": "threshold order check skipped",
           "red": true,
+          "setupError": false,
           "error": "misordered thresholds not reported",
           "obs": []
         }
@@ -324,6 +391,7 @@
         {
           "title": "an off-by-one in the JS ordinal minimum",
           "red": true,
+          "setupError": false,
           "error": "JS and SQL disagree: [{\"key\":\"WRITE_VALIDATION\",\"cons\":{\"min\":\"log\"},\"v\":\"off\",\"sql\":false,\"js\":true}]",
           "obs": [
             "30 cases compared"
@@ -344,6 +412,7 @@
         {
           "title": "project floor removed from the catalogue row",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /^floor:/, but it was accepted",
           "obs": []
         }
@@ -362,6 +431,7 @@
         {
           "title": "project floor removed from the catalogue row",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /^floor:/, but it was accepted",
           "obs": []
         }
@@ -380,6 +450,7 @@
         {
           "title": "project floor removed",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /^floor:/, but it was accepted",
           "obs": []
         }
@@ -398,6 +469,7 @@
         {
           "title": "TREATMENTS_AUTH added to the catalogue",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /not a hosted setting|foreign key/, but it was accepted",
           "obs": []
         }
@@ -416,6 +488,7 @@
         {
           "title": "name CHECK dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /config_setting_no_secret_names/, but it was accepted",
           "obs": []
         }
@@ -434,6 +507,7 @@
         {
           "title": "UPDATE granted to the operator",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
           "obs": []
         }
@@ -452,6 +526,7 @@
         {
           "title": "needs_confirmation cleared",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /^floor:.*confirmation/, but it was accepted",
           "obs": []
         }
@@ -470,12 +545,14 @@
         {
           "title": "post-gate GRANT applied",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
           "obs": []
         },
         {
           "title": "alarms-hidden CHECK dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /config_setting_alarms_hidden/, but it was accepted",
           "obs": []
         }
@@ -494,6 +571,7 @@
         {
           "title": "public-host check replaced by `true`",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /integration:/, but it was accepted",
           "obs": []
         }
@@ -512,15 +590,16 @@
         {
           "title": "kind's endpoint rule changed from driver to public",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /^integration: floor:/, but it was accepted",
           "obs": []
         }
       ]
     },
     {
-      "id": "FLOOR-deployment-scope",
+      "id": "CLASSD-environment",
       "group": "floors-db",
-      "title": "a deployment value (API_V3_DATA_WARNINGS) cannot be overridden per tenant or set by an owner, and must be pinned",
+      "title": "class D values live in each role's environment (decided 2026-10-27): the database refuses them as deployment or per-tenant policy, and each role reads its own environment",
       "verdict": "PASS",
       "pass": {
         "ok": true,
@@ -528,9 +607,17 @@
       },
       "controls": [
         {
-          "title": "catalogue row re-scoped to tenant and owner-settable",
+          "title": "API_V3_DATA_WARNINGS added to the catalogue",
           "red": true,
-          "error": "expected a refusal matching /deployment value/, but it was accepted",
+          "setupError": false,
+          "error": "expected a refusal matching /not a hosted setting|foreign key/, but it was accepted",
+          "obs": []
+        },
+        {
+          "title": "roles ignore their environment (code defaults only)",
+          "red": true,
+          "setupError": false,
+          "error": "api role {\"TRUST_PROXY\":\"\",\"DEBUG_LOGGING\":false,\"API_V3_DATA_WARNINGS\":false,\"API_V1_COUNT_LEADING_NUMBER\":true,\"API_V1_COUNT_ZERO_WINDOW\":true}",
           "obs": []
         }
       ]
@@ -548,24 +635,28 @@
         {
           "title": "secret check off",
           "red": true,
+          "setupError": false,
           "error": "not refused: [\"TRUST_PROXY\",\"API_SECRET\"]",
           "obs": []
         },
         {
           "title": "API3 security check off",
           "red": true,
+          "setupError": false,
           "error": "not refused: [\"TRUST_PROXY\",\"API3_SECURITY_ENABLE\"]",
           "obs": []
         },
         {
           "title": "TRUST_PROXY check off",
           "red": true,
+          "setupError": false,
           "error": "not refused: []",
           "obs": []
         },
         {
           "title": "DEBUG_LOGGING check off",
           "red": true,
+          "setupError": false,
           "error": "not refused: [\"TRUST_PROXY\",\"DEBUG_LOGGING\"]",
           "obs": []
         }
@@ -584,6 +675,7 @@
         {
           "title": "multi honours the env value",
           "red": true,
+          "setupError": false,
           "error": "multi honoured the env",
           "obs": []
         }
@@ -602,6 +694,7 @@
         {
           "title": "owner-value trigger dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /pinned/, but it was accepted",
           "obs": []
         }
@@ -620,6 +713,7 @@
         {
           "title": "owner-value trigger dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /outside the operator/, but it was accepted",
           "obs": []
         }
@@ -638,7 +732,8 @@
         {
           "title": "owner-value trigger dropped",
           "red": true,
-          "error": "expected a refusal matching /\\(override\\)/, but it was accepted",
+          "setupError": false,
+          "error": "expected a refusal matching /\\(override rule: bounded/, but it was accepted",
           "obs": []
         }
       ]
@@ -656,6 +751,7 @@
         {
           "title": "owner-value trigger dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /must be a boolean/, but it was accepted",
           "obs": []
         }
@@ -674,6 +770,7 @@
         {
           "title": "owner listener granted policy writes",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
           "obs": []
         }
@@ -692,6 +789,7 @@
         {
           "title": "policy lookup made blind to INTEGRATION_HOSTS keys",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /allow-list/, but it was accepted",
           "obs": []
         }
@@ -710,6 +808,7 @@
         {
           "title": "state snapshot broken: cfg_current_state returns an empty state",
           "red": true,
+          "setupError": false,
           "error": "states do not record what changed",
           "obs": []
         }
@@ -728,6 +827,7 @@
         {
           "title": "commit-time version guards dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /without a version/, but it was accepted",
           "obs": []
         }
@@ -746,6 +846,7 @@
         {
           "title": "append-only trigger dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /append-only/, but it was accepted",
           "obs": []
         }
@@ -764,25 +865,36 @@
         {
           "title": "rollback restores values only",
           "red": true,
+          "setupError": false,
           "error": "live state differs from v2: {\"values\":{\"SHOW_SECONDS\":true,\"AUTH_DEFAULT_ROLES\":[\"readable\"]},\"thresholds\":{\"bgLow\":60,\"bgHigh\":250,\"bgTargetTop\":170,\"enteredUnits\":\"mg/dl\",\"bgTargetBottom\":90},\"integrations\":[]} vs {\"values\":{\"SHOW_SECONDS\":true,\"AUTH_DEFAULT_ROLES\":[\"readable\"]},\"thresholds\":{\"bgLow\":55,\"bgHigh\":260,\"bgTargetTop\":180,\"enteredUnits\":\"mg/dl\",\"bgTargetBottom\":80},\"integrations\":[{\"id\":\"a1a1a1a1-0000-4000-8000-0000000000a1\",\"kind\":\"webhook\",\"label\":\"\",\"enabled\":true,\"settings\":{\"url\":\"https://hooks.example-receiver.test/ns\",\"events\":\"alarm\"},\"secretRef\":\"sref:v1:builtin:rrrrrrrrrrrrrrrrrrrr0001\"}]}",
           "obs": []
         }
       ]
     },
     {
-      "id": "VERSION-rollback-vs-new-pin",
+      "id": "VERSION-rollback-vs-new-policy",
       "group": "versions",
-      "title": "rollback to a version whose value the operator has since pinned is refused whole, naming the setting; nothing changes and no version is written",
+      "title": "Q3 (decided): rollback to a version whose settings the operator has since pinned or narrowed is refused whole, naming EACH blocked setting and the operator rule behind it; nothing changes and no version is written",
       "verdict": "PASS",
       "pass": {
         "ok": true,
-        "obs": []
+        "obs": [
+          "rollback to version 1 refused; 2 setting(s) blocked: policy: AUTH_DEFAULT_ROLES = [\"readable\"] is outside the operator's constraint (override rule: bounded {\"allowed\": [\"denied\"]}); policy: SHOW_SECONDS is pinned by the operator (deployment rule: pinned to false)"
+        ]
       },
       "controls": [
         {
-          "title": "owner-value trigger dropped",
+          "title": "checks removed: owner-value trigger dropped and the pre-check made permissive",
           "red": true,
-          "error": "expected a refusal matching /SHOW_SECONDS is pinned/, but it was accepted",
+          "setupError": false,
+          "error": "expected a refusal matching /refused; 2 setting\\(s\\) blocked/, but it was accepted",
+          "obs": []
+        },
+        {
+          "title": "rollback reports only the first blocked setting",
+          "red": true,
+          "setupError": false,
+          "error": "refused for the wrong reason: rollback to version 1 refused; 1 setting(s) blocked: policy: AUTH_DEFAULT_ROLES = [\"readable\"] is outside the operator's constraint (override rule: bounded {\"allowed\": [\"denied\"]})",
           "obs": []
         }
       ]
@@ -800,7 +912,8 @@
         {
           "title": "needs_confirmation cleared",
           "red": true,
-          "error": "expected a refusal matching /^floor:.*confirmation/, but it was accepted",
+          "setupError": false,
+          "error": "expected a refusal matching /blocked: floor: API3_AUTOPRUNE_ENTRIES deletes data permanently.*confirmation/, but it was accepted",
           "obs": []
         }
       ]
@@ -818,6 +931,7 @@
         {
           "title": "advisory lock removed from cfg_apply",
           "red": true,
+          "setupError": false,
           "error": "23505 duplicate key value violates unique constraint \"tenant_config_version_pkey\"",
           "obs": []
         }
@@ -838,18 +952,21 @@
         {
           "title": "a plaintext password column added",
           "red": true,
+          "setupError": false,
           "error": "credential-like columns: [{\"table_name\":\"tenant_integration\",\"column_name\":\"password\"}]",
           "obs": []
         },
         {
           "title": "a bytea material column added",
           "red": true,
+          "setupError": false,
           "error": "credential-like columns: [{\"table_name\":\"tenant_integration\",\"column_name\":\"material_blob\"}]",
           "obs": []
         },
         {
           "title": "an unconstrained *_ref column added",
           "red": true,
+          "setupError": false,
           "error": "tenant_integration.backup_ref has no reference-format CHECK",
           "obs": []
         }
@@ -868,6 +985,7 @@
         {
           "title": "kind CHECK dropped and a password field added to the webhook schema",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /unknown field password/, but it was accepted",
           "obs": []
         }
@@ -886,6 +1004,7 @@
         {
           "title": "reference CHECKs dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /tenant_integration_ref_format/, but it was accepted",
           "obs": []
         }
@@ -904,6 +1023,7 @@
         {
           "title": "whole-table SELECT granted to the owner listener",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /permission denied/ (42501), but it was accepted",
           "obs": []
         }
@@ -929,6 +1049,7 @@
         {
           "title": "the OLD shape: tenant_settings as drafted in config-surface §A.2",
           "red": true,
+          "setupError": false,
           "error": "partial {bgHigh:14} was accepted: {\"bgHigh\":14}",
           "obs": [
             "partial {bgHigh:14}: ACCEPTED"
@@ -937,6 +1058,7 @@
         {
           "title": "new shape with the range CHECK dropped and the columns made nullable",
           "red": true,
+          "setupError": false,
           "error": "partial {bgHigh:14} was accepted: {\"bgHigh\":14}",
           "obs": [
             "partial {bgHigh:14}: ACCEPTED"
@@ -964,6 +1086,7 @@
         {
           "title": "the same inputs against the new shape",
           "red": true,
+          "setupError": false,
           "error": "the partial mmol override was refused: hazard not reproduced on this shape",
           "obs": [
             "partial {\"bgHigh\":14}: refused 23514: thresholds: all four are written together; bgLow is missing",
@@ -989,6 +1112,7 @@
         {
           "title": "conversion skipped at the write boundary",
           "red": true,
+          "setupError": false,
           "error": "23514 thresholds: bgLow = 3.1 is not a whole mg/dL value; convert mmol/L at the write boundary",
           "obs": []
         }
@@ -1007,6 +1131,7 @@
         {
           "title": "integration trigger dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /allows 2 per tenant/, but it was accepted",
           "obs": []
         }
@@ -1025,6 +1150,7 @@
         {
           "title": "integration trigger dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /missing field priority/, but it was accepted",
           "obs": []
         }
@@ -1043,6 +1169,7 @@
         {
           "title": "integration trigger dropped",
           "red": true,
+          "setupError": false,
           "error": "expected a refusal matching /needs a reference/, but it was accepted",
           "obs": []
         }
@@ -1051,19 +1178,20 @@
     {
       "id": "MIGRATE-up-down-up",
       "group": "migrate",
-      "title": "umzug applies 0001-0007, rolls all of them back to an empty schema, and applies them again",
+      "title": "umzug applies 0001-0008, rolls all of them back to an empty schema, and applies them again",
       "verdict": "PASS",
       "pass": {
         "ok": true,
         "obs": [
-          "46 schema objects created; 0 left after down; re-applied"
+          "47 schema objects created; 0 left after down; re-applied"
         ]
       },
       "controls": [
         {
-          "title": "0005's down migration forgets one function",
+          "title": "0006's down migration forgets one function",
           "red": true,
-          "error": "1 objects left after down to 0 (of 46)",
+          "setupError": false,
+          "error": "1 objects left after down to 0 (of 47)",
           "obs": []
         }
       ]
@@ -1076,16 +1204,17 @@
       "pass": {
         "ok": true,
         "obs": [
-          "orphaned server session ran on for about 5368 ms after the kill; then ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\"], deployment_policy present: false"
+          "orphaned server session ran on for about 5212 ms after the kill; then ledger [\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\"], deployment_policy present: false"
         ]
       },
       "controls": [
         {
           "title": "umzug's default split: migration and ledger row in separate steps",
           "red": true,
-          "error": "0004 applied but not recorded (or the reverse): {\"ledger\":[\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\"],\"policyTable\":true,\"integrationTable\":false}",
+          "setupError": false,
+          "error": "0005 applied but not recorded (or the reverse): {\"ledger\":[\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\"],\"policyTable\":true,\"integrationTable\":false}",
           "obs": [
-            "orphaned server session ran on for about 5257 ms after the kill; then ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\"], deployment_policy present: true"
+            "orphaned server session ran on for about 5289 ms after the kill; then ledger [\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\"], deployment_policy present: true"
           ]
         }
       ]
@@ -1098,16 +1227,17 @@
       "pass": {
         "ok": true,
         "obs": [
-          "after the kill: ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\",\"0004_policy\",\"0005_integrations\"], tenant_integration present: true"
+          "after the kill: ledger [\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\",\"0005_policy\",\"0006_integrations\"], tenant_integration present: true"
         ]
       },
       "controls": [
         {
           "title": "umzug's default split: migration and ledger row in separate steps",
           "red": true,
-          "error": "0005 applied but not recorded: {\"ledger\":[\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\",\"0004_policy\"],\"policyTable\":true,\"integrationTable\":true}",
+          "setupError": false,
+          "error": "0006 applied but not recorded: {\"ledger\":[\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\",\"0005_policy\"],\"policyTable\":true,\"integrationTable\":true}",
           "obs": [
-            "after the kill: ledger [\"0001_platform_base\",\"0002_catalogue\",\"0003_catalogue_seed\",\"0004_policy\"], tenant_integration present: true"
+            "after the kill: ledger [\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\",\"0005_policy\"], tenant_integration present: true"
           ]
         }
       ]
@@ -1120,13 +1250,14 @@
       "pass": {
         "ok": true,
         "obs": [
-          "applied per process: [0,7,0,0]"
+          "applied per process: [8,0,0,0]"
         ]
       },
       "controls": [
         {
           "title": "advisory lock off",
           "red": true,
+          "setupError": false,
           "error": "3 of 4 failed: {\"ok\":false,\"error\":\"duplicate key value violates unique constraint \\\"pg_type_typname_nsp_index\\\"\"} | {\"ok\":false,\"error\":\"duplicate key value violates unique constraint \\\"pg_type_typname_nsp_index\\\"\"} | {\"ok\":false,\"error\":\"duplicate key value violates unique constraint \\\"pg_type_typname_nsp_index\\\"\"}",
           "obs": []
         }
@@ -1145,7 +1276,8 @@
         {
           "title": "drift check off",
           "red": true,
-          "error": "expected a refusal matching /drift: 0003_catalogue_seed/, but it was accepted",
+          "setupError": false,
+          "error": "expected a refusal matching /drift: 0004_catalogue_seed/, but it was accepted",
           "obs": []
         }
       ]
@@ -1163,7 +1295,8 @@
         {
           "title": "schema fully migrated (the check must not be constant)",
           "red": true,
-          "error": "expected a refusal matching /pending \\[0006_owner_values_and_versions, 0007_grants\\]/, but it was accepted",
+          "setupError": false,
+          "error": "expected a refusal matching /pending \\[0007_owner_values_and_versions, 0008_grants\\]/, but it was accepted",
           "obs": []
         }
       ]

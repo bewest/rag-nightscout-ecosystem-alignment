@@ -1,4 +1,4 @@
--- 0005: integrations as typed records (D22, second round).
+-- 0006: integrations as typed records (D22, second round).
 --
 -- deployment_integration    -- the operator's part of a kind's credential, by
 --                              reference (e.g. a push service's application
@@ -16,7 +16,7 @@ CREATE TABLE deployment_integration (
   operator_secret_ref text CONSTRAINT deployment_integration_ref_format
                       CHECK (operator_secret_ref IS NULL OR cfg_is_secret_ref(operator_secret_ref)),
   -- What the tenant-owner listener may see: whether the operator's part exists,
-  -- never its reference (0007 grants this column, not the reference).
+  -- never its reference (0008 grants this column, not the reference).
   operator_configured boolean GENERATED ALWAYS AS (operator_secret_ref IS NOT NULL) STORED,
   updated_at          timestamptz NOT NULL DEFAULT now(),
   updated_by          text NOT NULL

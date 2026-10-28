@@ -6,8 +6,24 @@ which stays permanent for single-tenant sites (D4), and PostgreSQL, the multiten
 (D3). The facts are in §1 to §3. The recommendation, kept separate, is in §4. Nothing has been
 added to cgm-remote-monitor.*
 
+*Revised the same day. The maintainer asked for the alternative to be measured against the
+same properties as umzug, with the MongoDB side measured for both options. §3 is now a
+side-by-side table of four measured arms:*
+
+- *umzug with a project PostgreSQL adapter;*
+- *node-pg-migrate 9.0.0;*
+- *umzug with a project MongoDB ledger and lease lock;*
+- *migrate-mongo 14.0.7.*
+
 Marks: **[M]** means measured, in [`tools/lab/tenant-config-schema/`](../../../tools/lab/tenant-config-schema/README.md)
-(PostgreSQL 16.15, umzug 3.8.2, Node 22.23.4). **[R]** means read or reasoned.
+(`compare.js`, `compare-results.json`; `harness.js` for the `MIGRATE-*` tests). The setup:
+
+- PostgreSQL 16.15, in container `cfgschema-pg`;
+- MongoDB 8.0.34, **standalone**, in container `cfgschema-mongo` with `nofile` 64000;
+- Node 22.23.4, which is dev's floor (`engines.node` `^22.23.4`);
+- umzug 3.8.3, node-pg-migrate 9.0.0, migrate-mongo 14.0.7, mongodb driver 6.21.0, pg 8.13.1.
+
+**[R]** means read or reasoned.
 
 ## 1. What cgm-remote-monitor does today
 
@@ -74,94 +90,140 @@ missing" code. [R]
 | constraint | source | what it asks of a tool |
 |---|---|---|
 | Self-hosters stay on MongoDB permanently, across a wide range of hosting | D1, D4 | It must run inside the Node process at boot, with no extra binary or runtime. Many self-hosted platforms cannot run a separate one-off command before the app starts. [R] It must work on a standalone MongoDB, so it cannot rely on multi-document transactions, which need a replica set. [R] |
-| A restart mid-migration must not leave a half-migrated database | maintainer brief | PostgreSQL: each migration and its ledger row commit together [M]. MongoDB: no transactions to lean on, so each step must be idempotent and the ledger written after it [R]. |
-| Several hosted processes start at once (D21 roles) | D21 | Exactly one applies each migration; the others wait or refuse to serve. PostgreSQL: advisory lock [M]. MongoDB: a lease document with an expiry, because a dead holder cannot release it [R]. |
-| Rollback | maintainer brief | `down` migrations for development and pre-release. In production, prefer roll-forward plus a backup, because a `down` that drops a table also drops its data (the lab's `0006` down destroys version history). [R] |
+| A restart mid-migration must not leave a half-migrated database | maintainer brief | PostgreSQL: each migration and its ledger row commit together [M]. MongoDB: no transactions to lean on, so each step must be idempotent and the ledger written after it [M] (§3.1, P2). |
+| Several hosted processes start at once (D21 roles) | D21 | Exactly one applies each migration; the others wait or refuse to serve. PostgreSQL: advisory lock [M]. MongoDB: a lease document with an expiry, because a dead holder cannot release it [M] (§3.1, P3 and P3b). |
+| Rollback | maintainer brief | `down` migrations for development and pre-release. In production, prefer roll-forward plus a backup, because a `down` that drops a table also drops its data (the lab's `0007` down destroys version history). [R] |
 | An explicit operator subcommand versus at boot | D21 (`nightscout migrate …` named as a later subcommand) | Hosted: `nightscout migrate up` as a one-shot job before `serve`, with serving roles refusing a stale schema [M]. Single: at boot, under the same lock, as index creation is today [R]. |
 | No dependency added to cgm-remote-monitor without review | D12, maintainer brief | A small dependency, or none, and no second runtime. |
 
-## 3. Candidates
+## 3. Candidates, measured side by side
 
-Only umzug was run. Every other row is read from the tool's documentation or package metadata.
+### 3.1 What was compared, and how
 
-| tool | backends | lock | atomic migration + ledger | down | fits a Node process at boot | notes |
-|---|---|---|---|---|---|---|
-| **umzug** 3.8.2 | any (storage interface). Ships JSON, memory, MongoDB and Sequelize storages | **none built in.** The lab adds a PostgreSQL session advisory lock [M] | **no.** It calls `storage.logMigration` after `up()` returns, as a separate step (`node_modules/umzug/lib/umzug.js:166-172`) [M]. The lab writes the ledger row inside the migration's transaction instead [M] | yes, with `to` | yes, as a library; an optional CLI | one runner and one ledger shape for both backends; the safety pieces are the project's to write |
-| **node-pg-migrate** (8.0.4 Dec 2025; 9.0.0 Jul 2026) | PostgreSQL only | advisory lock built in [R] | one transaction per migration by default [R] | yes [R] | yes, as a library or CLI | does PostgreSQL well; MongoDB would still need a second tool |
-| **migrate-mongo** 14.0.7 | MongoDB only | a lock collection with an optional TTL (`lockCollectionName`, `lockTtl`) [R, readme] | transactions optional, and only where the server supports them [R, readme] | yes [R] | mainly a CLI with a config file | a second tool and a second ledger format beside the PostgreSQL one |
-| **knex** migrations 3.3.0 | SQL databases (PostgreSQL); not MongoDB | a lock table (`knex_migrations_lock`) [R] | a transaction per migration by default [R] | yes [R] | yes | brings a query builder the seam does not use |
-| **Flyway**, **Atlas** | PostgreSQL (and others) | built in [R] | yes [R] | yes, or diff-based [R] | **no**: a JVM or Go binary outside the Node process | suits an operator's deployment pipeline; does not serve self-hosters on MongoDB |
+Each arm runs as a child process through one wrapper (`lib/run-tool.js`), which has the shape a
+`nightscout migrate up|down` subcommand in D21's dispatcher would have.
 
-### 3.1 What the lab measured (umzug with a project-written PostgreSQL storage)
+- **PostgreSQL arms.** Both apply the lab's eight schema migrations. node-pg-migrate gets the
+  same SQL, converted to its one-file `-- Up Migration` / `-- Down Migration` format.
+- **MongoDB arms.** Both apply the same three CommonJS migration files:
+  - an index build (idempotent);
+  - a filtered backfill (idempotent);
+  - a new collection plus a seed document (**not** idempotent: a second run hits `E11000`).
+
+Every measurement carries its own non-vacuity check, and a measurement that fails its check is
+reported invalid. All rows below passed theirs. The checks:
+
+- the kill landed while the migration was running (a `PgSleep` wait in PostgreSQL; a printed
+  mark between two steps in MongoDB);
+- the four concurrent runs overlapped in time;
+- the edited migration had been applied first.
+
+The concurrency rows were measured three times, and the outcome was the same each time.
+
+| property | umzug + project PG adapter | node-pg-migrate 9.0.0 | umzug + project Mongo adapter (ledger + lease) | migrate-mongo 14.0.7 |
+|---|---|---|---|---|
+| **P1** up, down to zero, up again | 8 / 8 / 8; state after down equals the start [M] | 8 / 8 / 8; state after down equals the start [M] | 3 / 3 / 3; state after down equals the start [M] | 3 / 3 / 3, but `down` undoes one migration per call, so the wrapper loops [M] |
+| **P2** runner killed mid-migration | **consistent**: the killed migration neither applied nor recorded. The orphaned server session ran about 5.3 s, then rolled back. Re-run completes. [M] umzug's *default* split (ledger written after `up()`) left the migration **committed but unrecorded** (`MIGRATE-crash-mid` control). [M] | **consistent**: same as the umzug adapter. Re-run completes. `runner()` called without `singleTransaction` ran one transaction per migration, so 0001-0004 stayed applied and recorded. Its type file says that option defaults to `true`. [M] | **applied but unrecorded**: the seed step ran and the migration was not recorded, because a standalone server has no transactions. Re-run as written fails on `E11000` (after waiting about 5 s for the 5 s lease). Re-run with the step written idempotently completes. [M] | **applied but unrecorded**, as for the umzug adapter. The crashed run **left its lock behind**: re-runs were refused ("a lock is in place") for about 62-77 s (`lockTtl` 30 s plus the server's TTL sweep). Then: as written, `E11000`; idempotent, completes. [M] |
+| **P3** four runners started at once, tool's lock on | 4/4 exit ok; one applies all 8, three wait and find nothing pending [M] | default mode `fail`: **1/4 ok**, three exit with "Another migration is already running". Mode `wait`: 4/4 ok, applied once. [M] | 4/4 exit ok; one applies all 3, three wait on the lease [M] | **lock not exclusive**. In 3 of 3 runs, three or four runners passed the lock check and ran the migrations again. The ledger holds 6 or 9 duplicate rows, and 3 runners failed on the seed `E11000`. [M] |
+| **P3** same, lock off | 1/4 ok; 3 fail `duplicate key … pg_type_typname_nsp_index` [M] | 1/4 ok; 3 fail on the same catalogue race or on creating `pgmigrations` [M] | 1/4 ok; the ledger's unique `_id` refuses duplicate records (`E11000`), but the idempotent steps ran up to four times [M] | 1/4 ok; 6 duplicate ledger rows [M] |
+| **P3b** one runner, then three more while it runs (separates "racy" from "does nothing") | lock on: 3/3 wait, then exit ok, applying 0 [M] | `fail`: 0/3, refused. `wait`: 3/3 ok. [M] | lock on: 3/3 wait, then exit ok [M] | lock on: 0/3, refused ("a lock is in place"). The lock works against a runner that is *already* running; it only races at the same start. [M] |
+| **P4** an applied migration file edited | **detected**: the run is refused, naming the file (checksum) [M] | **ignored**: the run succeeds, applies nothing and says nothing [M] | **detected**: the run is refused, naming the file (checksum) [M] | `useFileHash: false`: **ignored**. `useFileHash: true`: **re-run**: the edited migration is applied again and the ledger gains a second row (3 to 4). [M] |
+| **P5** behind a CommonJS `nightscout migrate` dispatcher | `require('umzug')`; a library; `pending()` / `executed()` give `status` [M] | ESM-only package; loads with `require()` through require(esm) on Node 22.23.4, dev's floor; `runner({direction, count, …})`; lock modes `fail` / `wait` / off [M] | as for umzug; the ledger and lease are about 120 lines (`lib/mongo-migrator.js`) [M] | ESM main. `require()` returns a Proxy whose properties are promises, so `import()` is the usable path. `config.set()` works with no config file. `up`/`down`/`status` take an existing `(db, client)`, so the server's own connection can be reused. [M] |
+| what the project must write | ledger, lock, one-transaction-per-migration, checksum (`lib/migrator.js`, about 150 lines) | a checksum check, if drift is to be caught; choose lock mode `wait` if several processes may start it | ledger, lease lock, checksum (`lib/mongo-migrator.js`) | a real lock (or run it from one process only), a drift check, and its own recovery from a stale lock |
+
+Findings that hold for every MongoDB option [M]:
+
+- **A step and its ledger record cannot be made atomic on a standalone server.** Both MongoDB
+  arms left the seed step applied and unrecorded. Only an idempotent step made the re-run
+  safe. Whatever tool is chosen, MongoDB migrations must be written idempotent and resumable.
+- **`createCollection` with identical options on an existing collection succeeded on 8.0.34.**
+  The lab's first non-idempotent step was in fact idempotent, and the first comparison run
+  showed no failure. The step was changed to a seed `insertOne`, which does fail. This is a
+  case of a break that did not break anything, and it was caught by asking why the re-run
+  passed.
+
+### 3.2 Tools not measured
+
+| tool | backends | notes |
+|---|---|---|
+| **knex** migrations 3.3.0 | SQL databases (PostgreSQL); not MongoDB | a lock table (`knex_migrations_lock`) and a transaction per migration by default [R]; brings a query builder the seam does not use |
+| **Flyway**, **Atlas** | PostgreSQL (and others) | a JVM or Go binary outside the Node process [R]. It could suit an operator's pipeline, but it does not serve self-hosters on MongoDB, and it adds a second runtime. |
+
+### 3.3 The earlier umzug-only measurements
+
+These are still in force, in `harness.js` (59 tests, 77 controls):
 
 | test | result | its control |
 |---|---|---|
-| `MIGRATE-up-down-up` | applies `0001`-`0007` (46 schema objects), rolls all back to an empty schema, and re-applies [M] | a `down` that forgets one function leaves 1 object, so red |
-| `MIGRATE-crash-mid` | a runner killed during migration 0004 leaves 0004 neither applied nor recorded; a re-run completes [M] | **umzug's default split** (implicit transaction per file, ledger row afterwards): the server **finished and committed 0004 after the client died** (the orphaned session ran about 5.4 s), the ledger row was never written, and the re-run fails on `relation "deployment_policy" already exists`. Red. |
-| `MIGRATE-crash-after` | a runner killed just after 0005 returns leaves the ledger matching the schema; a re-run completes [M] | default split: 0005 applied but not recorded. Red. |
-| `MIGRATE-concurrent` | four `migrate up` processes started together: all exit 0, and one applies all 7 migrations [M] | lock off: 3 of 4 fail on `duplicate key … pg_type_typname_nsp_index`. Red. |
-| `MIGRATE-drift` | a migration file edited after it was applied stops the next run [M] | drift check off. Red. |
-| `MIGRATE-serve-refuses-stale-schema` | a serving role at start refuses a schema with pending migrations [M] | fully migrated schema: no refusal, so the check is not constant. Red. |
+| `MIGRATE-up-down-up` | applies `0001`-`0008`, rolls all back to an empty schema, and re-applies [M] | a `down` that forgets one function leaves 1 object, so red |
+| `MIGRATE-crash-mid` | the killed migration is neither applied nor recorded; a re-run completes [M] | umzug's default split: the server committed the migration after the client died, and the ledger row was never written. Red. |
+| `MIGRATE-crash-after` | a kill just after a migration returns leaves the ledger matching the schema [M] | default split: applied but not recorded. Red. |
+| `MIGRATE-concurrent` | four processes at once: all exit 0, and one applies every migration [M] | lock off: 3 of 4 fail. Red. |
+| `MIGRATE-drift` | an edited applied file stops the next run [M] | drift check off. Red. |
+| `MIGRATE-serve-refuses-stale-schema` | a serving role refuses a schema with pending migrations [M] | a fully migrated schema is accepted. Red. |
+| `MEMBER-migration-refuses-rows` | `0002` refuses to run while `tenant_members` holds rows [M] | without lifting `FORCE` around its count, the migration role counts zero rows under RLS, and the check passes vacuously. Red. |
 
-The `MIGRATE-crash-mid` control matters for any tool. **Killing the client does not stop the
-server.** If the `COMMIT` is implicit at the end of the statement the server is already running,
-the migration commits without its ledger row. The fix is to send `BEGIN`, the migration, the
-ledger insert and `COMMIT` as separate statements in one transaction, which is what the lab's
-runner does. Setting `client_connection_check_interval` on the migration role would also
-shorten the orphaned session. That was not measured. [R]
+The last row matters for any tool. A data check inside a migration, run by a role subject to
+`FORCE ROW LEVEL SECURITY`, sees nothing unless it binds a tenant or lifts `FORCE`. [M]
 
 ## 4. Recommendation
 
-*This section is a recommendation, not a fact. It is for the maintainer to accept or reject.*
+*This section is a recommendation, not a fact. It is for the maintainer to accept or reject.
+It rests on the measurements in §3.*
 
-**One runner, umzug, with two project-owned storage adapters**, and a `nightscout migrate`
-subcommand in D21's dispatcher.
+**One runner, umzug 3.8.3, with two project-owned storage adapters**, and a
+`nightscout migrate {status|up|down --to}` subcommand in D21's dispatcher. Five reasons:
 
-1. **The runner.** umzug, as a library inside `bin/nightscout.js migrate {status|up|down --to}`.
-   It is one dependency, with one ledger shape and one lock discipline for both backends. Its
-   gaps (lock, atomic ledger, drift) are each about 20 lines in the lab's
-   `lib/migrator.js`. They are measured, and are better owned by the project than hidden in a
-   tool.
-2. **PostgreSQL adapter.**
-   - The ledger is a `schema_migrations` table holding name, checksum and time.
-   - A session advisory lock is held for the run.
-   - Each migration is `BEGIN; <file>; INSERT ledger; COMMIT`, with explicit statements.
-   - Migrations are plain `.up.sql` and `.down.sql` files, like the lab's, so DDL stays
-     reviewable and portable into the seam's `platform.sql` layout.
-   - A **separate migration role** owns the schema. The serving roles own nothing (M7).
-3. **MongoDB adapter.**
-   - The ledger is a `schema_migrations` collection.
-   - The lock is a lease document: an insert on a fixed `_id`, an expiry that the holder
-     renews, and a takeover allowed only after the expiry.
-   - Each step must be idempotent and resumable, because standalone servers have no
-     transactions. The ledger entry is written after the step.
-   - Today's boot-time index creation stays as it is. It is already idempotent and is part of
-     D1's "single unchanged". The ledger is only for changes that rewrite data.
-4. **When migrations run.**
-   - **Hosted (`multi`):** only `nightscout migrate up`, run as a one-shot job before
-     `nightscout serve <roles>`. Every serving role checks at start that the schema matches
-     its release and refuses to serve if it does not (`MIGRATE-serve-refuses-stale-schema`).
-     No serving role migrates.
-   - **Single:** at boot, under the lock, before `ensureIndexes`. This keeps today's
-     zero-step upgrade for self-hosters. `nightscout migrate status` is offered for
-     operators who want to look first.
-5. **Rollback.**
-   - `down` files are kept and tested (up, down, up in CI), for development and pre-release.
-   - In production, a bad migration is fixed by a new forward migration.
-   - A `down` that destroys data needs a flag and an export first, which is the same rule as
-     the autoprune floor.
-6. **How the lab's schema is expressed in it.** As it already is: `0001`-`0007` are umzug
-   migrations, applied and rolled back cleanly (§3.1). [M] Porting to the seam would mean:
-   - replacing `platform-store.js:120-158`'s all-or-nothing `ensureSchema` with a call to the
-     runner;
-   - adding a baseline migration that records `0001` as applied on databases that already
-     have `tenants` and `tenant_members`;
-   - giving `postgres-storage.js`'s emitted tables a migration of their own.
+1. **MongoDB decides it.** Of the two MongoDB arms, only umzug with the project ledger and
+   lease was measured to:
+   - serialise four simultaneous starters (P3);
+   - detect an edited migration (P4);
+   - recover from a crashed runner without about a minute of refused runs (P2).
 
-**The alternative**, if the maintainer prefers tools that bring their own safety:
-node-pg-migrate for PostgreSQL and migrate-mongo for MongoDB. That means two ledgers, two CLIs
-and two lock designs, and the self-hoster's MongoDB path gains a tool built mainly as a CLI.
-Neither was measured here.
+   migrate-mongo's lock raced when the runners started together (3 of 3 runs). It left a
+   stale lock after a crash. With `useFileHash` it re-ran an edited migration instead of
+   refusing it.
+2. **PostgreSQL is a close call.** node-pg-migrate met the restart property out of the box
+   (P2), and its lock is real in both of its modes (P3, P3b). It did not detect drift (P4),
+   and its default lock mode turns simultaneous starters away rather than making them wait.
+   Using it would mean a second tool and a second ledger format beside the MongoDB runner,
+   for a saving of about 150 lines that are already written and measured.
+3. **One shape for both backends.** One ledger shape (name, checksum, time), one lock
+   discipline, and one `status` output, for self-hosters on MongoDB and operators on
+   PostgreSQL alike.
+4. **PostgreSQL adapter.**
+   - The ledger is `schema_migrations`.
+   - A session advisory lock is held, waiting, for the whole run.
+   - Each migration is `BEGIN; <file>; INSERT ledger; COMMIT`, sent as separate statements.
+   - A drift check by checksum.
+   - Plain `.up.sql` and `.down.sql` files.
+   - A **separate migration role** owns the schema (spec M7). A migration that checks data in
+     a `FORCE`-RLS table must lift `FORCE` or bind a tenant (§3.3).
+5. **MongoDB adapter.**
+   - The ledger is `schema_migrations`, with a unique `_id` per migration.
+   - A lease lock with an expiry, renewed while held.
+   - A drift check by checksum.
+   - **Every step idempotent.** This is a review rule for migration authors, because no tool
+     can supply it on a standalone server.
+   - Today's boot-time index creation stays as it is (D1).
+
+**When migrations run:**
+
+- **Hosted:** `nightscout migrate up` as a one-shot job before `nightscout serve <roles>`.
+  Serving roles refuse a stale schema (`MIGRATE-serve-refuses-stale-schema`).
+- **Single:** at boot, under the lock, before `ensureIndexes`, to keep self-hosters' zero-step
+  upgrade.
+
+**Rollback:**
+
+- `down` files are kept and tested (up, down, up in CI).
+- Production fixes roll forward.
+- A data-destroying `down` needs a flag and an export first.
+
+**The alternative**, if the maintainer prefers tools that bring their own safety, is
+node-pg-migrate for PostgreSQL (lock mode `wait`, plus a project checksum check) with **the
+umzug MongoDB adapter** for MongoDB. The measurements do not support migrate-mongo as the
+MongoDB half without project work on its lock, its stale-lock recovery and drift.
 
 ## 5. Open questions
 
@@ -171,7 +233,7 @@ Neither was measured here.
    decides whether a baseline migration is needed or whether the platform schema is young
    enough to recreate (config-surface §I.1, J10).
 3. Is a production `down` ever run, or are `down` files for development only?
-4. Should the MongoDB lease and its expiry be measured against a real replica set and a
-   standalone server before adoption? (Not done here.)
+4. The MongoDB arms were measured on a standalone 8.0.34 server only. Should they be repeated
+   on a replica set, and on dev's oldest supported MongoDB, before adoption?
 5. Should migration files carry a signature or checksum list in the release, so that the drift
    check also catches a tampered image, not only an edited file?

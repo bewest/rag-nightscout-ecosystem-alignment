@@ -1,0 +1,1504 @@
+{
+  "when": "2026-10-28T01:49:07.277Z",
+  "server": {
+    "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+    "mongodb": "8.0.34",
+    "mongoTopology": "standalone",
+    "node": "v22.23.4",
+    "versions": {
+      "umzug": "3.8.3",
+      "node-pg-migrate": "9.0.0",
+      "migrate-mongo": "14.0.7",
+      "mongodb": "6.21.0",
+      "pg": "8.13.1"
+    }
+  },
+  "rows": [
+    {
+      "prop": "P1",
+      "tool": "umzug-pg",
+      "backend": "pg",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 8; down 8; state after down equals the starting state; up again 8",
+      "data": {
+        "before": {
+          "ledger": [],
+          "objects": 0,
+          "policyTable": false
+        },
+        "mid": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        },
+        "after": {
+          "ledger": [],
+          "objects": 0,
+          "policyTable": false
+        },
+        "up1": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "startedAt": 1793152007773,
+          "endedAt": 1793152007992,
+          "raw": "{\"ok\":true,\"done\":[\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\",\"0005_policy\",\"0006_integrations\",\"0007_owner_values_and_versions\",\"0008_grants\"],\"startedAt\":1793152007773,\"endedAt\":1793152007992}"
+        },
+        "down": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "0008_grants",
+            "0007_owner_values_and_versions",
+            "0006_integrations",
+            "0005_policy",
+            "0004_catalogue_seed",
+            "0003_catalogue",
+            "0002_member_identity",
+            "0001_platform_base"
+          ],
+          "startedAt": 1793152008026,
+          "endedAt": 1793152008146,
+          "raw": "{\"ok\":true,\"done\":[\"0008_grants\",\"0007_owner_values_and_versions\",\"0006_integrations\",\"0005_policy\",\"0004_catalogue_seed\",\"0003_catalogue\",\"0002_member_identity\",\"0001_platform_base\"],\"startedAt\":1793152008026,\"endedAt\":1793152008146}"
+        },
+        "up2": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "startedAt": 1793152008175,
+          "endedAt": 1793152008389,
+          "raw": "{\"ok\":true,\"done\":[\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\",\"0005_policy\",\"0006_integrations\",\"0007_owner_values_and_versions\",\"0008_grants\"],\"startedAt\":1793152008175,\"endedAt\":1793152008389}"
+        }
+      }
+    },
+    {
+      "prop": "P2",
+      "tool": "umzug-pg",
+      "backend": "pg",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill (orphaned server session ran ~5.3 s): ledger 4 rows, 0005 table absent -> consistent (applied+recorded, or neither); re-run completes",
+      "data": {
+        "after": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed"
+          ],
+          "objects": 16,
+          "policyTable": false,
+          "orphanMs": 5290
+        },
+        "reruns": [
+          {
+            "what": "re-run",
+            "ok": true,
+            "error": null,
+            "applied": 4
+          }
+        ]
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "umzug-pg",
+      "backend": "pg",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "4/4 exit ok; ledger 8 rows (8 distinct); applied per process [0,0,8,0]",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "umzug-pg",
+      "backend": "pg",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 exit ok; ledger 8 rows (8 distinct); applied per process [0,0,8,0]; errors: duplicate key value violates unique constraint \"pg_type_typname_nsp_index\"",
+      "data": {
+        "results": [
+          {
+            "ok": false,
+            "n": 0,
+            "error": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+          },
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "umzug-pg",
+      "backend": "pg",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "later runners: 3/3 exit ok, applied [0,0,0]; ledger 8 rows",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "umzug-pg",
+      "backend": "pg",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "later runners: 0/3 exit ok, applied [0,0,0]; ledger 8 rows; errors: Migration 0001_platform_base (up) failed: Original error: relation \"tenants\" already exists",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Migration 0001_platform_base (up) failed: Original error: relation \"tenants\" already exists"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Migration 0001_platform_base (up) failed: Original error: relation \"tenants\" already exists"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Migration 0001_platform_base (up) failed: Original error: relation \"tenants\" already exists"
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P4",
+      "tool": "umzug-pg",
+      "backend": "pg",
+      "variant": "",
+      "valid": true,
+      "outcome": "DETECTED: refused (migration drift: 0004_catalogue_seed changed or vanished after being applied)",
+      "data": {
+        "up1": 8,
+        "up2": {
+          "code": 2,
+          "signal": null,
+          "ok": false,
+          "error": "migration drift: 0004_catalogue_seed changed or vanished after being applied",
+          "startedAt": 1793152022557,
+          "endedAt": 1793152022676,
+          "raw": "{\"ok\":false,\"error\":\"migration drift: 0004_catalogue_seed changed or vanished after being applied\",\"startedAt\":1793152022557,\"endedAt\":1793152022676}"
+        }
+      }
+    },
+    {
+      "prop": "P1",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 8; down 8; state after down equals the starting state; up again 8",
+      "data": {
+        "before": {
+          "ledger": [],
+          "objects": 0,
+          "policyTable": false
+        },
+        "mid": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        },
+        "after": {
+          "ledger": [],
+          "objects": 0,
+          "policyTable": false
+        },
+        "up1": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "startedAt": 1793152022760,
+          "endedAt": 1793152022960,
+          "raw": "{\"ok\":true,\"done\":[\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\",\"0005_policy\",\"0006_integrations\",\"0007_owner_values_and_versions\",\"0008_grants\"],\"startedAt\":1793152022760,\"endedAt\":1793152022960}"
+        },
+        "down": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "0008_grants",
+            "0007_owner_values_and_versions",
+            "0006_integrations",
+            "0005_policy",
+            "0004_catalogue_seed",
+            "0003_catalogue",
+            "0002_member_identity",
+            "0001_platform_base"
+          ],
+          "startedAt": 1793152022992,
+          "endedAt": 1793152023102,
+          "raw": "{\"ok\":true,\"done\":[\"0008_grants\",\"0007_owner_values_and_versions\",\"0006_integrations\",\"0005_policy\",\"0004_catalogue_seed\",\"0003_catalogue\",\"0002_member_identity\",\"0001_platform_base\"],\"startedAt\":1793152022992,\"endedAt\":1793152023102}"
+        },
+        "up2": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "startedAt": 1793152023132,
+          "endedAt": 1793152023383,
+          "raw": "{\"ok\":true,\"done\":[\"0001_platform_base\",\"0002_member_identity\",\"0003_catalogue\",\"0004_catalogue_seed\",\"0005_policy\",\"0006_integrations\",\"0007_owner_values_and_versions\",\"0008_grants\"],\"startedAt\":1793152023132,\"endedAt\":1793152023383}"
+        }
+      }
+    },
+    {
+      "prop": "P2",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill (orphaned server session ran ~5.3 s): ledger 4 rows, 0005 table absent -> consistent (applied+recorded, or neither); re-run completes",
+      "data": {
+        "after": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed"
+          ],
+          "objects": 16,
+          "policyTable": false,
+          "orphanMs": 5328
+        },
+        "reruns": [
+          {
+            "what": "re-run",
+            "ok": true,
+            "error": null,
+            "applied": 4
+          }
+        ]
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "1/4 exit ok; ledger 8 rows (8 distinct); applied per process [0,0,8,0]; errors: Another migration is already running. Advisory lock mode is set to 'fail'.",
+      "data": {
+        "results": [
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Another migration is already running. Advisory lock mode is set to 'fail'."
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Another migration is already running. Advisory lock mode is set to 'fail'."
+          },
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Another migration is already running. Advisory lock mode is set to 'fail'."
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "lock mode 'wait'",
+      "valid": true,
+      "outcome": "4/4 exit ok; ledger 8 rows (8 distinct); applied per process [8,0,0,0]",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 exit ok; ledger 8 rows (8 distinct); applied per process [0,8,0,0]; errors: duplicate key value violates unique constraint \"pg_type_typname_nsp_index\" | Unable to ensure migrations table: error: duplicate key value violates unique constraint \"pg_type_typname_nsp_index\"",
+      "data": {
+        "results": [
+          {
+            "ok": false,
+            "n": 0,
+            "error": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+          },
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Unable to ensure migrations table: error: duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "duplicate key value violates unique constraint \"pg_type_typname_nsp_index\""
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "later runners: 0/3 exit ok, applied [0,0,0]; ledger 8 rows; errors: Another migration is already running. Advisory lock mode is set to 'fail'.",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Another migration is already running. Advisory lock mode is set to 'fail'."
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Another migration is already running. Advisory lock mode is set to 'fail'."
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Another migration is already running. Advisory lock mode is set to 'fail'."
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "lock mode 'wait'",
+      "valid": true,
+      "outcome": "later runners: 3/3 exit ok, applied [0,0,0]; ledger 8 rows",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "later runners: 0/3 exit ok, applied [0,0,0]; ledger 8 rows; errors: relation \"tenants\" already exists",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 8,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "relation \"tenants\" already exists"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "relation \"tenants\" already exists"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "relation \"tenants\" already exists"
+          }
+        ],
+        "state": {
+          "ledger": [
+            "0001_platform_base",
+            "0002_member_identity",
+            "0003_catalogue",
+            "0004_catalogue_seed",
+            "0005_policy",
+            "0006_integrations",
+            "0007_owner_values_and_versions",
+            "0008_grants"
+          ],
+          "objects": 47,
+          "policyTable": true
+        }
+      }
+    },
+    {
+      "prop": "P4",
+      "tool": "pgm",
+      "backend": "pg",
+      "variant": "",
+      "valid": true,
+      "outcome": "IGNORED: run succeeds, applies nothing, says nothing",
+      "data": {
+        "up1": 8,
+        "up2": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [],
+          "startedAt": 1793152041379,
+          "endedAt": 1793152041443,
+          "raw": "{\"ok\":true,\"done\":[],\"startedAt\":1793152041379,\"endedAt\":1793152041443}"
+        }
+      }
+    },
+    {
+      "prop": "P1",
+      "tool": "umzug-mongo",
+      "backend": "mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; state after down equals the starting state; up again 3",
+      "data": {
+        "before": {
+          "ledger": [],
+          "entriesIndexes": [
+            "_id_"
+          ],
+          "profileWithUnits": 0,
+          "configVersions": false,
+          "seedDocs": 0,
+          "lockDocs": 0
+        },
+        "mid": {
+          "ledger": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        },
+        "after": {
+          "ledger": [],
+          "entriesIndexes": [
+            "_id_"
+          ],
+          "profileWithUnits": 0,
+          "configVersions": false,
+          "seedDocs": 0,
+          "lockDocs": 0
+        },
+        "up1": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "startedAt": 1793152041558,
+          "endedAt": 1793152041972,
+          "raw": "{\"ok\":true,\"done\":[\"20261027000001-entries-indexes\",\"20261027000002-profile-units-backfill\",\"20261027000003-config-versions-collection\"],\"startedAt\":1793152041558,\"endedAt\":1793152041972}"
+        },
+        "down": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "20261027000003-config-versions-collection",
+            "20261027000002-profile-units-backfill",
+            "20261027000001-entries-indexes"
+          ],
+          "startedAt": 1793152042021,
+          "endedAt": 1793152042173,
+          "raw": "{\"ok\":true,\"done\":[\"20261027000003-config-versions-collection\",\"20261027000002-profile-units-backfill\",\"20261027000001-entries-indexes\"],\"startedAt\":1793152042021,\"endedAt\":1793152042173}"
+        },
+        "up2": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "startedAt": 1793152042203,
+          "endedAt": 1793152042484,
+          "raw": "{\"ok\":true,\"done\":[\"20261027000001-entries-indexes\",\"20261027000002-profile-units-backfill\",\"20261027000003-config-versions-collection\"],\"startedAt\":1793152042203,\"endedAt\":1793152042484}"
+        }
+      }
+    },
+    {
+      "prop": "P2",
+      "tool": "umzug-mongo",
+      "backend": "mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: the seed step APPLIED, migration NOT recorded, lock docs left 1; re-run as written: FAILS: Migration 20261027000003-config-versions-collection (up) failed: Original error: E11000 duplicate key error collection: cmp_3099415_17.config_versions index: _id_ dup key: { _id: \"seed\" } (that run took ~5 s); re-run with the step made idempotent: completes; final ledger 3",
+      "data": {
+        "after": {
+          "ledger": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 1
+        },
+        "reruns": [
+          {
+            "what": "re-run, migration as written",
+            "ok": false,
+            "error": "Migration 20261027000003-config-versions-collection (up) failed: Original error: E11000 duplicate key error collection: cmp_3099415_17.config_versions index: _id_ dup key: { _id: \"seed\" }",
+            "tries": 1,
+            "waitedS": 5,
+            "lastRunS": 5
+          },
+          {
+            "what": "re-run, step guarded to be idempotent",
+            "ok": true,
+            "error": null
+          }
+        ],
+        "fin": {
+          "ledger": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "umzug-mongo",
+      "backend": "mongo",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "4/4 exit ok; ledger 3 rows (3 distinct); applied per process [0,0,3,0]",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "umzug-mongo",
+      "backend": "mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 exit ok; ledger 3 rows (3 distinct); applied per process [0,0,3,0]; errors: E11000 duplicate key error collection: ….schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" }",
+      "data": {
+        "results": [
+          {
+            "ok": false,
+            "n": 0,
+            "error": "E11000 duplicate key error collection: cmp_3099415_19.schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "E11000 duplicate key error collection: cmp_3099415_19.schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" }"
+          },
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "E11000 duplicate key error collection: cmp_3099415_19.schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" }"
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "umzug-mongo",
+      "backend": "mongo",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "later runners: 3/3 exit ok, applied [0,0,0]; ledger 3 rows",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          },
+          {
+            "ok": true,
+            "n": 0,
+            "error": null
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "umzug-mongo",
+      "backend": "mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "later runners: 0/3 exit ok, applied [0,0,0]; ledger 3 rows; errors: E11000 duplicate key error collection: ….schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" ",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "E11000 duplicate key error collection: cmp_3099415_21.schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "E11000 duplicate key error collection: cmp_3099415_21.schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "E11000 duplicate key error collection: cmp_3099415_21.schema_migrations index: _id_ dup key: { _id: \"20261027000001-entries-indexes\" }"
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes",
+            "20261027000002-profile-units-backfill",
+            "20261027000003-config-versions-collection"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P4",
+      "tool": "umzug-mongo",
+      "backend": "mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "DETECTED: refused (migration drift: 20261027000002-profile-units-backfill changed or vanished after being applied)",
+      "data": {
+        "up1": 3,
+        "up2": {
+          "code": 2,
+          "signal": null,
+          "ok": false,
+          "error": "migration drift: 20261027000002-profile-units-backfill changed or vanished after being applied",
+          "startedAt": 1793152058120,
+          "endedAt": 1793152058260,
+          "raw": "{\"ok\":false,\"error\":\"migration drift: 20261027000002-profile-units-backfill changed or vanished after being applied\",\"startedAt\":1793152058120,\"endedAt\":1793152058260}"
+        }
+      }
+    },
+    {
+      "prop": "P1",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "up 3; down 3; state after down equals the starting state; up again 3",
+      "data": {
+        "before": {
+          "ledger": [],
+          "entriesIndexes": [
+            "_id_"
+          ],
+          "profileWithUnits": 0,
+          "configVersions": false,
+          "seedDocs": 0,
+          "lockDocs": 0
+        },
+        "mid": {
+          "ledger": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        },
+        "after": {
+          "ledger": [],
+          "entriesIndexes": [
+            "_id_"
+          ],
+          "profileWithUnits": 0,
+          "configVersions": false,
+          "seedDocs": 0,
+          "lockDocs": 0
+        },
+        "up1": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js"
+          ],
+          "startedAt": 1793152058363,
+          "endedAt": 1793152058732,
+          "raw": "{\"ok\":true,\"done\":[\"20261027000001-entries-indexes.js\",\"20261027000002-profile-units-backfill.js\",\"20261027000003-config-versions-collection.js\"],\"startedAt\":1793152058363,\"endedAt\":1793152058732}"
+        },
+        "down": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "20261027000003-config-versions-collection.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000001-entries-indexes.js"
+          ],
+          "startedAt": 1793152058771,
+          "endedAt": 1793152058895,
+          "raw": "{\"ok\":true,\"done\":[\"20261027000003-config-versions-collection.js\",\"20261027000002-profile-units-backfill.js\",\"20261027000001-entries-indexes.js\"],\"startedAt\":1793152058771,\"endedAt\":1793152058895}"
+        },
+        "up2": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js"
+          ],
+          "startedAt": 1793152058924,
+          "endedAt": 1793152059175,
+          "raw": "{\"ok\":true,\"done\":[\"20261027000001-entries-indexes.js\",\"20261027000002-profile-units-backfill.js\",\"20261027000003-config-versions-collection.js\"],\"startedAt\":1793152058924,\"endedAt\":1793152059175}"
+        }
+      }
+    },
+    {
+      "prop": "P2",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "",
+      "valid": true,
+      "outcome": "after the kill: the seed step APPLIED, migration NOT recorded, lock docs left 1; re-run as written: FAILS: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_24.config_versions index: _id_ dup key: { _id: \"seed\" } (first 15 attempt(s) refused by the stale lock, ~77 s); re-run with the step made idempotent: completes; final ledger 3",
+      "data": {
+        "after": {
+          "ledger": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 1
+        },
+        "reruns": [
+          {
+            "what": "re-run, migration as written",
+            "ok": false,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_24.config_versions index: _id_ dup key: { _id: \"seed\" }",
+            "tries": 16,
+            "waitedS": 77,
+            "lastRunS": 0
+          },
+          {
+            "what": "re-run, step guarded to be idempotent",
+            "ok": true,
+            "error": null
+          }
+        ],
+        "fin": {
+          "ledger": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "1/4 exit ok; ledger 9 rows (3 distinct, 6 DUPLICATE); applied per process [0,0,3,0]; errors: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….config_versions index: _id_ dup ",
+      "data": {
+        "results": [
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_25.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_25.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          },
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_25.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000002-profile-units-backfill.js"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "1/4 exit ok; ledger 9 rows (3 distinct, 6 DUPLICATE); applied per process [0,0,0,3]; errors: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….config_versions index: _id_ dup ",
+      "data": {
+        "results": [
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_26.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_26.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_26.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          },
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "tool lock on (default)",
+      "valid": true,
+      "outcome": "later runners: 0/3 exit ok, applied [0,0,0]; ledger 3 rows; errors: Could not migrate up, a lock is in place.",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up, a lock is in place."
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up, a lock is in place."
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up, a lock is in place."
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P3b",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "lock off",
+      "valid": true,
+      "outcome": "later runners: 0/3 exit ok, applied [0,0,0]; ledger 9 rows (6 DUPLICATE); errors: Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: ….config_versi",
+      "data": {
+        "results": [
+          {
+            "ok": true,
+            "n": 3,
+            "error": null
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_28.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_28.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          },
+          {
+            "ok": false,
+            "n": 0,
+            "error": "Could not migrate up 20261027000003-config-versions-collection.js: E11000 duplicate key error collection: cmp_3099415_28.config_versions index: _id_ dup key: { _id: \"seed\" }"
+          }
+        ],
+        "state": {
+          "ledger": [
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000003-config-versions-collection.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000001-entries-indexes.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000002-profile-units-backfill.js",
+            "20261027000002-profile-units-backfill.js"
+          ],
+          "entriesIndexes": [
+            "_id_",
+            "lab_date",
+            "lab_type_date"
+          ],
+          "profileWithUnits": 2,
+          "configVersions": true,
+          "seedDocs": 1,
+          "lockDocs": 0
+        }
+      }
+    },
+    {
+      "prop": "P4",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "useFileHash false",
+      "valid": true,
+      "outcome": "IGNORED: run succeeds, applies nothing, says nothing",
+      "data": {
+        "up1": 3,
+        "up2": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [],
+          "startedAt": 1793152146390,
+          "endedAt": 1793152146499,
+          "raw": "{\"ok\":true,\"done\":[],\"startedAt\":1793152146390,\"endedAt\":1793152146499}"
+        }
+      }
+    },
+    {
+      "prop": "P4",
+      "tool": "migrate-mongo",
+      "backend": "mongo",
+      "variant": "useFileHash true",
+      "valid": true,
+      "outcome": "RE-RUN: the edited migration was applied again ([\"20261027000002-profile-units-backfill.js\"]); ledger 3 -> 4 rows",
+      "data": {
+        "up1": 3,
+        "up2": {
+          "code": 0,
+          "signal": null,
+          "ok": true,
+          "done": [
+            "20261027000002-profile-units-backfill.js"
+          ],
+          "startedAt": 1793152146974,
+          "endedAt": 1793152147087,
+          "raw": "{\"ok\":true,\"done\":[\"20261027000002-profile-units-backfill.js\"],\"startedAt\":1793152146974,\"endedAt\":1793152147087}"
+        }
+      }
+    }
+  ],
+  "p5": {
+    "umzug": "require() ok; class Umzug; pending()/executed() for status",
+    "pgm": "require() ok (ESM package via require(esm) on Node v22.23.4); runner({direction,count,dryRun})",
+    "mmRequire": "require() returns a Proxy whose properties are promises (await m.up -> function)",
+    "mm": "import() ok; config.set() without a config file; up/down/status(db, client)"
+  }
+}

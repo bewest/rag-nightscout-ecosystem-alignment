@@ -14,22 +14,35 @@ it is read or reasoned, not measured.
 
 The lab has three parts:
 
-- **The schema**, as seven ordered migrations in `migrations/`, each with a `.down.sql`.
+- **The schema**, as eight ordered migrations in `migrations/`, each with a `.down.sql`.
   - `0001` is the seam's `lib/admin/platform.sql` from cgm-remote-monitor `81a1f6ce`,
     byte-identical below a three-line header. It has the same sha256, `b50efaf0…`, as
     `git show 81a1f6ce:lib/admin/platform.sql`.
-  - `0002` to `0007` add the configuration tables without altering `tenants` or
-    `tenant_members`.
+  - `0002` changes `tenant_members` so that a person is identified by identity provider and
+    subject, as text, unique together within a tenant, with no foreign key (maintainer,
+    2026-10-27). It refuses to run while the table holds rows, because nothing records which
+    provider issued them.
+  - `0003` to `0008` add the configuration tables without altering `tenants`. They were
+    `0002` to `0007` in the first run, renumbered before anything shipped.
 - **A runner**, `lib/migrator.js`, which drives the migrations through
-  [umzug](https://github.com/sequelize/umzug) 3.8.2. It adds the three things umzug leaves to
+  [umzug](https://github.com/sequelize/umzug) 3.8.3. It adds the three things umzug leaves to
   its caller: one transaction per migration and its ledger row, an advisory lock, and a
   checksum drift check.
-- **A harness**, `harness.js`, with 57 tests. Each test runs twice on a fresh database cloned
+- **A harness**, `harness.js`, with 59 tests. Each test runs twice on a fresh database cloned
   from a migrated template:
   - the **pass run** must be green;
   - each **control** removes the protection under test, and the same test must then go red.
 
-  A control that stays green is reported as `VACUOUS?`, and the harness exits non-zero.
+  A control that stays green is reported as `VACUOUS?`, and the harness exits non-zero. A
+  control whose *setup* fails is reported as a setup error and never counted red. (Run 3 of
+  this lab found one such control, whose SQL still named a dropped column. Raw tests, which
+  set up inside `run`, are not covered by that guard; their assertions match specific
+  messages instead.)
+- **A tool comparison**, `compare.js`, which measures umzug against node-pg-migrate on
+  PostgreSQL, and umzug (with a project ledger and lease lock, `lib/mongo-migrator.js`)
+  against migrate-mongo on MongoDB, for the same five properties. Results are in
+  `compare-results.json`; the side-by-side table is in the
+  [migration-tooling plan](../../../docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md) §3.
 
 ## Roles, and why the isolation tests are not vacuous
 
@@ -67,15 +80,23 @@ docker run -d --name cfgschema-pg -p 127.0.0.1:5447:5432 \
 cd tools/lab/tenant-config-schema && npm ci
 node harness.js --secrets "$S"                    # about 60 s; writes results.json
 node harness.js --secrets "$S" --only isolation   # one group, or test ids; results.json untouched
+
+# the tool comparison also needs MongoDB (port checked free with ss -ltn)
+(umask 077; openssl rand -hex 24 > "$S/mongo-root-password")
+docker run -d --name cfgschema-mongo --ulimit nofile=64000:64000 -p 127.0.0.1:27747:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=labroot -e MONGO_INITDB_ROOT_PASSWORD="$(cat "$S/mongo-root-password")" mongo:8.0
+node compare.js --secrets "$S"                    # about 2.5 min; writes compare-results.json
 ```
 
 Before every run, the harness asserts that `cfgschema-pg` is running and is published on
-`127.0.0.1:<port>`. It refuses a `--secrets` directory inside the repository.
+`127.0.0.1:<port>`. `compare.js` also asserts that `cfgschema-mongo` is running on
+`127.0.0.1:27747` with the 64000 `nofile` limit. It refuses a `--secrets` directory inside the repository.
 
 ## Results
 
-Run of 2026-10-27, on PostgreSQL 16.15 (`postgres:16`) and Node v22.23.4: **57 tests green,
-72 of 72 controls red.** The full record, including each control's error and the observations,
+Run of 2026-10-27 (second round, after the maintainer's answers on class D values, member
+identity and rollback), on PostgreSQL 16.15 (`postgres:16`), Node v22.23.4 and umzug 3.8.3:
+**59 tests green, 77 of 77 controls red, none through a setup error.** The full record, including each control's error and the observations,
 is in `results.json`. [M]
 
 | id | what it shows | pass run | control (each must go red) |
@@ -89,6 +110,8 @@ is in `results.json`. [M]
 | `ISO-tenant_integration_status` | tenant_integration_status: a role bound to tenant A reads, updates and inserts only A's rows; unbound it reads none | green | red: RLS disabled on the table<br>red: same reads as the container superuser (RLS bypassed) |
 | `ISO-roles` | the roles the tests use are NOSUPERUSER NOBYPASSRLS, own no table, and RLS is active for each on every tenant table (row_security_active) | green | red: include the container superuser among the roles<br>red: NO FORCE on one table: the owning migration role escapes RLS |
 | `ISO-complete` | every table with a tenant_id column has RLS enabled and forced and a policy on app.current_tenant_id (discovered, not listed); only `tenants` is exempt | green | red: a new tenant table without RLS |
+| `MEMBER-identity` | tenant_members names a person by (provider, subject) as text: any provider's subject fits, the pair is unique within a tenant, the same person may join two tenants, and no foreign key names an identity table | green | red: the pair's unique constraint dropped<br>red: the seam's shape (0001 only: subject_id uuid, no provider) |
+| `MEMBER-migration-refuses-rows` | 0002 refuses to run while tenant_members holds rows whose provider nobody recorded, and its row count is not blinded by FORCE RLS | green | red: 0002 without the NO FORCE around its count |
 | `MERGE-layers` | code default, operator default, per-tenant override default, owner value and operator pin each win where D22 says | green | red: merge ignores per-tenant overrides |
 | `MERGE-override-narrows` | an override that narrows tenant B's policy after B's owner set a value: B falls back to the override default and the stale value is reported; A is unaffected | green | red: merge ignores per-tenant overrides |
 | `MERGE-pin-beats-owner` | a per-tenant pin on A overrides A's stored owner value; B keeps its own | green | red: merge applies the pin before the owner value |
@@ -105,7 +128,7 @@ is in `results.json`. [M]
 | `FLOOR-alarms-hidden` | alarm settings hidden until the 7a gate: the owner listener cannot write thresholds or alarm keys, and no alarm key can be made owner-settable | green | red: post-gate GRANT applied<br>red: alarms-hidden CHECK dropped |
 | `FLOOR-webhook-public` | network safety: a webhook url must be https, carry no credentials, and not name a private, loopback, link-local or local-only host | green | red: public-host check replaced by `true` |
 | `FLOOR-connector-driver-hosts` | network safety: a connector endpoint may only name a host its driver defines | green | red: kind's endpoint rule changed from driver to public |
-| `FLOOR-deployment-scope` | a deployment value (API_V3_DATA_WARNINGS) cannot be overridden per tenant or set by an owner, and must be pinned | green | red: catalogue row re-scoped to tenant and owner-settable |
+| `CLASSD-environment` | class D values live in each role's environment (decided 2026-10-27): the database refuses them as deployment or per-tenant policy, and each role reads its own environment | green | red: API_V3_DATA_WARNINGS added to the catalogue<br>red: roles ignore their environment (code defaults only) |
 | `FLOOR-app-process` | process start under multi refuses API_SECRET(_FILE), API3_SECURITY_ENABLE=false, an empty or non-numeric TRUST_PROXY and DEBUG_LOGGING; IMPORT_CONFIG is ignored with a warning | green | red: secret check off<br>red: API3 security check off<br>red: TRUST_PROXY check off<br>red: DEBUG_LOGGING check off |
 | `FLOOR-app-settings-private` | app settings stay private: under multi, reading a settings record by identifier needs api:settings:admin even when API3_SETTINGS_STRICT_READ_ENABLED=false | green | red: multi honours the env value |
 | `POLICY-pinned` | an owner value for a setting the operator has pinned is refused | green | red: owner-value trigger dropped |
@@ -118,7 +141,7 @@ is in `results.json`. [M]
 | `VERSION-unversioned-write-refused` | a write that skips cfg_apply cannot commit (update, insert or delete; values and integrations) | green | red: commit-time version guards dropped |
 | `VERSION-append-only` | versions cannot be edited or deleted, even by the owning migration role | green | red: append-only trigger dropped |
 | `VERSION-rollback-restores` | rollback to v1 writes a new version (kind rollback, rollback_of 1) whose state, and the live state, equal v1: values, thresholds and integrations | green | red: rollback restores values only |
-| `VERSION-rollback-vs-new-pin` | rollback to a version whose value the operator has since pinned is refused whole, naming the setting; nothing changes and no version is written | green | red: owner-value trigger dropped |
+| `VERSION-rollback-vs-new-policy` | Q3 (decided): rollback to a version whose settings the operator has since pinned or narrowed is refused whole, naming EACH blocked setting and the operator rule behind it; nothing changes and no version is written | green | red: checks removed: owner-value trigger dropped and the pre-check made permissive<br>red: rollback reports only the first blocked setting |
 | `VERSION-rollback-needs-fresh-confirmation` | rolling back to a version that had permanent deletion on needs a fresh confirmation; the old one is not carried forward | green | red: needs_confirmation cleared |
 | `VERSION-concurrent-writers` | two owner sessions saving at once get consecutive versions; neither fails | green | red: advisory lock removed from cfg_apply |
 | `SECRETS-schema-scan` | information_schema: no column named like a credential (except *_ref / *_parts), no bytea column, and every *_ref column is CHECKed by cfg_is_secret_ref | green | red: a plaintext password column added<br>red: a bytea material column added<br>red: an unconstrained *_ref column added |
@@ -131,7 +154,7 @@ is in `results.json`. [M]
 | `INTEGRATION-kind-limits` | kinds the operator disabled are refused, and the per-tenant count is held | green | red: integration trigger dropped |
 | `INTEGRATION-settings-schema` | settings are validated against the kind's schema: required, unknown, enum, type, length | green | red: integration trigger dropped |
 | `INTEGRATION-credential-parts` | an owner part needs a reference; a kind with an operator part needs the operator's part configured first; a record's kind is fixed | green | red: integration trigger dropped |
-| `MIGRATE-up-down-up` | umzug applies 0001-0007, rolls all of them back to an empty schema, and applies them again | green | red: 0005's down migration forgets one function |
+| `MIGRATE-up-down-up` | umzug applies 0001-0008, rolls all of them back to an empty schema, and applies them again | green | red: 0006's down migration forgets one function |
 | `MIGRATE-crash-mid` | a migrate process killed while a migration runs: once the server finishes with the orphaned session, the migration is either applied and recorded or neither; a re-run completes | green | red: umzug's default split: migration and ledger row in separate steps |
 | `MIGRATE-crash-after` | a migrate process killed just after a migration returns (before the next starts) leaves the ledger matching the schema; a re-run completes | green | red: umzug's default split: migration and ledger row in separate steps |
 | `MIGRATE-concurrent` | four migrate processes started at once on an empty database: all succeed and each migration is applied once | green | red: advisory lock off |
@@ -154,13 +177,13 @@ is in `results.json`. [M]
 - **umzug's default split loses a migration, even when the kill comes mid-migration**
   (`MIGRATE-crash-mid`, control).
   - With one implicit transaction per file and the ledger row written afterwards, a runner
-    killed during migration 0004 left 0004 **committed**, because the server finished the
+    killed during migration 0005 (then numbered 0004) left it **committed**, because the server finished the
     statement after the client was gone. The ledger row was never written.
   - The orphaned server session ran for about 5.4 s after the kill.
   - In the lab's runner, which sends `COMMIT` and the ledger row in the same transaction, the
     same kill leaves nothing applied, and a re-run completes. [M]
 - **Concurrent starters**: four `migrate up` processes started together on an empty database.
-  - With the advisory lock, one applied all seven migrations and three found nothing pending.
+  - With the advisory lock, one applied every migration and three found nothing pending.
   - Without the lock, 3 of 4 failed with `duplicate key value violates unique constraint
     "pg_type_typname_nsp_index"`. [M]
 - **The commit-time version guard is only as good as `cfg_current_state`** (`VERSION-numbered`,
@@ -169,7 +192,10 @@ is in `results.json`. [M]
 
 ## Compatibility with the seam
 
-- `tenants` and `tenant_members` are untouched. [M] (`0001` is byte-identical to `81a1f6ce`.)
+- `tenants` is untouched, and `0001` is byte-identical to `81a1f6ce`. [M] `tenant_members`
+  is changed by `0002` only (provider column, text subject, the pair unique within a tenant).
+  `MEMBER-identity`'s control runs the same inserts on the seam's shape, which cannot hold
+  them. [M]
 - New tables add `tenant_id` foreign keys to `tenants` with `ON DELETE CASCADE`.
 - The seam's `ensureSchema` (`81a1f6ce:lib/admin/platform-store.js:120-158`) creates the
   platform tables only when none of them exist. It cannot add these tables to an existing
@@ -182,13 +208,15 @@ is in `results.json`. [M]
 
 | path | what |
 |---|---|
-| `migrations/0001-0007.{up,down}.sql` | the schema |
+| `migrations/0001-0008.{up,down}.sql` | the schema |
+| `mongo-migrations/*.js` | three MongoDB migrations used unchanged by both MongoDB arms of the comparison |
 | `bootstrap/roles.sql` | the four roles (run once by a database administrator) |
 | `old-shape/a2-tenant-settings.sql` | config-surface §A.2's `tenant_settings`, extracted verbatim, for the A.3 measurement |
 | `lib/merge.js` | D22's merge, process-level floors, the threshold write boundary |
 | `lib/migrator.js`, `lib/run-migrate.js` | the umzug runner and a child-process wrapper for crash and concurrency tests |
 | `lib/db.js` | connections; the container assertion |
 | `harness.js`, `results.json` | tests and the last full run |
+| `compare.js`, `compare-results.json`, `lib/run-tool.js`, `lib/mongo-migrator.js` | the tool comparison, one child process per run, and the umzug MongoDB adapter |
 
-The container `cfgschema-pg` is left running after a run so that results can be re-checked.
-Stop it by name: `docker rm -f cfgschema-pg`.
+The containers `cfgschema-pg` and `cfgschema-mongo` are left running after a run so that
+results can be re-checked. Stop them by name: `docker rm -f cfgschema-pg cfgschema-mongo`.

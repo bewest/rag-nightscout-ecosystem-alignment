@@ -1,6 +1,6 @@
 'use strict';
 // D22's merge and the application-level floors, as the hosted processes would
-// run them. The database holds the write-time checks (migrations 0002-0006);
+// run them. The database holds the write-time checks (migrations 0003-0007);
 // this module holds what only code can know: the code defaults, the process
 // environment, and the merged (effective) set.
 //
@@ -30,9 +30,28 @@ const CODE_DEFAULTS = {
   ALARM_URGENT_HIGH: true,
   ALARM_HIGH: true,
   ALARM_LOW: true,
-  ALARM_URGENT_LOW: true,
-  API_V3_DATA_WARNINGS: false
+  ALARM_URGENT_LOW: true
 };
+
+// Class D (deployment-level) values live in each role's ENVIRONMENT, never in
+// the database (maintainer, 2026-10-27). Defaults are dev's
+// (lib/server/env.js:121-132); readENVTruthy semantics are simplified here.
+const CLASS_D_DEFAULTS = {
+  TRUST_PROXY: '',
+  DEBUG_LOGGING: false,
+  API_V3_DATA_WARNINGS: false,
+  API_V1_COUNT_LEADING_NUMBER: true,
+  API_V1_COUNT_ZERO_WINDOW: true
+};
+function deploymentValues (env, brk = {}) {
+  const out = {};
+  for (const [k, d] of Object.entries(CLASS_D_DEFAULTS)) {
+    const raw = brk.classDFromCodeDefaults ? undefined : env[k];
+    if (raw === undefined || raw === '') out[k] = d;
+    else out[k] = typeof d === 'boolean' ? TRUTHY.test(raw) : raw;
+  }
+  return out;
+}
 function codeDefault (key) {
   if (key.startsWith('INTEGRATION_MAX:')) return 0;
   if (key.startsWith('INTEGRATION_HOSTS:')) return null;
@@ -189,6 +208,6 @@ function thresholdsForStorage (input, units, brk = {}) {
 }
 
 module.exports = {
-  CODE_DEFAULTS, codeDefault, valueOk, satisfies, accepts, policyFor, effective,
+  CODE_DEFAULTS, CLASS_D_DEFAULTS, deploymentValues, codeDefault, valueOk, satisfies, accepts, policyFor, effective,
   processFloors, settingsReadByIdPermission, thresholdsForStorage, MMOL_TO_MGDL
 };

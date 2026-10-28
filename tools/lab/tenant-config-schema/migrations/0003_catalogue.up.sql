@@ -1,4 +1,4 @@
--- 0002: the catalogues the project ships with the code.
+-- 0003: the catalogues the project ships with the code.
 --
 -- config_setting   -- one row per census setting name that hosted configuration
 --                     may carry at all. A name that is NOT here cannot appear in
@@ -6,13 +6,15 @@
 --                     the "not offered" floors (API_SECRET, TREATMENTS_AUTH,
 --                     IMPORT_CONFIG, TRUST_PROXY, BASE_URL, DEBUG_LOGGING,
 --                     API3_SECURITY_ENABLE, API3_SETTINGS_STRICT_READ_ENABLED)
---                     reach the database.
+--                     reach the database. Class D (deployment-level) names are
+--                     absent too: they are environment variables of the role
+--                     that reads them.
 -- integration_kind -- the driver catalogue: one row per integration kind, with
 --                     the schema its settings must satisfy and the names of the
 --                     credential parts it needs (names only, never values).
 --
 -- Only migrations write these tables. No application role is granted INSERT,
--- UPDATE or DELETE on them (0006), so an operator cannot widen a floor by
+-- UPDATE or DELETE on them (0008), so an operator cannot widen a floor by
 -- editing the catalogue.
 
 -- Value grammar, shared by floors, operator constraints, defaults, pins and
@@ -151,10 +153,8 @@ CREATE TABLE config_setting (
   -- such as INTEGRATION_MAX:webhook.
   key                text PRIMARY KEY
                      CHECK (key ~ '^[A-Z][A-Z0-9_]*(:[a-z][a-z0-9-]*)?$'),
-  -- 'tenant': operator policy (deployment row and per-tenant override) and,
-  --           where owner_settable, an owner value.
-  -- 'deployment': one pinned deployment row only; never per tenant, never owner.
-  scope              text NOT NULL CHECK (scope IN ('tenant', 'deployment')),
+  -- Every row is a TENANT-FACING setting. Deployment-level (class D) values
+  -- live in each role's environment, not here (maintainer, 2026-10-27).
   value_type         text NOT NULL
                      CHECK (value_type IN ('boolean', 'integer', 'enum', 'ordinal', 'role_list', 'host_list')),
   -- enum / role_list: the values the type admits. ordinal: in order, loosest first.
@@ -179,8 +179,6 @@ CREATE TABLE config_setting (
 
   CONSTRAINT config_setting_enum_iff_enumerated
     CHECK ((value_type IN ('enum', 'ordinal', 'role_list')) = (enum_values IS NOT NULL)),
-  CONSTRAINT config_setting_owner_only_tenant_scope
-    CHECK (scope = 'tenant' OR (NOT owner_settable AND default_mode = 'pinned')),
   -- FLOOR (alarm settings hidden until 7a's gate). A post-gate migration drops
   -- this CHECK; until then no alarm setting can be marked owner-settable.
   CONSTRAINT config_setting_alarms_hidden

@@ -1,4 +1,4 @@
--- 0006: owner values (D22 layer 3), the alarm-threshold side-table, and versions.
+-- 0007: owner values (D22 layer 3), the alarm-threshold side-table, and versions.
 --
 -- tenant_setting_value    -- one row per setting the owner has set. Accepted
 --                            only within the governing policy row and the floor.
@@ -30,33 +30,42 @@ CREATE POLICY tenant_setting_value_tenant_isolation ON tenant_setting_value
   USING      (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid)
   WITH CHECK (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid);
 
-CREATE FUNCTION cfg_owner_value_check() RETURNS trigger LANGUAGE plpgsql AS $$
+-- NULL when an owner may store value v for setting k on tenant t now;
+-- otherwise the reason, naming the operator rule behind it. Shared by the
+-- write trigger and by cfg_rollback, which reports every blocked setting at once.
+CREATE FUNCTION cfg_owner_value_error(p_tenant uuid, p_key text, p_value jsonb, p_confirmed boolean)
+RETURNS text LANGUAGE plpgsql STABLE AS $$
 DECLARE s config_setting; pol record;
 BEGIN
-  SELECT * INTO s FROM config_setting WHERE key = NEW.setting_key;
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'policy: % is not a hosted setting', NEW.setting_key USING ERRCODE = '23503';
+  SELECT * INTO s FROM config_setting WHERE key = p_key;
+  IF NOT FOUND THEN RETURN format('policy: %s is not a hosted setting', p_key); END IF;
+  IF NOT s.owner_settable THEN RETURN format('policy: %s is not set by the owner', s.key); END IF;
+  IF NOT cfg_value_ok(s.value_type, s.enum_values, p_value) THEN
+    RETURN format('policy: %s must be a %s', s.key, s.value_type);
   END IF;
-  IF NOT s.owner_settable THEN
-    RAISE EXCEPTION 'policy: % is not set by the owner', s.key USING ERRCODE = '23514';
+  IF NOT cfg_satisfies(s.value_type, s.enum_values, s.floor, p_value) THEN
+    RETURN format('floor: %s = %s breaks the project floor %s', s.key, p_value, s.floor);
   END IF;
-  IF NOT cfg_value_ok(s.value_type, s.enum_values, NEW.value) THEN
-    RAISE EXCEPTION 'policy: % must be a %', s.key, s.value_type USING ERRCODE = '23514';
-  END IF;
-  IF NOT cfg_satisfies(s.value_type, s.enum_values, s.floor, NEW.value) THEN
-    RAISE EXCEPTION 'floor: % = % breaks the project floor', s.key, NEW.value USING ERRCODE = '23514';
-  END IF;
-  SELECT * INTO pol FROM cfg_policy_for(NEW.tenant_id, NEW.setting_key);
+  SELECT * INTO pol FROM cfg_policy_for(p_tenant, p_key);
   IF pol.mode = 'pinned' THEN
-    RAISE EXCEPTION 'policy: % is pinned by the operator (%)', s.key, pol.source USING ERRCODE = '23514';
+    RETURN format('policy: %s is pinned by the operator (%s rule: pinned to %s)', s.key, pol.source, COALESCE(pol.pin_value::text, 'the code default'));
   END IF;
-  IF pol.mode = 'bounded' AND NOT cfg_satisfies(s.value_type, s.enum_values, pol.constraint_spec, NEW.value) THEN
-    RAISE EXCEPTION 'policy: % = % is outside the operator''s constraint % (%)', s.key, NEW.value, pol.constraint_spec, pol.source
-      USING ERRCODE = '23514';
+  IF pol.mode = 'bounded' AND NOT cfg_satisfies(s.value_type, s.enum_values, pol.constraint_spec, p_value) THEN
+    RETURN format('policy: %s = %s is outside the operator''s constraint (%s rule: bounded %s)', s.key, p_value, pol.source, pol.constraint_spec);
   END IF;
-  IF s.needs_confirmation AND (NEW.confirmed_at IS NULL OR NEW.export_offered_at IS NULL) THEN
-    RAISE EXCEPTION 'floor: % deletes data permanently; it needs an explicit confirmation and an export offered first', s.key
-      USING ERRCODE = '23514';
+  IF s.needs_confirmation AND NOT p_confirmed THEN
+    RETURN format('floor: %s deletes data permanently; it needs an explicit confirmation and an export offered first', s.key);
+  END IF;
+  RETURN NULL;
+END $$;
+
+CREATE FUNCTION cfg_owner_value_check() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE err text;
+BEGIN
+  err := cfg_owner_value_error(NEW.tenant_id, NEW.setting_key, NEW.value,
+                               NEW.confirmed_at IS NOT NULL AND NEW.export_offered_at IS NOT NULL);
+  IF err IS NOT NULL THEN
+    RAISE EXCEPTION '%', err USING ERRCODE = CASE WHEN err LIKE '%not a hosted setting' THEN '23503' ELSE '23514' END;
   END IF;
   NEW.updated_at := now();
   RETURN NEW;
@@ -106,12 +115,16 @@ CREATE TABLE tenant_config_version (
   -- no foreign key). 'system' for bootstrap and imports.
   actor_plane   text NOT NULL CHECK (actor_plane IN ('owner', 'operator', 'system')),
   actor_subject text NOT NULL CHECK (length(actor_subject) BETWEEN 1 AND 255),
+  -- the identity provider that issued actor_subject (as tenant_members, 0002);
+  -- required for an owner, absent for system writes
+  actor_provider text CHECK (actor_provider ~ '^[a-z][a-z0-9-]{0,31}$'),
   kind          text NOT NULL CHECK (kind IN ('change', 'rollback', 'bootstrap', 'import')),
   rollback_of   integer,
   reason        text CHECK (length(reason) <= 500),
   -- what: the owner-scope state after this version (cfg_current_state)
   state         jsonb NOT NULL,
   PRIMARY KEY (tenant_id, version),
+  CONSTRAINT tenant_config_version_owner_has_provider CHECK (actor_plane <> 'owner' OR actor_provider IS NOT NULL),
   CONSTRAINT tenant_config_version_rollback_target CHECK ((kind = 'rollback') = (rollback_of IS NOT NULL)),
   CONSTRAINT tenant_config_version_rollback_earlier CHECK (rollback_of IS NULL OR rollback_of < version),
   FOREIGN KEY (tenant_id, rollback_of) REFERENCES tenant_config_version (tenant_id, version)
@@ -217,7 +230,8 @@ END $$;
 -- p_confirmations: {KEY: {"exportOfferedAt": timestamptz}} for keys that need one.
 CREATE FUNCTION cfg_apply(p_tenant uuid, p_changes jsonb, p_actor_plane text, p_actor_subject text,
                           p_reason text DEFAULT NULL, p_kind text DEFAULT 'change',
-                          p_rollback_of integer DEFAULT NULL, p_confirmations jsonb DEFAULT '{}'::jsonb)
+                          p_rollback_of integer DEFAULT NULL, p_confirmations jsonb DEFAULT '{}'::jsonb,
+                          p_actor_provider text DEFAULT NULL)
 RETURNS integer LANGUAGE plpgsql AS $$
 DECLARE k text; v jsonb; th jsonb; it jsonb; next_version integer;
 BEGIN
@@ -274,22 +288,25 @@ BEGIN
 
   SELECT COALESCE(max(version), 0) + 1 INTO next_version
     FROM tenant_config_version WHERE tenant_id = p_tenant;
-  INSERT INTO tenant_config_version (tenant_id, version, actor_plane, actor_subject, kind, rollback_of, reason, state)
-  VALUES (p_tenant, next_version, p_actor_plane, p_actor_subject, p_kind, p_rollback_of, p_reason,
+  INSERT INTO tenant_config_version (tenant_id, version, actor_plane, actor_subject, actor_provider, kind, rollback_of, reason, state)
+  VALUES (p_tenant, next_version, p_actor_plane, p_actor_subject, p_actor_provider, p_kind, p_rollback_of, p_reason,
           cfg_current_state(p_tenant));
   RETURN next_version;
 END $$;
 
 -- Roll back to version p_target: write, as a NEW version, the changes that make
 -- the current state equal p_target's state. Every row passes the same checks a
--- fresh write does, against the CURRENT policy and floors: a value the operator
--- has since pinned or narrowed refuses the whole rollback (lab behaviour; open
--- question in the schema spec). Permanent-deletion settings need a fresh
+-- fresh write does, against the CURRENT policy and floors.
+-- DECIDED (maintainer, 2026-10-27, schema spec Q3): when the operator has since
+-- pinned or narrowed a setting that version used, the rollback is refused WHOLE,
+-- naming each blocked setting and the operator rule behind it. Nothing changes
+-- and no version is written. Permanent-deletion settings need a fresh
 -- confirmation; an old one is not carried forward.
 CREATE FUNCTION cfg_rollback(p_tenant uuid, p_target integer, p_actor_plane text, p_actor_subject text,
-                             p_reason text DEFAULT NULL, p_confirmations jsonb DEFAULT '{}'::jsonb)
+                             p_reason text DEFAULT NULL, p_confirmations jsonb DEFAULT '{}'::jsonb,
+                             p_actor_provider text DEFAULT NULL)
 RETURNS integer LANGUAGE plpgsql AS $$
-DECLARE target jsonb; cur jsonb; vals jsonb; changes jsonb; ups jsonb; dels jsonb;
+DECLARE target jsonb; cur jsonb; vals jsonb; changes jsonb; ups jsonb; dels jsonb; blocked text[];
 BEGIN
   SELECT state INTO target FROM tenant_config_version WHERE tenant_id = p_tenant AND version = p_target;
   IF target IS NULL THEN
@@ -300,6 +317,15 @@ BEGIN
     FROM (SELECT jsonb_object_keys(target -> 'values') AS k
           UNION SELECT jsonb_object_keys(cur -> 'values')) keys
    WHERE (target -> 'values' -> k) IS DISTINCT FROM (cur -> 'values' -> k);
+  -- every blocked setting, not just the first
+  SELECT array_agg(e ORDER BY e) INTO blocked FROM (
+    SELECT cfg_owner_value_error(p_tenant, key, value, p_confirmations ? key) AS e
+      FROM jsonb_each(vals) WHERE value <> 'null'::jsonb) x
+   WHERE e IS NOT NULL;
+  IF blocked IS NOT NULL THEN
+    RAISE EXCEPTION 'rollback to version % refused; % setting(s) blocked: %', p_target, cardinality(blocked),
+      array_to_string(blocked, '; ') USING ERRCODE = '23514';
+  END IF;
   changes := jsonb_build_object('values', vals);
   IF (target -> 'thresholds') IS DISTINCT FROM (cur -> 'thresholds') THEN
     changes := changes || jsonb_build_object('thresholds', target -> 'thresholds');
@@ -311,5 +337,5 @@ BEGIN
     FROM jsonb_array_elements(cur -> 'integrations') c
    WHERE NOT EXISTS (SELECT 1 FROM jsonb_array_elements(target -> 'integrations') t WHERE t ->> 'id' = c ->> 'id');
   changes := changes || jsonb_build_object('integrations', jsonb_build_object('upsert', ups, 'delete', dels));
-  RETURN cfg_apply(p_tenant, changes, p_actor_plane, p_actor_subject, p_reason, 'rollback', p_target, p_confirmations);
+  RETURN cfg_apply(p_tenant, changes, p_actor_plane, p_actor_subject, p_reason, 'rollback', p_target, p_confirmations, p_actor_provider);
 END $$;

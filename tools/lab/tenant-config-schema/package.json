@@ -4,7 +4,10 @@
   "description": "T30-SCHEMA-CONFIG: hosted tenant configuration schema on PostgreSQL 16, with RLS, floors, versions, and umzug-run migrations",
   "license": "MIT",
   "dependencies": {
+    "migrate-mongo": "14.0.7",
+    "mongodb": "6.21.0",
+    "node-pg-migrate": "9.0.0",
     "pg": "8.13.1",
-    "umzug": "3.8.2"
+    "umzug": "3.8.3"
   }
 }

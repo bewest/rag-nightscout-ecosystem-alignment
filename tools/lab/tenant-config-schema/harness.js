@@ -52,14 +52,15 @@ async function refused (promise, re, code) {
 
 function apply (t, role, tenant, changes, extra = {}) {
   return t.lab.as(role, t.db, tenant, (c) => c.query(
-    'SELECT cfg_apply($1, $2::jsonb, $3, $4, $5, $6, $7, $8::jsonb) AS v',
+    'SELECT cfg_apply($1, $2::jsonb, $3, $4, $5, $6, $7, $8::jsonb, $9) AS v',
     [tenant, J(changes), extra.plane || 'owner', extra.subject || `subject-${tenant === A ? 'a' : 'b'}`,
-      extra.reason || null, 'change', null, J(extra.confirm || {})]).then((r) => r.rows[0].v));
+      extra.reason || null, 'change', null, J(extra.confirm || {}),
+      extra.provider || ((extra.plane || 'owner') === 'owner' ? 'lab-idp' : null)]).then((r) => r.rows[0].v));
 }
 function rollback (t, tenant, target, confirm = {}) {
   return t.lab.as('ns_tenant_admin', t.db, tenant, (c) => c.query(
-    'SELECT cfg_rollback($1, $2, $3, $4, $5, $6::jsonb) AS v',
-    [tenant, target, 'owner', 'subject-a', 'lab rollback', J(confirm)]).then((r) => r.rows[0].v));
+    'SELECT cfg_rollback($1, $2, $3, $4, $5, $6::jsonb, $7) AS v',
+    [tenant, target, 'owner', 'subject-a', 'lab rollback', J(confirm), 'lab-idp']).then((r) => r.rows[0].v));
 }
 function op (t, tenant, sql, params) { return t.lab.as('ns_operator', t.db, tenant, (c) => c.query(sql, params)); }
 function owner (t, sql, params) { return t.lab.as('cfg_owner', t.db, null, (c) => c.query(sql, params)); }
@@ -91,8 +92,7 @@ async function seed (t) {
     ['INTEGRATION_MAX:push-relay', 'pinned', null, {}, 2],
     ['INTEGRATION_MAX:webhook', 'pinned', null, {}, 1],
     ['INTEGRATION_MAX:cgm-connector', 'pinned', null, {}, 1],
-    ['INTEGRATION_MAX:app-push', 'pinned', null, {}, 0],
-    ['API_V3_DATA_WARNINGS', 'pinned', null, {}, false]
+    ['INTEGRATION_MAX:app-push', 'pinned', null, {}, 0]
   ];
   await t.lab.as('ns_operator', t.db, null, async (c) => {
     for (const [k, mode, d, cons, pin] of dp) {
@@ -115,7 +115,7 @@ async function seed (t) {
     integrations: { upsert: [{ id: IB1, kind: 'push-relay', settings: { priority: 'high' }, secretRef: REF(2) }] }
   });
   for (const tn of [A, B]) {
-    await t.lab.as('ns_tenant_admin', t.db, tn, (c) => c.query('INSERT INTO tenant_members (id, tenant_id, subject_id) VALUES (gen_random_uuid(), $1, gen_random_uuid())', [tn]));
+    await t.lab.as('ns_tenant_admin', t.db, tn, (c) => c.query("INSERT INTO tenant_members (id, tenant_id, provider, subject_id) VALUES (gen_random_uuid(), $1, 'lab-idp', 'user_' || md5(random()::text))", [tn]));
   }
   await t.lab.as('ns_api', t.db, A, (c) => c.query('INSERT INTO tenant_integration_status (tenant_id, integration_id, last_success_at) VALUES ($1, $2, now())', [A, IA1]));
   await t.lab.as('ns_api', t.db, B, (c) => c.query("INSERT INTO tenant_integration_status (tenant_id, integration_id, last_error_at, last_error) VALUES ($1, $2, now(), 'timeout')", [B, IB1]));
@@ -142,7 +142,7 @@ function patchFunction (file, fname, find, replace) {
 
 // The cfg_apply body with its advisory lock removed (control for V-8).
 function cfgApplyWithoutLock () {
-  const src = fs.readFileSync(path.join(__dirname, 'migrations', '0006_owner_values_and_versions.up.sql'), 'utf8');
+  const src = fs.readFileSync(path.join(__dirname, 'migrations', '0007_owner_values_and_versions.up.sql'), 'utf8');
   const start = src.indexOf('CREATE FUNCTION cfg_apply(');
   const end = src.indexOf('END $$;', start) + 'END $$;'.length;
   const body = src.slice(start, end).replace('CREATE FUNCTION', 'CREATE OR REPLACE FUNCTION');
@@ -154,7 +154,8 @@ function cfgApplyWithoutLock () {
 // A rollback that restores values only (control for V-4 / V-7).
 const ROLLBACK_VALUES_ONLY = `
 CREATE OR REPLACE FUNCTION cfg_rollback(p_tenant uuid, p_target integer, p_actor_plane text, p_actor_subject text,
-                             p_reason text DEFAULT NULL, p_confirmations jsonb DEFAULT '{}'::jsonb)
+                             p_reason text DEFAULT NULL, p_confirmations jsonb DEFAULT '{}'::jsonb,
+                             p_actor_provider text DEFAULT NULL)
 RETURNS integer LANGUAGE plpgsql AS $f$
 DECLARE target jsonb; cur jsonb; vals jsonb;
 BEGIN
@@ -163,7 +164,7 @@ BEGIN
   SELECT COALESCE(jsonb_object_agg(k, COALESCE(target -> 'values' -> k, 'null'::jsonb)), '{}'::jsonb) INTO vals
     FROM (SELECT jsonb_object_keys(target -> 'values') AS k UNION SELECT jsonb_object_keys(cur -> 'values')) keys
    WHERE (target -> 'values' -> k) IS DISTINCT FROM (cur -> 'values' -> k);
-  RETURN cfg_apply(p_tenant, jsonb_build_object('values', vals), p_actor_plane, p_actor_subject, p_reason, 'rollback', p_target, p_confirmations);
+  RETURN cfg_apply(p_tenant, jsonb_build_object('values', vals), p_actor_plane, p_actor_subject, p_reason, 'rollback', p_target, p_confirmations, p_actor_provider);
 END $f$;`;
 
 // ------------------------------------------------------------------ tests
@@ -173,7 +174,7 @@ const T = (x) => tests.push(x);
 
 // ---- isolation, one per tenant-scoped table ------------------------------
 const ISO = [
-  { table: 'tenant_members', writer: 'ns_tenant_admin', insert: 'INSERT INTO tenant_members (id, tenant_id, subject_id) VALUES (gen_random_uuid(), $1, gen_random_uuid())' },
+  { table: 'tenant_members', writer: 'ns_tenant_admin', insert: "INSERT INTO tenant_members (id, tenant_id, provider, subject_id) VALUES (gen_random_uuid(), $1, 'lab-idp', 'user_x')" },
   { table: 'tenant_policy_override', writer: 'ns_operator', insert: "INSERT INTO tenant_policy_override (tenant_id, setting_key, mode, updated_by) VALUES ($1, 'SHOW_SECONDS', 'open', 'op')" },
   { table: 'tenant_setting_value', writer: 'ns_tenant_admin', insert: `INSERT INTO tenant_setting_value (tenant_id, setting_key, value) VALUES ($1, 'DISPLAY_UNITS', '"mmol"')` },
   { table: 'tenant_alarm_thresholds', fixture: 'postgate', writer: 'ns_tenant_admin', insert: "INSERT INTO tenant_alarm_thresholds (tenant_id, bg_low_mgdl, bg_target_bottom_mgdl, bg_target_top_mgdl, bg_high_mgdl, entered_units) VALUES ($1, 60, 80, 180, 250, 'mg/dl')" },
@@ -247,6 +248,56 @@ T({
   controls: [{ title: 'a new tenant table without RLS', ownerSql: 'CREATE TABLE tenant_notes (tenant_id uuid NOT NULL, note text)' }]
 });
 
+// ---- tenant_members: provider + subject (decided 2026-10-27) ---------------
+T({
+  id: 'MEMBER-identity', group: 'isolation', raw: true,
+  title: 'tenant_members names a person by (provider, subject) as text: any provider\'s subject fits, the pair is unique within a tenant, the same person may join two tenants, and no foreign key names an identity table',
+  async run (t) {
+    await t.lab.createDb(t.db);
+    const c = await t.lab.connect('cfg_owner', t.db);
+    try { await mig.migrateUp({ client: c, to: t.upTo || undefined }); } finally { await c.end(); }
+    if (t.ownerSqlAfter) await owner(t, t.ownerSqlAfter);
+    if (t.upTo) {
+      await t.lab.super(t.db, (q) => q.query('GRANT SELECT, INSERT ON tenants TO ns_operator; GRANT SELECT, INSERT ON tenant_members TO ns_tenant_admin'));
+    }
+    await op(t, null, "INSERT INTO tenants (id, slug) VALUES ($1, 'alpha'), ($2, 'bravo')", [A, B]);
+    const add = (tn, provider, subject) => t.lab.as('ns_tenant_admin', t.db, tn, (q) => q.query(
+      'INSERT INTO tenant_members (id, tenant_id, provider, subject_id) VALUES (gen_random_uuid(), $1, $2, $3)', [tn, provider, subject]));
+    await add(A, 'kratos', '6f1c2d3e-0000-4000-8000-00000000abcd');
+    await add(A, 'clerk', 'user_2abcXYZ');
+    await add(A, 'oidc-example', 'opaque|subject:42');
+    await add(A, 'clerk', '6f1c2d3e-0000-4000-8000-00000000abcd');
+    await refused(add(A, 'clerk', 'user_2abcXYZ'), /tenant_members_identity/);
+    await add(B, 'clerk', 'user_2abcXYZ');
+    await refused(add(A, 'Clerk Inc', 'x'), /tenant_members_provider_format/);
+    const fks = await t.lab.super(t.db, (q) => q.query("SELECT conname, confrelid::regclass::text AS ref FROM pg_constraint WHERE conrelid = 'tenant_members'::regclass AND contype = 'f'"));
+    assert(fks.rows.length === 1 && fks.rows[0].ref === 'tenants', `foreign keys: ${J(fks.rows)}`);
+  },
+  controls: [
+    { title: "the pair's unique constraint dropped", ownerSqlAfter: 'ALTER TABLE tenant_members DROP CONSTRAINT tenant_members_identity' },
+    { title: "the seam's shape (0001 only: subject_id uuid, no provider)", upTo: '0001_platform_base' }
+  ]
+});
+
+T({
+  id: 'MEMBER-migration-refuses-rows', group: 'migrate', raw: true,
+  title: "0002 refuses to run while tenant_members holds rows whose provider nobody recorded, and its row count is not blinded by FORCE RLS",
+  async run (t) {
+    await t.lab.createDb(t.db);
+    const dir = copyMigrations(t, t.edit);
+    const c = await t.lab.connect('cfg_owner', t.db);
+    try {
+      await mig.migrateUp({ client: c, dir, to: '0001_platform_base' });
+      await t.lab.as('cfg_owner', t.db, A, (q) => q.query("INSERT INTO tenants (id, slug) VALUES ($1, 'alpha'); INSERT INTO tenant_members (id, tenant_id, subject_id) VALUES (gen_random_uuid(), $1, gen_random_uuid())".replace(/\$1/g, `'${A}'`)));
+      await refused(mig.migrateUp({ client: c, dir }), /tenant_members has 1 rows/);
+    } finally { await c.end(); }
+  },
+  controls: [{ title: "0002 without the NO FORCE around its count", edit: (dir) => {
+    const f = path.join(dir, '0002_member_identity.up.sql');
+    fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace('ALTER TABLE tenant_members NO FORCE ROW LEVEL SECURITY;', '').replace('ALTER TABLE tenant_members FORCE ROW LEVEL SECURITY;\n\nALTER', 'ALTER'));
+  } }]
+});
+
 // ---- merge precedence ---------------------------------------------------
 T({
   id: 'MERGE-layers', group: 'merge',
@@ -259,7 +310,7 @@ T({
     assert(v('DISPLAY_UNITS').value === 'mmol' && v('DISPLAY_UNITS').source === 'operator-default', `DISPLAY_UNITS (A's override) ${J(v('DISPLAY_UNITS'))}`);
     assert(v('SHOW_SECONDS').value === true && v('SHOW_SECONDS').source === 'owner', `SHOW_SECONDS ${J(v('SHOW_SECONDS'))}`);
     assert(J(v('AUTH_DEFAULT_ROLES').value) === '["readable"]' && v('AUTH_DEFAULT_ROLES').source === 'owner', `AUTH_DEFAULT_ROLES ${J(v('AUTH_DEFAULT_ROLES'))}`);
-    assert(v('API_V3_DATA_WARNINGS').value === false && v('API_V3_DATA_WARNINGS').source === 'operator-pin', `API_V3_DATA_WARNINGS ${J(v('API_V3_DATA_WARNINGS'))}`);
+    assert(v('INTEGRATION_MAX:webhook').value === 1 && v('INTEGRATION_MAX:webhook').source === 'operator-pin', `INTEGRATION_MAX:webhook ${J(v('INTEGRATION_MAX:webhook'))}`);
     assert(eff.floorViolations.length === 0, `floor violations ${J(eff.floorViolations)}`);
     const effB = merge.effective(await loadCfg(t, B), t.brk);
     assert(effB.values.DISPLAY_UNITS.value === 'mg/dl', `B got A's override: ${J(effB.values.DISPLAY_UNITS)}`);
@@ -413,7 +464,7 @@ T({
       await refused(apply(t, 'ns_tenant_admin', A, { values: { [k]: 'x' } }), /foreign key|not a hosted/);
     }
   },
-  controls: [{ title: 'TREATMENTS_AUTH added to the catalogue', ownerSql: "INSERT INTO config_setting (key, scope, value_type, enum_values, owner_settable, default_mode) VALUES ('TREATMENTS_AUTH', 'tenant', 'enum', ARRAY['on','off','x'], true, 'open')" }]
+  controls: [{ title: 'TREATMENTS_AUTH added to the catalogue', ownerSql: "INSERT INTO config_setting (key, value_type, enum_values, owner_settable, default_mode) VALUES ('TREATMENTS_AUTH', 'enum', ARRAY['on','off','x'], true, 'open')" }]
 });
 
 T({
@@ -421,7 +472,7 @@ T({
   title: 'no deployment secrets, no secrets as settings: even the migration role cannot put a credential-like name in the catalogue',
   async run (t) {
     for (const k of ['API_SECRET', 'PUSHOVER_API_TOKEN', 'LOOP_APNS_KEY', 'CONNECT_SHARE_PASSWORD', 'MAKER_KEY']) {
-      await refused(owner(t, "INSERT INTO config_setting (key, scope, value_type, owner_settable) VALUES ($1, 'tenant', 'boolean', false)", [k]), /config_setting_no_secret_names/);
+      await refused(owner(t, "INSERT INTO config_setting (key, value_type, owner_settable) VALUES ($1, 'boolean', false)", [k]), /config_setting_no_secret_names/);
     }
   },
   controls: [{ title: 'name CHECK dropped', ownerSql: 'ALTER TABLE config_setting DROP CONSTRAINT config_setting_no_secret_names' }]
@@ -445,7 +496,7 @@ T({
   async run (t) {
     await refused(apply(t, 'ns_tenant_admin', A, { values: { API3_AUTOPRUNE_ENTRIES: 90 } }), /^floor:.*confirmation/);
     await refused(t.lab.as('ns_tenant_admin', t.db, A, (c) => c.query(
-      "SELECT cfg_apply($1, '{\"values\": {\"API3_AUTOPRUNE_ENTRIES\": 90}}', 'owner', 's', NULL, 'change', NULL, '{\"API3_AUTOPRUNE_ENTRIES\": {}}')", [A])), /^floor:/);
+      "SELECT cfg_apply($1, '{\"values\": {\"API3_AUTOPRUNE_ENTRIES\": 90}}', 'owner', 's', NULL, 'change', NULL, '{\"API3_AUTOPRUNE_ENTRIES\": {}}', 'lab-idp')", [A])), /^floor:/);
     await apply(t, 'ns_tenant_admin', A, { values: { API3_AUTOPRUNE_ENTRIES: 90 } }, { confirm: confirmFor('API3_AUTOPRUNE_ENTRIES') });
   },
   controls: [{ title: 'needs_confirmation cleared', ownerSql: "UPDATE config_setting SET needs_confirmation = false WHERE key LIKE 'API3_AUTOPRUNE_%'" }]
@@ -493,15 +544,24 @@ T({
   controls: [{ title: "kind's endpoint rule changed from driver to public", ownerSql: `UPDATE integration_kind SET settings_schema = jsonb_set(settings_schema, '{fields,endpoint,hosts}', '"public"') WHERE kind = 'cgm-connector'` }]
 });
 
+const CLASS_D = ['API_V3_DATA_WARNINGS', 'API_V1_COUNT_LEADING_NUMBER', 'API_V1_COUNT_ZERO_WINDOW', 'TRUST_PROXY', 'DEBUG_LOGGING', 'PORT', 'STORAGE_URI'];
 T({
-  id: 'FLOOR-deployment-scope', group: 'floors-db',
-  title: 'a deployment value (API_V3_DATA_WARNINGS) cannot be overridden per tenant or set by an owner, and must be pinned',
+  id: 'CLASSD-environment', group: 'floors-db',
+  title: "class D values live in each role's environment (decided 2026-10-27): the database refuses them as deployment or per-tenant policy, and each role reads its own environment",
   async run (t) {
-    await refused(op(t, A, "INSERT INTO tenant_policy_override (tenant_id, setting_key, mode, pin_value, updated_by) VALUES ($1, 'API_V3_DATA_WARNINGS', 'pinned', 'true', 'op')", [A]), /deployment value/);
-    await refused(op(t, null, "UPDATE deployment_policy SET mode = 'open', pin_value = NULL WHERE setting_key = 'API_V3_DATA_WARNINGS'"), /must be pinned/);
-    await refused(apply(t, 'ns_tenant_admin', A, { values: { API_V3_DATA_WARNINGS: true } }), /not set by the owner/);
+    for (const k of CLASS_D) {
+      await refused(op(t, null, `INSERT INTO deployment_policy (setting_key, mode, pin_value, updated_by) VALUES ($1, 'pinned', 'true', 'op')`, [k]), /not a hosted setting|foreign key/);
+      await refused(op(t, A, `INSERT INTO tenant_policy_override (tenant_id, setting_key, mode, pin_value, updated_by) VALUES ($1, $2, 'pinned', 'true', 'op')`, [A, k]), /not a hosted setting|foreign key/);
+    }
+    const api = merge.deploymentValues({ TRUST_PROXY: '1', API_V3_DATA_WARNINGS: 'true' }, t.brk);
+    const evaluator = merge.deploymentValues({ TRUST_PROXY: '2' }, t.brk);
+    assert(api.TRUST_PROXY === '1' && api.API_V3_DATA_WARNINGS === true, `api role ${J(api)}`);
+    assert(evaluator.TRUST_PROXY === '2' && evaluator.API_V3_DATA_WARNINGS === false && evaluator.API_V1_COUNT_ZERO_WINDOW === true, `evaluator role ${J(evaluator)}`);
   },
-  controls: [{ title: 'catalogue row re-scoped to tenant and owner-settable', ownerSql: "UPDATE config_setting SET scope = 'tenant', owner_settable = true WHERE key = 'API_V3_DATA_WARNINGS'" }]
+  controls: [
+    { title: 'API_V3_DATA_WARNINGS added to the catalogue', ownerSql: "INSERT INTO config_setting (key, value_type, owner_settable, default_mode) VALUES ('API_V3_DATA_WARNINGS', 'boolean', false, 'pinned')" },
+    { title: 'roles ignore their environment (code defaults only)', brk: { classDFromCodeDefaults: true } }
+  ]
 });
 
 // ---- floors in the application ------------------------------------------
@@ -549,7 +609,7 @@ T({
   async run (t) {
     await op(t, null, "UPDATE deployment_policy SET mode = 'pinned', pin_value = 'false' WHERE setting_key = 'SHOW_SECONDS'");
     await refused(apply(t, 'ns_tenant_admin', B, { values: { SHOW_SECONDS: true } }), /pinned/);
-    await refused(apply(t, 'ns_tenant_admin', B, { values: { API3_AUTOPRUNE_FOOD: 90 } }, { confirm: confirmFor('API3_AUTOPRUNE_FOOD') }), /pinned by the operator \(catalogue\)/);
+    await refused(apply(t, 'ns_tenant_admin', B, { values: { API3_AUTOPRUNE_FOOD: 90 } }, { confirm: confirmFor('API3_AUTOPRUNE_FOOD') }), /pinned by the operator \(catalogue rule/);
   },
   controls: [{ title: 'owner-value trigger dropped', ownerSql: DROP_OWNER_CHECK }]
 });
@@ -568,7 +628,7 @@ T({
 T({
   id: 'POLICY-per-tenant-override', group: 'policy', title: "B's override narrows AUTH_DEFAULT_ROLES to denied: readable is refused for B and accepted for A",
   async run (t) {
-    await refused(apply(t, 'ns_tenant_admin', B, { values: { AUTH_DEFAULT_ROLES: ['readable'] } }), /\(override\)/);
+    await refused(apply(t, 'ns_tenant_admin', B, { values: { AUTH_DEFAULT_ROLES: ['readable'] } }), /\(override rule: bounded/);
     await apply(t, 'ns_tenant_admin', A, { values: { AUTH_DEFAULT_ROLES: ['readable'] } });
   },
   controls: [{ title: 'owner-value trigger dropped', ownerSql: DROP_OWNER_CHECK }]
@@ -598,7 +658,7 @@ T({
     await refused(apply(t, 'ns_tenant_admin', A, { integrations: { upsert: [{ id: IA1, kind: 'webhook', settings: { url: 'https://other.example.test/', events: 'all' }, secretRef: REF(1) }] } }), /allow-list/);
     await apply(t, 'ns_tenant_admin', A, { integrations: { upsert: [{ id: IA1, kind: 'webhook', settings: { url: 'https://hooks.example-receiver.test/v2', events: 'all' }, secretRef: REF(1) }] } });
   },
-  controls: [{ title: 'policy lookup made blind to INTEGRATION_HOSTS keys', ownerSql: patchFunction('0004_policy.up.sql', 'cfg_policy_for', 'BEGIN\n', "BEGIN\n  IF p_key LIKE 'INTEGRATION_HOSTS:%' THEN RETURN; END IF;\n") }]
+  controls: [{ title: 'policy lookup made blind to INTEGRATION_HOSTS keys', ownerSql: patchFunction('0005_policy.up.sql', 'cfg_policy_for', 'BEGIN\n', "BEGIN\n  IF p_key LIKE 'INTEGRATION_HOSTS:%' THEN RETURN; END IF;\n") }]
 });
 
 // ---- versions and rollback -------------------------------------------------
@@ -651,17 +711,25 @@ T({
   controls: [{ title: 'rollback restores values only', ownerSql: ROLLBACK_VALUES_ONLY }]
 });
 T({
-  id: 'VERSION-rollback-vs-new-pin', group: 'versions',
-  title: 'rollback to a version whose value the operator has since pinned is refused whole, naming the setting; nothing changes and no version is written',
+  id: 'VERSION-rollback-vs-new-policy', group: 'versions',
+  title: 'Q3 (decided): rollback to a version whose settings the operator has since pinned or narrowed is refused whole, naming EACH blocked setting and the operator rule behind it; nothing changes and no version is written',
   async run (t) {
-    await apply(t, 'ns_tenant_admin', A, { values: { SHOW_SECONDS: null } });
+    await apply(t, 'ns_tenant_admin', A, { values: { SHOW_SECONDS: null, AUTH_DEFAULT_ROLES: ['denied'] } });
     await op(t, null, "UPDATE deployment_policy SET mode = 'pinned', pin_value = 'false' WHERE setting_key = 'SHOW_SECONDS'");
+    await op(t, A, `INSERT INTO tenant_policy_override (tenant_id, setting_key, mode, default_value, constraint_spec, updated_by)
+                    VALUES ($1, 'AUTH_DEFAULT_ROLES', 'bounded', '["denied"]', '{"allowed": ["denied"]}', 'operator-1')`, [A]);
     const before = await t.lab.as('ns_tenant_admin', t.db, A, (c) => c.query('SELECT max(version) AS v, cfg_current_state($1) AS s FROM tenant_config_version', [A]));
-    await refused(rollback(t, A, 1), /SHOW_SECONDS is pinned/);
+    const msg = await refused(rollback(t, A, 1), /refused; 2 setting\(s\) blocked/);
+    t.observe(msg);
+    assert(/SHOW_SECONDS is pinned by the operator \(deployment rule: pinned to false\)/.test(msg), `SHOW_SECONDS or its rule not named: ${msg}`);
+    assert(/AUTH_DEFAULT_ROLES = \["readable"\] is outside the operator's constraint \(override rule: bounded \{"allowed": \["denied"\]\}\)/.test(msg), `AUTH_DEFAULT_ROLES or its rule not named: ${msg}`);
     const after = await t.lab.as('ns_tenant_admin', t.db, A, (c) => c.query('SELECT max(version) AS v, cfg_current_state($1) AS s FROM tenant_config_version', [A]));
     assert(after.rows[0].v === before.rows[0].v && deepEq(after.rows[0].s, before.rows[0].s), 'partial rollback or version written');
   },
-  controls: [{ title: 'owner-value trigger dropped', ownerSql: DROP_OWNER_CHECK }]
+  controls: [
+    { title: 'checks removed: owner-value trigger dropped and the pre-check made permissive', ownerSql: DROP_OWNER_CHECK + "; CREATE OR REPLACE FUNCTION cfg_owner_value_error(p_tenant uuid, p_key text, p_value jsonb, p_confirmed boolean) RETURNS text LANGUAGE sql STABLE AS $$ SELECT NULL::text $$" },
+    { title: 'rollback reports only the first blocked setting', ownerSql: patchFunction('0007_owner_values_and_versions.up.sql', 'cfg_rollback', 'SELECT array_agg(e ORDER BY e) INTO blocked', 'SELECT (array_agg(e ORDER BY e))[1:1] INTO blocked') }
+  ]
 });
 T({
   id: 'VERSION-rollback-needs-fresh-confirmation', group: 'versions',
@@ -669,7 +737,7 @@ T({
   async run (t) {
     const v2 = await apply(t, 'ns_tenant_admin', A, { values: { API3_AUTOPRUNE_ENTRIES: 90 } }, { confirm: confirmFor('API3_AUTOPRUNE_ENTRIES') });
     await apply(t, 'ns_tenant_admin', A, { values: { API3_AUTOPRUNE_ENTRIES: null } });
-    await refused(rollback(t, A, v2), /^floor:.*confirmation/);
+    await refused(rollback(t, A, v2), /blocked: floor: API3_AUTOPRUNE_ENTRIES deletes data permanently.*confirmation/);
     await rollback(t, A, v2, confirmFor('API3_AUTOPRUNE_ENTRIES'));
   },
   controls: [{ title: 'needs_confirmation cleared', ownerSql: "UPDATE config_setting SET needs_confirmation = false WHERE key LIKE 'API3_AUTOPRUNE_%'" }]
@@ -682,7 +750,7 @@ T({
     const c2 = await t.lab.connect('ns_tenant_admin', t.db);
     try {
       for (const c of [c1, c2]) { await c.query('BEGIN'); await c.query("SELECT set_config('app.current_tenant_id', $1, true)", [A]); }
-      const q = "SELECT cfg_apply($1, $2::jsonb, 'owner', 's') AS v";
+      const q = "SELECT cfg_apply($1, $2::jsonb, 'owner', 's', p_actor_provider => 'lab-idp') AS v";
       const v1 = (await c1.query(q, [A, J({ values: { SHOW_SECONDS: false } })])).rows[0].v;
       const p2 = c2.query(q, [A, J({ values: { DISPLAY_UNITS: 'mg/dl' } })]).then((r) => c2.query('COMMIT').then(() => r.rows[0].v));
       p2.catch(() => {});
@@ -887,26 +955,26 @@ async function publicObjects (t, db) {
 
 T({
   id: 'MIGRATE-up-down-up', group: 'migrate', raw: true,
-  title: 'umzug applies 0001-0007, rolls all of them back to an empty schema, and applies them again',
+  title: 'umzug applies 0001-0008, rolls all of them back to an empty schema, and applies them again',
   async run (t) {
     await t.lab.createDb(t.db);
     const dir = copyMigrations(t, t.edit);
     const c = await t.lab.connect('cfg_owner', t.db);
     try {
       const up1 = await mig.migrateUp({ client: c, dir });
-      assert(up1.length === 7, `up applied ${up1.length}`);
+      assert(up1.length === 8, `up applied ${up1.length}`);
       const objs = await publicObjects(t, t.db);
       const down = await mig.migrateDown({ client: c, dir });
-      assert(down.length === 7, `down reverted ${down.length}`);
+      assert(down.length === 8, `down reverted ${down.length}`);
       const left = await publicObjects(t, t.db);
       assert(left === 0, `${left} objects left after down to 0 (of ${objs})`);
       const up2 = await mig.migrateUp({ client: c, dir });
-      assert(up2.length === 7, `re-up applied ${up2.length}`);
+      assert(up2.length === 8, `re-up applied ${up2.length}`);
       t.observe(`${objs} schema objects created; 0 left after down; re-applied`);
     } finally { await c.end(); }
   },
-  controls: [{ title: "0005's down migration forgets one function", edit: (dir) => {
-    const f = path.join(dir, '0005_integrations.down.sql');
+  controls: [{ title: "0006's down migration forgets one function", edit: (dir) => {
+    const f = path.join(dir, '0006_integrations.down.sql');
     fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace('DROP FUNCTION cfg_https_host(text);', ''));
   } }]
 });
@@ -926,7 +994,7 @@ T({
   async run (t) {
     await t.lab.createDb(t.db);
     const dir = copyMigrations(t, (d) => {
-      const f = path.join(d, '0004_policy.up.sql');
+      const f = path.join(d, '0005_policy.up.sql');
       fs.writeFileSync(f, fs.readFileSync(f, 'utf8') + '\nSELECT pg_sleep(5);\n');
     });
     const pg = pgFor(t, t.db);
@@ -934,7 +1002,7 @@ T({
     const sleeping = async () => (await t.lab.super(t.db, (c) => c.query("SELECT 1 FROM pg_stat_activity WHERE wait_event = 'PgSleep' AND datname = $1", [t.db]))).rowCount > 0;
     let deadline = Date.now() + 15000;
     while (Date.now() < deadline && !(await sleeping())) await new Promise((r) => setTimeout(r, 100));
-    assert(await sleeping(), 'migration 0004 never started');
+    assert(await sleeping(), 'migration 0005 never started');
     const killedAt = Date.now();
     run.proc.kill('SIGKILL');
     const r1 = await run;
@@ -945,7 +1013,7 @@ T({
     const orphanMs = Date.now() - killedAt;
     const st = await ledgerAndSchema(t);
     t.observe(`orphaned server session ran on for about ${orphanMs} ms after the kill; then ledger ${J(st.ledger)}, deployment_policy present: ${st.policyTable}`);
-    assert(st.ledger.includes('0004_policy') === st.policyTable, `0004 applied but not recorded (or the reverse): ${J(st)}`);
+    assert(st.ledger.includes('0005_policy') === st.policyTable, `0005 applied but not recorded (or the reverse): ${J(st)}`);
     const r3 = await child(pg, ['up', '--dir', copyMigrations(t), ...atomicArg(t)]);
     assert(r3.code === 0, `re-run failed: ${r3.out}`);
   },
@@ -959,15 +1027,15 @@ T({
     await t.lab.createDb(t.db);
     const pg = pgFor(t, t.db);
     const dir = copyMigrations(t);
-    const r2 = await child(pg, ['up', '--dir', dir, '--crash-after', '0005_integrations', ...atomicArg(t)]);
+    const r2 = await child(pg, ['up', '--dir', dir, '--crash-after', '0006_integrations', ...atomicArg(t)]);
     assert(r2.signal === 'SIGKILL', `crash-after child ended ${r2.code}/${r2.signal}: ${r2.out}`);
     const st = await ledgerAndSchema(t);
     t.observe(`after the kill: ledger ${J(st.ledger)}, tenant_integration present: ${st.integrationTable}`);
-    assert(st.ledger.includes('0005_integrations') === st.integrationTable, `0005 applied but not recorded: ${J(st)}`);
+    assert(st.ledger.includes('0006_integrations') === st.integrationTable, `0006 applied but not recorded: ${J(st)}`);
     const r3 = await child(pg, ['up', '--dir', dir, ...atomicArg(t)]);
     assert(r3.code === 0, `re-run failed: ${r3.out}`);
     const n = await t.lab.super(t.db, (c) => c.query('SELECT count(*)::int AS n FROM schema_migrations'));
-    assert(n.rows[0].n === 7, `ledger has ${n.rows[0].n}`);
+    assert(n.rows[0].n === 8, `ledger has ${n.rows[0].n}`);
   },
   controls: [{ title: "umzug's default split: migration and ledger row in separate steps", atomic: false }]
 });
@@ -986,9 +1054,9 @@ T({
     const failed = rs.filter((r) => r.code !== 0);
     assert(failed.length === 0, `${failed.length} of 4 failed: ${failed.map((r) => r.out).join(' | ').slice(0, 400)}`);
     const n = await t.lab.super(t.db, (c) => c.query('SELECT count(*)::int AS n FROM schema_migrations'));
-    assert(n.rows[0].n === 7, `ledger has ${n.rows[0].n}`);
+    assert(n.rows[0].n === 8, `ledger has ${n.rows[0].n}`);
     const applied = rs.map((r) => JSON.parse(r.out.split('\n').pop()).done.length);
-    assert(applied.reduce((a, b) => a + b, 0) === 7, `applied counts ${J(applied)}`);
+    assert(applied.reduce((a, b) => a + b, 0) === 8, `applied counts ${J(applied)}`);
     t.observe(`applied per process: ${J(applied)}`);
   },
   controls: [{ title: 'advisory lock off', lock: false }]
@@ -1003,9 +1071,9 @@ T({
     const c = await t.lab.connect('cfg_owner', t.db);
     try {
       await mig.migrateUp({ client: c, dir });
-      const f = path.join(dir, '0003_catalogue_seed.up.sql');
+      const f = path.join(dir, '0004_catalogue_seed.up.sql');
       fs.writeFileSync(f, fs.readFileSync(f, 'utf8') + '\n-- edited after release\n');
-      await refused(mig.migrateUp({ client: c, dir, checkDrift: t.checkDrift }), /drift: 0003_catalogue_seed/);
+      await refused(mig.migrateUp({ client: c, dir, checkDrift: t.checkDrift }), /drift: 0004_catalogue_seed/);
     } finally { await c.end(); }
   },
   controls: [{ title: 'drift check off', checkDrift: false }]
@@ -1018,11 +1086,11 @@ T({
     await t.lab.createDb(t.db);
     const c = await t.lab.connect('cfg_owner', t.db);
     try {
-      await mig.migrateUp({ client: c, to: t.upTo || '0005_integrations' });
-      await refused(mig.assertCurrent(c), /pending \[0006_owner_values_and_versions, 0007_grants\]/);
+      await mig.migrateUp({ client: c, to: t.upTo || '0006_integrations' });
+      await refused(mig.assertCurrent(c), /pending \[0007_owner_values_and_versions, 0008_grants\]/);
     } finally { await c.end(); }
   },
-  controls: [{ title: 'schema fully migrated (the check must not be constant)', upTo: '0007_grants' }]
+  controls: [{ title: 'schema fully migrated (the check must not be constant)', upTo: '0008_grants' }]
 });
 
 // ------------------------------------------------------------------ runner
@@ -1038,10 +1106,11 @@ async function runOne (lab, test, ctl, n) {
   const db = `cfgt_${n}`;
   const obs = [];
   const t = { lab, db, brk: (ctl && ctl.brk) || {}, fixture: test.fixture, scratch: lab.scratch, observe: (o) => obs.push(o) };
-  for (const k of ['reader', 'roles', 'shape', 'atomic', 'lock', 'checkDrift', 'upTo', 'edit']) {
+  for (const k of ['reader', 'roles', 'shape', 'atomic', 'lock', 'checkDrift', 'upTo', 'edit', 'ownerSqlAfter']) {
     if (test.defaults && k in test.defaults) t[k] = test.defaults[k];
     if (ctl && k in ctl) t[k] = ctl[k];
   }
+  let stage = 'setup';
   try {
     if (!test.raw) {
       if (t.shape === 'old') {
@@ -1060,10 +1129,12 @@ async function runOne (lab, test, ctl, n) {
         await seed(t);
       }
     }
+    stage = 'run';
     await test.run(t);
     return { ok: true, obs };
   } catch (e) {
-    return { ok: false, error: (e instanceof Fail ? '' : `${e.code || ''} `) + e.message.split('\n')[0], obs };
+    // A control whose SETUP fails proves nothing: it is reported, never counted red.
+    return { ok: false, setupError: stage === 'setup', error: (stage === 'setup' ? 'SETUP: ' : '') + (e instanceof Fail ? '' : `${e.code || ''} `) + e.message.split('\n')[0], obs };
   } finally {
     await lab.dropDb(db).catch(() => {});
   }
@@ -1088,12 +1159,12 @@ async function runOne (lab, test, ctl, n) {
     const controls = [];
     for (const ctl of test.controls || []) {
       const r = await runOne(lab, test, ctl, n++);
-      controls.push({ title: ctl.title, red: !r.ok, error: r.error || null, obs: r.obs });
+      controls.push({ title: ctl.title, red: !r.ok && !r.setupError, setupError: !!r.setupError, error: r.error || null, obs: r.obs });
     }
     const verdict = pass.ok && controls.length > 0 && controls.every((x) => x.red) ? 'PASS' : (!pass.ok ? 'FAIL' : 'VACUOUS?');
     results.push({ id: test.id, group: test.group, title: test.title, verdict, pass, controls });
     console.log(`${verdict.padEnd(8)} ${test.id}${pass.ok ? '' : '  -- ' + pass.error}`);
-    for (const ctl of controls) console.log(`         control ${ctl.red ? 'red  ' : 'GREEN'} ${ctl.title}${ctl.red ? '  -- ' + ctl.error : ''}`);
+    for (const ctl of controls) console.log(`         control ${ctl.red ? 'red  ' : (ctl.setupError ? 'SETUP' : 'GREEN')} ${ctl.title}${ctl.error ? '  -- ' + ctl.error : ''}`);
   }
   await lab.dropDb(TEMPLATE);
   fs.rmSync(lab.scratch, { recursive: true, force: true });
