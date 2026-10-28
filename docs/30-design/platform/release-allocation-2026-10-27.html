@@ -5931,7 +5931,7 @@ the loudest row's (R3).</p>
 <tr>
 <td>16.0.0</td>
 <td>modernization, the write boundary, one read and write path</td>
-<td>what is on <code>dev</code> <code>ca1652d6</code> (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161, #8865 (decided 2026-10-27 night; <code>single</code> supported, <code>serve api</code> alpha) and any release fix found in the quiet period</td>
+<td>what is on <code>dev</code> <code>ca1652d6</code> (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161, #8865 (decided 2026-10-27 night; <code>single</code> supported, <code>serve</code> reserved for a multitenant Nightscout) and any release fix found in the quiet period</td>
 <td>major (already)</td>
 </tr>
 <tr>
@@ -5949,7 +5949,7 @@ the loudest row's (R3).</p>
 <tr>
 <td>16.3.0 or later</td>
 <td>multi mode, preview</td>
-<td>ST-PG, T30-SCHEMA-CONFIG, TEN-RESOLVE, T30-WIRING behind <code>TENANCY_MODE=multi</code>; TEN-LAB passes with its control; single-tenant unchanged</td>
+<td>ST-PG, T30-SCHEMA-CONFIG, TEN-RESOLVE, T30-WIRING behind <code>nightscout serve</code> (the subcommand selects tenancy, 2026-10-27; formerly <code>TENANCY_MODE=multi</code>); TEN-LAB passes with its control; single-tenant unchanged</td>
 <td>minor for self-hosters</td>
 </tr>
 <tr>
@@ -6087,7 +6087,7 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 </tr>
 <tr>
 <td>Q6</td>
-<td>Does multi mode ship in 16.x minors behind <code>TENANCY_MODE=multi</code>?</td>
+<td>Does multi mode ship in 16.x minors behind <code>TENANCY_MODE=multi</code>? <em>(Since 2026-10-27 the gate is <code>nightscout serve</code>, not a setting.)</em></td>
 <td>(a) yes, labelled preview; (b) wait for 17.0.0</td>
 <td>(a), §4.3</td>
 <td>TEN-LAB's release</td>
@@ -6428,7 +6428,8 @@ release soaks them; and how does that weigh against releasing as soon as the can
   lab cannot reach: a supervisor that sends SIGTERM itself under <code>restart: on-failure</code> (the site used
   to keep running; it now exits 0 and stays down), and tooling that matches PID 1's command line.</li>
 <li><strong>Trade.</strong> A cleaner stop for every Docker site in the major, against one more PR in the merge
-  list; <code>serve api</code> ships labelled alpha.</li>
+  list; <code>serve</code> is reserved for a multitenant Nightscout and refuses every role until one is
+  multitenant (maintainer, 2026-10-27 night).</li>
 </ul>
 <h3 id="b9-multitenant-roles-in-1600-as-alpha">B9. Multitenant roles in 16.0.0 as alpha<a class="headerlink" href="#b9-multitenant-roles-in-1600-as-alpha" title="Permanent link">&para;</a></h3>
 <ul>

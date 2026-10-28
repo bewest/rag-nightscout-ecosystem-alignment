@@ -2390,7 +2390,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>a5058a196</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>e487d1745</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2766,6 +2766,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>MIG-VV</code></td>
+<td>Verify the migration runner choice: umzug's MongoDB adapter on a replica set and</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>SEAM-REFRESH</code></td>
 <td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
 <td><code>blocked</code></td>
@@ -2840,6 +2847,13 @@ Until then, the order below is the order of development, not of release.</p>
 <td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
 <td><code>blocked</code></td>
 <td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>MIG-RUNNER</code></td>
+<td><code>nightscout migrate</code>: one runner (umzug) with the project's PostgreSQL and Mongo</td>
+<td><code>not-started</code></td>
+<td><code>MIG-VV</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>

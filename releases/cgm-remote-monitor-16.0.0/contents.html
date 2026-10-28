@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>0fbf1dc42</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>f59ccc1f3</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3080,10 +3080,10 @@ runtime Docker image.</p>
 <td><code>ST-FILTER-READS</code>, <code>ST-WRITES</code>, <code>PLAT-ENTRY</code>, <code>PLAT-SERVE</code>, <code>HUB-REG-CRM</code></td>
 </tr>
 <tr>
-<td>one executable, the image's start and stop, <code>serve api</code> (alpha) and API v3 standing alone (PLAT-SERVE, PLAT-ENTRY, ST-V3-DECOUPLE)</td>
+<td>one executable, the image's start and stop, the boot split for a multitenant Nightscout (PLAT-SERVE, PLAT-ENTRY, ST-V3-DECOUPLE)</td>
 <td><code>feat/nightscout-serve</code>, <strong>#8865</strong> (base <code>dev</code>; supersedes #8862)</td>
-<td><code>53ba192a</code>: #8862's four commits, <code>serve api</code>, the image <code>CMD nightscout single</code>, SIGTERM/SIGINT shutdown, the API v3 role harness (<code>9f7f84f8</code>), the healthcheck certificate fix (<code>f01d67e6</code>, CodeQL alert 138 fixed) and the "multitenant roles" wording; 0 behind <code>dev</code> <code>db3b9e4e</code></td>
-<td><strong>in the 16.0.0 merge list (maintainer, 2026-10-27)</strong>; open, every check passing, no human review yet. Image start forms: every <code>docker run</code> form that started a server on <code>dev</code> starts the same one; <code>docker stop</code> 10.1 s/137 becomes 0.13 s/0 (<code>tools/lab/image-start-forms</code>)</td>
+<td><code>b01b77c3</code>: #8862's four commits, the image <code>CMD nightscout single</code>, SIGTERM/SIGINT shutdown, the healthcheck certificate fix (<code>f01d67e6</code>, CodeQL alert 138 fixed), boot profiles, the API v3 role harness, and <code>serve</code> reserved for a multitenant Nightscout with the single-tenant api code as <code>scripts/headless-test-server.js</code></td>
+<td><strong>in the 16.0.0 merge list (maintainer, 2026-10-27)</strong>; open, no human review yet. API v3 suites 751/0 under single, 643/0/108 pending under headless; image start forms: every <code>docker run</code> form that started a server on <code>dev</code> starts the same one, <code>docker stop</code> 10.1 s/137 becomes 0.13 s/0 (<code>tools/lab/image-start-forms</code>)</td>
 <td><code>PLAT-SERVE</code></td>
 </tr>
 <tr>
@@ -3342,7 +3342,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ca48f90877265bb1a7d8c22f132f13c507e83444/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ddf766ae871cde919a1485e37cafe79a281614fe/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and
@@ -3464,9 +3464,9 @@ candidate is named.</p>
   <code>docker stop</code> used to ignore it and keep running; it now exits 0 and stays stopped. The image's
   command is <code>nightscout single</code> (the same server as <code>node lib/server/server.js</code>, which still works
   as an explicit command); tooling that matches PID 1's command line sees the new name. <code>nightscout</code>
-  is a new executable with <code>single</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code>, <code>diagnose data</code> and <code>serve</code>;
-  <code>serve api</code> is alpha and is for a multitenant Nightscout, not for a single site; the other roles
-  are not yet available.</p>
+  is a new executable with <code>single</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code> and <code>diagnose data</code>;
+  <code>nightscout serve</code> is reserved for a multitenant Nightscout, which is not built yet, so every
+  role exits 64.</p>
 </li>
 <li>
 <p>The Node floor <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>, and the message the server prints when it refuses

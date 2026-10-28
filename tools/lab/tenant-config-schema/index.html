@@ -3957,7 +3957,7 @@
 
 
 <h1 id="tenant-configuration-schema-lab-t30-schema-config">Tenant configuration schema lab (T30-SCHEMA-CONFIG)<a class="headerlink" href="#tenant-configuration-schema-lab-t30-schema-config" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>99e0e6f76</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>d9c41fd05</code>.</em></p>
 <p><em>Contributor-facing. Built 2026-10-27 to support
 <a href="../../../docs/30-design/tenancy/tenant-config-schema-2026-10-27.html">the tenant configuration schema spec</a>
 (queue <code>T30-SCHEMA-CONFIG</code>) and
@@ -3969,22 +3969,35 @@ it is read or reasoned, not measured.</p>
 <h2 id="what-it-is">What it is<a class="headerlink" href="#what-it-is" title="Permanent link">&para;</a></h2>
 <p>The lab has three parts:</p>
 <ul>
-<li><strong>The schema</strong>, as seven ordered migrations in <code>migrations/</code>, each with a <code>.down.sql</code>.</li>
+<li><strong>The schema</strong>, as eight ordered migrations in <code>migrations/</code>, each with a <code>.down.sql</code>.</li>
 <li><code>0001</code> is the seam's <code>lib/admin/platform.sql</code> from cgm-remote-monitor <code>81a1f6ce</code>,
     byte-identical below a three-line header. It has the same sha256, <code>b50efaf0…</code>, as
     <code>git show 81a1f6ce:lib/admin/platform.sql</code>.</li>
-<li><code>0002</code> to <code>0007</code> add the configuration tables without altering <code>tenants</code> or
-    <code>tenant_members</code>.</li>
+<li><code>0002</code> changes <code>tenant_members</code> so that a person is identified by identity provider and
+    subject, as text, unique together within a tenant, with no foreign key (maintainer,
+    2026-10-27). It refuses to run while the table holds rows, because nothing records which
+    provider issued them.</li>
+<li><code>0003</code> to <code>0008</code> add the configuration tables without altering <code>tenants</code>. They were
+    <code>0002</code> to <code>0007</code> in the first run, renumbered before anything shipped.</li>
 <li><strong>A runner</strong>, <code>lib/migrator.js</code>, which drives the migrations through
-  <a href="https://github.com/sequelize/umzug">umzug</a> 3.8.2. It adds the three things umzug leaves to
+  <a href="https://github.com/sequelize/umzug">umzug</a> 3.8.3. It adds the three things umzug leaves to
   its caller: one transaction per migration and its ledger row, an advisory lock, and a
   checksum drift check.</li>
-<li><strong>A harness</strong>, <code>harness.js</code>, with 57 tests. Each test runs twice on a fresh database cloned
+<li><strong>A harness</strong>, <code>harness.js</code>, with 59 tests. Each test runs twice on a fresh database cloned
   from a migrated template:</li>
 <li>the <strong>pass run</strong> must be green;</li>
 <li>each <strong>control</strong> removes the protection under test, and the same test must then go red.</li>
 </ul>
-<p>A control that stays green is reported as <code>VACUOUS?</code>, and the harness exits non-zero.</p>
+<p>A control that stays green is reported as <code>VACUOUS?</code>, and the harness exits non-zero. A
+  control whose <em>setup</em> fails is reported as a setup error and never counted red. (Run 3 of
+  this lab found one such control, whose SQL still named a dropped column. Raw tests, which
+  set up inside <code>run</code>, are not covered by that guard; their assertions match specific
+  messages instead.)
+- <strong>A tool comparison</strong>, <code>compare.js</code>, which measures umzug against node-pg-migrate on
+  PostgreSQL, and umzug (with a project ledger and lease lock, <code>lib/mongo-migrator.js</code>)
+  against migrate-mongo on MongoDB, for the same five properties. Results are in
+  <code>compare-results.json</code>; the side-by-side table is in the
+  <a href="../../../docs/60-research/tenancy/migration-tooling-plan-2026-10-27.html">migration-tooling plan</a> §3.</p>
 <h2 id="roles-and-why-the-isolation-tests-are-not-vacuous">Roles, and why the isolation tests are not vacuous<a class="headerlink" href="#roles-and-why-the-isolation-tests-are-not-vacuous" title="Permanent link">&para;</a></h2>
 <p><code>bootstrap/roles.sql</code> creates four roles. The harness gives each one a random password per run
 and keeps it in memory only.</p>
@@ -4040,12 +4053,20 @@ this three ways:</p>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">cd</span><span class="w"> </span>tools/lab/tenant-config-schema<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>ci
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>node<span class="w"> </span>harness.js<span class="w"> </span>--secrets<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">"</span><span class="w">                    </span><span class="c1"># about 60 s; writes results.json</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>node<span class="w"> </span>harness.js<span class="w"> </span>--secrets<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">"</span><span class="w"> </span>--only<span class="w"> </span>isolation<span class="w">   </span><span class="c1"># one group, or test ids; results.json untouched</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># the tool comparison also needs MongoDB (port checked free with ss -ltn)</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="o">(</span><span class="nb">umask</span><span class="w"> </span><span class="m">077</span><span class="p">;</span><span class="w"> </span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">24</span><span class="w"> </span>&gt;<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/mongo-root-password"</span><span class="o">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>cfgschema-mongo<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">64000</span>:64000<span class="w"> </span>-p<span class="w"> </span><span class="m">127</span>.0.0.1:27747:27017<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_USERNAME</span><span class="o">=</span>labroot<span class="w"> </span>-e<span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_PASSWORD</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>cat<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">/mongo-root-password"</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span>mongo:8.0
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>node<span class="w"> </span>compare.js<span class="w"> </span>--secrets<span class="w"> </span><span class="s2">"</span><span class="nv">$S</span><span class="s2">"</span><span class="w">                    </span><span class="c1"># about 2.5 min; writes compare-results.json</span>
 </code></pre></div>
 <p>Before every run, the harness asserts that <code>cfgschema-pg</code> is running and is published on
-<code>127.0.0.1:&lt;port&gt;</code>. It refuses a <code>--secrets</code> directory inside the repository.</p>
+<code>127.0.0.1:&lt;port&gt;</code>. <code>compare.js</code> also asserts that <code>cfgschema-mongo</code> is running on
+<code>127.0.0.1:27747</code> with the 64000 <code>nofile</code> limit. It refuses a <code>--secrets</code> directory inside the repository.</p>
 <h2 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h2>
-<p>Run of 2026-10-27, on PostgreSQL 16.15 (<code>postgres:16</code>) and Node v22.23.4: <strong>57 tests green,
-72 of 72 controls red.</strong> The full record, including each control's error and the observations,
+<p>Run of 2026-10-27 (second round, after the maintainer's answers on class D values, member
+identity and rollback), on PostgreSQL 16.15 (<code>postgres:16</code>), Node v22.23.4 and umzug 3.8.3:
+<strong>59 tests green, 77 of 77 controls red, none through a setup error.</strong> The full record, including each control's error and the observations,
 is in <code>results.json</code>. [M]</p>
 <table>
 <thead>
@@ -4110,6 +4131,18 @@ is in <code>results.json</code>. [M]</p>
 <td>every table with a tenant_id column has RLS enabled and forced and a policy on app.current_tenant_id (discovered, not listed); only <code>tenants</code> is exempt</td>
 <td>green</td>
 <td>red: a new tenant table without RLS</td>
+</tr>
+<tr>
+<td><code>MEMBER-identity</code></td>
+<td>tenant_members names a person by (provider, subject) as text: any provider's subject fits, the pair is unique within a tenant, the same person may join two tenants, and no foreign key names an identity table</td>
+<td>green</td>
+<td>red: the pair's unique constraint dropped<br>red: the seam's shape (0001 only: subject_id uuid, no provider)</td>
+</tr>
+<tr>
+<td><code>MEMBER-migration-refuses-rows</code></td>
+<td>0002 refuses to run while tenant_members holds rows whose provider nobody recorded, and its row count is not blinded by FORCE RLS</td>
+<td>green</td>
+<td>red: 0002 without the NO FORCE around its count</td>
 </tr>
 <tr>
 <td><code>MERGE-layers</code></td>
@@ -4208,10 +4241,10 @@ is in <code>results.json</code>. [M]</p>
 <td>red: kind's endpoint rule changed from driver to public</td>
 </tr>
 <tr>
-<td><code>FLOOR-deployment-scope</code></td>
-<td>a deployment value (API_V3_DATA_WARNINGS) cannot be overridden per tenant or set by an owner, and must be pinned</td>
+<td><code>CLASSD-environment</code></td>
+<td>class D values live in each role's environment (decided 2026-10-27): the database refuses them as deployment or per-tenant policy, and each role reads its own environment</td>
 <td>green</td>
-<td>red: catalogue row re-scoped to tenant and owner-settable</td>
+<td>red: API_V3_DATA_WARNINGS added to the catalogue<br>red: roles ignore their environment (code defaults only)</td>
 </tr>
 <tr>
 <td><code>FLOOR-app-process</code></td>
@@ -4286,10 +4319,10 @@ is in <code>results.json</code>. [M]</p>
 <td>red: rollback restores values only</td>
 </tr>
 <tr>
-<td><code>VERSION-rollback-vs-new-pin</code></td>
-<td>rollback to a version whose value the operator has since pinned is refused whole, naming the setting; nothing changes and no version is written</td>
+<td><code>VERSION-rollback-vs-new-policy</code></td>
+<td>Q3 (decided): rollback to a version whose settings the operator has since pinned or narrowed is refused whole, naming EACH blocked setting and the operator rule behind it; nothing changes and no version is written</td>
 <td>green</td>
-<td>red: owner-value trigger dropped</td>
+<td>red: checks removed: owner-value trigger dropped and the pre-check made permissive<br>red: rollback reports only the first blocked setting</td>
 </tr>
 <tr>
 <td><code>VERSION-rollback-needs-fresh-confirmation</code></td>
@@ -4365,9 +4398,9 @@ is in <code>results.json</code>. [M]</p>
 </tr>
 <tr>
 <td><code>MIGRATE-up-down-up</code></td>
-<td>umzug applies 0001-0007, rolls all of them back to an empty schema, and applies them again</td>
+<td>umzug applies 0001-0008, rolls all of them back to an empty schema, and applies them again</td>
 <td>green</td>
-<td>red: 0005's down migration forgets one function</td>
+<td>red: 0006's down migration forgets one function</td>
 </tr>
 <tr>
 <td><code>MIGRATE-crash-mid</code></td>
@@ -4417,13 +4450,13 @@ is in <code>results.json</code>. [M]</p>
 - <strong>umzug's default split loses a migration, even when the kill comes mid-migration</strong>
   (<code>MIGRATE-crash-mid</code>, control).
   - With one implicit transaction per file and the ledger row written afterwards, a runner
-    killed during migration 0004 left 0004 <strong>committed</strong>, because the server finished the
+    killed during migration 0005 (then numbered 0004) left it <strong>committed</strong>, because the server finished the
     statement after the client was gone. The ledger row was never written.
   - The orphaned server session ran for about 5.4 s after the kill.
   - In the lab's runner, which sends <code>COMMIT</code> and the ledger row in the same transaction, the
     same kill leaves nothing applied, and a re-run completes. [M]
 - <strong>Concurrent starters</strong>: four <code>migrate up</code> processes started together on an empty database.
-  - With the advisory lock, one applied all seven migrations and three found nothing pending.
+  - With the advisory lock, one applied every migration and three found nothing pending.
   - Without the lock, 3 of 4 failed with <code>duplicate key value violates unique constraint
     "pg_type_typname_nsp_index"</code>. [M]
 - <strong>The commit-time version guard is only as good as <code>cfg_current_state</code></strong> (<code>VERSION-numbered</code>,
@@ -4431,7 +4464,10 @@ is in <code>results.json</code>. [M]</p>
   compares the state with itself. The test catches this. The guard does not. [M]</p>
 <h2 id="compatibility-with-the-seam">Compatibility with the seam<a class="headerlink" href="#compatibility-with-the-seam" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>tenants</code> and <code>tenant_members</code> are untouched. [M] (<code>0001</code> is byte-identical to <code>81a1f6ce</code>.)</li>
+<li><code>tenants</code> is untouched, and <code>0001</code> is byte-identical to <code>81a1f6ce</code>. [M] <code>tenant_members</code>
+  is changed by <code>0002</code> only (provider column, text subject, the pair unique within a tenant).
+  <code>MEMBER-identity</code>'s control runs the same inserts on the seam's shape, which cannot hold
+  them. [M]</li>
 <li>New tables add <code>tenant_id</code> foreign keys to <code>tenants</code> with <code>ON DELETE CASCADE</code>.</li>
 <li>The seam's <code>ensureSchema</code> (<code>81a1f6ce:lib/admin/platform-store.js:120-158</code>) creates the
   platform tables only when none of them exist. It cannot add these tables to an existing
@@ -4450,8 +4486,12 @@ is in <code>results.json</code>. [M]</p>
 </thead>
 <tbody>
 <tr>
-<td><code>migrations/0001-0007.{up,down}.sql</code></td>
+<td><code>migrations/0001-0008.{up,down}.sql</code></td>
 <td>the schema</td>
+</tr>
+<tr>
+<td><code>mongo-migrations/*.js</code></td>
+<td>three MongoDB migrations used unchanged by both MongoDB arms of the comparison</td>
 </tr>
 <tr>
 <td><code>bootstrap/roles.sql</code></td>
@@ -4477,10 +4517,14 @@ is in <code>results.json</code>. [M]</p>
 <td><code>harness.js</code>, <code>results.json</code></td>
 <td>tests and the last full run</td>
 </tr>
+<tr>
+<td><code>compare.js</code>, <code>compare-results.json</code>, <code>lib/run-tool.js</code>, <code>lib/mongo-migrator.js</code></td>
+<td>the tool comparison, one child process per run, and the umzug MongoDB adapter</td>
+</tr>
 </tbody>
 </table>
-<p>The container <code>cfgschema-pg</code> is left running after a run so that results can be re-checked.
-Stop it by name: <code>docker rm -f cfgschema-pg</code>.</p>
+<p>The containers <code>cfgschema-pg</code> and <code>cfgschema-mongo</code> are left running after a run so that
+results can be re-checked. Stop them by name: <code>docker rm -f cfgschema-pg cfgschema-mongo</code>.</p>
 
 
 

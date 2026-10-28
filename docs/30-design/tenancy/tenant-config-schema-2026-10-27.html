@@ -5116,8 +5116,12 @@
 dev</a> (§3a), and the <a href="tenant-owner-config-surface-2026-09-15.html">configuration-surface
 document</a> (§A, §A.3, §B.3, §C, §E, §F.1). The schema
 runs in <a href="../../../tools/lab/tenant-config-schema/index.html"><code>tools/lab/tenant-config-schema/</code></a>,
-which holds 57 tests and 72 controls. Nothing here decides a question those documents leave
+which holds 59 tests and 77 controls. Nothing here decides a question those documents leave
 open: such questions are listed in §11.</em></p>
+<p><em>Revised the same day after three maintainer answers: class D values live in each role's
+environment; <code>tenant_members</code> names a person by provider and subject; and rollback against a
+changed policy is refused whole (Q3, now decided). The first round's migrations <code>0002</code> to
+<code>0007</code> are now <code>0003</code> to <code>0008</code>.</em></p>
 <p>Marks: <strong>[M]</strong> means measured by the lab, in the run recorded in its <code>results.json</code> (PostgreSQL
 16.15). <strong>[R]</strong> means read or reasoned, not measured. Test ids (<code>ISO-…</code>, <code>FLOOR-…</code>) name the
 lab's tests.</p>
@@ -5140,12 +5144,21 @@ secrets component, and that every change is versioned and can be rolled back.</p
 <li>no table holds secret material.</li>
 </ul>
 <h2 id="2-the-tables-and-why-each-exists">2. The tables, and why each exists<a class="headerlink" href="#2-the-tables-and-why-each-exists" title="Permanent link">&para;</a></h2>
-<p>Two tables already exist on the seam branch (<code>81a1f6ce:lib/admin/platform.sql</code>), and this
-schema leaves both unchanged:</p>
+<p>Two tables already exist on the seam branch (<code>81a1f6ce:lib/admin/platform.sql</code>):</p>
 <ul>
-<li><code>tenants</code> has no RLS, because it is read before a tenant context exists.</li>
-<li><code>tenant_members</code> has RLS.</li>
+<li><code>tenants</code> has no RLS, because it is read before a tenant context exists. This schema leaves
+  it unchanged.</li>
+<li><code>tenant_members</code> has RLS. Migration <code>0002</code> changes it as the maintainer decided on
+  2026-10-27: a person is identified by <strong>identity provider and subject, both text, unique
+  together</strong>, with no foreign key to any identity table of Nightscout's, so a Kratos, Clerk or
+  any OIDC subject fits (D17 as amended).</li>
+<li>The lab makes the pair unique <strong>within a tenant</strong>, as <code>(tenant_id, provider, subject_id)</code>,
+    so that one person can be a member of two tenants.</li>
+<li>The column keeps the seam's name, <code>subject_id</code>, so seam code still reads it.</li>
+<li><code>0002</code> refuses to run while the table holds rows, because nothing records which provider
+    issued them.</li>
 </ul>
+<p><code>MEMBER-identity</code> and <code>MEMBER-migration-refuses-rows</code> cover this, with three controls. [M]</p>
 <p>The lab's migration <code>0001</code> is that file byte for byte. [M]</p>
 <table>
 <thead>
@@ -5173,7 +5186,7 @@ schema leaves both unchanged:</p>
 <td><code>deployment_policy</code></td>
 <td>no</td>
 <td>operator</td>
-<td>D22's one deployment policy: per setting, a default, a mode (<code>open</code>, <code>bounded</code> or <code>pinned</code>), a constraint and a pin.</td>
+<td>D22's one deployment policy of <strong>tenant-facing</strong> settings: per setting, a default, a mode (<code>open</code>, <code>bounded</code> or <code>pinned</code>), a constraint and a pin. Deployment-level (class D) values are not here: they are environment variables of the role that reads them (maintainer, 2026-10-27).</td>
 </tr>
 <tr>
 <td><code>tenant_policy_override</code></td>
@@ -5197,7 +5210,7 @@ schema leaves both unchanged:</p>
 <td><code>tenant_config_version</code></td>
 <td>yes</td>
 <td>tenant-owner listener (insert only)</td>
-<td>One numbered, append-only row per change. It records the plane, the identity provider's subject, the time, the kind (<code>change</code>, <code>rollback</code>, <code>bootstrap</code>, <code>import</code>) and the full owner-scope state after the change.</td>
+<td>One numbered, append-only row per change. It records the plane, the identity provider (required for an owner) and its subject, the time, the kind (<code>change</code>, <code>rollback</code>, <code>bootstrap</code>, <code>import</code>) and the full owner-scope state after the change.</td>
 </tr>
 <tr>
 <td><code>deployment_integration</code></td>
@@ -5235,7 +5248,7 @@ to everything they do:</p>
 <li>The other three own nothing. They map to D7's operator plane, D16's tenant-owner listener,
   and D5/D21's consumer, evaluator and connector roles.</li>
 </ul>
-<p>The grants are in <code>0007_grants.up.sql</code>.</p>
+<p>The grants are in <code>0008_grants.up.sql</code>.</p>
 <p><strong>Measured, and in tension with a claim in the seam's code (§10, M7):</strong> the tables are owned by
 a role that is not the application role. RLS is still active for every application role, with
 <code>row_security_active()</code> true on all seven tenant tables (<code>ISO-roles</code>, <code>ISO-&lt;table&gt;</code>). [M]</p>
@@ -5286,8 +5299,8 @@ differential in CI. [R]</p>
 <h2 id="4-project-floors-the-database-or-the-application">4. Project floors: the database or the application<a class="headerlink" href="#4-project-floors-the-database-or-the-application" title="Permanent link">&para;</a></h2>
 <p>D22 lists five floor groups.</p>
 <blockquote>
-<p><strong>Mismatch noted (§10, M1):</strong> the execution plan's §2.13 still introduces them as "Decided as
-four groups".</p>
+<p>The execution plan's §2.13 now says five as well. It said "four groups" when this document
+was first drafted (M1, fixed on main in <code>2222116ea</code>).</p>
 </blockquote>
 <table>
 <thead>
@@ -5494,16 +5507,21 @@ four groups".</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Class D values (decided 2026-10-27).</strong> Deployment-level values live in each role's
+<strong>environment</strong>. This covers <code>TRUST_PROXY</code>, <code>DEBUG_LOGGING</code>, ports, storage URIs and the
+release-driven compatibility switches. None is in the catalogue, so the database refuses each
+of them as a deployment policy row or a per-tenant override. The lab's
+<code>deploymentValues(env)</code> reads them from the role's own environment, so two roles can differ.
+<code>CLASSD-environment</code> covers both halves. Its two controls add <code>API_V3_DATA_WARNINGS</code> to the
+catalogue, and make the roles ignore their environment. [M]</p>
 <p><strong>The eight names new on dev:</strong></p>
 <ul>
-<li><code>API_V3_DATA_WARNINGS</code> is catalogued as <code>scope = 'deployment'</code>. It can only be a pinned
-  deployment row, never an override or an owner value (<code>FLOOR-deployment-scope</code>). [M]
-  <code>API_V1_COUNT_LEADING_NUMBER</code> and <code>API_V1_COUNT_ZERO_WINDOW</code> would be catalogued the same
-  way. [R]</li>
+<li><code>API_V3_DATA_WARNINGS</code>, <code>API_V1_COUNT_LEADING_NUMBER</code> and <code>API_V1_COUNT_ZERO_WINDOW</code> are
+  class D: environment variables of the role that reads them (<code>CLASSD-environment</code>). [M]</li>
 <li><code>SHOW_SECONDS</code> is open to the owner. [M]</li>
 <li>The two <code>CUSTOMCONNSTR_*</code> spellings are absent. [R]</li>
 </ul>
-<p>The lab's catalogue (<code>0003</code>) covers these rows plus <code>SHOW_SECONDS</code> and <code>DISPLAY_UNITS</code>. It does
+<p>The lab's catalogue (<code>0004</code>) covers these rows plus <code>SHOW_SECONDS</code> and <code>DISPLAY_UNITS</code>. It does
 not cover the remaining class-T names. A release would generate the catalogue from the census
 (J7). [R]</p>
 <h2 id="6-alarm-thresholds-and-the-a3-hazard">6. Alarm thresholds and the §A.3 hazard<a class="headerlink" href="#6-alarm-thresholds-and-the-a3-hazard" title="Permanent link">&para;</a></h2>
@@ -5588,15 +5606,27 @@ version <em>N</em>. It applies them through <code>cfg_apply</code> as a new vers
 <p><strong>Rollback against a policy that has changed since version <em>N</em>.</strong> Every restored row passes
 the same checks as a fresh write, against the <strong>current</strong> policy and floors.</p>
 <ul>
-<li>In the lab, if the operator has since pinned or narrowed a setting that the rollback would
-  restore, the <strong>whole rollback is refused</strong>. The error names the setting, nothing changes,
-  and no version is written (<code>VERSION-rollback-vs-new-pin</code>). [M]</li>
+<li><strong>Decided (maintainer, 2026-10-27; Q3).</strong> An owner's rollback to an earlier version is
+  <strong>refused whole</strong> when the operator has since pinned or narrowed a setting that version
+  used. The error names <strong>each</strong> blocked setting and the operator rule behind it. Nothing
+  changes, and no version is written.</li>
+<li><code>cfg_rollback</code> pre-checks every value it would restore with the same function the write
+    trigger uses (<code>cfg_owner_value_error</code>), and raises one error listing all of them.</li>
+<li>Measured message, with one deployment pin and one per-tenant narrowing:
+    <code>rollback to version 1 refused; 2 setting(s) blocked: policy: AUTH_DEFAULT_ROLES =
+    ["readable"] is outside the operator's constraint (override rule: bounded {"allowed":
+    ["denied"]}); policy: SHOW_SECONDS is pinned by the operator (deployment rule: pinned to
+    false)</code>.</li>
+<li>The test is <code>VERSION-rollback-vs-new-policy</code>. Its two controls remove the checks, and
+    report only the first blocked setting. [M]</li>
+<li>The first round's lab stopped at the first blocked setting. That did not meet the
+    decision, and is fixed.</li>
+<li>Integration records restored by a rollback are still checked one at a time by their
+    trigger, so a blocked integration is reported alone (Q13). [R]</li>
 <li>A rollback to a version with permanent deletion turned on needs a <strong>fresh</strong> confirmation.
   The old confirmation is not part of the version state and is not carried forward
   (<code>VERSION-rollback-needs-fresh-confirmation</code>). [M]</li>
 </ul>
-<p>Refusing the whole rollback was chosen by the lab, not by any decision. The alternatives are
-in §11 (Q3).</p>
 <p><strong>What is versioned.</strong> Owner-scope state is versioned: owner values, thresholds and
 integration records. Integration status is not. Operator policy changes are not versioned
 here, so whether they need history is open (Q5). Saving a new version should invalidate the
@@ -5726,12 +5756,12 @@ That difference follows from D22's keys-stay decision. It is not a judgement on 
 choice. [R]</p>
 <h2 id="10b-mismatches-found-stop-and-report">10b. Mismatches found (stop-and-report)<a class="headerlink" href="#10b-mismatches-found-stop-and-report" title="Permanent link">&para;</a></h2>
 <p>These are inconsistencies between decisions, documents and code. None was resolved by this
-work.</p>
+work. M1, M2, M4 and M5 were settled on 2026-10-27, as each entry says.</p>
 <ul>
-<li><strong>M1.</strong> The execution plan's §2.13 lists five floor groups, the fifth added on 2026-10-27,
-  but introduces them as "Decided as four groups". The decision row D22 does not count them.
-  [R]</li>
-<li><strong>M2.</strong> D17 as amended makes the identity provider interchangeable and
+<li><strong>M1.</strong> <em>(Fixed on main in <code>2222116ea</code>.)</em> The execution plan's §2.13 listed five floor
+  groups but introduced them as "Decided as four groups". [R]</li>
+<li><strong>M2.</strong> <em>(Settled 2026-10-27: provider and subject, both text, unique together, no foreign
+  key. Migration <code>0002</code>.)</em> D17 as amended makes the identity provider interchangeable and
   <code>tenant_members.subject_id</code> the provider's subject, with no foreign key. Two places do not
   fit that:</li>
 <li>On the seam (<code>81a1f6ce</code>), the column is <code>uuid NOT NULL</code>. A provider whose subjects are not
@@ -5739,23 +5769,26 @@ work.</p>
 <li>On <code>seam/t30-schema-cred</code> (<code>65ce54b9</code>), the column became <code>text</code> <strong>with</strong> a composite
     foreign key to <code>tenant_subject</code>, against "no foreign key".</li>
 </ul>
-<p>This schema leaves <code>tenant_members</code> unchanged and records actors as text with no foreign key
-  (<code>tenant_config_version.actor_subject</code>). [R]
+<p>The first round left <code>tenant_members</code> unchanged. [R]
 - <strong>M3.</strong> <code>tenant_secret</code> stores <code>material bytea</code> in the platform schema. It is drafted in
   config-surface §A.2 and §C.5 (J4) and built on <code>65ce54b9</code>. D22's later decisions say keys
   never leave the secrets component. They do not say where the built-in signer keeps its
   encrypted keys. This schema holds references only, and <code>SECRETS-schema-scan</code> forbids <code>bytea</code>
   in it. If the built-in signer's store is to live in the same schema, that check needs a
   defined scope. [R]
-- <strong>M4.</strong> Census §3a row 5 says <code>TRUST_PROXY</code> is "never a tenant row", and row 12 gives
+- <strong>M4.</strong> <em>(Settled 2026-10-27: class D values live in the environment, so neither is a
+  policy row.)</em> Census §3a row 5 says <code>TRUST_PROXY</code> is "never a tenant row", and row 12 gives
   <code>DEBUG_LOGGING</code> no policy. The call-path lab's <code>lib/policy.js</code> models both as per-tenant
   pinned policy rows. That lab is evidence for the call path, not for the setting model, but
   the two disagree. [R]
-- <strong>M5.</strong> Config-surface §B.3 says class D settings are read from <code>process.env</code> under <code>multi</code>,
+- <strong>M5.</strong> <em>(Settled 2026-10-27: each role's environment; <code>deployment_policy</code> holds only
+  tenant-facing defaults, modes and constraints; D15 reads as "no per-tenant configuration from
+  the environment". The <code>scope</code> column and the deployment-scope row were removed.)</em>
+  Config-surface §B.3 says class D settings are read from <code>process.env</code> under <code>multi</code>,
   "as today". D22 and census §3a describe release-driven D names as "deployment values the
   operator pins", which is a policy row. D15 says env-sourced configuration must not reach the
-  multi path. Where D values live under <code>multi</code> is therefore not stated consistently. This
-  schema supports pinned deployment rows (<code>scope = 'deployment'</code>), and the process-level floors
+  multi path. Where D values live under <code>multi</code> is therefore not stated consistently. The
+  first round supported pinned deployment rows (<code>scope = 'deployment'</code>), and the process-level floors
   read the environment. [R]
 - <strong>M6.</strong> Config-surface §A.3 cites <code>settings.js:290-296</code> and a <code>bgHigh &lt; 50</code> heuristic.
   Dev at <code>db3b9e4e</code> converts each threshold on its own when it is below 30
@@ -5772,8 +5805,9 @@ work.</p>
   side-table "where constraints matter". At <code>42275c812</code> it holds a do-not-disturb schedule;
   Nocturne's thresholds are JSON parameters on alert rules (§10a). [R]</p>
 <h2 id="11-open-questions-for-the-maintainer">11. Open questions for the maintainer<a class="headerlink" href="#11-open-questions-for-the-maintainer" title="Permanent link">&para;</a></h2>
-<p>The lab made a working choice for each question below, so that it could run. None of these
-choices is a decision.</p>
+<p>The lab made a working choice for each question below, so that it could run. Rows marked
+<strong>decided</strong> were answered by the maintainer on 2026-10-27. For the others, the working choice
+is not a decision.</p>
 <table>
 <thead>
 <tr>
@@ -5796,7 +5830,7 @@ choices is a decision.</p>
 <tr>
 <td>Q3</td>
 <td>Rollback against a changed policy: refuse it whole, apply it partly with a report, or restore values the merge then ignores?</td>
-<td>refuse whole, naming the setting</td>
+<td><strong>decided:</strong> refused whole, naming each blocked setting and the operator rule behind it (§7)</td>
 </tr>
 <tr>
 <td>Q4</td>
@@ -5831,12 +5865,12 @@ choices is a decision.</p>
 <tr>
 <td>Q10</td>
 <td><code>tenant_members.subject_id</code> type and foreign key under D17 as amended (M2; J1, I.2)</td>
-<td>unchanged from <code>81a1f6ce</code></td>
+<td><strong>decided:</strong> provider and subject, both text, unique together, no foreign key (<code>0002</code>)</td>
 </tr>
 <tr>
 <td>Q11</td>
 <td>Under <code>multi</code>, do class D values live in the environment or as pinned deployment rows? (M5)</td>
-<td>both supported</td>
+<td><strong>decided:</strong> each role's environment</td>
 </tr>
 <tr>
 <td>Q12</td>
@@ -5866,7 +5900,22 @@ choices is a decision.</p>
 <tr>
 <td>Q17</td>
 <td>Generate the catalogue from the census gate (J7)?</td>
-<td>hand-written <code>0003</code></td>
+<td>hand-written <code>0004</code></td>
+</tr>
+<tr>
+<td>Q18</td>
+<td>Existing <code>tenant_members</code> rows have no recorded provider. Should they be backfilled with a stated provider (the seam's rows came from the Kratos proof), or the table emptied?</td>
+<td><code>0002</code> refuses to run while rows exist</td>
+</tr>
+<tr>
+<td>Q19</td>
+<td>Is "unique together" per tenant (one person, several tenants) or global? Should <code>subject_id</code> be renamed <code>subject</code>?</td>
+<td>per tenant; name kept for seam compatibility</td>
+</tr>
+<tr>
+<td>Q20</td>
+<td>Should a <code>nightscout serve</code> role refuse to start when a class D value it needs is missing, as the floors already do for <code>TRUST_PROXY</code>?</td>
+<td>only the floors refuse</td>
 </tr>
 </tbody>
 </table>
@@ -5874,6 +5923,7 @@ choices is a decision.</p>
 <ul>
 <li>Lab: <code>tools/lab/tenant-config-schema/</code>: <code>README.md</code> (how to run, the full results table) and
   <code>results.json</code> (each control's error and observation).</li>
+<li>Migration-tool comparison: <code>tools/lab/tenant-config-schema/compare.js</code> and <code>compare-results.json</code> (umzug, node-pg-migrate and migrate-mongo, on PostgreSQL 16.15 and a standalone MongoDB 8.0.34).</li>
 <li>Migration tooling: <a href="../../60-research/tenancy/migration-tooling-plan-2026-10-27.html"><code>docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md</code></a>.</li>
 </ul>
 
