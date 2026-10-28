@@ -183,12 +183,21 @@ Until then, the order below is the order of development, not of release.
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
+| 1 | `WC-R1-QG` | Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin | `not-started` | &mdash; |
+| 1 | `WC-R1-QI` | Retire websocket.js idMatch when the socket update slice moves into the step | `not-started` | &mdash; |
 | 1 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `in-progress` | &mdash; |
 | 2 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
 | 2 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH` |
 | 2 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
 | 2 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `T30-RESEARCH` |
+| 2 | `WC-R2-QA` | Release 2: Re-express API v3 writes as filter writes under the step, or keep two | `not-started` | `WC-STEP-PATCH` |
+| 2 | `WC-R2-QB` | Release 2: One timing for removing a stored string-form _id twin on every path | `not-started` | `WC-STEP-PATCH` |
+| 2 | `WC-R2-QC` | Release 2: Separate source labels for API v1 and in-process callers | `not-started` | `WC-STEP-PATCH` |
+| 2 | `WC-R2-QD` | Release 2: One rule for a non-hex _id on in-process create and save | `not-started` | `WC-STEP-PATCH` |
+| 2 | `WC-R2-QE` | Release 2: Answer an identical re-send as unchanged (nothing written, no srvModi | `not-started` | `WC-STEP-PATCH` |
+| 2 | `WC-R2-QF` | Release 2: Move the lower half of write validation into the step, or decide it s | `not-started` | `WC-STEP-PATCH` |
+| 2 | `WC-R2-QH` | Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-m | `not-started` | `WC-STEP-PATCH` |
 | 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
 | 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
 | 3 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |

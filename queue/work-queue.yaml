@@ -6943,6 +6943,14 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      Transition target (maintainer, 2026-10-27): every write path enrolled
+      in the step before 16.2.0, measured by G2's enrolled set covering every
+      writer and by the write-rule copies gate falling toward zero (47 at dev
+      db3b9e4e). The mixed state (some paths through the step, some not) is
+      the riskiest one, so it is kept short. Release-2 questions are queue
+      items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1.
+      Contributor guide: docs/30-design/platform/guides/write-intent.md.
+
       2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests,
       G2, the copies gate and the G1 compare outputs re-checked by -4f): local
       feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac
@@ -6995,6 +7003,261 @@ items:
       re-making it. BFQ-169 (the v3 swagger text about identifier) is
       documentation only and independent; it is linked because the identifier
       items below make the corrected text a promise.
+
+  - id: WC-R2-QA
+    title: "Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: feat/write-intent
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/api3/generic/{create,update,patch,delete}, lib/api3/storage, lib/storage/write-intent.js. Today: v3 writes by identifier through its own cached methods; v1 and the socket write by filter.
+    review: maintainer; decided on its own, as a deliberate change with a release note
+    operator_visible: ""
+    semver: minor
+    semver_reason: >
+      changes which cache events v3 writes emit
+    gates:
+      - no-gate: >
+          Written when the change is decided: a G1 diff (write-contract-matrix
+          --compare against the pin) that must change exactly the cells this
+          item names and no others, with the pre-change pin as the control.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Design note question Q-A. Release 1 keeps today's behaviour, encoded
+      as data in the step's rule table and marked there with a release-2
+      comment (maintainer, 2026-10-27). What would move: the cache events and data-update emissions for v3 writes.
+
+  - id: WC-R2-QB
+    title: "Release 2: One timing for removing a stored string-form _id twin on every path"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: feat/write-intent
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/storage/write-intent.js rule table (remove-string-forms vs remove-string-forms-after). Today: string-form twin removal is appended to the bulk write on some paths and a separate call on others.
+    review: maintainer; decided on its own, as a deliberate change with a release note
+    operator_visible: ""
+    semver: patch
+    semver_reason: >
+      internal event count only; no reply or stored state changes, to be confirmed by G1
+    gates:
+      - no-gate: >
+          Written when the change is decided: a G1 diff (write-contract-matrix
+          --compare against the pin) that must change exactly the cells this
+          item names and no others, with the pre-change pin as the control.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Design note question Q-B. Release 1 keeps today's behaviour, encoded
+      as data in the step's rule table and marked there with a release-2
+      comment (maintainer, 2026-10-27). What would move: the number of commit events per write.
+
+  - id: WC-R2-QC
+    title: "Release 2: Separate source labels for API v1 and in-process callers"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: feat/write-intent
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/storage/write-intent.js, lib/storage/write-step.js. Today: v1 and in-process writes share the v1/internal source label.
+    review: maintainer; decided on its own, as a deliberate change with a release note
+    operator_visible: ""
+    semver: patch
+    semver_reason: >
+      internal event field only (the event is internal and unstable)
+    gates:
+      - no-gate: >
+          Written when the change is decided: a G1 diff (write-contract-matrix
+          --compare against the pin) that must change exactly the cells this
+          item names and no others, with the pre-change pin as the control.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Design note question Q-C. Release 1 keeps today's behaviour, encoded
+      as data in the step's rule table and marked there with a release-2
+      comment (maintainer, 2026-10-27). What would move: the commit event source field.
+
+  - id: WC-R2-QD
+    title: "Release 2: One rule for a non-hex _id on in-process create and save"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: feat/write-intent
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/{food,activity}.js through the step. Today: an in-process save with a non-hex _id gets a fresh ObjectId while create keeps the id.
+    review: maintainer; decided on its own, as a deliberate change with a release note
+    operator_visible: ""
+    semver: minor
+    semver_reason: >
+      changes a stored id form for an in-process caller
+    gates:
+      - no-gate: >
+          Written when the change is decided: a G1 diff (write-contract-matrix
+          --compare against the pin) that must change exactly the cells this
+          item names and no others, with the pre-change pin as the control.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Design note question Q-D. Release 1 keeps today's behaviour, encoded
+      as data in the step's rule table and marked there with a release-2
+      comment (maintainer, 2026-10-27). What would move: the stored _id for in-process saves with a non-hex _id.
+
+  - id: WC-R2-QE
+    title: "Release 2: Answer an identical re-send as unchanged (nothing written, no srvModified, no event), per spec U2 / Q2"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: feat/write-intent
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/storage/write-intent.js outcome rule. Today: re-sends are labelled replaced and rewritten; unchanged waits for release 2.
+    review: maintainer; decided on its own, as a deliberate change with a release note
+    operator_visible: ""
+    semver: minor
+    semver_reason: >
+      clients syncing by srvModified stop seeing identical re-sends (spec Q2 decided b1 status quo per path; reopen with this item)
+    gates:
+      - no-gate: >
+          Written when the change is decided: a G1 diff (write-contract-matrix
+          --compare against the pin) that must change exactly the cells this
+          item names and no others, with the pre-change pin as the control.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Design note question Q-E. Release 1 keeps today's behaviour, encoded
+      as data in the step's rule table and marked there with a release-2
+      comment (maintainer, 2026-10-27). What would move: srvModified, v3 history and events for identical re-sends.
+
+  - id: WC-R2-QF
+    title: "Release 2: Move the lower half of write validation into the step, or decide it stays at the persistence boundary"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: feat/write-intent
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/storage/write-step.js, lib/storage/validated-update.js, lib/storage/write-intent.js. Today: half of WRITE_VALIDATION sits below the storage interface in write-step.js and validated-update.js.
+    review: maintainer; decided on its own, as a deliberate change with a release note
+    operator_visible: ""
+    semver: patch
+    semver_reason: >
+      placement only, held by G1
+    gates:
+      - no-gate: >
+          Written when the change is decided: a G1 diff (write-contract-matrix
+          --compare against the pin) that must change exactly the cells this
+          item names and no others, with the pre-change pin as the control.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Design note question Q-F. Release 1 keeps today's behaviour, encoded
+      as data in the step's rule table and marked there with a release-2
+      comment (maintainer, 2026-10-27). What would move: none intended; placement only.
+
+  - id: WC-R2-QH
+    title: "Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-match (spec Q1)"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ""
+    base: feat/write-intent
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/*.js create paths through the step. Today: v1 create has always been allowed to replace a matched record.
+    review: maintainer; decided on its own, as a deliberate change with a release note
+    operator_visible: ""
+    semver: minor
+    semver_reason: >
+      a v1 re-POST no longer removes omitted fields (spec U3)
+    gates:
+      - no-gate: >
+          Written when the change is decided: a G1 diff (write-contract-matrix
+          --compare against the pin) that must change exactly the cells this
+          item names and no others, with the pre-change pin as the control.
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+      - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
+    notes: >
+      Design note question Q-H. Release 1 keeps today's behaviour, encoded
+      as data in the step's rule table and marked there with a release-2
+      comment (maintainer, 2026-10-27). What would move: stored fields of a v1 re-POST that omits fields.
+
+  - id: WC-R1-QG
+    title: "Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: ""
+    base: main
+    state: not-started
+    pr: []
+    blast_radius: >
+      docs/30-design/tenancy/write-contract-spec-2026-10-07.md section 1.3 and
+      the appendix; tools/qc/write-contract-ablate.sh's expected lists (they
+      predate the Temporary Target cells).
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: documentation and tooling
+    gates:
+      - no-gate: >
+          The spec's tables are prose generated from a run; a gate would
+          regenerate them from the pin and diff. Today they differ from the pin
+          in 65 cells (design note Q-G).
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+    notes: >
+      Design note question Q-G. Not a behaviour change.
+
+  - id: WC-R1-QI
+    title: "Retire websocket.js idMatch when the socket update slice moves into the step"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: feat/write-intent
+    base: official/dev@db3b9e4e
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/server/websocket.js idMatch (still used by dbUpdate and
+      dbUpdateUnset) and the step's id-match target, which duplicates it.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: part of release 1 (WC-STEP-PATCH slice 6); no behaviour change
+    gates:
+      - no-gate: >
+          Held by WC-STEP-PATCH's G1 and the write-rule-copies gate once slice 6
+          moves dbUpdate; until then the two copies can drift.
+    blocks_on: []
+    evidence:
+      - docs/30-design/platform/wc-step-design-note-2026-10-27.md
+    notes: >
+      Design note question Q-I. Inside release 1, slice 6.
 
   - id: ID-FIRST-MATCH
     title: "Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule"

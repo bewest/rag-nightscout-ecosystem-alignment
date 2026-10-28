@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 308 |
+| items | 317 |
 | runnable gates | 377 |
-| explicit `no-gate:` markers | 343 |
+| explicit `no-gate:` markers | 352 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 720 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 352 of the 729 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 61 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 70 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 7 | BFQ-178, T30-SCHEMA-CONFIG, WC-STEP-PATCH, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -7523,7 +7523,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 37 items
+`parcel: tenancy` &mdash; 46 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -7550,6 +7550,15 @@ alarm-readiness items, and the seam branch refresh.
 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-DUP-MEASURE` | Measure duplicate identifier values across the 12-site ns-data corpus | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `in-progress` | `feat/write-intent` | patch | 2 run + 1 no-gate |
+| `WC-R2-QA` | Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `WC-R2-QB` | Release 2: One timing for removing a stored string-form _id twin on every path | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `WC-R2-QC` | Release 2: Separate source labels for API v1 and in-process callers | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `WC-R2-QD` | Release 2: One rule for a non-hex _id on in-process create and save | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `WC-R2-QE` | Release 2: Answer an identical re-send as unchanged (nothing written, no srvModified, no event), per spec U2 / Q2 | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `WC-R2-QF` | Release 2: Move the lower half of write validation into the step, or decide it stays at the persistence boundary | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `WC-R2-QH` | Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-match (spec Q1) | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `WC-R1-QG` | Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `WC-R1-QI` | Retire websocket.js idMatch when the socket update slice moves into the step | `not-started` | `feat/write-intent` | n/a | 0 run + 1 no-gate |
 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not required) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
@@ -8196,7 +8205,273 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/qc/write-contract-matrix.js`
 
-**Notes.** 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
+**Notes.** Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
+
+### `WC-R2-QA` &mdash; Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `feat/write-intent` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; decided on its own, as a deliberate change with a release note |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/api3/generic/{create,update,patch,delete}, lib/api3/storage, lib/storage/write-intent.js. Today: v3 writes by identifier through its own cached methods; v1 and the socket write by filter.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** changes which cache events v3 writes emit
+
+**Gates.**
+
+- **NO GATE** &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Design note question Q-A. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the cache events and data-update emissions for v3 writes.
+
+### `WC-R2-QB` &mdash; Release 2: One timing for removing a stored string-form _id twin on every path
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `feat/write-intent` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer; decided on its own, as a deliberate change with a release note |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/storage/write-intent.js rule table (remove-string-forms vs remove-string- forms-after). Today: string-form twin removal is appended to the bulk write on some paths and a separate call on others.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** internal event count only; no reply or stored state changes, to be confirmed by G1
+
+**Gates.**
+
+- **NO GATE** &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Design note question Q-B. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the number of commit events per write.
+
+### `WC-R2-QC` &mdash; Release 2: Separate source labels for API v1 and in-process callers
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `feat/write-intent` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer; decided on its own, as a deliberate change with a release note |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/storage/write-intent.js, lib/storage/write-step.js. Today: v1 and in- process writes share the v1/internal source label.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** internal event field only (the event is internal and unstable)
+
+**Gates.**
+
+- **NO GATE** &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Design note question Q-C. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the commit event source field.
+
+### `WC-R2-QD` &mdash; Release 2: One rule for a non-hex _id on in-process create and save
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `feat/write-intent` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; decided on its own, as a deliberate change with a release note |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/server/{food,activity}.js through the step. Today: an in-process save with a non-hex _id gets a fresh ObjectId while create keeps the id.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** changes a stored id form for an in-process caller
+
+**Gates.**
+
+- **NO GATE** &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Design note question Q-D. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: the stored _id for in-process saves with a non-hex _id.
+
+### `WC-R2-QE` &mdash; Release 2: Answer an identical re-send as unchanged (nothing written, no srvModified, no event), per spec U2 / Q2
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `feat/write-intent` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; decided on its own, as a deliberate change with a release note |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/storage/write-intent.js outcome rule. Today: re-sends are labelled replaced and rewritten; unchanged waits for release 2.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** clients syncing by srvModified stop seeing identical re-sends (spec Q2 decided b1 status quo per path; reopen with this item)
+
+**Gates.**
+
+- **NO GATE** &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Design note question Q-E. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: srvModified, v3 history and events for identical re-sends.
+
+### `WC-R2-QF` &mdash; Release 2: Move the lower half of write validation into the step, or decide it stays at the persistence boundary
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `feat/write-intent` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer; decided on its own, as a deliberate change with a release note |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/storage/write-step.js, lib/storage/validated-update.js, lib/storage/write- intent.js. Today: half of WRITE_VALIDATION sits below the storage interface in write-step.js and validated-update.js.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `patch`.** placement only, held by G1
+
+**Gates.**
+
+- **NO GATE** &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Design note question Q-F. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: none intended; placement only.
+
+### `WC-R2-QH` &mdash; Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-match (spec Q1)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `feat/write-intent` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; decided on its own, as a deliberate change with a release note |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/server/*.js create paths through the step. Today: v1 create has always been allowed to replace a matched record.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** a v1 re-POST no longer removes omitted fields (spec U3)
+
+**Gates.**
+
+- **NO GATE** &mdash; Written when the change is decided: a G1 diff (write-contract-matrix --compare against the pin) that must change exactly the cells this item names and no others, with the pre-change pin as the control.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+- `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
+
+**Notes.** Design note question Q-H. Release 1 keeps today's behaviour, encoded as data in the step's rule table and marked there with a release-2 comment (maintainer, 2026-10-27). What would move: stored fields of a v1 re-POST that omits fields.
+
+### `WC-R1-QG` &mdash; Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** docs/30-design/tenancy/write-contract-spec-2026-10-07.md section 1.3 and the appendix; tools/qc/write-contract-ablate.sh's expected lists (they predate the Temporary Target cells).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** documentation and tooling
+
+**Gates.**
+
+- **NO GATE** &mdash; The spec's tables are prose generated from a run; a gate would regenerate them from the pin and diff. Today they differ from the pin in 65 cells (design note Q-G).
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+
+**Notes.** Design note question Q-G. Not a behaviour change.
+
+### `WC-R1-QI` &mdash; Retire websocket.js idMatch when the socket update slice moves into the step
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `feat/write-intent` |
+| base | `official/dev@db3b9e4e` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** lib/server/websocket.js idMatch (still used by dbUpdate and dbUpdateUnset) and the step's id-match target, which duplicates it.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** part of release 1 (WC-STEP-PATCH slice 6); no behaviour change
+
+**Gates.**
+
+- **NO GATE** &mdash; Held by WC-STEP-PATCH's G1 and the write-rule-copies gate once slice 6 moves dbUpdate; until then the two copies can drift.
+
+**Evidence.**
+
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+
+**Notes.** Design note question Q-I. Inside release 1, slice 6.
 
 ### `ID-FIRST-MATCH` &mdash; Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule
 
