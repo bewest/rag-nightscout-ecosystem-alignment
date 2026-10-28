@@ -60,7 +60,7 @@ Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRIT
 | ST-V3-DECOUPLE | in review in #8865: API v3 without API v1's modules, the socket and the cache, so `serve api` serves it alone (M3) | ST-WRITES, PLAT-SERVE | `serve api` passes the API v3 suites (634 pass, 0 fail, 108 single-only pending, as reported at `9f7f84f8`); `single` unchanged |
 | ST-EVENT | the commit event names the records of each write, from WriteResult.items[] | WC-STEP-PATCH, D-EVENT (deferred) | each stored record named once per write |
 | ST-HARNESS | backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
-| ST-VIEWS | draft #8875, not wired in: computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
+| ST-VIEWS | draft #8875, not wired in; device-status bound open again (two reproduced missed alarms, fix pending the maintainer): computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
 | ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
 
 The September seam chain is kept as reference for ST-HARNESS, ST-PG and TEN-RESOLVE (commits named on each item); it is not merged as it stands.
