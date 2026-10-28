@@ -1454,6 +1454,12 @@ non-zero exit**, not a warning.
 | may | read and write everything belonging to their tenant: settings, plugin config, thresholds, their own subjects and roles, rotate their own credentials, export their own data | create, list, suspend, activate, delete a tenant; export any tenant |
 | may **not** | see that any other tenant exists; create or delete a tenant; change their own `slug`, `is_active` or `id`; read `pg_catalog`; set `app.current_tenant_id`; enumerate the deployment's configuration | — (it is the deployment's own plane; its protection is that it is not routed) |
 
+*Amended 2026-10-27 (maintainer, D22 call path):* a human owner's credential on `ns-tenant-admin` is the
+per-tenant owner token Nightscout mints after the identity provider's login (D14, D17 as amended), carried
+end to end from the owner dashboard. The tenant's root credential (§C.2b) stays the credential for devices
+and for recovery, not for the dashboard. Provisioning and suspension go through an orchestrator on the
+operator plane only. Evidence: the call-path lab, `tools/lab/tenant-config-callpath/`.
+
 Two specific refusals worth naming because they will be asked for:
 
 - **A tenant owner cannot change their own `slug`.** `slug` is a host label (D10) and the hoster's

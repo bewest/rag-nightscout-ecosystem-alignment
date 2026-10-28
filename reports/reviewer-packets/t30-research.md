@@ -105,12 +105,16 @@ contested settings re-stated under D22. Execution plan §2.13; census §3.
 Second round, same day: integrations (connectors, webhooks, push) are typed
 records with a credential reference and status; a change takes effect live,
 versioned with rollback, at the tenant's next request or loop cycle; operator
-policy varies per tenant by operator override, floors over all. T3.0 is the
-largest correction owed in the programme. It does not block T3.3, which landed
-first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration
-was written and adversarially reviewed on 2026-09-15; the surface total is
-277. What remains is not enumeration: it is the maintainer decisions the
-document defers, and the harnesses that would turn its numbers into
+policy varies per tenant by operator override, floors over all. Call path
+decided (maintainer, same day): owner token end to end to ns-tenant-admin,
+provisioning and suspension through an orchestrator on the operator plane
+only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and
+§F.1 / D17 wording contradictions the lab found are noted in place. T3.0 is
+the largest correction owed in the programme. It does not block T3.3, which
+landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The
+enumeration was written and adversarially reviewed on 2026-09-15; the surface
+total is 277. What remains is not enumeration: it is the maintainer decisions
+the document defers, and the harnesses that would turn its numbers into
 measurements. The three decisions with the longest reach are where the tenant-
 owner API lives, what issues and verifies a tenant-owner credential, and
 whether D7's credential-free platform plane holds against Nocturne's design,

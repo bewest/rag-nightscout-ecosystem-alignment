@@ -132,7 +132,7 @@ preference.
 | **D4** | **MongoDB is permanent for the single-tenant target**, not a deprecated path. Existing self-hosters keep their databases, so the storage seam carries two mature backends permanently (§4) | maintainer, 2026-09-14 |
 | **D5** | **Four hosted entrypoints over one core** — `api` (stateless), `evaluator` (change-driven), `realtime` (fan-out), `vcpool` — plus `single` unchanged. The split is also a configuration-source split (D15). *(packaged by D21 as `nightscout serve <roles>`, 2026-10-26)* | {C} §2, {DB} §6 |
 | **D6** | **Change feed = replication slot (spine) + `NOTIFY` (latency) + bounded aggregate poll (backstop)**, with `NOTIFY` emitted **by the slot reader, never by a trigger** | {DB} §8.5, §9.4; measured in T4.1 |
-| **D7** | **The platform-admin plane gets its own entrypoint on its own network interface**, ORY-style, secured by unreachability rather than a credential. Tenant admin stays on the consumer interface under RLS. A deliberate departure from Nocturne | maintainer, 2026-09-14 — §2 |
+| **D7** | **The platform-admin plane gets its own entrypoint on its own network interface**, ORY-style, secured by unreachability rather than a credential. Tenant admin stays on the consumer interface under RLS *(superseded in part by D16: tenant admin has its own listener, `ns-tenant-admin`, reachable by owners; noted 2026-10-27)*. A deliberate departure from Nocturne | maintainer, 2026-09-14 — §2 |
 | **D8** | **API v3's closed operator set is the query contract; v1 is bounded by corpus evidence.** `mingo` is the differential-test oracle | maintainer, 2026-09-14 — §3 |
 | **D9** | **Base the work on `chore/nightscout-modernization`**, not `dev` | maintainer, 2026-09-14 — §5 |
 | **D10** | **Tenant `slug` is globally unique per deployment, and is a *host label*** — the resolver maps Host → slug by a configured rule with one capture group, so both `foo.user-content.apex.org` and `foo-user-content.apex.org` name tenant `foo`. Store the label only | maintainer, 2026-09-14 — §2.5 |
@@ -989,10 +989,21 @@ reveals. This answers the config-surface document's open §C.5 in direction; the
   individual tenants. The project floors apply to every tenant whatever the overrides say. How tenants are
   grouped, sold or assigned is the operator's business logic, outside Nightscout.
 
-**Not decided.** How the owner
-dashboard reaches the tenant-owner listener (owner token end to end, an orchestrator with a service
-identity, or split by audience), which a lab will compare first; and each of the twelve contested settings
-re-stated under D22, which most of them follow from.
+**The call path, decided 2026-10-27 (maintainer): owner token end to end, provisioning on the operator
+plane.** The owner dashboard exchanges the owner's login for a per-tenant owner token (D14, D17) and calls
+`ns-tenant-admin` with it; that listener verifies the token and enforces policy and floors. Provisioning
+and suspension go through an orchestrator that exists only on the operator plane (D7) and is never
+reachable from the dashboard. No component on the dashboard's path holds a credential for every tenant.
+Evidence: [`tools/lab/tenant-config-callpath/`](../../../tools/lab/tenant-config-callpath/README.md)
+(designs A, B0, B1, C; 33 controls). A trusted orchestrator writing for owners (B) gave one component on
+the dashboard's path read, write and reveal over every tenant, and an audit log that cannot name a
+verified human. Under A, a token used on another tenant fails as a signature failure. Remaining
+all-tenant components: the tenant-owner listener (it fetches every signing key), the identity provider
+and the operator plane. Next: a lab arm in which the secrets component signs and verifies, so keys never
+leave it.
+
+**Not decided.** Each of the twelve contested settings re-stated under D22, which most of them follow
+from; the secrets backend; alarm settings while multi-mode alarms are off.
 
 ## 3. D8 — the query surface
 
