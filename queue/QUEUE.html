@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>e2e65877b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>7485d54db</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3230,7 +3230,7 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>373</td>
+<td>375</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3238,7 +3238,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 716 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 718 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3276,13 +3276,13 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>6</td>
-<td>BFQ-72, BFQ-161, BFQ-203, BFQ-194, PLAT-ENTRY, PLAT-SERVE</td>
+<td>4</td>
+<td>BFQ-72, BFQ-161, PLAT-ENTRY, PLAT-SERVE</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
-<td>57</td>
-<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-192, BFQ-193, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH</td>
+<td>59</td>
+<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH</td>
 </tr>
 <tr>
 <td><code>released</code></td>
@@ -9298,10 +9298,10 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-203</code></td>
 <td>BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>tooling/jsconfig-watch-scope</code></td>
 <td>n/a</td>
-<td>1 run + 1 no-gate</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-192</code></td>
@@ -9322,10 +9322,10 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-194</code></td>
 <td>BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>bf/16.0.0-tt-units</code></td>
 <td>minor</td>
-<td>1 run</td>
+<td>2 run</td>
 </tr>
 <tr>
 <td><code>BFQ-200</code></td>
@@ -16975,7 +16975,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -17016,6 +17016,8 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>n/a</code>.</strong> editor tooling; nothing the server, build or tests read</p>
 <p><strong>Gates.</strong></p>
 <ul>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e737d310 official/dev</code></li>
+<li>official/dev contains BF-203's jsconfig.json commit e737d310 (merged 2026-10-27 as dcf20bfb, #8871); red if dev is rewritten or the merge is reverted out of history</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show tooling/jsconfig-watch-scope:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&amp;&amp;!c.files&amp;&amp;(c.exclude||[]).includes('node_modules')?0:1)"</code></li>
 <li>The branch has a jsconfig.json that scopes the project by exclude only (no include or files list, so new folders stay covered) and excludes node_modules.</li>
 <li><strong>NO GATE</strong> &mdash; The watch count needs a TypeScript server started as an editor starts it, about 2.5 minutes per measurement, so it is not a queue gate. Measured 2026-10-27 with tsserver 5.9.3 on Linux, opening lib/server/app.js with --useInferredProjectPerProjectRoot, JavaScript enabled for inferred projects and the alignment repo as project root: 450,689 watches and 1.4 GB without the file, 2,007 and 358 MB with it. Plain tsserver without those settings gives 1,203 either way.</li>
@@ -17024,7 +17026,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27, 22:21:20Z: #8871 opened by the maintainer into dev, head f28d40bb. 2026-10-27: draft e737d310 by the maintainer through session -a7 (437,239 against 5,616 watches in its probe), re-measured by session -e4 and dev 7abe1cf6 merged in as f28d40bb. tsc -p jsconfig.json --listFilesOnly lists lib/server/app.js; test:tiers 401 files ok; npm test on dev 9668b179 plus the file 4700 passing, 0 failing, 3 pending. No tooling PR is open, so it starts the next one. The editor-side companion of BF-201.</p>
+<p><strong>Notes.</strong> 2026-10-27 22:51:12Z: #8871 MERGED to dev by the maintainer as dcf20bfb (head 57f1d37c). Developer tooling only; nothing an operator sees. Recorded by session -4f. 2026-10-27, 22:21:20Z: #8871 opened by the maintainer into dev, head f28d40bb. 2026-10-27: draft e737d310 by the maintainer through session -a7 (437,239 against 5,616 watches in its probe), re-measured by session -e4 and dev 7abe1cf6 merged in as f28d40bb. tsc -p jsconfig.json --listFilesOnly lists lib/server/app.js; test:tiers 401 files ok; npm test on dev 9668b179 plus the file 4700 passing, 0 failing, 3 pending. No tooling PR is open, so it starts the next one. The editor-side companion of BF-201.</p>
 <h3 id="bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression"><code>BFQ-192</code> &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)<a class="headerlink" href="#bfq-192--bf-192---the-populated-reports-browser-test-measured-a-drawn-report-against-an-empty-form-heap-ceiling-test-measurement-blind-spot-not-a-product-regression" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -17160,7 +17162,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -17201,6 +17203,8 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>minor</code>.</strong> changes what is stored for a write clients already send</p>
 <p><strong>Gates.</strong></p>
 <ul>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7b74110c official/dev</code></li>
+<li>official/dev contains BF-194's fix 7b74110c (merged 2026-10-27 as db3b9e4e, #8872); red if dev is rewritten or the merge is reverted out of history</li>
 <li><code>[integration]</code> <code>cd externals/work/crm-tt-units &amp;&amp; node bin/with-env.js ./my.test.env node_modules/mocha/bin/mocha.js --timeout 5000 --require ./tests/hooks.js --exit tests/api.treatments-tt-units.test.js tests/websocket.tt-units.test.js</code></li>
 <li>A Temporary Target is stored in mg/dL labelled mg/dl on every write path: API v1 POST (one and a batch) and PUT, in-process create and save, API v3 POST, PUT and PATCH, socket dbAdd (one and an array) and dbUpdate; other event types and untouched stored records are left alone. Control 2026-10-27: the same test files over dev ca1652d6's lib/ fail 45 of 499 (with the write-validation and CRUD matrix files), every failure a stored value or label left unconverted, none a missing module. Needs the worktree's untracked my.test.env (MongoDB on 127.0.0.1:27195).</li>
 </ul>
@@ -17209,7 +17213,7 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 <li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27 23:06Z: PR #8872 opened to dev by the maintainer (head 355b4f14, not draft, mergeable). 2026-10-27 late: official/dev moved to dcf20bfb (#8871, jsconfig.json only) and was merged in as 355b4f14; the four BF-194 test files, 499 passing. 2026-10-27 evening, verified by session -4f on 7b74110c (rebased on dev ca1652d6; d4435f18 was the same commit before an amend that updated tests/api.crud-by-id.matrix.test.js only): red control as in the gate; npm test 4750 passing, 0 failing, 3 pending; test:all exit 0 (all seven tiers; Node v22.23.4, MongoDB 7.0). Write paths checked by reading: every v1 entry (create, createChecked, upsert, save) goes through prepareData; dbUpdateUnset only removes fields and cannot introduce mmol numbers; the helper is idempotent, so a socket dbAdd that is converted and then prepared again is unchanged. The rule matches the read side: ddata converts both targets when either is below 20, and so does the helper. Label spelling: the code writes mg/dl, not the mg/dL of the decision text. mg/dl is write-validation's canonicalUnits, ddata's and the careportal's spelling, and the exact text of AAPS's GlucoseUnit.MGDL (fromText matches exactly, falling back to mg/dL); the survey's other label readers accept it (the reporter case-insensitive, nightguard checks for mol). Not done: a mixed patch (units mmol with one target in mmol and the stored other above 30) keeps the numbers as sent, an edge no surveyed client sends. 2026-10-27: building on local bf/16.0.0-tt- units (worktree externals/work/crm-tt-units, off dev 7abe1cf6; session -ee's agent). Rule as briefed: a target labelled mmol (any spelling) is converted with the careportal's arithmetic; an unlabelled target below 20 is converted too (the read-side rule of lib/data/ddata.js:486-488, #3549, moved to write, so Trio's unlabelled-mmol edge case is not stamped mg/dL); every Temporary Target is then labelled mg/dL; other eventTypes and stored records unchanged. Decided 2026-10-27 (maintainer), for 16.0.0: convert and always label. At write, on API v1 and v3, a Temporary Target labelled mmol is converted to mg/dL, and every Temporary Target is stored with units mg/dL (the spelling every surveyed label-honouring reader accepts). The conversion runs before v1's units deletion. Fixes BF-194 and nightscout- reporter's misreading of unlabelled mg/dL targets on mmol sites; changes no surveyed client's numbers. A release-note line in 16.0.0. 2026-10-27, survey done (session -ee's agent, read from source; AAPS 7e1d537d, Trio 0b29cd53, iAPS 642a82cd, oref0 d219baf9, nightguard 75404bd, LoopFollow 4a74b781, xDrip 1ed76004, nightscout-reporter 518d61f): no surveyed client uploads a Temporary Target labelled mmol. AAPS (API v3) and nightguard send mg/dL labelled mg/dl; Trio and iAPS send mg/dL with no label (v1); Nightscout's careportal converts first; Loop, NightscoutKit, LoopCaregiver, DiaBLE and xDrip+ send none. Readers that ignore the label: Trio, iAPS, oref0, LoopFollow. Read-back by value: none (AAPS matches by identifier and never compares targets). So BF-194's exposure is clients outside the survey (scripts, third-party apps). Convert-at-write changes no surveyed client's records; it must run before v1's units delete, and relabel as mg/dL (AAPS treats any label but 'mmol' as mg/dL; the reporter compares mg/dl case- insensitively; nightguard checks for 'mol'). Separate finding: nightscout-reporter reads an unlabelled target in the site's units, so unlabelled mg/dL targets (Trio, iAPS, careportal via v1) show wrong on mmol sites; writing an mg/dL label on every Temporary Target would fix that. Decision pending. 2026-10-27 (maintainer): survey the clients first (which apps send or read temp targets in mmol/L, over which API, and whether they read back their own), then likely enforce mg/dL at write: a target labelled mmol is converted to mg/dL and relabelled, so readers that ignore the label (Trio) read it right and Nightscout's read-side conversion (lib/data/ddata.js:476-488, #3549 in 2018) does not convert it twice. History: the units deletion dates from a6182b55 (2015-02-11, 'if there isn't a glucose value, don't store the units'), before temp targets carried units; #3549 (2018) added the read-side mg/dL normalisation, which a v1-written target's missing label defeats only for readers outside Nightscout's own page. Survey running (session -ee). Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS- CANONICAL.</p>
+<p><strong>Notes.</strong> 2026-10-27 23:45Z: #8872 MERGED to dev by the maintainer as db3b9e4e. Released in no version yet; owes a 16.0.0 release-note line. 2026-10-27 23:06Z: PR #8872 opened to dev by the maintainer (head 355b4f14, not draft, mergeable). 2026-10-27 late: official/dev moved to dcf20bfb (#8871, jsconfig.json only) and was merged in as 355b4f14; the four BF-194 test files, 499 passing. 2026-10-27 evening, verified by session -4f on 7b74110c (rebased on dev ca1652d6; d4435f18 was the same commit before an amend that updated tests/api.crud-by-id.matrix.test.js only): red control as in the gate; npm test 4750 passing, 0 failing, 3 pending; test:all exit 0 (all seven tiers; Node v22.23.4, MongoDB 7.0). Write paths checked by reading: every v1 entry (create, createChecked, upsert, save) goes through prepareData; dbUpdateUnset only removes fields and cannot introduce mmol numbers; the helper is idempotent, so a socket dbAdd that is converted and then prepared again is unchanged. The rule matches the read side: ddata converts both targets when either is below 20, and so does the helper. Label spelling: the code writes mg/dl, not the mg/dL of the decision text. mg/dl is write-validation's canonicalUnits, ddata's and the careportal's spelling, and the exact text of AAPS's GlucoseUnit.MGDL (fromText matches exactly, falling back to mg/dL); the survey's other label readers accept it (the reporter case-insensitive, nightguard checks for mol). Not done: a mixed patch (units mmol with one target in mmol and the stored other above 30) keeps the numbers as sent, an edge no surveyed client sends. 2026-10-27: building on local bf/16.0.0-tt- units (worktree externals/work/crm-tt-units, off dev 7abe1cf6; session -ee's agent). Rule as briefed: a target labelled mmol (any spelling) is converted with the careportal's arithmetic; an unlabelled target below 20 is converted too (the read-side rule of lib/data/ddata.js:486-488, #3549, moved to write, so Trio's unlabelled-mmol edge case is not stamped mg/dL); every Temporary Target is then labelled mg/dL; other eventTypes and stored records unchanged. Decided 2026-10-27 (maintainer), for 16.0.0: convert and always label. At write, on API v1 and v3, a Temporary Target labelled mmol is converted to mg/dL, and every Temporary Target is stored with units mg/dL (the spelling every surveyed label-honouring reader accepts). The conversion runs before v1's units deletion. Fixes BF-194 and nightscout- reporter's misreading of unlabelled mg/dL targets on mmol sites; changes no surveyed client's numbers. A release-note line in 16.0.0. 2026-10-27, survey done (session -ee's agent, read from source; AAPS 7e1d537d, Trio 0b29cd53, iAPS 642a82cd, oref0 d219baf9, nightguard 75404bd, LoopFollow 4a74b781, xDrip 1ed76004, nightscout-reporter 518d61f): no surveyed client uploads a Temporary Target labelled mmol. AAPS (API v3) and nightguard send mg/dL labelled mg/dl; Trio and iAPS send mg/dL with no label (v1); Nightscout's careportal converts first; Loop, NightscoutKit, LoopCaregiver, DiaBLE and xDrip+ send none. Readers that ignore the label: Trio, iAPS, oref0, LoopFollow. Read-back by value: none (AAPS matches by identifier and never compares targets). So BF-194's exposure is clients outside the survey (scripts, third-party apps). Convert-at-write changes no surveyed client's records; it must run before v1's units delete, and relabel as mg/dL (AAPS treats any label but 'mmol' as mg/dL; the reporter compares mg/dl case- insensitively; nightguard checks for 'mol'). Separate finding: nightscout-reporter reads an unlabelled target in the site's units, so unlabelled mg/dL targets (Trio, iAPS, careportal via v1) show wrong on mmol sites; writing an mg/dL label on every Temporary Target would fix that. Decision pending. 2026-10-27 (maintainer): survey the clients first (which apps send or read temp targets in mmol/L, over which API, and whether they read back their own), then likely enforce mg/dL at write: a target labelled mmol is converted to mg/dL and relabelled, so readers that ignore the label (Trio) read it right and Nightscout's read-side conversion (lib/data/ddata.js:476-488, #3549 in 2018) does not convert it twice. History: the units deletion dates from a6182b55 (2015-02-11, 'if there isn't a glucose value, don't store the units'), before temp targets carried units; #3549 (2018) added the read-side mg/dL normalisation, which a v1-written target's missing label defeats only for readers outside Nightscout's own page. Survey running (session -ee). Filed 2026-10-26 from R15. Needs a maintainer decision: keep units on a record with targets when no glucose is given, convert to mg/dL, or refuse under WRITE_VALIDATION=reject. Related to BF-180 (the careportal path through the same lines, merged in #8842) and MOD-UNITS- CANONICAL.</p>
 <h3 id="bfq-200--bf-200---on-dev-an-unusable-time-on-api-v2s-data-snapshot-route-stops-the-server"><code>BFQ-200</code> &mdash; BF-200 - on dev, an unusable time on API v2's data-snapshot route stops the server<a class="headerlink" href="#bfq-200--bf-200---on-dev-an-unusable-time-on-api-v2s-data-snapshot-route-stops-the-server" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

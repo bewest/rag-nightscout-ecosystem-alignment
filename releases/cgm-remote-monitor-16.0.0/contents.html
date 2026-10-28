@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>141952e18</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>7485d54db</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2746,6 +2746,26 @@ merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nin
 <td>—</td>
 <td>the API v1 and v3 documents describe what 16.0.0 serves, and a contract test holds them to the routes (includes #8381 by arfaomar); the alignment site's API pages re-rendered from it as current</td>
 </tr>
+<tr>
+<td>#8871</td>
+<td>10-27 22:51:12</td>
+<td><code>dcf20bfb</code></td>
+<td><code>57f1d37c</code></td>
+<td>bewest</td>
+<td>BF-203</td>
+<td><code>BFQ-203</code></td>
+<td>tooling: a <code>jsconfig.json</code> scoped by <code>exclude</code>, so an editor stops watching sibling worktrees (1 file, +8)</td>
+</tr>
+<tr>
+<td>#8872</td>
+<td>10-27 23:45:05</td>
+<td><code>db3b9e4e</code></td>
+<td><code>355b4f14</code></td>
+<td>bewest</td>
+<td>BF-194</td>
+<td><code>BFQ-194</code></td>
+<td>a Temporary Target is stored in mg/dL labelled <code>mg/dl</code> on API v1, API v3 and the socket (11 files, +742/−43); owes a release-note line</td>
+</tr>
 </tbody>
 </table>
 <p>Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
@@ -3077,7 +3097,7 @@ runtime Docker image.</p>
 <td>BF-203: an editor's file watches</td>
 <td><code>tooling/jsconfig-watch-scope</code>, <strong>#8871</strong> (opened by the maintainer 2026-10-27 22:21:20Z, base <code>dev</code>; the start of the next tooling PR)</td>
 <td><code>f28d40bb</code>: the maintainer's draft <code>e737d310</code> (<code>jsconfig.json</code>, 8 lines) with <code>dev</code> <code>7abe1cf6</code> merged in</td>
-<td>open, CI running: an editor opening <code>lib/server/app.js</code> from a checkout inside a larger workspace watches 450,689 → 2,007 files, 1.4 GB → 358 MB (tsserver 5.9.3, started as an editor starts it); <code>npm test</code> 4700 passing, 0 failing, 3 pending; developer tooling only</td>
+<td><strong>merged 2026-10-27 22:51:12Z by bewest as <code>dev</code> <code>dcf20bfb</code></strong> (head <code>57f1d37c</code>, <code>dev</code> merged in). Earlier: open, CI running: an editor opening <code>lib/server/app.js</code> from a checkout inside a larger workspace watches 450,689 → 2,007 files, 1.4 GB → 358 MB (tsserver 5.9.3, started as an editor starts it); <code>npm test</code> 4700 passing, 0 failing, 3 pending; developer tooling only</td>
 <td><code>BFQ-203</code></td>
 </tr>
 </tbody>
@@ -3315,7 +3335,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fe21d6b3fa55e80269d07fafad996d469d8e87e6/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/21641d9c27d0f378932e2bfab0b3441b1c9ee839/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (65 queue ids: every item this file or
 <a href="decisions.html">decisions.md</a> names, and the release items), with the capture command.</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and
@@ -3379,7 +3399,7 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
 <li><strong>BF-194</strong> (maintainer): API v1 removes <code>units</code> from a treatment with no glucose value before
     <code>WRITE_VALIDATION</code> runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and <code>dev</code> (reproduced, integration record R15):
-    keep the units, convert, or refuse. Queue <code>BFQ-194</code>. <em>2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.</em> <em>Decided 2026-10-27 (maintainer): convert and always label. Fixed on local <code>bf/16.0.0-tt-units</code> <code>7b74110c</code>, PR #8872 to <code>dev</code> (head <code>355b4f14</code>, opened 2026-10-27): every write path stores a Temporary Target in mg/dL labelled <code>mg/dl</code>; gate PASS, npm test and test:all pass. Owes a release-note line.</em></li>
+    keep the units, convert, or refuse. Queue <code>BFQ-194</code>. <em>2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.</em> <em>Decided 2026-10-27 (maintainer): convert and always label. Fixed on local <code>bf/16.0.0-tt-units</code> <code>7b74110c</code>, </em><em>merged</em><em> to <code>dev</code> 2026-10-27 as <code>db3b9e4e</code> (#8872): every write path stores a Temporary Target in mg/dL labelled <code>mg/dl</code>; gate PASS, npm test and test:all pass. Owes a release-note line.</em></li>
 <li><strong>#8854's <code>failed</code> slot</strong> (maintainer): under <code>reject</code>, a socket treatment array answers an item whose
     write cannot be confirmed (a lookup, similar-record match or insert error, such as a duplicate key) with a
     slot without <code>_id</code> carrying <code>failed: {status: 500, message: "Treatment write could not be confirmed"}</code>,
