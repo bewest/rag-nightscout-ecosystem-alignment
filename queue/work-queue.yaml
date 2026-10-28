@@ -17513,6 +17513,40 @@ items:
       Filed 2026-10-27 by session -4f from the ST-VIEWS census. Related to
       ST-VIEWS, whose bounded views may be the fix's home.
 
+  - id: BFQ-207
+    title: "BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@db3b9e4e
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/plugins/sensorage.js (:84-100), the event-replacement rule.
+    review: maintainer; alarm path, checked against the alarm fixtures
+    operator_visible: >
+      If a sensor start is entered several times within a few seconds, the
+      sensor age shown, and the sensor-age warnings, can count from the first
+      entry instead of the last. Check the sensor age shown after restarting
+      a sensor.
+    semver: patch
+    semver_reason: the intended value, decided by the maintainer; a sensor-age alarm can move by up to the burst's spread
+    register: [BF-207]
+    gates:
+      - no-gate: >
+          Observed 2026-10-27 by session -65's ST-VIEWS census on a corpus
+          fixture. A gate replays a same-hour burst, and one crossing an hour
+          boundary, and asserts the newest start is reported; dev db3b9e4e is
+          its failing control.
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      Filed 2026-10-27 by session -4f. Intended behaviour ("latest is
+      correct") decided by the maintainer in session -65, relayed. ST-VIEWS'
+      bounded view differs from the resident value here by design.
+
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"
     parcel: register-open
