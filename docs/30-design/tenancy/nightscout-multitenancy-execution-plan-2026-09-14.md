@@ -969,7 +969,23 @@ reveal the owner's own credential. Target: reveal also needs a fresh re-authenti
 to the second changes one operation's policy, with no data migration or re-keying. The operator plane never
 reveals. This answers the config-surface document's open §C.5 in direction; the backend is not chosen.
 
-**Not decided.** Whether operator policy can vary by plan or cohort within one deployment; how the owner
+**Decided the same day (maintainer, 2026-10-27, second round).**
+
+- **Integrations are typed records.** Connectors, webhooks, push targets and other services are not scalar
+  settings. Each is a record: a kind from a driver catalogue, settings validated by that kind's schema, a
+  reference to its credential in the secrets component, and a status (last success, last error). The owner
+  dashboard lists, adds, tests and removes them, and a tenant may hold several of one kind. Operator policy
+  says which kinds are enabled and their limits. The environment keys (`CONNECT_*`, `BRIDGE_*`,
+  `WEBHOOK_*`, `PUSHOVER_*`) stay as aliases in `single`.
+- **A change takes effect live, and is versioned.** Each change is a numbered version recording who, when
+  and what, and the owner can roll back. Saving invalidates the tenant's cached settings. The next request
+  for that tenant uses the new version. A background loop (alarm evaluation, connector polling) uses it at
+  that tenant's next cycle. No restart. Alarm-related settings are confirmed with a preview first.
+- **Operator policy varies per tenant by override.** One deployment policy, plus operator overrides on
+  individual tenants. The project floors apply to every tenant whatever the overrides say. How tenants are
+  grouped, sold or assigned is the operator's business logic, outside Nightscout.
+
+**Not decided.** How the owner
 dashboard reaches the tenant-owner listener (owner token end to end, an orchestrator with a service
 identity, or split by audience), which a lab will compare first; and each of the twelve contested settings
 re-stated under D22, which most of them follow from.

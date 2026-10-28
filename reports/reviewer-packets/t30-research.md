@@ -101,12 +101,16 @@ safety, data and log safety). Secrets are a component: encrypted at rest,
 decrypted only by the consuming process, a logged reveal operation (initial
 policy: an owner session; target: re-authentication). Open: policy by plan or
 cohort; the dashboard call path (lab of three designs briefed); the twelve
-contested settings re-stated under D22. Execution plan §2.13; census §3. T3.0
-is the largest correction owed in the programme. It does not block T3.3, which
-landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The
-enumeration was written and adversarially reviewed on 2026-09-15; the surface
-total is 277. What remains is not enumeration: it is the maintainer decisions
-the document defers, and the harnesses that would turn its numbers into
+contested settings re-stated under D22. Execution plan §2.13; census §3.
+Second round, same day: integrations (connectors, webhooks, push) are typed
+records with a credential reference and status; a change takes effect live,
+versioned with rollback, at the tenant's next request or loop cycle; operator
+policy varies per tenant by operator override, floors over all. T3.0 is the
+largest correction owed in the programme. It does not block T3.3, which landed
+first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration
+was written and adversarially reviewed on 2026-09-15; the surface total is
+277. What remains is not enumeration: it is the maintainer decisions the
+document defers, and the harnesses that would turn its numbers into
 measurements. The three decisions with the longest reach are where the tenant-
 owner API lives, what issues and verifies a tenant-owner credential, and
 whether D7's credential-free platform plane holds against Nocturne's design,
