@@ -11,6 +11,22 @@ deleted. **Option 2** keeps the payload as it is.
 > Contributor-facing. Synthetic data only: the lab writes its own records into its own databases
 > and must never be pointed at a real site.
 
+## Status
+
+**D-EVENT was deferred on 2026-10-27.** No event shape is adopted. This lab is research to inform
+that decision, and it continued after the deferral.
+
+- **Round 1** compares base with the uncapped pre-read variant.
+- **Round 2** ([below](#round-2-2026-10-27-post-write-capped-and-counts-only-deletes)) adds
+  three arms:
+  - the post-write variant
+  - the same variant with counts-only deletes
+  - a pre-read capped at 500 records (the pattern Nocturne uses)
+- **Prior art.** Comparable systems name records from the database's own log (change streams,
+  an oplog or write-ahead log) or by a read before the write. A read after the write cannot see
+  deleted records. It also misses records whose filter fields the update itself changed. Round 2
+  measures both of these.
+
 ## What it measures
 
 | axis | script | question |
@@ -290,7 +306,7 @@ read's read-then-write race, triggered on purpose.
 from every 10th event onto the event before it. The check reports **277 cross-attributed events
 and 560 records ≠ counts**, so the zero results above come from a check that can see a difference.
 
-## Verdict
+## Verdict (round 1: base vs uncapped pre-read)
 
 - **With no subscriber, option 1 is free.** proto0 is inside the base-vs-base noise floor on all
   18 shapes, because the identity read is gated on a listener and nothing subscribes today.
@@ -314,7 +330,7 @@ and 560 records ≠ counts**, so the zero results above come from a check that c
   That would make a fresh backfill free. Its own exactness cost (a post-read misses records whose
   filter fields the update changed) is unmeasured.
 
-## Not measured
+## Not measured (round 1; see round 2 for what it added)
 
 - Network latency. Everything ran on localhost. On a hosted MongoDB every identity read adds a
   network round trip, so the absolute +0.4–1.8 ms will grow with the RTT.
@@ -328,6 +344,245 @@ and 560 records ≠ counts**, so the zero results above come from a check that c
 - The post-read variant above.
 - An event-by-event proof that every inexact event under the race shows records ≠ counts.
 
+## Round 2 (2026-10-27): post-write, capped and counts-only deletes
+
+### Arms and anchors
+
+All variants keep the listener gate and take `counts` from the driver.
+
+| arm | tree | head | what it does |
+|---|---|---|---|
+| base | dev | `9668b179` | counts only |
+| base2 | dev, second process | `9668b179` | noise floor |
+| noop | base plus one comment line | `1d4a8753` | no-op control |
+| pre | `proto/d-event-per-call` | `8a396715` | uncapped pre-read (round 1) |
+| post | `proto/d-event-post-write` | `408c7d03` | inserts and upserts named from the result; updates and replacements read **after** the write, only when `matchedCount > 0` and `modifiedCount > 0`, and only for the operations that did not upsert; deletes keep a pre-read limited to the delete filters |
+| postnodel | `proto/d-event-post-nodelete` | `70e2d218` | post, but deletes are counts only (no read and no deleted records) |
+| capped | `proto/d-event-capped` | `8432ea66` | pre-read limited to 501; above 500 records the event has `collapsed: true` and no records; a call with more than 500 insert or upsert operations collapses without reading |
+
+Environment:
+- Node v22.23.4.
+- `mongo:8.0.29` single-node replica set on 127.0.0.1:27601, `--ulimit nofile=64000:64000`.
+- Every round-2 log starts and ends with `docker inspect`. They show `restarts=0` and the same
+  `StartedAt` (2026-10-27T23:24:35Z) throughout. `results/round2/containers-final.log` holds the
+  state at removal. All containers are removed.
+
+**A failed run, not reported.** The first round-2 latency run used five arms and n = 200/100/10.
+It crashed at about iteration 55 with `fetch failed: ECONNRESET` and wrote no results. The
+likely cause is a reused keep-alive socket that the server had closed. The container stayed up
+(`restarts=0`). The harness now counts a reset request as an error (status 599, never retried).
+The runs below have 0 errors.
+
+### Tests and controls for the new arms
+
+| tree | `npm test` | new or changed tests | red control | break-it |
+|---|---|---|---|---|
+| post `408c7d03` | **4706 passing, 0 failing, 3 pending** | first identity test now expects the post-read filter; new: "reads updated records after the write, deleted records before it"; "reads nothing after a write that matched nothing, such as a fresh upsert batch" (includes matched-but-unmodified); "leaves a post-write mis-name visible: records disagree with counts" | on pre `8a396715`: 3 fail (the read happens before the write, the fresh batch reads); on base: 6 fail (`records` undefined) | counts rebuilt from records: the mis-name test fails |
+| capped `8432ea66` | **4704 passing, 0 failing, 3 pending** | new: "collapses an event above 500 records to counts and collapsed: true" | on pre: fails at "more than 500 upserts collapse without a read" | — |
+| postnodel `70e2d218` | **4706 passing, 0 failing, 3 pending** | delete expectations changed to counts only | — (comparison arm only) | — |
+
+### (a) Latency, interleaved
+
+**Single writes**, n = 200 per shape and per arm, 7 arms. The noise floor (base2/base) is
+0.903–1.035 at the median and 0.872–1.252 at p95. The no-op control is 0.899–1.016 / 0.823–1.175,
+inside it.
+
+Ranges of arm/base median ratios, grouped by write kind (Δ = arm − base median):
+
+| kind (shapes) | pre | post | postnodel | capped |
+|---|---|---|---|---|
+| insert (devicestatus, v3 create, socket dbAdd) | 0.913–1.007 | 0.914–1.003 | 0.929–1.022 | 0.953–1.003 |
+| single upsert (v1 entries/treatments create) | **1.049–1.150** (+0.4–0.9 ms) | 0.949–0.992 (free) | 0.964–1.017 | **1.091–1.111** (+0.6–0.8 ms) |
+| update/replace (v1 put, softdelete, resend; v3 resend, patch, put; socket dbUpdate; internal moves-out) | 0.978–**1.206** (up to +1.6 ms) | 0.959–**1.199** (up to +1.6 ms) | 1.011–**1.277** (up to +2.2 ms) | 0.983–**1.245** (up to +1.9 ms) |
+| delete (v1 query delete 10, v1 delete id, v3 delete permanent, socket dbRemove) | **1.078–1.341** (+0.6–2.7 ms) | **1.119–1.426** (+0.7–3.3 ms) | 0.924–1.036 (free) | **1.079–1.414** (+0.6–3.2 ms) |
+
+Per-shape numbers are in `results/round2/latency-singles.log`.
+
+**Backfills**, one v1 POST each. n = 50 at 1,000 records and n = 8 at 10,000, 5 arms. A re-send
+posts the same records again; every operation matches and is modified (the server stamps them).
+
+| backfill | base median | base2 | pre | **post** | capped (collapsed) |
+|---|---|---|---|---|---|
+| entries fresh 1,000 | 180 ms | ×1.009 | ×1.121 (+22 ms) | **×1.054 (+10)** | ×1.026 (+5) |
+| entries re-send 1,000 | 193 ms | ×1.000 | ×1.154 (+30) | **×1.147 (+28)** | ×0.987 |
+| treatments fresh 1,000 | 394 ms | ×1.026 | ×1.283 (+112) | **×1.009 (+4)** | ×1.022 |
+| treatments re-send 1,000 | 1,187 ms | ×1.000 | ×1.098 (+116) | **×1.093 (+111)** | ×0.980 |
+| entries fresh 10,000 | 1,653 ms | ×0.971 | ×1.150 (+249) | **×0.958** | ×1.003 |
+| entries re-send 10,000 | 1,914 ms | ×1.022 | ×1.165 (+316) | **×1.185 (+354)** | ×0.971 |
+| treatments fresh 10,000 | 3,772 ms | ×1.019 | ×1.269 (+1,016) | **×0.995** | ×0.970 |
+| treatments re-send 10,000 | 11,385 ms | ×1.029 (+325) | ×1.140 (+1,591) | **×1.119 (+1,350)** | ×1.000 |
+
+- Noise floor: base2 is 0.971–1.029 at the median. At 10,000 it moved up to ±325 ms, with n = 8.
+- **post** is free on fresh backfills. On a full re-send it costs as much as the pre-read:
+  +9–19%, +111 ms at 1,000 treatments and +1.35 s at 10,000.
+- **capped** is free on every backfill over 500 records, because it collapses without reading.
+  Those events name no records.
+
+### (b) Naming cost and payload, in-process
+
+20 repetitions (5 at 10,000). The column is listen − quiet at the median. Base's own
+listen − quiet is the control: it reached −59 to +25 ms at 10,000, so smaller differences at
+that size are noise.
+
+| N | call | pre | post | postnodel | capped |
+|---|---|---|---|---|---|
+| 1,000 | bulkWrite upsert, fresh | +37.9 ms | −0.4 | −3.7 | −0.3 (collapsed, no read) |
+| 1,000 | bulkWrite upsert, re-send | +33.2 | +48.0 | +47.9 | −1.5 (collapsed) |
+| 1,000 | deleteMany | +4.1 | +4.8 | −1.1 (counts only) | +3.9 (reads 501, then collapses) |
+| 10,000 | bulkWrite upsert, fresh | +464 | −35 | −116 | −48 (collapsed) |
+| 10,000 | bulkWrite upsert, re-send | +467 | +499 | +457 | +5 (collapsed) |
+| 10,000 | deleteMany | +26.6 | +36.4 | −1.8 | −0.6 (collapsed) |
+| 10,000 | updateMany | +39.8 | −14.5 | −11.7 | −32.5 — inside this row's base noise (−57.5) |
+
+- **Bytes.** Unchanged from round 1: about 105 B per record with an `identifier`, about 55 B
+  without. A collapsed event is 166–171 B, and a counts-only delete event 163–167 B.
+- Details are in `results/round2/payload.log`.
+
+### Deletes: named by a pre-read limited to deletes (post) vs counts only (postnodel)
+
+| | post | postnodel |
+|---|---|---|
+| latency, 4 single delete shapes | ×1.119–1.426 (+0.7–3.3 ms) | ×0.924–1.036 (inside the floor) |
+| naming cost, deleteMany of 1,000 / 10,000 | +4.8 ms / +36.4 ms | none |
+| change-feed exactness, 6 delete shapes (10 to 1,000 records) | **30 / 30 exact**, no follow-up | **0 / 30**: every delete event needs a follow-up read, and every one is flagged (records ≠ counts) |
+| pruner race (d), records ≠ counts per round | 7, 7 (k = 1); 37, 28 (k = 4) | 464, 455; 1,129, 1,098 (every pruner delete) |
+
+### (c) Change-feed exactness against the change stream
+
+5 calls per shape (2 at 10,000). The shapes are all 17 singles, including the new
+`internal-update-moves-out-10`, plus the query deletes of 100 and 1,000 and the 8 backfills.
+
+- **`internal-update-moves-out-10`** is an `updateMany` whose `$set` changes its own filter
+  field (`bench`). It goes through the write-step boundary in the server process. No HTTP route
+  was found that sends such an update.
+
+| arm | calls exact | where it is not exact | wrong and unflagged |
+|---|---|---|---|
+| pre | **all** | — | **0** |
+| post | all but 5 | `internal-update-moves-out-10`: 0 / 5, all 10 records missed; flagged on every call | **0** |
+| postnodel | all but 35 | moves-out (5) and every delete shape (30); all flagged | **0** |
+| capped | all but 33 | every event over 500 records (1,000 and 10,000 backfills, query delete 1,000) is `collapsed`; all need a follow-up | **0** |
+
+Controls:
+- **BROKEN-drop-last** is wrong and unflagged on every call of every arm.
+- **BROKEN-ignore-counts** reads names and ignores counts. It is wrong and unflagged exactly
+  where the post variants mis-name (moves-out, and deletes on postnodel). The check sees that
+  difference.
+- **BROKEN-guess** is again right only on single-writer creates.
+
+### Mis-naming test (`misname.js`, in-process, change stream as truth, 5 per case)
+
+A concurrent writer is simulated deterministically by wrapping the driver call.
+
+| case | pre | post | postnodel | capped |
+|---|---|---|---|---|
+| plain update / plain delete (controls) | exact / exact | exact / exact | exact / **missed 25** (counts only) | exact / exact |
+| update moves records out of its filter | exact | **missed 25** | **missed 25** | exact |
+| matched but unmodified (2 of 5 already hold the value) | extra 10 | extra 10 | extra 10 | extra 10 |
+| concurrent insert just after the update | exact | **extra 5** | **extra 5** | exact |
+| concurrent delete of an updated record just after the update | exact | **missed 5** | **missed 5** | exact |
+| concurrent insert just before the delete | missed 5 | missed 5 | missed 30 | missed 5 |
+| validated (reject-mode) Temporary Target update | exact | exact | exact | exact |
+| **inexact and unflagged** (all cases) | **0** | **0** | **0** | **0** |
+
+- Every inexact event in every arm had records ≠ counts.
+- **Break-it.** `--break counts-from-records` rebuilds counts from the records. The check then
+  reports **75** inexact-and-unflagged events (`results/round2/misname-break.log`).
+- **Exactly which records a post-read mis-names:**
+  - records the update moved out of its own filter (missed)
+  - records a concurrent writer inserted or changed into the filter before the read (extra)
+  - updated records a concurrent writer deleted before the read (missed)
+  - matched records the update left unchanged (extra, as with the pre-read)
+- **What it does not mis-name.** The reject-mode conditional update re-reads the original
+  filter, not its snapshot filter, so it stays exact.
+
+### (d) Concurrent writers: 3k uploaders, k = 1, 2, 4, 20 s, two rounds, arm order reversed per round
+
+**Noise floor for (d) (new).** It comes from base, base2 and noop, which all emit the same
+counts-only payload. Across rounds they span:
+- 131.6–143.7 req/s at k = 1
+- 239.0–288.1 req/s at k = 2
+- 472.6–527.3 req/s at k = 4
+
+That is up to 17% between identical arms. The naming arms fall inside it: pre 501.8–505.5,
+post 500.0–505.6 and capped 503.2–512.1 req/s at k = 4.
+
+**Attribution.** With no overlapping filters, every naming arm named every change-stream
+operation, with **0** cross-attributed, **0** records ≠ counts, **0** missed and **0** extra:
+- pre: 40,681
+- post: 40,847
+- capped: 40,608
+
+No capped event collapsed, because these calls are small.
+
+**Pruner race** (k = 1, 4; base, base2, pre, post, postnodel, capped):
+
+| arm | records ≠ counts (k = 1 r0, r1; k = 4 r0, r1) | missed | extra | cross-attributed |
+|---|---|---|---|---|
+| pre | 2, 1; 14, 7 | 1, 1; 20, 10 | 1, 0; 1, 0 | 0 |
+| **post** | **7, 7; 37, 28** | **11, 14; 70, 61** | 0 | 0 |
+| postnodel | 464, 455; 1,129, 1,098 | 815, 799; 2,633, 2,572 | 0 | 0 |
+| capped | 1, 0; 10, 13 | 1, 0; 12, 17 | 0 | 0 |
+
+The post-read has a wider race window than the pre-read. After a bridge re-send matches its
+records, the pruner can delete them before the read.
+
+**Break-it** (`--break swap-writer`):
+- post: 266 cross-attributed, 532 records ≠ counts
+- capped: 253 cross-attributed, 512 records ≠ counts
+
+### Comparison of all arms
+
+| axis | pre (uncapped) | post-write | post, counts-only deletes | capped at 500 |
+|---|---|---|---|---|
+| single inserts | free | free | free | free |
+| single upsert | +0.4–0.9 ms | **free** | free | +0.6–0.8 ms |
+| single update/replace | up to +1.6 ms | up to +1.6 ms | up to +2.2 ms | up to +1.9 ms |
+| single delete | +0.6–2.7 ms | +0.7–3.3 ms | **free** | +0.6–3.2 ms |
+| fresh backfill 1,000 / 10,000 | +12–28% / +15–27% | **free** | free | free, collapsed |
+| re-send backfill 1,000 / 10,000 | +10–15% / +14–17% | +9–15% / +12–19% | same as post | free, collapsed |
+| payload per record | 55–105 B | 55–105 B | 55–105 B (deletes 0) | 55–105 B up to 500; then 170 B |
+| change-feed exact (single writer) | all shapes | all except filter-changing update | all except filter-changing update and deletes | all except calls over 500 |
+| concurrent throughput | inside the (d) floor | inside the floor | not run without the pruner | inside the floor |
+| pruner race, inexact events per round | 1–14 | 7–37 | 455–1,129 | 0–13 |
+| inexact and unflagged | 0 | 0 | 0 | 0 |
+
+### Round 2 verdict
+
+- **The post-write variant is not cheap overall.**
+  - It is free where the pre-read was most expensive: fresh uploads, single (×0.949–0.992) and
+    bulk (treatments 1,000 +112 ms → +4 ms).
+  - A full re-send pays the same read: +9–19%, up to +1.35 s on a 10,000-treatment re-send.
+  - Deletes still need their pre-read: ×1.12–1.43 on single deletes.
+  - It mis-names updates that move records out of their own filter, which the pre-read names
+    correctly.
+  - Under the pruner race it was inexact two to four times as often as the pre-read.
+  - Every mis-name was flagged by records ≠ counts.
+- **Counts-only deletes** remove the delete cost entirely. But every delete event then needs a
+  follow-up read, so a change feed cannot rebuild deletions from the event alone.
+- **The capped pre-read is the cheapest arm on bulk writes.** It is free on every backfill over
+  500 records. Below the cap it costs the same as the pre-read, and it keeps the pre-read's
+  exactness. Its price: events over 500 records (the 1,000- and 10,000-record backfills) name
+  nothing and say so with `collapsed: true`. That is the case where a listener's follow-up read
+  is most expensive.
+- **No arm adds a measurable throughput cost** to the concurrent uploaders. Base-vs-base varies
+  by up to 17% there.
+- **PR-readiness.** The post-write head was **not** made PR-ready (not squashed onto
+  `9668b179` and not merged with `official/dev` `7abe1cf6`), because by these numbers it is not
+  cheap.
+
+### Not measured in round 2
+
+- Network latency: localhost only, so every extra read is one localhost round trip.
+- MongoDB versions other than 8.0.29.
+- Caps other than 500.
+- A post-read issued asynchronously after the reply.
+- An HTTP route that sends a filter-changing update (none was found; the shape is internal).
+- postnodel under the concurrent run without the pruner.
+- An event-by-event proof under the pruner race that every inexact event is flagged. The
+  in-process mis-naming test does prove it for its cases.
+- Memory and client-visible socket latency.
+
 ## Files
 
 | file | role |
@@ -339,8 +594,9 @@ and 560 records ≠ counts**, so the zero results above come from a check that c
 | `payload.js` | axis (b) |
 | `changefeed.js` | axis (c) |
 | `concurrent.js` | axis (d), with `--pruner` and `--break swap-writer` |
-| `run.sh` | up / all / down |
-| `results/` | `*.log` (tables, `docker inspect` state) and `*.json` (raw) for every axis above |
+| `misname.js` | round 2: which records each variant mis-names, with `--break counts-from-records` |
+| `run.sh` | up / all / round2 / down (the round-2 runs were driven by the same commands, with the arms listed in the round-2 section) |
+| `results/` | round 1: `*.log` (tables, `docker inspect` state) and `*.json` (raw); round 2: `results/round2/` |
 
 An earlier payload run attached the listener twice in some repetitions (a harness bug: modes
 were added without removing the previous listener). It was discarded and rerun after the fix.

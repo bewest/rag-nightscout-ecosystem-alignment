@@ -1,0 +1,882 @@
+{
+ "run": "b5be74",
+ "reps": 2,
+ "node": "v22.23.4",
+ "arms": [
+  {
+   "name": "base",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-base",
+   "head": "9668b179ff4efbdd335e400dec40b712bd5b9af6"
+  },
+  {
+   "name": "pre",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-proto",
+   "head": "8a39671502bbe9fb6bcdf027493290eb4a0910a1"
+  },
+  {
+   "name": "post",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-post",
+   "head": "408c7d03b065e733bf35d78d7d7f81d11ed00ed1"
+  },
+  {
+   "name": "postnodel",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-postnodel",
+   "head": "70e2d2181ea7d089ba7cc6edd7533f334dddc000"
+  },
+  {
+   "name": "capped",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-capped",
+   "head": "8432ea6624cd0682b3f353e37124c78ea9ba9a17"
+  }
+ ],
+ "shapes": {
+  "v1-entries-fresh-10000": {
+   "base": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "pre": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "post": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "postnodel": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "capped": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   }
+  },
+  "v1-entries-resend-10000": {
+   "base": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "pre": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "post": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "postnodel": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "capped": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   }
+  },
+  "v1-treatments-fresh-10000": {
+   "base": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "pre": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "post": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "postnodel": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "capped": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   }
+  },
+  "v1-treatments-resend-10000": {
+   "base": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "pre": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "post": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "postnodel": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 2,
+      "wrong": 0,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   },
+   "capped": {
+    "calls": 2,
+    "events": 2,
+    "truthOps": 20000,
+    "consumers": {
+     "names": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-drop-last": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     },
+     "BROKEN-ignore-counts": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 0,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 2
+     },
+     "BROKEN-guess": {
+      "exact": 0,
+      "wrong": 2,
+      "wrongUnflagged": 2,
+      "followUps": 0,
+      "eventsNeedingFollowUp": 0
+     }
+    }
+   }
+  }
+ }
+}

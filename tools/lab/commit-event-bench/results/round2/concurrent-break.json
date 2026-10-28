@@ -1,0 +1,111 @@
+{
+ "run": "a5ce9e",
+ "node": "v22.23.4",
+ "seconds": 10,
+ "pruner": false,
+ "break": "swap-writer",
+ "arms": [
+  {
+   "name": "post",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-post",
+   "head": "408c7d03b065e733bf35d78d7d7f81d11ed00ed1"
+  },
+  {
+   "name": "capped",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-capped",
+   "head": "8432ea6624cd0682b3f353e37124c78ea9ba9a17"
+  }
+ ],
+ "rows": [
+  {
+   "level": 2,
+   "round": 0,
+   "arm": "post",
+   "wall": 10.048,
+   "requests": 2666,
+   "failed": 0,
+   "perSecond": 265.3264331210191,
+   "latency": {
+    "n": 2666,
+    "median": 7.759741,
+    "p95": 13.867602,
+    "mean": 8.34764072055513
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1204,
+     "median": 6.930636,
+     "p95": 12.397649,
+     "mean": 7.490418308139533
+    },
+    "cgm": {
+     "n": 442,
+     "median": 7.144233,
+     "p95": 12.57077,
+     "mean": 7.7797400090497755
+    },
+    "care": {
+     "n": 1020,
+     "median": 9.037307,
+     "p95": 14.810218,
+     "mean": 9.605589641176461
+    }
+   },
+   "events": 2666,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 2886,
+   "namedRecords": 2886,
+   "cross": 266,
+   "countMismatch": 532,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "arm": "capped",
+   "wall": 10.047,
+   "requests": 2565,
+   "failed": 0,
+   "perSecond": 255.30008957897877,
+   "latency": {
+    "n": 2565,
+    "median": 8.439896,
+    "p95": 16.857018,
+    "mean": 9.179233086549692
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1142,
+     "median": 7.65349,
+     "p95": 15.771388,
+     "mean": 8.362865650612965
+    },
+    "cgm": {
+     "n": 427,
+     "median": 8.560094,
+     "p95": 16.568527,
+     "mean": 9.16091191100702
+    },
+    "care": {
+     "n": 996,
+     "median": 9.252764,
+     "p95": 17.724541,
+     "mean": 10.123123401606414
+    }
+   },
+   "events": 2565,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 2777,
+   "namedRecords": 2777,
+   "cross": 253,
+   "countMismatch": 512,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  }
+ ]
+}

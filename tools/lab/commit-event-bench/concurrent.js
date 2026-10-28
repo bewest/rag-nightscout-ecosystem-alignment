@@ -139,10 +139,10 @@ async function scenario (a, k, deadline) {
         }
         // ---- checks
         const reqTouches = requests.map(r => new Set(r.touches));
-        let cross = 0, countMismatch = 0, unnamed = 0, pruneEvents = 0;
+        let cross = 0, countMismatch = 0, unnamed = 0, pruneEvents = 0, collapsed = 0;
         const named = [];
         for (const e of events) {
-          if (!e.records) { unnamed++; continue; }
+          if (!e.records) { unnamed++; if (e.collapsed) collapsed++; continue; }
           const by = { created: 0, modified: 0, deleted: 0 };
           e.records.forEach(r => { by[KIND[r.change]]++; named.push(KIND[r.change] + ' ' + r._id); });
           const c = e.counts;
@@ -161,7 +161,7 @@ async function scenario (a, k, deadline) {
         const all = Object.values(lat).flat();
         const row = { level: k, round, arm: arm.name, wall, requests: requests.length, failed: requests.filter(r => !r.ok).length,
           perSecond: requests.length / wall, latency: L.stats(all), byWriter: Object.fromEntries(Object.entries(lat).map(([w, xs]) => [w, L.stats(xs)])),
-          events: events.length, unnamed, truthOps: truth.length, namedRecords: named.length, cross, countMismatch, missed, extra, pruneEvents };
+          events: events.length, unnamed, collapsed, truthOps: truth.length, namedRecords: named.length, cross, countMismatch, missed, extra, pruneEvents };
         rows.push(row);
         console.error(JSON.stringify({ k, round, arm: arm.name, req: row.requests, rps: row.perSecond.toFixed(1), med: row.latency.median.toFixed(2), p95: row.latency.p95.toFixed(2), events: row.events, truth: row.truthOps, cross, countMismatch, missed, extra, unnamed }));
       }
@@ -170,8 +170,8 @@ async function scenario (a, k, deadline) {
   await cli.close();
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify({ run, node: process.version, seconds: SECONDS, pruner: PRUNER, break: BREAK, arms: arms.map(a => Object.assign({}, a, { head: require('child_process').execFileSync('git', ['-C', a.tree, 'rev-parse', 'HEAD']).toString().trim() })), rows }, null, 1));
-  console.log('| k | round | arm | requests | failed | req/s | median ms | p95 ms | events | unnamed | change-stream ops | named | cross-attributed | records≠counts | missed | extra |');
+  console.log('| k | round | arm | requests | failed | req/s | median ms | p95 ms | events | unnamed (collapsed) | change-stream ops | named | cross-attributed | records≠counts | missed | extra |');
   console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
-  for (const r of rows) console.log('| ' + [r.level, r.round, r.arm, r.requests, r.failed, r.perSecond.toFixed(1), r.latency.median.toFixed(2), r.latency.p95.toFixed(2), r.events, r.unnamed, r.truthOps, r.namedRecords, r.cross, r.countMismatch, r.missed, r.extra].join(' | ') + ' |');
+  for (const r of rows) console.log('| ' + [r.level, r.round, r.arm, r.requests, r.failed, r.perSecond.toFixed(1), r.latency.median.toFixed(2), r.latency.p95.toFixed(2), r.events, r.unnamed + ' (' + r.collapsed + ')', r.truthOps, r.namedRecords, r.cross, r.countMismatch, r.missed, r.extra].join(' | ') + ' |');
   process.exit(0);
 })().catch(e => { console.error(e); process.exit(2); });

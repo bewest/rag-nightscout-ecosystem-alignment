@@ -58,6 +58,11 @@ R('lib/server/bootevent')(env, language).boot(async function booted (ctx) {
 
   process.on('message', m => {
     if (m.cmd === 'events') { process.send({ cmd: 'events', id: m.id, events, count }); events = []; }
+    if (m.cmd === 'internal' && m.op === 'moveOut') {
+      const col = R('lib/storage/write-step').collection(ctx.store.collection(env.entries_collection), { name: 'entries', source: 'internal', bus: ctx.bus });
+      col.updateMany({ bench: m.tag }, { $set: { bench: m.tag + '-moved' } })
+        .then(r => process.send({ cmd: 'internal', id: m.id, ok: true, modified: r.modifiedCount }), e => process.send({ cmd: 'internal', id: m.id, ok: false, err: String(e.message) }));
+    }
     if (m.cmd === 'exit') process.exit(0);
   });
   process.send({ cmd: 'ready', port, jwt, collections: { entries: env.entries_collection, treatments: env.treatments_collection, devicestatus: env.devicestatus_collection } });

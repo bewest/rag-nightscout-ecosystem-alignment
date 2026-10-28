@@ -37,16 +37,24 @@ async function startArm (name, tree, mongo, db, listener, ioTree) {
   });
   let seq = 0;
   const pending = new Map();
-  child.on('message', m => { if (m.cmd === 'events' && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } });
+  child.on('message', m => { if ((m.cmd === 'events' || m.cmd === 'internal') && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } });
   const arm = {
     name, tree, db, child, base, jwt: ready.jwt, sock, collections: ready.collections,
     events: () => new Promise(resolve => { const id = ++seq; pending.set(id, resolve); child.send({ cmd: 'events', id }); }),
     async req (method, p, body, v3) {
       const headers = { 'content-type': 'application/json' };
       if (v3) headers.authorization = 'Bearer ' + ready.jwt; else headers['api-secret'] = HASH;
-      const r = await fetch(base + p, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
-      const t = await r.text(); let j; try { j = JSON.parse(t); } catch (e) { /* not JSON */ }
-      return { s: r.status, j };
+      // A reset connection (an idle keep-alive socket the server closed as the
+      // client reused it) is reported as status 599 and counted as an error by
+      // the caller; it is never retried, because the write may have landed.
+      try {
+        const r = await fetch(base + p, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+        const t = await r.text(); let j; try { j = JSON.parse(t); } catch (e) { /* not JSON */ }
+        return { s: r.status, j };
+      } catch (e) { return { s: 599, err: String(e.cause && e.cause.code || e.message) }; }
+    },
+    internal (op, tag) {
+      return new Promise(resolve => { const id = ++seq; pending.set(id, resolve); child.send({ cmd: 'internal', op, tag, id }); });
     },
     emit (ev, d) {
       return new Promise(resolve => {
@@ -130,17 +138,35 @@ const SHAPES = {
     seed: async (a, tag) => idOf(await a.req('POST', '/api/v1/treatments/', [treatment(tag, nextT())])),
     run: (a, tag, id) => a.emit('dbUpdate', { collection: 'treatments', _id: id, data: { carbs: 21 } })
   },
+  // An update whose $set changes a field of its own filter, through the same
+  // write-step boundary every internal path uses (no HTTP route found sends
+  // one): the case a post-write read cannot see.
+  'internal-update-moves-out-10': {
+    seed: async (a, tag) => { const t = nextT(); await a.req('POST', '/api/v1/entries/', Array.from({ length: 10 }, (_, i) => entry(tag, t + i))); },
+    run: async (a, tag) => { const m = await a.internal('moveOut', tag); return { s: m.ok ? 200 : 500 }; }
+  },
   'ws-treatments-dbRemove': {
     seed: async (a, tag) => idOf(await a.req('POST', '/api/v1/treatments/', [treatment(tag, nextT())])),
     run: (a, tag, id) => a.emit('dbRemove', { collection: 'treatments', _id: id })
   }
 };
 
-// Bulk uploads (a backfill after an uploader was offline).
-const BULK = {
-  'v1-entries-backfill-1000': { run: (a, tag) => { const t = nextB(1000); return a.req('POST', '/api/v1/entries/', Array.from({ length: 1000 }, (_, i) => entry(tag, t + i * 1000))); } },
-  'v1-treatments-backfill-1000': { run: (a, tag) => { const t = nextB(1000); return a.req('POST', '/api/v1/treatments/', Array.from({ length: 1000 }, (_, i) => treatment(tag, t + i * 1000))); } }
-};
+// Bulk uploads (a backfill after an uploader was offline): fresh records, and a
+// full re-send of records already stored (an uploader that lost its upload
+// cursor). The re-send is the case where the post-write variant reads: every
+// upsert matches. Each backfill is one v1 POST of n records, dated 40 days back.
+function backfill (coll, n, resend) {
+  const make = tag => { const t = nextB(n); return Array.from({ length: n }, (_, i) => (coll === 'entries' ? entry : treatment)(tag, t + i * 1000)); };
+  return resend ? {
+    seed: async (a, tag) => { const body = make(tag); await a.req('POST', '/api/v1/' + coll + '/', body); return body; },
+    run: (a, tag, body) => a.req('POST', '/api/v1/' + coll + '/', body)
+  } : { run: (a, tag) => a.req('POST', '/api/v1/' + coll + '/', make(tag)) };
+}
+const BULK = {};
+for (const n of [1000, 10000]) for (const coll of ['entries', 'treatments']) {
+  BULK['v1-' + coll + '-fresh-' + n] = backfill(coll, n, false);
+  BULK['v1-' + coll + '-resend-' + n] = backfill(coll, n, true);
+}
 
 // The query delete at scale: the shape whose record identity costs a pre-read.
 function queryDelete (n) {

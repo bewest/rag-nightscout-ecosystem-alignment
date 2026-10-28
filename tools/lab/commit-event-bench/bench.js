@@ -21,7 +21,7 @@ const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i === -1 ? d : argv[i + 1]; };
 const arms = []; argv.forEach((a, i) => { if (a === '--arm') { const [name, rest] = argv[i + 1].split('='); const [tree, listener] = rest.split(':'); arms.push({ name, tree, listener: listener || 'count' }); } });
 const MONGO = opt('--mongo', 'mongodb://127.0.0.1:27601');
-const N = +opt('--n', 200), NBULK = +opt('--nbulk', 200);
+const N = +opt('--n', 200), NBULK = +opt('--nbulk', 200), NBIG = +opt('--nbig', 10);
 const ONLY = opt('--only', null);
 const OUT = path.resolve(opt('--out', path.join(__dirname, 'results', 'latency.json')));
 
@@ -33,12 +33,12 @@ const OUT = path.resolve(opt('--out', path.join(__dirname, 'results', 'latency.j
   const names = Object.keys(shapes).filter(n => !ONLY || ONLY.split(',').includes(n));
   const times = {}; names.forEach(n => { times[n] = {}; live.forEach(a => { times[n][a.name] = []; }); });
   const errors = {};
-  const maxIter = Math.max(N, NBULK);
+  const limit = name => name in L.BULK ? (/-10000$/.test(name) ? NBIG : NBULK) : N;
+  const maxIter = Math.max(...names.map(limit));
   const t0 = Date.now();
   for (let it = 0; it < maxIter; it++) {
     for (const name of L.shuffle(names.slice())) {
-      const bulk = name in L.BULK;
-      if (it >= (bulk ? NBULK : N)) continue;
+      if (it >= limit(name)) continue;
       const s = shapes[name];
       const seeds = {};
       for (const a of live) seeds[a.name] = s.seed ? await s.seed(a, name + '-' + run + '-' + it + '-' + a.name) : undefined;
@@ -58,7 +58,7 @@ const OUT = path.resolve(opt('--out', path.join(__dirname, 'results', 'latency.j
   for (const a of live) { counts[a.name] = (await a.events()).count; }
   for (const a of live) await a.stop();
 
-  const result = { run, mongo: MONGO, node: process.version, n: N, nbulk: NBULK, arms: arms.map(a => Object.assign({}, a, {
+  const result = { run, mongo: MONGO, node: process.version, n: N, nbulk: NBULK, nbig: NBIG, arms: arms.map(a => Object.assign({}, a, {
     head: require('child_process').execFileSync('git', ['-C', a.tree, 'rev-parse', 'HEAD']).toString().trim() })),
   wallSeconds: (Date.now() - t0) / 1000, errors, eventCounts: counts, shapes: {} };
   const ref = live[0].name;

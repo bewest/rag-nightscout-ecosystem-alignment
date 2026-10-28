@@ -53,6 +53,8 @@ const CONSUMERS = {
   },
   counts: evs => ({ set: [], followUps: evs.length }),
   'BROKEN-drop-last': evs => ({ set: evs.flatMap(e => (e.records || []).slice(0, -1).map(r => [KIND[r.change], r._id])), followUps: 0 }),
+  // the check must also catch a consumer that trusts names and ignores counts
+  'BROKEN-ignore-counts': evs => ({ set: evs.flatMap(e => (e.records || []).map(r => [KIND[r.change], r._id])), followUps: evs.filter(e => !e.records).length }),
   'BROKEN-guess': (evs, ctx) => ({ set: evs.flatMap(e => {
     // the newest documents of the collection, as many as the counts say
     const n = e.counts.inserted + e.counts.upserted;
@@ -66,14 +68,16 @@ const CONSUMERS = {
   const run = L.hex().slice(0, 6);
   const live = [];
   for (const a of arms) live.push(await L.startArm(a.name, a.tree, MONGO, 'devent_cf_' + a.name + '_' + run, 'capture'));
-  const shapes = Object.assign({}, L.SHAPES, L.BULK, { 'v1-entries-query-delete-100': L.queryDelete(100), 'v1-entries-query-delete-1000': L.queryDelete(1000) });
+  const only = opt('--only', null);
+  const all = Object.assign({}, L.SHAPES, L.BULK, { 'v1-entries-query-delete-100': L.queryDelete(100), 'v1-entries-query-delete-1000': L.queryDelete(1000) });
+  const shapes = Object.fromEntries(Object.entries(all).filter(([n]) => !only || only.split(',').includes(n)));
   const res = {};
   for (const [name, s] of Object.entries(shapes)) {
     res[name] = {};
     for (const a of live) {
       const db = cli.db(a.db);
       const agg = { calls: 0, events: 0, truthOps: 0, consumers: {} };
-      Object.keys(CONSUMERS).forEach(c => { agg.consumers[c] = { exact: 0, wrong: 0, followUps: 0, eventsNeedingFollowUp: 0 }; });
+      Object.keys(CONSUMERS).forEach(c => { agg.consumers[c] = { exact: 0, wrong: 0, wrongUnflagged: 0, followUps: 0, eventsNeedingFollowUp: 0 }; });
       for (let rep = 0; rep < REPS; rep++) {
         const tag = name + '-' + run + '-' + rep + '-' + a.name;
         const seeded = s.seed ? await s.seed(a, tag) : undefined;
@@ -110,6 +114,7 @@ const CONSUMERS = {
           const r = fn(evs, { newest });
           const ok = same(keyset(r.set), T);
           agg.consumers[c][ok ? 'exact' : 'wrong']++;
+          if (!ok && r.followUps === 0) agg.consumers[c].wrongUnflagged++;
           agg.consumers[c].eventsNeedingFollowUp += r.followUps;
         }
       }
@@ -122,11 +127,11 @@ const CONSUMERS = {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify({ run, reps: REPS, node: process.version, arms: arms.map(a => Object.assign({}, a, { head: require('child_process').execFileSync('git', ['-C', a.tree, 'rev-parse', 'HEAD']).toString().trim() })), shapes: res }, null, 1));
   const cons = Object.keys(CONSUMERS);
-  console.log('| shape | arm | calls | events | change-stream ops | ' + cons.map(c => c + ' exact (follow-up events)').join(' | ') + ' |');
+  console.log('| shape | arm | calls | events | change-stream ops | ' + cons.map(c => c + ' exact (follow-up events; wrong and unflagged)').join(' | ') + ' |');
   console.log('|---|---|---|---|---|' + cons.map(() => '---').join('|') + '|');
   for (const [name, byArm] of Object.entries(res)) {
     for (const [arm, g] of Object.entries(byArm)) {
-      console.log('| ' + name + ' | ' + arm + ' | ' + g.calls + ' | ' + g.events + ' | ' + g.truthOps + ' | ' + cons.map(c => g.consumers[c].exact + '/' + g.calls + ' (' + g.consumers[c].eventsNeedingFollowUp + ')').join(' | ') + ' |');
+      console.log('| ' + name + ' | ' + arm + ' | ' + g.calls + ' | ' + g.events + ' | ' + g.truthOps + ' | ' + cons.map(c => g.consumers[c].exact + '/' + g.calls + ' (' + g.consumers[c].eventsNeedingFollowUp + (g.consumers[c].wrongUnflagged ? '; UNFLAGGED ' + g.consumers[c].wrongUnflagged : '') + ')').join(' | ') + ' |');
     }
   }
   process.exit(0);
