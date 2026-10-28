@@ -5544,7 +5544,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>03a00b3e7</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>b478ea794</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>db3b9e4e</code> (2026-10-27). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5552,7 +5552,7 @@
 <li>storage behind one write path;</li>
 <li>the client and server identifiers Loop asked to separate;</li>
 <li>controller registration, from a read-only catalogue to typed writes;</li>
-<li>hosted multitenancy.</li>
+<li>multitenant Nightscout.</li>
 </ul>
 <p>It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.</p>
 <h2 id="1-where-things-stand">1. Where things stand<a class="headerlink" href="#1-where-things-stand" title="Permanent link">&para;</a></h2>
@@ -5588,7 +5588,7 @@
 <td>Tenancy</td>
 <td>nothing</td>
 <td>#8865 PLAT-SERVE (<code>f01d67e6</code>, base dev, open), which supersedes #8862 PLAT-ENTRY by carrying its commits</td>
-<td>tenant configuration, resolution, tenant-scoped auth, hosted lab</td>
+<td>tenant configuration, resolution, tenant-scoped auth, multitenant lab</td>
 </tr>
 </tbody>
 </table>
@@ -5823,7 +5823,7 @@
 </tr>
 <tr>
 <td>PLAT-SERVE</td>
-<td><code>nightscout serve &lt;roles&gt;</code>: hosted roles carved from <code>bootevent</code>, <code>api</code> first, each listener bound separately (D5, D7, D16)</td>
+<td><code>nightscout serve &lt;roles&gt;</code>: multitenant roles carved from <code>bootevent</code>, <code>api</code> first, each listener bound separately (D5, D7, D16)</td>
 <td>PLAT-ENTRY, ST-READS</td>
 </tr>
 <tr>

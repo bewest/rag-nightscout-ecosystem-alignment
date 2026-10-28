@@ -5871,7 +5871,7 @@ interface, with tenant resolution and per-tenant credentials. Its critical path 
 <tr>
 <td>PLAT-ENTRY, PLAT-SERVE</td>
 <td>yes</td>
-<td>hosted roles (D5) are <code>nightscout serve &lt;roles&gt;</code></td>
+<td>multitenant roles (D5) are <code>nightscout serve &lt;roles&gt;</code></td>
 </tr>
 <tr>
 <td>Tenant configuration surface (D-T30)</td>
@@ -5930,7 +5930,7 @@ the loudest row's (R3).</p>
 </tr>
 <tr>
 <td>16.1.0</td>
-<td>one executable, hosted roles as alpha, registration readable</td>
+<td>one executable, multitenant roles as alpha, registration readable</td>
 <td>#8862 and #8865 (one executable, <code>serve api</code>) with ST-V3-DECOUPLE; #8857 off by default (D-REG-FLAG); SPEC-ID-AMEND; the OpenAPI description of what 16.1.0 serves, including the registration paths</td>
 <td>minor</td>
 </tr>
@@ -5958,7 +5958,7 @@ the loudest row's (R3).</p>
 <ul>
 <li><strong>Multitenancy does not wait for 17.0.0.</strong> Multi mode is a new deployment target behind a setting
   a self-hoster never sets, so for the single-tenant surface it is additive (question 9). Its
-  maturity for hosting is a separate label (preview, then supported), set by TEN-LAB and a hosted
+  maturity for multitenant use is a separate label (preview, then supported), set by TEN-LAB and a multitenant
   soak, not by the version number.</li>
 <li><strong>17.0.0 is where identity is enforced, not where it starts.</strong> Identifier matching starts in
   16.0.0 (#8859) and spreads in 16.2.0; the unique index that makes it a guarantee is the major.</li>
@@ -6013,7 +6013,7 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 </tr>
 <tr>
 <td>M6</td>
-<td>tenant resolution, per-tenant credentials, realtime, the hosted lab, as a preview</td>
+<td>tenant resolution, per-tenant credentials, realtime, the multitenant lab, as a preview</td>
 <td></td>
 <td>16.3.0 or later</td>
 </tr>
@@ -6202,7 +6202,7 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 <ul>
 <li><strong>What happens.</strong> ST-PG and TEN-RESOLVE are built before the identity decisions, with
   <code>identifier</code> as an unconstrained column.</li>
-<li><strong>Who it reaches.</strong> Hosted tenants only; self-hosters are unaffected.</li>
+<li><strong>Who it reaches.</strong> Tenants of a multitenant Nightscout only; single-tenant sites are unaffected.</li>
 <li><strong>Risk.</strong> The unique key and the typed record paths are decided later, against tables that hold
   data. It also puts PostgreSQL behind an interface that has had no release under real traffic.</li>
 <li><strong>When to choose it.</strong> If a hosting partner needs a dated preview before the identity answers
@@ -6424,7 +6424,7 @@ release soaks them; and how does that weigh against releasing as soon as the can
 <li><strong>Trade.</strong> A cleaner stop for every Docker site in the major, against one more PR in the merge
   list; <code>serve api</code> ships labelled alpha.</li>
 </ul>
-<h3 id="b9-hosted-roles-in-1600-as-alpha">B9. Hosted roles in 16.0.0 as alpha<a class="headerlink" href="#b9-hosted-roles-in-1600-as-alpha" title="Permanent link">&para;</a></h3>
+<h3 id="b9-multitenant-roles-in-1600-as-alpha">B9. Multitenant roles in 16.0.0 as alpha<a class="headerlink" href="#b9-multitenant-roles-in-1600-as-alpha" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>What happens.</strong> ST-V3-DECOUPLE is built and #8865 merged before the tag, <code>serve api</code> labelled
   alpha.</li>
