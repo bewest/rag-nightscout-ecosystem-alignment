@@ -937,7 +937,7 @@ model.
 **The layers.**
 
 1. **Project floors**, in code, under `TENANCY_MODE=multi` only. The server refuses to start, or refuses to
-   save a policy or a value, that breaks one. Decided as four groups:
+   save a policy or a value, that breaks one. Decided as five groups (the fifth added the same day):
    - **no deployment secrets**: `API_SECRET` and `API_SECRET_FILE` refused (D13 as a check);
      `API3_SECURITY_ENABLE=false` refused;
    - **no anonymous writes**: default roles only from `denied`, `readable` and `status-only`;
