@@ -5873,7 +5873,7 @@ items:
     branch: ""
     base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: not-started
+    state: in-progress
     blast_radius: >
       lib/admin/platform.sql. D15's per-tenant configuration table, which hosted
       entrypoints read instead of the process environment, over the 277-name
@@ -5911,6 +5911,20 @@ items:
       - docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
       - docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md
     notes: >
+      2026-10-27 (session -4f's agent; scope and secrets re-checked by -4f):
+      built as a spec plus PostgreSQL lab in this repository, to port to dev
+      with ST-PG/TEN-RESOLVE (maintainer: this repo or the seam line). Spec
+      docs/30-design/tenancy/tenant-config-schema-2026-10-27.md; lab
+      tools/lab/tenant-config-schema/ (migrations 0001-0007, 0001 = the seam's
+      platform.sql at 81a1f6ce unchanged); 57 tests green, 72 of 72 controls
+      red, PostgreSQL 16.15, as a non-superuser application role. The §A.2
+      partial-mmol hazard reproduced on the old shape and is refused by the new
+      one. Migration tooling plan (both stores):
+      docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md, umzug
+      measured (needs one transaction per migration plus ledger row, and an
+      advisory lock). Eight mismatches (spec §10b; M1 fixed) and 17 open
+      questions (spec §11) for the maintainer.
+
       Two different blockers. T30-RESEARCH blocks the configuration table,
       because the settings surface is what that item enumerates and what a
       tenant may override versus what the hoster pins is a decision it still
