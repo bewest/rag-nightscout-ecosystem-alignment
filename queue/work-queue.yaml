@@ -6895,6 +6895,22 @@ items:
       a field a client already expects.
     register: [BF-165]
     gates:
+      - run: node tools/queue/gates/write-rule-copies.js --ref official/dev
+        kind: static
+        describe: >
+          No write rule (merge-patch, BF-194 units, write-validation,
+          validated-update, srv-dates, object-id-forms, the treatment fallback
+          key) gains a new (rule, file) pair or a larger count outside
+          lib/storage/write-intent.js, against
+          write-rule-copies.baseline.json (47 pairs at dev db3b9e4e; 45 on
+          feat/write-intent after slice 1). Holds the maintainer's rule of
+          2026-10-27: a new write rule goes into the step, not a route.
+      - run: bash tools/queue/gates/write-rule-copies-control.sh
+        kind: static
+        describe: >
+          Control for the gate above: an exported copy of official/dev passes,
+          and the same copy with one planted call to the BF-194 helper in
+          lib/server/food.js fails naming only that pair.
       - no-gate: >
           Not started; its blocker ARCH-8854 is merged (dev c08cbe03). Its gate is
           spec G1: tools/qc/write-contract-matrix.js run through every path

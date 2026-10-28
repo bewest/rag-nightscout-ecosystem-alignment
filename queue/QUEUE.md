@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 308 |
-| runnable gates | 375 |
+| runnable gates | 377 |
 | explicit `no-gate:` markers | 343 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 718 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 343 of the 720 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -7549,7 +7549,7 @@ alarm-readiness items, and the seam branch refresh.
 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `seam/t1-2-storage-interface` | n/a | 2 run + 1 no-gate |
 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-DUP-MEASURE` | Measure duplicate identifier values across the 12-site ns-data corpus | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
-| `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `in-progress` | `feat/write-intent` | patch | 0 run + 1 no-gate |
+| `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `in-progress` | `feat/write-intent` | patch | 2 run + 1 no-gate |
 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not required) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
@@ -8184,6 +8184,10 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[static]` `node tools/queue/gates/write-rule-copies.js --ref official/dev`
+  - No write rule (merge-patch, BF-194 units, write-validation, validated-update, srv-dates, object-id-forms, the treatment fallback key) gains a new (rule, file) pair or a larger count outside lib/storage/write-intent.js, against write-rule-copies.baseline.json (47 pairs at dev db3b9e4e; 45 on feat/write-intent after slice 1). Holds the maintainer's rule of 2026-10-27: a new write rule goes into the step, not a route.
+- `[static]` `bash tools/queue/gates/write-rule-copies-control.sh`
+  - Control for the gate above: an exported copy of official/dev passes, and the same copy with one planted call to the BF-194 helper in lib/server/food.js fails naming only that pair.
 - **NO GATE** &mdash; Not started; its blocker ARCH-8854 is merged (dev c08cbe03). Its gate is spec G1: tools/qc/write-contract-matrix.js run through every path with every cell equal to the pinned dev matrix except BF-165's two cells (treatments v1/inproc resend-identity gain _id); control: each of the spec's six one-line ablations turns its predicted cells red.
 
 **Evidence.**

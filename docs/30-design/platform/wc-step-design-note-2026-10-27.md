@@ -12,6 +12,25 @@ note says where its pieces are now, and what the step has to do on the code as i
 
 ---
 
+## 0. The rule, and the gate that holds it
+
+**Decided 2026-10-27 (maintainer): a new write rule goes into `lib/storage/write-intent.js`, not into a
+route.** This applies from now on, before every collection is enrolled. §3 below lists the copies that
+already exist outside any step; the slices move them in.
+
+Two gates hold it:
+
+- **G2** (`scripts/check-write-intent.js` on the branch): an enrolled module writes only through
+  `write(intent)`. Its coverage grows as each slice enrols a module.
+- **Write-rule copies** (`tools/queue/gates/write-rule-copies.js`, control
+  `write-rule-copies-control.sh`): for seven rule modules (merge-patch, the BF-194 units helper,
+  write-validation, validated-update, srv-dates, object-id-forms, the treatment fallback key), it counts
+  the lines in each other file under `lib/` and `bin/` that use the rule. It fails on a new (rule, file)
+  pair or a grown count against `write-rule-copies.baseline.json`. The baseline was measured on `dev`
+  `db3b9e4e`: 47 pairs. On `feat/write-intent` (slice 1) it reads 45: food's `srv-dates` and
+  `object-id-forms` copies are gone. The count can only go down; the baseline is re-written after a
+  slice moves a copy into the step, never to make a failure pass.
+
 ## 1. Placement: two layers, not one
 
 The spec (§2.1) puts `write(intent)` in `lib/storage/write-step.js`, "applied in `collectionFor`

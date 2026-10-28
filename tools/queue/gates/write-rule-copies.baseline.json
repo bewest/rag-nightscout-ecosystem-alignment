@@ -1,0 +1,66 @@
+{
+  "measured": "official/dev in externals/cgm-remote-monitor-official",
+  "rules": {
+    "object-id-forms": {
+      "lib/api/entries/index.js": 3,
+      "lib/api/shared/objectid-validation.js": 1,
+      "lib/api3/generic/create/acknowledge.js": 1,
+      "lib/api3/storage/mongoCollection/utils.js": 4,
+      "lib/authorization/storage.js": 1,
+      "lib/server/activity.js": 5,
+      "lib/server/devicestatus.js": 7,
+      "lib/server/entries.js": 7,
+      "lib/server/food.js": 4,
+      "lib/server/profile.js": 7,
+      "lib/server/query.js": 2,
+      "lib/server/treatments.js": 7,
+      "lib/server/websocket.js": 6
+    },
+    "write-validation": {
+      "lib/api/treatments/index.js": 3,
+      "lib/api3/generic/patch/operation.js": 1,
+      "lib/api3/shared/operationTools.js": 6,
+      "lib/server/env.js": 1,
+      "lib/server/treatments.js": 7,
+      "lib/server/websocket.js": 7,
+      "lib/storage/read-contract.js": 2,
+      "lib/storage/validated-update.js": 4,
+      "lib/storage/write-step.js": 6,
+      "lib/treatmentTargetUnits.js": 5
+    },
+    "target-units": {
+      "lib/api3/generic/create/insert.js": 1,
+      "lib/api3/generic/patch/operation.js": 1,
+      "lib/api3/generic/update/replace.js": 1,
+      "lib/server/treatments.js": 1,
+      "lib/server/websocket.js": 3
+    },
+    "srv-dates": {
+      "lib/api3/generic/create/insert.js": 1,
+      "lib/api3/generic/delete/operation.js": 1,
+      "lib/api3/generic/patch/operation.js": 1,
+      "lib/api3/generic/update/replace.js": 1,
+      "lib/server/bootevent.js": 1,
+      "lib/server/devicestatus.js": 1,
+      "lib/server/entries.js": 1,
+      "lib/server/food.js": 1,
+      "lib/server/profile.js": 3,
+      "lib/server/treatments.js": 4,
+      "lib/server/websocket.js": 8
+    },
+    "merge-patch": {
+      "lib/api3/generic/patch/operation.js": 2,
+      "lib/server/entries.js": 4,
+      "lib/server/profile.js": 3,
+      "lib/server/websocket.js": 4
+    },
+    "fallback-key": {
+      "lib/server/treatments.js": 1,
+      "lib/server/websocket.js": 1
+    },
+    "validated-update": {
+      "lib/server/websocket.js": 1,
+      "lib/storage/write-step.js": 2
+    }
+  }
+}
