@@ -87,7 +87,7 @@
 //
 // Usage:
 //   node tools/qc/alarm-critical-slice.js [--json] [--root <server checkout>]
-//                                         [--verbose]
+//                                         [--verbose] [--bf28 live|fixed]
 
 'use strict';
 
@@ -949,15 +949,31 @@ function selfChecks (results, depth) {
   // its WARN threshold it emits WARN.
   const agedUrgent = results.deviceAged.alarmSig;
   const agedWarn = results.insulinAgedWarn.alarmSig;
-  checks.push({
-    id: 'V7',
-    name: 'insulinage URGENT branch is unreachable (upstream defect, NOT fixed here)',
-    pass: !agedUrgent.includes('|iage|') && agedWarn.includes('|iage|')
-      && agedWarn.startsWith(String(levels.WARN) + '|'),
-    detail: `at each plugin's urgent threshold: ${JSON.stringify(agedUrgent)} ` +
-            `(cage/sage/bage URGENT, no iage) ; at iage's warn threshold: ` +
-            `${JSON.stringify(agedWarn)}`
-  });
+  const warnOk = agedWarn.includes('|iage|') && agedWarn.startsWith(String(levels.WARN) + '|');
+  // BF-28 (merged to dev in PR #8739) makes the URGENT branch reachable, so on a
+  // checkout that carries the fix the September assertion is inverted rather
+  // than dropped. `--bf28 fixed` asserts the fixed behaviour: iage URGENT at its
+  // urgent hour. The default, `live`, keeps the 2026-09-15 assertion.
+  const BF28 = opt('--bf28', 'live');
+  if (BF28 === 'fixed') {
+    checks.push({
+      id: 'V7',
+      name: 'insulinage URGENT fires at its urgent hour (BF-28 fixed in this checkout)',
+      pass: agedUrgent.includes(String(levels.URGENT) + '|IAGE|iage|') && warnOk,
+      detail: `at each plugin's urgent threshold: ${JSON.stringify(agedUrgent)} ` +
+              `(expect iage URGENT beside cage/sage/bage) ; at iage's warn threshold: ` +
+              `${JSON.stringify(agedWarn)}`
+    });
+  } else {
+    checks.push({
+      id: 'V7',
+      name: 'insulinage URGENT branch is unreachable (upstream defect, NOT fixed here)',
+      pass: !agedUrgent.includes('|iage|') && warnOk,
+      detail: `at each plugin's urgent threshold: ${JSON.stringify(agedUrgent)} ` +
+              `(cage/sage/bage URGENT, no iage) ; at iage's warn threshold: ` +
+              `${JSON.stringify(agedWarn)}`
+    });
+  }
 
   return checks;
 }
