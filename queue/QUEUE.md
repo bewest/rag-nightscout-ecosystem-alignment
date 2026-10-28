@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 324 |
-| runnable gates | 378 |
-| explicit `no-gate:` markers | 358 |
+| runnable gates | 382 |
+| explicit `no-gate:` markers | 354 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 358 of the 736 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 354 of the 736 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -2822,10 +2822,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-201` | BF-201 - npm run dev's nodemon watches nearly the whole repository (1,502 Linux file watches); watch the paths the server loads | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 1 run + 1 no-gate |
 | `BFQ-202` | BF-202 - CI's MongoDB 8.0 jobs fail on hosted runners with Linux 6.19 or newer (MongoDB refuses to start, SERVER-121912) | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 2 run + 1 no-gate |
 | `BFQ-203` | BF-203 - an editor opening a cgm-remote-monitor file inside a larger workspace watches every sibling worktree (450,689 inotify watches); add jsconfig.json | `merged-upstream` | `tooling/jsconfig-watch-scope` | n/a | 2 run + 1 no-gate |
-| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
-| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
-| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
-| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `ready-to-push` | `bf/16.0.0-views-data` | patch | 0 run + 1 no-gate |
+| `BFQ-204` | BF-204 - API v2 data-snapshot route returns the live 48 hours, not data framed at the requested time | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-205` | BF-205 - same-timestamp records are ordered differently between in-memory loads | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
+| `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `ready-to-push` | `bf/16.0.0-views-data` | patch | 1 run |
 | `BFQ-208` | BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed | `not-started` | `-` | patch | 1 run |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
@@ -6844,7 +6844,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.
+- `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/data.ddata-at.test.js`
+  - Runs tests/data.ddata-at.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks a past frame with a populated live cache: nothing in the answer newer than the requested time, and the cache unchanged; with dev's lib/ it fails with readings dated after that time (1 of 6). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 **Evidence.**
 
@@ -6874,7 +6875,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.
+- `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js`
+  - Runs tests/dataloader.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks the same documents in two query orders: the same order, and the same one of two temp basals at one time kept; with dev's lib/ both fail (2 of 5). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 **Evidence.**
 
@@ -6904,7 +6906,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its failing control.
+- `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/iob.test.js`
+  - Runs tests/iob.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks an untimestamped IOB 20 minutes old against a timestamped one 1 minute old, OpenAPS and Loop: the newer is current; with dev's lib/ the older wins (3 of 17). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 **Evidence.**
 
@@ -6934,7 +6937,8 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; Observed 2026-10-27 by session -65's ST-VIEWS census on a corpus fixture. A gate replays a same-hour burst, and one crossing an hour boundary, and asserts the newest start is reported; dev db3b9e4e is its failing control.
+- `[unit]` `sh tools/queue/gates/bf204-207-views-data.sh tests/sensorage.test.js`
+  - Runs tests/sensorage.test.js from bf/16.0.0-views-data (git archive) twice: as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on assertions only. It checks a same-hour burst in either order and the hour boundary: the newest start is kept; with dev's lib/ the oldest-first burst keeps the older start (1 of 11). Needs node_modules installed at the fix ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 **Evidence.**
 

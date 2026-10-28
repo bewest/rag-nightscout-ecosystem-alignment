@@ -45,16 +45,20 @@ maintainer
 
 ## What was measured
 
-**Nothing runnable.** Every gate on this item is an explicit `no-gate:` marker. Read the next section as the whole evidence picture, not as a caveat on it.
+**`sh tools/queue/gates/bf204-207-views-data.sh tests/iob.test.js`** &nbsp;·&nbsp; kind: `unit`
+
+Runs tests/iob.test.js from bf/16.0.0-views-data (git archive) twice: as it
+is, where it must pass, and with lib/ at dev db3b9e4e, where it must fail on
+assertions only. It checks an untimestamped IOB 20 minutes old against a
+timestamped one 1 minute old, OpenAPS and Loop: the newer is current; with
+dev's lib/ the older wins (3 of 17). Needs node_modules installed at the fix
+ref (default the externals/work/crm-bf-views worktree); otherwise UNMEASURED.
+Measured 2026-10-27 by session -65: met. Controls: the same lib/ on both sides
+reports NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 ## What these gates do NOT prove
 
-*Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
-
-- Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-
-  census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev
-  db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its
-  failing control.
+*No `no-gate:` markers on this item — every declared property has a runnable measurement. That is rare in this manifest and worth confirming rather than assuming.*
 
 ## Evidence
 

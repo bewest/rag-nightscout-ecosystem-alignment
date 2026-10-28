@@ -41,16 +41,20 @@ maintainer
 
 ## What was measured
 
-**Nothing runnable.** Every gate on this item is an explicit `no-gate:` marker. Read the next section as the whole evidence picture, not as a caveat on it.
+**`sh tools/queue/gates/bf204-207-views-data.sh tests/dataloader.test.js`** &nbsp;·&nbsp; kind: `unit`
+
+Runs tests/dataloader.test.js from bf/16.0.0-views-data (git archive) twice:
+as it is, where it must pass, and with lib/ at dev db3b9e4e, where it must
+fail on assertions only. It checks the same documents in two query orders: the
+same order, and the same one of two temp basals at one time kept; with dev's
+lib/ both fail (2 of 5). Needs node_modules installed at the fix ref (default
+the externals/work/crm-bf-views worktree); otherwise UNMEASURED. Measured
+2026-10-27 by session -65: met. Controls: the same lib/ on both sides reports
+NOT MET; the official clone's older node_modules reports UNMEASURED.
 
 ## What these gates do NOT prove
 
-*Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
-
-- Reproduced 2026-10-27 by session -65's ST-VIEWS census (branch lab/views-
-  census, docs/60-research/platform/st-views-census-2026-10-27.md §4) on dev
-  db3b9e4e. A queue gate is written with the fix, with dev db3b9e4e as its
-  failing control.
+*No `no-gate:` markers on this item — every declared property has a runnable measurement. That is rare in this manifest and worth confirming rather than assuming.*
 
 ## Evidence
 
