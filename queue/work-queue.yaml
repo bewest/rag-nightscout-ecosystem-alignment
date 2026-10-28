@@ -5959,7 +5959,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: ""
     base: main
-    state: not-started
+    state: in-progress
     pr: []
     blast_radius: >
       tools/lab/tenant-config-schema (compare.js and the MongoDB migrator):
@@ -5980,6 +5980,13 @@ items:
     evidence:
       - docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md
     notes: >
+      2026-10-27, started (maintainer): MongoDB 8.0 as a three-member
+      replica set, and 5.0 (dev's floor, CI's oldest lane per
+      docs/runtime-upgrade.md at db3b9e4e; 4.4 unsupported) standalone and as
+      a replica set; a primary failover during a migration; whether the
+      adapter can use a transaction on a replica set. Session -4f's agent, on
+      lab/tenant-config-schema.
+
       The maintainer adopted umzug for both stores provisionally on
       2026-10-27 and asked for this verification before it is confirmed.
       The standalone MongoDB 8.0.34 measurements are in the plan's table.
