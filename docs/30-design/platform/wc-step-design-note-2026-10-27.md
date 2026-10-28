@@ -39,6 +39,12 @@ socket's `dbAdd` for treatments, devicestatus and profile (the `near` match, WRI
 then the step's `id-match` duplicates it). Matrix gaps found: no form PUTs over a stored string twin, reads
 an `_id` that fails, or removes by a custom or numeric `_id`; those are covered by unit tests only.
 
+**Release-1 answers (maintainer, 2026-10-27).** For release 1 (Q6 (a): no behaviour change), Q-A to Q-I
+are answered "keep today's behaviour, unify in release 2": the step encodes each path's current way as
+data, and G1 proves nothing moved. Each becomes a deliberate change, with its own decision, in release 2.
+Slice 5 proceeds; slices 4 (v3) and 6 (the socket's treatment handling and updates) are held until the
+maintainer has reviewed the explanation of the questions.
+
 ## 1. Placement: two layers, not one
 
 The spec (§2.1) puts `write(intent)` in `lib/storage/write-step.js`, "applied in `collectionFor`
