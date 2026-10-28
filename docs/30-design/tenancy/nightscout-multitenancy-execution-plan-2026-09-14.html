@@ -5652,14 +5652,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>ddf766ae8</code>.</em></p>
+<p><em>Living document, last changed 2026-10-27 at <code>15e6e0e05</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D21 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ddf766ae871cde919a1485e37cafe79a281614fe/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7c96e819d111159fa48f60b92ccf4ed0fe0568b8/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -7128,7 +7128,7 @@ and Ory uses to turn its public and admin listeners on and off (<code>serve publ
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
 change) and PLAT-SERVE (the hosted roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ddf766ae871cde919a1485e37cafe79a281614fe/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7c96e819d111159fa48f60b92ccf4ed0fe0568b8/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
 <p><strong>Amended 2026-10-27 (maintainer): the subcommand selects tenancy.</strong> <code>nightscout single</code> is
 single-tenant and every <code>nightscout serve</code> role is multitenant, so no separate tenancy setting is
@@ -8546,6 +8546,13 @@ already issue two as <code>count: 1</code>); <strong><code>ns-evaluator</code> n
 <li><code>devicestatus</code> (478 KB), because <code>iob.js</code> prefers device-reported IOB — but only its newest document
   is needed.</li>
 </ul>
+<p><em>Superseded for device statuses (maintainer, 2026-10-27; ST-VIEWS):</em> the newest document, or the
+  10 newest the bounded view first took, is not enough. When a second uploader floods device statuses,
+  today's code raises two URGENT alarms (OpenAPS not looping, pump data stale) and a 10-newest window
+  raises none (reproduced by session -65). The window keeps the 10 newest plus the newest status of
+  each kind the alarm plugins read (loop, openaps, pump, uploader and the rest), looking back as far as
+  today's resident device-status load (24 hours, or 2 days by setting). The same crowding question for
+  entries (a duplicate uploader against the 12 newest readings) is open.</p>
 <p>The top-down spike reported a field split with raw <code>treatments</code> as display-only; that is wrong
 (<code>treatmentnotify</code> withholds on treatments) and the spike's corpus armed 6 of 17 alarm producers. The
 bottom-up result is the one to use.</p>
