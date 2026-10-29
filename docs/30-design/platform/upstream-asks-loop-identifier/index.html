@@ -5605,7 +5605,7 @@
 
 
 <h1 id="reply-to-the-loop-developers-identifier-proposal">Reply to the Loop developers' <code>identifier</code> proposal<a class="headerlink" href="#reply-to-the-loop-developers-identifier-proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>89afcd90f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>f3a1d540d</code>.</em></p>
 <p><em>What this is: an outreach draft (contributor-facing). Read after the <a href="../spec/identity.html">identity
 specification</a>; leads to the <a href="../upstream-asks-device-simulators/index.html">device-simulator
 requests</a>. Status: </em><em>posted 2026-10-27 as an update on this page</em><em> (the maintainer's choice of channel); the reply is <a href="reply.body.html">reply.body.md</a>. Queue item <code>LOOP-ID-REPLY</code>.
@@ -5806,7 +5806,7 @@ model is generally workable; the previous, longer version is in git history at <
 <p>Decisions cited: <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20 rule 5 and rule 7</a>
 (<code>18397441</code>, 2026-10-16); <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §3 (U4, U6) and §6.1</a>
 (2026-10-12); <a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync design §3.7</a>
-(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/d6c670cb792ffc33897989df38fda12a4c6248b3/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
+(<code>write.ids</code>, <code>matchedBy</code>); cases in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c6e0a457c9a15b1c9662227f3df6c43b3b5369d8/specs/sync/conformance/quirks"><code>specs/sync/conformance/quirks/</code></a>;
 <a href="../../../../traceability/sync-identity-gaps.html">GAP-SYNC-032</a> ("send <code>syncIdentifier</code> as
 <code>identifier</code>") and REQ-BATCH-003 (per-item results) in
 <a href="../../../../traceability/sync-identity-requirements.html">sync-identity-requirements</a>.</p>
@@ -5881,6 +5881,13 @@ send <code>identifier</code>) is the direction the reply takes.</p>
 <td>—</td>
 <td>the maintainer proceeds without waiting for Loop's answers, revisable when they come: identifier 1 to 256 URL-safe characters, a UUID recommended, placeholders refused; a client may still send an ObjectId <code>_id</code> over API v1 (legacy), while going forward the server sets <code>_id</code> and the client sets <code>identifier</code>. Case 1 and 2 (a re-send with the same <code>identifier</code> and changed fields): the maintainer leans to blocking; a client survey of edit paths and error handling is under way before it is decided</td>
 <td>plan D-LOOP-ID</td>
+</tr>
+<tr>
+<td>2026-10-29</td>
+<td>revised</td>
+<td>—</td>
+<td>rule 3 decided by the maintainer after a client survey (Loop 3.14.9, Trio 1.0.2, AndroidAPS, xDrip+, xDrip4iOS, nightscout-connect, tconnectsync, oref0, nightguard): merge on match stays the default, because Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by <code>POST</code> and rely on the update, and a refusal makes Loop and Trio retry silently without end; v3 keeps refusing a changed date, device or event type; <code>PUT</code> replaces; a site setting and per-client quirks (D20) may select keep-first or refuse for clients that opt in. Case 2 corrected (a Loop carb edit is a v1 <code>PUT</code> by an <code>_id</code> cached for 24 h, not a re-send), and a caution added that an edit is lost when that <code>_id</code> is no longer cached</td>
+<td>plan D-LOOP-ID; <a href="../../../60-research/tenancy/identity-resend-survey-2026-10-29.html">client survey</a></td>
 </tr>
 </tbody>
 </table>

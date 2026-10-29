@@ -5680,7 +5680,7 @@
 
   <h1>Reply.body</h1>
 
-<p><em>Living document, last changed 2026-10-27 at <code>a2a670252</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>f3a1d540d</code>.</em></p>
 <p><strong>Re: client-supplied identifiers for Nightscout</strong></p>
 <p>Thank you for writing this up. We agree with the core of the ask, and most of what Loop needs
 already works. The one gap we found, v1 entries and device status ignoring <code>identifier</code> on a
@@ -5841,6 +5841,11 @@ the comparison slightly differently).</p>
   with the same identifier is stored twice there; from 16.0.0 it is matched
   (<a href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-27.html">lab</a>).</li>
 <li><strong>Older servers store the field and ignore it.</strong></li>
+<li><strong>A carb edit can be lost.</strong> Loop 3.14.9 sends a carb edit as a v1 <code>PUT</code> by the record's <code>_id</code>, which
+  it caches for 24 hours. If the <code>_id</code> is no longer cached, the edit is not sent at all, and nothing tells
+  the user. The server can take the edit by <code>identifier</code> instead: API v3 <code>PATCH</code> or <code>PUT</code>
+  <code>/api/v3/treatments/{identifier}</code> today, and a v1 re-send with the same <code>identifier</code> (merged on match).
+  Would Loop send edits that way?</li>
 </ul>
 <h2 id="six-cases-what-should-nightscout-do">Six cases: what should Nightscout do?<a class="headerlink" href="#six-cases-what-should-nightscout-do" title="Permanent link">&para;</a></h2>
 <p>To make the contract unambiguous, we would like your answer for each case. "Our default" is what
@@ -5865,9 +5870,9 @@ our decisions so far give, chosen to keep today's clients working.</p>
 </tr>
 <tr>
 <td>2</td>
-<td>Loop re-sends a carb entry after the user edits its amount or time, same <code>identifier</code></td>
-<td>v1 treatments: updated. API v3: 400 if the time changed</td>
-<td>updated (merge); an explicit <code>PUT</code> replaces</td>
+<td>Loop re-sends a record that changed after its first upload, same identity: a dose whose final amount differs, or an override ended early (Loop 3.14.9 does both by <code>POST</code>; a carb edit is a <code>PUT</code>, below)</td>
+<td>v1 treatments: updated. API v3: 400 if the date, device or event type changed</td>
+<td>updated (merge), kept as the default; an explicit <code>PUT</code> replaces. A switch, a site setting or a per-client rule, may later select keep-first or refuse for clients that opt in</td>
 <td></td>
 </tr>
 <tr>
