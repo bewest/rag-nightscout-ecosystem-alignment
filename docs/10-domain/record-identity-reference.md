@@ -178,6 +178,47 @@ BF-170 (2026-10-18). On `dev` since #8845 (merged 2026-10-26, `47723cda`), API v
 and `PATCH` refuse a client-supplied body `_id` with 400 [R], and
 [identity I2](../30-design/platform/spec/identity.md#1-rules) states that rule.
 
+### 2.7 What a re-send does, by collection and path (added 2026-10-29)
+
+This section has its own pin: the write-contract matrix on `dev` `db3b9e4e`
+([`dev-db3b9e4e-v2.json`](../../tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json),
+measured 2026-10-27, form `resend-identity`). The record re-sent is identical to the first and carries no
+`identifier`, so it is matched by each collection's own key. **[M]**
+
+| collection | API v1 | API v3 | socket | in-process |
+|---|---|---|---|---|
+| entries | updated | updated | duplicate | updated |
+| treatments | updated | updated | kept | updated |
+| device status | duplicate | kept | kept | duplicate |
+| profile | duplicate | updated | updated | duplicate |
+| food | duplicate | updated | duplicate | duplicate |
+| activity | duplicate | n/a | duplicate | duplicate |
+
+- **updated:** one record. `srvModified` advances, and the later upload's fields are merged in (upsert).
+- **kept:** one record and nothing written. The reply names the stored record (first upload wins).
+- **duplicate:** a second record is stored.
+
+The same matrix's `resend-near` form re-sends the record one second later. Every path stores a second
+record, except the socket's treatments, where the ±2 s similar match keeps one. **[M]**
+
+Three related facts:
+- **With an `identifier`.** v1 treatments match on it first and update (since 15.0.7, #8421). On `dev`
+  since #8859, v1 entries match on it and update, and v1 device status matches on it and keeps the
+  stored record. **[M]**
+- **With changed fields.** A v1 treatment re-sent with a changed amount or time is updated. API v3 answers
+  400 when `date`, `device` or `eventType` changes
+  ([v3-identifier-immutable](../../tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-27.md)).
+  That 400 is the only refusal of a re-send on any path. **[M]**
+- **The socket's treatment exact match keeps the first record and drops an edited re-send.** Session -4f's
+  dedupe gate, 2026-10-29, pins this. **[M]**
+
+**What clients rely on.** Loop's doses and early-ended overrides, and Trio's finalized doses and temp
+targets, are re-sent by `POST` over v1 and rely on the update. Carb edits use `PUT`, `PATCH`, or a delete
+followed by a new record ([client survey](../60-research/tenancy/identity-resend-survey-2026-10-29.md)).
+D-LOOP-ID rule 3 (maintainer, 2026-10-29) keeps today's per-path behaviour as the default. A switch, a
+site setting plus per-client quirks, may opt a client into keep-first or refuse. The duplicate cells
+are the subject of ID-FIRST-MATCH.
+
 ## 3. `UUID_HANDLING`
 
 `UUID_HANDLING` is on unless set false (`env.uuidHandling = readENVTruthy("UUID_HANDLING", true)`,
