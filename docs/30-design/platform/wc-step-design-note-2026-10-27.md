@@ -76,6 +76,26 @@ delete. Single-tenant Nightscout supports writes to MongoDB only through its own
 2026-10-29), so every write the catch-up must see carries `srvModified`. A since-watermark arm is
 to be added to the D-EVENT bench (`tools/lab/commit-event-bench`).
 
+**Slice 6 dedupe gate, 2026-10-29.** Session -4f's gate (`test/ws-dedupe` `fe1aee82`, 58 tests, an
+ablation per rule) pins today's socket behaviour and found four differences from the rule list. They were
+re-run on `v15.0.9` `c6a0d8ed`.
+1. The similar match ignores client identity apart from `NSCLIENT_ID` (same on 15.0.9). Filed as **BF-209**.
+   The maintainer asked for it to be fixed for the pending release candidate, so the gate's fixtures for it
+   change deliberately when the fix lands.
+2. In reject mode, a similar-matched temp target stores `durationInMilliseconds` and `endmills`, and the reply
+   omits them (dev only): **Q-Q**, release 2.
+3. A soft-deleted profile is matched, and so revived, by a socket `dbAdd` with the same `NSCLIENT_ID` or
+   `startDate` (same on 15.0.9): **Q-R**, release 2. Whether AndroidAPS 3.4.2.x's v1 NSClient, the only
+   profile `dbAdd` sender found, can reach it is being checked; if it can, it becomes a BF.
+4. An amount field the write does not carry is not part of the match (same on 15.0.9). This is with the
+   maintainer.
+
+A side finding: the chart-drag split (`treatmenttime.js` `splitRecord`) keeps the original's client identity
+on the new half. That can leave two records with one identity. It was read from the code and is being
+reproduced. The maintainer's direction: editing is mainly for fixing broken records, so a lossy edit of a
+record that an automated controller claims (one with a client identity) should need an extra manual
+confirmation.
+
 ## 1. Placement: two layers, not one
 
 The spec (§2.1) puts `write(intent)` in `lib/storage/write-step.js`, "applied in `collectionFor`
