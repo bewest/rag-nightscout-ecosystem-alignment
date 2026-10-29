@@ -5820,7 +5820,7 @@ is not a decision.</p>
 <tr>
 <td>Q1</td>
 <td>Does an operator override replace the deployment row whole, or field by field?</td>
-<td>whole row</td>
+<td><strong>decided (2026-10-29):</strong> whole row. A later deployment change does not leak into overridden tenants</td>
 </tr>
 <tr>
 <td>Q2</td>
@@ -5840,7 +5840,7 @@ is not a decision.</p>
 <tr>
 <td>Q5</td>
 <td>Are operator policy changes, at deployment and per tenant, versioned or audited? How do they invalidate tenants' caches?</td>
-<td>not versioned</td>
+<td><strong>direction (2026-10-29):</strong> audited, by whichever of audit, invalidation and versioning each need calls for, but through one audit approach shared across the code base, not a second incompatible one. An inventory of the existing audit and history mechanisms comes first (see the note under this table); the lab's working shape is AFTER triggers writing append-only audit rows with the operator's identity from <code>SET LOCAL</code>, a policy generation number and <code>pg_notify</code></td>
 </tr>
 <tr>
 <td>Q6</td>
@@ -5875,7 +5875,7 @@ is not a decision.</p>
 <tr>
 <td>Q12</td>
 <td>Export and deletion: which configuration tables are "tenant data" for <code>tenantScopedTables</code> and <code>NOT_TENANT_DATA</code>? Owner values, versions and integrations are the owner's. Overrides are the operator's.</td>
-<td>not addressed</td>
+<td><strong>decided (2026-10-29):</strong> export carries the owner's tables (values, thresholds, versions, integrations with references only, integration status), not operator overrides; deleting the tenant deletes all of them, overrides included</td>
 </tr>
 <tr>
 <td>Q13</td>
@@ -5905,7 +5905,7 @@ is not a decision.</p>
 <tr>
 <td>Q18</td>
 <td>Existing <code>tenant_members</code> rows have no recorded provider. Should they be backfilled with a stated provider (the seam's rows came from the Kratos proof), or the table emptied?</td>
-<td><code>0002</code> refuses to run while rows exist</td>
+<td><strong>decided (2026-10-29), question dissolved:</strong> the table is on no merged branch, so the migrations are rewritten instead of migrated: one <code>CREATE TABLE</code> with provider and subject from the start, no row migration. The table is renamed <code>tenant_access_grants</code>: one row is one identity the tenant has granted access to, with its permissions (owner, care team, family, followers; uploader apps keep tokens). Single-tenant needs the same contract (see the note under this table)</td>
 </tr>
 <tr>
 <td>Q19</td>
@@ -5919,6 +5919,19 @@ is not a decision.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Maintainer notes, 2026-10-29.</strong></p>
+<ul>
+<li><strong>One access-grant contract, two stores.</strong> Single-tenant Nightscout on MongoDB will need the same
+  logic once a login plugin is enabled (D17 as amended: a pluggable identity provider). The plugin would
+  link an identity provider's (provider, subject) to an existing authorization subject (<code>auth_subjects</code>),
+  and today's token mechanics would then issue that subject's roles. <code>tenant_access_grants</code> is the
+  multitenant store of the same contract. Not yet designed; no plan row yet.</li>
+<li><strong>One audit approach.</strong> Before Q5 is built, inventory what already records history or attribution:
+  this schema's <code>tenant_config_version</code>, API v3 history by <code>srvModified</code>, the write step's internal commit
+  event, the authority spec's §8 (which lists "who took an owner action and when" as not recorded),
+  commands CM1, and the agent trust boundaries' append-only audit requirement. Propose one audit record
+  shape that both MongoDB and PostgreSQL can hold. Q5 then uses it.</li>
+</ul>
 <h2 id="12-evidence">12. Evidence<a class="headerlink" href="#12-evidence" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Lab: <code>tools/lab/tenant-config-schema/</code>: <code>README.md</code> (how to run, the full results table) and
