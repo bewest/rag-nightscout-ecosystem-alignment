@@ -76,6 +76,21 @@ delete. Single-tenant Nightscout supports writes to MongoDB only through its own
 2026-10-29), so every write the catch-up must see carries `srvModified`. A since-watermark arm is
 to be added to the D-EVENT bench (`tools/lab/commit-event-bench`).
 
+**Progress, 2026-10-29: slice 4 is built** (local `feat/write-intent-s4`: `00f93946` rule table, `3cad3508` v3
+through `write(intent)`). v3 uses only the cached wrapper's identifier methods (`insertOne`, `replaceOne`,
+`updateOne`, `updateEveryForm`, `deleteEveryForm`). Server dates, BF-194 units, subject/modifiedBy, duration,
+the merge patch and the write calls moved into the step. Permissions, validation, the identifying read,
+`acknowledge.js`, HTTP shaping, storage-socket emissions and autoPrune stayed in the modules; `writeFilter`'s
+twin choice stayed below the interface. G1 shows 0 of 360 cells differing, and the commit-event copy 0.
+`npm test` gives 4960/0/3 (+41). Each ablation goes red only in v3 cells; four breaks the matrix cannot
+see are caught by the unit tests. Cache emissions are unchanged. A control that swaps in a query-based method
+turns them into `remove (reload)`, and its reach extends to socket cells in three collections. Rule copies
+fell from 37 to 28. New release-2 questions:
+- **Q-S:** a v3 delete reaches every stored form, while PUT/PATCH write the one `writeFilter` picks.
+- **Q-T:** the intent carries the authenticated subject (`by`); compare Q-P.
+- **Q-U:** autoPrune (`collection.js:158`, `deleteManyOr`) is a query-based v3 delete outside the step. It is
+  a candidate for Q-A's watermark catch-up.
+
 **Slice 6 dedupe gate, 2026-10-29.** Session -4f's gate (`test/ws-dedupe` `fe1aee82`, 58 tests, an
 ablation per rule) pins today's socket behaviour and found four differences from the rule list. They were
 re-run on `v15.0.9` `c6a0d8ed`.
