@@ -1,0 +1,3 @@
+base-a 5min {"insert":1,"query":95,"update":9,"delete":0,"getmore":0,"command":214} {"dbStats":7,"find":95,"hello":178,"insert":1,"isMaster":26,"listIndexes":2,"serverStatus":1,"update":2}
+cache-pool100 5min {"insert":1,"query":95,"update":14,"delete":0,"getmore":0,"command":223} {"dbStats":7,"find":95,"hello":178,"insert":1,"isMaster":35,"listIndexes":2,"serverStatus":1,"update":2}
+bypass-pool5 5min {"insert":1,"query":104,"update":9,"delete":0,"getmore":0,"command":209} {"dbStats":7,"find":104,"hello":178,"insert":1,"isMaster":21,"listIndexes":2,"serverStatus":1,"update":2}
