@@ -56,9 +56,15 @@ make every rule error an asynchronous refusal), **Q-L** (devicestatus on v1 has 
 treatments fallback key reads `created_at` two ways), **Q-N** (the shared `_id` rule), **Q-O** (devicestatus
 inserts unordered, profile ordered), **Q-P** (does an authorization input, `canUpdate`, belong in an intent).
 
-**Maintainer, 2026-10-29.** Slice 4 is released. As built it keeps v3 writing by identifier through
+**Maintainer, 2026-10-29.** Slices 4 and 6 are released. Slice 6 has an extra gate, because its rules decide
+whether a treatment is a duplicate (`websocket.js:743-860`): a wrong move would drop a real second bolus or
+carb entry, or store a re-send twice. Each rule needs a fixture that keeps today's result and an ablation that
+goes red: exact `NSCLIENT_ID` and fallback-key (BF-121) match, the 2-second similar match at its edges, each
+BF-09 zero case, a different `eventType` being a second record, soft-deleted records never matching, the
+similar match setting only `created_at` and `srvModified`, and WRITE_VALIDATION reply slots. Any difference
+is stop-and-report. On slice 4: As built it keeps v3 writing by identifier through
 the cached wrapper (`mongoCachedCollection`), which updates or removes only the record written, so it adds
-no cache flush and no MongoDB load. Slice 6 stays held. Q-A for release 2 is open, with research continuing,
+no cache flush and no MongoDB load. Q-A for release 2 is open, with research continuing,
 on the maintainer's proposal: instead of the full flush a query-based write causes today (a `remove` with
 no ids empties all three caches, `lib/server/cache.js`), the step would read the collection back from a
 `srvModified` watermark. This rests on three things on `dev`. Every server write path stamps `srvModified`
