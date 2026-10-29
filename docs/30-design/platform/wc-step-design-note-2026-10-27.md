@@ -66,7 +66,8 @@ no ids empties all three caches, `lib/server/cache.js`), the step would read the
 indexes the field (`mongoCollection/index.js:147-150`). The record's own time (`date`, `created_at`) cannot
 serve as the watermark: it is the event time a client set, so late uploads, edits and future-dated clocks
 would be missed. Hard deletes leave nothing for the watermark to find, so they keep reading ids before the
-delete. Writers that bypass the server are left to the loader's existing poll. A since-watermark arm is
+delete. Single-tenant Nightscout supports writes to MongoDB only through its own APIs (maintainer,
+2026-10-29), so every write the catch-up must see carries `srvModified`. A since-watermark arm is
 to be added to the D-EVENT bench (`tools/lab/commit-event-bench`).
 
 ## 1. Placement: two layers, not one
