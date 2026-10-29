@@ -40,7 +40,7 @@ pages:
   nightscout-next-gen-platform.html:
     kind: living
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
-    source_commit: 0c4689d0c
+    source_commit: f3a1d540d
     render: tools/site/render_nextgen.py
   api-aid-commands-2025.html:
     kind: living
