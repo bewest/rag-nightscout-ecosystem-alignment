@@ -62,7 +62,7 @@ carb entry, or store a re-send twice. Each rule needs a fixture that keeps today
 goes red: exact `NSCLIENT_ID` and fallback-key (BF-121) match, the 2-second similar match at its edges, each
 BF-09 zero case, a different `eventType` being a second record, soft-deleted records never matching, the
 similar match setting only `created_at` and `srvModified`, and WRITE_VALIDATION reply slots. Any difference
-is stop-and-report. On slice 4: As built it keeps v3 writing by identifier through
+is stop-and-report. On slice 4: as built, it keeps v3 writing by identifier through
 the cached wrapper (`mongoCachedCollection`), which updates or removes only the record written, so it adds
 no cache flush and no MongoDB load. Q-A for release 2 is open, with research continuing,
 on the maintainer's proposal: instead of the full flush a query-based write causes today (a `remove` with
