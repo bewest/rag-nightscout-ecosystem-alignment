@@ -124,6 +124,11 @@ the comparison slightly differently).
   with the same identifier is stored twice there; from 16.0.0 it is matched
   ([lab](https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-27.html)).
 - **Older servers store the field and ignore it.**
+- **A carb edit can be lost.** Loop 3.14.9 sends a carb edit as a v1 `PUT` by the record's `_id`, which
+  it caches for 24 hours. If the `_id` is no longer cached, the edit is not sent at all, and nothing tells
+  the user. The server can take the edit by `identifier` instead: API v3 `PATCH` or `PUT`
+  `/api/v3/treatments/{identifier}` today, and a v1 re-send with the same `identifier` (merged on match).
+  Would Loop send edits that way?
 
 ## Six cases: what should Nightscout do?
 
@@ -133,7 +138,7 @@ our decisions so far give, chosen to keep today's clients working.
 | # | case | 15.0.9 / 16.0.0 today (measured) | our default | your answer |
 |---|---|---|---|---|
 | 1 | The watch uploads a G7 reading. Later the phone uploads the same reading: same `identifier`, other `device`, time 1.5 s later | v1 entries: two records on 15.0.9, one (updated) on 16.0.0. API v3: 400 on both | one record, updated with the later upload's fields (merge on match) | |
-| 2 | Loop re-sends a carb entry after the user edits its amount or time, same `identifier` | v1 treatments: updated. API v3: 400 if the time changed | updated (merge); an explicit `PUT` replaces | |
+| 2 | Loop re-sends a record that changed after its first upload, same identity: a dose whose final amount differs, or an override ended early (Loop 3.14.9 does both by `POST`; a carb edit is a `PUT`, below) | v1 treatments: updated. API v3: 400 if the date, device or event type changed | updated (merge), kept as the default; an explicit `PUT` replaces. A switch, a site setting or a per-client rule, may later select keep-first or refuse for clients that opt in | |
 | 3 | Loop re-sends an identical record after a timeout | 16.0.0: matched, and the reply carries the stored `_id`, on v1 entries, treatments and device status and on API v3. 15.0.9: device status stored again, and a treatment matched by time is answered without `_id` | success, and the reply carries the stored `_id` and `identifier` | |
 | 4 | A record is deleted, then the same `identifier` arrives again | v1 (hard delete): stored again as a new record. API v3 (soft delete): a `POST` brings it back, a `PUT` is 410; on 16.0.0 an API v3 device status stays deleted | the re-send is acknowledged (a success reply naming the stored record, so the app stops retrying) and the record **stays deleted** (decided 2026-10-27; not built yet) | |
 | 5 | An app sends no `identifier` | each collection's time key | the time key stays; `identifier` is recommended for every app and required for registered controller instances | |
