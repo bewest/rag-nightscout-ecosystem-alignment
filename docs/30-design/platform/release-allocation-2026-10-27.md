@@ -44,6 +44,13 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
   WC-STEP-PATCH in 16.2.0. **2026-10-29:** the maintainer added BF-209 and BF-210 (the socket's ±2 s
   similar treatment match: client identity, and a missing amount treated as none) to the 16.0.0 merge list,
   as one small backfix. It is draft PR #8877 (`ebed6323`).
+  **Also 2026-10-29 (maintainer):** `write(intent)` release 1 (#8874 with slices 4 and 6), then
+  ID-FIRST-MATCH, ID-BATCH and the re-send switch (D-LOOP-ID rule 3) are **eligible for 16.0.0 through an
+  entry bar**, in that order. Each item joins the merge list only when four things hold: its matrix result
+  is as stated (0 cells, or named cells), its red controls and ablations pass, a revert has been rehearsed,
+  and it has had time on `dev` with its cohort check. What has not cleared the bar when the maintainer
+  chooses to tag rolls to 16.1.0. Because 16.0.0 is already a major, the identity rules planned for 17.0.0
+  may land there instead.
 - **Does including other roadmap features help multitenancy: not by being in 16.0.0.** The one
   indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
   bought by M1. What shortens the path from here is decisions and a reopened `dev`: D-T30,

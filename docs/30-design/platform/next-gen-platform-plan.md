@@ -39,7 +39,13 @@ tagged, beside registration, instead of after `write(intent)`.
 | 4 | BF-72 and BF-161 fork branches | security fixes held outside the public PR list until release ([register](../remedial/nightscout-backfix-register.md)) | brought up to `dev` and merged before the tag |
 | 5 | #8824, dev to master | blocked by master protection (`Run Tests (22, 4.4)`) | fix the required check, then merge and tag |
 
-**After the tag**, when `dev` reopens:
+**Eligible for 16.0.0 through an entry bar** (maintainer, 2026-10-29): rows 8 and 9 below, plus the
+re-send switch, in that order. Each joins the merge list when its matrix result is as stated, its red
+controls and ablations pass, a revert has been rehearsed, and it has had time on `dev` with its cohort
+check. Whatever has not cleared the bar at the tag rolls to 16.1.0. 16.0.0 is already a major, so identity
+rules that change outcomes may land there instead of 17.0.0.
+
+**After the tag**, when `dev` reopens (or earlier, for rows that clear the bar):
 
 | # | work | release | risk | review |
 |---|---|---|---|---|
