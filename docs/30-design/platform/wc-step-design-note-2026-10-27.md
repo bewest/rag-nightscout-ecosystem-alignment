@@ -56,6 +56,19 @@ make every rule error an asynchronous refusal), **Q-L** (devicestatus on v1 has 
 treatments fallback key reads `created_at` two ways), **Q-N** (the shared `_id` rule), **Q-O** (devicestatus
 inserts unordered, profile ordered), **Q-P** (does an authorization input, `canUpdate`, belong in an intent).
 
+**Maintainer, 2026-10-29.** Slice 4 is released. As built it keeps v3 writing by identifier through
+the cached wrapper (`mongoCachedCollection`), which updates or removes only the record written, so it adds
+no cache flush and no MongoDB load. Slice 6 stays held. Q-A for release 2 is open, with research continuing,
+on the maintainer's proposal: instead of the full flush a query-based write causes today (a `remove` with
+no ids empties all three caches, `lib/server/cache.js`), the step would read the collection back from a
+`srvModified` watermark. This rests on three things on `dev`. Every server write path stamps `srvModified`
+(since `718efddc`, in 15.0.9). `srv-dates.js` issues those values in increasing order. Every v3 collection
+indexes the field (`mongoCollection/index.js:147-150`). The record's own time (`date`, `created_at`) cannot
+serve as the watermark: it is the event time a client set, so late uploads, edits and future-dated clocks
+would be missed. Hard deletes leave nothing for the watermark to find, so they keep reading ids before the
+delete. Writers that bypass the server are left to the loader's existing poll. A since-watermark arm is
+to be added to the D-EVENT bench (`tools/lab/commit-event-bench`).
+
 ## 1. Placement: two layers, not one
 
 The spec (§2.1) puts `write(intent)` in `lib/storage/write-step.js`, "applied in `collectionFor`
