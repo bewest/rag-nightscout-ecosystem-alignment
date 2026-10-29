@@ -5572,7 +5572,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>c61c2236f</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>9e9baca5b</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>e1f7ac41</code> (2026-10-29). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5668,7 +5668,12 @@ tagged, beside registration, instead of after <code>write(intent)</code>.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>After the tag</strong>, when <code>dev</code> reopens:</p>
+<p><strong>Eligible for 16.0.0 through an entry bar</strong> (maintainer, 2026-10-29): rows 8 and 9 below, plus the
+re-send switch, in that order. Each joins the merge list when its matrix result is as stated, its red
+controls and ablations pass, a revert has been rehearsed, and it has had time on <code>dev</code> with its cohort
+check. Whatever has not cleared the bar at the tag rolls to 16.1.0. 16.0.0 is already a major, so identity
+rules that change outcomes may land there instead of 17.0.0.</p>
+<p><strong>After the tag</strong>, when <code>dev</code> reopens (or earlier, for rows that clear the bar):</p>
 <table>
 <thead>
 <tr>
