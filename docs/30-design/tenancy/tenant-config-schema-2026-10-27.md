@@ -459,26 +459,39 @@ is not a decision.
 
 | # | question | lab's working choice |
 |---|---|---|
-| Q1 | Does an operator override replace the deployment row whole, or field by field? | whole row |
+| Q1 | Does an operator override replace the deployment row whole, or field by field? | **decided (2026-10-29):** whole row. A later deployment change does not leak into overridden tenants |
 | Q2 | When the operator has written no row, what applies? Is there a project-shipped default policy? | the catalogue's shipped mode and constraint. Autoprune and alarm keys are pinned off, ordinary T settings open, contested rows bounded within the floor |
 | Q3 | Rollback against a changed policy: refuse it whole, apply it partly with a report, or restore values the merge then ignores? | **decided:** refused whole, naming each blocked setting and the operator rule behind it (§7) |
 | Q4 | When an operator narrows or pins a setting, owners' stored values fall outside it. Who tells the owner, and how? D22's "review list, never dropped silently" covers migration only. | the merge ignores and reports them; nothing tells the owner |
-| Q5 | Are operator policy changes, at deployment and per tenant, versioned or audited? How do they invalidate tenants' caches? | not versioned |
+| Q5 | Are operator policy changes, at deployment and per tenant, versioned or audited? How do they invalidate tenants' caches? | **direction (2026-10-29):** audited, by whichever of audit, invalidation and versioning each need calls for, but through one audit approach shared across the code base, not a second incompatible one. An inventory of the existing audit and history mechanisms comes first (see the note under this table); the lab's working shape is AFTER triggers writing append-only audit rows with the operator's identity from `SET LOCAL`, a policy generation number and `pg_notify` |
 | Q6 | J11: refuse partial threshold input, or allow it per key with nullable typed columns? | refuse partial (J11's recommendation) |
 | Q7 | Threshold bounds: §A.2 uses 20 to 600 mg/dL. Dev now treats values below 30 as mmol/L. Which bounds, after clinical review? | 20 to 600 |
 | Q8 | The secret-reference format, and how a reference is bound to its tenant. | placeholder format; binding left to the secrets component |
 | Q9 | Where does the built-in signer keep encrypted keys: in this database (separate schema and role) or outside it? (M3) | outside this schema |
 | Q10 | `tenant_members.subject_id` type and foreign key under D17 as amended (M2; J1, I.2) | **decided:** provider and subject, both text, unique together, no foreign key (`0002`) |
 | Q11 | Under `multi`, do class D values live in the environment or as pinned deployment rows? (M5) | **decided:** each role's environment |
-| Q12 | Export and deletion: which configuration tables are "tenant data" for `tenantScopedTables` and `NOT_TENANT_DATA`? Owner values, versions and integrations are the owner's. Overrides are the operator's. | not addressed |
+| Q12 | Export and deletion: which configuration tables are "tenant data" for `tenantScopedTables` and `NOT_TENANT_DATA`? Owner values, versions and integrations are the owner's. Overrides are the operator's. | **decided (2026-10-29):** export carries the owner's tables (values, thresholds, versions, integrations with references only, integration status), not operator overrides; deleting the tenant deletes all of them, overrides included |
 | Q13 | An integration restored by rollback may reference a secret since deleted or rotated, and an operator may lower a kind's maximum below a tenant's current count. What happens in each case? | neither handled |
 | Q14 | May the operator plane read owner values (for support)? | no grant |
 | Q15 | The post-gate change for alarm settings, a migration that grants the owner listener writes and drops the hidden CHECK: is a reviewed migration the intended switch? | yes, as a migration |
 | Q16 | The send-time webhook check (DNS resolution, pinning the resolved address): where does it live? | not built |
 | Q17 | Generate the catalogue from the census gate (J7)? | hand-written `0004` |
-| Q18 | Existing `tenant_members` rows have no recorded provider. Should they be backfilled with a stated provider (the seam's rows came from the Kratos proof), or the table emptied? | `0002` refuses to run while rows exist |
+| Q18 | Existing `tenant_members` rows have no recorded provider. Should they be backfilled with a stated provider (the seam's rows came from the Kratos proof), or the table emptied? | **decided (2026-10-29), question dissolved:** the table is on no merged branch, so the migrations are rewritten instead of migrated: one `CREATE TABLE` with provider and subject from the start, no row migration. The table is renamed `tenant_access_grants`: one row is one identity the tenant has granted access to, with its permissions (owner, care team, family, followers; uploader apps keep tokens). Single-tenant needs the same contract (see the note under this table) |
 | Q19 | Is "unique together" per tenant (one person, several tenants) or global? Should `subject_id` be renamed `subject`? | per tenant; name kept for seam compatibility |
 | Q20 | Should a `nightscout serve` role refuse to start when a class D value it needs is missing, as the floors already do for `TRUST_PROXY`? | only the floors refuse |
+
+**Maintainer notes, 2026-10-29.**
+
+- **One access-grant contract, two stores.** Single-tenant Nightscout on MongoDB will need the same
+  logic once a login plugin is enabled (D17 as amended: a pluggable identity provider). The plugin would
+  link an identity provider's (provider, subject) to an existing authorization subject (`auth_subjects`),
+  and today's token mechanics would then issue that subject's roles. `tenant_access_grants` is the
+  multitenant store of the same contract. Not yet designed; no plan row yet.
+- **One audit approach.** Before Q5 is built, inventory what already records history or attribution:
+  this schema's `tenant_config_version`, API v3 history by `srvModified`, the write step's internal commit
+  event, the authority spec's §8 (which lists "who took an owner action and when" as not recorded),
+  commands CM1, and the agent trust boundaries' append-only audit requirement. Propose one audit record
+  shape that both MongoDB and PostgreSQL can hold. Q5 then uses it.
 
 ## 12. Evidence
 
