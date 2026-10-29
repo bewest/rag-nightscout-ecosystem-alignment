@@ -7942,9 +7942,9 @@ Companion to <a href="identifier-duplicates-2026-10-17.html">identifier duplicat
 and client classes this note reuses. The proposed constraints are carried in the
 <a href="../../30-design/platform/spec/identity.html#4-the-identifier-format">identity specification §4</a>.</p>
 <p>Marks: <strong>[R]</strong> read from code at the commit given; <strong>[M]</strong> measured, by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c6e0a457c9a15b1c9662227f3df6c43b3b5369d8/docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py"><code>identifier-format-2026-10-17/idshape.py</code></a> (corpus shapes,
-output <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c6e0a457c9a15b1c9662227f3df6c43b3b5369d8/docs/60-research/tenancy/identifier-format-2026-10-17/results-2026-10-17.txt"><code>results-2026-10-17.txt</code></a>, control
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c6e0a457c9a15b1c9662227f3df6c43b3b5369d8/docs/60-research/tenancy/identifier-format-2026-10-17/control-results-2026-10-17.txt"><code>control-results-2026-10-17.txt</code></a>) or by
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7f4300b62d20d5ac5d41b084097662abd6399d7/docs/60-research/tenancy/identifier-format-2026-10-17/idshape.py"><code>identifier-format-2026-10-17/idshape.py</code></a> (corpus shapes,
+output <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7f4300b62d20d5ac5d41b084097662abd6399d7/docs/60-research/tenancy/identifier-format-2026-10-17/results-2026-10-17.txt"><code>results-2026-10-17.txt</code></a>, control
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7f4300b62d20d5ac5d41b084097662abd6399d7/docs/60-research/tenancy/identifier-format-2026-10-17/control-results-2026-10-17.txt"><code>control-results-2026-10-17.txt</code></a>) or by
 the two small harnesses in §3.3. Corpus output is aggregate counts and value <strong>shapes</strong>
 (regex classes, lengths, token signatures); no identifier value, serial or record content is printed
 or committed.</p>
@@ -8370,7 +8370,7 @@ the companion note says. Shapes, not values, were read.</p>
 <h3 id="33-what-breaks-two-small-harnesses-m">3.3 What breaks: two small harnesses [M]<a class="headerlink" href="#33-what-breaks-two-small-harnesses-m" title="Permanent link">&para;</a></h3>
 <p><strong>URL path.</strong> Express 4.22.2 (the version in the checkout's <code>node_modules</code>; dev pins 4.22.2, 15.0.8
 4.22.1) with the four v3 routes and the history route registered in the server's order, driven over
-HTTP (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c6e0a457c9a15b1c9662227f3df6c43b3b5369d8/docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js"><code>v3-path-routing.js</code></a>; Express routing only, no proxy, no auth, no storage):</p>
+HTTP (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7f4300b62d20d5ac5d41b084097662abd6399d7/docs/60-research/tenancy/identifier-format-2026-10-17/v3-path-routing.js"><code>v3-path-routing.js</code></a>; Express routing only, no proxy, no auth, no storage):</p>
 <table>
 <thead>
 <tr>
@@ -8409,7 +8409,7 @@ HTTP (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob
 </tr>
 </tbody>
 </table>
-<p><strong>Index key size.</strong> (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c6e0a457c9a15b1c9662227f3df6c43b3b5369d8/docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js"><code>index-key-size.js</code></a>.) Local MongoDB 3.6.8 (FCV 3.6), a scratch database with the v1 entries indexes
+<p><strong>Index key size.</strong> (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7f4300b62d20d5ac5d41b084097662abd6399d7/docs/60-research/tenancy/identifier-format-2026-10-17/index-key-size.js"><code>index-key-size.js</code></a>.) Local MongoDB 3.6.8 (FCV 3.6), a scratch database with the v1 entries indexes
 <code>{identifier: 1}</code> and <code>{date: -1, identifier: -1, created_at: -1}</code>, dropped afterwards: a 256-character
 <code>identifier</code> inserts; 1,000, 1,010, 1,020, 1,100 and 2,000 characters fail with code 17280 "key too
 large to index" (the compound key is 1,026 bytes at 1,000 characters). MongoDB 4.2 removed this limit
@@ -8419,7 +8419,7 @@ at FCV 4.2 (not fetched from MongoDB's documentation; MongoDB's tracker
 <p>The maintainer prefers URL syntax for identifiers (<code>dexcom://g7/&lt;serial&gt;/&lt;offset&gt;</code>, see the
 <a href="../../30-design/platform/identifier-conventions.html">identifier conventions</a>), which puts <code>:</code> and
 <code>/</code> in every value. §3.3 ran Express routing alone; this run asks the two servers.
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c6e0a457c9a15b1c9662227f3df6c43b3b5369d8/docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js"><code>url-identifier-probes.js</code></a> wrote
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7f4300b62d20d5ac5d41b084097662abd6399d7/docs/60-research/tenancy/identifier-format-2026-10-17/url-identifier-probes.js"><code>url-identifier-probes.js</code></a> wrote
 synthetic <code>scheme://g7/&lt;digits&gt;/&lt;seconds&gt;</code> identifiers to 15.0.8 (<code>92d08342</code>) and dev (<code>fade2299</code>),
 started by the record-identity lab on a dedicated <code>mongo:7</code> container (7.0.43), with no proxy in
 front. Output: <a href="identifier-format-2026-10-17/url-identifier-results-2026-10-18.html"><code>url-identifier-results-2026-10-18.md</code></a>.
