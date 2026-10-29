@@ -5753,6 +5753,20 @@ would be missed. Hard deletes leave nothing for the watermark to find, so they k
 delete. Single-tenant Nightscout supports writes to MongoDB only through its own APIs (maintainer,
 2026-10-29), so every write the catch-up must see carries <code>srvModified</code>. A since-watermark arm is
 to be added to the D-EVENT bench (<code>tools/lab/commit-event-bench</code>).</p>
+<p><strong>Progress, 2026-10-29: slice 4 is built</strong> (local <code>feat/write-intent-s4</code>: <code>00f93946</code> rule table, <code>3cad3508</code> v3
+through <code>write(intent)</code>). v3 uses only the cached wrapper's identifier methods (<code>insertOne</code>, <code>replaceOne</code>,
+<code>updateOne</code>, <code>updateEveryForm</code>, <code>deleteEveryForm</code>). Server dates, BF-194 units, subject/modifiedBy, duration,
+the merge patch and the write calls moved into the step. Permissions, validation, the identifying read,
+<code>acknowledge.js</code>, HTTP shaping, storage-socket emissions and autoPrune stayed in the modules; <code>writeFilter</code>'s
+twin choice stayed below the interface. G1 shows 0 of 360 cells differing, and the commit-event copy 0.
+<code>npm test</code> gives 4960/0/3 (+41). Each ablation goes red only in v3 cells; four breaks the matrix cannot
+see are caught by the unit tests. Cache emissions are unchanged. A control that swaps in a query-based method
+turns them into <code>remove (reload)</code>, and its reach extends to socket cells in three collections. Rule copies
+fell from 37 to 28. New release-2 questions:
+- <strong>Q-S:</strong> a v3 delete reaches every stored form, while PUT/PATCH write the one <code>writeFilter</code> picks.
+- <strong>Q-T:</strong> the intent carries the authenticated subject (<code>by</code>); compare Q-P.
+- <strong>Q-U:</strong> autoPrune (<code>collection.js:158</code>, <code>deleteManyOr</code>) is a query-based v3 delete outside the step. It is
+  a candidate for Q-A's watermark catch-up.</p>
 <p><strong>Slice 6 dedupe gate, 2026-10-29.</strong> Session -4f's gate (<code>test/ws-dedupe</code> <code>fe1aee82</code>, 58 tests, an
 ablation per rule) pins today's socket behaviour and found four differences from the rule list. They were
 re-run on <code>v15.0.9</code> <code>c6a0d8ed</code>.
@@ -6053,7 +6067,7 @@ Results in this scratch directory.</p>
   <code>--dry-run</code> counts 4,753 tests, consistent. A dry run at <code>ca1652d6</code> counts 4,707, so the brief's
   "4,750 at ca1652d6" figure must have been taken at a later tree; BF-194 added 46 tests in two
   new files (<code>api.treatments-tt-units</code> 34, <code>websocket.tt-units</code> 12).</li>
-<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0dfb265ec3d8ca54ea2f019696ebc1570dc7fa6a/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
+<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2c753a88f99005036010c6e609fd1972c819664a/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
   (336 + 24 Temporary Target), 0 INVALID, 20 n/a, <code>write_validation</code> off. <code>--compare</code>: <strong>0
   differing cells</strong>, the known racy <code>cache</code> field included. Two more runs of a scratch copy of the
   harness that also records <code>storage-write-committed</code> per cell (<code>tools/wc-matrix-commit.js</code>,
