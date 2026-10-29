@@ -85,14 +85,20 @@ re-run on `v15.0.9` `c6a0d8ed`.
 2. In reject mode, a similar-matched temp target stores `durationInMilliseconds` and `endmills`, and the reply
    omits them (dev only): **Q-Q**, release 2.
 3. A soft-deleted profile is matched, and so revived, by a socket `dbAdd` with the same `NSCLIENT_ID` or
-   `startDate` (same on 15.0.9): **Q-R**, release 2. Whether AndroidAPS 3.4.2.x's v1 NSClient, the only
-   profile `dbAdd` sender found, can reach it is being checked; if it can, it becomes a BF.
-4. An amount field the write does not carry is not part of the match (same on 15.0.9). This is with the
-   maintainer.
+   `startDate` (same on 15.0.9): **Q-R**, release 2. Measured on `dev` `e1f7ac41` with an AndroidAPS-shaped
+   profile (AndroidAPS 3.4.2.6's v1 NSClient sends `startDate`, never `NSCLIENT_ID`). It is reachable only
+   by a sequence no app was found to start. The profile must be soft-deleted through API v3 (the profile
+   editor and every v1 path delete hard, and no client in the corpus calls the v3 profile delete). After
+   that, no local edit, and then an NSClient full sync, a database reset or a lost acknowledgement.
+4. An amount field the write does not carry is not part of the match (same on 15.0.9). Filed as **BF-210**,
+   fixed in the same backfix as BF-209: a missing amount is treated as none.
 
 A side finding: the chart-drag split (`treatmenttime.js` `splitRecord`) keeps the original's client identity
-on the new half. That can leave two records with one identity. It was read from the code and is being
-reproduced. The maintainer's direction: editing is mainly for fixing broken records, so a lossy edit of a
+on the new half. This is reproduced on `dev` `e1f7ac41` (probe `probe/split-ident-2026-10-29` `95570d41`, local,
+with a control). Two stored records then share one `syncIdentifier` or `identifier`. API v3 lookups and dedupe
+resolve to the new half. A v1 upsert by `identifier` replaces the original but replies with the new half's
+`_id`. Separately, and also with the identity removed: a full re-upload of the original by the client that
+still holds it writes the moved insulin back, so the insulin appears twice. Not run on 15.0.9. The maintainer's direction: editing is mainly for fixing broken records, so a lossy edit of a
 record that an automated controller claims (one with a client identity) should need an extra manual
 confirmation.
 

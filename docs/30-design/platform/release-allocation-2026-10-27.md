@@ -41,7 +41,9 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
   (`RT-16-RELEASE`, item 4, decided 2026-10-27). Recommendation: the remaining storage items wait for
   16.1.0. The quiet period is not a date: it starts when the 16.0.0 merge list is closed (Q13,
   corrected by the maintainer 2026-10-27: merging is still under way). D-EVENT was deferred by the maintainer the same evening (Q9); ST-EVENT stays tied to
-  WC-STEP-PATCH in 16.2.0.
+  WC-STEP-PATCH in 16.2.0. **2026-10-29:** the maintainer added BF-209 and BF-210 (the socket's ±2 s
+  similar treatment match: client identity, and a missing amount treated as none) to the 16.0.0 merge list,
+  as one small backfix.
 - **Does including other roadmap features help multitenancy: not by being in 16.0.0.** The one
   indirect benefit, real traffic on the interface before PostgreSQL depends on it (§4.2), is now
   bought by M1. What shortens the path from here is decisions and a reopened `dev`: D-T30,
