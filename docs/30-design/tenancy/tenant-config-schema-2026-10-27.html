@@ -5850,17 +5850,17 @@ is not a decision.</p>
 <tr>
 <td>Q7</td>
 <td>Threshold bounds: §A.2 uses 20 to 600 mg/dL. Dev now treats values below 30 as mmol/L. Which bounds, after clinical review?</td>
-<td>20 to 600</td>
+<td><strong>decided (maintainer, 2026-10-29):</strong> lower bound 30 mg/dL, aligned with dev's below-30-is-mmol/L rule. The maintainer's reasoning: 30 is far below Dexcom's mandatory urgent low of 55, Dexcom sensors report nothing below 40, and values below 39 are error and algorithm state codes. Upper bound 600 unchanged (not discussed)</td>
 </tr>
 <tr>
 <td>Q8</td>
 <td>The secret-reference format, and how a reference is bound to its tenant.</td>
-<td>placeholder format; binding left to the secrets component</td>
+<td><strong>direction (2026-10-29):</strong> the secrets component enforces ownership (it stores each secret under tenant and id, and refuses to resolve a reference outside the calling tenant); the format and any database-side tenant check are decided with the secrets component design</td>
 </tr>
 <tr>
 <td>Q9</td>
 <td>Where does the built-in signer keep encrypted keys: in this database (separate schema and role) or outside it? (M3)</td>
-<td>outside this schema</td>
+<td><strong>decided (2026-10-29):</strong> outside the database by default; an operator may keep them in the same database in a separate schema owned by a separate role no application role can read, documented as weaker, since every dump then carries the encrypted key material</td>
 </tr>
 <tr>
 <td>Q10</td>
