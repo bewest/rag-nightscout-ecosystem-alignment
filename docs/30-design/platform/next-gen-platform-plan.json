@@ -630,7 +630,7 @@
    "state": "planned",
    "short": "Per-tenant config table",
    "title": "The per-tenant settings table, read by the multitenant entrypoints instead of the environment (D15)",
-   "ref": "Spec and PostgreSQL lab (docs/30-design/tenancy/tenant-config-schema-2026-10-27.md, tools/lab/tenant-config-schema). Maintainer, 2026-10-29: Q1 whole-row overrides; Q12 export carries the owner's tables, deletion removes all; Q18 dissolved: migrations rewritten (nothing merged), tenant_members renamed tenant_access_grants; Q5 audited through one audit approach shared across the code base, after an inventory of existing audit and history mechanisms. Also noted: single-tenant needs the same access-grant contract through a login plugin over auth_subjects. Open: Q2, Q4, Q6-Q9, Q13-Q17, Q19, Q20 (Q7 needs clinical review).",
+   "ref": "Spec and PostgreSQL lab (docs/30-design/tenancy/tenant-config-schema-2026-10-27.md, tools/lab/tenant-config-schema). Maintainer, 2026-10-29: Q1 whole-row overrides; Q12 export carries the owner's tables, deletion removes all; Q18 dissolved: migrations rewritten (nothing merged), tenant_members renamed tenant_access_grants; Q5 audited through one audit approach shared across the code base, after an inventory of existing audit and history mechanisms. Also noted: single-tenant needs the same access-grant contract through a login plugin over auth_subjects. Q7 lower threshold bound 30 mg/dL (maintainer's reasoning recorded); Q8 the secrets component enforces ownership, format decided with it; Q9 keys outside the database by default, a separate schema and role allowed. Open: Q2, Q4, Q6, Q13-Q17, Q19, Q20.",
    "depends": [
     "T30-RESEARCH",
     "T30-DONE"
