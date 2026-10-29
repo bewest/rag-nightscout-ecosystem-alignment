@@ -1,0 +1,789 @@
+{
+  "at": "2026-10-29T20:18:27.933Z",
+  "crmHead": "e1f7ac4169256581bda70fef4fea1846ecf56d86",
+  "crmDiff": "(none)",
+  "node": "v22.23.4",
+  "serverVersion": "8.0.34",
+  "uri": "mongodb://127.0.0.1:27801/cvp1",
+  "seeded": {
+    "entries": 600,
+    "devicestatus": 312,
+    "treatments": 34
+  },
+  "afterBoot": {
+    "treatments": 32,
+    "devicestatus": 287,
+    "entries": 575,
+    "generations": {
+      "treatments": 0,
+      "devicestatus": 0,
+      "entries": 0
+    }
+  },
+  "results": [
+    {
+      "action": "warm-reload",
+      "httpStatus": null,
+      "before": {
+        "treatments": 32,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 0,
+          "devicestatus": 0,
+          "entries": 0
+        }
+      },
+      "immediately": {
+        "treatments": 32,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 0,
+          "devicestatus": 0,
+          "entries": 0
+        }
+      },
+      "afterReload": {
+        "treatments": 32,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 0,
+          "devicestatus": 0,
+          "entries": 0
+        }
+      },
+      "loads": 1,
+      "profile": {
+        "totals": {
+          "ops": 14,
+          "nreturned": 4,
+          "responseLength": 6226
+        },
+        "byNs": {
+          "treatments query": {
+            "ops": 8,
+            "nreturned": 0,
+            "responseLength": 832
+          },
+          "entries query": {
+            "ops": 1,
+            "nreturned": 2,
+            "responseLength": 435
+          },
+          "devicestatus query": {
+            "ops": 1,
+            "nreturned": 2,
+            "responseLength": 4378
+          },
+          "profile query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 101
+          },
+          " command": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 280
+          },
+          "activity query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 102
+          },
+          "food query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 98
+          }
+        },
+        "queries": [
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 0.25,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "entries",
+            "windowHours": 0.25,
+            "nreturned": 2,
+            "responseLength": 435
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 8928,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "devicestatus",
+            "windowHours": 0.25,
+            "nreturned": 2,
+            "responseLength": 4378
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          }
+        ]
+      }
+    },
+    {
+      "action": "delete-by-id",
+      "httpStatus": 200,
+      "before": {
+        "treatments": 32,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 0,
+          "devicestatus": 0,
+          "entries": 0
+        }
+      },
+      "immediately": {
+        "treatments": 31,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 1,
+          "devicestatus": 0,
+          "entries": 0
+        }
+      },
+      "afterReload": {
+        "treatments": 31,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 1,
+          "devicestatus": 0,
+          "entries": 0
+        }
+      },
+      "loads": 1,
+      "profile": {
+        "totals": {
+          "ops": 15,
+          "nreturned": 4,
+          "responseLength": 6226
+        },
+        "byNs": {
+          "treatments remove": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 0
+          },
+          "treatments query": {
+            "ops": 8,
+            "nreturned": 0,
+            "responseLength": 832
+          },
+          "entries query": {
+            "ops": 1,
+            "nreturned": 2,
+            "responseLength": 435
+          },
+          "profile query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 101
+          },
+          "food query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 98
+          },
+          "devicestatus query": {
+            "ops": 1,
+            "nreturned": 2,
+            "responseLength": 4378
+          },
+          "activity query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 102
+          },
+          " command": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 280
+          }
+        },
+        "queries": [
+          {
+            "ns": "treatments",
+            "windowHours": 0.25,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "entries",
+            "windowHours": 0.25,
+            "nreturned": 2,
+            "responseLength": 435
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 8928,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "devicestatus",
+            "windowHours": 0.25,
+            "nreturned": 2,
+            "responseLength": 4378
+          }
+        ]
+      }
+    },
+    {
+      "action": "delete-by-query",
+      "httpStatus": 200,
+      "before": {
+        "treatments": 31,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 1,
+          "devicestatus": 0,
+          "entries": 0
+        }
+      },
+      "immediately": {
+        "treatments": 0,
+        "devicestatus": 0,
+        "entries": 0,
+        "generations": {
+          "treatments": 2,
+          "devicestatus": 1,
+          "entries": 1
+        }
+      },
+      "afterReload": {
+        "treatments": 28,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 2,
+          "devicestatus": 1,
+          "entries": 1
+        }
+      },
+      "loads": 1,
+      "profile": {
+        "totals": {
+          "ops": 15,
+          "nreturned": 890,
+          "responseLength": 716202
+        },
+        "byNs": {
+          "treatments remove": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 0
+          },
+          "treatments query": {
+            "ops": 8,
+            "nreturned": 28,
+            "responseLength": 4853
+          },
+          "profile query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 101
+          },
+          "food query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 98
+          },
+          "entries query": {
+            "ops": 1,
+            "nreturned": 575,
+            "responseLength": 97166
+          },
+          "activity query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 102
+          },
+          " command": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 280
+          },
+          "devicestatus query": {
+            "ops": 1,
+            "nreturned": 287,
+            "responseLength": 613602
+          }
+        },
+        "queries": [
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 8928,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 60,
+            "nreturned": 28,
+            "responseLength": 4125
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "entries",
+            "windowHours": 48,
+            "nreturned": 575,
+            "responseLength": 97166
+          },
+          {
+            "ns": "devicestatus",
+            "windowHours": 24,
+            "nreturned": 287,
+            "responseLength": 613602
+          }
+        ]
+      }
+    },
+    {
+      "action": "warm-reload-after",
+      "httpStatus": null,
+      "before": {
+        "treatments": 28,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 2,
+          "devicestatus": 1,
+          "entries": 1
+        }
+      },
+      "immediately": {
+        "treatments": 28,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 2,
+          "devicestatus": 1,
+          "entries": 1
+        }
+      },
+      "afterReload": {
+        "treatments": 28,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 2,
+          "devicestatus": 1,
+          "entries": 1
+        }
+      },
+      "loads": 1,
+      "profile": {
+        "totals": {
+          "ops": 14,
+          "nreturned": 4,
+          "responseLength": 6226
+        },
+        "byNs": {
+          "treatments query": {
+            "ops": 8,
+            "nreturned": 0,
+            "responseLength": 832
+          },
+          "entries query": {
+            "ops": 1,
+            "nreturned": 2,
+            "responseLength": 435
+          },
+          "profile query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 101
+          },
+          "food query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 98
+          },
+          "activity query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 102
+          },
+          "devicestatus query": {
+            "ops": 1,
+            "nreturned": 2,
+            "responseLength": 4378
+          },
+          " command": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 280
+          }
+        },
+        "queries": [
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 8928,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 0.25,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "entries",
+            "windowHours": 0.25,
+            "nreturned": 2,
+            "responseLength": 435
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "devicestatus",
+            "windowHours": 0.25,
+            "nreturned": 2,
+            "responseLength": 4378
+          }
+        ]
+      }
+    },
+    {
+      "action": "delete-by-query-none",
+      "httpStatus": 200,
+      "before": {
+        "treatments": 28,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 2,
+          "devicestatus": 1,
+          "entries": 1
+        }
+      },
+      "immediately": {
+        "treatments": 0,
+        "devicestatus": 0,
+        "entries": 0,
+        "generations": {
+          "treatments": 3,
+          "devicestatus": 2,
+          "entries": 2
+        }
+      },
+      "afterReload": {
+        "treatments": 28,
+        "devicestatus": 287,
+        "entries": 575,
+        "generations": {
+          "treatments": 3,
+          "devicestatus": 2,
+          "entries": 2
+        }
+      },
+      "loads": 1,
+      "profile": {
+        "totals": {
+          "ops": 15,
+          "nreturned": 890,
+          "responseLength": 716202
+        },
+        "byNs": {
+          "treatments remove": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 0
+          },
+          "treatments query": {
+            "ops": 8,
+            "nreturned": 28,
+            "responseLength": 4853
+          },
+          "entries query": {
+            "ops": 1,
+            "nreturned": 575,
+            "responseLength": 97166
+          },
+          "profile query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 101
+          },
+          "food query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 98
+          },
+          "activity query": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 102
+          },
+          " command": {
+            "ops": 1,
+            "nreturned": 0,
+            "responseLength": 280
+          },
+          "devicestatus query": {
+            "ops": 1,
+            "nreturned": 287,
+            "responseLength": 613602
+          }
+        },
+        "queries": [
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 8928,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 60,
+            "nreturned": 28,
+            "responseLength": 4125
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "treatments",
+            "windowHours": 1488,
+            "limit": 1,
+            "nreturned": 0,
+            "responseLength": 104
+          },
+          {
+            "ns": "entries",
+            "windowHours": 48,
+            "nreturned": 575,
+            "responseLength": 97166
+          },
+          {
+            "ns": "devicestatus",
+            "windowHours": 24,
+            "nreturned": 287,
+            "responseLength": 613602
+          }
+        ]
+      }
+    }
+  ],
+  "scopeCheck": "FAIL",
+  "failures": [
+    "entries cache emptied by a treatments delete-by-query: before 575, after 0",
+    "entries removal generation bumped by a treatments delete-by-query: 0 -> 1",
+    "entries reloaded with a long load after a treatments delete-by-query: window 48 h",
+    "devicestatus cache emptied by a treatments delete-by-query: before 287, after 0",
+    "devicestatus removal generation bumped by a treatments delete-by-query: 0 -> 1",
+    "devicestatus reloaded with a long load after a treatments delete-by-query: window 24 h"
+  ]
+}

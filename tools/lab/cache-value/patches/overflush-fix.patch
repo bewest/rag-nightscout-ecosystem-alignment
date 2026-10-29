@@ -1,0 +1,22 @@
+diff --git a/lib/server/cache.js b/lib/server/cache.js
+index c6d431b7..e5b5040a 100644
+--- a/lib/server/cache.js
++++ b/lib/server/cache.js
+@@ -131,14 +131,10 @@ function cache (env, ctx) {
+     if (!data[operation.type]) return;
+ 
+     if (operation.op == 'remove') {
+-      // if multiple items were deleted, flush entire cache
++      // if multiple items were deleted, flush this datatype's cache only
+       if (!operation.changes) {
+-        data.treatments = [];
+-        data.devicestatus = [];
+-        data.entries = [];
+-        removalGenerations.treatments += 1;
+-        removalGenerations.devicestatus += 1;
+-        removalGenerations.entries += 1;
++        data[operation.type] = [];
++        removalGenerations[operation.type] += 1;
+       } else {
+         // v3 sends a list of ids; v1/socket send a scalar. Handle the list
+         // explicitly instead of relying on ['id'] == 'id' coercion.
