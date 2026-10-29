@@ -123,7 +123,7 @@ Rules in force (maintainer, 2026-10-26 and 2026-10-27):
 - **Re-send after delete.** It is acknowledged with a 2xx naming the stored, deleted record, and the record stays deleted.
 - **Format (2026-10-29).** 1 to 256 URL-safe characters; a UUID is recommended; placeholders (`invalid`, `undefined`, `null`, `NaN`) are refused.
 - **`_id` (2026-10-29).** A client may still send an ObjectId `_id` over API v1 (legacy). Going forward the server sets `_id` and the client sets `identifier`.
-- **Re-send with changed fields (2026-10-29).** Merge on match stays the default, because Loop and Trio re-send changed doses, overrides and temp targets by `POST` ([client survey](../../60-research/tenancy/identity-resend-survey-2026-10-29.md)). API v3 keeps refusing a changed date, device or event type, and `PUT` replaces. A site setting plus per-client quirks (D20) may opt a client into keep-first or refuse. No default changes before 17.0.0.
+- **Re-send with changed fields (2026-10-29).** Merge on match stays the default, because Loop and Trio re-send changed doses, overrides and temp targets by `POST` ([client survey](../../60-research/tenancy/identity-resend-survey-2026-10-29.md)). API v3 keeps refusing a changed date, device or event type, and `PUT` replaces. A site setting plus per-client quirks (D20) may opt a client into keep-first or refuse. A default changes only in a major: 16.0.0 if it clears the entry bar (§1a), otherwise 17.0.0.
 
 The rules are in the [identity specification](spec/identity.md) and the [identifier conventions](identifier-conventions.md); the conversation with the Loop maintainers is in [upstream-asks-loop-identifier](upstream-asks-loop-identifier/README.md).
 

@@ -194,7 +194,9 @@ measured 2026-10-27, form `resend-identity`). The record re-sent is identical to
 | food | duplicate | updated | duplicate | duplicate |
 | activity | duplicate | n/a | duplicate | duplicate |
 
-- **updated:** one record. `srvModified` advances, and the later upload's fields are merged in (upsert).
+- **updated:** one record, and `srvModified` advances (upsert). Whether fields left out of the re-send are kept
+  (merge) or dropped (replace) differs by path. The census reads replace on v1 and in-process treatments, the
+  v3 dedup and the socket profile match. This is not yet re-measured.
 - **kept:** one record and nothing written. The reply names the stored record (first upload wins).
 - **duplicate:** a second record is stored.
 
@@ -217,7 +219,9 @@ targets, are re-sent by `POST` over v1 and rely on the update. Carb edits use `P
 followed by a new record ([client survey](../60-research/tenancy/identity-resend-survey-2026-10-29.md)).
 D-LOOP-ID rule 3 (maintainer, 2026-10-29) keeps today's per-path behaviour as the default. A switch, a
 site setting plus per-client quirks, may opt a client into keep-first or refuse. The duplicate cells
-are the subject of ID-FIRST-MATCH.
+are re-sends without an `identifier`, which identifier-first cannot reach. Closing them needs a natural
+key per collection (food and activity have none), and that changes outcomes (corrected 2026-10-29 by the
+ID-FIRST-MATCH census).
 
 ## 3. `UUID_HANDLING`
 
