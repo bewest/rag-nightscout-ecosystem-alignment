@@ -5734,9 +5734,15 @@ written is <code>refused</code> for devicestatus, <code>unchanged</code> for pro
 make every rule error an asynchronous refusal), <strong>Q-L</strong> (devicestatus on v1 has no natural key), <strong>Q-M</strong> (the
 treatments fallback key reads <code>created_at</code> two ways), <strong>Q-N</strong> (the shared <code>_id</code> rule), <strong>Q-O</strong> (devicestatus
 inserts unordered, profile ordered), <strong>Q-P</strong> (does an authorization input, <code>canUpdate</code>, belong in an intent).</p>
-<p><strong>Maintainer, 2026-10-29.</strong> Slice 4 is released. As built it keeps v3 writing by identifier through
+<p><strong>Maintainer, 2026-10-29.</strong> Slices 4 and 6 are released. Slice 6 has an extra gate, because its rules decide
+whether a treatment is a duplicate (<code>websocket.js:743-860</code>): a wrong move would drop a real second bolus or
+carb entry, or store a re-send twice. Each rule needs a fixture that keeps today's result and an ablation that
+goes red: exact <code>NSCLIENT_ID</code> and fallback-key (BF-121) match, the 2-second similar match at its edges, each
+BF-09 zero case, a different <code>eventType</code> being a second record, soft-deleted records never matching, the
+similar match setting only <code>created_at</code> and <code>srvModified</code>, and WRITE_VALIDATION reply slots. Any difference
+is stop-and-report. On slice 4: as built, it keeps v3 writing by identifier through
 the cached wrapper (<code>mongoCachedCollection</code>), which updates or removes only the record written, so it adds
-no cache flush and no MongoDB load. Slice 6 stays held. Q-A for release 2 is open, with research continuing,
+no cache flush and no MongoDB load. Q-A for release 2 is open, with research continuing,
 on the maintainer's proposal: instead of the full flush a query-based write causes today (a <code>remove</code> with
 no ids empties all three caches, <code>lib/server/cache.js</code>), the step would read the collection back from a
 <code>srvModified</code> watermark. This rests on three things on <code>dev</code>. Every server write path stamps <code>srvModified</code>
@@ -5744,7 +5750,8 @@ no ids empties all three caches, <code>lib/server/cache.js</code>), the step wou
 indexes the field (<code>mongoCollection/index.js:147-150</code>). The record's own time (<code>date</code>, <code>created_at</code>) cannot
 serve as the watermark: it is the event time a client set, so late uploads, edits and future-dated clocks
 would be missed. Hard deletes leave nothing for the watermark to find, so they keep reading ids before the
-delete. Writers that bypass the server are left to the loader's existing poll. A since-watermark arm is
+delete. Single-tenant Nightscout supports writes to MongoDB only through its own APIs (maintainer,
+2026-10-29), so every write the catch-up must see carries <code>srvModified</code>. A since-watermark arm is
 to be added to the D-EVENT bench (<code>tools/lab/commit-event-bench</code>).</p>
 <h2 id="1-placement-two-layers-not-one">1. Placement: two layers, not one<a class="headerlink" href="#1-placement-two-layers-not-one" title="Permanent link">&para;</a></h2>
 <p>The spec (§2.1) puts <code>write(intent)</code> in <code>lib/storage/write-step.js</code>, "applied in <code>collectionFor</code>
@@ -6022,7 +6029,7 @@ Results in this scratch directory.</p>
   <code>--dry-run</code> counts 4,753 tests, consistent. A dry run at <code>ca1652d6</code> counts 4,707, so the brief's
   "4,750 at ca1652d6" figure must have been taken at a later tree; BF-194 added 46 tests in two
   new files (<code>api.treatments-tt-units</code> 34, <code>websocket.tt-units</code> 12).</li>
-<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/84952d142ded11a6c321b7eef6fa1eb396ee9a46/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
+<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29126b3bc069c33e73a5157d53f321726794f40d/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
   (336 + 24 Temporary Target), 0 INVALID, 20 n/a, <code>write_validation</code> off. <code>--compare</code>: <strong>0
   differing cells</strong>, the known racy <code>cache</code> field included. Two more runs of a scratch copy of the
   harness that also records <code>storage-write-committed</code> per cell (<code>tools/wc-matrix-commit.js</code>,
