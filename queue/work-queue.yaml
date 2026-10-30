@@ -8074,7 +8074,7 @@ items:
           stores two. (2) a database seeded with a duplicate identifier
           starts, logs the failed index build and serves reads (cf. BF-115);
           control: an ensureIndexes that throws on the build stops start-up.
-    blocks_on: [ID-DUP-MEASURE, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-V3-IMMUTABLE-DECISION, ID-VALIDATE]
+    blocks_on: [ID-DUP-MEASURE, ID-FIRST-MATCH, ID-V3-IMMUTABLE-DECISION, ID-VALIDATE]
     evidence:
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
       - docs/30-design/remedial/nightscout-backfix-register.md
@@ -8094,6 +8094,14 @@ items:
       and no v3 writer; if Loop sent syncIdentifier as identifier it would
       not build at 2 of 12 sites. The pre-flight report is what decides on a
       real site.
+
+      2026-10-30 (maintainer, via session -49): the index comes before
+      ID-BATCH-RESULTS, which leaves blocks_on. The index work carries the
+      duplicate-key handling inside the write step (re-read by identifier,
+      apply the item under WRITE_RESEND, retry once; a second failure is a
+      5xx), which needs no change to the reply format. ID-BATCH-RESULTS
+      follows as a reply-format change
+      (docs/30-design/platform/id-batch-design-note-2026-10-30.md).
 
   - id: ID-NATURAL-KEY
     title: "Natural keys for re-sends that carry no identifier: device status and profile, with a corpus check of what would merge"
