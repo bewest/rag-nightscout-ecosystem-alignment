@@ -6331,8 +6331,8 @@ tenancy work, from its route census of <code>dev</code> <code>2dc0c1bc</code> (1
 <td>Q9</td>
 <td>D-EVENT: commit event per call or per driver operation</td>
 <td>per the plan's decision card</td>
-<td><em>Deferred, maintainer 2026-10-27:</em> no shape adopted; the event stays counts-only and internal; reopened when WC-STEP-PATCH's WriteResult.items[], a named first subscriber, the BF-164 websocket cursor re-measure and a count of replica-set sites are in hand. Research continues as input: a post-write variant, with a capped pre-read as the comparison (session -2e)</td>
-<td>ST-EVENT, the change feed</td>
+<td><em>Deferred, maintainer 2026-10-27:</em> no shape adopted; the event stays counts-only and internal; reopened when WC-STEP-PATCH's WriteResult.items[], a named first subscriber, the BF-164 websocket cursor re-measure and a count of replica-set sites are in hand. Research continues as input: a post-write variant, with a capped pre-read as the comparison (session -2e). <em>2026-10-30 (maintainer, via session -7d, on the cache catch-up lab):</em> "the cache needs records named" is dropped as a reason to reopen D-EVENT; the four reopen conditions stay for its other subscribers (sync, alarms, screen refresh), and when it reopens it names records from the same <code>WriteResult.items[]</code>. <strong>Q-A is answered by id resolution, replacing the srvModified watermark proposal</strong>: for release 2, the write step resolves every write by filter (v1 delete by query, update by filter, socket filter writes, autoPrune, which also answers Q-U) to ids first, writes <code>{filter AND _id in ids}</code>, returns the ids in <code>items[]</code>, and the cache removes or re-reads exactly those; over 1,000 ids it falls back to today's per-type reload; no timestamp watermark. One behaviour change: a matching record inserted during a delete by query survives. Condition: a lab arm confirms the <code>{filter AND ids}</code> write first (session -7d, on <code>dev</code> <code>305a6533</code>)</td>
+<td>ST-EVENT, the change feed, WC-STEP-PATCH release 2</td>
 </tr>
 <tr>
 <td>Q10</td>
