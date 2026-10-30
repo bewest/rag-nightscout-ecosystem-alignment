@@ -1,0 +1,175 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+size 1 done
+size 100 done
+size 1000 done
+size 10000 done
+| N | driver call | arm | events/call | records | event bytes | median ms listen | median ms quiet | listen − quiet ms |
+|---|---|---|---|---|---|---|---|---|
+| 1 | insertMany | base | 1 | 0 | 150 | 3.02 | 2.93 | 0.08 |
+| 1 | insertMany | pre | 1 | 1 | 260 | 2.86 | 2.90 | -0.04 |
+| 1 | insertMany | post | 1 | 1 | 261 | 3.06 | 3.05 | 0.02 |
+| 1 | insertMany | since | 1 | 1 | 262 | 3.24 | 3.29 | -0.05 |
+| 1 | bulkWrite-upsert-fresh | base | 1 | 0 | 149 | 3.12 | 3.32 | -0.20 |
+| 1 | bulkWrite-upsert-fresh | pre | 1 | 1 | 216 | 4.16 | 3.02 | 1.14 |
+| 1 | bulkWrite-upsert-fresh | post | 1 | 1 | 216 | 3.04 | 3.39 | -0.35 |
+| 1 | bulkWrite-upsert-fresh | since | 1 | 1 | 216 | 3.57 | 3.40 | 0.18 |
+| 1 | bulkWrite-upsert-resend | base | 1 | 0 | 149 | 3.13 | 3.29 | -0.17 |
+| 1 | bulkWrite-upsert-resend | pre | 1 | 1 | 216 | 4.07 | 3.16 | 0.91 |
+| 1 | bulkWrite-upsert-resend | post | 1 | 1 | 216 | 4.39 | 3.01 | 1.38 |
+| 1 | bulkWrite-upsert-resend | since | 1 | 1 | 216 | 4.32 | 3.31 | 1.01 |
+| 1 | updateMany | base | 1 | 0 | 150 | 2.80 | 2.76 | 0.03 |
+| 1 | updateMany | pre | 1 | 1 | 260 | 4.32 | 2.84 | 1.48 |
+| 1 | updateMany | post | 1 | 1 | 261 | 4.04 | 2.90 | 1.14 |
+| 1 | updateMany | since | 1 | 1 | 262 | 4.56 | 3.00 | 1.55 |
+| 1 | deleteMany | base | 1 | 0 | 150 | 2.75 | 3.17 | -0.42 |
+| 1 | deleteMany | pre | 1 | 1 | 259 | 3.82 | 2.86 | 0.95 |
+| 1 | deleteMany | post | 1 | 1 | 260 | 3.65 | 2.90 | 0.75 |
+| 1 | deleteMany | since | 1 | 1 | 261 | 4.20 | 2.76 | 1.44 |
+| 100 | insertMany | base | 1 | 0 | 152 | 5.94 | 5.59 | 0.35 |
+| 100 | insertMany | pre | 1 | 100 | 10254 | 5.76 | 5.78 | -0.01 |
+| 100 | insertMany | post | 1 | 100 | 10354 | 5.87 | 5.84 | 0.03 |
+| 100 | insertMany | since | 1 | 100 | 10454 | 5.96 | 5.71 | 0.25 |
+| 100 | bulkWrite-upsert-fresh | base | 1 | 0 | 151 | 18.17 | 17.14 | 1.03 |
+| 100 | bulkWrite-upsert-fresh | pre | 1 | 100 | 5663 | 20.54 | 18.39 | 2.15 |
+| 100 | bulkWrite-upsert-fresh | post | 1 | 100 | 5663 | 19.39 | 19.61 | -0.22 |
+| 100 | bulkWrite-upsert-fresh | since | 1 | 100 | 5663 | 20.45 | 20.08 | 0.37 |
+| 100 | bulkWrite-upsert-resend | base | 1 | 0 | 151 | 15.11 | 15.12 | -0.01 |
+| 100 | bulkWrite-upsert-resend | pre | 1 | 100 | 5663 | 19.00 | 14.85 | 4.15 |
+| 100 | bulkWrite-upsert-resend | post | 1 | 100 | 5663 | 19.50 | 15.09 | 4.40 |
+| 100 | bulkWrite-upsert-resend | since | 1 | 100 | 5663 | 16.18 | 15.53 | 0.65 |
+| 100 | updateMany | base | 1 | 0 | 152 | 7.48 | 7.06 | 0.42 |
+| 100 | updateMany | pre | 1 | 100 | 10254 | 8.18 | 7.33 | 0.85 |
+| 100 | updateMany | post | 1 | 100 | 10354 | 8.57 | 7.67 | 0.89 |
+| 100 | updateMany | since | 1 | 100 | 10454 | 8.59 | 7.12 | 1.47 |
+| 100 | deleteMany | base | 1 | 0 | 152 | 7.16 | 6.65 | 0.51 |
+| 100 | deleteMany | pre | 1 | 100 | 10154 | 7.86 | 6.57 | 1.30 |
+| 100 | deleteMany | post | 1 | 100 | 10254 | 8.61 | 7.09 | 1.51 |
+| 100 | deleteMany | since | 1 | 100 | 10354 | 7.95 | 6.15 | 1.80 |
+| 1000 | insertMany | base | 1 | 0 | 153 | 16.40 | 15.79 | 0.61 |
+| 1000 | insertMany | pre | 1 | 1000 | 103055 | 16.46 | 16.25 | 0.21 |
+| 1000 | insertMany | post | 1 | 1000 | 104055 | 16.31 | 15.99 | 0.32 |
+| 1000 | insertMany | since | 1 | 1000 | 105055 | 17.08 | 16.06 | 1.01 |
+| 1000 | bulkWrite-upsert-fresh | base | 1 | 0 | 152 | 101.34 | 99.32 | 2.02 |
+| 1000 | bulkWrite-upsert-fresh | pre | 1 | 1000 | 55164 | 135.78 | 99.28 | 36.49 |
+| 1000 | bulkWrite-upsert-fresh | post | 1 | 1000 | 55164 | 99.37 | 99.14 | 0.22 |
+| 1000 | bulkWrite-upsert-fresh | since | 1 | 1000 | 55164 | 101.55 | 99.39 | 2.16 |
+| 1000 | bulkWrite-upsert-resend | base | 1 | 0 | 152 | 108.10 | 107.63 | 0.47 |
+| 1000 | bulkWrite-upsert-resend | pre | 1 | 1000 | 55164 | 144.60 | 109.77 | 34.83 |
+| 1000 | bulkWrite-upsert-resend | post | 1 | 1000 | 55164 | 147.66 | 107.87 | 39.78 |
+| 1000 | bulkWrite-upsert-resend | since | 1 | 1000 | 55164 | 110.33 | 106.66 | 3.67 |
+| 1000 | updateMany | base | 1 | 0 | 153 | 28.08 | 27.39 | 0.69 |
+| 1000 | updateMany | pre | 1 | 1000 | 103055 | 31.76 | 28.57 | 3.19 |
+| 1000 | updateMany | post | 1 | 1000 | 104055 | 32.26 | 28.50 | 3.75 |
+| 1000 | updateMany | since | 1 | 1000 | 105055 | 32.92 | 27.91 | 5.01 |
+| 1000 | deleteMany | base | 1 | 0 | 153 | 16.83 | 17.00 | -0.17 |
+| 1000 | deleteMany | pre | 1 | 1000 | 102055 | 20.08 | 16.76 | 3.33 |
+| 1000 | deleteMany | post | 1 | 1000 | 103055 | 20.15 | 16.66 | 3.49 |
+| 1000 | deleteMany | since | 1 | 1000 | 104055 | 20.82 | 16.86 | 3.96 |
+| 10000 | insertMany | base | 1 | 0 | 154 | 116.55 | 124.00 | -7.46 |
+| 10000 | insertMany | pre | 1 | 10000 | 1039056 | 130.07 | 121.79 | 8.27 |
+| 10000 | insertMany | post | 1 | 10000 | 1049056 | 147.07 | 118.26 | 28.81 |
+| 10000 | insertMany | since | 1 | 10000 | 1059056 | 147.88 | 123.31 | 24.57 |
+| 10000 | bulkWrite-upsert-fresh | base | 1 | 0 | 153 | 985.23 | 1023.80 | -38.57 |
+| 10000 | bulkWrite-upsert-fresh | pre | 1 | 10000 | 550165 | 1368.31 | 1016.04 | 352.28 |
+| 10000 | bulkWrite-upsert-fresh | post | 1 | 10000 | 550165 | 990.44 | 1037.82 | -47.38 |
+| 10000 | bulkWrite-upsert-fresh | since | 1 | 10000 | 550165 | 998.31 | 1010.39 | -12.08 |
+| 10000 | bulkWrite-upsert-resend | base | 1 | 0 | 153 | 1038.02 | 1041.62 | -3.60 |
+| 10000 | bulkWrite-upsert-resend | pre | 1 | 10000 | 550165 | 1451.46 | 1037.97 | 413.49 |
+| 10000 | bulkWrite-upsert-resend | post | 1 | 10000 | 550165 | 1451.57 | 1079.74 | 371.83 |
+| 10000 | bulkWrite-upsert-resend | since | 1 | 10000 | 550165 | 1052.82 | 1044.53 | 8.29 |
+| 10000 | updateMany | base | 1 | 0 | 154 | 276.47 | 252.97 | 23.50 |
+| 10000 | updateMany | pre | 1 | 10000 | 1039056 | 297.92 | 266.52 | 31.40 |
+| 10000 | updateMany | post | 1 | 10000 | 1049056 | 318.76 | 268.25 | 50.51 |
+| 10000 | updateMany | since | 1 | 10000 | 1059056 | 299.77 | 268.91 | 30.85 |
+| 10000 | deleteMany | base | 1 | 0 | 154 | 128.95 | 128.66 | 0.29 |
+| 10000 | deleteMany | pre | 1 | 10000 | 1029056 | 156.60 | 123.56 | 33.05 |
+| 10000 | deleteMany | post | 1 | 10000 | 1039056 | 158.76 | 125.87 | 32.89 |
+| 10000 | deleteMany | since | 1 | 10000 | 1049056 | 170.43 | 134.82 | 35.62 |
+
+| N | driver call | arm | json ms | index ms | cache remove ms (entries left of 576 + N) |
+|---|---|---|---|---|---|
+| 1 | insertMany | base | 0.0006 | n/a (needs re-read) |  |
+| 1 | updateMany | base | 0.0006 | n/a (needs re-read) |  |
+| 1 | deleteMany | base | 0.0005 | n/a (needs re-read) | 0.002 (0) |
+| 1 | bulkWrite-upsert-fresh | base | 0.0004 | n/a (needs re-read) |  |
+| 1 | bulkWrite-upsert-resend | base | 0.0004 | n/a (needs re-read) |  |
+| 1 | insertMany | post | 0.0010 | 0.0002 |  |
+| 1 | updateMany | post | 0.0010 | 0.0002 |  |
+| 1 | deleteMany | post | 0.0010 | 0.0002 | 0.008 (576) |
+| 1 | bulkWrite-upsert-fresh | post | 0.0009 | 0.0002 |  |
+| 1 | bulkWrite-upsert-resend | post | 0.0009 | 0.0002 |  |
+| 1 | insertMany | since | 0.0010 | 0.0002 |  |
+| 1 | updateMany | since | 0.0010 | 0.0002 |  |
+| 1 | deleteMany | since | 0.0010 | 0.0002 | 0.007 (576) |
+| 1 | bulkWrite-upsert-fresh | since | 0.0010 | 0.0002 |  |
+| 1 | bulkWrite-upsert-resend | since | 0.0010 | 0.0002 |  |
+| 1 | insertMany | pre | 0.0010 | 0.0002 |  |
+| 1 | updateMany | pre | 0.0016 | 0.0002 |  |
+| 1 | deleteMany | pre | 0.0010 | 0.0002 | 0.005 (576) |
+| 1 | bulkWrite-upsert-fresh | pre | 0.0010 | 0.0002 |  |
+| 1 | bulkWrite-upsert-resend | pre | 0.0010 | 0.0002 |  |
+| 100 | insertMany | post | 0.0151 | 0.0051 |  |
+| 100 | updateMany | post | 0.0154 | 0.0050 |  |
+| 100 | deleteMany | post | 0.0156 | 0.0011 | 0.027 (576) |
+| 100 | bulkWrite-upsert-fresh | post | 0.0112 | 0.0015 |  |
+| 100 | bulkWrite-upsert-resend | post | 0.0111 | 0.0015 |  |
+| 100 | insertMany | base | 0.0005 | n/a (needs re-read) |  |
+| 100 | updateMany | base | 0.0005 | n/a (needs re-read) |  |
+| 100 | deleteMany | base | 0.0005 | n/a (needs re-read) | 0.001 (0) |
+| 100 | bulkWrite-upsert-fresh | base | 0.0005 | n/a (needs re-read) |  |
+| 100 | bulkWrite-upsert-resend | base | 0.0005 | n/a (needs re-read) |  |
+| 100 | insertMany | pre | 0.0157 | 0.0017 |  |
+| 100 | updateMany | pre | 0.0157 | 0.0016 |  |
+| 100 | deleteMany | pre | 0.0170 | 0.0022 | 0.029 (576) |
+| 100 | bulkWrite-upsert-fresh | pre | 0.0116 | 0.0017 |  |
+| 100 | bulkWrite-upsert-resend | pre | 0.0117 | 0.0017 |  |
+| 100 | insertMany | since | 0.0162 | 0.0017 |  |
+| 100 | updateMany | since | 0.0164 | 0.0024 |  |
+| 100 | deleteMany | since | 0.0301 | 0.0012 | 0.028 (576) |
+| 100 | bulkWrite-upsert-fresh | since | 0.0115 | 0.0017 |  |
+| 100 | bulkWrite-upsert-resend | since | 0.0116 | 0.0016 |  |
+| 1000 | insertMany | base | 0.0005 | n/a (needs re-read) |  |
+| 1000 | updateMany | base | 0.0005 | n/a (needs re-read) |  |
+| 1000 | deleteMany | base | 0.0005 | n/a (needs re-read) | 0.001 (0) |
+| 1000 | bulkWrite-upsert-fresh | base | 0.0005 | n/a (needs re-read) |  |
+| 1000 | bulkWrite-upsert-resend | base | 0.0005 | n/a (needs re-read) |  |
+| 1000 | insertMany | pre | 0.1419 | 0.0230 |  |
+| 1000 | updateMany | pre | 0.1442 | 0.0255 |  |
+| 1000 | deleteMany | pre | 0.1541 | 0.0108 | 0.169 (576) |
+| 1000 | bulkWrite-upsert-fresh | pre | 0.1020 | 0.0233 |  |
+| 1000 | bulkWrite-upsert-resend | pre | 0.1021 | 0.0233 |  |
+| 1000 | insertMany | since | 0.1467 | 0.0231 |  |
+| 1000 | updateMany | since | 0.1445 | 0.0238 |  |
+| 1000 | deleteMany | since | 0.1542 | 0.0103 | 0.185 (576) |
+| 1000 | bulkWrite-upsert-fresh | since | 0.1016 | 0.0253 |  |
+| 1000 | bulkWrite-upsert-resend | since | 0.1023 | 0.0240 |  |
+| 1000 | insertMany | post | 0.1464 | 0.0234 |  |
+| 1000 | updateMany | post | 0.1457 | 0.0230 |  |
+| 1000 | deleteMany | post | 0.1540 | 0.0105 | 0.149 (576) |
+| 1000 | bulkWrite-upsert-fresh | post | 0.1036 | 0.0243 |  |
+| 1000 | bulkWrite-upsert-resend | post | 0.1052 | 0.0229 |  |
+| 10000 | insertMany | base | 0.0005 | n/a (needs re-read) |  |
+| 10000 | updateMany | base | 0.0005 | n/a (needs re-read) |  |
+| 10000 | deleteMany | base | 0.0005 | n/a (needs re-read) | 0.001 (0) |
+| 10000 | bulkWrite-upsert-fresh | base | 0.0005 | n/a (needs re-read) |  |
+| 10000 | bulkWrite-upsert-resend | base | 0.0005 | n/a (needs re-read) |  |
+| 10000 | insertMany | post | 1.8215 | 0.2728 |  |
+| 10000 | updateMany | post | 1.8458 | 0.2618 |  |
+| 10000 | deleteMany | post | 1.9523 | 0.1093 | 368.527 (576) |
+| 10000 | bulkWrite-upsert-fresh | post | 1.2184 | 0.2710 |  |
+| 10000 | bulkWrite-upsert-resend | post | 1.2036 | 0.2674 |  |
+| 10000 | insertMany | pre | 1.7505 | 0.2701 |  |
+| 10000 | updateMany | pre | 1.7730 | 0.2605 |  |
+| 10000 | deleteMany | pre | 1.8138 | 0.1051 | 6.144 (576) |
+| 10000 | bulkWrite-upsert-fresh | pre | 1.2220 | 0.2571 |  |
+| 10000 | bulkWrite-upsert-resend | pre | 1.2032 | 0.2557 |  |
+| 10000 | insertMany | since | 1.9231 | 0.2940 |  |
+| 10000 | updateMany | since | 1.8903 | 0.2792 |  |
+| 10000 | deleteMany | since | 1.8659 | 0.1028 | 296.660 (576) |
+| 10000 | bulkWrite-upsert-fresh | since | 1.0905 | 0.2431 |  |
+| 10000 | bulkWrite-upsert-resend | since | 1.0972 | 0.2373 |  |
+
+option 1 follow-up for a contents consumer, find by _id $in: 1: 0.85 ms, 100: 0.94 ms, 1000: 4.21 ms, 10000: 36.59 ms
+
+counts-only follow-up: re-read of the 2-day cache window (576 entries): median 2.41 ms, p95 3.94 ms
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0

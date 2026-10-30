@@ -1,0 +1,6 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+{"k":2,"round":0,"arm":"since","req":2348,"rps":"233.9","med":"10.31","p95":"18.83","events":2348,"truth":2552,"cross":539,"countMismatch":744,"missed":0,"missedKeys":0,"extra":645,"unnamed":0}
+| k | round | arm | requests | failed | req/s | median ms | p95 ms | events | unnamed (collapsed) | change-stream ops | named | cross-attributed | records≠counts | missed | never named | extra |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | 0 | since | 2348 | 0 | 233.9 | 10.31 | 18.83 | 2348 | 0 (0) | 2552 | 3197 | 539 | 744 | 0 | 0 | 645 |
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0

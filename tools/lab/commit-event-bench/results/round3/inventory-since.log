@@ -1,0 +1,27 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+v1-entries-create                200      v1/internal bulkWrite {"inserted":0,"upserted":1,"modified":0,"deleted":0} records=1
+v1-entries-resend                200      v1/internal bulkWrite {"inserted":0,"upserted":0,"modified":1,"deleted":0} records=1
+v1-entries-query-delete-10       200      v1/internal deleteMany {"inserted":0,"upserted":0,"modified":0,"deleted":10} records=10
+v1-devicestatus-create           200      v1/internal insertMany {"inserted":1,"upserted":0,"modified":0,"deleted":0} records=1
+v1-treatments-create             200      v1/internal bulkWrite {"inserted":0,"upserted":1,"modified":0,"deleted":0} records=1
+v1-treatments-put                200      v1/internal replaceOne {"inserted":0,"upserted":0,"modified":1,"deleted":0} records=1
+v1-treatments-softdelete         200      v1/internal replaceOne {"inserted":0,"upserted":0,"modified":1,"deleted":0} records=1
+v1-treatments-delete-id          200      v1/internal deleteMany {"inserted":0,"upserted":0,"modified":0,"deleted":1} records=1
+v3-treatments-create             201      v3 insertOne {"inserted":1,"upserted":0,"modified":0,"deleted":0} records=1
+v3-treatments-resend             200      v3 replaceOne {"inserted":0,"upserted":0,"modified":1,"deleted":0} records=1
+v3-treatments-patch              200      v3 updateOne {"inserted":0,"upserted":0,"modified":1,"deleted":0} records=1
+v3-treatments-put                200      v3 replaceOne {"inserted":0,"upserted":0,"modified":1,"deleted":0} records=1
+v3-treatments-delete-permanent   200      v3 deleteMany {"inserted":0,"upserted":0,"modified":0,"deleted":1} records=1
+ws-treatments-dbAdd              ack[1]   socket insertOne {"inserted":1,"upserted":0,"modified":0,"deleted":0} records=1
+ws-treatments-dbUpdate           {"result":"success"} socket updateMany {"inserted":0,"upserted":0,"modified":1,"deleted":0} records=1
+internal-update-moves-out-10     200      internal updateMany {"inserted":0,"upserted":0,"modified":10,"deleted":0} records=10
+ws-treatments-dbRemove           {"result":"success"} socket deleteMany {"inserted":0,"upserted":0,"modified":0,"deleted":1} records=1
+v1-entries-fresh-1000            200      v1/internal bulkWrite {"inserted":0,"upserted":1000,"modified":0,"deleted":0} records=1000
+v1-entries-resend-1000           200      v1/internal bulkWrite {"inserted":0,"upserted":0,"modified":1000,"deleted":0} records=1000
+v1-treatments-fresh-1000         200      v1/internal bulkWrite {"inserted":0,"upserted":1000,"modified":0,"deleted":0} records=1000
+v1-treatments-resend-1000        200      v1/internal bulkWrite {"inserted":0,"upserted":0,"modified":1000,"deleted":0} records=1000
+v1-entries-fresh-10000           200      v1/internal bulkWrite {"inserted":0,"upserted":10000,"modified":0,"deleted":0} records=10000
+v1-entries-resend-10000          200      v1/internal bulkWrite {"inserted":0,"upserted":0,"modified":10000,"deleted":0} records=10000
+v1-treatments-fresh-10000        200      v1/internal bulkWrite {"inserted":0,"upserted":10000,"modified":0,"deleted":0} records=10000
+v1-treatments-resend-10000       200      v1/internal bulkWrite {"inserted":0,"upserted":0,"modified":10000,"deleted":0} records=10000
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0

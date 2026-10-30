@@ -1,0 +1,100 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+{"arm":"pre","case":"plain-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"pre","case":"plain-delete","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"pre","case":"moves-out-of-filter","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"pre","case":"matched-unmodified","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"pre","case":"insert-after-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"pre","case":"delete-after-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"pre","case":"insert-before-delete","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"pre","case":"validated-reject-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"post","case":"plain-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"post","case":"plain-delete","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"post","case":"moves-out-of-filter","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":25,"extra":0}
+{"arm":"post","case":"matched-unmodified","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"post","case":"insert-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":0,"extra":5}
+{"arm":"post","case":"delete-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"post","case":"insert-before-delete","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"post","case":"validated-reject-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"plain-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"plain-delete","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"moves-out-of-filter","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"matched-unmodified","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"insert-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":0,"extra":5}
+{"arm":"since","case":"delete-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"since","case":"insert-before-delete","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"since","case":"validated-reject-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since0","case":"plain-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since0","case":"plain-delete","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since0","case":"moves-out-of-filter","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since0","case":"matched-unmodified","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since0","case":"insert-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":0,"extra":5}
+{"arm":"since0","case":"delete-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"since0","case":"insert-before-delete","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"since0","case":"validated-reject-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"late0","case":"plain-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":25,"extra":0}
+{"arm":"late0","case":"plain-delete","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"late0","case":"moves-out-of-filter","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":25,"extra":0}
+{"arm":"late0","case":"matched-unmodified","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":25,"extra":0}
+{"arm":"late0","case":"insert-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":25,"extra":5}
+{"arm":"late0","case":"delete-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":25,"extra":0}
+{"arm":"late0","case":"insert-before-delete","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"late0","case":"validated-reject-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"late5","case":"plain-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"late5","case":"plain-delete","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"late5","case":"moves-out-of-filter","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"late5","case":"matched-unmodified","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"late5","case":"insert-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":0,"extra":5}
+{"arm":"late5","case":"delete-after-update","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"late5","case":"insert-before-delete","calls":5,"exact":0,"inexact":5,"flagged":5,"inexactUnflagged":0,"missed":5,"extra":0}
+{"arm":"late5","case":"validated-reject-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+| case | arm | events | exact | inexact | flagged (records≠counts) | inexact and UNFLAGGED | missed | extra |
+|---|---|---|---|---|---|---|---|---|
+| plain-update | pre | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-delete | pre | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| moves-out-of-filter | pre | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| matched-unmodified | pre | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| insert-after-update | pre | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| delete-after-update | pre | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| insert-before-delete | pre | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| validated-reject-update | pre | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-update | post | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-delete | post | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| moves-out-of-filter | post | 5 | 0 | 5 | 5 | 0 | 25 | 0 |
+| matched-unmodified | post | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| insert-after-update | post | 5 | 0 | 5 | 5 | 0 | 0 | 5 |
+| delete-after-update | post | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| insert-before-delete | post | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| validated-reject-update | post | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-update | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-delete | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| moves-out-of-filter | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| matched-unmodified | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| insert-after-update | since | 5 | 0 | 5 | 5 | 0 | 0 | 5 |
+| delete-after-update | since | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| insert-before-delete | since | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| validated-reject-update | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-update | since0 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-delete | since0 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| moves-out-of-filter | since0 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| matched-unmodified | since0 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| insert-after-update | since0 | 5 | 0 | 5 | 5 | 0 | 0 | 5 |
+| delete-after-update | since0 | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| insert-before-delete | since0 | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| validated-reject-update | since0 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-update | late0 | 5 | 0 | 5 | 5 | 0 | 25 | 0 |
+| plain-delete | late0 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| moves-out-of-filter | late0 | 5 | 0 | 5 | 5 | 0 | 25 | 0 |
+| matched-unmodified | late0 | 5 | 0 | 5 | 5 | 0 | 25 | 0 |
+| insert-after-update | late0 | 5 | 0 | 5 | 5 | 0 | 25 | 5 |
+| delete-after-update | late0 | 5 | 0 | 5 | 5 | 0 | 25 | 0 |
+| insert-before-delete | late0 | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| validated-reject-update | late0 | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| plain-update | late5 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-delete | late5 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| moves-out-of-filter | late5 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| matched-unmodified | late5 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| insert-after-update | late5 | 5 | 0 | 5 | 5 | 0 | 0 | 5 |
+| delete-after-update | late5 | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| insert-before-delete | late5 | 5 | 0 | 5 | 5 | 0 | 5 | 0 |
+| validated-reject-update | late5 | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0

@@ -1,0 +1,44 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+{"k":1,"round":0,"arm":"base","req":2776,"rps":"138.5","med":"7.58","p95":"12.90","events":2775,"truth":3343,"cross":0,"countMismatch":0,"missed":3343,"missedKeys":3343,"extra":0,"unnamed":2775}
+{"k":1,"round":0,"arm":"base2","req":2803,"rps":"139.8","med":"7.45","p95":"12.61","events":2802,"truth":3372,"cross":0,"countMismatch":0,"missed":3372,"missedKeys":3372,"extra":0,"unnamed":2802}
+{"k":1,"round":0,"arm":"pre","req":2762,"rps":"137.3","med":"7.77","p95":"13.08","events":2761,"truth":3318,"cross":0,"countMismatch":2,"missed":2,"missedKeys":2,"extra":0,"unnamed":0}
+{"k":1,"round":0,"arm":"post","req":2651,"rps":"131.3","med":"8.67","p95":"15.18","events":2650,"truth":3199,"cross":0,"countMismatch":5,"missed":9,"missedKeys":9,"extra":0,"unnamed":0}
+{"k":1,"round":0,"arm":"since","req":2648,"rps":"132.1","med":"8.63","p95":"15.22","events":2647,"truth":3191,"cross":151,"countMismatch":154,"missed":3,"missedKeys":3,"extra":152,"unnamed":0}
+{"k":1,"round":1,"arm":"since","req":2440,"rps":"120.8","med":"10.28","p95":"18.17","events":2439,"truth":2968,"cross":166,"countMismatch":170,"missed":9,"missedKeys":9,"extra":168,"unnamed":0}
+{"k":1,"round":1,"arm":"post","req":2426,"rps":"121.1","med":"10.60","p95":"17.51","events":2425,"truth":2943,"cross":0,"countMismatch":5,"missed":13,"missedKeys":13,"extra":0,"unnamed":0}
+{"k":1,"round":1,"arm":"pre","req":2394,"rps":"118.6","med":"11.21","p95":"17.79","events":2393,"truth":2910,"cross":0,"countMismatch":4,"missed":3,"missedKeys":3,"extra":2,"unnamed":0}
+{"k":1,"round":1,"arm":"base2","req":2408,"rps":"119.8","med":"10.69","p95":"17.97","events":2407,"truth":2926,"cross":0,"countMismatch":0,"missed":2926,"missedKeys":2926,"extra":0,"unnamed":2407}
+{"k":1,"round":1,"arm":"base","req":2460,"rps":"122.6","med":"10.29","p95":"16.68","events":2459,"truth":2977,"cross":0,"countMismatch":0,"missed":2977,"missedKeys":2977,"extra":0,"unnamed":2459}
+{"k":4,"round":0,"arm":"base","req":8865,"rps":"434.3","med":"11.50","p95":"22.26","events":8864,"truth":11218,"cross":0,"countMismatch":0,"missed":11218,"missedKeys":11218,"extra":0,"unnamed":8864}
+{"k":4,"round":0,"arm":"base2","req":8338,"rps":"409.5","med":"12.14","p95":"29.31","events":8337,"truth":10593,"cross":0,"countMismatch":0,"missed":10593,"missedKeys":10593,"extra":0,"unnamed":8337}
+{"k":4,"round":0,"arm":"pre","req":8766,"rps":"430.1","med":"11.80","p95":"23.17","events":8765,"truth":11020,"cross":0,"countMismatch":10,"missed":14,"missedKeys":14,"extra":0,"unnamed":0}
+{"k":4,"round":0,"arm":"post","req":8450,"rps":"418.0","med":"11.82","p95":"27.36","events":8450,"truth":10710,"cross":0,"countMismatch":39,"missed":86,"missedKeys":86,"extra":0,"unnamed":0}
+{"k":4,"round":0,"arm":"since","req":8847,"rps":"435.4","med":"11.43","p95":"22.92","events":8847,"truth":11151,"cross":1618,"countMismatch":1647,"missed":54,"missedKeys":54,"extra":4709,"unnamed":0}
+{"k":4,"round":1,"arm":"since","req":8538,"rps":"422.1","med":"11.95","p95":"24.38","events":8538,"truth":10819,"cross":1532,"countMismatch":1556,"missed":45,"missedKeys":45,"extra":4597,"unnamed":0}
+{"k":4,"round":1,"arm":"post","req":8580,"rps":"421.6","med":"11.71","p95":"25.56","events":8580,"truth":10832,"cross":0,"countMismatch":32,"missed":68,"missedKeys":68,"extra":0,"unnamed":0}
+{"k":4,"round":1,"arm":"pre","req":8619,"rps":"422.8","med":"12.12","p95":"23.13","events":8618,"truth":10833,"cross":0,"countMismatch":6,"missed":10,"missedKeys":10,"extra":0,"unnamed":0}
+{"k":4,"round":1,"arm":"base2","req":8772,"rps":"434.7","med":"11.57","p95":"22.67","events":8771,"truth":11117,"cross":0,"countMismatch":0,"missed":11117,"missedKeys":11117,"extra":0,"unnamed":8771}
+{"k":4,"round":1,"arm":"base","req":8753,"rps":"432.3","med":"11.45","p95":"23.15","events":8752,"truth":11063,"cross":0,"countMismatch":0,"missed":11063,"missedKeys":11063,"extra":0,"unnamed":8752}
+| k | round | arm | requests | failed | req/s | median ms | p95 ms | events | unnamed (collapsed) | change-stream ops | named | cross-attributed | records≠counts | missed | never named | extra |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 0 | base | 2776 | 0 | 138.5 | 7.58 | 12.90 | 2775 | 2775 (0) | 3343 | 0 | 0 | 0 | 3343 | 3343 | 0 |
+| 1 | 0 | base2 | 2803 | 0 | 139.8 | 7.45 | 12.61 | 2802 | 2802 (0) | 3372 | 0 | 0 | 0 | 3372 | 3372 | 0 |
+| 1 | 0 | pre | 2762 | 0 | 137.3 | 7.77 | 13.08 | 2761 | 0 (0) | 3318 | 3316 | 0 | 2 | 2 | 2 | 0 |
+| 1 | 0 | post | 2651 | 0 | 131.3 | 8.67 | 15.18 | 2650 | 0 (0) | 3199 | 3190 | 0 | 5 | 9 | 9 | 0 |
+| 1 | 0 | since | 2648 | 0 | 132.1 | 8.63 | 15.22 | 2647 | 0 (0) | 3191 | 3340 | 151 | 154 | 3 | 3 | 152 |
+| 1 | 1 | since | 2440 | 0 | 120.8 | 10.28 | 18.17 | 2439 | 0 (0) | 2968 | 3127 | 166 | 170 | 9 | 9 | 168 |
+| 1 | 1 | post | 2426 | 0 | 121.1 | 10.60 | 17.51 | 2425 | 0 (0) | 2943 | 2930 | 0 | 5 | 13 | 13 | 0 |
+| 1 | 1 | pre | 2394 | 0 | 118.6 | 11.21 | 17.79 | 2393 | 0 (0) | 2910 | 2909 | 0 | 4 | 3 | 3 | 2 |
+| 1 | 1 | base2 | 2408 | 0 | 119.8 | 10.69 | 17.97 | 2407 | 2407 (0) | 2926 | 0 | 0 | 0 | 2926 | 2926 | 0 |
+| 1 | 1 | base | 2460 | 0 | 122.6 | 10.29 | 16.68 | 2459 | 2459 (0) | 2977 | 0 | 0 | 0 | 2977 | 2977 | 0 |
+| 4 | 0 | base | 8865 | 0 | 434.3 | 11.50 | 22.26 | 8864 | 8864 (0) | 11218 | 0 | 0 | 0 | 11218 | 11218 | 0 |
+| 4 | 0 | base2 | 8338 | 0 | 409.5 | 12.14 | 29.31 | 8337 | 8337 (0) | 10593 | 0 | 0 | 0 | 10593 | 10593 | 0 |
+| 4 | 0 | pre | 8766 | 0 | 430.1 | 11.80 | 23.17 | 8765 | 0 (0) | 11020 | 11006 | 0 | 10 | 14 | 14 | 0 |
+| 4 | 0 | post | 8450 | 0 | 418.0 | 11.82 | 27.36 | 8450 | 0 (0) | 10710 | 10624 | 0 | 39 | 86 | 86 | 0 |
+| 4 | 0 | since | 8847 | 0 | 435.4 | 11.43 | 22.92 | 8847 | 0 (0) | 11151 | 15806 | 1618 | 1647 | 54 | 54 | 4709 |
+| 4 | 1 | since | 8538 | 0 | 422.1 | 11.95 | 24.38 | 8538 | 0 (0) | 10819 | 15371 | 1532 | 1556 | 45 | 45 | 4597 |
+| 4 | 1 | post | 8580 | 0 | 421.6 | 11.71 | 25.56 | 8580 | 0 (0) | 10832 | 10764 | 0 | 32 | 68 | 68 | 0 |
+| 4 | 1 | pre | 8619 | 0 | 422.8 | 12.12 | 23.13 | 8618 | 0 (0) | 10833 | 10823 | 0 | 6 | 10 | 10 | 0 |
+| 4 | 1 | base2 | 8772 | 0 | 434.7 | 11.57 | 22.67 | 8771 | 8771 (0) | 11117 | 0 | 0 | 0 | 11117 | 11117 | 0 |
+| 4 | 1 | base | 8753 | 0 | 432.3 | 11.45 | 23.15 | 8752 | 8752 (0) | 11063 | 0 | 0 | 0 | 11063 | 11063 | 0 |
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0

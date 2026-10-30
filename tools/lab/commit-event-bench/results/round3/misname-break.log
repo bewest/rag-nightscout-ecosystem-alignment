@@ -1,0 +1,20 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+{"arm":"since","case":"plain-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"plain-delete","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"moves-out-of-filter","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"matched-unmodified","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+{"arm":"since","case":"insert-after-update","calls":5,"exact":0,"inexact":5,"flagged":0,"inexactUnflagged":5,"missed":0,"extra":5}
+{"arm":"since","case":"delete-after-update","calls":5,"exact":0,"inexact":5,"flagged":0,"inexactUnflagged":5,"missed":5,"extra":0}
+{"arm":"since","case":"insert-before-delete","calls":5,"exact":0,"inexact":5,"flagged":0,"inexactUnflagged":5,"missed":5,"extra":0}
+{"arm":"since","case":"validated-reject-update","calls":5,"exact":5,"inexact":0,"flagged":0,"inexactUnflagged":0,"missed":0,"extra":0}
+| case | arm | events | exact | inexact | flagged (records≠counts) | inexact and UNFLAGGED | missed | extra |
+|---|---|---|---|---|---|---|---|---|
+| plain-update | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| plain-delete | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| moves-out-of-filter | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| matched-unmodified | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+| insert-after-update | since | 5 | 0 | 5 | 0 | 5 | 0 | 5 |
+| delete-after-update | since | 5 | 0 | 5 | 0 | 5 | 5 | 0 |
+| insert-before-delete | since | 5 | 0 | 5 | 0 | 5 | 5 | 0 |
+| validated-reject-update | since | 5 | 5 | 0 | 0 | 0 | 0 | 0 |
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0

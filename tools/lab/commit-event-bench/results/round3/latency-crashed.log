@@ -1,0 +1,6 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+iteration 0 (214 s)
+iteration 25 (2017 s)
+TypeError: Cannot read properties of undefined (reading 'identifier')
+    at Object.seed (/home/bewest/src/ns-align-lab-devent/tools/lab/commit-event-bench/lib.js:159:108)
+    at async /home/bewest/src/ns-align-lab-devent/tools/lab/commit-event-bench/bench.js:44:54
