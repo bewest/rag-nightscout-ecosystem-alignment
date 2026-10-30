@@ -122,6 +122,44 @@
 // new cells on entries and treatments with UUID_HANDLING=false (504 cells, ids
 // as in the default run). `cache` stays racy on the new cells too, chiefly on
 // entries cells that cross API v3.
+//
+// Forms added 2026-10-30 (QC-MATRIX-IDFMT), the identifier-format cells
+// ID-FIRST-MATCH slice 2 (`identifier-format`, ID-VALIDATE) pins. They run
+// last, after the QC-MATRIX-IDF cells, so every earlier cell keeps its order,
+// its timestamps and its result; their ids all start "idfmt-". Form
+// "idfmt-<class>-<mode>" sends one value as `identifier` (class idundef sends
+// it as `_id` instead, which UUID_HANDLING can move into `identifier`):
+//   placeholders  undefined, null, invalid, nan ("NaN"), unknown, empty (""),
+//                 blank ("   "), jsonnull (a JSON null): the union of the
+//                 candidate lists (ID-PLACEHOLDER-LIST), so each list has cells
+//   number        a non-string identifier (the cell's time, a number)
+//   len256/len257 a string of exactly 256 / 257 characters
+//   urlsafe, colon ("glooko:bolus:<sha256>", as nightscout-connect), slash,
+//   nonascii      character classes; today's behaviour only
+//   idundef       `_id: "undefined"` and no identifier
+// The placeholder values are the same in every cell (that is their point):
+// before each such cell, records carrying the cell's value (as `identifier`
+// or `_id`) are deleted straight from MongoDB, so a cell starts from no record
+// with that value. The other classes are new per cell. Modes:
+//   time    seed with `wck: 1`, re-send five minutes later with `wcv: 2`
+//           (as idf-*-time, so a match is not on the time key)
+//   single  one write with `wcv: 2`, no seed
+//   twoapp  two DIFFERENT apps sharing the value (placeholder classes and
+//           idundef only): app A's record, then app B's (other app, device
+//           and enteredBy, another amount, 2.5 minutes later); `shape` says
+//           what B's write did: new,new (two records), merge or replace (B
+//           landed in A's record), not-written (B was dropped)
+// Every path; time and twoapp also across paths ("<coll> x <A> x <B> <form>"),
+// as the idf cross cells. Settings gets the same-path cells on API v3. Each new
+// cell has the idf fields (shape included) plus `ident`, one label per stored
+// record in `store` order: kept (the sent value, same type), absent, or what is
+// there instead (null, num, empty, uuid, str<length>[ trimmed]).
+// --idfmt-only runs only these cells; --no-idfmt leaves them out (as do
+// --idf-only and --tt-only).
+// The pin with these forms is results/write-contract-matrix/dev-991b0654-idformat.json
+// (2675 cells, the new ones only, from an --idfmt-only run). `wire` is racy on
+// cells whose seed or delete went through API v3: that write's storage-socket
+// event can arrive inside the measured step (seen on earlier cells too).
 
 const fs = require('fs');
 const path = require('path');
@@ -283,6 +321,13 @@ const FORMS = (opt('--forms', 'create,resend-hex,resend-upper,resend-oid,resend-
 // QC-MATRIX-V2 forms: run after the Temporary Target cells (see the header).
 const V2_FORMS = ['update-twin', 'idread-fail', 'harddelete-custom', 'harddelete-num'];
 const IDF_ONLY = flag('--idf-only');
+// QC-MATRIX-IDFMT forms: run after the QC-MATRIX-IDF cells (see the header).
+const IDFMT_ONLY = flag('--idfmt-only');
+const EARLIER = !IDFMT_ONLY; // the cells before QC-MATRIX-IDFMT
+const IDFMT_PH = ['undefined', 'null', 'invalid', 'nan', 'unknown', 'empty', 'blank', 'jsonnull'];
+const IDFMT_CLASSES = IDFMT_PH.concat(['number', 'len256', 'len257', 'urlsafe', 'colon', 'slash', 'nonascii', 'idundef']);
+const IDFMT_FORMS = [].concat(...IDFMT_CLASSES.map(k => ['time', 'single']
+  .concat(IDFMT_PH.includes(k) || k === 'idundef' ? ['twoapp'] : []).map(m => 'idfmt-' + k + '-' + m)));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const hex = () => crypto.randomBytes(12).toString('hex');
 const iso = t => new Date(t).toISOString();
@@ -608,7 +653,7 @@ function body (coll, t, cell, extra) {
   }
 
   const TT_ONLY = flag('--tt-only');
-  if (!TT_ONLY && !IDF_ONLY) for (const c of COLLS) {
+  if (EARLIER && !TT_ONLY && !IDF_ONLY) for (const c of COLLS) {
     for (const p of PATHS) {
       for (const f of FORMS) {
         if (f === 'update-put' && p !== 'v3') continue;
@@ -619,7 +664,7 @@ function body (coll, t, cell, extra) {
   }
 
   // ---- cross-path: create through A, re-send the same body (no _id) through B
-  if (!flag('--no-cross') && !TT_ONLY && !IDF_ONLY) {
+  if (EARLIER && !flag('--no-cross') && !TT_ONLY && !IDF_ONLY) {
     for (const c of COLLS) {
       for (const a of PATHS) for (const b of PATHS) {
         if (a === b) continue;
@@ -639,7 +684,7 @@ function body (coll, t, cell, extra) {
   // ---- Temporary Target cells (see the header). The body is a valid target;
   // `change` is what the measured step sends or applies.
   const TT_FORMS = [];
-  if (COLLS.includes('treatments') && !flag('--no-tt') && !IDF_ONLY) {
+  if (EARLIER && COLLS.includes('treatments') && !flag('--no-tt') && !IDF_ONLY) {
     const c = 'treatments';
     const ttBody = (t, cell, extra) => Object.assign({ date: t, utcOffset: 0, app: 'wc-lab', wc: cell, wcv: 1
       , eventType: 'Temporary Target', reason: 'wc-lab', targetBottom: 100, targetTop: 120, units: 'mg/dl', duration: 60
@@ -713,7 +758,7 @@ function body (coll, t, cell, extra) {
   }
 
   // ---- QC-MATRIX-V2 forms (see the header), after every earlier cell
-  if (!TT_ONLY && !IDF_ONLY) for (const c of COLLS) for (const p of PATHS) for (const f of FORMS) {
+  if (EARLIER && !TT_ONLY && !IDF_ONLY) for (const c of COLLS) for (const p of PATHS) for (const f of FORMS) {
     if (V2_FORMS.includes(f)) await cell(c, p, f);
   }
 
@@ -751,7 +796,8 @@ function body (coll, t, cell, extra) {
     }).join(',');
   }
   // The measured step and every observation an earlier cell records, plus shape.
-  async function idfMeasure (key, c, cellId, out, measured) {
+  // `extra` (QC-MATRIX-IDFMT only) adds fields from the ordered records.
+  async function idfMeasure (key, c, cellId, out, measured, extra) {
     const before = await docsOf(c, cellId);
     const cursor = await cursorOf(c);
     events = []; wire = [];
@@ -775,6 +821,7 @@ function body (coll, t, cell, extra) {
     out.wire = wired.length ? wired.join(',') : 'none';
     out.cache = cacheOf(c, cellId);
     out.v1read = await v1readOf(c, cellId);
+    if (extra) extra(out, after);
     if (!(await alive())) { cells[key] = { st: 'INVALID liveness after' }; return; }
     cells[key] = out;
   }
@@ -842,7 +889,7 @@ function body (coll, t, cell, extra) {
   }
 
   const IDF_COLLS = opt('--only', null) ? COLLS : COLLS.concat(['settings']);
-  if (!TT_ONLY && !flag('--no-idf')) {
+  if (EARLIER && !TT_ONLY && !flag('--no-idf')) {
     for (const c of IDF_COLLS) {
       const paths = c === 'settings' ? PATHS.filter(p => p === 'v3') : PATHS;
       // settings: the earlier forms, through the generic cell
@@ -865,12 +912,87 @@ function body (coll, t, cell, extra) {
     }
   }
 
+  // ---- QC-MATRIX-IDFMT forms (see the header), after every earlier cell.
+  const IDFMT_FIXED = { undefined: 'undefined', null: 'null', invalid: 'invalid', nan: 'NaN', unknown: 'unknown'
+    , empty: '', blank: '   ', jsonnull: null, idundef: 'undefined' };
+  // The value a cell sends; the classes not in IDFMT_FIXED are new per cell.
+  function idfmtValue (k, t) {
+    if (Object.prototype.hasOwnProperty.call(IDFMT_FIXED, k)) return IDFMT_FIXED[k];
+    const h = crypto.randomBytes(16).toString('hex');
+    if (k === 'number') return t;
+    if (k === 'len256' || k === 'len257') return ('wc-' + h + crypto.randomBytes(160).toString('hex')).slice(0, k === 'len256' ? 256 : 257);
+    if (k === 'urlsafe') return 'wc_' + h + '.~-A';
+    if (k === 'colon') return 'glooko:bolus:' + crypto.createHash('sha256').update(h).digest('hex');
+    if (k === 'slash') return 'wc/' + h + '/dose';
+    if (k === 'nonascii') return 'wc-\u00fc-\u65e5\u672c-' + h;
+    throw new Error('idfmt class ' + k);
+  }
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  function identDesc (docs, sent) {
+    if (!docs.length) return 'none';
+    return docs.map(d => {
+      if (!Object.prototype.hasOwnProperty.call(d, 'identifier')) return 'absent';
+      const v = d.identifier;
+      if (v === sent) return 'kept';
+      if (v === null) return 'null';
+      if (typeof v === 'number') return 'num';
+      if (typeof v !== 'string') return typeof v;
+      if (v === '') return 'empty';
+      if (UUID_RE.test(v)) return 'uuid';
+      return 'str' + v.length + (typeof sent === 'string' && v === sent.trim() ? ' trimmed' : '');
+    }).join(',');
+  }
+  async function idfmtCell (c, a, b, f) {
+    const key = a === b ? c + ' ' + a + ' ' + f : c + ' x ' + a + ' x ' + b + ' ' + f;
+    const cellId = 'wc-idfmt' + seq + '-' + crypto.randomBytes(3).toString('hex');
+    const t = nextT();
+    const out = {};
+    if (!(await alive())) { cells[key] = { st: 'INVALID liveness before' }; return; }
+    const m = /^idfmt-(.+)-(time|single|twoapp)$/.exec(f);
+    const k = m[1]; const mode = m[2];
+    const val = idfmtValue(k, t);
+    // no record from an earlier cell carries the fixed value
+    if (Object.prototype.hasOwnProperty.call(IDFMT_FIXED, k)) {
+      await col(c).deleteMany(val === null ? { identifier: { $type: 'null' } } : { $or: [{ identifier: val }, { _id: val }] });
+    }
+    const fixed = k === 'idundef' ? { _id: val } : { identifier: val };
+    const mk = (tt, extra) => body(c, tt, cellId, Object.assign({}, fixed, extra));
+    let measured;
+    if (mode === 'single') {
+      if (!P[b].create || (b === 'v3' && !V3[c])) { cells[key] = { st: 'n/a' }; return; }
+      measured = () => P[b].create(c, mk(t, { wcv: 2 }));
+    } else {
+      out.seed = await P[a].create(c, mk(t, { wck: 1 })); await sleep(80);
+      if (out.seed === null) { cells[key] = { st: 'n/a' }; return; }
+      measured = mode === 'time' ? () => P[b].create(c, mk(t + 300000, { wcv: 2 }))
+        : () => P[b].create(c, mk(t + 150000, Object.assign({ app: 'wc-app-b', device: 'wc-app-b', enteredBy: 'wc-app-b' }
+          , idfAmount(c, t), { wcv: 2 })));
+    }
+    await idfMeasure(key, c, cellId, out, measured, (o, after) => { o.ident = identDesc(after, val); });
+  }
+
+  if (!TT_ONLY && !IDF_ONLY && !flag('--no-idfmt')) {
+    for (const c of IDF_COLLS) {
+      const paths = c === 'settings' ? PATHS.filter(p => p === 'v3') : PATHS;
+      for (const p of paths) for (const f of IDFMT_FORMS) await idfmtCell(c, p, p, f);
+    }
+    if (!flag('--no-cross')) for (const c of IDF_COLLS) {
+      if (c === 'settings') continue;
+      for (const a of PATHS) for (const b of PATHS) {
+        if (a === b) continue;
+        if ((a === 'v3' || b === 'v3') && !V3[c]) continue;
+        for (const f of IDFMT_FORMS) if (!f.endsWith('-single')) await idfmtCell(c, a, b, f);
+      }
+    }
+  }
+
   const result = {
     head, dirty_lib: dirty || '', node: process.version, mongod: serverVersion, db: DBNAME
     , write_validation: env.writeValidation === undefined ? '(not read by this build)' : env.writeValidation
     , date: new Date().toISOString(), collections: COLLS, paths: PATHS
-    , forms: TT_ONLY ? TT_FORMS : IDF_ONLY ? FORMS.filter(f => IDF_FORMS.includes(f))
-      : FORMS.filter(f => !V2_FORMS.includes(f) && !IDF_FORMS.includes(f)).concat(TT_FORMS, FORMS.filter(f => V2_FORMS.includes(f)), FORMS.filter(f => IDF_FORMS.includes(f)))
+    , forms: TT_ONLY ? TT_FORMS : IDF_ONLY ? FORMS.filter(f => IDF_FORMS.includes(f)) : IDFMT_ONLY ? IDFMT_FORMS
+      : FORMS.filter(f => !V2_FORMS.includes(f) && !IDF_FORMS.includes(f)).concat(TT_FORMS, FORMS.filter(f => V2_FORMS.includes(f)), FORMS.filter(f => IDF_FORMS.includes(f))
+        , flag('--no-idfmt') ? [] : IDFMT_FORMS)
     , idf_collections: IDF_COLLS, uuid_handling: env.uuidHandling, cells
   };
   if (OUT) fs.writeFileSync(OUT, JSON.stringify(result, null, 1));
