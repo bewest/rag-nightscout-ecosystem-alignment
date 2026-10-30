@@ -1,0 +1,4789 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/lab/cache-value/index.html">
+      
+      
+        <link rel="prev" href="../brush-extent/index.html">
+      
+      
+        <link rel="next" href="BF-DRAFT.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>cache-value lab - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cache-value-lab" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              cache-value lab
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tools/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aid-autoresearch/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aid-autoresearch/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../animations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    animations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../cgmencode/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgmencode/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../kotlin-nightscout-tests/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    kotlin-nightscout-tests/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lab/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_8" id="__nav_8_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    lab/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../aaps-ws-delivery/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps-ws-delivery/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bf94-browser/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bf94-browser/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../brush-extent/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    brush-extent/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cache-value/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_8_8_5" id="__nav_8_8_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_8_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_8_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    cache-value/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="BF-DRAFT.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DRAFT backfix-register entry: a remove without ids flushes every cache
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="results/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    results/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../hub-active-state/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    hub-active-state/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../image-start-forms/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    image-start-forms/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mongo-server-matrix/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mongo-server-matrix/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nocturne-parity/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nocturne-parity/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../object-id/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    object-id/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../proxy-trust/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    proxy-trust/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../rc-soak/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rc-soak/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../record-identity/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    record-identity/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../stpa-diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa-diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../stpa-grid-style/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    stpa-grid-style/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenant-config-callpath/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-config-callpath/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenant-config-schema/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-config-schema/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../v3-identifier-immutable/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v3-identifier-immutable/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../mt-bench/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mt-bench/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../ns2parquet/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../nsprobe/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nsprobe/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../nsschema/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nsschema/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../qc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    qc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../review/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    review/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../seam/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    seam/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    site/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../structure-diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    structure-diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../swift-nightscout-tests/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    swift-nightscout-tests/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-harness/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-harness/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#anchors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anchors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-read-first-r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code read first [R]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-the-over-flush" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: the over-flush
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-what-the-cache-saves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: what the cache saves
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: what the cache saves">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="cache-value-lab">cache-value lab<a class="headerlink" href="#cache-value-lab" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-10-29 at <code>329da703e</code>.</em></p>
+<p>What cgm-remote-monitor's in-memory cache still saves on a single-tenant site,
+and a reproduction of an over-broad cache flush. Synthetic data only; never a
+real site or real health data. Approved by the maintainer 2026-10-29.</p>
+<p>Marks: [M] measured in this lab, [R] read from code, [A] an assumption of the
+lab's traffic model.</p>
+<h2 id="anchors">Anchors<a class="headerlink" href="#anchors" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cgm-remote-monitor</td>
+<td>official/dev e1f7ac4169256581bda70fef4fea1846ecf56d86 (fetched 2026-10-29), worktrees <code>externals/work/crm-cache-value</code> (unpatched) and <code>externals/work/crm-cache-value-bypass</code> (cache-bypass.patch applied), each with its own <code>npm ci</code></td>
+</tr>
+<tr>
+<td>15.0.9 read for comparison</td>
+<td>tag v15.0.9 = c6a0d8ed (read only, not run)</td>
+</tr>
+<tr>
+<td>MongoDB</td>
+<td>mongo:8.0 image, server version read from the server: 8.0.34 [M]</td>
+</tr>
+<tr>
+<td>Node</td>
+<td>v22.23.4 [M]</td>
+</tr>
+<tr>
+<td>Part 1 container</td>
+<td>cv-p1-mongo, id d73fbff4f743…, port 27801, restartCount 0 at start and end of each run (results/p1-*-docker.jsonl)</td>
+</tr>
+<tr>
+<td>Part 2 containers</td>
+<td>cv-p2-rt3h-<arm>, ports 27810-27814; ids and restart counts in results/rt3h/docker-<arm>.jsonl</td>
+</tr>
+</tbody>
+</table>
+<p>Containers run with <code>--ulimit nofile=64000:64000</code>, no <code>--rm</code> (mongo.sh). The
+API secret is generated per run into a state directory outside git and is never
+written into results.</p>
+<h2 id="code-read-first-r">Code read first [R]<a class="headerlink" href="#code-read-first-r" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>lib/server/cache.js</code>: retention 60 h treatments, 48 h entries, 24 h
+  devicestatus (48 h with <code>devicestatus.days == 2</code>). <code>isEmpty</code> is "fewer than
+  20 records". <code>dataChanged</code>: a <code>remove</code> with no <code>changes</code> empties all three
+  caches and bumps all three removal generations (Part 1). <code>invalidate(type)</code>
+  exists for a per-type flush.</li>
+<li><code>lib/data/dataloader.js</code>: with a warm cache the entries, treatments and
+  devicestatus loaders query a 15-minute window; with <code>isEmpty</code> they query
+  48 h / 60 h / 24 h. Each reload also runs the other loaders (profile, food,
+  activity, profile switches, latest sensor/insulin change treatments), which
+  do not depend on the cache: a warm reload is 13 queries (8 of them on treatments) and 1 command [M].</li>
+<li><code>lib/api3/storage/mongoCachedCollection/index.js</code>: per-record cache updates
+  for insertOne/replaceOne/updateOne/deleteOne; <code>deleteInCache(undefined)</code> (a
+  no-changes remove, so all three caches) after the filter-AST writes and after
+  <code>deleteManyOr</code> of more than one document. The comment there says it drops
+  "this collection".</li>
+<li><code>lib/server/storage-writes.js</code>: v1 writes go through the plain
+  MongoCollection (<code>lib/server/storage-reads.js</code> <code>collection()</code>), not the cached
+  wrapper; the v1 modules emit their own <code>data-update</code>.</li>
+<li><code>lib/storage/mongo-storage.js</code>: <code>DEFAULT_POOL_SIZE = 5</code>,
+  <code>LEGACY_POOL_SIZE = 100</code>; <code>maxPoolSize</code> from <code>env.mongo_pool_size</code>, else 5;
+  <code>minPoolSize</code> from <code>env.mongo_min_pool_size</code>, else 0; <code>maxIdleTimeMS</code> 30000.
+  <code>lib/server/env.js</code> reads <code>MONGO_POOL_SIZE</code> / <code>MONGO_MIN_POOL_SIZE</code> via
+  <code>readENV</code>, which also accepts the lowercase name and the <code>CUSTOMCONNSTR_</code>
+  prefix [R]; <code>MONGO_POOL_SIZE=100</code> and <code>mongo_pool_size=9</code> both reach
+  <code>env.mongo_pool_size</code> [M].</li>
+<li>v1 GETs from memory: entries (<code>lib/api/entries/index.js</code> <code>query_models</code>)
+  when the only <code>find</code> key is <code>type</code> and <code>count</code> ≤ cached length; treatments
+  (<code>lib/api/treatments/index.js</code>) only when <code>count</code> is the only query key and
+  the cache holds at least <code>count</code> records (default count 100, so a site with
+  fewer than 100 treatments in 60 h never serves <code>/treatments.json</code> from
+  memory); devicestatus (<code>lib/api/devicestatus/index.js</code>) when the only key is
+  <code>count</code> and the cache holds at least <code>count</code>.</li>
+<li><code>lib/server/bootevent.js</code>: <code>tick</code> (every <code>HEARTBEAT</code> s, default 60) and
+  <code>data-received</code> call a debounced reload (1 s wait, 5 s max wait, leading and
+  trailing).</li>
+</ul>
+<h2 id="part-1-the-over-flush">Part 1: the over-flush<a class="headerlink" href="#part-1-the-over-flush" title="Permanent link">&para;</a></h2>
+<p><code>overflush.js</code> boots the server in-process (as <code>lib/server/server.js</code> does,
+without the websocket, <code>HEARTBEAT=3600</code> so only the actions trigger reloads)
+against a seeded synthetic database (entries every 5 min for 50 h,
+devicestatus every 5 min for 26 h, a treatment every 2 h for 62 h, plus three
+Notes), then profiles (MongoDB profiler level 2, the probe's own connection
+excluded by appName) each action and the reload it triggers.</p>
+<table>
+<thead>
+<tr>
+<th>action</th>
+<th>caches right after (tx/ds/entries)</th>
+<th>reload windows (tx/ds/entries)</th>
+<th>ops</th>
+<th>docs returned</th>
+<th>bytes returned</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>warm reload, nothing changed</td>
+<td>32/287/575</td>
+<td>15 min each</td>
+<td>14</td>
+<td>4</td>
+<td>6,226</td>
+</tr>
+<tr>
+<td>DELETE /api/v1/treatments/<id></td>
+<td>31/287/575</td>
+<td>15 min each</td>
+<td>15</td>
+<td>4</td>
+<td>6,226</td>
+</tr>
+<tr>
+<td>DELETE /api/v1/treatments/?find[eventType]=Note (3 records), dev</td>
+<td><strong>0/0/0</strong></td>
+<td>60 h / 24 h / 48 h</td>
+<td>15</td>
+<td>890</td>
+<td>716,202</td>
+</tr>
+<tr>
+<td>same, matching 0 records, dev</td>
+<td><strong>0/0/0</strong></td>
+<td>60 h / 24 h / 48 h</td>
+<td>15</td>
+<td>890</td>
+<td>716,202</td>
+</tr>
+<tr>
+<td>delete by query, with overflush-fix.patch</td>
+<td>0/287/575</td>
+<td>60 h / 15 min / 15 min</td>
+<td>15</td>
+<td>32</td>
+<td>10,247</td>
+</tr>
+</tbody>
+</table>
+<p>All rows [M] (results/p1-unpatched.json, results/p1-unpatched-run2.json:
+identical figures; results/p1-patched.json). Of the 716,202 bytes, devicestatus
+is 613,602 and entries 97,166.</p>
+<p>Control: <code>overflush.js --control</code> exits 1 on unpatched dev with
+"entries cache emptied by a treatments delete-by-query: before 575, after 0",
+the devicestatus equivalent, the two generation bumps and "entries reloaded
+with a long load … window 48 h" / "devicestatus … 24 h"; it exits 0 with
+<code>patches/overflush-fix.patch</code>. Draft register entry: BF-DRAFT.md.</p>
+<h2 id="part-2-what-the-cache-saves">Part 2: what the cache saves<a class="headerlink" href="#part-2-what-the-cache-saves" title="Permanent link">&para;</a></h2>
+<h3 id="method">Method<a class="headerlink" href="#method" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Five arms run in parallel, in real time, each with its own MongoDB
+  container, its own server process and its own replay process started at the
+  same moment with the same schedule (<code>run.sh</code>). Real time, not compressed:
+  compressing would shrink the heartbeat and follower intervals but not the
+  dataloader's 15-minute window or the debounce, so a warm reload would return
+  many more records than on a real site (the compressed smoke run in
+  results/smoke shows this; its figures are not used).</li>
+<li>Arms: <code>base-a</code> and <code>base-b</code> (dev, cache, pool default 5: the noise floor),
+  <code>cache-pool100</code> (dev, <code>MONGO_POOL_SIZE=100</code>), <code>bypass-pool5</code> and
+  <code>bypass-pool100</code> (dev + <code>patches/cache-bypass.patch</code>). The bypass makes
+  <code>cache.isEmpty</code> always true (every reload is a long load) and makes the three
+  v1 GETs never serve from memory. The cache still exists and is still filled.</li>
+<li>Seed: the Part 1 history. Traffic [A], per arm (<code>replay.js</code>):</li>
+<li>uploader: a v1 entry and a devicestatus every 5 min, devicestatus
+    alternating v1 and v3 (JWT from an admin subject); a treatment every
+    40 min alternating v1 and v3;</li>
+<li>follower 1: <code>GET /api/v1/entries/sgv.json?count=1</code> every minute;</li>
+<li>follower 2, every 5 min: <code>entries/sgv.json?count=288</code>,
+    <code>devicestatus.json?count=1</code>, <code>treatments.json?count=10</code>;</li>
+<li>follower 3, every 5 min: <code>entries.json?count=300&amp;find[date][$gte]=&lt;24 h&gt;</code>,
+    <code>treatments.json?find[created_at][$gte]=&lt;24 h&gt;</code>, <code>devicestatus.json?count=2</code>
+    (the first two are never served from memory, in either arm);</li>
+<li>the website: one socket.io connection, <code>authorize</code> with the secret.
+  Followers authenticate with the API secret header [A].</li>
+<li>Bypass control (in <code>replay.js</code>, before hour 0): 20 <code>entries/sgv.json?count=1</code>
+  and 20 <code>devicestatus.json?count=1</code>, counting serverStatus <code>opcounters.query</code>.
+  A cache arm must cause fewer than 10 queries, a bypass arm at least 40. Shown
+  red for the right reason with the declarations swapped
+  (results/bypass-check-red.txt: "caused 0 MongoDB queries: FAIL: expected every
+  one to read MongoDB" and "caused 40 MongoDB queries: FAIL: expected them
+  served from memory").</li>
+<li>Measures per hour: serverStatus deltas (<code>opcounters</code>,
+  <code>metrics.document.returned</code>, <code>network.bytesOut</code> minus the sampler's own two
+  serverStatus replies per sample), client-side request latency p50/p95, server
+  RSS and <code>data-loaded</code> count from <code>preload.js</code>, <code>connections.current</code>.</li>
+<li>Atlas M0 column: MongoDB, "Atlas Free Cluster Limits",
+  https://www.mongodb.com/docs/atlas/reference/free-shared-limitations/ , read
+  2026-10-29 (the page shows no last-updated date): "Free clusters: 100
+  operations per second"; "a maximum of 500 connections"; "10 GB in and 10 GB
+  out per period" (rolling seven days); 0.5 GB storage; throttling when a limit
+  is exceeded. The page does not say whether commands (as opposed to reads and
+  writes) count toward the operations limit, so the ops/s column counts CRUD
+  plus commands, which is the upper reading. Bytes out per 7 days is the hour's
+  figure × 168. These figures are a local 8.0.34 server's counters, not
+  Atlas's metering.</li>
+</ul>
+<h3 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h3>
+<p>Run <code>rt3h</code>: 3 real hours, all arms in parallel, 2026-10-29 20:26-23:27 UTC.
+Every figure in the table is [M] (results/rt3h/summary.json, table.md). 0 of
+473 replay requests per arm failed; all five bypass controls PASS; every
+container's restartCount was 0 at start and end.</p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th>hour</th>
+<th>CRUD ops</th>
+<th>command ops</th>
+<th>ops/s</th>
+<th>docs returned</th>
+<th>bytes out</th>
+<th>reloads</th>
+<th>GET p50/p95 ms</th>
+<th>POST p50/p95 ms</th>
+<th>RSS max MB</th>
+<th>conns</th>
+<th>M0: ops/s % of 100</th>
+<th>M0: bytes out/7d % of 10 GB</th>
+<th>M0: conns % of 500</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base-a</td>
+<td>1</td>
+<td>1,264</td>
+<td>1,847</td>
+<td>0.86</td>
+<td>4,140</td>
+<td>1,940,192</td>
+<td>86</td>
+<td>2.2/7.7</td>
+<td>14.1/23.9</td>
+<td>112.9</td>
+<td>5</td>
+<td>0.86%</td>
+<td>3.26%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>base-a</td>
+<td>2</td>
+<td>1,248</td>
+<td>1,913</td>
+<td>0.88</td>
+<td>4,142</td>
+<td>2,196,119</td>
+<td>85</td>
+<td>2.3/7.0</td>
+<td>11.1/31.8</td>
+<td>112.1</td>
+<td>5</td>
+<td>0.88%</td>
+<td>3.69%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>base-a</td>
+<td>3</td>
+<td>1,261</td>
+<td>1,850</td>
+<td>0.86</td>
+<td>4,168</td>
+<td>1,986,018</td>
+<td>86</td>
+<td>3.3/7.0</td>
+<td>11.4/29.6</td>
+<td>112.7</td>
+<td>5</td>
+<td>0.86%</td>
+<td>3.34%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>base-b</td>
+<td>1</td>
+<td>1,264</td>
+<td>1,850</td>
+<td>0.86</td>
+<td>4,140</td>
+<td>1,941,179</td>
+<td>86</td>
+<td>2.2/7.6</td>
+<td>12.3/33.0</td>
+<td>112.9</td>
+<td>10</td>
+<td>0.86%</td>
+<td>3.26%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>base-b</td>
+<td>2</td>
+<td>1,246</td>
+<td>1,851</td>
+<td>0.86</td>
+<td>4,142</td>
+<td>1,956,886</td>
+<td>85</td>
+<td>2.3/7.6</td>
+<td>8.9/33.9</td>
+<td>113.8</td>
+<td>10</td>
+<td>0.86%</td>
+<td>3.29%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>base-b</td>
+<td>3</td>
+<td>1,261</td>
+<td>1,851</td>
+<td>0.86</td>
+<td>4,168</td>
+<td>1,986,379</td>
+<td>86</td>
+<td>3.3/7.4</td>
+<td>15.3/31.3</td>
+<td>114</td>
+<td>10</td>
+<td>0.86%</td>
+<td>3.34%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>cache-pool100</td>
+<td>1</td>
+<td>1,318</td>
+<td>1,983</td>
+<td>0.92</td>
+<td>4,142</td>
+<td>1,989,304</td>
+<td>86</td>
+<td>2.3/7.5</td>
+<td>10.1/21.7</td>
+<td>111.9</td>
+<td>11</td>
+<td>0.92%</td>
+<td>3.34%</td>
+<td>2.2%</td>
+</tr>
+<tr>
+<td>cache-pool100</td>
+<td>2</td>
+<td>1,291</td>
+<td>2,035</td>
+<td>0.92</td>
+<td>4,142</td>
+<td>2,236,257</td>
+<td>85</td>
+<td>2.2/7.1</td>
+<td>10.3/39.6</td>
+<td>112.9</td>
+<td>12</td>
+<td>0.92%</td>
+<td>3.76%</td>
+<td>2.4%</td>
+</tr>
+<tr>
+<td>cache-pool100</td>
+<td>3</td>
+<td>1,302</td>
+<td>1,972</td>
+<td>0.91</td>
+<td>4,172</td>
+<td>2,034,924</td>
+<td>86</td>
+<td>3.3/6.8</td>
+<td>8.4/32.0</td>
+<td>113.1</td>
+<td>11</td>
+<td>0.91%</td>
+<td>3.42%</td>
+<td>2.2%</td>
+</tr>
+<tr>
+<td>bypass-pool5</td>
+<td>1</td>
+<td>1,372</td>
+<td>1,789</td>
+<td>0.88</td>
+<td>84,127</td>
+<td>63,758,250</td>
+<td>86</td>
+<td>4.5/11.2</td>
+<td>15.7/68.2</td>
+<td>126.5</td>
+<td>10</td>
+<td>0.88%</td>
+<td>107.11%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>bypass-pool5</td>
+<td>2</td>
+<td>1,356</td>
+<td>1,853</td>
+<td>0.89</td>
+<td>83,374</td>
+<td>63,554,681</td>
+<td>85</td>
+<td>4.4/8.6</td>
+<td>16.8/88.2</td>
+<td>124.5</td>
+<td>10</td>
+<td>0.89%</td>
+<td>106.77%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>bypass-pool5</td>
+<td>3</td>
+<td>1,369</td>
+<td>1,790</td>
+<td>0.88</td>
+<td>84,323</td>
+<td>64,303,678</td>
+<td>86</td>
+<td>5.3/10.5</td>
+<td>15.8/66.9</td>
+<td>128.4</td>
+<td>10</td>
+<td>0.88%</td>
+<td>108.03%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>bypass-pool100</td>
+<td>1</td>
+<td>1,429</td>
+<td>1,980</td>
+<td>0.95</td>
+<td>84,127</td>
+<td>63,821,105</td>
+<td>86</td>
+<td>4.6/10.4</td>
+<td>13.0/73.1</td>
+<td>123.1</td>
+<td>11</td>
+<td>0.95%</td>
+<td>107.22%</td>
+<td>2.2%</td>
+</tr>
+<tr>
+<td>bypass-pool100</td>
+<td>2</td>
+<td>1,409</td>
+<td>1,981</td>
+<td>0.94</td>
+<td>83,374</td>
+<td>63,377,942</td>
+<td>85</td>
+<td>4.6/10.4</td>
+<td>16.4/73.6</td>
+<td>123.7</td>
+<td>12</td>
+<td>0.94%</td>
+<td>106.47%</td>
+<td>2.4%</td>
+</tr>
+<tr>
+<td>bypass-pool100</td>
+<td>3</td>
+<td>1,425</td>
+<td>1,987</td>
+<td>0.95</td>
+<td>84,323</td>
+<td>64,368,507</td>
+<td>86</td>
+<td>5.9/11.4</td>
+<td>16.2/70.3</td>
+<td>122.9</td>
+<td>11</td>
+<td>0.95%</td>
+<td>108.14%</td>
+<td>2.2%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>bypass check (base-a, expect cache): 40 simple v1 GETs caused 0 MongoDB queries: PASS; errors: 0 of 473 requests</li>
+<li>bypass check (base-b, expect cache): 40 simple v1 GETs caused 0 MongoDB queries: PASS; errors: 0 of 473 requests</li>
+<li>bypass check (cache-pool100, expect cache): 40 simple v1 GETs caused 0 MongoDB queries: PASS; errors: 0 of 473 requests</li>
+<li>bypass check (bypass-pool5, expect bypass): 40 simple v1 GETs caused 40 MongoDB queries: PASS; errors: 0 of 473 requests</li>
+<li>bypass check (bypass-pool100, expect bypass): 40 simple v1 GETs caused 40 MongoDB queries: PASS; errors: 0 of 473 requests</li>
+</ul>
+<p>Per-hour means of hours 1-3 (pool 5 arms; base = mean of base-a and base-b) [M]:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>cache (base)</th>
+<th>bypass-pool5</th>
+<th>bypass / cache</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRUD ops/h</td>
+<td>1,257</td>
+<td>1,366</td>
+<td>1.09</td>
+</tr>
+<tr>
+<td>finds/5 min (spot check, results/rt3h-command-breakdown-5min.txt)</td>
+<td>95</td>
+<td>104</td>
+<td>1.09</td>
+</tr>
+<tr>
+<td>commands/h</td>
+<td>1,860</td>
+<td>1,811</td>
+<td>0.97</td>
+</tr>
+<tr>
+<td>documents returned/h</td>
+<td>4,150</td>
+<td>83,941</td>
+<td>20.2</td>
+</tr>
+<tr>
+<td>bytes out/h</td>
+<td>2.0 MB</td>
+<td>63.9 MB</td>
+<td>32</td>
+</tr>
+<tr>
+<td>GET p50 / p95 (ms, range over hours)</td>
+<td>2.2-3.3 / 7.0-7.7</td>
+<td>4.4-5.3 / 8.6-11.2</td>
+<td></td>
+</tr>
+<tr>
+<td>POST p95 (ms, range)</td>
+<td>23.9-33.9</td>
+<td>66.9-88.2</td>
+<td></td>
+</tr>
+<tr>
+<td>RSS max (MB)</td>
+<td>112-114</td>
+<td>124.5-128.4</td>
+<td></td>
+</tr>
+<tr>
+<td>M0 bytes out, ×168 h vs 10 GB / 7 days</td>
+<td>3.3-3.7 %</td>
+<td>106.8-108.0 %</td>
+<td></td>
+</tr>
+<tr>
+<td>M0 ops/s (CRUD + commands) vs 100</td>
+<td>0.86-0.88 %</td>
+<td>0.88-0.89 %</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Reading the measurements:</p>
+<ul>
+<li>[M] Noise floor (base-a vs base-b): CRUD ops and documents returned agree
+  within 2 per hour; bytes out within 0.1 % in hours 1 and 3. Hour 2 of base-a
+  (and of cache-pool100 and bypass-pool5) carries a 5-minute command-breakdown
+  probe this lab ran by hand (three extra connections, ~250 KB of serverStatus
+  replies, ~60 commands), which explains base-a hour 2's 2.20 MB against
+  base-b's 1.96 MB.</li>
+<li>[M] Reloads: 85-86 per hour in every arm (60 heartbeat ticks plus the
+  uploader's posts). The cache does not change how often the server reloads,
+  nor the number of queries per reload; it changes the window, so what the
+  cache saves is documents and bytes, not operations. The operations it saves
+  are the follower GETs it serves from memory (≈9 finds per 5 min here).</li>
+<li>[M] Commands are more than half of all operations in every arm; in the
+  5-minute breakdown they are mostly driver monitoring (<code>hello</code> 178,
+  <code>isMaster</code> 21-35, <code>dbStats</code> 7). Whether Atlas counts these toward the M0
+  operations limit is not published on the page read.</li>
+<li>[M] Pool 100 against pool 5 (same cache mode): about 40-57 more CRUD ops and
+  120-200 more commands per hour (more <code>isMaster</code>, i.e. connection handshakes,
+  and more <code>update</code> in opcounters), 1-2 more connections, no latency difference
+  beyond the hour-to-hour spread. With this traffic the server never had more
+  than 12 connections open (including the replay's own).</li>
+<li>[M] Against M0: at this traffic, average operation rate is under 1 % of
+  100/s in all arms (per-second peaks were not measured). Bytes out is the
+  limit the cache matters for: about 0.33 GB per 7 days with the cache, about
+  10.7 GB without, which is above the published 10 GB out per rolling 7 days.
+  These are a local server's counters, not Atlas metering, and the traffic is
+  the model above [A]; a site with more followers or a larger devicestatus
+  scales the bypass figure roughly with the long-load size.</li>
+</ul>
+<h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>mongo.sh</code> containers; <code>common.js</code> synthetic data and helpers; <code>seed.js</code>.</li>
+<li><code>overflush.js</code> Part 1 probe and control; <code>patches/overflush-fix.patch</code>.</li>
+<li><code>run.sh</code>, <code>replay.js</code>, <code>preload.js</code>, <code>analyze.js</code> Part 2;
+  <code>patches/cache-bypass.patch</code>.</li>
+<li><code>results/</code> raw outputs: <code>p1-*.json</code> and docker state, <code>rt3h/</code> (replay and
+  metrics jsonl, anchors, docker state, summary.json), <code>smoke/</code> (compressed,
+  harness check only), <code>bypass-check-red.txt</code>.</li>
+<li><code>BF-DRAFT.md</code> draft register entry (no id).</li>
+</ul>
+<p>Re-run: <code>CV_STATE=&lt;dir outside git&gt; ./run.sh &lt;name&gt; &lt;hours&gt;</code> then
+<code>node analyze.js results/&lt;name&gt;</code>; Part 1:
+<code>CRM_DIR=&lt;tree&gt; MONGODB_URI=mongodb://127.0.0.1:27801/cvp1 node overflush.js --control --out &lt;file&gt;</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

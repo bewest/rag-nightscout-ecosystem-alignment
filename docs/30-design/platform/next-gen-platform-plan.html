@@ -5572,7 +5572,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>9e9baca5b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>73a244a92</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>e1f7ac41</code> (2026-10-29). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5701,8 +5701,8 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 </tr>
 <tr>
 <td>8</td>
-<td>#8874 plus slices 4 and 6, <code>write(intent)</code> release 1</td>
-<td>16.2.0</td>
+<td>#8874 plus slices 4 and 6, <code>write(intent)</code> release 1 (push-ready at <code>e8224807</code>, 2026-10-29: matrix 0 cells, revert rehearsed)</td>
+<td>16.2.0, or 16.0.0 through the bar</td>
 <td>every write moves, behaviour-neutral by the matrix</td>
 <td>G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit</td>
 </tr>
@@ -5890,7 +5890,19 @@ direction on the split: a lossy edit of a controller-claimed record needs a manu
 <li><strong>Re-send after delete.</strong> It is acknowledged with a 2xx naming the stored, deleted record, and the record stays deleted.</li>
 <li><strong>Format (2026-10-29).</strong> 1 to 256 URL-safe characters; a UUID is recommended; placeholders (<code>invalid</code>, <code>undefined</code>, <code>null</code>, <code>NaN</code>) are refused.</li>
 <li><strong><code>_id</code> (2026-10-29).</strong> A client may still send an ObjectId <code>_id</code> over API v1 (legacy). Going forward the server sets <code>_id</code> and the client sets <code>identifier</code>.</li>
-<li><strong>Re-send with changed fields (2026-10-29).</strong> Merge on match stays the default, because Loop and Trio re-send changed doses, overrides and temp targets by <code>POST</code> (<a href="../../60-research/tenancy/identity-resend-survey-2026-10-29.html">client survey</a>). API v3 keeps refusing a changed date, device or event type, and <code>PUT</code> replaces. A site setting plus per-client quirks (D20) may opt a client into keep-first or refuse. No default changes before 17.0.0.</li>
+<li><strong>Merge on match (2026-10-29).</strong> When a re-send matching a stored record is applied, fields it leaves out are
+  kept (RFC 7386), and <code>PUT</code> replaces. The census reads replace on several paths today. The extended matrix
+  measures each path first, and each path that changes is listed cell by cell.</li>
+<li><strong>Re-send after delete, every path (2026-10-29).</strong> "Acknowledged, stays deleted" applies on every path, and
+  the spec text is corrected. Every changed cell is documented, so the change can be reverted or adjusted
+  as cohort feedback arrives.</li>
+<li><strong>Records without an identifier.</strong> Natural keys for device status and profile are a separate item,
+  ID-NATURAL-KEY, with its own corpus check of what would merge. Food and activity have no natural key.</li>
+<li><strong>Socket edits and removes, and activity.</strong> Identifier addressing is added where it changes nothing for
+  writes that carry no <code>identifier</code>: socket <code>dbUpdate</code>, <code>dbUpdateUnset</code> and <code>dbRemove</code> accept an
+  <code>identifier</code> when there is no <code>_id</code>, and activity creates match on <code>identifier</code>. This is conditional on
+  the extended matrix showing every existing form unchanged.</li>
+<li><strong>Re-send with changed fields (2026-10-29).</strong> Merge on match stays the default, because Loop and Trio re-send changed doses, overrides and temp targets by <code>POST</code> (<a href="../../60-research/tenancy/identity-resend-survey-2026-10-29.html">client survey</a>). API v3 keeps refusing a changed date, device or event type, and <code>PUT</code> replaces. A site setting plus per-client quirks (D20) may opt a client into keep-first or refuse. A default changes only in a major: 16.0.0 if it clears the entry bar (§1a), otherwise 17.0.0.</li>
 </ul>
 <p>The rules are in the <a href="spec/identity.html">identity specification</a> and the <a href="identifier-conventions.html">identifier conventions</a>; the conversation with the Loop maintainers is in <a href="upstream-asks-loop-identifier/index.html">upstream-asks-loop-identifier</a>.</p>
 <h3 id="43-registration">4.3 Registration<a class="headerlink" href="#43-registration" title="Permanent link">&para;</a></h3>
