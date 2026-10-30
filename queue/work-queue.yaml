@@ -7028,6 +7028,9 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-30: #8874 pushed at 4f9fc4cd (slices 1-6, dev 991b0654 merged), PR CI green;
+      in 16.0.0 scope through the entry bar (maintainer, 2026-10-30). Earlier notes saying
+      "not for 16.0.0" are superseded.
       2026-10-29: draft PR #8874 (GitHub head still feat/write-intent
       0671b430). Push-ready head: local feat/write-intent-release e8224807,
       17 commits on dev e1f7ac41, slices 1-6. npm test 5106/0/3 against dev

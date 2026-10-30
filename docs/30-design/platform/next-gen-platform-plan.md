@@ -59,7 +59,7 @@ tagged, beside registration, instead of after `write(intent)`.
 | 3 | BF-211, per-collection cache flush (joins #8877) | low; changes only which caches a delete by query empties | the red/green control from `tools/lab/cache-value`; v1 deletes by query and API v3 auto-prune |
 | 3a | #8855, Crowdin | low | none beyond the usual |
 | 4 | BF-72 and BF-161 fork branches | security fixes held outside the public PR list until release ([register](../remedial/nightscout-backfix-register.md)) | brought up to `dev` and merged before the tag |
-| 5 | #8824, dev to master | blocked by master protection (`Run Tests (22, 4.4)`) | fix the required check, then merge and tag |
+| 5 | #8824, dev to master | blocked by master protection, which requires `Run Tests (22, 6)`, `(22, 4.4)` and `(24, 6)` plus one approving review | fix the required check, then merge and tag |
 
 **Eligible for 16.0.0 through an entry bar** (maintainer, 2026-10-29): rows 8 and 9 below, plus the
 re-send switch, in that order. Each joins the merge list when its matrix result is as stated, its red
@@ -67,16 +67,16 @@ controls and ablations pass, a revert has been rehearsed, and it has had time on
 check. Whatever has not cleared the bar at the tag rolls to 16.1.0. 16.0.0 is already a major, so identity
 rules that change outcomes may land there instead of 17.0.0.
 
-**After the tag**, when `dev` reopens (or earlier, for rows that clear the bar):
+**Next, through the bar** (2026-10-30: every single-tenant row targets 16.0.0; a miss rolls to 16.1.0, or to 17.0.0 if it changes a default):
 
 | # | work | release | risk | review |
 |---|---|---|---|---|
-| 6 | SPEC-ID-AMEND (spec and conformance only) | 16.1.0 | none for sites | case-by-case conformance report |
-| 7 | #8857, registration S0-S2, S5 | 16.1.0 | off by default; 78 commits behind with conflicts | the flag stays off; D-REG-FLAG (where the catalogue lives) |
-| 8 | #8874 plus slices 4 and 6, `write(intent)` release 1 (push-ready at `e8224807`, 2026-10-29: matrix 0 cells, revert rehearsed) | 16.2.0, or 16.0.0 through the bar | every write moves, behaviour-neutral by the matrix | G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit |
-| 9 | ID-FIRST-MATCH where it changes no outcome, and ID-BATCH | 16.2.0 | re-send matching on every path | the re-send table in the [identity reference §2.7](../../10-domain/record-identity-reference.md); D-LOOP-ID's per-client switch |
-| 10 | #8875 ST-VIEWS, once wired | 16.2.0 or later | alarms are safety-relevant | wiring is the maintainer's call; alarm cohort checks (execution plan §7b) |
-| 11 | #8810, AndroidAPS iOS push | 16.1.0 | device tokens are readable by read tokens | its four review items, with the author |
+| 6 | SPEC-ID-AMEND (spec and conformance only) | 16.0.0 through the bar | none for sites | case-by-case conformance report |
+| 7 | #8857, registration S0-S2, S5 | 16.0.0 through the bar | off by default; 109 commits behind dev with conflicts (2026-10-30) | the flag stays off; D-REG-FLAG (where the catalogue lives) |
+| 8 | #8874 plus slices 4 and 6, `write(intent)` release 1 (push-ready at `e8224807`, 2026-10-29: matrix 0 cells, revert rehearsed) | 16.0.0 through the bar (#8874 pushed at `4f9fc4cd`, dev `991b0654` merged, CI green, 2026-10-30) | every write moves, behaviour-neutral by the matrix | G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit |
+| 9 | ID-FIRST-MATCH slices 1, 2, 5, 3, 4, 6, 6a, then ID-UNIQUE-INDEX (`WRITE_IDENTIFIER_INDEX`), then ID-BATCH | 16.0.0 through the bar, in that order | re-send matching on every path | the re-send table in the [identity reference §2.7](../../10-domain/record-identity-reference.md); D-LOOP-ID's per-client switch |
+| 10 | #8875 ST-VIEWS, once wired | 16.0.0 only if it clears the bar, else 16.1.0 | alarms are safety-relevant | wiring is the maintainer's call; alarm cohort checks (execution plan §7b) |
+| 11 | #8810, AndroidAPS iOS push | 16.0.0 if its review items close, else 16.1.0 | device tokens are readable by read tokens | its four review items, with the author |
 
 Research that informs the order, without being in it: the cache-value lab (BF-211), the
 since-watermark arm of the D-EVENT bench, and the extended write-contract matrix (QC-MATRIX-IDF), which

@@ -421,7 +421,7 @@ on treatments and entries; the identity track records that move as `quirksApplie
 | `ID-SIMPLE-MATCH` | not started, unblocked since RT-1 merged | v1 entries and devicestatus match on `identifier`, on `dev` | before the write intent and independent of every slice |
 | `WC-STEP-PATCH` | blocked on `SEAM-REFRESH` in the queue | the one write step, today's behaviour pinned; BF-165's `_id` in every reply | #8854's boundary is its likely base and follow-up 1 its content; S3 and S4 wait on it; the identity track's 12 cases are checked when it lands |
 | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-VALIDATE`, `ID-V1-LOOKUP` | blocked on `WC-STEP-PATCH` | identifier-first matching on every path, per-item batch results, identifier validation, v1 lookup by any identifier | beside S3, behind the boundary; `ID-VALIDATE`'s checks apply to typed record ids once `ID-FORMAT-DECISION` decides C1–C7 |
-| `ID-UNIQUE-INDEX` | blocked on the four above | a partial unique index on `identifier` | after S3; the typed collection's index on `(vendor, product, identifier)` is S3's own |
+| `ID-UNIQUE-INDEX` | in 16.0.0 scope (2026-10-30), after ID-FIRST-MATCH slice 5 | a partial unique index on `identifier`, behind `WRITE_IDENTIFIER_INDEX=try|require|off` | no longer waits for S3; the typed collection's index on `(vendor, product, identifier)` is S3's own |
 | `ID-FORMAT-DECISION`, `ID-ABSENT-DECISION`, `ID-CLIENT-OID-DECISION`, `ID-V3-IMMUTABLE-DECISION`, `ID-DELETE-REUSE-DECISION` | needs decision | the maintainer's | `ID-ABSENT-DECISION` decides how S3 recognises a registered instance on a legacy path |
 | `ID-SCOPE-DECISION` | needs decision | per collection, across collections, per tenant | S6: the per-tenant scope is a column in the key under `multi` |
 

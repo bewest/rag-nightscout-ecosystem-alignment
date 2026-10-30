@@ -479,7 +479,7 @@ The questions in §6, numbered in order: (i) is ID-Q1, (ii) ID-Q2, (iii) ID-Q3, 
 - **ID-Q9, decided:** both additive items ship with slice 1 (a socket edit or remove by `identifier` without
   `_id`; activity creates matching `identifier`). No existing request changes.
 - **ID-Q11, decided:** data protection first. The slices go to the 16.0.0 entry bar in the order 1 (with the
-  additive items), 2, 5, 3, 4, 6, 6a. Whatever has not cleared the bar at the tag rolls to 17.0.0.
+  additive items), 2, 5, 3, 4, 6, 6a. Whatever has not cleared the bar at the tag rolls to 17.0.0 if it changes a default, otherwise to 16.1.0 (rule of 2026-10-30).
 - **ID-Q10, decided:** an edit addressed by an `identifier` that two stored records share lands on the record
   the P4 pick names. A delete addressed that way reaches every record sharing it, as API v3 DELETE does today.
 - **Unique index, decided 2026-10-30:** in 16.0.0 behind `WRITE_IDENTIFIER_INDEX=try|require|off` (default `try`).
