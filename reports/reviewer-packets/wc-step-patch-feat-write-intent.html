@@ -1721,6 +1721,62 @@
   
   
     <li class="md-nav__item">
+      <a href="bfq-209-bf-16-0-0-socket-similar-match.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 209 bf 16 0 0 socket similar match
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bfq-211-bf-16-0-0-socket-similar-match.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bfq 211 bf 16 0 0 socket similar match
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="bfq-72-adv-r3gv-1600-dev.html" class="md-nav__link">
         
   
@@ -1833,70 +1889,14 @@
   
   
     <li class="md-nav__item">
-      <a href="id-client-oid-decision.html" class="md-nav__link">
+      <a href="loop-upstream-carb-edit.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Id client oid decision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="id-format-decision.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Id format decision
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="id-v3-immutable-decision.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Id v3 immutable decision
+    Loop upstream carb edit
   
 
     
@@ -3108,7 +3108,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-27 at <code>74967c404</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3194,11 +3194,12 @@ fails naming only that pair.</p>
 <h2 id="what-these-gates-do-not-prove">What these gates do NOT prove<a class="headerlink" href="#what-these-gates-do-not-prove" title="Permanent link">&para;</a></h2>
 <p><em>Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.</em></p>
 <ul>
-<li>Not started; its blocker ARCH-8854 is merged (dev c08cbe03). Its gate is
-  spec G1: tools/qc/write-contract-matrix.js run through every path with
-  every cell equal to the pinned dev matrix except BF-165's two cells
-  (treatments v1/inproc resend-identity gain _id); control: each of the
-  spec's six one-line ablations turns its predicted cells red.</li>
+<li>G1 is run by hand, not wired here (last result: 0 cells against dev on the
+  push-ready head e8224807, 2026-10-29). Its gate is spec G1:
+  tools/qc/write-contract-matrix.js run through every path with every cell
+  equal to the pinned dev matrix except BF-165's two cells (treatments
+  v1/inproc resend-identity gain _id); control: each of the spec's six one-
+  line ablations turns its predicted cells red.</li>
 </ul>
 <h2 id="blocked-on">Blocked on<a class="headerlink" href="#blocked-on" title="Permanent link">&para;</a></h2>
 <p><code>ARCH-8854</code></p>
@@ -3206,54 +3207,60 @@ fails naming only that pair.</p>
 <ul>
 <li><a href="../../docs/30-design/tenancy/write-contract-spec-2026-10-07.html"><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></a></li>
 <li><a href="../../docs/30-design/remedial/nightscout-backfix-register.html"><code>docs/30-design/remedial/nightscout-backfix-register.md</code></a></li>
-<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0673cb64004b5da72670772d1237dc900fff58c2/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
+<li><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a941745b9a1b7c1df46d7730769032979860c402/tools/qc/write-contract-matrix.js"><code>tools/qc/write-contract-matrix.js</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-28: draft PR #8874 to dev opened by the maintainer (head 0671b430);
-not for 16.0.0. Slices 4 and 6 still to come. 2026-10-28, slice 5 (session
--4f's agent; heads, the two write-intent test files (169 passing), G2 and the
-copies gate re-checked by -4f, and G1 re-run by -4f against the v2 pin): local
-feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries), 6115c755
-(devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1 on the
-360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin (456
-cells): 2 cells differ in the racy cache field only, the same two that vary
-between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells, suites
-608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule copies
-37 (baseline 47). G2 enrols 7 entries. A new test file runs the db3b9e4e
-modules and the step side by side over a recording driver (calls, events,
-emissions, log lines, replies), the only check on preBolus, UUID_HANDLING, the
-profile permission and log lines. New questions Q-J..Q-P (design note). Slices
-left: 4 (v3) and 6 (socket treatments, devicestatus, profile adds and
-updates), held for the maintainer's review. 2026-10-27: G1's pin is now dev-
-db3b9e4e-v2.json (456 cells: the 360 of the first pin, identical, plus update-
-twin, idread-fail, harddelete-custom and harddelete-num; b6c19bc5a). Slices
-1-3 (a0e7fcac) equal it in every cell, setting aside the racy cache field. The
-activity save-twin break the first pin could not see turns activity update-
-twin red on both v1 and in-process. Transition target (maintainer,
-2026-10-27): every write path enrolled in the step before 16.2.0, measured by
-G2's enrolled set covering every writer and by the write-rule copies gate
-falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through
-the step, some not) is the riskiest one, so it is kept short. Release-2
-questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in
-release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md.
-2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2,
-the copies gate and the G1 compare outputs re-checked by -4f): local
-feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the
-socket's generic dbAdd for entries, food and activity, and dbRemove for all
-six collections). G1 0 of 360 cells after each, commit events included; every
-step ablation red only in enrolled cells, one (activity save-twin) red only in
-the suite because no matrix form PUTs over a string twin; G2 enrols function
-by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule
-copies on the branch: five fewer than the dev baseline, none new. No dev test
-expectation changed. New question Q-I: the step's id-match duplicates
-websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A);
-5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for
-treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event,
-after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit
-tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent
-2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API
-v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5
-files +530/-77). G1: 0 of 360 cells differ from the pin
+<p>2026-10-29: draft PR #8874 (GitHub head still feat/write-intent 0671b430).
+Push-ready head: local feat/write-intent-release e8224807, 17 commits on dev
+e1f7ac41, slices 1-6. npm test 5106/0/3 against dev 4759/0/3; the write-
+contract matrix differs from dev in 0 cells; the revert was rehearsed. The
+release-2 questions are Q-A..Q-Y in docs/30-design/platform/wc-step-design-
+note-2026-10-27.md (the queue items WC-R2-QA..WC-R2-QH carry the first of
+them). 2026-10-28: draft PR #8874 to dev opened by the maintainer (head
+0671b430); not for 16.0.0. Slices 4 and 6 still to come. 2026-10-28, slice 5
+(session -4f's agent; heads, the two write-intent test files (169 passing), G2
+and the copies gate re-checked by -4f, and G1 re-run by -4f against the v2
+pin): local feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries),
+6115c755 (devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1
+on the 360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin
+(456 cells): 2 cells differ in the racy cache field only, the same two that
+vary between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells,
+suites 608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule
+copies 37 (baseline 47). G2 enrols 7 entries. A new test file runs the
+db3b9e4e modules and the step side by side over a recording driver (calls,
+events, emissions, log lines, replies), the only check on preBolus,
+UUID_HANDLING, the profile permission and log lines. New questions Q-J..Q-P
+(design note). Slices left: 4 (v3) and 6 (socket treatments, devicestatus,
+profile adds and updates), held for the maintainer's review. 2026-10-27: G1's
+pin is now dev-db3b9e4e-v2.json (456 cells: the 360 of the first pin,
+identical, plus update-twin, idread-fail, harddelete-custom and harddelete-
+num; b6c19bc5a). Slices 1-3 (a0e7fcac) equal it in every cell, setting aside
+the racy cache field. The activity save-twin break the first pin could not see
+turns activity update-twin red on both v1 and in-process. Transition target
+(maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0,
+measured by G2's enrolled set covering every writer and by the write-rule
+copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some
+paths through the step, some not) is the riskiest one, so it is kept short.
+Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI
+stay in release 1. Contributor guide: docs/30-design/platform/guides/write-
+intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit
+tests, G2, the copies gate and the G1 compare outputs re-checked by -4f):
+local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac
+(the socket's generic dbAdd for entries, food and activity, and dbRemove for
+all six collections). G1 0 of 360 cells after each, commit events included;
+every step ablation red only in enrolled cells, one (activity save-twin) red
+only in the suite because no matrix form PUTs over a string twin; G2 enrols
+function by function in websocket.js. npm test 4821/0/3; test:all passes.
+Write-rule copies on the branch: five fewer than the dev baseline, none new.
+No dev test expectation changed. New question Q-I: the step's id-match
+duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3
+(after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6
+socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset;
+7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent;
+heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-
+intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes
+from API v1 and in-process go through write(intent) (lib/storage/write-
+intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin
 tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs
 identical; the six ablations all red, two report MISMATCH only because their
 expected lists predate the Temporary Target cells). npm test 4761/0/3

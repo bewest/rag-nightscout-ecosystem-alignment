@@ -2280,7 +2280,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>74967c404</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2312,9 +2312,9 @@ current and the prose is stale.</p>
 <tr>
 <td><strong>Remedial</strong></td>
 <td><code>phase0</code>, <code>register-open</code>, <code>docs-truth</code></td>
-<td style="text-align: right;">189</td>
-<td style="text-align: right;">39</td>
-<td style="text-align: right;">9</td>
+<td style="text-align: right;">193</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">11</td>
 </tr>
 <tr>
 <td><strong>Modernization</strong></td>
@@ -2326,15 +2326,15 @@ current and the prose is stale.</p>
 <tr>
 <td><strong>Multitenant</strong></td>
 <td><code>tenancy</code>, <code>platform</code></td>
-<td style="text-align: right;">83</td>
-<td style="text-align: right;">25</td>
-<td style="text-align: right;">9</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">7</td>
 </tr>
 <tr>
 <td></td>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>324</strong></td>
-<td style="text-align: right;"><strong>72</strong></td>
+<td style="text-align: right;"><strong>332</strong></td>
+<td style="text-align: right;"><strong>76</strong></td>
 <td style="text-align: right;"><strong>20</strong></td>
 </tr>
 </tbody>
@@ -2812,6 +2812,26 @@ cover more than one <code>BF-</code>:</p>
 <td>BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while not</td>
 </tr>
 <tr>
+<td><code>BFQ-209</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even</td>
+</tr>
+<tr>
+<td><code>BFQ-210</code></td>
+<td><code>closed</code></td>
+<td>BF-210 - a socket treatment without an amount is matched to a stored one that has one (clo</td>
+</tr>
+<tr>
+<td><code>BFQ-211</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>BF-211 - a delete by query in one collection empties all three in-memory caches</td>
+</tr>
+<tr>
+<td><code>BFQ-212</code></td>
+<td><code>not-started</code></td>
+<td>BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can</td>
+</tr>
+<tr>
 <td><code>BFQ-40</code></td>
 <td><code>released</code></td>
 <td>BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion</td>
@@ -2982,24 +3002,24 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>register-open</code></td>
-<td>29</td>
+<td>30</td>
 <td>3</td>
 <td>1</td>
 <td>1</td>
 <td>3</td>
-<td>2</td>
+<td>4</td>
 <td>42</td>
 <td>58</td>
 <td>5</td>
 <td></td>
 <td></td>
-<td>4</td>
+<td>5</td>
 <td></td>
-<td><strong>148</strong></td>
+<td><strong>152</strong></td>
 </tr>
 <tr>
 <td><code>tenancy</code></td>
-<td>17</td>
+<td>20</td>
 <td>2</td>
 <td></td>
 <td>1</td>
@@ -3007,12 +3027,12 @@ cover more than one <code>BF-</code>:</p>
 <td>1</td>
 <td>3</td>
 <td></td>
-<td>4</td>
+<td>1</td>
 <td>4</td>
 <td>1</td>
 <td></td>
-<td>3</td>
-<td><strong>48</strong></td>
+<td>6</td>
+<td><strong>51</strong></td>
 </tr>
 <tr>
 <td><code>docs-truth</code></td>
@@ -3055,7 +3075,7 @@ cover more than one <code>BF-</code>:</p>
 <td></td>
 <td></td>
 <td></td>
-<td>2</td>
+<td>3</td>
 <td></td>
 <td></td>
 <td></td>
@@ -3063,7 +3083,7 @@ cover more than one <code>BF-</code>:</p>
 <td></td>
 <td></td>
 <td></td>
-<td><strong>35</strong></td>
+<td><strong>36</strong></td>
 </tr>
 </tbody>
 </table>
@@ -3104,7 +3124,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <tbody>
 <tr>
 <td>Maintainer</td>
-<td style="text-align: right;">287</td>
+<td style="text-align: right;">295</td>
 <td style="text-align: right;">89%</td>
 </tr>
 <tr>
@@ -3139,7 +3159,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>324</strong></td>
+<td style="text-align: right;"><strong>332</strong></td>
 <td style="text-align: right;"></td>
 </tr>
 </tbody>

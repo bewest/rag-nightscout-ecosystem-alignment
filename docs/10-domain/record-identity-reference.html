@@ -8171,7 +8171,7 @@
 
 
 <h1 id="record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys">Record identity in cgm-remote-monitor: <code>_id</code>, <code>identifier</code> and time keys<a class="headerlink" href="#record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>f1901631e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
 <p><em>Contributor-facing. Living reference, </em><em>as of 2026-10-18</em><em>. Pinned to cgm-remote-monitor
 </em><em>15.0.8</em><em> (<code>92d08342</code>, the shipping release) and </em><em>dev</em><em> (<code>fade2299</code>, the 15.0.9 candidate).
 Queue item <code>DOCS-RECORD-IDENTITY</code>. It describes what the code does today; it proposes nothing.</em></p>
@@ -8524,7 +8524,7 @@ and <code>PATCH</code> refuse a client-supplied body <code>_id</code> with 400 [
 <a href="../30-design/platform/spec/identity.html#1-rules">identity I2</a> states that rule.</p>
 <h3 id="27-what-a-re-send-does-by-collection-and-path-added-2026-10-29">2.7 What a re-send does, by collection and path (added 2026-10-29)<a class="headerlink" href="#27-what-a-re-send-does-by-collection-and-path-added-2026-10-29" title="Permanent link">&para;</a></h3>
 <p>This section has its own pin: the write-contract matrix on <code>dev</code> <code>db3b9e4e</code>
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0673cb64004b5da72670772d1237dc900fff58c2/tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json"><code>dev-db3b9e4e-v2.json</code></a>,
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a941745b9a1b7c1df46d7730769032979860c402/tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json"><code>dev-db3b9e4e-v2.json</code></a>,
 measured 2026-10-27, form <code>resend-identity</code>). The record re-sent is identical to the first and carries no
 <code>identifier</code>, so it is matched by each collection's own key. <strong>[M]</strong></p>
 <table>
@@ -8628,10 +8628,10 @@ reached <code>dev</code> in #8456) [R].</p>
   finds it [M]. <code>$in</code> lists are not rewritten [R]. Devicestatus lookups do not pass the flag [R].</li>
 <li><strong>Version-scoped quirks it serves</strong> (D20 rule 7: today's handling becomes a registry entry
   scoped to the versions that send it, its behaviour unchanged).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0673cb64004b5da72670772d1237dc900fff58c2/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a941745b9a1b7c1df46d7730769032979860c402/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
   <code>syncIdentifier</code> UUID as <code>_id</code> (read at LoopWorkspace <code>f8412858</code>, Loop 3.14.8; measured in the
   corpus: every stored document it fires on is an override with an upper-case UUID).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0673cb64004b5da72670772d1237dc900fff58c2/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a941745b9a1b7c1df46d7730769032979860c402/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
   non-hex strings stored as entries <code>_id</code> on two corpus sites, attributed to older Trio versions
   by a backlog, unmeasured. Trio 1.0.1 (<code>e41c9db3</code>) sends <code>_id</code> on carbs and temporary targets
   (<code>CarbsEntry.swift:29</code>, <code>TempTarget.swift:50</code>) and its other treatments' UUID as <code>id</code>, which
@@ -8744,42 +8744,44 @@ crash path is read, not run]</p>
    it, even with another time and device (15.0.x) [M].</li>
 </ol>
 <h2 id="6-open-decisions">6. Open decisions<a class="headerlink" href="#6-open-decisions" title="Permanent link">&para;</a></h2>
-<p>Each is a row in <a href="../../queue/QUEUE.html">the queue</a>; only <code>ID-ABSENT-DECISION</code> is decided in part.</p>
+<p>Each is a row in <a href="../../queue/QUEUE.html">the queue</a>. All six are decided (maintainer, 2026-10-27 and
+2026-10-29, D-LOOP-ID); none of the 2026-10-29 rules is built yet. The rules are stated in the
+<a href="../30-design/platform/spec/identity.html">identity specification</a> §3–§5.</p>
 <table>
 <thead>
 <tr>
 <th>item</th>
-<th>question</th>
+<th>decision</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>ID-FORMAT-DECISION</code></td>
-<td>what an <code>identifier</code> may contain (opaque string, limits; UUID not required)</td>
+<td>1 to 256 URL-safe characters, a UUID recommended, placeholders (<code>invalid</code>, <code>undefined</code>, <code>null</code>, <code>NaN</code>) refused (2026-10-29). Not enforced; <code>ID-VALIDATE</code> ships with or before <code>ID-FIRST-MATCH</code></td>
 </tr>
 <tr>
 <td><code>ID-CLIENT-OID-DECISION</code></td>
-<td>may a client set <code>_id</code> over API v1 (API v3 refuses one on <code>dev</code>, BF-170; <code>identifier</code> wins when the two name different records, decided 2026-10-18)</td>
+<td>a client may still send an ObjectId <code>_id</code> over API v1 (legacy); going forward the server sets <code>_id</code> and the client sets <code>identifier</code> (2026-10-29). API v3 refuses a client <code>_id</code> (BF-170); <code>identifier</code> wins when the two name different records (2026-10-18)</td>
 </tr>
 <tr>
 <td><code>ID-V3-IMMUTABLE-DECISION</code></td>
-<td>on an <code>identifier</code> match, may <code>date</code>, <code>device</code> or <code>eventType</code> change</td>
+<td>merge on match stays the default for a re-send with changed fields; API v3 keeps refusing a changed <code>date</code>, <code>device</code> or <code>eventType</code>; <code>PUT</code> replaces; a site setting plus per-client quirks may opt a client into keep-first or refuse (<code>ID-RESEND-SWITCH</code>); a default changes only in a major (2026-10-29)</td>
 </tr>
 <tr>
 <td><code>ID-ABSENT-DECISION</code></td>
-<td>a write with no <code>identifier</code>: decided 2026-10-18 (maintainer): <code>identifier</code> becomes mandatory at a future version boundary and for registered controller instances, and legacy paths keep the time-key fallback until then; the version and the detection of registered instances are open</td>
+<td><code>identifier</code> is SHOULD for legacy writers, with the time-key fallback kept, and MUST for registered controller instances (2026-10-27). New natural keys for re-sends without <code>identifier</code> are <code>ID-NATURAL-KEY</code></td>
 </tr>
 <tr>
 <td><code>ID-DELETE-REUSE-DECISION</code></td>
-<td>after a delete, a re-send of the same <code>identifier</code>: resurrect, refuse, or create new</td>
+<td>a re-send of a deleted record is acknowledged and the record stays deleted, on every path (2026-10-27; every path 2026-10-29). Today's code differs per path (§2.7 and the 2026-10-18 lab)</td>
 </tr>
 <tr>
 <td><code>ID-SCOPE-DECISION</code></td>
-<td>is <code>identifier</code> unique per collection, across collections, per tenant</td>
+<td>unique per collection, with the tenant in the key under multi; values globally unique by convention (2026-10-27)</td>
 </tr>
 <tr>
 <td><code>ID-SIMPLE-MATCH</code></td>
-<td>the one server change proposed: v1 entries and devicestatus match on <code>identifier</code></td>
+<td>v1 entries and devicestatus match on <code>identifier</code>: on <code>dev</code> since #8859</td>
 </tr>
 </tbody>
 </table>

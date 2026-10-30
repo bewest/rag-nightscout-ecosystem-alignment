@@ -5572,7 +5572,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>5e56e3209</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>afaea9eb2</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>e1f7ac41</code> (2026-10-29). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5603,7 +5603,7 @@
 <tr>
 <td>Identity</td>
 <td><code>identifier</code> is the client's, <code>_id</code> the server's; API v3 refuses a client <code>_id</code> (#8845); v1 entries and devicestatus match on <code>identifier</code>, and an explicit null removes a field (#8859)</td>
-<td>#8877 (BF-209, BF-210: the socket's similar match follows client identity, in the 16.0.0 merge list)</td>
+<td>#8877 (BF-209: the socket's similar match follows client identity; BF-211: a delete by query flushes only its own cache; in the 16.0.0 merge list; BF-210 withdrawn)</td>
 <td>SPEC-ID-AMEND (next), identifier-first on every path, unique index</td>
 </tr>
 <tr>
@@ -5622,8 +5622,8 @@
 </table>
 <h2 id="1a-priority-and-merge-order-2026-10-29">1a. Priority and merge order (2026-10-29)<a class="headerlink" href="#1a-priority-and-merge-order-2026-10-29" title="Permanent link">&para;</a></h2>
 <p>Identity moved up on 2026-10-29, because most of the week's defects came from records matched by
-different rules on different paths: BF-121's socket gap, BF-209, BF-210, the chart split's shared
-identity. D-LOOP-ID's three rules are now decided. Identity work therefore starts as soon as 16.0.0 is
+different rules on different paths: BF-121's socket gap, BF-209, and the chart split's shared
+identity (BF-212, where a re-send can overwrite another record's amount). D-LOOP-ID's three rules are now decided. Identity work therefore starts as soon as 16.0.0 is
 tagged, beside registration, instead of after <code>write(intent)</code>.</p>
 <p><strong>Before the 16.0.0 tag</strong>, in this order:</p>
 <table>
@@ -5735,9 +5735,10 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 </tr>
 </tbody>
 </table>
-<p>Research that informs the order, without being in it: the cache-value and over-flush lab, the
-since-watermark arm of the D-EVENT bench, and the chart-split identity finding. The maintainer's
-direction on the split: a lossy edit of a controller-claimed record needs a manual confirmation.</p>
+<p>Research that informs the order, without being in it: the cache-value lab (BF-211), the
+since-watermark arm of the D-EVENT bench, and the extended write-contract matrix (QC-MATRIX-IDF), which
+found BF-212. The maintainer's direction on BF-212: a lossy edit of a controller-claimed record needs a
+manual confirmation. Two records already sharing an identifier is a question for the ID-FIRST-MATCH design.</p>
 <h2 id="2-why-the-tracks-meet-at-the-write-step">2. Why the tracks meet at the write step<a class="headerlink" href="#2-why-the-tracks-meet-at-the-write-step" title="Permanent link">&para;</a></h2>
 <p>Every track changes what happens when a record is written:</p>
 <table>

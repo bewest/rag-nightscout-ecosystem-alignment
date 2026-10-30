@@ -2390,7 +2390,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>74967c404</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2738,9 +2738,9 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>ID-CLIENT-OID-DECISION</code></td>
-<td>Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid</td>
-<td><code>needs-decision</code></td>
+<td><code>DISPLAY-MEAL-GROUP</code></td>
+<td>Show a bolus and its carbs as one meal in the display layer; storage de-duplicat</td>
+<td><code>not-started</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2748,20 +2748,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td><code>ID-CONVENTIONS</code></td>
 <td>Identifier conventions: one URL-form identifier template per record kind and sou</td>
 <td><code>in-progress</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>ID-FORMAT-DECISION</code></td>
-<td>Decide: the client identifier's format (opaque string with limits; UUID not requ</td>
-<td><code>needs-decision</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>ID-V3-IMMUTABLE-DECISION</code></td>
-<td>Decide: on an identifier match, may date, device or eventType change?</td>
-<td><code>needs-decision</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2829,9 +2815,16 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>ID-FIRST-MATCH</code></td>
-<td>Release 2 (minor): identifier-first matching for entries, devicestatus and socke</td>
-<td><code>blocked</code></td>
+<td><code>ID-NATURAL-KEY</code></td>
+<td>Natural keys for re-sends that carry no identifier: device status and profile, w</td>
+<td><code>not-started</code></td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ID-RESEND-SWITCH</code></td>
+<td>A site setting plus per-client D20 quirks that opt a client into keep-first or r</td>
+<td><code>not-started</code></td>
 <td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
@@ -2844,7 +2837,7 @@ Until then, the order below is the order of development, not of release.</p>
 <tr>
 <td style="text-align: right;">2</td>
 <td><code>ID-VALIDATE</code></td>
-<td>Release 2 (minor): validate identifier on every collection; empty and null mean</td>
+<td>Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch</td>
 <td><code>blocked</code></td>
 <td><code>WC-STEP-PATCH</code></td>
 </tr>
@@ -2920,10 +2913,10 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-UNIQUE-INDEX</code></td>
-<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>Identifier-first matching on every collection and path, with D-LOOP-ID's rules (</td>
 <td><code>blocked</code></td>
-<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-V3-IMMUTABLE-DECISION</code></td>
+<td><code>WC-STEP-PATCH</code>, <code>ID-VALIDATE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2938,6 +2931,13 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T3.2 remainder - platform.sql carries no config, secret or signing key</td>
 <td><code>blocked</code></td>
 <td><code>T30-SCHEMA-CONFIG</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>ID-UNIQUE-INDEX</code></td>
+<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
+<td><code>blocked</code></td>
+<td><code>ID-FIRST-MATCH</code>, <code>ID-BATCH-RESULTS</code>, <code>ID-VALIDATE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>

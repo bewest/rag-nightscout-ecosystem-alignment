@@ -5812,7 +5812,7 @@ resolve to the new half. A v1 upsert by <code>identifier</code> replaces the ori
 <code>_id</code>. Separately, and also with the identity removed: a full re-upload of the original by the client that
 still holds it writes the moved insulin back, so the insulin appears twice. Not run on 15.0.9. The maintainer's direction: editing is mainly for fixing broken records, so a lossy edit of a
 record that an automated controller claims (one with a client identity) should need an extra manual
-confirmation.</p>
+confirmation. Filed as <strong>BF-212</strong> in the backfix register.</p>
 <h2 id="1-placement-two-layers-not-one">1. Placement: two layers, not one<a class="headerlink" href="#1-placement-two-layers-not-one" title="Permanent link">&para;</a></h2>
 <p>The spec (§2.1) puts <code>write(intent)</code> in <code>lib/storage/write-step.js</code>, "applied in <code>collectionFor</code>
 above both adapters". On <code>db3b9e4e</code> that file name is taken by a different layer, and
@@ -6089,7 +6089,7 @@ Results in this scratch directory.</p>
   <code>--dry-run</code> counts 4,753 tests, consistent. A dry run at <code>ca1652d6</code> counts 4,707, so the brief's
   "4,750 at ca1652d6" figure must have been taken at a later tree; BF-194 added 46 tests in two
   new files (<code>api.treatments-tt-units</code> 34, <code>websocket.tt-units</code> 12).</li>
-<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0673cb64004b5da72670772d1237dc900fff58c2/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
+<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a941745b9a1b7c1df46d7730769032979860c402/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
   (336 + 24 Temporary Target), 0 INVALID, 20 n/a, <code>write_validation</code> off. <code>--compare</code>: <strong>0
   differing cells</strong>, the known racy <code>cache</code> field included. Two more runs of a scratch copy of the
   harness that also records <code>storage-write-committed</code> per cell (<code>tools/wc-matrix-commit.js</code>,

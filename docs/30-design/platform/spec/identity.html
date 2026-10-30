@@ -5987,15 +5987,17 @@
 
 
 <h1 id="l0-identity-how-records-definitions-instances-and-subjects-are-named">L0 Identity: how records, definitions, instances and subjects are named<a class="headerlink" href="#l0-identity-how-records-definitions-instances-and-subjects-are-named" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>38fb13008</code>.</em></p>
-<p><em>Contributor-facing. Living specification, current at 2026-10-26 (cgm-remote-monitor <code>dev</code>
-<code>47723cda</code>). Layer L0 of the <a href="../index.html">platform index</a>; terms are in the
+<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
+<p><em>Contributor-facing. Living specification, current at 2026-10-29 (cgm-remote-monitor <code>dev</code>
+<code>47723cda</code>, and <code>e1f7ac41</code> where named). Layer L0 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Status: specified, not implemented; §6, today's behaviour, is evidenced.
 Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>,
 the <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract's §6.1</a>
 and the <a href="../../../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions</a> (I2 on API
-v3, BF-170; the null rule of §3, Q1b).
+v3, BF-170; the null rule of §3, Q1b), and D-LOOP-ID
+(<a href="../next-gen-platform-plan.html#42-identity">next-gen plan §4.2</a>, maintainer, 2026-10-29: the
+<code>identifier</code> format, <code>_id</code> over API v1, re-sends with changed fields, re-send after delete).
 Queue: <code>SPEC-ID</code>.</em></p>
 <p><em>Specification 1 of 8 in the <a href="../index.html#reading-order">reading order</a>; every other specification uses these ids. Expect rules I1–I9, the contract ids, the match order per collection, the <code>identifier</code> format, today's behaviour in cgm-remote-monitor, and the conformance cases.</em></p>
 <p>This page defines how records, definitions, instances and subjects are identified, and how a hub
@@ -6170,8 +6172,26 @@ first that resolves wins.</p>
 <li>The devicestatus natural key matches identical retries only, because Loop writes distinct
   statuses that share <code>created_at</code> and <code>device</code> (3,078 groups, 14,757 documents, at 11 of 12
   corpus sites, measured 2026-10-12).</li>
-<li>An <code>_id</code> matches every stored form of that id. A soft-deleted record is not a target for a
-  create, so a re-send of a deleted record is stored again.</li>
+<li>An <code>_id</code> matches every stored form of that id.</li>
+<li><em>Re-send after delete.</em> A re-send that matches a deleted record is acknowledged with a 2xx naming
+  the stored, deleted record, and the record stays deleted, on every path (maintainer, 2026-10-27;
+  every path, 2026-10-29). Each cell this changes is documented, so the change can be reverted or
+  adjusted. Today's code differs per path (§6); <code>ID-FIRST-MATCH</code> builds the rule.</li>
+<li><em>Re-send with changed fields.</em> Where the table says merge, merge on match is the default. API v3
+  refuses a re-send whose <code>date</code>, <code>device</code> or <code>eventType</code> differs from the stored record (HTTP
+  400), and <code>PUT</code> replaces. A site setting plus per-client quirks (I9's registry) may opt a client
+  into keep-first or refuse (<code>ID-RESEND-SWITCH</code>). A default changes only in a major version
+  (maintainer, 2026-10-29).</li>
+<li><em>Fields left out of a re-send</em> are kept on a merge on match (RFC 7386). The census reads replace on
+  several paths today, which is not yet measured; the extended write-contract matrix measures each
+  path before it changes, and every changed cell is listed.</li>
+<li><em>Socket edits and removes, and activity.</em> The socket's <code>dbUpdate</code>, <code>dbUpdateUnset</code> and <code>dbRemove</code>
+  accept an <code>identifier</code> when no <code>_id</code> is given, and an activity create matches on <code>identifier</code>.
+  Both apply only where the extended matrix shows every existing form unchanged (maintainer,
+  2026-10-29).</li>
+<li><em>A re-send without <code>identifier</code></em> is matched only by the natural keys in the table. New natural
+  keys (device status, profile) are a separate item, <code>ID-NATURAL-KEY</code>, with its own corpus check of
+  what would merge; food and activity have none.</li>
 </ul>
 <h2 id="4-the-identifier-format">4. The <code>identifier</code> format<a class="headerlink" href="#4-the-identifier-format" title="Permanent link">&para;</a></h2>
 <p><code>identifier</code> is an opaque string, with one rule for every collection. Values follow the
@@ -6179,8 +6199,13 @@ first that resolves wins.</p>
 syntax: a source scheme for things that exist outside the app, the manufacturer as the scheme and
 the model as the first segment (<code>dexcom://g7/&lt;serial&gt;/&lt;offset&gt;</code>), and an app scheme for records
 made in an app (<code>loop://carbs/&lt;uuid&gt;</code>) (maintainer, 2026-10-18). What makes two devices agree is
-that they derive the id from the same inputs, not its format. A UUID is not required.</p>
-<p>The constraints proposed for <code>ID-FORMAT-DECISION</code>, each grounded in the
+that they derive the id from the same inputs, not its format. A UUID is recommended and not
+required.</p>
+<p>The format (maintainer, 2026-10-29, D-LOOP-ID) is 1 to 256 URL-safe characters (C1–C3), a UUID
+recommended, with placeholders refused (C5). C4 and C5's reserved path words (<code>history</code>, <code>.</code>,
+<code>..</code>) are proposed. Nothing enforces the format yet. Identifier-first matching would merge two
+clients' writes that carry the same placeholder, so <code>ID-VALIDATE</code> ships with or before
+<code>ID-FIRST-MATCH</code>. Each constraint is grounded in the
 <a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#0-answer">identifier format research §0</a>:</p>
 <table>
 <thead>
@@ -6235,32 +6260,32 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <tr>
 <td><code>ID-FORMAT-DECISION</code></td>
 <td>adopt C1–C7?</td>
-<td>opaque values, URL syntax and the source and app schemes are decided (maintainer, 2026-10-18); C1–C7 are proposed; I6 holds either way</td>
+<td>decided (maintainer, 2026-10-29): 1 to 256 URL-safe characters, a UUID recommended, placeholders refused (C1–C3, C5); opaque values, URL syntax and the source and app schemes decided 2026-10-18; C4 and the reserved path words proposed; not enforced yet (<code>ID-VALIDATE</code>)</td>
 </tr>
 <tr>
 <td><code>ID-CLIENT-OID-DECISION</code></td>
 <td>may a client create its own ObjectId as <code>_id</code> over API v1?</td>
-<td>the API v3 half is decided: I2 refuses a client <code>_id</code> on v3 (maintainer, 2026-10-25, BF-170). When <code>identifier</code> and <code>_id</code> match different records, <code>identifier</code> decides (maintainer, 2026-10-18), as I5 orders it. Open: whether the v1 half of the <a href="../upstream-asks-loop-identifier/index.html#the-simple-contract">Loop reply's simple contract</a> (a client-created ObjectId as <code>_id</code>) is recommended, which waits on Loop's answer and is carried by <code>ID-SIMPLE-MATCH</code></td>
+<td>decided (maintainer, 2026-10-29): a client may still send an ObjectId <code>_id</code> over API v1 (legacy); going forward the hub sets <code>_id</code> and the client sets <code>identifier</code>. I2 refuses a client <code>_id</code> on API v3 (maintainer, 2026-10-25, BF-170). When <code>identifier</code> and <code>_id</code> match different records, <code>identifier</code> decides (maintainer, 2026-10-18), as I5 orders it</td>
 </tr>
 <tr>
 <td><code>ID-V3-IMMUTABLE-DECISION</code></td>
 <td>on an <code>identifier</code> match, may <code>date</code>, <code>device</code> or <code>eventType</code> change?</td>
-<td>API v3 refuses it (400, reproduced by <code>LOOP-ID-V3-IMMUTABLE</code>); v1 does not</td>
+<td>decided (maintainer, 2026-10-29, §3): merge on match stays the default; API v3 keeps refusing the change (400, reproduced by <code>LOOP-ID-V3-IMMUTABLE</code>); <code>PUT</code> replaces; <code>ID-RESEND-SWITCH</code> may opt a client into keep-first or refuse. Loop and Trio re-send changed doses, overrides and temp targets by <code>POST</code> over v1 and rely on the update (<a href="../../../60-research/tenancy/identity-resend-survey-2026-10-29.html">client survey</a>)</td>
 </tr>
 <tr>
 <td><code>ID-ABSENT-DECISION</code></td>
 <td>a write with no <code>identifier</code>: keep the time-key fallback, deprecate it, or require <code>identifier</code>?</td>
-<td>decided (maintainer, 2026-10-18): <code>identifier</code> becomes mandatory at a future version boundary and for registered controller instances; until then legacy paths keep the time-key fallback. Open: which version, and how a hub recognises a registered instance's write. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one <code>created_at</code> and <code>eventType</code> and no identifier are merged by §3 (UCA-SYNC-STORE-007)</td>
+<td>decided (maintainer, 2026-10-27): <code>identifier</code> is SHOULD for legacy writers, and the time-key fallback stays; it is MUST for registered controller instances; revisited as adoption grows. Open: how a hub recognises a registered instance's write on a legacy path. New natural keys are <code>ID-NATURAL-KEY</code>. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one <code>created_at</code> and <code>eventType</code> and no identifier are merged by §3 (UCA-SYNC-STORE-007)</td>
 </tr>
 <tr>
 <td><code>ID-DELETE-REUSE-DECISION</code></td>
-<td>after a delete, does a re-send of the same <code>identifier</code> resurrect, get refused, or create new? §3 stores it again today; a resurrected dose is UCA-SYNC-STORE-003 in the <a href="control-loops.html">control-loop analysis</a></td>
-<td>API v3 resurrects a soft-deleted record on POST (measured 2026-10-18, <a href="../../../10-domain/record-identity-reference.html">record identity reference</a>)</td>
+<td>after a delete, does a re-send of the same <code>identifier</code> resurrect, get refused, or create new? A resurrected dose is UCA-SYNC-STORE-003 in the <a href="control-loops.html">control-loop analysis</a></td>
+<td>decided (maintainer, 2026-10-27; every path, 2026-10-29): acknowledged, and the record stays deleted (§3). Not built: today API v1 stores the re-send again after its hard delete and API v3 <code>POST</code> resurrects a soft-deleted record (measured 2026-10-18, <a href="../../../10-domain/record-identity-reference.html">record identity reference</a>)</td>
 </tr>
 <tr>
 <td><code>ID-SCOPE-DECISION</code></td>
 <td>is <code>identifier</code> unique per collection, across collections, and per tenant?</td>
-<td>per collection today (each collection is its own MongoDB collection and index); the rules above do not say</td>
+<td>decided (maintainer, 2026-10-27): unique per collection, with the tenant in the key under multi; values stay globally unique by convention (the URL kind segment). Not enforced: no index on <code>identifier</code> is unique today (<code>ID-UNIQUE-INDEX</code>)</td>
 </tr>
 <tr>
 <td>D20 choice 6 (<a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">text</a>)</td>
@@ -6279,8 +6304,10 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <ul>
 <li><strong>API v1 treatments</strong> match a re-send on <code>identifier</code>, and drop a client <code>_id</code> when <code>identifier</code>
   is present (<code>lib/server/treatments.js:356-362</code> at 15.0.8).</li>
-<li><strong>API v1 entries and devicestatus</strong> do not match on <code>identifier</code>. Queue item <code>ID-SIMPLE-MATCH</code>
-  adds that, after 15.0.9.</li>
+<li><strong>API v1 entries and devicestatus</strong> (<code>dev</code> since #8859, <code>ID-SIMPLE-MATCH</code>): a v1 entries re-send
+  matches on <code>identifier</code> and updates, and a v1 device status re-send matches on it and keeps the
+  stored record (measured, <a href="../../../10-domain/record-identity-reference.html#27-what-a-re-send-does-by-collection-and-path-added-2026-10-29">record identity reference §2.7</a>).
+  15.0.9 matches neither on <code>identifier</code>.</li>
 <li><strong>API v1 by-id routes</strong> treat only UUID-shaped values as identifiers (<code>UUID_RE</code>,
   <code>lib/server/query.js:12</code>). Stored identifiers are compared exactly, so an upper-case UUID matches
   only itself.</li>
@@ -6293,11 +6320,18 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
   return <code>_id</code> (<code>lib/api3/storage/mongoCollection/utils.js:10-16</code>, read).</li>
 <li><strong>A devicestatus re-send with a stored <code>identifier</code></strong> (<code>dev</code> <code>47723cda</code>): API v1 stores a second
   record (no identifier match) and API v3 replaces the stored record and moves its <code>srvModified</code>
-  (reproduced, the devicestatus study of 2026-10-26). I6's rule is built for 16.0.0 with
-  <code>ID-SIMPLE-MATCH</code> on branch <code>bf/16.0.0-null-removes</code>.</li>
+  (reproduced, the devicestatus study of 2026-10-26). I6's rule is on <code>dev</code> since #8859
+  (<code>ID-SIMPLE-MATCH</code>).</li>
 <li><strong>A <code>null</code> in an update</strong> (<code>dev</code> <code>47723cda</code>): a merge on match stores a field sent as <code>null</code> as
   <code>null</code> (<code>$set</code>), on every path, and <code>tests/api.profiles.resend.test.js:218</code> pins that. §3's
-  removal is built for 16.0.0 on branch <code>bf/16.0.0-null-removes</code> (in progress), with BF-195's fix.</li>
+  removal is on <code>dev</code> since #8859, with BF-195's fix, for 16.0.0.</li>
+<li><strong>A re-send after delete</strong> (measured 2026-10-18 at 15.0.8 and <code>fade2299</code>): API v1 deletes hard, so
+  a re-send is stored again (with the same <code>_id</code> when the client sent one); API v3 <code>POST</code> brings a
+  soft-deleted record back under the same <code>_id</code>, and <code>PUT</code> answers 410. §3's rule differs from all
+  three and is not built.</li>
+<li><strong>Two records with one client identity</strong> (<code>dev</code> <code>e1f7ac41</code>, reproduced): the chart's "Move
+  insulin" and "Move carbs" store the split-off half with the original's <code>syncIdentifier</code>, <code>id</code>,
+  <code>uuid</code> and <code>identifier</code>, which breaks I6 (BF-212).</li>
 <li><strong><code>UUID_HANDLING</code></strong> (default on) moves a non-24-hex string <code>_id</code> to <code>identifier</code> on treatments and
   entries, as I9 describes (<code>lib/server/treatments.js:394-411</code>, <code>lib/server/entries.js:267-284</code> at
   official <code>a8888f0d</code>).</li>
@@ -6405,7 +6439,7 @@ are not a hub.</p>
 </table>
 <p>Not covered by a case: I2's API v3 refusal (the carrier cases do not name an API version); I7 across two instances (<code>typed-write-resend-same-ids</code> re-sends from one
 instance); §3's per-collection keys, which the write contract's gates measure against
-cgm-remote-monitor rather than a reference function; and §4's format, until it is decided.</p>
+cgm-remote-monitor rather than a reference function; and §4's format, which nothing enforces yet.</p>
 
 
 
