@@ -1,0 +1,8638 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/id-first-match-design-note-2026-10-29-cells.html">
+      
+      
+        <link rel="prev" href="glucose-units-at-the-profile-boundary-2026-10-21.html">
+      
+      
+        <link rel="next" href="id-first-match-design-note-2026-10-29.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>ID-FIRST-MATCH: cell-by-cell impact (appendix) - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#id-first-match-cell-by-cell-impact-appendix" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ID-FIRST-MATCH: cell-by-cell impact (appendix)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    docs/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTINUATION-PROMPTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuation Prompts for Nightscout Ecosystem Work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DIGITAL-RIGHTS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Digital Rights and Legal Protections for Open-Source Diabetes Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTEGRATION-MULTIFACTORED-FACTSLOADERS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BabelBetes Integration &amp; Multifactored FactsLoader Implementation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LITERATE-TRACEABLE-SYSTEM-PROPOSAL.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Proposal: Literate Programming &amp; Traceable System for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NIGHTSCOUT-SDQCTL-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Workflow Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPEN-QUESTIONS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Open Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLATFORM-AND-SKILLS-ANALYSIS.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis: Platform &amp; Skills for SDLC Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PR-8421-reviewers-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer's Guide: PR #8421 - MongoDB 5.x Modernization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-ROADMAP.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Improvement Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STPA-USAGE-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STPA Usage Guide for Nightscout Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-GUIDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling Guide: Enhanced Traceability and Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TOOLING-QUICKREF.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference: Tooling for AI Agents and Interactive Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOW-USAGE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflow Usage Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-edit-diagnosis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile-Edit Sync Diagnosis — Discord Report Follow-up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aaps-profile-sync-impact-analysis-2026-04-20.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AAPS Profile Sync to Nightscout: Impact Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bug-impact-assessment.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bug Impact Assessment: Experiment Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cgm-remote-monitor-analysis-2026-01-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CGM Remote Monitor Analysis - January 18, 2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exp-841-850-design.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EXP-841–850: Error Anatomy &amp; Information Budget
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../progress-update-confirmation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Progress update confirmation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sdqctl-integration-feedback.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl Integration Feedback Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../state-of-diabetes-2026.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State of Diabetes: 2026 Edition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../10-domain/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10-domain/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    30-design/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24" id="__nav_5_24_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_24_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    30-design/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cgm-remote-monitor-telemetry-emitter-map-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgm-remote-monitor Telemetry Emitter Integration Map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-adoption-roadmap-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke adoption across projects: who builds what, in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-integration-guide.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Integration Guide for App Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-backend-service-design-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Backend Service Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Deployment Lifecycle Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-implementation-breakdown-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Implementation Breakdown
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-lifecycle-policy-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Lifecycle Policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-local-integration-plan-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Local Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nightscout-telemetry-scheduling-dedupe-model-2026-07-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout Telemetry Scheduling and Dedupe Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ns2parquet-keyed-pseudonyms.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet keyed pseudonyms: design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../modernization/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    modernization/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    platform/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_24_13" id="__nav_5_24_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_24_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    platform/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-intent-workflow-landscape-2026-10-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent, workflow and entity management across the AID controller landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="spec/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    spec/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-typed-schema-evidence-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Typed schemas for Nightscout, measured against stored documents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-primitive-coverage-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence coverage of the primitive catalogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-devicestatus-profile-fidelity-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replaying a dosing decision from devicestatus and profile: what is lost, and what was never written
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-extensibility-models-2026-09-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending the Nightscout document model: four designs, measured
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-effects-and-versioning-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Therapy effects and the sync contract's version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-hub-sync-architecture-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hub-and-spoke sync for AID controllers: the original sketch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="agent-trust-boundaries-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents in the ecosystem: develop, interpret, act
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="algorithm-audition-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditioning a dosing algorithm: same inputs, shadow only
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PROPOSAL-controller-descriptions-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Controller descriptions: Nightscout describes the controllers it already recognises — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Replay fidelity: the concrete changes, per project — proposal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="upstream-asks-loop-identifier/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-loop-identifier/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="upstream-asks-device-simulators/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-device-simulators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="command-journeys-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command journeys: plans, confirmations and moment commands for one pump with many orchestrators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="command-queue-and-planning-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command queue and planning: outstanding commands, enacting once, and plans confirmed in advance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="effect-link-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect link: how a command's outcome names the record that shows its effect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evidence-weighted-approval-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence-weighted approval: what a plan or proposal needs before a controller acts on it
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="glucose-units-at-the-profile-boundary-2026-10-21.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glucose units at the profile boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FIRST-MATCH: cell-by-cell impact (appendix)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="id-first-match-design-note-2026-10-29-cells.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FIRST-MATCH: cell-by-cell impact (appendix)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Counts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-the-write-changes-no-recorded-value-is-predicted-to-change-62-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (a) The write changes, no recorded value is predicted to change: 62 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-identifier-now-matches-where-a-second-record-was-stored-88-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (b) Identifier now matches where a second record was stored: 88 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c1-replace-becomes-merge-same-record-216-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (c1) Replace becomes merge (same record): 216 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c2-kept-becomes-merge-socket-treatments-option-m-only-4-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (c2) Kept becomes merge: socket treatments, option M only: 4 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d1-revived-becomes-acknowledged-stays-deleted-36-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (d1) Revived becomes "acknowledged, stays deleted": 36 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d2-a-new-record-beside-a-deleted-one-becomes-acknowledged-stays-deleted-23-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (d2) A new record beside a deleted one becomes "acknowledged, stays deleted": 23 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-two-stored-records-share-one-identifier-the-split-family-bf-212-pick-rule-p1-50-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (g) Two stored records share one identifier (the split family, BF-212), pick rule P1: 50 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-not-visible-same-matrix-values-the-reply-names-another-record-1-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (g, not visible) Same matrix values, the reply names another record: 1 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h-unchanged-as-read-but-in-question-devicestatus-api-v3-fallback-replace-12-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (h) Unchanged as read, but in question: devicestatus API v3 fallback replace: 12 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-k-cells-whose-prediction-differs-from-option-m-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option K: cells whose prediction differs from option M: 12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uuid_handling-off-pin-dev-e1f7ac41-idfirst-uuidoffjson-504-cells-entries-and-treatments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UUID_HANDLING off (pin dev-e1f7ac41-idfirst-uuidoff.json, 504 cells, entries and treatments)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="id-first-match-design-note-2026-10-29.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FIRST-MATCH: the re-send rule on every path, cell by cell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="identifier-conventions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identifier conventions: one identifier per real thing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="integration-questionnaire-defaults-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration questionnaire: default answers for Loop, Trio, AndroidAPS and OpenAPS, read from their source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="interface-ownership-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Which interface owns which API: single-tenant and hosted multitenant
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="next-gen-platform-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next-gen platform: one write path, four tracks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="partial-acceptance-prototype-2026-10-18.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Partial acceptance: binding an approval that accepts part of a plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="release-allocation-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release allocation: what goes in 16.0.0, what follows, and in what order
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v4-surface-and-nocturne-2026-10-26.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API v4: which parts to share with Nocturne, and which listener serves each
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="v4-typed-record-paths-comparison-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API v4 typed record paths: Nocturne's routes with our rules, or paths of our own
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="wc-step-design-note-2026-10-27.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WC-STEP-PATCH: mapping the write step onto dev db3b9e4e
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="upstream-asks-controller-authors/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    upstream-asks-controller-authors/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remedial/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remedial/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenancy/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-data-pipelines/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-data-pipelines/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../40-migration/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    40-migration/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../60-research/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    60-research/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../90-decisions/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    90-decisions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../_includes/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    _includes/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../architecture/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    architecture/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../archive/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    archive/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../backlogs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    backlogs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../guides/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    guides/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../sdqctl-proposals/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    sdqctl-proposals/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#counts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Counts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-the-write-changes-no-recorded-value-is-predicted-to-change-62-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (a) The write changes, no recorded value is predicted to change: 62 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-identifier-now-matches-where-a-second-record-was-stored-88-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (b) Identifier now matches where a second record was stored: 88 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c1-replace-becomes-merge-same-record-216-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (c1) Replace becomes merge (same record): 216 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c2-kept-becomes-merge-socket-treatments-option-m-only-4-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (c2) Kept becomes merge: socket treatments, option M only: 4 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d1-revived-becomes-acknowledged-stays-deleted-36-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (d1) Revived becomes "acknowledged, stays deleted": 36 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d2-a-new-record-beside-a-deleted-one-becomes-acknowledged-stays-deleted-23-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (d2) A new record beside a deleted one becomes "acknowledged, stays deleted": 23 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-two-stored-records-share-one-identifier-the-split-family-bf-212-pick-rule-p1-50-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (g) Two stored records share one identifier (the split family, BF-212), pick rule P1: 50 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g-not-visible-same-matrix-values-the-reply-names-another-record-1-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (g, not visible) Same matrix values, the reply names another record: 1 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h-unchanged-as-read-but-in-question-devicestatus-api-v3-fallback-replace-12-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        (h) Unchanged as read, but in question: devicestatus API v3 fallback replace: 12 cells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-k-cells-whose-prediction-differs-from-option-m-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option K: cells whose prediction differs from option M: 12
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uuid_handling-off-pin-dev-e1f7ac41-idfirst-uuidoffjson-504-cells-entries-and-treatments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UUID_HANDLING off (pin dev-e1f7ac41-idfirst-uuidoff.json, 504 cells, entries and treatments)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="id-first-match-cell-by-cell-impact-appendix">ID-FIRST-MATCH: cell-by-cell impact (appendix)<a class="headerlink" href="#id-first-match-cell-by-cell-impact-appendix" title="Permanent link">&para;</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Record</p>
+<p>Record as of 2026-10-29. A point-in-time document; it is not kept up to date.</p>
+</div>
+<p><em>Generated 2026-10-29 by <code>tools/qc/idfirst/classify.py</code> (its rules are in the note, section 2) and <code>render.py</code> from the pin <code>tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json</code> (1,929 cells: 456 earlier, 1,473 new). The design note is <a href="id-first-match-design-note-2026-10-29.html"><code>id-first-match-design-note-2026-10-29.md</code></a>. "Today" columns are </em><em>[M]</em><em>, the pin. Every "predicted" column is </em><em>[R, prediction]</em><em>: read from code at crm <code>e8224807</code> and the rule in the note §1, not run. The implementation slice measures each one.</em></p>
+<p>Rule options used: socket treatments merge on an identifier match (<strong>option M</strong>, decision 1 as written); shared-identifier pick <strong>P1</strong> (each path keeps today's pick; a path new to identifier matching picks the first stored record). Option K (socket treatments keep the stored record on an identifier match) differs only where listed at the end.</p>
+<p>Format of "today": reply · stored records (<code>n=</code>, one label per record: <code>OID</code>/<code>str*</code> the <code>_id</code> form, <code>:v2</code> the re-send's fields are on it, <code>:inv</code> soft-deleted) · <code>shape</code> · <code>srv</code>. Predicted: stored records · <code>shape</code> · note. A reply is predicted unchanged unless the note says otherwise.</p>
+<h2 id="counts">Counts<a class="headerlink" href="#counts" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>group</th>
+<th style="text-align: right;">cells</th>
+<th>per collection / path (<code>A&gt;B</code> = seeded through A, re-sent through B)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) The write changes, no recorded value is predicted to change</td>
+<td style="text-align: right;">62</td>
+<td>activity inproc 5, activity v1 4, devicestatus inproc&gt;ws 1, devicestatus v1&gt;ws 1, devicestatus v3&gt;ws 1, devicestatus ws 2, entries inproc&gt;v3 1, entries v1&gt;v3 1, entries v3 1, entries ws&gt;v3 1, food inproc 5, food v1 4, food v3 1, food ws&gt;v3 1, profile inproc&gt;v3 1, profile inproc&gt;ws 1, profile v1&gt;v3 1, profile v1&gt;ws 1, profile v3 1, profile v3&gt;ws 1, profile ws 5, profile ws&gt;v3 1, settings v3 1, treatments inproc 6, treatments inproc&gt;v1 1, treatments inproc&gt;v3 1, treatments v1 6, treatments v1&gt;inproc 1, treatments v1&gt;v3 1, treatments v3 1, treatments ws&gt;inproc 1, treatments ws&gt;v1 1, treatments ws&gt;v3 1</td>
+</tr>
+<tr>
+<td>(b) Identifier now matches where a second record was stored</td>
+<td style="text-align: right;">88</td>
+<td>activity inproc 3, activity inproc&gt;v1 2, activity inproc&gt;ws 2, activity v1 3, activity v1&gt;inproc 2, activity v1&gt;ws 2, activity ws 3, activity ws&gt;inproc 2, activity ws&gt;v1 2, devicestatus inproc&gt;ws 1, devicestatus v1&gt;ws 1, devicestatus v3&gt;ws 1, devicestatus ws 1, entries inproc&gt;ws 2, entries v1&gt;ws 2, entries v3&gt;ws 2, entries ws 3, food inproc 3, food inproc&gt;v1 2, food inproc&gt;ws 2, food v1 3, food v1&gt;inproc 2, food v1&gt;ws 2, food v3&gt;inproc 2, food v3&gt;v1 2, food v3&gt;ws 2, food ws 3, food ws&gt;inproc 2, food ws&gt;v1 2, profile inproc 3, profile inproc&gt;v1 2, profile inproc&gt;ws 1, profile v1 3, profile v1&gt;inproc 2, profile v1&gt;ws 1, profile v3&gt;inproc 2, profile v3&gt;v1 2, profile v3&gt;ws 1, profile ws 1, profile ws&gt;inproc 2, profile ws&gt;v1 2, treatments inproc&gt;ws 1, treatments v1&gt;ws 1, treatments v3&gt;ws 1, treatments ws 2</td>
+</tr>
+<tr>
+<td>(c1) Replace becomes merge (same record)</td>
+<td style="text-align: right;">216</td>
+<td>activity inproc 3, activity ws&gt;inproc 2, entries inproc&gt;v3 5, entries v1&gt;v3 5, entries v3 10, entries ws&gt;v3 5, food inproc 3, food inproc&gt;v3 1, food v1&gt;v3 1, food v3 10, food ws&gt;inproc 2, food ws&gt;v3 5, profile inproc&gt;v3 5, profile inproc&gt;ws 7, profile v1&gt;v3 5, profile v1&gt;ws 6, profile v3 10, profile v3&gt;ws 6, profile ws 13, profile ws&gt;v3 5, settings v3 10, treatments inproc 14, treatments inproc&gt;v1 8, treatments inproc&gt;v3 5, treatments v1 14, treatments v1&gt;inproc 8, treatments v1&gt;v3 5, treatments v3 10, treatments v3&gt;inproc 6, treatments v3&gt;v1 6, treatments ws&gt;inproc 8, treatments ws&gt;v1 8, treatments ws&gt;v3 5</td>
+</tr>
+<tr>
+<td>(c2) Kept becomes merge: socket treatments, option M only</td>
+<td style="text-align: right;">4</td>
+<td>treatments inproc&gt;ws 1, treatments v1&gt;ws 1, treatments v3&gt;ws 1, treatments ws 1</td>
+</tr>
+<tr>
+<td>(d1) Revived becomes "acknowledged, stays deleted"</td>
+<td style="text-align: right;">36</td>
+<td>entries inproc 2, entries v1 2, entries v3 4, food v3 4, profile v3 4, profile ws 4, settings v3 4, treatments inproc 4, treatments v1 4, treatments v3 4</td>
+</tr>
+<tr>
+<td>(d2) A new record beside a deleted one becomes "acknowledged, stays deleted"</td>
+<td style="text-align: right;">23</td>
+<td>activity inproc 1, activity v1 1, activity ws 1, devicestatus ws 4, entries ws 2, food inproc 2, food v1 2, food ws 2, profile inproc 2, profile v1 2, treatments ws 4</td>
+</tr>
+<tr>
+<td>(g) Two stored records share one identifier (the split family, BF-212), pick rule P1</td>
+<td style="text-align: right;">50</td>
+<td>activity inproc 3, activity v1 3, activity ws 3, devicestatus ws 1, entries v3 2, entries ws 3, food inproc 3, food v1 3, food v3 2, food ws 3, profile inproc 3, profile v1 3, profile v3 2, profile ws 3, settings v3 2, treatments inproc 3, treatments v1 3, treatments v3 2, treatments ws 3</td>
+</tr>
+<tr>
+<td>(g, not visible) Same matrix values, the reply names another record</td>
+<td style="text-align: right;">1</td>
+<td>devicestatus ws 1</td>
+</tr>
+<tr>
+<td>(h) Unchanged as read, but in question: devicestatus API v3 fallback replace</td>
+<td style="text-align: right;">12</td>
+<td>devicestatus inproc&gt;v3 4, devicestatus v1&gt;v3 4, devicestatus ws&gt;v3 4</td>
+</tr>
+</tbody>
+</table>
+<h2 id="a-the-write-changes-no-recorded-value-is-predicted-to-change-62-cells">(a) The write changes, no recorded value is predicted to change: 62 cells<a class="headerlink" href="#a-the-write-changes-no-recorded-value-is-predicted-to-change-62-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>activity inproc legacy-lower</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity inproc legacy-upper</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity inproc resend-hex</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity inproc resend-oid</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity inproc resend-upper</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity v1 legacy-lower</code></td>
+<td>200 [1 _id=sent] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity v1 legacy-upper</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity v1 resend-hex</code></td>
+<td>200 [1 _id=sent] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>activity v1 resend-upper</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv noCnoM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-identifier-amt</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M=</td>
+<td>n=1 OID · not-written · match key changes to identifier; values as today</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M=</td>
+<td>n=1 OID · not-written · match key changes to identifier; values as today</td>
+</tr>
+<tr>
+<td><code>devicestatus x inproc x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M=</td>
+<td>n=1 OID · not-written · match key changes to identifier; values as today</td>
+</tr>
+<tr>
+<td><code>devicestatus x v1 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M=</td>
+<td>n=1 OID · not-written · match key changes to identifier; values as today</td>
+</tr>
+<tr>
+<td><code>devicestatus x v3 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M=</td>
+<td>n=1 OID · not-written · match key changes to identifier; values as today</td>
+</tr>
+<tr>
+<td><code>entries v3 resend-identity</code></td>
+<td>200 {..} · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>entries x inproc x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>entries x v1 x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>entries x ws x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food inproc legacy-lower</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food inproc legacy-upper</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food inproc resend-hex</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food inproc resend-oid</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food inproc resend-upper</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food v1 legacy-lower</code></td>
+<td>200 [1 _id=sent] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food v1 legacy-upper</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food v1 resend-hex</code></td>
+<td>200 [1 _id=sent] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food v1 resend-upper</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food v3 resend-identity</code></td>
+<td>200 {..} · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>food x ws x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile v3 resend-identity</code></td>
+<td>200 {..} · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile ws legacy-lower</code></td>
+<td>ack [1 _id=sent] · n=1 str · None · srv noCM+</td>
+<td>n=1 str · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile ws legacy-upper</code></td>
+<td>ack [1 _id] · n=1 str · None · srv noCM+</td>
+<td>n=1 str · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile ws resend-hex</code></td>
+<td>ack [1 _id=sent] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile ws resend-identity</code></td>
+<td>ack [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile ws resend-upper</code></td>
+<td>ack [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws</code></td>
+<td>ack [1 _id] · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile x v1 x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws</code></td>
+<td>ack [1 _id] · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws</code></td>
+<td>ack [1 _id] · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>profile x ws x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>settings v3 resend-identity</code></td>
+<td>200 {..} · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments inproc legacy-lower</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments inproc legacy-upper</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments inproc resend-hex</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments inproc resend-identity</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments inproc resend-oid</code></td>
+<td>cb [1 _id=sent] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments inproc resend-upper</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments v1 legacy-lower</code></td>
+<td>200 [1 _id=sent] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments v1 legacy-upper</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv CM</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments v1 resend-hex</code></td>
+<td>200 [1 _id=sent] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments v1 resend-identity</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments v1 resend-oid</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments v1 resend-upper</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments v3 resend-identity</code></td>
+<td>200 {..} · n=1 OID · None · srv C=M+</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc</code></td>
+<td>cb [1 _id] · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1</code></td>
+<td>200 [1 _id] · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v3</code></td>
+<td>200 {..} · n=1 OID · None · srv None</td>
+<td>n=1 OID · replace -&gt; merge of an identical body: no recorded value predicted to change</td>
+</tr>
+</tbody>
+</table>
+<h2 id="b-identifier-now-matches-where-a-second-record-was-stored-88-cells">(b) Identifier now matches where a second record was stored: 88 cells<a class="headerlink" href="#b-identifier-now-matches-where-a-second-record-was-stored-88-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>activity inproc idf-identifier-amt</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity v1 idf-identifier-amt</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity ws idf-identifier-amt</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x inproc x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x inproc x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x inproc x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x inproc x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x v1 x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x v1 x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x v1 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x v1 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x ws x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x ws x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x ws x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x ws x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>devicestatus x inproc x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>devicestatus x v1 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>devicestatus x v3 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>entries ws idf-identifier-amt</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x inproc x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x inproc x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v1 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v1 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v3 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v3 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food inproc idf-identifier-amt</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v1 idf-identifier-amt</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food ws idf-identifier-amt</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x inproc x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x inproc x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x inproc x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x inproc x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v1 x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v1 x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v1 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v1 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v3 x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v3 x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v3 x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v3 x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v3 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v3 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-identifier-amt</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-identifier-amt</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-identifier-amt</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x ws idf-identifier-time</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+</tbody>
+</table>
+<h2 id="c1-replace-becomes-merge-same-record-216-cells">(c1) Replace becomes merge (same record): 216 cells<a class="headerlink" href="#c1-replace-becomes-merge-same-record-216-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>activity inproc idf-uuidid-amt</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv noCnoM</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity inproc idf-uuidid-same</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv noCnoM</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity inproc idf-uuidid-time</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv noCnoM</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x ws x inproc idf-uuidid-same</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv noCnoM</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>activity x ws x inproc idf-uuidid-time</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv noCnoM</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-NSCLIENT_ID-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-id-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-identifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-syncIdentifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-uuid-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x inproc x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x inproc x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x inproc x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x inproc x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x inproc x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v1 x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v1 x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v1 x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v1 x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x v1 x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x ws x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x ws x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x ws x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x ws x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>entries x ws x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food inproc idf-uuidid-amt</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food inproc idf-uuidid-same</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food inproc idf-uuidid-time</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-NSCLIENT_ID-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-id-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-identifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-syncIdentifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-uuid-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x inproc x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x v1 x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x inproc idf-uuidid-same</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x inproc idf-uuidid-time</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>food x ws x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-NSCLIENT_ID-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-id-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-identifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-syncIdentifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-uuid-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-NSCLIENT_ID-amt</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-NSCLIENT_ID-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-NSCLIENT_ID-time</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-id-amt</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-id-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-identifier-amt</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-syncIdentifier-amt</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-syncIdentifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-uuid-amt</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-uuid-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-uuidid-amt</code></td>
+<td>ack [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile ws idf-uuidid-same</code></td>
+<td>ack [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-NSCLIENT_ID-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-NSCLIENT_ID-time</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-id-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-syncIdentifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-uuid-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x inproc x ws idf-uuidid-same</code></td>
+<td>ack [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws idf-NSCLIENT_ID-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws idf-NSCLIENT_ID-time</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws idf-id-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws idf-syncIdentifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v1 x ws idf-uuid-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws idf-NSCLIENT_ID-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws idf-NSCLIENT_ID-time</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws idf-id-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws idf-syncIdentifier-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x v3 x ws idf-uuid-same</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>profile x ws x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-NSCLIENT_ID-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-id-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-identifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-syncIdentifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-uuid-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-NSCLIENT_ID-amt</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-NSCLIENT_ID-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-id-amt</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-id-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-identifier-amt</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-syncIdentifier-amt</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-syncIdentifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-uuid-amt</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-uuid-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-uuidid-amt</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-uuidid-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-uuidid-time</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-NSCLIENT_ID-amt</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-NSCLIENT_ID-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-id-amt</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-id-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-identifier-amt</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-syncIdentifier-amt</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-syncIdentifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-uuid-amt</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-uuid-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-uuidid-amt</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-uuidid-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-uuidid-time</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-NSCLIENT_ID-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-id-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-identifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-syncIdentifier-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-uuid-amt</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-NSCLIENT_ID-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-id-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-syncIdentifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-uuid-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-uuidid-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v1 idf-uuidid-time</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-NSCLIENT_ID-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-id-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-syncIdentifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-uuid-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-uuidid-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x inproc idf-uuidid-time</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x inproc idf-NSCLIENT_ID-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x inproc idf-id-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x inproc idf-syncIdentifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x inproc idf-uuid-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x v1 idf-NSCLIENT_ID-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x v1 idf-id-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x v1 idf-syncIdentifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x v1 idf-uuid-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-NSCLIENT_ID-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-id-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-identifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-identifier-time</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-syncIdentifier-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-uuid-same</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-uuidid-same</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x inproc idf-uuidid-time</code></td>
+<td>cb [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-NSCLIENT_ID-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-id-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-identifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-identifier-time</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-syncIdentifier-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-uuid-same</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-uuidid-same</code></td>
+<td>200 [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v1 idf-uuidid-time</code></td>
+<td>200 [1 _id=sent] · n=1 str*:v2 · replace · srv C=M+</td>
+<td>n=1 str*:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v3 idf-identifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x ws x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+</tbody>
+</table>
+<h2 id="c2-kept-becomes-merge-socket-treatments-option-m-only-4-cells">(c2) Kept becomes merge: socket treatments, option M only: 4 cells<a class="headerlink" href="#c2-kept-becomes-merge-socket-treatments-option-m-only-4-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>treatments ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x ws idf-identifier-same</code></td>
+<td>ack [1 _id] · n=1 OID · not-written · srv C=M+</td>
+<td>n=1 OID:v2 · merge</td>
+</tr>
+</tbody>
+</table>
+<h2 id="d1-revived-becomes-acknowledged-stays-deleted-36-cells">(d1) Revived becomes "acknowledged, stays deleted": 36 cells<a class="headerlink" href="#d1-revived-becomes-acknowledged-stays-deleted-36-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>entries inproc idf-v3del-identifier</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · merge · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries inproc idf-v3del-plain</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · merge · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries v1 idf-v3del-identifier</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · merge · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries v1 idf-v3del-plain</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · merge · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-softdel-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-softdel-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-v3del-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-v3del-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food v3 idf-softdel-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food v3 idf-softdel-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food v3 idf-v3del-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food v3 idf-v3del-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-softdel-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-softdel-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-v3del-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-v3del-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile ws idf-softdel-identifier</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile ws idf-softdel-plain</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile ws idf-v3del-identifier</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile ws idf-v3del-plain</code></td>
+<td>ack [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-softdel-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-softdel-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-v3del-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-v3del-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-softdel-identifier</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-softdel-plain</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-v3del-identifier</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-v3del-plain</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-softdel-identifier</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-softdel-plain</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-v3del-identifier</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-v3del-plain</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-softdel-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-softdel-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-v3del-identifier</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-v3del-plain</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+</tbody>
+</table>
+<h2 id="d2-a-new-record-beside-a-deleted-one-becomes-acknowledged-stays-deleted-23-cells">(d2) A new record beside a deleted one becomes "acknowledged, stays deleted": 23 cells<a class="headerlink" href="#d2-a-new-record-beside-a-deleted-one-becomes-acknowledged-stays-deleted-23-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>activity inproc idf-softdel-identifier</code></td>
+<td>cb [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>activity v1 idf-softdel-identifier</code></td>
+<td>200 [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>activity ws idf-softdel-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv noCnoM,noCnoM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-softdel-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-softdel-plain</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-v3del-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-v3del-plain</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries ws idf-softdel-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>entries ws idf-v3del-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food inproc idf-softdel-identifier</code></td>
+<td>cb [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food inproc idf-v3del-identifier</code></td>
+<td>cb [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food v1 idf-softdel-identifier</code></td>
+<td>200 [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food v1 idf-v3del-identifier</code></td>
+<td>200 [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food ws idf-softdel-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>food ws idf-v3del-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-softdel-identifier</code></td>
+<td>cb [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-v3del-identifier</code></td>
+<td>cb [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-softdel-identifier</code></td>
+<td>200 [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-v3del-identifier</code></td>
+<td>200 [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-softdel-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-softdel-plain</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-v3del-identifier</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-v3del-plain</code></td>
+<td>ack [1 _id] · n=2 OID:inv,OID:v2 · not-written,new · srv C=M=,CM</td>
+<td>n=1 OID:inv · not-written</td>
+</tr>
+</tbody>
+</table>
+<h2 id="g-two-stored-records-share-one-identifier-the-split-family-bf-212-pick-rule-p1-50-cells">(g) Two stored records share one identifier (the split family, BF-212), pick rule P1: 50 cells<a class="headerlink" href="#g-two-stored-records-share-one-identifier-the-split-family-bf-212-pick-rule-p1-50-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>activity inproc idf-split-first</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,noCnoM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>activity inproc idf-split-second</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,noCnoM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>activity inproc idf-split-written</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv noCnoM,noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>activity v1 idf-split-first</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,noCnoM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>activity v1 idf-split-second</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,noCnoM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>activity v1 idf-split-written</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv noCnoM,noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>activity ws idf-split-first</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,noCnoM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>activity ws idf-split-second</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,noCnoM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>activity ws idf-split-written</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv noCnoM,noCnoM,noCnoM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>devicestatus ws idf-split-written</code></td>
+<td>ack [1 _id] · n=2 OID,OID · not-written,not-written · srv C=M=,C=M=</td>
+<td>n=1 OID · not-written · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-split-second</code></td>
+<td>200 {..} · n=2 OID,OID:v2 · not-written,replace · srv C=M=,C=M+</td>
+<td>n=2 OID,OID:v2 · not-written,merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>entries v3 idf-split-written</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>entries ws idf-split-first</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>entries ws idf-split-second</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>entries ws idf-split-written</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>food inproc idf-split-first</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>food inproc idf-split-second</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>food inproc idf-split-written</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>food v1 idf-split-first</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>food v1 idf-split-second</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>food v1 idf-split-written</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>food v3 idf-split-second</code></td>
+<td>200 {..} · n=2 OID,OID:v2 · not-written,replace · srv C=M=,C=M+</td>
+<td>n=2 OID,OID:v2 · not-written,merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>food v3 idf-split-written</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>food ws idf-split-first</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>food ws idf-split-second</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>food ws idf-split-written</code></td>
+<td>ack [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-split-first</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-split-second</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>profile inproc idf-split-written</code></td>
+<td>cb [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-split-first</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-split-second</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>profile v1 idf-split-written</code></td>
+<td>200 [1 _id] · n=3 OID,OID,OID:v2 · not-written,not-written,new · srv C=M=,C=M=,CM</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-split-second</code></td>
+<td>200 {..} · n=2 OID,OID:v2 · not-written,replace · srv C=M=,C=M+</td>
+<td>n=2 OID,OID:v2 · not-written,merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>profile v3 idf-split-written</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>profile ws idf-split-first</code></td>
+<td>ack [1 _id] · n=2 OID:v2,OID · replace,not-written · srv C=M+,C=M=</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>profile ws idf-split-second</code></td>
+<td>ack [1 _id] · n=2 OID,OID:v2 · not-written,replace · srv C=M=,C=M+</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>profile ws idf-split-written</code></td>
+<td>ack [1 _id] · n=2 OID:v2,OID · replace,not-written · srv C=M+,C=M=</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-split-second</code></td>
+<td>200 {..} · n=2 OID,OID:v2 · not-written,replace · srv C=M=,C=M+</td>
+<td>n=2 OID,OID:v2 · not-written,merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>settings v3 idf-split-written</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-split-first</code></td>
+<td>cb [1 _id] · n=2 OID:v2,OID · replace,not-written · srv C=M+,C=M=</td>
+<td>n=2 OID:v2,OID · merge,not-written · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-split-second</code></td>
+<td>cb [1 _id] · n=2 OID:v2,OID · replace,not-written · srv C=M+,C=M=</td>
+<td>n=2 OID:v2,OID · merge,not-written · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments inproc idf-split-written</code></td>
+<td>cb [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-split-first</code></td>
+<td>200 [1 _id] · n=2 OID:v2,OID · replace,not-written · srv C=M+,C=M=</td>
+<td>n=2 OID:v2,OID · merge,not-written · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-split-second</code></td>
+<td>200 [1 _id] · n=2 OID:v2,OID · replace,not-written · srv C=M+,C=M=</td>
+<td>n=2 OID:v2,OID · merge,not-written · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments v1 idf-split-written</code></td>
+<td>200 [1 _id] · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-split-second</code></td>
+<td>200 {..} · n=2 OID,OID:v2 · not-written,replace · srv C=M=,C=M+</td>
+<td>n=2 OID,OID:v2 · not-written,merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments v3 idf-split-written</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>n=1 OID:v2 · merge · replace -&gt; merge, same target</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-split-first</code></td>
+<td>ack [1 _id] · n=2 OID,OID · not-written,not-written · srv C=M+,C=M=</td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-split-second</code></td>
+<td>ack [1 _id] · n=2 OID,OID · not-written,not-written · srv C=M=,C=M+</td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-split-written</code></td>
+<td>ack [1 _id] · n=2 OID,OID · not-written,not-written · srv C=M+,C=M=</td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+</tr>
+</tbody>
+</table>
+<h2 id="g-not-visible-same-matrix-values-the-reply-names-another-record-1-cells">(g, not visible) Same matrix values, the reply names another record: 1 cells<a class="headerlink" href="#g-not-visible-same-matrix-values-the-reply-names-another-record-1-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>devicestatus ws idf-split-second</code></td>
+<td>ack [1 _id] · n=2 OID,OID · not-written,not-written · srv C=M=,C=M=</td>
+<td>n=2 OID,OID · not-written,not-written · B re-sent, answered with A; nothing written (same matrix values; the reply names A)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="h-unchanged-as-read-but-in-question-devicestatus-api-v3-fallback-replace-12-cells">(h) Unchanged as read, but in question: devicestatus API v3 fallback replace: 12 cells<a class="headerlink" href="#h-unchanged-as-read-but-in-question-devicestatus-api-v3-fallback-replace-12-cells" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>today [M]</th>
+<th>predicted [R, prediction]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>devicestatus x inproc x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x inproc x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x inproc x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x inproc x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x v1 x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x v1 x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x v1 x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x v1 x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x ws x v3 idf-NSCLIENT_ID-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x ws x v3 idf-id-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x ws x v3 idf-syncIdentifier-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+<tr>
+<td><code>devicestatus x ws x v3 idf-uuid-same</code></td>
+<td>200 {..} · n=1 OID:v2 · replace · srv C=M+</td>
+<td>(see note)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="option-k-cells-whose-prediction-differs-from-option-m-12">Option K: cells whose prediction differs from option M: 12<a class="headerlink" href="#option-k-cells-whose-prediction-differs-from-option-m-12" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>predicted, option M</th>
+<th>predicted, option K</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>treatments ws idf-identifier-amt</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-identifier-same</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written · kept by identifier: nothing written (today the similar match wrote created_at, srvModified)</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-identifier-time</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-split-first</code></td>
+<td>n=2 OID:v2,OID · merge,not-written · A re-sent, lands on A</td>
+<td>(store and shape as today; <code>srv</code> of A goes from <code>C=M+</code> to <code>C=M=</code>)</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-split-second</code></td>
+<td>n=2 OID:v2,OID · merge,not-written · B re-sent, lands on A: A takes B's body</td>
+<td>n=2 OID,OID · not-written,not-written · B re-sent, answered with A; nothing written (same matrix values; the reply names A)</td>
+</tr>
+<tr>
+<td><code>treatments ws idf-split-written</code></td>
+<td>n=1 OID:v2 · merge · B's own write matched A by identifier: one record</td>
+<td>n=1 OID · not-written · B's own write matched A by identifier: one record</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x ws idf-identifier-same</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written · kept by identifier: nothing written (today the similar match wrote created_at, srvModified)</td>
+</tr>
+<tr>
+<td><code>treatments x inproc x ws idf-identifier-time</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x ws idf-identifier-same</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written · kept by identifier: nothing written (today the similar match wrote created_at, srvModified)</td>
+</tr>
+<tr>
+<td><code>treatments x v1 x ws idf-identifier-time</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x ws idf-identifier-same</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written · kept by identifier: nothing written (today the similar match wrote created_at, srvModified)</td>
+</tr>
+<tr>
+<td><code>treatments x v3 x ws idf-identifier-time</code></td>
+<td>n=1 OID:v2 · merge</td>
+<td>n=1 OID · not-written</td>
+</tr>
+</tbody>
+</table>
+<h2 id="uuid_handling-off-pin-dev-e1f7ac41-idfirst-uuidoffjson-504-cells-entries-and-treatments">UUID_HANDLING off (pin <code>dev-e1f7ac41-idfirst-uuidoff.json</code>, 504 cells, entries and treatments)<a class="headerlink" href="#uuid_handling-off-pin-dev-e1f7ac41-idfirst-uuidoffjson-504-cells-entries-and-treatments" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>group</th>
+<th style="text-align: right;">cells</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(b) Identifier now matches where a second record was stored</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>(c1) Replace becomes merge (same record)</td>
+<td style="text-align: right;">114</td>
+</tr>
+<tr>
+<td>(c2) Kept becomes merge: socket treatments, option M only</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td>(d1) Revived becomes "acknowledged, stays deleted"</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>(d2) A new record beside a deleted one becomes "acknowledged, stays deleted"</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr>
+<td>(g) Two stored records share one identifier (the split family, BF-212), pick rule P1</td>
+<td style="text-align: right;">16</td>
+</tr>
+</tbody>
+</table>
+<p>With the flag off, an upper-case UUID <code>_id</code> on API v1 and in-process is dropped instead of moved to <code>identifier</code> (identity reference §3), so the <code>idf-uuidid-*</code> cells there are re-sends with no identity and identifier matching cannot reach them; the 16 cells that differ between the two pins are all of that kind.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

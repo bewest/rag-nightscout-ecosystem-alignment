@@ -4811,6 +4811,8 @@
       
         
       
+        
+      
     
     
     
@@ -4908,6 +4910,34 @@
     
   
     The auth plane: Ory Kratos/Hydra against building it ourselves
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deleted-record-edit-survey-2026-10-29.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Edits of a soft-deleted record: what clients do
   
 
     
@@ -7558,7 +7588,7 @@ the only backend, and it is the kind of defect that is only found once a second 
 <blockquote>
 <p><strong>Update 2026-09-15.</strong> T2.5 shipped a <strong>fifth</strong> strategy not in this table — a typed generated
 column guarded by <code>jsonb_typeof</code>, plus explicit <code>NULLS FIRST/LAST</code>. Measured in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8c31c34b1dc64608fdbc78105cc129429db4aeb8/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>: it <strong>matches <code>mongod</code> exactly on
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a23475d9e651d1ed8e83523b3321aff84ea46d39/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>: it <strong>matches <code>mongod</code> exactly on
 single-typed data</strong>, the only one of the five that does. On mixed-typed data the guard rejects
 the wrong-typed value to SQL <code>NULL</code>, so it sorts to the front where MongoDB sorts it last. See
 <a href="../../30-design/tenancy/nightscout-seam-ordering-translation.html">the ordering design</a> §3.1b.</p>

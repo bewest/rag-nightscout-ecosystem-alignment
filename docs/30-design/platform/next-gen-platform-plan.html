@@ -2373,6 +2373,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3126,6 +3130,62 @@
     
   
     Glucose units at the profile boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="id-first-match-design-note-2026-10-29-cells.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FIRST-MATCH: cell-by-cell impact (appendix)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="id-first-match-design-note-2026-10-29.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-FIRST-MATCH: the re-send rule on every path, cell by cell
   
 
     
@@ -5572,7 +5632,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>afaea9eb2</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>33218a6d8</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>e1f7ac41</code> (2026-10-29). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5647,6 +5707,12 @@ tagged, beside registration, instead of after <code>write(intent)</code>.</p>
 <td>#8865, one executable and the boot split</td>
 <td>every site starts through it, so it carries the release's widest operational change</td>
 <td>the image's <code>nightscout single</code> start, <code>npm start</code>, Heroku/Docker/Azure forms, SIGTERM shutdown. Ask each hosting cohort to check it</td>
+</tr>
+<tr>
+<td>2a</td>
+<td>#8878, BF-212 first part: the chart split stops copying identity fields</td>
+<td>low; changes only what the moved half of a chart drag carries</td>
+<td>the unit test (red on dev) and the reproduction probe; the re-upload double count remains</td>
 </tr>
 <tr>
 <td>3</td>
