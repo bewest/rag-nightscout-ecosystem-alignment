@@ -5802,7 +5802,9 @@ re-run on <code>v15.0.9</code> <code>c6a0d8ed</code>.
    editor and every v1 path delete hard, and no client in the corpus calls the v3 profile delete). After
    that, no local edit, and then an NSClient full sync, a database reset or a lost acknowledgement.
 4. An amount field the write does not carry is not part of the match (same on 15.0.9). Filed as <strong>BF-210</strong>,
-   fixed in the same backfix as BF-209: a missing amount is treated as none.</p>
+   then withdrawn by the maintainer the same day as not a defect: absorbing a nearby matching upload is
+   intended, and treating a missing amount as none would double-count a carbs-only re-send. Meal grouping
+   belongs in the display layer.</p>
 <p>A side finding: the chart-drag split (<code>treatmenttime.js</code> <code>splitRecord</code>) keeps the original's client identity
 on the new half. This is reproduced on <code>dev</code> <code>e1f7ac41</code> (probe <code>probe/split-ident-2026-10-29</code> <code>95570d41</code>, local,
 with a control). Two stored records then share one <code>syncIdentifier</code> or <code>identifier</code>. API v3 lookups and dedupe
@@ -6087,7 +6089,7 @@ Results in this scratch directory.</p>
   <code>--dry-run</code> counts 4,753 tests, consistent. A dry run at <code>ca1652d6</code> counts 4,707, so the brief's
   "4,750 at ca1652d6" figure must have been taken at a later tree; BF-194 added 46 tests in two
   new files (<code>api.treatments-tt-units</code> 34, <code>websocket.tt-units</code> 12).</li>
-<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2a5f776b33024e336df2e838b7582783348fdd4f/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
+<li>Write matrix, two runs on untouched <code>db3b9e4e</code> (the first is committed as <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0673cb64004b5da72670772d1237dc900fff58c2/tools/qc/results/write-contract-matrix/dev-db3b9e4e.json"><code>tools/qc/results/write-contract-matrix/dev-db3b9e4e.json</code></a>, the G1 pin): 360 cells
   (336 + 24 Temporary Target), 0 INVALID, 20 n/a, <code>write_validation</code> off. <code>--compare</code>: <strong>0
   differing cells</strong>, the known racy <code>cache</code> field included. Two more runs of a scratch copy of the
   harness that also records <code>storage-write-committed</code> per cell (<code>tools/wc-matrix-commit.js</code>,
