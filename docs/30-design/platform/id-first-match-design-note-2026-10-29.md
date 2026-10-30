@@ -482,7 +482,7 @@ The questions in §6, numbered in order: (i) is ID-Q1, (ii) ID-Q2, (iii) ID-Q3, 
   additive items), 2, 5, 3, 4, 6, 6a. Whatever has not cleared the bar at the tag rolls to 17.0.0.
 - **ID-Q10, decided:** an edit addressed by an `identifier` that two stored records share lands on the record
   the P4 pick names. A delete addressed that way reaches every record sharing it, as API v3 DELETE does today.
-- **Settings, proposed by session -4f** (not yet confirmed by the maintainer). They follow `WRITE_VALIDATION`:
+- **Settings, proposed by session -4f and confirmed by the maintainer (2026-10-29). They follow `WRITE_VALIDATION`:
   a `WRITE_` prefix, and modes rather than booleans, with the default first:
   - `WRITE_RESEND=merge|acknowledge|refuse`;
   - `WRITE_IDENTIFIER=lenient|strict`;
