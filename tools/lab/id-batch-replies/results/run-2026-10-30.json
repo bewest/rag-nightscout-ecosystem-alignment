@@ -1,0 +1,5381 @@
+{
+ "meta": {
+  "crm": "7d81e1c1e8d6f83fc9b60243d754ad030a77263c",
+  "crmDirty": "",
+  "mongod": "8.3.9",
+  "node": "v22.23.4",
+  "run": "b844e3",
+  "date": "2026-10-30T21:10:52.154Z",
+  "cycles": 3,
+  "pins": {
+   "loop": "NightscoutKit 4ec9fd12a1 (= LoopWorkspace 548b332451 Package.resolved:104-109), NightscoutService 2cef4896f0, Loop c30b5c89",
+   "trio": "Trio 0b29cd5341",
+   "xdripplus": "xDrip 1ed760048a",
+   "xdripswift": "xdripswift c268542e64",
+   "connect": "nightscout-connect 04102f9d26 (run, not modelled: connect-run.js)",
+   "aaps": "AndroidAPS 7e1d537d49"
+  }
+ },
+ "runs": [
+  {
+   "scenario": "T-mixed",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 treatments refused by WRITE_VALIDATION; see the refused member of each\"",
+     "resent": 3,
+     "why": "slot without _id -> \"NA\", counted as uploaded"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d7a",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "NA",
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d7b",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "today",
+   "optIn": null,
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 treatments refused by WRITE_VALIDATION; see the refused member of each\"",
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "today",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 treatments refused by WRITE_VALIDATION; see the refused member of each\"",
+     "resent": 3,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "status 400"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "status 400"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d7e",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": null,
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d7f",
+     "idRight": true
+    }
+   ],
+   "retry": "every sync while among the latest 50 treatments",
+   "readsId": true
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "slot without _id -> \"NA\", counted as uploaded"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d80",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "NA",
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d81",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "slots",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 400,
+     "length": 1,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 1 items refused\"",
+     "resent": 1,
+     "why": "status 400"
+    },
+    {
+     "status": 400,
+     "length": 1,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 1 items refused\"",
+     "resent": 1,
+     "why": "status 400"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d84",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": null,
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d85",
+     "idRight": true
+    }
+   ],
+   "retry": "every sync while among the latest 50 treatments",
+   "readsId": true
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "slots",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "items",
+   "optIn": "items",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "body is not an array"
+    },
+    {
+     "status": 200,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "body is not an array"
+    },
+    {
+     "status": 200,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "body is not an array"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "items",
+   "optIn": "items",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": null,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "items",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "items",
+   "optIn": "items",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "body is not an array: upload counted as failed"
+    },
+    {
+     "status": 200,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "body is not an array: upload counted as failed"
+    },
+    {
+     "status": 200,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "body is not an array: upload counted as failed"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "every sync while among the latest 50 treatments",
+   "readsId": false
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "items",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "207",
+   "optIn": "slots; status=207",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 207,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "status 207 is not 200"
+    },
+    {
+     "status": 207,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "status 207 is not 200"
+    },
+    {
+     "status": 207,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "status 207 is not 200"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "207",
+   "optIn": "slots; status=207",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 207,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "207",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "207",
+   "optIn": "slots; status=207",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 207,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 207,
+     "length": 1,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 1 items refused\"",
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 207,
+     "length": 1,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 1 items refused\"",
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d90",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": null,
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dc9f2672b0ce681d91",
+     "idRight": true
+    }
+   ],
+   "retry": "unmatched items on every sync while among the latest 50",
+   "readsId": true
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "207",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400 is not 200"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400 is not 200"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400 is not 200"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "today",
+   "optIn": null,
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400: nothing marked"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400: nothing marked"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400: nothing marked"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole chunk on every upload pass while within 1 day (carbs), no attempt counter",
+   "readsId": false
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "today",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "status 400"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "every sync while among the latest 50 treatments",
+   "readsId": false
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400 is not 200"
+    },
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400 is not 200"
+    },
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400 is not 200"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400: nothing marked"
+    },
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400: nothing marked"
+    },
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400: nothing marked"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole chunk on every upload pass while within 1 day (carbs), no attempt counter",
+   "readsId": false
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "slots",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400"
+    },
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400"
+    },
+    {
+     "status": 400,
+     "length": 2,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"2 of 2 items refused\"",
+     "resent": 2,
+     "why": "status 400"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "every sync while among the latest 50 treatments",
+   "readsId": false
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "slots",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "array length 3 != 2"
+    },
+    {
+     "status": 200,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "array length 3 != 2"
+    },
+    {
+     "status": 200,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "array length 3 != 2"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "today",
+   "optIn": null,
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "today",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": null,
+     "idRight": null
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681d9a",
+     "idRight": true
+    }
+   ],
+   "retry": "unmatched items on every sync while among the latest 50",
+   "readsId": true
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-keep",
+   "optIn": "slots; prebolus=keep",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "array length 3 != 2"
+    },
+    {
+     "status": 200,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "array length 3 != 2"
+    },
+    {
+     "status": 200,
+     "length": 3,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "array length 3 != 2"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-keep",
+   "optIn": "slots; prebolus=keep",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-keep",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-keep",
+   "optIn": "slots; prebolus=keep",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": null,
+     "idRight": null
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681da3",
+     "idRight": true
+    }
+   ],
+   "retry": "unmatched items on every sync while among the latest 50",
+   "readsId": true
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-keep",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-omit",
+   "optIn": "slots; prebolus=omit",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681da4",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681da6",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-omit",
+   "optIn": "slots; prebolus=omit",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-omit",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-omit",
+   "optIn": "slots; prebolus=omit",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 200,
+     "length": 1,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 200,
+     "length": 1,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 1,
+     "why": "1 item(s) matched no slot with _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": null,
+     "idRight": null
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681dac",
+     "idRight": true
+    }
+   ],
+   "retry": "unmatched items on every sync while among the latest 50",
+   "readsId": true
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-omit",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681dad",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681dae",
+     "idRight": true
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681daf",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "today",
+   "optIn": null,
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "today",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "every item matched a slot with _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681db3",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681db4",
+     "idRight": true
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681db5",
+     "idRight": true
+    }
+   ],
+   "retry": "none",
+   "readsId": true
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "slot without _id -> \"NA\", counted as uploaded"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681db6",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "NA",
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681db7",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "slots",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "1 item(s) matched no slot with _id"
+    },
+    {
+     "status": 400,
+     "length": 1,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 1 items refused\"",
+     "resent": 1,
+     "why": "status 400"
+    },
+    {
+     "status": 400,
+     "length": 1,
+     "ok": false,
+     "errCode": null,
+     "warning": "299 - \"1 of 1 items refused\"",
+     "resent": 1,
+     "why": "status 400"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681dba",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": null,
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dd9f2672b0ce681dbb",
+     "idRight": true
+    }
+   ],
+   "retry": "every sync while among the latest 50 treatments",
+   "readsId": true
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "slots",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500 is not 200"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500 is not 200"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500 is not 200"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "today",
+   "optIn": null,
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: nothing marked"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: nothing marked"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: nothing marked"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole chunk on every upload pass while within 1 day (carbs), no attempt counter",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: items stay queued"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: items stay queued"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: items stay queued"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload run until the queue entry is 7 days old",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "from the bookmark on every sync",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500 is not 200"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500 is not 200"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500 is not 200"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: nothing marked"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: nothing marked"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: nothing marked"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole chunk on every upload pass while within 1 day (carbs), no attempt counter",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: items stay queued"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: items stay queued"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500: items stay queued"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload run until the queue entry is 7 days old",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500"
+    },
+    {
+     "status": 500,
+     "length": null,
+     "ok": false,
+     "errCode": 11000,
+     "warning": null,
+     "resent": 3,
+     "why": "status 500"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "from the bookmark on every sync",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-5xx",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "slot without _id -> \"NA\", counted as uploaded"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dc4",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "NA",
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dc5",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: queue items marked done, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: bookmark moved, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-409",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dc8",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "316983c4b712ca5c3044c139",
+     "idRight": true
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dc9",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "today",
+   "optIn": null,
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: queue items marked done, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: bookmark moved, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dcc",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "57a2a3f8c1543e70a9199c84",
+     "idRight": true
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dcd",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: queue items marked done, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: bookmark moved, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-5xx",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dd0",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "cc272122d2e8f83339ef89d9",
+     "idRight": true
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dd1",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: queue items marked done, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: bookmark moved, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-409",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dd5",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dd6",
+     "idRight": true
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dd7",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "today",
+   "optIn": null,
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: queue items marked done, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "today",
+   "optIn": null,
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "2xx: bookmark moved, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "slot without _id -> \"NA\", counted as uploaded"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681ddd",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "NA",
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507de9f2672b0ce681dde",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "trio",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: every item marked uploaded, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "xdripplus",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: queue items marked done, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "xdripswift",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "2xx: bookmark moved, body ignored"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "none",
+   "readsId": false
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "slots",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": null,
+     "resent": 2,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "d49097b5db0acc94abba6b4e",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dee530573e20da36df",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "today",
+   "client": "trio",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "today",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "today",
+   "client": "xdripswift",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-refused",
+   "optIn": "slots; acknowledged=refused",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 2 items refused\"",
+     "resent": 2,
+     "why": "slot without _id -> \"NA\", counted as uploaded"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "NA",
+     "idRight": null
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dee530573e20da36e0",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-refused",
+   "client": "trio",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-refused",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-refused",
+   "client": "xdripswift",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-refused",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-word",
+   "optIn": "slots; acknowledged=word",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 acknowledged, not applied\"",
+     "resent": 2,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "dd34c07109b420cbcafc49bc",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dee530573e20da36e1",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-word",
+   "client": "trio",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-word",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-word",
+   "client": "xdripswift",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-word",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-unchanged",
+   "optIn": "slots; acknowledged=unchanged",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 2,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 acknowledged, not applied\"",
+     "resent": 2,
+     "why": "all slots carry _id"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "54355d4534121b89db8316c8",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dee530573e20da36e2",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-unchanged",
+   "client": "trio",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-unchanged",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-unchanged",
+   "client": "xdripswift",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-unchanged",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "today",
+   "optIn": null,
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "status 400 is not 200"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "status 400 is not 200"
+    },
+    {
+     "status": 400,
+     "length": null,
+     "ok": false,
+     "errCode": null,
+     "warning": null,
+     "resent": 3,
+     "why": "status 400 is not 200"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "marked": false,
+     "pending": true,
+     "idKept": "n/a",
+     "idRight": false
+    }
+   ],
+   "retry": "whole batch on every upload trigger, no bound; later records wait behind it",
+   "readsId": false
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "today",
+   "client": "trio",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "today",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "today",
+   "client": "xdripswift",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "today",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "slots",
+   "optIn": "slots",
+   "client": "loop",
+   "cycles": [
+    {
+     "status": 200,
+     "length": 3,
+     "ok": true,
+     "errCode": null,
+     "warning": "299 - \"1 of 3 items refused\"",
+     "resent": 3,
+     "why": "slot without _id -> \"NA\", counted as uploaded"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dee530573e20da36e3",
+     "idRight": true
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "marked": true,
+     "pending": false,
+     "idKept": "NA",
+     "idRight": null
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "marked": true,
+     "pending": false,
+     "idKept": "6ae507dee530573e20da36e4",
+     "idRight": true
+    }
+   ],
+   "retry": "none (anchor advanced)",
+   "readsId": true
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "slots",
+   "client": "trio",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "slots",
+   "client": "xdripplus",
+   "na": "treatments are PUT one object at a time (NightscoutUploader.java:803-806, :880-889)"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "slots",
+   "client": "xdripswift",
+   "na": "does not post devicestatus as a v1 array"
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "slots",
+   "client": "aaps",
+   "na": "API v3, one document per request (NightscoutApi.kt:127-130, :160-163)"
+  }
+ ],
+ "connect": [
+  {
+   "scenario": "T-mixed",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "T-mixed:today:connect:b844e3:0",
+      "T-mixed:today:connect:b844e3:1",
+      "T-mixed:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-28T22:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-28T22:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-28T22:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "slots",
+   "optIn": "slots",
+   "cycles": [
+    {
+     "sent": [
+      "T-mixed:slots:connect:b844e3:0",
+      "T-mixed:slots:connect:b844e3:1",
+      "T-mixed:slots:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-28T23:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-28T23:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-28T23:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "T-mixed",
+   "variant": "207",
+   "optIn": "slots; status=207",
+   "cycles": [
+    {
+     "sent": [
+      "T-mixed:207:connect:b844e3:0",
+      "T-mixed:207:connect:b844e3:1",
+      "T-mixed:207:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 207,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "T-allrefused:today:connect:b844e3:0",
+      "T-allrefused:today:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    },
+    {
+     "sent": [
+      "T-allrefused:today:connect:b844e3:0",
+      "T-allrefused:today:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    },
+    {
+     "sent": [
+      "T-allrefused:today:connect:b844e3:0",
+      "T-allrefused:today:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "T-allrefused",
+   "variant": "slots",
+   "optIn": "slots",
+   "cycles": [
+    {
+     "sent": [
+      "T-allrefused:slots:connect:b844e3:0",
+      "T-allrefused:slots:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    },
+    {
+     "sent": [
+      "T-allrefused:slots:connect:b844e3:0",
+      "T-allrefused:slots:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    },
+    {
+     "sent": [
+      "T-allrefused:slots:connect:b844e3:0",
+      "T-allrefused:slots:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T00:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "T-prebolus:today:connect:b844e3:0",
+      "T-prebolus:today:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T03:25:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T03:25:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T03:25:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "sentTimes": 0,
+     "late": true
+    }
+   ]
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-keep",
+   "optIn": "slots; prebolus=keep",
+   "cycles": [
+    {
+     "sent": [
+      "T-prebolus:prebolus-keep:connect:b844e3:0",
+      "T-prebolus:prebolus-keep:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T04:25:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T04:25:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T04:25:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "sentTimes": 0,
+     "late": true
+    }
+   ]
+  },
+  {
+   "scenario": "T-prebolus",
+   "variant": "prebolus-omit",
+   "optIn": "slots; prebolus=omit",
+   "cycles": [
+    {
+     "sent": [
+      "T-prebolus:prebolus-omit:connect:b844e3:0",
+      "T-prebolus:prebolus-omit:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 2
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T05:11:43.772Z"
+    },
+    {
+     "sent": [
+      "T-prebolus:prebolus-omit:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 1
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T05:15:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T05:15:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": true
+    }
+   ]
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "T-strict:today:connect:b844e3:0",
+      "T-strict:today:connect:b844e3:1",
+      "T-strict:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T06:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T06:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T06:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "T-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "cycles": [
+    {
+     "sent": [
+      "T-strict:slots:connect:b844e3:0",
+      "T-strict:slots:connect:b844e3:1",
+      "T-strict:slots:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T07:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T07:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T07:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "E-dupid:today:connect:b844e3:0",
+      "E-dupid:today:connect:b844e3:1",
+      "E-dupid:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 500,
+       "length": null
+      }
+     ],
+     "error": 500,
+     "bookmark": "2026-10-28T06:50:43.772Z"
+    },
+    {
+     "sent": [
+      "E-dupid:today:connect:b844e3:0",
+      "E-dupid:today:connect:b844e3:1",
+      "E-dupid:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 500,
+       "length": null
+      }
+     ],
+     "error": 500,
+     "bookmark": "2026-10-28T06:50:43.772Z"
+    },
+    {
+     "sent": [
+      "E-dupid:today:connect:b844e3:0",
+      "E-dupid:today:connect:b844e3:1",
+      "E-dupid:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 500,
+       "length": null
+      }
+     ],
+     "error": 500,
+     "bookmark": "2026-10-28T06:50:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "cycles": [
+    {
+     "sent": [
+      "E-dupid:dup-5xx:connect:b844e3:0",
+      "E-dupid:dup-5xx:connect:b844e3:1",
+      "E-dupid:dup-5xx:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 500,
+       "length": null
+      }
+     ],
+     "error": 500,
+     "bookmark": "2026-10-29T08:10:43.772Z"
+    },
+    {
+     "sent": [
+      "E-dupid:dup-5xx:connect:b844e3:0",
+      "E-dupid:dup-5xx:connect:b844e3:1",
+      "E-dupid:dup-5xx:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 500,
+       "length": null
+      }
+     ],
+     "error": 500,
+     "bookmark": "2026-10-29T08:10:43.772Z"
+    },
+    {
+     "sent": [
+      "E-dupid:dup-5xx:connect:b844e3:0",
+      "E-dupid:dup-5xx:connect:b844e3:1",
+      "E-dupid:dup-5xx:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 500,
+       "length": null
+      }
+     ],
+     "error": 500,
+     "bookmark": "2026-10-29T08:10:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-dupid",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "cycles": [
+    {
+     "sent": [
+      "E-dupid:dup-409:connect:b844e3:0",
+      "E-dupid:dup-409:connect:b844e3:1",
+      "E-dupid:dup-409:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T10:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T10:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T10:20:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "E-sametime:today:connect:b844e3:0",
+      "E-sametime:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 2
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T11:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T11:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T11:20:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 0,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-5xx",
+   "optIn": "slots; duplicate-id=5xx",
+   "cycles": [
+    {
+     "sent": [
+      "E-sametime:dup-5xx:connect:b844e3:0",
+      "E-sametime:dup-5xx:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 2
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T12:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T12:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T12:20:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 0,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-sametime",
+   "variant": "dup-409",
+   "optIn": "slots; duplicate-id=409",
+   "cycles": [
+    {
+     "sent": [
+      "E-sametime:dup-409:connect:b844e3:0",
+      "E-sametime:dup-409:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 2
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T13:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T13:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T13:20:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 0,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "E-strict:today:connect:b844e3:0",
+      "E-strict:today:connect:b844e3:1",
+      "E-strict:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T14:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T14:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T14:20:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "E-strict",
+   "variant": "slots",
+   "optIn": "slots",
+   "cycles": [
+    {
+     "sent": [
+      "E-strict:slots:connect:b844e3:0",
+      "E-strict:slots:connect:b844e3:1",
+      "E-strict:slots:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T15:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T15:20:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T15:20:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "D-resend:today:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 1
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T16:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T16:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T16:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 0,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-refused",
+   "optIn": "slots; acknowledged=refused",
+   "cycles": [
+    {
+     "sent": [
+      "D-resend:ack-refused:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 1
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T17:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T17:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T17:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 0,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-word",
+   "optIn": "slots; acknowledged=word",
+   "cycles": [
+    {
+     "sent": [
+      "D-resend:ack-word:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 1
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T18:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T18:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T18:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 0,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "D-resend",
+   "variant": "ack-unchanged",
+   "optIn": "slots; acknowledged=unchanged",
+   "cycles": [
+    {
+     "sent": [
+      "D-resend:ack-unchanged:connect:b844e3:1"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 1
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T19:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T19:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T19:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 0,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "today",
+   "optIn": null,
+   "cycles": [
+    {
+     "sent": [
+      "D-badid:today:connect:b844e3:0",
+      "D-badid:today:connect:b844e3:1",
+      "D-badid:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T19:11:43.772Z"
+    },
+    {
+     "sent": [
+      "D-badid:today:connect:b844e3:0",
+      "D-badid:today:connect:b844e3:1",
+      "D-badid:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T19:11:43.772Z"
+    },
+    {
+     "sent": [
+      "D-badid:today:connect:b844e3:0",
+      "D-badid:today:connect:b844e3:1",
+      "D-badid:today:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 400,
+       "length": null
+      }
+     ],
+     "error": 400,
+     "bookmark": "2026-10-29T19:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 0,
+     "sentTimes": 3,
+     "late": false
+    }
+   ]
+  },
+  {
+   "scenario": "D-badid",
+   "variant": "slots",
+   "optIn": "slots",
+   "cycles": [
+    {
+     "sent": [
+      "D-badid:slots:connect:b844e3:0",
+      "D-badid:slots:connect:b844e3:1",
+      "D-badid:slots:connect:b844e3:2"
+     ],
+     "posts": [
+      {
+       "status": 200,
+       "length": 3
+      }
+     ],
+     "error": null,
+     "bookmark": "2026-10-29T21:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T21:11:43.772Z"
+    },
+    {
+     "sent": [],
+     "posts": [],
+     "error": null,
+     "bookmark": "2026-10-29T21:11:43.772Z"
+    }
+   ],
+   "items": [
+    {
+     "i": 0,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 1,
+     "stored": 0,
+     "sentTimes": 1,
+     "late": false
+    },
+    {
+     "i": 2,
+     "stored": 1,
+     "sentTimes": 1,
+     "late": false
+    }
+   ]
+  }
+ ],
+ "optInForms": [
+  {
+   "name": "none",
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "warning": "299 - \"1 of 2 treatments refused by WRITE_VALIDATION; see the refused member of each\"",
+   "shape": "array[2]",
+   "storedFirst": 1,
+   "urlInServerLog": false
+  },
+  {
+   "name": "header",
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "warning": "299 - \"1 of 2 items refused\"",
+   "shape": "object{items[2],documents}",
+   "storedFirst": 1,
+   "urlInServerLog": false
+  },
+  {
+   "name": "query",
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "warning": "299 - \"1 of 2 items refused\"",
+   "shape": "object{items[2],documents}",
+   "storedFirst": 1,
+   "urlInServerLog": false
+  },
+  {
+   "name": "accept",
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "warning": "299 - \"1 of 2 treatments refused by WRITE_VALIDATION; see the refused member of each\"",
+   "shape": "array[2]",
+   "storedFirst": 1,
+   "urlInServerLog": false
+  },
+  {
+   "name": "accept-no-suffix-path",
+   "status": 200,
+   "contentType": "application/vnd.nightscout.write-results+json; charset=utf-8",
+   "warning": "299 - \"1 of 2 items refused\"",
+   "shape": "object{items[2],documents}",
+   "storedFirst": 1,
+   "urlInServerLog": false
+  },
+  {
+   "name": "accept-with-json-too",
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "warning": "299 - \"1 of 2 treatments refused by WRITE_VALIDATION; see the refused member of each\"",
+   "shape": "array[2]",
+   "storedFirst": 1,
+   "urlInServerLog": false
+  },
+  {
+   "name": "header-no-suffix-path",
+   "status": 200,
+   "contentType": "application/json; charset=utf-8",
+   "warning": "299 - \"1 of 2 items refused\"",
+   "shape": "object{items[2],documents}",
+   "storedFirst": 1,
+   "urlInServerLog": false
+  },
+  {
+   "name": "header-malformed",
+   "status": 400,
+   "contentType": "application/json; charset=utf-8",
+   "warning": null,
+   "shape": "object",
+   "storedFirst": 0,
+   "urlInServerLog": false
+  }
+ ],
+ "profile": [
+  {
+   "name": "today",
+   "status": 401,
+   "body": {
+    "status": 401,
+    "message": "Unauthorized",
+    "description": "Missing permission api:profile:update"
+   },
+   "changedApplied": false,
+   "newStored": 0
+  },
+  {
+   "name": "whole",
+   "status": 401,
+   "body": {
+    "status": 401,
+    "message": "Unauthorized",
+    "description": "Missing permission api:profile:update"
+   },
+   "changedApplied": false,
+   "newStored": 0
+  },
+  {
+   "name": "per-item",
+   "status": 200,
+   "body": [
+    {
+     "refused": 403
+    },
+    {
+     "_id": true
+    }
+   ],
+   "changedApplied": false,
+   "newStored": 1
+  }
+ ],
+ "scenarios": [
+  {
+   "id": "T-mixed",
+   "server": "reject",
+   "coll": "treatments",
+   "what": "WRITE_VALIDATION=reject; [carbs, Temporary Target with bottom > top, carbs]"
+  },
+  {
+   "id": "T-allrefused",
+   "server": "reject",
+   "coll": "treatments",
+   "what": "WRITE_VALIDATION=reject; every item refused: [bad TT, bad TT]"
+  },
+  {
+   "id": "T-prebolus",
+   "server": "off",
+   "coll": "treatments",
+   "what": "[carbs with preBolus 15, carbs]; a late item 5 min after the first appears at cycle 2 (connect)"
+  },
+  {
+   "id": "T-strict",
+   "server": "strict",
+   "coll": "treatments",
+   "what": "WRITE_IDENTIFIER=strict; [carbs with a valid identifier, carbs with identifier \"undefined\", carbs]"
+  },
+  {
+   "id": "E-dupid",
+   "server": "off",
+   "coll": "entries",
+   "what": "a stored entry holds _id X; batch [sgv, sgv sent with _id X at another time, sgv]"
+  },
+  {
+   "id": "E-sametime",
+   "server": "off",
+   "coll": "entries",
+   "what": "a stored entry at time t holds _id X; batch [sgv, sgv at t sent with another _id Y, sgv] (xDrip4iOS calibrations send _id)"
+  },
+  {
+   "id": "E-strict",
+   "server": "strict",
+   "coll": "entries",
+   "what": "WRITE_IDENTIFIER=strict; [sgv, sgv with identifier \"null\", sgv]"
+  },
+  {
+   "id": "D-resend",
+   "server": "off",
+   "coll": "devicestatus",
+   "what": "a stored devicestatus re-sent with its _id beside a new one: the step answers the re-send refused \"already stored\""
+  },
+  {
+   "id": "D-badid",
+   "server": "off",
+   "coll": "devicestatus",
+   "what": "[devicestatus, devicestatus with a non-hex _id, devicestatus]: today a whole-batch 400"
+  }
+ ]
+}
