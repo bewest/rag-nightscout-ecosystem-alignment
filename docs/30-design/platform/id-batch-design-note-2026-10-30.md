@@ -253,6 +253,12 @@ Trade-off: no retry loops and no blocked queues, against a dropped record surfac
 the `Warning` header and the opt-in results. Whether a refused dose or carb entry should also be shown on
 the site (an announcement or status-page count) is open.
 
+**Decided elsewhere, carried here (maintainer, 2026-10-30, ID-STRICT-V1).** `WRITE_IDENTIFIER=strict`
+refuses an invalid identifier on API v3 and the socket from slice 2 on. On API v1 and in-process it is
+enforced with this item's per-item replies; until then those paths treat an invalid identifier as absent,
+as under `lenient` (`IDENTIFIER_STRICT` in `lib/storage/write-intent.js`, `'v1/internal': 'absent'`). The
+reply-format prototype includes strict on v1 as a case.
+
 ## 7. How this was produced
 
 Server code read with `git show 9919f8ef:<path>` from the `crm-wc-step` work tree, nothing checked out.
