@@ -448,7 +448,24 @@ The questions in §6, numbered in order: (i) is ID-Q1, (ii) ID-Q2, (iii) ID-Q3, 
 - **ID-Q3:** the maintainer leans to refusing edits of a deleted record on every path, with a separate
   restore action. He asked first which clients that would affect and what the AndroidAPS authors intend.
   A client survey is under way.
-- **ID-Q2 and ID-Q6 to ID-Q11:** open.
+- **ID-Q2, decided:** device status follows the same default as the other collections (merge on an identifier
+  match). The re-send switch (ID-RESEND-SWITCH) can select acknowledge, and the maintainer noted that the
+  switch is the place for that choice. This changes only `dev`'s unreleased behaviour since #8859 (acknowledge);
+  15.0.9 stored a duplicate. Loop sends no device-status identifier, and AndroidAPS creates each status once.
+  API v3's `created_at`+`device` fallback is left to ID-NATURAL-KEY.
+- **ID-Q6, decided:**
+  - no character restriction. Any string up to 256 characters (MongoDB's index key limit) is accepted, and the
+    docs say an identifier used in a URL path must be percent-encoded;
+  - a placeholder (`undefined`, `null`, `invalid`, an empty string) or an over-length value is treated as
+    absent: it is ignored for matching, not stored, and answered with a warning;
+  - strict refusal is available behind a setting, off by default;
+  - the check runs right after the `_id` step, so a placeholder `_id` moved into `identifier` by
+    `UUID_HANDLING` is caught as well.
+- **ID-Q7, decided:** a matched profile re-send replaces `store` as a whole, and its other fields merge. No
+  released client depends on a merge of `store`: 15.0.9 refused that re-send (BF-166), and API v3 and the socket
+  replace. This adjusts the `dev`-only Q1b rule for `store`.
+- **ID-Q3, ID-Q8 to ID-Q11:** open. ID-Q3 has a client survey
+  ([edits of deleted records](../../60-research/tenancy/deleted-record-edit-survey-2026-10-29.md)).
 
 ## 7. How this was produced
 
