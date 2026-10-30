@@ -389,7 +389,8 @@
    "depends": [
     "ID-FIRST-MATCH",
     "ID-BATCH"
-   ]
+   ],
+   "ref": "In 16.0.0 scope (maintainer, 2026-10-30) behind WRITE_IDENTIFIER_INDEX=try|require|off (default try). Try builds a partial unique index per collection (records with an identifier, soft-deleted included, built online); on existing duplicates it logs counts and shows them on the status page, runs without the index, and the write rule still refuses a second record. An operator-run tool reports and resolves duplicate groups by the P4 pick. ID-DUP-MEASURE found 0 duplicates across the 12-site corpus."
   },
   {
    "id": "REG-SPECS",

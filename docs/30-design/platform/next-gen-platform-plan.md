@@ -22,6 +22,26 @@ It names each piece of work, what it needs first, where it goes in the code, and
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857: S0, S1, S2, S5, off by default (`f7a43fed`, 78 behind dev, conflicts) | typed writes (S3), projected views (S4) |
 | Tenancy | nothing | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`fcd305ae`, base dev, open, in the 16.0.0 merge list; #8862 closed as superseded) | tenant configuration, resolution, tenant-scoped auth, multitenant lab |
 
+## 1. 16.0.0 scope (maintainer, 2026-10-30)
+
+16.0.0 targets **every single-tenant item of this plan**, through the entry bar and in priority order. A
+miss rolls to 16.1.0, or to 17.0.0 if it changes a default.
+- **The identity work is the core.** It is the substance of the agreement with the Loop maintainers:
+  identifier-first on every path, re-sends recognised, the format rules, and one record per identifier.
+- **The unique index on `identifier` is in 16.0.0**, behind `WRITE_IDENTIFIER_INDEX=try|require|off`
+  (default `try`).
+  - Under `try`, boot attempts a partial unique index per collection: records with an `identifier`,
+    soft-deleted ones included, built online. If existing duplicates block it, the counts per collection
+    (never the values) are logged and shown on the status page, and the server runs without the index.
+  - The write rule (ID-Q5) still refuses to create a second record with a stored identifier.
+  - `require` refuses to start until the index exists. `off` skips it.
+  - An operator-run tool reports duplicate groups and resolves them by the P4 pick.
+- **Multitenant items may ship dormant, labelled alpha behind `serve`, or not ship.**
+
+Feasibility, from the 7 days to 2026-10-30: 53 PRs merged into `dev`, and 14 of this plan's 36 items went
+to done. Build speed is not the limit. Time on `dev`, cohort checks and review are, so items land in
+priority order and early, and the tag is gated by the bar, not by a date.
+
 ## 1a. Priority and merge order (2026-10-29)
 
 Identity moved up on 2026-10-29, because most of the week's defects came from records matched by

@@ -8076,6 +8076,10 @@ items:
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-30 (maintainer): in 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off
+      (default try: on existing duplicates, log counts, show them on the status page, run without
+      the index; the write rule still blocks new duplicates), plus an operator-run report and clean
+      tool using the P4 pick.
       2026-10-29: ID-V3-IMMUTABLE-DECISION is answered (merge on match stays
       the default). ID-VALIDATE joins blocks_on: with placeholders refused
       first, two clients sending the same placeholder cannot collide on the
