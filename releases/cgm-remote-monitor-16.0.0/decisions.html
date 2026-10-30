@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>34a4d0030</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>bd866d8e7</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2677,6 +2677,18 @@ public.</em></p>
 <td>maintainer, 2026-10-30, via session -49, on session -4f's survey: no surveyed client sends such an edit (read, file:line), 0 shared identifiers across the 12 corpus sites (measured, with a planted control); only a typed ID in the web food editor or bad stored data produce it, so a person sees the error</td>
 <td><code>ID-FIRST-MATCH</code> (slice 5, second commit)</td>
 <td>being built for #8879</td>
+</tr>
+<tr>
+<td><strong>Slice 3, API v3's computed identifier after a delete, per collection</strong>: for entries, profile, food and settings the server-computed <code>identifier</code> (device + date + eventType) counts as an identity key, so a v3 re-create of a deleted record is acknowledged and stays deleted; for treatments, v3 keeps today's revive in 16.0.0. Socket profile revive stays with Q-R. Slice 3 otherwise follows ID-Q4 (identity-key match on a deleted record: acknowledged; time-key match: a new record)</td>
+<td>maintainer, 2026-10-30, via session -49, on session -4f's AAPS reading (7e1d537d, read, not run): AAPS never sends an identifier; treatments carry no device, so the key is <code>undefined_&lt;date&gt;_&lt;eventType&gt;</code>; a same-minute re-entry after delete is realistic; staying deleted would hide the re-entered treatment and, on a later PATCH answered 410, stall that collection's AAPS uploads without limit (only 404 is retry-bounded)</td>
+<td><code>ID-FIRST-MATCH</code> (slice 3)</td>
+<td>being built for #8879; an AAPS upstream ask (bound or handle 410 on PATCH) is being drafted, then treatments are revisited. Reviewer to verify: the real rate of same-minute re-entries, SQLite row order in <code>getByNSId</code>, and whether a bolus and a carb entry share a timestamp</td>
+</tr>
+<tr>
+<td><strong>#8875's properties view also reads the resident windows (60 h of treatments, the loader's 48 h of readings)</strong>, so the main-page pills match today's exactly, at 1.1 to 2.5 times the bytes per minute of the 3-DIA bound</td>
+<td>maintainer, 2026-10-30, via session -49, on replay round 4 (3-DIA bound: only COB details differed on most datasets, the shown COB number on 1,632 minutes of one; the wide bound 0 differing minutes; noise floor 0 of 252,184)</td>
+<td><code>ST-VIEWS</code></td>
+<td>being built on <code>feat/views-bounded-text</code> after <code>24911435</code></td>
 </tr>
 <tr>
 <td><strong>Q9 / Q-A / Q-U (release 2): the cache gets the records a filter write touched from the write step's id resolution, not from D-EVENT and not from a srvModified watermark</strong> (replacing the watermark proposal); D-EVENT keeps its other reopen conditions. Q-A, taken up by the maintainer directly: leaning towards one write shape for v3 too, decided only after a v3 prototype shows backward compatibility, quality and the lab's exactness. Q-U decided: autoPrune through the write step with id resolution. The 1,000 cap is a fixed constant. Details in the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> Q9 row</td>
