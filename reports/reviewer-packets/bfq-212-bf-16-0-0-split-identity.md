@@ -72,10 +72,12 @@ maintainer
 
 ## Notes carried on the item
 
-Filed 2026-10-29 by the records accuracy pass from the chart-drag split probe
-on dev e1f7ac41; the overwrite of a shared-identifier record measured the same
-day by session -4f (QC-MATRIX-IDF). Not run on v15.0.9; splitRecord there is
-the same code (read).
+2026-10-30: the first part (the split stops copying identity fields) merged to
+dev as d51c7a60 (#8878); the re-upload double count stays open. Filed
+2026-10-29 by the records accuracy pass from the chart-drag split probe on dev
+e1f7ac41; the overwrite of a shared-identifier record measured the same day by
+session -4f (QC-MATRIX-IDF). Not run on v15.0.9; splitRecord there is the same
+code (read).
 
 ---
 

@@ -218,8 +218,8 @@
   {
    "id": "ST-V3-DECOUPLE",
    "track": "storage",
-   "phase": "boundary",
-   "state": "review",
+   "phase": "dev",
+   "state": "done",
    "short": "v3 on its own",
    "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own (milestone M3)",
    "where": "lib/api3 (the cached collection and its cache hooks), bootevent's factory chain; about the fixtures the API v3 suites share with v1 and the socket",
@@ -228,7 +228,7 @@
     "ST-WRITES",
     "PLAT-SERVE"
    ],
-   "ref": "In #8865 (head 53ba192a): session -2e's API v3 role harness, folded in by the maintainer at 9f7f84f8. Exit check met as reported by -2e: API v3 suites under the api profile 634 passing, 0 failing, 108 pending (now the headless target: 643/0/108 at b01b77c3) (single-only subjects: the websocket, the cache, in-process v1), under single 742/0; npm test 4803/0/3 on 9f7f84f8",
+   "ref": "Merged to dev 2026-10-30 02:04Z as 991b0654 (#8865, head 1b2801f7), by the maintainer; in 16.0.0. In #8865 (head 53ba192a): session -2e's API v3 role harness, folded in by the maintainer at 9f7f84f8. Exit check met as reported by -2e: API v3 suites under the api profile 634 passing, 0 failing, 108 pending (now the headless target: 643/0/108 at b01b77c3) (single-only subjects: the websocket, the cache, in-process v1), under single 742/0; npm test 4803/0/3 on 9f7f84f8",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {
@@ -587,8 +587,8 @@
   {
    "id": "PLAT-SERVE",
    "track": "tenancy",
-   "phase": "boundary",
-   "state": "review",
+   "phase": "dev",
+   "state": "done",
    "short": "serve <roles>",
    "title": "`nightscout serve <role>[,<role>…]` for a multitenant Nightscout (D21): roles carved one at a time from bootevent's factory chain, `api` first; each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16). The subcommand selects tenancy",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
@@ -603,7 +603,7 @@
      "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
     }
    ],
-   "ref": "In the 16.0.0 merge list (maintainer, 2026-10-27). #8865 head fcd305ae (b01b77c3 with dev e1f7ac41 merged in): the subcommand selects tenancy (`single` single-tenant, every `serve` role multitenant; TENANCY_MODE retires); `serve` refuses every role until it is multitenant; the single-tenant api code runs as scripts/headless-test-server.js for tests and development. Carries #8862's commits; image CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path; the healthcheck checks the server's own certificate (CodeQL alert 138 fixed). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms); API v3 suites 751/0 under single, 643/0/108 pending under headless",
+   "ref": "Merged to dev 2026-10-30 02:04Z as 991b0654 (#8865, head 1b2801f7), by the maintainer; in 16.0.0. In the 16.0.0 merge list (maintainer, 2026-10-27). #8865 head fcd305ae (b01b77c3 with dev e1f7ac41 merged in): the subcommand selects tenancy (`single` single-tenant, every `serve` role multitenant; TENANCY_MODE retires); `serve` refuses every role until it is multitenant; the single-tenant api code runs as scripts/headless-test-server.js for tests and development. Carries #8862's commits; image CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path; the healthcheck checks the server's own certificate (CodeQL alert 138 fixed). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms); API v3 suites 751/0 under single, 643/0/108 pending under headless",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
   },
   {

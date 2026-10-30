@@ -18156,6 +18156,8 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/platform/wc-step-design-note-2026-10-27.md
     notes: >
+      2026-10-30: the first part (the split stops copying identity fields) merged
+      to dev as d51c7a60 (#8878); the re-upload double count stays open.
       Filed 2026-10-29 by the records accuracy pass from the chart-drag
       split probe on dev e1f7ac41; the overwrite of a shared-identifier
       record measured the same day by session -4f (QC-MATRIX-IDF). Not run
@@ -23499,7 +23501,7 @@ items:
     branch: feat/nightscout-serve
     base: official/dev (PR base since the retarget; first stacked on feat/storage-writes@38b910d7 + feat/nightscout-entrypoint@b63d9b7f, merge 775fd1cb)
     worktree: externals/work/crm-serve
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8865]
     blast_radius: >
       bin/nightscout.js, lib/server/bootevent.js (the factory chain split by
@@ -23512,25 +23514,18 @@ items:
     semver: minor
     semver_reason: new subcommands; `single` unchanged
     gates:
-      - no-gate: >
-          Measured by the lab, not re-runnable from this repository alone.
-          On feat/nightscout-serve 1dafe2a5 against 775fd1cb (Node 22.23.4,
-          MongoDB 8.0.34): single npm test 4639/0/3 (base 4617), test:all
-          4967/0/3 (base 4945), start-paths green. API v3 suites (46 files)
-          under `serve api`: 485 passing, 81 failing, 168 not run, against
-          734/0 under single; the failures are fixtures that wait for the
-          cache's data-update event (42), call v1 modules (33) or need
-          socket.io (6), all pieces the api role leaves out. A `serve api`
-          boot constructs no bus, ddata, cache, websocket or v1/v2 (asserted;
-          red when the api profile lists single's stages). Plane rule: 18
-          listener tests, each check ablated red. Unknown or unimplemented
-          role exits 64; SIGTERM exits 0 in under 10 ms (red: Mongo client
-          left open, exit 1 at 10 s).
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1b2801f7 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8865's head 1b2801f7 (merged 2026-10-30 as 991b0654);
+          red if dev is rewritten or the merge is reverted
     blocks_on: [PLAT-ENTRY, ST-FILTER-READS]
     evidence:
       - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
       - tools/lab/image-start-forms/README.md
     notes: >
+      2026-10-30: #8865 merged to dev as 991b0654 (head 1b2801f7) by the
+      maintainer; in 16.0.0, not released.
       2026-10-27 night (maintainer): #8865 joins the 16.0.0 merge list.
       Only `single` is supported. Then (maintainer, same night): the
       subcommand selects tenancy, so TENANCY_MODE retires; `serve` is reserved

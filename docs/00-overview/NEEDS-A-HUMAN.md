@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 17 items
+### Maintainer &mdash; 16 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -38,7 +38,6 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
-| `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
 | `WC-STEP-PATCH` | `in-flight-upstream` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | #8874 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
@@ -77,7 +76,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | PR | id | branch | what it fixes | who should review |
 |---|---|---|---|---|
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
-| **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
 | **#8874** | `WC-STEP-PATCH` | `feat/write-intent` | Release 1 (patch): one write step for every v1, v3 and socke | Maintainer |
 | **#8878** | `BFQ-212` | `bf/16.0.0-split-identity` | BF-212 - a chart-drag split leaves two treatments with one c | Maintainer |
 
