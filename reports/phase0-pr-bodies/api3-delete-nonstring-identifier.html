@@ -4048,7 +4048,7 @@
 
   <h1>Api3 delete nonstring identifier</h1>
 
-<p><em>Living document, last changed 2026-09-26 at <code>312727dcb</code>.</em></p>
+<p><em>Living document, last changed 2026-09-26 at <code>312727dc</code>.</em></p>
 <!-- Draft body for branch bf/api3-delete-nonstring-identifier at 1c3aeb8c (one commit on dev ce7d754a), 2026-09-26. This comment is hidden on GitHub. Not opened; not pushed. -->
 <p>API v3 can delete a record whose stored identifier is <code>0</code> or <code>false</code> again (BF-142). One commit (<code>1c3aeb8c</code>, on <code>dev</code> <code>ce7d754a</code>). This is a regression from #8758 (the BF-117 fix) that was never released: <code>v15.0.8</code> deletes these records. Found while reviewing #8778. The maintainer decided on 2026-09-26 to fix it for 15.0.9. Storage, v3 reads, PUT and PATCH are not changed.</p>
 <h2 id="what-changes-for-you">What changes for you<a class="headerlink" href="#what-changes-for-you" title="Permanent link">&para;</a></h2>

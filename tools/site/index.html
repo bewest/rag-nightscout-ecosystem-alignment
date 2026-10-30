@@ -3036,7 +3036,7 @@
 
 
 <h1 id="static-site-mkdocs-material">Static site (MkDocs Material)<a class="headerlink" href="#static-site-mkdocs-material" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>a26f4b5fa</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>5dbb92c3</code>.</em></p>
 <p><em>Contributor-facing.</em> Builds a browsable copy of this repository's
 documentation. It is deployed only by the maintainer, from a local build, on the
 <code>gh-pages</code> branch (see <a href="#publishing">Publishing</a>). Every page carries
@@ -3138,9 +3138,12 @@ prefix of; a short form that matches none or several fails the build.
   names carry a pseudonym should stay stable.</li>
 <li>Neither the key nor any ID-to-pseudonym mapping is written to the repo, the
   build output or <code>build/site-report.json</code> (it records counts only).</li>
-<li>The key stays on the maintainer's machine. The site is built and published
-  locally (<code>make site-publish</code>); there is no Actions workflow and no Actions
-  secret.</li>
+<li>The key is kept in two places with the same value: the maintainer's key file,
+  for local builds, and the repository secret <code>SITE_PSEUDONYM_KEY</code>, for the CI
+  job that publishes on each push to <code>main</code> (see <a href="#publishing">Publishing</a>).
+  Set or rotate the secret from the key file without printing it:
+  <code>gh secret set SITE_PSEUDONYM_KEY -R bewest/rag-nightscout-ecosystem-alignment &lt; ~/.config/nightscout-alignment/pseudonym.key</code>.
+  A different value in the secret changes every pseudonym on the site.</li>
 <li>The <code>participant-id</code> scan kind fails the build and <code>make site-check</code> on any
   raw <code>odc-&lt;2 to 12 digits&gt;</code> left in <code>build/site-src/</code> or <code>build/site/</code> (HTML,
   search index, sitemap, file names). It cannot be allowlisted.</li>
@@ -3214,6 +3217,15 @@ the reader needs before trusting the page, and optionally <code>see:</code>, a t
 [NAME.html]</code> (needs node/npx; network on first run), then move <code>source_commit</code>
 to the commit it prints.</p>
 <h2 id="publishing">Publishing<a class="headerlink" href="#publishing" title="Permanent link">&para;</a></h2>
+<p><strong>On each push to <code>main</code></strong>, the <code>site</code> job in <code>.github/workflows/ci.yml</code> runs
+after the other CI checks pass. It runs <code>make site-publish</code> with the
+<code>SITE_PSEUDONYM_KEY</code> secret and pushes the new gh-pages commit (a fast-forward;
+a rejected push means someone published in between, and the next push to
+<code>main</code> builds on theirs). Without the secret it skips the publish with a
+warning. A failed <code>make site-check</code>, for example a living page whose sources
+moved past its <code>source_commit</code>, fails the job and publishes nothing: re-render
+the page, move <code>source_commit</code> and push again.</p>
+<p><strong>Locally</strong>, the same command works as before:</p>
 <p><code>make site-publish</code> refuses unless the working tree is clean, <code>HEAD</code> is on a
 remote branch (<code>git branch -r --contains HEAD</code>), <code>SITE_PSEUDONYM_KEY</code> is set
 and <code>make site-check</code> passes. It then fetches <code>origin/gh-pages</code>, copies

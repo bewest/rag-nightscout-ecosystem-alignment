@@ -5964,7 +5964,7 @@
 
 
 <h1 id="semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect">Semver and release versioning policy — cgm-remote-monitor and nightscout-connect<a class="headerlink" href="#semver-and-release-versioning-policy--cgm-remote-monitor-and-nightscout-connect" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>f1119d4cf</code>.</em></p>
+<p><em>Living document, last changed 2026-10-26 at <code>f1119d4c</code>.</em></p>
 <p><em>Contributor- and maintainer-facing. Full technical depth is intended. Operator-facing text
 derived from this document has its own rules — §5.6.</em></p>
 <p><strong>Status: living document.</strong> Three parts with different standing:</p>
@@ -5998,7 +5998,7 @@ is 498 commits and 82 first-parent merges.</p>
 (where the two disagree, this document is the later position);
 <a href="../../../releases/cgm-remote-monitor-15.0.9/contents.html">15.0.9 contents</a>;
 <a href="../remedial/nightscout-backfix-register.html">backfix register</a> (defect facts);
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/37fabba3afbfc0717ab5a33704381574e21b3ebf/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4095db8f2b592edb7e2beef156503578695c29c/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> (item state);
 <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>
 (decisions D1–D17, cited here by number).</p>
 <hr />
@@ -6330,14 +6330,14 @@ under- or over-reported delivered therapy. That sentence must survive verbatim i
 operator-facing release note: a person may have looked at a total-insulin report built on a
 broken filter.</p>
 <h3 id="32-a-fix-that-adds-restrictions--count0x10-and-count25-now-return-400">3.2 A fix that adds restrictions — <code>?count=0x10</code> and <code>?count=2.5</code> now return 400<a class="headerlink" href="#32-a-fix-that-adds-restrictions--count0x10-and-count25-now-return-400" title="Permanent link">&para;</a></h3>
-<p><em>The case: <code>bf/reads</code>, merged to dev as #8738 (2026-09-18) </em><em>as written</em><em>, not released. On
+<p><em>The case: <code>bf/reads</code>, merged to dev as #8738 (2026-09-18) <strong>as written</strong>, not released. On
 <code>origin/dev</code> <code>74fc6619</code>, <code>lib/server/count.js</code> <code>parseCount</code> accepts only a positive safe integer,
 and <code>lib/api/index.js:54</code> returns 400 when a <code>count</code> is supplied and does not parse. <code>0</code>, <code>0x10</code>,
 <code>2.5</code>, <code>-3</code>, <code>1e2</code>, <code>abc</code> and integers above <code>MAX_SAFE_INTEGER</code> now return HTTP 400. Previously
-<code>?count=0</code> returned </em><em>the whole collection</em><em> (<code>limit(0)</code> is unbounded in MongoDB). The validator
+<code>?count=0</code> returned <strong>the whole collection</strong> (<code>limit(0)</code> is unbounded in MongoDB). The validator
 is mounted on the whole v1 app before every router, so it covers <code>/treatments</code>, <code>/profile</code>,
 <code>/devicestatus</code>, <code>/notifications</code>, <code>/activity</code>, <code>/food</code>, <code>/status</code>, <code>/alexa</code>, <code>/googlehome</code> and
-</em><em>writes</em><em>: <code>POST /api/v1/treatments?count=0</code> now fails. (GT4 executed the new validator against
+<strong>writes</strong>: <code>POST /api/v1/treatments?count=0</code> now fails. (GT4 executed the new validator against
 a transcription of the old <code>if (opts &amp;&amp; opts.count) return this.limit(parseInt(opts.count))</code>.)</em></p>
 <p><strong>Answer: as written, MAJOR. The policy's recommended shape splits it, and both halves become
 MINOR.</strong></p>
@@ -6572,10 +6572,10 @@ that the failure mode during the window be "warn and keep ingesting" rather than
 <p><em>The case: <code>nightscout-connect</code> <code>lib/backoff.js</code> merged options as <code>{...config, ...defaults}</code> —
 defaults last — so every value a caller passed was discarded. All five vendor sources configure a
 2.5-minute retry interval; every one got the 256 ms default. Measured by executing both versions:
-</em><em>585.94× exactly</em><em> (150000/256) at every attempt below the ceiling. Uncapped, attempt 20 is 4.99
+<strong>585.94× exactly</strong> (150000/256) at every attempt below the ceiling. Uncapped, attempt 20 is 4.99
 years, so the precedence fix ships with a ceiling: <code>lib/builder.js:89</code> supplies
-<code>max_interval_ms = expected_data_interval_ms * 6</code>, which is </em><em>30 minutes for four of the five
-sources</em><em> (<code>dexcomshare</code>, <code>minimedcarelink</code>, <code>glooko</code>, <code>nightscout</code> each declare
+<code>max_interval_ms = expected_data_interval_ms * 6</code>, which is <strong>30 minutes for four of the five
+sources</strong> (<code>dexcomshare</code>, <code>minimedcarelink</code>, <code>glooko</code>, <code>nightscout</code> each declare
 <code>expected_data_interval_ms: 5 * 60 * 1000</code>). <code>librelinkup</code> derives it from
 <code>opts.linkUpInterval * 60 * 1000</code> (<code>lib/sources/librelinkup.js:220</code>), so its ceiling is the
 operator's configured interval × 6. With <code>'equal'</code> jitter the delay at the ceiling spreads over
@@ -6648,14 +6648,14 @@ Queue gate: <code>tools/queue/gates/d3-drag-clamp-covered.js</code>.</p>
 <p><strong>Rule:</strong> <em>a version number is never accepted as mitigation for absent coverage.</em></p>
 <h3 id="38-a-client-side-calculation-that-gave-the-wrong-number--the-case-the-ladder-cannot-see">3.8 A client-side calculation that gave the wrong number — the case the ladder cannot see<a class="headerlink" href="#38-a-client-side-calculation-that-gave-the-wrong-number--the-case-the-ladder-cannot-see" title="Permanent link">&para;</a></h3>
 <p>This is a <strong>hole in §1's enumeration and §2's ladder</strong>, left as an open decision.</p>
-<p><em>The case: <code>bf/food</code> <code>73495331</code>, merged to dev as #8735, not released; register </em><em>BF-35</em><em>, graded
-</em><em>high</em><em>. <code>lib/client/boluscalc.js</code> <code>loadFoodQuickpicks</code> builds the <code>&lt;option&gt;</code> list by iterating
-the </em><em>whole food collection</em><em> and using the array index as the option's <code>value</code>, while
-<code>quickpickChange</code> looks that index up in <code>quickpicks</code>, the </em><em>filtered</em><em> array. They agree only
+<p><em>The case: <code>bf/food</code> <code>73495331</code>, merged to dev as #8735, not released; register <strong>BF-35</strong>, graded
+<strong>high</strong>. <code>lib/client/boluscalc.js</code> <code>loadFoodQuickpicks</code> builds the <code>&lt;option&gt;</code> list by iterating
+the <strong>whole food collection</strong> and using the array index as the option's <code>value</code>, while
+<code>quickpickChange</code> looks that index up in <code>quickpicks</code>, the <strong>filtered</strong> array. They agree only
 when every food record is a quick pick. Reproduced in jsdom (register): picking the option labelled
-<code>Breakfast (45 g)</code> loads </em><em>Lunch (70 g)</em><em>; picking the last option throws. The register's severity
+<code>Breakfast (45 g)</code> loads <strong>Lunch (70 g)</strong>; picking the last option throws. The register's severity
 line: "the carbs that reach the insulin calculation come from a record the user did not choose,
-</em><em>with no error shown</em><em>." A regression from <code>3457de5b</code>, 2017.</em></p>
+<strong>with no error shown</strong>." A regression from <code>3457de5b</code>, 2017.</em></p>
 <p><strong>What §2 says about it: PATCH.</strong> Every question 1–13 answers "no" — the HTTP responses are
 byte-identical; defect and fix are entirely in the browser — and §5.6's note obligations attach
 only to minors and majors, so <strong>no note is required.</strong></p>

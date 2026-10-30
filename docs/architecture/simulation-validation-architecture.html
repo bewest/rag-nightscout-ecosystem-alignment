@@ -5889,7 +5889,7 @@
 
 
 <h1 id="simulation-validation-architecture">Simulation Validation Architecture<a class="headerlink" href="#simulation-validation-architecture" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-03-30 at <code>d2903af7c</code>.</em></p>
+<p><em>Living document, last changed 2026-03-30 at <code>d2903af7</code>.</em></p>
 <blockquote>
 <p>How to ensure simulated CGM and treatment data reflects actual human experience,
 and how to use validated simulations for autonomous dosing algorithm improvement.</p>
@@ -5907,9 +5907,9 @@ and how to use validated simulations for autonomous dosing algorithm improvement
 <p>But simulation is only useful if it's <strong>calibrated against reality</strong>. We've already observed
 the core failure mode: <strong>algorithm rankings reverse on synthetic vs real data</strong>. Persistence
 wins on cgmsim-lib's simplified engine (narrow 89–140 mg/dL range, MAE 2.3) while oref0
-wins on real TV-<em> vectors (real variability, MAE 14.6). Any autonomous loop that optimizes
+wins on real TV-* vectors (real variability, MAE 14.6). Any autonomous loop that optimizes
 against uncalibrated simulation will converge on algorithms that are good at predicting
-</em>simulations<em>, not </em>humans*.</p>
+<em>simulations</em>, not <em>humans</em>.</p>
 <hr />
 <h2 id="2-current-simulation-infrastructure">2. Current Simulation Infrastructure<a class="headerlink" href="#2-current-simulation-infrastructure" title="Permanent link">&para;</a></h2>
 <h3 id="21-engines">2.1 Engines<a class="headerlink" href="#21-engines" title="Permanent link">&para;</a></h3>
@@ -6000,8 +6000,8 @@ against uncalibrated simulation will converge on algorithms that are good at pre
 </table>
 <h3 id="23-generated-artifacts">2.3 Generated Artifacts<a class="headerlink" href="#23-generated-artifacts" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>35 SIM-* vectors</strong> in <code>conformance/in-silico/vectors/</code></li>
-<li><strong>~20 TV-*-synthetic vectors</strong> in <code>conformance/t1pal/vectors/oref0-endtoend/</code></li>
+<li><em><em>35 SIM-</em> vectors</em>* in <code>conformance/in-silico/vectors/</code></li>
+<li>*<em>~20 TV-<em>-synthetic vectors</em></em> in <code>conformance/t1pal/vectors/oref0-endtoend/</code></li>
 <li><strong>GluPredKit example data</strong>: <code>externals/GluPredKit/example_data/synthetic_data.csv</code> (6000 rows)</li>
 </ul>
 <h3 id="24-known-limitation-ranking-reversal">2.4 Known Limitation: Ranking Reversal<a class="headerlink" href="#24-known-limitation-ranking-reversal" title="Permanent link">&para;</a></h3>
@@ -8244,9 +8244,9 @@ on higher-fidelity simulation).</p>
   carb restriction then binge, deliberate insulin omission — these show up in real
   data as patterns an algorithm must handle safely</li>
 </ul>
-<p>Real TV-<em> vectors from phone captures must always carry the highest scoring weight.
+<p>Real TV-* vectors from phone captures must always carry the highest scoring weight.
 Simulation expands coverage; it doesn't replace ground truth. The goal of the
-mismatch layer is to bridge the gap so simulation results are </em>directionally correct*
+mismatch layer is to bridge the gap so simulation results are <em>directionally correct</em>
 — not to eliminate the need for real data.</p>
 <h3 id="uvapadova-engine-integration--resolved--2025-03-30">UVA/Padova Engine Integration (✅ Resolved — 2025-03-30)<a class="headerlink" href="#uvapadova-engine-integration--resolved--2025-03-30" title="Permanent link">&para;</a></h3>
 <p><strong><code>in-silico-bridge.js</code> now supports both engines</strong> via the <code>--engine</code> flag:</p>

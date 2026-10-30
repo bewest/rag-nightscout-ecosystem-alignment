@@ -4672,7 +4672,7 @@
 
 
 <h1 id="ecosystem-progression-nocturne--trio-dev-vs-shipped">Ecosystem Progression: Nocturne &amp; Trio (dev vs. shipped)<a class="headerlink" href="#ecosystem-progression-nocturne--trio-dev-vs-shipped" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-09 at <code>3cc4b474f</code>.</em></p>
+<p><em>Living document, last changed 2026-09-09 at <code>3cc4b474</code>.</em></p>
 <p><strong>Date:</strong> 2026-09-14 (research run 2026-09-09)
 <strong>Method:</strong> Verified directly against live GitHub (API + <code>gh</code> CLI): repo
 metadata, releases/tags, commit comparisons, source files, PRs. Every claim
@@ -4808,14 +4808,14 @@ as an <strong>additional, wire-compatible backend</strong>, not a replacement re
 any Trio code change:</p>
 <ul>
 <li>Trio PR <a href="https://github.com/nightscout/Trio/pull/1333">#1333</a> (open) is
-  explicit: it refactors upload infrastructure <em>"ahead of adding a </em><em>fourth</em><em>
+  explicit: it refactors upload infrastructure <em>"ahead of adding a <strong>fourth</strong>
   backend (Nocturne...)"</em> alongside Trio's existing Nightscout, Tidepool,
   and Apple Health uploaders — and states plainly <em>"Intended behavior change
   for Nightscout uploads: none."</em> Nightscout remains a first-class,
   unmodified upload target.</li>
 <li>Nocturne issue <a href="https://github.com/nightscout/nocturne/issues/354">#354</a>
   (closed): <em>"Trio uploads directly to Nocturne via the
-  </em><em>Nightscout-compatible API</em><em> — just point it at your Nocturne URL (no
+  <strong>Nightscout-compatible API</strong> — just point it at your Nocturne URL (no
   config changes beyond the URL/secret)."</em> Nocturne is deliberately
   designed to be indistinguishable from classic Nightscout at the protocol
   level for existing uploaders — Trio (and Loop/AAPS/iAPS) already work

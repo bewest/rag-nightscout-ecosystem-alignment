@@ -6935,7 +6935,7 @@
 
 
 <h1 id="ecosystem-alignment-backlog">Ecosystem Alignment Backlog<a class="headerlink" href="#ecosystem-alignment-backlog" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-16 at <code>1a10007b4</code>.</em></p>
+<p><em>Living document, last changed 2026-09-16 at <code>1a10007b</code>.</em></p>
 <blockquote>
 <p><strong>Last Updated</strong>: 2026-01-31<br />
 <strong>Purpose</strong>: Track active work items across all domains<br />
@@ -7010,7 +7010,7 @@
 <strong>Unblocked:</strong> Yes - internal tooling change</p>
 <h3 id="2-p2-yamlmarkdown-sync-validator-">2. [P2] YAML↔Markdown sync validator ✅<a class="headerlink" href="#2-p2-yamlmarkdown-sync-validator-" title="Permanent link">&para;</a></h3>
 <p><strong>Type:</strong> Implementation | <strong>Effort:</strong> Medium
-<strong>Focus:</strong> Detect drift between traceability/<em>.md claims and conformance/</em><em>/</em>.yaml assertions
+<strong>Focus:</strong> Detect drift between traceability/*.md claims and conformance/**/*.yaml assertions
 <strong>Rationale:</strong> Enable LLM-free verification of documentation accuracy
 <strong>Deliverable:</strong> <code>tools/verify_sync.py</code> - compare REQ/GAP references across formats
 <strong>Source:</strong> tooling.md #30
@@ -7366,7 +7366,7 @@
 <td>57% avg coverage, 2 collections (food, activity) need specs</td>
 </tr>
 <tr>
-<td><strong>Classify GAP-SYNC-* by ontology</strong></td>
+<td><em><em>Classify GAP-SYNC-</em> by ontology</em>*</td>
 <td><code>traceability/sync-identity-gaps.md</code></td>
 <td>22 gaps classified: 6 Observed, 8 Desired, 2 Control, 6 Cross-category</td>
 </tr>
@@ -7378,7 +7378,7 @@
 <tr>
 <td><strong>Extend verify_assertions scope</strong></td>
 <td><code>tools/verify_assertions.py</code></td>
-<td>4→12 YAML files, now scans conformance/*<em>/</em>.yaml</td>
+<td>4→12 YAML files, now scans conformance/**/*.yaml</td>
 </tr>
 <tr>
 <td><strong>Extend verify_refs scope</strong></td>
@@ -7738,8 +7738,8 @@
 <h3 id="p2-level-5-req-api--openapi-alignment--complete">~~[P2] Level 5: REQ-API-* OpenAPI alignment~~ ✅ COMPLETE<a class="headerlink" href="#p2-level-5-req-api--openapi-alignment--complete" title="Permanent link">&para;</a></h3>
 <p><strong>Status:</strong> Completed 2026-01-29 - <strong>LEVEL 5 COMPLETE!</strong>
 - 35 requirements audited, <strong>63% have OpenAPI spec</strong> (22/35)
-- Covered: REQ-API/API3/SPEC/PLUGIN/ERR/NS-<em> via 8 specs
-- Gaps: REQ-STATS-</em> (5), REQ-AUTH-<em> (3), REQ-RG-</em> (4)</p>
+- Covered: REQ-API/API3/SPEC/PLUGIN/ERR/NS-* via 8 specs
+- Gaps: REQ-STATS-* (5), REQ-AUTH-* (3), REQ-RG-* (4)</p>
 <h3 id="p2-level-5-req-connect--completeness--complete">~~[P2] Level 5: REQ-CONNECT-* completeness~~ ✅ COMPLETE<a class="headerlink" href="#p2-level-5-req-connect--completeness--complete" title="Permanent link">&para;</a></h3>
 <p><strong>Status:</strong> Completed 2026-01-29
 - 28 GAPs audited, <strong>100% have REQs</strong> (28/28)
@@ -7749,7 +7749,7 @@
 <p><strong>Status:</strong> Completed 2026-01-29
 - 7 requirements audited, <strong>100% covered</strong> (7/7)
 - All via treatment-sync.yaml: REQ-TREAT-040 to REQ-TREAT-046
-- Related gaps: REQ-REMOTE-<em> (0%), REQ-ALARM-</em> (0%), REQ-UNIT-* (0%)</p>
+- Related gaps: REQ-REMOTE-* (0%), REQ-ALARM-* (0%), REQ-UNIT-* (0%)</p>
 <h3 id="p2-level-5-req-sync--traceability--complete">~~[P2] Level 5: REQ-SYNC-* traceability~~ ✅ COMPLETE<a class="headerlink" href="#p2-level-5-req-sync--traceability--complete" title="Permanent link">&para;</a></h3>
 <p><strong>Status:</strong> Completed 2026-01-29
 - 18 requirements audited, <strong>83% covered</strong> (15/18)

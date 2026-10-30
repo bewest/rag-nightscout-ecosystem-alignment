@@ -5595,7 +5595,7 @@ deletes code the single-tenant target needs; it selects a different subset of it
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  realtime.js           ns-realtime  — socket.io + change feed, no storage writes
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  vcpool.js             ns-vcpool    — connect actors + egress proxy
 </code></pre></div>
-<p><em>Amended 2026-10-26 by </em><em>D21</em><em>: the roles below are started as subcommands of one executable, <code>nightscout single</code> and <code>nightscout serve &lt;roles&gt;</code>, not as one script per role. The table of which factories each role calls is unchanged (<a href="nightscout-multitenancy-execution-plan-2026-09-14.html#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26">execution plan §2.12</a>).</em></p>
+<p><em>Amended 2026-10-26 by <strong>D21</strong>: the roles below are started as subcommands of one executable, <code>nightscout single</code> and <code>nightscout serve &lt;roles&gt;</code>, not as one script per role. The table of which factories each role calls is unchanged (<a href="nightscout-multitenancy-execution-plan-2026-09-14.html#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26">execution plan §2.12</a>).</em></p>
 <p><strong>Four hosted entrypoints and one legacy entrypoint, over one <code>package.json</code> and one CI
 pipeline</strong> — not five repositories. {M} §10.5 already argued this and it holds: these are
 thin <code>bin/</code> scripts selecting which factories to call, not independent products with

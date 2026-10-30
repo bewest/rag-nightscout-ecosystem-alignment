@@ -8061,7 +8061,7 @@
 
 
 <h1 id="nightscout-write-purification-compatibility-deep-dive">Nightscout Write Purification Compatibility Deep Dive<a class="headerlink" href="#nightscout-write-purification-compatibility-deep-dive" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-09 at <code>0adbca4b1</code>.</em></p>
+<p><em>Living document, last changed 2026-09-09 at <code>0adbca4b</code>.</em></p>
 <p>Date: 2026-09-02</p>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>Nightscout stored-XSS mitigation that purifies write payloads for data collections is expected to have low compatibility impact for typical mobile and edge clients. The reviewed clients model Nightscout treatment metadata as plain strings, JSON objects, or stringified JSON payloads; no reviewed upload path intentionally uses HTML markup in <code>notes</code>, <code>enteredBy</code>, <code>reason</code>, <code>foodType</code>, profile names, or treatment event metadata.</p>
