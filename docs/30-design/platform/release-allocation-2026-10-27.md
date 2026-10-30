@@ -7,7 +7,45 @@ day. The work items are those of the living [next-gen platform plan](next-gen-pl
 release's own state is in [releases/cgm-remote-monitor-16.0.0](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
 The versioning rules quoted are those of the
 [semver policy](../modernization/semver-and-release-versioning-policy-2026-09-15.md) §2. Recommendations
-are proposals for the maintainer; nothing here is decided until §5 says so.*
+are proposals for the maintainer; nothing here is decided until §5 says so. A dated section on the
+16.0.0 scope decided 2026-10-30 follows; the rest of the page is kept as written, with notes where that
+decision supersedes it.*
+
+## 16.0.0 scope, decided 2026-10-30
+
+*Added 2026-10-30 at cgm-remote-monitor `official/dev` `991b0654` (merge of #8865). Source: the
+[next-gen plan](next-gen-platform-plan.md) §1 and §1a and the
+[ID-FIRST-MATCH design note](id-first-match-design-note-2026-10-29.md) §6a; the release's decision rows
+are in [decisions.md](../../../releases/cgm-remote-monitor-16.0.0/decisions.md).*
+
+- **16.0.0 targets every single-tenant item of the next-gen plan**, through the entry bar and in priority
+  order (maintainer, 2026-10-30). The entry bar (maintainer, 2026-10-29): an item joins the merge list when its
+  matrix result is as stated (0 cells, or named cells), its red controls and ablations pass, a revert has been
+  rehearsed, and it has had time on `dev` with its cohort check. A miss at the tag rolls to 16.1.0, or to
+  17.0.0 if it changes a default. The tag is gated by the bar, not by a date.
+- **The identity work is the core.** It is the substance of the agreement with the Loop maintainers:
+  identifier-first on every path, re-sends recognised, the format rules, and one record per identifier.
+  D-LOOP-ID's three rules and ID-Q1..ID-Q11 were decided on 2026-10-29; ID-FIRST-MATCH goes to the bar as
+  slices in the order 1, 2, 5, 3, 4, 6, 6a.
+- **The unique index on `identifier` is in 16.0.0**, behind `WRITE_IDENTIFIER_INDEX=try|require|off`
+  (default `try`). Under `try`, boot builds a partial unique index per collection online; on existing
+  duplicates it logs the counts per collection (never the values), shows them on the status page and runs
+  without the index, while the write rule (ID-Q5) still refuses a second record with a stored identifier.
+  `require` refuses to start without the index; `off` skips it. An operator-run tool reports duplicate groups
+  and resolves them by the P4 pick. The other settings named on 2026-10-29: `WRITE_RESEND`,
+  `WRITE_IDENTIFIER`, `WRITE_DELETED_EDIT`.
+- **Moved from 17.0.0 to 16.0.0, through the bar:** ID-UNIQUE-INDEX (Q5 below) and the parts of
+  ID-FIRST-MATCH that change outcomes (slices 3 to 6a). **Moved from 16.1.0 and 16.2.0 to 16.0.0, through
+  the bar:** `write(intent)` release 1 (#8874, WC-STEP-PATCH), ID-BATCH, the re-send switch, SPEC-ID-AMEND,
+  #8857 registration (off by default; it needs a rebase onto `dev`), ST-HARNESS, and ST-EVENT and ST-VIEWS
+  if they clear it.
+- **Multitenant items may ship dormant, labelled alpha behind `serve`, or not ship.** Their rows in §4.3 are
+  otherwise unchanged; Q12a's rule (the alpha label belongs to the multitenant bindings only) applies.
+- **Merged since this page's snapshot** (to `991b0654`): #8871, #8872, #8873, #8877 (BF-209 and BF-211; BF-210
+  withdrawn), #8878 (BF-212's split fix) and #8865 (one executable and the boot split, with ST-V3-DECOUPLE).
+  The pre-tag merge order left: #8855, the BF-72 and BF-161 fork branches, then the `master` protection fix and
+  #8824 (which still cannot meet `master`'s required `Run Tests (22, 4.4)`). The release's state is in
+  [contents.md](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
 The maintainer asked four questions on 2026-10-27:
 
@@ -58,6 +96,7 @@ state; §1–§6 keep the morning's reasoning, with their decided rows marked. 1
   columns, and ST-V3-DECOUPLE for `serve api`. Registration and v4 reads stay parallel work.
 - **Schedule: tag 16.0.0 as soon as its four pre-tag items are met; then one theme per minor.**
   The fastest route to a multi-mode preview is to release 16.0.0 and reopen `dev`, not to load it.
+  *(Superseded for the single-tenant items by the 16.0.0 scope of 2026-10-30, above.)*
   The revised themes are in §4.3 (16.1.0 one executable, `serve api` and registration off by
   default; 16.2.0 `write(intent)`, the commit event and identity on every path; 16.3.0 or later the multi preview;
   17.0.0 enforcement). Client identity and formal schemas run ahead of tenancy because they fix its
@@ -103,6 +142,8 @@ What still stands between `dev` and the tag, at `ca1652d6`:
   Everything single-tenant operators can opt into (registration, the storage interface, v4 reads,
   multi mode itself) is additive and fits minors. The changes that refuse or migrate existing data
   (a unique `identifier` index, validation on by default, bounding v1 queries) collect for 17.0.0.
+  *(2026-10-30: the unique index moved to 16.0.0 behind `WRITE_IDENTIFIER_INDEX`, default `try`, which
+  does not refuse existing data; see the 16.0.0 scope above.)*
 
 ## 2. Where things stand
 
@@ -217,6 +258,11 @@ So the morning's question (how much of the seam goes ahead of multitenancy into 
 by what merged: the part every single-tenant site exercises went in; the part only multi mode needs
 waits for the minors, where it can ship as alpha without holding the tag.
 
+*2026-10-30:* the "proposed release" column is superseded for the single-tenant items by the 16.0.0 scope
+(above): WC-STEP-PATCH, ID-BATCH, ST-EVENT, ST-VIEWS and ST-HARNESS target 16.0.0 through the entry bar,
+rolling to 16.1.0 (or 17.0.0 for a default change) on a miss. ST-V3-DECOUPLE and PLAT-SERVE merged with
+#8865 (`991b0654`). ST-PG stays with the multitenant rows.
+
 ## 4. How the tracks depend on each other
 
 ### 4.1 Which features shorten the path to multitenancy
@@ -260,6 +306,14 @@ separately, not for bundling features with tenancy.
 Each row ships when its checks pass and it has soaked; no dates are proposed. The version class is
 the loudest row's (R3).
 
+> **Superseded for the single-tenant items, 2026-10-30 (maintainer).** The single-tenant items in the
+> 16.1.0, 16.2.0 and 17.0.0 rows below target 16.0.0 through the entry bar, and a miss rolls to 16.1.0, or
+> to 17.0.0 if it changes a default (the 16.0.0 scope, above). ID-UNIQUE-INDEX and the outcome-changing parts
+> of ID-FIRST-MATCH moved from 17.0.0 to 16.0.0 through the bar. The multitenant rows (16.3.0 or later) are
+> unchanged, except that multitenant items may also ship in 16.0.0, dormant and labelled alpha behind `serve`.
+> `WRITE_VALIDATION`'s default and D8's v1 query bounds are not part of the 2026-10-30 decision. The table is
+> kept as proposed on 2026-10-27.
+
 | release | theme | contents | class |
 |---|---|---|---|
 | 16.0.0 | modernization, the write boundary, one read and write path | what is on `dev` `ca1652d6` (M1 included: #8859, #8856, #8861, #8863, #8870, #8864, #8866, #8868, #8869, #8858 merged 2026-10-27), plus BF-72, BF-161, #8865 (decided 2026-10-27 night; `single` supported, `serve` reserved for a multitenant Nightscout) and any release fix found in the quiet period | major (already) |
@@ -276,6 +330,8 @@ Two consequences:
   soak, not by the version number.
 - **17.0.0 is where identity is enforced, not where it starts.** Identifier matching starts in
   16.0.0 (#8859) and spreads in 16.2.0; the unique index that makes it a guarantee is the major.
+  *(2026-10-30: superseded. Identifier-first on every path and the unique index target 16.0.0 through the
+  bar; the index ships with the default `try`.)*
 
 **Milestones proposed by session -2e (2026-10-27); M3 and M4 adopted as plan items the same day (maintainer): `ST-V3-DECOUPLE` and `ST-VIEWS`.** A finer split of the storage and
 tenancy work, from its route census of `dev` `2dc0c1bc` (129 routes and 7 socket events):
@@ -312,8 +368,8 @@ M3 is `ST-V3-DECOUPLE` and M4 is `ST-VIEWS` in the [next-gen plan](next-gen-plat
 | Q2 | #8862 (one executable) in 16.0.0? | (a) yes, if merged with time on `dev` before the tag; (b) 16.1.0 | (a): the image's start changes form, and a major's release notes already ask operators to check their start; if the soak has started, (b) | the soak start |
 | Q3 | The seam slices in 16.0.0? | (a) hold to 16.1.0; (b) merge now | *Superseded by Q12 (decided 2026-10-27):* in, through B6's entry bar, merged to `dev` once its measured items pass (§2.1); otherwise 16.1.0 | tenancy start date by the time the soak takes |
 | Q4 | #8857 in 16.1.0, off by default? | keep `CONTROLLER_REGISTRATION` on/off, or a staged mode (D-REG-FLAG) | 16.1.0 with whichever flag the PR review settles | REG-S3 |
-| Q5 | Is ID-UNIQUE-INDEX (with duplicate cleaning) 17.0.0 material? | (a) yes; (b) add the index as opt-in in a minor, enforce in 17.0.0 | (b): an opt-in index lets operators measure their duplicates first | ID-UNIQUE-INDEX, the PostgreSQL key |
-| Q6 | Does multi mode ship in 16.x minors behind `TENANCY_MODE=multi`? *(Since 2026-10-27 the gate is `nightscout serve`, not a setting.)* | (a) yes, labelled preview; (b) wait for 17.0.0 | (a), §4.3 | TEN-LAB's release |
+| Q5 | Is ID-UNIQUE-INDEX (with duplicate cleaning) 17.0.0 material? | (a) yes; (b) add the index as opt-in in a minor, enforce in 17.0.0 | (b): an opt-in index lets operators measure their duplicates first. *Decided 2026-10-30 (maintainer), neither: in 16.0.0 through the entry bar, behind `WRITE_IDENTIFIER_INDEX=try\|require\|off`, default `try` (built where no duplicates block it; counts logged and shown otherwise), with an operator-run report and clean tool* | ID-UNIQUE-INDEX, the PostgreSQL key |
+| Q6 | Does multi mode ship in 16.x minors behind `TENANCY_MODE=multi`? *(Since 2026-10-27 the gate is `nightscout serve`, not a setting. 2026-10-30: multitenant items may also ship in 16.0.0, dormant and labelled alpha behind `serve`, or not ship.)* | (a) yes, labelled preview; (b) wait for 17.0.0 | (a), §4.3 | TEN-LAB's release |
 | Q7 | How is v4's stability declared? | (a) per path in the capability document; (b) a `/api/v4-unstable` prefix; (c) no marker | (a): the capability document is already the place a client reads what the hub serves | REG-PROPOSE |
 | Q8 | `WRITE_VALIDATION` default | (a) stays `off`; (b) `log` in a minor; (c) `reject` in 17.0.0 | (b) then (c), after #8841's open items (contents, item 7) | 17.0.0 contents |
 | Q9 | D-EVENT: commit event per call or per driver operation | per the plan's decision card | *Deferred, maintainer 2026-10-27:* no shape adopted; the event stays counts-only and internal; reopened when WC-STEP-PATCH's WriteResult.items[], a named first subscriber, the BF-164 websocket cursor re-measure and a count of replica-set sites are in hand. Research continues as input: a post-write variant, with a capped pre-read as the comparison (session -2e) | ST-EVENT, the change feed |
@@ -506,6 +562,8 @@ release soaks them; and how does that weigh against releasing as soon as the can
   become public surface, and the quiet period moves out. The prerelease route in B6
   (`16.1.0-alpha.1` from a branch, run in TEN-LAB) gives the same exposure to the people who would
   run it.
+- **Outcome (2026-10-30).** #8865 merged with ST-V3-DECOUPLE (`991b0654`); `serve` still refuses every role.
+  The 16.0.0 scope allows multitenant items to ship dormant, labelled alpha behind `serve`, or not ship.
 
 ## 7. Sources
 
