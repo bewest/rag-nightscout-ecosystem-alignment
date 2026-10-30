@@ -64,3 +64,69 @@ jobs:
 
       - name: OpenAPI lint (make openapi-lint)
         run: make openapi-lint
+
+  # After the checks above pass on a push to main, build the site, run
+  # make site-check, append one commit to gh-pages and push it (the same steps
+  # as make site-publish locally; tools/site/README.md). Needs the repository
+  # secret SITE_PSEUDONYM_KEY, the same key as the maintainer's
+  # ~/.config/nightscout-alignment/pseudonym.key, so participant pseudonyms on
+  # the site stay stable. Without the secret the job skips the publish.
+  site:
+    name: Site (build, check, publish to gh-pages)
+    needs: [python-syntax, specs-and-fixtures]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    # One publish at a time; a later push waits instead of cancelling a
+    # publish part-way.
+    concurrency:
+      group: site-publish
+      cancel-in-progress: false
+    steps:
+      # Full history, blobs on demand: the living-page check diffs each page's
+      # source_commit against HEAD.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          filter: blob:none
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Check the pseudonym key secret is set
+        id: key
+        env:
+          SITE_PSEUDONYM_KEY: ${{ secrets.SITE_PSEUDONYM_KEY }}
+        run: |
+          if [ -n "$SITE_PSEUDONYM_KEY" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::SITE_PSEUDONYM_KEY is not set; the site is not published"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build, check and commit to gh-pages (make site-publish)
+        if: steps.key.outputs.present == 'true'
+        env:
+          SITE_PSEUDONYM_KEY: ${{ secrets.SITE_PSEUDONYM_KEY }}
+          SITE_PAGES_WORKTREE: ${{ runner.temp }}/gh-pages
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          make site-publish
+
+      # A plain fast-forward of the gh-pages that make site-publish fetched; if
+      # a local publish landed in between, the push is rejected, not forced.
+      - name: Push gh-pages
+        if: steps.key.outputs.present == 'true'
+        run: |
+          WT="$RUNNER_TEMP/gh-pages"
+          if git -C "$WT" rev-parse -q --verify refs/heads/gh-pages >/dev/null \
+             && ! git -C "$WT" diff --quiet origin/gh-pages gh-pages 2>/dev/null; then
+            git -C "$WT" push origin gh-pages:gh-pages
+          else
+            echo "No new build to push."
+          fi
