@@ -18,15 +18,15 @@ It names each piece of work, what it needs first, where it goes in the code, and
 | | on dev `e1f7ac41` (ships in 16.0.0) | in review (draft PRs) | not started |
 |---|---|---|---|
 | Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1) | ST-V3-DECOUPLE, in #8865; WC-STEP-PATCH, draft #8874; ST-VIEWS, draft #8875 (`a0470a72`) | `write(intent)` (in progress), ST-EVENT (decision deferred, research continuing), computed views, backend-selectable harness, PostgreSQL |
-| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | #8877 (BF-209, BF-210: the socket's similar match follows client identity, in the 16.0.0 merge list) | SPEC-ID-AMEND (next), identifier-first on every path, unique index |
+| Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | #8877 (BF-209: the socket's similar match follows client identity; BF-211: a delete by query flushes only its own cache; in the 16.0.0 merge list; BF-210 withdrawn) | SPEC-ID-AMEND (next), identifier-first on every path, unique index |
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | #8857: S0, S1, S2, S5, off by default (`f7a43fed`, 78 behind dev, conflicts) | typed writes (S3), projected views (S4) |
 | Tenancy | nothing | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`fcd305ae`, base dev, open, in the 16.0.0 merge list; #8862 closed as superseded) | tenant configuration, resolution, tenant-scoped auth, multitenant lab |
 
 ## 1a. Priority and merge order (2026-10-29)
 
 Identity moved up on 2026-10-29, because most of the week's defects came from records matched by
-different rules on different paths: BF-121's socket gap, BF-209, BF-210, the chart split's shared
-identity. D-LOOP-ID's three rules are now decided. Identity work therefore starts as soon as 16.0.0 is
+different rules on different paths: BF-121's socket gap, BF-209, and the chart split's shared
+identity (BF-212, where a re-send can overwrite another record's amount). D-LOOP-ID's three rules are now decided. Identity work therefore starts as soon as 16.0.0 is
 tagged, beside registration, instead of after `write(intent)`.
 
 **Before the 16.0.0 tag**, in this order:
@@ -57,9 +57,10 @@ rules that change outcomes may land there instead of 17.0.0.
 | 10 | #8875 ST-VIEWS, once wired | 16.2.0 or later | alarms are safety-relevant | wiring is the maintainer's call; alarm cohort checks (execution plan §7b) |
 | 11 | #8810, AndroidAPS iOS push | 16.1.0 | device tokens are readable by read tokens | its four review items, with the author |
 
-Research that informs the order, without being in it: the cache-value and over-flush lab, the
-since-watermark arm of the D-EVENT bench, and the chart-split identity finding. The maintainer's
-direction on the split: a lossy edit of a controller-claimed record needs a manual confirmation.
+Research that informs the order, without being in it: the cache-value lab (BF-211), the
+since-watermark arm of the D-EVENT bench, and the extended write-contract matrix (QC-MATRIX-IDF), which
+found BF-212. The maintainer's direction on BF-212: a lossy edit of a controller-claimed record needs a
+manual confirmation. Two records already sharing an identifier is a question for the ID-FIRST-MATCH design.
 
 ## 2. Why the tracks meet at the write step
 
