@@ -325,17 +325,19 @@ Each rule says the version it holds from; "dev" means not yet released.
 
 ## 6. Open decisions
 
-Each is a row in [the queue](../../queue/QUEUE.md); only `ID-ABSENT-DECISION` is decided in part.
+Each is a row in [the queue](../../queue/QUEUE.md). All six are decided (maintainer, 2026-10-27 and
+2026-10-29, D-LOOP-ID); none of the 2026-10-29 rules is built yet. The rules are stated in the
+[identity specification](../30-design/platform/spec/identity.md) §3–§5.
 
-| item | question |
+| item | decision |
 |---|---|
-| `ID-FORMAT-DECISION` | what an `identifier` may contain (opaque string, limits; UUID not required) |
-| `ID-CLIENT-OID-DECISION` | may a client set `_id` over API v1 (API v3 refuses one on `dev`, BF-170; `identifier` wins when the two name different records, decided 2026-10-18) |
-| `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change |
-| `ID-ABSENT-DECISION` | a write with no `identifier`: decided 2026-10-18 (maintainer): `identifier` becomes mandatory at a future version boundary and for registered controller instances, and legacy paths keep the time-key fallback until then; the version and the detection of registered instances are open |
-| `ID-DELETE-REUSE-DECISION` | after a delete, a re-send of the same `identifier`: resurrect, refuse, or create new |
-| `ID-SCOPE-DECISION` | is `identifier` unique per collection, across collections, per tenant |
-| `ID-SIMPLE-MATCH` | the one server change proposed: v1 entries and devicestatus match on `identifier` |
+| `ID-FORMAT-DECISION` | 1 to 256 URL-safe characters, a UUID recommended, placeholders (`invalid`, `undefined`, `null`, `NaN`) refused (2026-10-29). Not enforced; `ID-VALIDATE` ships with or before `ID-FIRST-MATCH` |
+| `ID-CLIENT-OID-DECISION` | a client may still send an ObjectId `_id` over API v1 (legacy); going forward the server sets `_id` and the client sets `identifier` (2026-10-29). API v3 refuses a client `_id` (BF-170); `identifier` wins when the two name different records (2026-10-18) |
+| `ID-V3-IMMUTABLE-DECISION` | merge on match stays the default for a re-send with changed fields; API v3 keeps refusing a changed `date`, `device` or `eventType`; `PUT` replaces; a site setting plus per-client quirks may opt a client into keep-first or refuse (`ID-RESEND-SWITCH`); a default changes only in a major (2026-10-29) |
+| `ID-ABSENT-DECISION` | `identifier` is SHOULD for legacy writers, with the time-key fallback kept, and MUST for registered controller instances (2026-10-27). New natural keys for re-sends without `identifier` are `ID-NATURAL-KEY` |
+| `ID-DELETE-REUSE-DECISION` | a re-send of a deleted record is acknowledged and the record stays deleted, on every path (2026-10-27; every path 2026-10-29). Today's code differs per path (§2.7 and the 2026-10-18 lab) |
+| `ID-SCOPE-DECISION` | unique per collection, with the tenant in the key under multi; values globally unique by convention (2026-10-27) |
+| `ID-SIMPLE-MATCH` | v1 entries and devicestatus match on `identifier`: on `dev` since #8859 |
 
 Related: [identity specification](../30-design/platform/spec/identity.md) (the L0 rules this page measures today's behaviour against),
 [identifier conventions](../30-design/platform/identifier-conventions.md) (what each record's `identifier` should be, per record kind and source),

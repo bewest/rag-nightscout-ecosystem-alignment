@@ -357,8 +357,10 @@ vocabulary says what each one has to get right.
 - **State and intent** ([§8](state-intent.md#8-open)): a treatment a controller downloads and acts
   on has none of a command's record, expiry or outcome (UCA-SYNC-DL-001), and an edit after the
   controller acted changes the record and not what was enacted (UCA-SYNC-DL-003).
-- **Identity** ([§5](identity.md#5-open-decisions)): §3 stores a re-send of a deleted record
-  again, which can bring back a dose the person deleted (UCA-SYNC-STORE-003); two distinct doses
+- **Identity** ([§5](identity.md#5-open-decisions)): today's code stores a re-send of a deleted
+  record again or brings it back, which can bring back a dose the person deleted
+  (UCA-SYNC-STORE-003); identity §3's rule, acknowledged and kept deleted on every path, is not
+  built; two distinct doses
   with one `created_at` and `eventType` and no identifier are merged (UCA-SYNC-STORE-007).
 - **Authority** ([§9](authority.md#9-open)): an owner's move of a command sink is not recorded
   (UCA-ROUTE-007); blocking or retiring a product can pass its shared-channel command sink to

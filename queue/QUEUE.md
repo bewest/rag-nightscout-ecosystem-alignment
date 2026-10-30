@@ -31,29 +31,29 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 324 |
+| items | 332 |
 | runnable gates | 386 |
-| explicit `no-gate:` markers | 354 |
+| explicit `no-gate:` markers | 362 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 354 of the 740 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 362 of the 748 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 72 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 76 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, BFQ-212, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 6 | BFQ-178, T30-SCHEMA-CONFIG, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 5 | WC-STEP-PATCH, BFQ-72, BFQ-161, PLAT-ENTRY, PLAT-SERVE |
+| `in-flight-upstream` | 8 | WC-STEP-PATCH, BFQ-72, BFQ-161, BFQ-209, BFQ-211, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, PLAT-SERVE |
 | `merged-upstream` | 63 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 11 | T30-RESEARCH, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-V3-IMMUTABLE-DECISION, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 41 | P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
 | `unsettled` | 1 | A7A-7 |
-| `closed` | 4 | BFQ-71, BFQ-41, BFQ-175, BFQ-141 |
-| `answered` | 7 | RT-D3, RT-VERSION, RT-PROPAGATION, ARCH-8854-FAILED, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION |
+| `closed` | 5 | BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
+| `answered` | 10 | RT-D3, RT-VERSION, RT-PROPAGATION, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION |
 
 ### Reaches an operator on today's release
 
@@ -143,6 +143,10 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-206** BF-206 - a device IOB without a timestamp is dated by the server clock
 - **BFQ-207** BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended
 - **BFQ-208** BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed
+- **BFQ-209** BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even from different clients
+- **BFQ-210** BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect)
+- **BFQ-211** BF-211 - a delete by query in one collection empties all three in-memory caches
+- **BFQ-212** BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice
 - **BFQ-193** BF-193 - the realtime socket and other write paths log every record written through them
 - **BFQ-194** BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL
 - **BFQ-195** BF-195 - a stale profile is pushed over the socket after a profile re-send
@@ -2693,7 +2697,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 148 items
+`parcel: register-open` &mdash; 152 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2827,6 +2831,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-206` | BF-206 - a device IOB without a timestamp is dated by the server clock | `merged-upstream` | `bf/16.0.0-views-data` | patch | 2 run |
 | `BFQ-207` | BF-207 - sensor age keeps the earliest of a same-hour burst of Sensor Starts; the newest is intended | `merged-upstream` | `bf/16.0.0-views-data` | patch | 2 run |
 | `BFQ-208` | BF-208 - an API v1 delete by a non-hex _id can answer 200 and announce a removal while nothing is removed | `not-started` | `-` | patch | 1 run |
+| `BFQ-209` | BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even from different clients | `in-flight-upstream` | `bf/16.0.0-socket-similar-match` | patch | 0 run + 1 no-gate |
+| `BFQ-210` | BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect) | `closed` | `-` | n/a | 0 run + 1 no-gate |
+| `BFQ-211` | BF-211 - a delete by query in one collection empties all three in-memory caches | `in-flight-upstream` | `bf/16.0.0-socket-similar-match` | patch | 0 run + 1 no-gate |
+| `BFQ-212` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `merged-upstream` | `bf/16.0.0-tt-units` | minor | 2 run |
@@ -6986,6 +6994,128 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** Filed 2026-10-27 by session -4f from the matrix forms added for WC-STEP- PATCH's coverage gaps (lab/matrix-forms-v2 de721074b).
 
+### `BFQ-209` &mdash; BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even from different clients
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-socket-similar-match` |
+| base | `official/dev@e1f7ac41` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-209` |
+
+**Blast radius.** lib/server/websocket.js processSingleDbAdd, the similar match only (identifier decides when present); the exact match is unchanged. Carries the socket dedupe gate (d6b0ef47).
+
+**What an operator sees.** When two apps, or the website's chart, send the same kind of treatment with the same amount within two seconds of each other, Nightscout can keep only one of them, so a carb or insulin entry is missing from what it shows and passes to followers. This affects uploads over the live connection only (for example AndroidAPS 3.4.2.x's older Nightscout client). Not yet in a released version.
+
+**Why `patch`.** A record that was swallowed is stored; in the 16.0.0 merge list. One matrix cell moves on purpose (treatments x v3 x ws, now 2 records, like v1 and in- process).
+
+**Gates.**
+
+- **NO GATE** &mdash; The behaviour gate is the socket dedupe gate on the branch (test/ws-dedupe, 58 tests, each rule's ablation red alone), run in the crm worktree; not wired here because it needs the branch's node_modules. Measured 2026-10-29: npm test 4759 to 4853/0/3; the exact match's selector identical over 559,872 inputs.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+
+**Notes.** 2026-10-29: draft PR #8877 opened by the maintainer (GitHub head ebed6323, which still carries BF-210's withdrawn rule and names it in the title). Local bf/16.0.0-socket-similar-match ac5d77fb adds the BF-210 withdrawal (567f0612) and BF-211's fix (ac5d77fb, from 13107d1e); not pushed. In the 16.0.0 merge list (maintainer, 2026-10-29).
+
+### `BFQ-210` &mdash; BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect)
+
+| | |
+|---|---|
+| state (claimed) | `closed` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@e1f7ac41` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-210` |
+
+**Blast radius.** None. lib/server/websocket.js processSingleDbAdd's similar match keeps today's amount rule.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** closed as intended behaviour; nothing ships
+
+**Gates.**
+
+- **NO GATE** &mdash; Closed as not a defect (maintainer, 2026-10-29). The socket dedupe gate (test/ws-dedupe on bf/16.0.0-socket-similar-match) pins today's amount rule, so a change to it shows there.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Filed and closed 2026-10-29. The maintainer: absorbing a nearby upload of the same event type whose amounts match is intended; the fix made a carbs-only re- send next to a stored carbs-and-insulin record a second record, which double- counts carbs on board. Withdrawn from #8877 before merge (567f0612, local). Meal grouping moves to DISPLAY-MEAL-GROUP.
+
+### `BFQ-211` &mdash; BF-211 - a delete by query in one collection empties all three in-memory caches
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-socket-similar-match` |
+| base | `official/dev@e1f7ac41` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-211` |
+
+**Blast radius.** lib/server/cache.js dataChanged: a remove with no ids flushes only the collection deleted from, through the existing invalidate(type).
+
+**What an operator sees.** Deleting several records at once made the site re-read days of data from its database on the next load. That costs data transfer, which matters for sites on MongoDB Atlas's free tier. Nothing shown changes. Not yet in a released version.
+
+**Why `patch`.** fewer cache reloads; no reply or stored record changes
+
+**Gates.**
+
+- **NO GATE** &mdash; The fix carries 3 tests that fail on dev (13107d1e on bf/16.0.0-cache-flush-scope; npm test 4759 to 4762/0/3), run in the crm worktree. The cache-value lab (tools/lab/cache-value) measures the reload: 890 documents and 716,202 bytes on dev, 32 documents and 10,289 bytes with the fix.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-29: in the 16.0.0 merge list (maintainer), added to #8877. Fix 13107d1e on bf/16.0.0-cache-flush-scope, cherry-picked onto local bf/16.0.0-socket-similar-match as ac5d77fb; not pushed (GitHub head of #8877 is ebed6323).
+
+### `BFQ-212` &mdash; BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@e1f7ac41` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-212` |
+
+**Blast radius.** lib/client/treatmenttime.js splitRecord and its callers in lib/client/renderer.js (Move insulin, Move carbs). The fix direction is a manual confirmation before a lossy edit of a record that carries a client identity (maintainer, 2026-10-29); the shared-identifier overwrite on v1 and in-process also concerns ID-FIRST-MATCH.
+
+**What an operator sees.** Moving the insulin or the carbs of a treatment on the Nightscout chart can leave two records labelled as the same entry. An app that later sends that entry again can overwrite one record's amount with the other's, or the moved insulin can be shown twice, which makes the insulin on board (IOB) shown on the chart too high. Not fixed in any released version.
+
+**Why `patch`.** a confirmation step before a lossy edit; no API or stored-record shape changes
+
+**Gates.**
+
+- **NO GATE** &mdash; Reproduced by a local probe (crm probe/split-ident-2026-10-29 95570d41, synthetic data, with a control) and measured by session -4f's matrix extension (QC-MATRIX-IDF, pin tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json). A gate once a fix exists: the probe's shared-identity checks green and its control red.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
+
+**Notes.** Filed 2026-10-29 by the records accuracy pass from the chart-drag split probe on dev e1f7ac41; the overwrite of a shared-identifier record measured the same day by session -4f (QC-MATRIX-IDF). Not run on v15.0.9; splitRecord there is the same code (read).
+
 ### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 
 | | |
@@ -7697,7 +7827,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 48 items
+`parcel: tenancy` &mdash; 51 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -7735,18 +7865,21 @@ alarm-readiness items, and the seam branch refresh.
 | `WC-R2-QH` | Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-match (spec Q1) | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `WC-R1-QG` | Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `WC-R1-QI` | Retire websocket.js idMatch when the socket update slice moves into the step | `not-started` | `feat/write-intent` | n/a | 0 run + 1 no-gate |
-| `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule | `blocked` | `-` | minor | 0 run + 1 no-gate |
+| `ID-FIRST-MATCH` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar) | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch | `blocked` | `-` | minor | 0 run + 1 no-gate |
-| `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not required) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
-| `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170) | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `ID-FORMAT-DECISION` | Decide: the client identifier's format (1 to 256 URL-safe characters; UUID recommended; placeholders refused) | `answered` | `-` | n/a | 0 run + 1 no-gate |
+| `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170) | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier? | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-DELETE-REUSE-DECISION` | Decide: after a delete, what does a re-send of the same identifier (or _id) do - resurrect, refuse, or create new? | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-SCOPE-DECISION` | Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi? | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and source, so apps converge | `in-progress` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
-| `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean absent | `blocked` | `-` | minor | 0 run + 1 no-gate |
+| `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe characters, placeholders refused); empty and null mean absent | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window | `blocked` | `-` | minor | 0 run + 1 no-gate |
-| `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | `-` | n/a | 0 run + 1 no-gate |
+| `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates | `blocked` | `-` | minor | 0 run + 1 no-gate |
+| `ID-NATURAL-KEY` | Natural keys for re-sends that carry no identifier: device status and profile, with a corpus check of what would merge | `not-started` | `-` | major | 0 run + 1 no-gate |
+| `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or refuse for a re-send with changed fields | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `DISPLAY-MEAL-GROUP` | Show a bolus and its carbs as one meal in the display layer; storage de-duplication collapses only true re-sends | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `crm-seam` | n/a | 0 run + 2 no-gate |
 | `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `merged-upstream` | `feat/storage-filter` | patch | 1 run + 1 no-gate |
@@ -8431,7 +8564,7 @@ alarm-readiness items, and the seam branch refresh.
   - No write rule (merge-patch, BF-194 units, write-validation, validated-update, srv-dates, object-id-forms, the treatment fallback key) gains a new (rule, file) pair or a larger count outside lib/storage/write-intent.js, against write-rule-copies.baseline.json (47 pairs at dev db3b9e4e; 45 on feat/write-intent after slice 1). Holds the maintainer's rule of 2026-10-27: a new write rule goes into the step, not a route.
 - `[static]` `bash tools/queue/gates/write-rule-copies-control.sh`
   - Control for the gate above: an exported copy of official/dev passes, and the same copy with one planted call to the BF-194 helper in lib/server/food.js fails naming only that pair.
-- **NO GATE** &mdash; Not started; its blocker ARCH-8854 is merged (dev c08cbe03). Its gate is spec G1: tools/qc/write-contract-matrix.js run through every path with every cell equal to the pinned dev matrix except BF-165's two cells (treatments v1/inproc resend-identity gain _id); control: each of the spec's six one-line ablations turns its predicted cells red.
+- **NO GATE** &mdash; G1 is run by hand, not wired here (last result: 0 cells against dev on the push-ready head e8224807, 2026-10-29). Its gate is spec G1: tools/qc/write-contract-matrix.js run through every path with every cell equal to the pinned dev matrix except BF-165's two cells (treatments v1/inproc resend-identity gain _id); control: each of the spec's six one-line ablations turns its predicted cells red.
 
 **Evidence.**
 
@@ -8439,7 +8572,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/qc/write-contract-matrix.js`
 
-**Notes.** 2026-10-28: draft PR #8874 to dev opened by the maintainer (head 0671b430); not for 16.0.0. Slices 4 and 6 still to come. 2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent test files (169 passing), G2 and the copies gate re-checked by -4f, and G1 re-run by -4f against the v2 pin): local feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries), 6115c755 (devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1 on the 360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin (456 cells): 2 cells differ in the racy cache field only, the same two that vary between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells, suites 608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule copies 37 (baseline 47). G2 enrols 7 entries. A new test file runs the db3b9e4e modules and the step side by side over a recording driver (calls, events, emissions, log lines, replies), the only check on preBolus, UUID_HANDLING, the profile permission and log lines. New questions Q-J..Q-P (design note). Slices left: 4 (v3) and 6 (socket treatments, devicestatus, profile adds and updates), held for the maintainer's review. 2026-10-27: G1's pin is now dev- db3b9e4e-v2.json (456 cells: the 360 of the first pin, identical, plus update- twin, idread-fail, harddelete-custom and harddelete-num; b6c19bc5a). Slices 1-3 (a0e7fcac) equal it in every cell, setting aside the racy cache field. The activity save-twin break the first pin could not see turns activity update- twin red on both v1 and in-process. Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
+**Notes.** 2026-10-29: draft PR #8874 (GitHub head still feat/write-intent 0671b430). Push-ready head: local feat/write-intent-release e8224807, 17 commits on dev e1f7ac41, slices 1-6. npm test 5106/0/3 against dev 4759/0/3; the write- contract matrix differs from dev in 0 cells; the revert was rehearsed. The release-2 questions are Q-A..Q-Y in docs/30-design/platform/wc-step-design- note-2026-10-27.md (the queue items WC-R2-QA..WC-R2-QH carry the first of them). 2026-10-28: draft PR #8874 to dev opened by the maintainer (head 0671b430); not for 16.0.0. Slices 4 and 6 still to come. 2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent test files (169 passing), G2 and the copies gate re-checked by -4f, and G1 re-run by -4f against the v2 pin): local feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries), 6115c755 (devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1 on the 360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin (456 cells): 2 cells differ in the racy cache field only, the same two that vary between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells, suites 608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule copies 37 (baseline 47). G2 enrols 7 entries. A new test file runs the db3b9e4e modules and the step side by side over a recording driver (calls, events, emissions, log lines, replies), the only check on preBolus, UUID_HANDLING, the profile permission and log lines. New questions Q-J..Q-P (design note). Slices left: 4 (v3) and 6 (socket treatments, devicestatus, profile adds and updates), held for the maintainer's review. 2026-10-27: G1's pin is now dev-db3b9e4e-v2.json (456 cells: the 360 of the first pin, identical, plus update-twin, idread-fail, harddelete-custom and harddelete- num; b6c19bc5a). Slices 1-3 (a0e7fcac) equal it in every cell, setting aside the racy cache field. The activity save-twin break the first pin could not see turns activity update-twin red on both v1 and in-process. Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write- intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write- intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write- intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
 
 ### `WC-R2-QA` &mdash; Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families
 
@@ -8707,7 +8840,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** Design note question Q-I. Inside release 1, slice 6.
 
-### `ID-FIRST-MATCH` &mdash; Release 2 (minor): identifier-first matching for entries, devicestatus and socket dbAdd, with the Q1 adoption rule
+### `ID-FIRST-MATCH` &mdash; Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar)
 
 | | |
 |---|---|
@@ -8718,7 +8851,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `minor` |
 | review | maintainer, plus a second human - re-send behaviour clients see changes |
-| blocks on | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH` |
+| blocks on | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH`, `ID-VALIDATE` |
 
 **Blast radius.** The write step's match rule, applied on: lib/server/entries.js upsertQueryFor (today sysTime+type unless identifier is present after UUID normalisation); lib/server/devicestatus.js create (insertMany becomes an upsert on identifier when one is present); lib/server/websocket.js dbAdd; lib/server/treatments.js upsertQueryFor gains the adoption rule.
 
@@ -8736,7 +8869,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier. ID-DUP-MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the reply names syncIdentifier as Loop's treatment identity), matching on it alone would fold those pairs into one record. The reply draft does not raise this yet. Re- shaped 2026-10-17: the v1 entries and devicestatus identifier match ships first, on dev, as the release-train item ID-SIMPLE-MATCH (maintainer: after 15.0.9, after cut 1's rebase). This item keeps the socket dbAdd match and the Q1 adoption rule, and absorbs ID-SIMPLE-MATCH's rule into the write step once WC-STEP-PATCH exists. The rewritten Loop reply lists Q1 under "later, only if needed".
+**Notes.** 2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): the rules this item builds are decided, and it is eligible for 16.0.0 through the entry bar (plan §1a), with ID-BATCH-RESULTS and ID-RESEND-SWITCH. Scope is every collection and path. (1) Merge on match stays the default for a re-send with changed fields; v3 keeps refusing a changed date, device or eventType; PUT replaces (ID-V3-IMMUTABLE-DECISION). (2) Merge on match keeps fields the re-send leaves out (RFC 7386), measured per path first: the census reads replace on several paths, not yet measured, and every path that changes is listed cell by cell. (3) A re-send after delete is acknowledged and stays deleted on every path, with the cell-by-cell impact documented for revert (ID-DELETE-REUSE-DECISION). (4) Socket dbUpdate, dbUpdateUnset and dbRemove accept identifier when no _id is given, and activity creates match on identifier; both are additive and conditional on the extended matrix showing every existing form unchanged. (5) The identifier format is enforced with or before this item (ID-VALIDATE, added to blocks_on), because two clients sending the same placeholder would be merged. (6) Natural keys for re-sends without identifier are a separate item, ID-NATURAL-KEY. A default changes only in a major: 16.0.0 through the entry bar, otherwise 17.0.0. Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier. ID-DUP- MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the reply names syncIdentifier as Loop's treatment identity), matching on it alone would fold those pairs into one record. The reply draft does not raise this yet. Re-shaped 2026-10-17: the v1 entries and devicestatus identifier match ships first, on dev, as the release-train item ID-SIMPLE- MATCH (maintainer: after 15.0.9, after cut 1's rebase). This item keeps the socket dbAdd match and the Q1 adoption rule, and absorbs ID-SIMPLE-MATCH's rule into the write step once WC-STEP-PATCH exists. The rewritten Loop reply lists Q1 under "later, only if needed".
 
 ### `ID-BATCH-RESULTS` &mdash; Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch
 
@@ -8766,13 +8899,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 
-**Notes.** U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).
+**Notes.** 2026-10-29 (maintainer): eligible for 16.0.0 through the entry bar (next-gen plan §1a and §4.2, where it is named ID-BATCH), with ID-FIRST-MATCH and ID- RESEND-SWITCH. The per-item reply shape (stored, refused, failed) for the socket, v1 batch and v3 is settled here (ARCH-8854-FAILED's 2026-10-27 decision points to it). U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).
 
-### `ID-FORMAT-DECISION` &mdash; Decide: the client identifier's format (opaque string with limits; UUID not required)
+### `ID-FORMAT-DECISION` &mdash; Decide: the client identifier's format (1 to 256 URL-safe characters; UUID recommended; placeholders refused)
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@fade2299` |
@@ -8797,13 +8930,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 - `docs/60-research/tenancy/identifier-format-2026-10-17.md`
 
-**Notes.** Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[_eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it. Maintainer, 2026-10-18 (decided): identifier is opaque to the server and follows one rule in every collection, plus a published conventions table per record kind so apps converge on one value (docs/30-design/platform/identifier- conventions.md, ID-CONVENTIONS). URL syntax: <scheme>://<segment>/<segment>. Things that exist outside the app (sensor readings, pump events) use a source scheme with the manufacturer as the scheme and the model as the first segment (dexcom://g7/<serial>/<offset>, dexcom://g6/<transmitterId>/<time>, abbott://libre3/<serial>/<lifeCount>); things created in an app (manual carbs, boluses, overrides, temporary targets) use an app scheme (loop://carbs/<uuid>). A controller may use one format of its own across collections (loop://carbs/<uuid>, loop://tempbasal/<syncId>, loop://override/<uuid>, loop://devicestatus/<uuid>): unique per collection, within the limits, stable across re-sends; a registered instance declares it. The kind segment separates the measured Loop Suspend Pump + Temp Basal pairs that share one syncIdentifier (identifier-duplicates §2.2: 9 of the 13 shared values). The '/' question, measured 2026-10-18 (identifier-format §3.4, url- identifier-probes.js; 15.0.8 92d08342 and dev fade2299, mongo:7 7.0.43, no proxy, same result at both): a URL-form identifier is stored exactly; percent- encoded as one path segment (%3A, %2F) it works on v3 GET, PATCH, PUT, PUT- create and DELETE; raw '/' in the path is 404; v3 ?identifier$eq= and v1 find[identifier]= find it; v1 DELETE by it deletes nothing (UUID_RE). So C3 becomes [A-Za-z0-9._~:/-] and clients must percent-encode the identifier in v3 paths. Still open: the 256 limit and the rest of C1-C8 as written in the conventions page §2, reverse proxies and %2F (not measured), the UUIDv5 client namespace, and whether the client developers accept the templates.
+**Notes.** Decided 2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2), without waiting for Loop's answers and revisable when they come: identifier is 1 to 256 URL-safe characters, a UUID is recommended, and placeholders (invalid, undefined, null, NaN) are refused. Not enforced anywhere yet. Under identifier-first, two clients that send the same placeholder would be merged into one record, so the enforcement (ID-VALIDATE) ships with or before ID- FIRST-MATCH. Recorded in the identity spec §4 and the Loop dialogue page's conversation table. Today: v1 recognises only UUID-shaped values as identifiers in by-id routes (UUID_RE, case-insensitive, lib/server/query.js:12 at dev fade2299), while stored identifiers are compared exactly, so Loop's upper-case override UUIDs match only themselves. API v3 computes uuid.v5(device_date[_eventType], "NightscoutRocks!") when none is sent (lib/api3/shared/operationTools.js:6, 106). A random UUID cannot serve the phone-and-watch case, where both devices must derive the same value; AndroidAPS keys on pump event ids. Not required: changing an existing client's identifiers, which would break matching against records it already stored. 2026-10-17: the rewritten Loop reply states only "a string, UUID recommended" and lists the limit, character set and case under "later, only if needed"; decide when a client or ID-VALIDATE needs it. Maintainer, 2026-10-18 (decided): identifier is opaque to the server and follows one rule in every collection, plus a published conventions table per record kind so apps converge on one value (docs/30-design/platform/identifier-conventions.md, ID- CONVENTIONS). URL syntax: <scheme>://<segment>/<segment>. Things that exist outside the app (sensor readings, pump events) use a source scheme with the manufacturer as the scheme and the model as the first segment (dexcom://g7/<serial>/<offset>, dexcom://g6/<transmitterId>/<time>, abbott://libre3/<serial>/<lifeCount>); things created in an app (manual carbs, boluses, overrides, temporary targets) use an app scheme (loop://carbs/<uuid>). A controller may use one format of its own across collections (loop://carbs/<uuid>, loop://tempbasal/<syncId>, loop://override/<uuid>, loop://devicestatus/<uuid>): unique per collection, within the limits, stable across re-sends; a registered instance declares it. The kind segment separates the measured Loop Suspend Pump + Temp Basal pairs that share one syncIdentifier (identifier-duplicates §2.2: 9 of the 13 shared values). The '/' question, measured 2026-10-18 (identifier-format §3.4, url- identifier-probes.js; 15.0.8 92d08342 and dev fade2299, mongo:7 7.0.43, no proxy, same result at both): a URL-form identifier is stored exactly; percent- encoded as one path segment (%3A, %2F) it works on v3 GET, PATCH, PUT, PUT- create and DELETE; raw '/' in the path is 404; v3 ?identifier$eq= and v1 find[identifier]= find it; v1 DELETE by it deletes nothing (UUID_RE). So C3 becomes [A-Za-z0-9._~:/-] and clients must percent-encode the identifier in v3 paths. Still open: the 256 limit and the rest of C1-C8 as written in the conventions page §2, reverse proxies and %2F (not measured), the UUIDv5 client namespace, and whether the client developers accept the templates.
 
 ### `ID-CLIENT-OID-DECISION` &mdash; Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170)
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@fade2299` |
@@ -8827,7 +8960,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** 2026-10-26: identity rule I2 is amended (docs/30-design/platform/spec/identity.md): on API v3 a client-supplied _id is refused with 400, with no quirk (maintainer, 2026-10-25, BF-170, merged in #8845); on API v1 the I9 quirk stays. The tie-break (2) was decided on 2026-10-18 (identifier decides). What is left is question (1) for API v1 only: whether the Loop reply's simple contract recommends a client-created ObjectId as _id over v1. That half stays with ID-SIMPLE-MATCH and waits on Loop's answer (LOOP-ID-REPLY). 2026-10-26, earlier: the API v3 half is settled in dev: #8845 (900abf7a) refuses any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170). API v1 keeps its legacy _id handling as a version- scoped quirk (#8845's body). The v1 question is unchanged. Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Maintainer, 2026-10-18: (2) identifier decides when the two match different records, keeping D20 rule 5's identifier-first order and v1 treatments' behaviour today (lib/server/treatments.js:356-362 at 15.0.8); the reply's earlier _id-first proposal is reversed. (1) still recommended, pending Loop's answer: a client may send an ObjectId it creates as _id over v1 (API v3 stores it as a string, BF-170); any other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex string _id to identifier).
+**Notes.** Decided 2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): a client may still send an ObjectId _id over API v1 (legacy). Going forward the server sets _id and the client sets identifier. API v3 keeps refusing a client _id (I2, BF-170). Recorded in the identity spec §5 and the Loop dialogue page's conversation table. 2026-10-26: identity rule I2 is amended (docs/30-design/platform/spec/identity.md): on API v3 a client-supplied _id is refused with 400, with no quirk (maintainer, 2026-10-25, BF-170, merged in #8845); on API v1 the I9 quirk stays. The tie-break (2) was decided on 2026-10-18 (identifier decides). What is left is question (1) for API v1 only: whether the Loop reply's simple contract recommends a client-created ObjectId as _id over v1. That half stays with ID-SIMPLE-MATCH and waits on Loop's answer (LOOP-ID-REPLY). 2026-10-26, earlier: the API v3 half is settled in dev: #8845 (900abf7a) refuses any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170). API v1 keeps its legacy _id handling as a version- scoped quirk (#8845's body). The v1 question is unchanged. Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Maintainer, 2026-10-18: (2) identifier decides when the two match different records, keeping D20 rule 5's identifier-first order and v1 treatments' behaviour today (lib/server/treatments.js:356-362 at 15.0.8); the reply's earlier _id-first proposal is reversed. (1) still recommended, pending Loop's answer: a client may send an ObjectId it creates as _id over v1 (API v3 stores it as a string, BF-170); any other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex string _id to identifier).
 
 ### `ID-ABSENT-DECISION` &mdash; Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier?
 
@@ -8889,7 +9022,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/10-domain/record-identity-reference.md`
 - `tools/lab/record-identity/results/record-identity-2026-10-18.md`
 
-**Notes.** Decided 2026-10-27 (maintainer): a re-send of a deleted record is acknowledged and the record stays deleted: a 2xx reply naming the stored, deleted record (so the uploader stops retrying), keeping the tombstone. Not resurrect (today's v3 POST and v1 entries), not 410 (today's v3 PUT), not a new record. Also asked: advice for AID controller authors on integrating with Nightscout appropriately (re- send, delete and tombstone handling), in the controller guide (guides/new-controller.md). The code follows in ID-FIRST-MATCH. Choices: resurrect (today's v3 POST), refuse (410, as v3 PUT does today), or create a new record beside the tombstone. A deleted reading that a second uploader still holds is re-sent on its next cycle, so "resurrect" undoes a user's delete. Read at 15.0.8: lib/api3/generic/update/validate.js:36 skips every immutable check when the stored record has isValid false; update/operation.js:62 and patch/operation.js:42 answer 410. On dev, v1 reads hide isValid false records (lib/server/soft-deleted.js) and an entries re-send clears isValid (lib/server/entries.js $unset).
+**Notes.** 2026-10-29 (maintainer, D-LOOP-ID): "acknowledged, stays deleted" applies on every path, with the full cell-by-cell impact documented so the change can be reverted or adjusted as cohort feedback arrives. Code differs per path today (the measurement in the gate above: v1 stores a re-send again after its hard delete; v3 POST resurrects a soft-deleted record). The identity spec §3 and the write contract §2.3, which said a re-send of a deleted record is stored again, are corrected to the decision (records/accuracy-2026-10-29). Built in ID-FIRST-MATCH. Decided 2026-10-27 (maintainer): a re-send of a deleted record is acknowledged and the record stays deleted: a 2xx reply naming the stored, deleted record (so the uploader stops retrying), keeping the tombstone. Not resurrect (today's v3 POST and v1 entries), not 410 (today's v3 PUT), not a new record. Also asked: advice for AID controller authors on integrating with Nightscout appropriately (re- send, delete and tombstone handling), in the controller guide (guides/new-controller.md). The code follows in ID-FIRST- MATCH. Choices: resurrect (today's v3 POST), refuse (410, as v3 PUT does today), or create a new record beside the tombstone. A deleted reading that a second uploader still holds is re-sent on its next cycle, so "resurrect" undoes a user's delete. Read at 15.0.8: lib/api3/generic/update/validate.js:36 skips every immutable check when the stored record has isValid false; update/operation.js:62 and patch/operation.js:42 answer 410. On dev, v1 reads hide isValid false records (lib/server/soft-deleted.js) and an entries re-send clears isValid (lib/server/entries.js $unset).
 
 ### `ID-SCOPE-DECISION` &mdash; Decide: is identifier unique per collection, across collections, and per tenant under TENANCY_MODE=multi?
 
@@ -8954,7 +9087,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** In progress until the maintainer confirms the proposed templates and the client developers answer; the unknown cells (Dexcom ONE+ and Stelo model segments, the Libre 2 serial source, AndroidAPS per-driver pumpId origin, Trio override and device status ids) are listed in the page's §7. The earlier per- client table in mapping/cross-project/interoperability-matrix.md (2026-01-20) is partly wrong against the format research (Loop syncIdentifier shown as a UUID, Trio shown with syncIdentifier, entries keyed dateString + device); the page's §6 says where. How a registered instance declares its convention is a proposal (a definition meaning member, registration §7-§8): the grammar has no member for it yet.
 
-### `ID-VALIDATE` &mdash; Release 2 (minor): validate identifier on every collection; empty and null mean absent
+### `ID-VALIDATE` &mdash; Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe characters, placeholders refused); empty and null mean absent
 
 | | |
 |---|---|
@@ -8967,7 +9100,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer |
 | blocks on | `WC-STEP-PATCH` |
 
-**Blast radius.** The write step's input check, for all six collections on every path: identifier must be a non-empty string within a length limit and charset (both to be decided); "" and null are treated as absent, as BF-141's fix does for treatment identities.
+**Blast radius.** The write step's input check, for all six collections on every path: identifier must be a string of 1 to 256 URL-safe characters that is not a placeholder (invalid, undefined, null, NaN), as decided 2026-10-29 (ID-FORMAT- DECISION); "" and null are treated as absent, as BF-141's fix does for treatment identities.
 
 **What an operator sees.** A record with a malformed record label is refused with a clear message instead of being stored with a label that cannot be found again.
 
@@ -8975,14 +9108,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started; the length limit and charset need a decision row first. Gate to write: per collection and path, identifier 7, "", null and an over-long string are refused or treated as absent as decided; control: today's dev stores each.
+- **NO GATE** &mdash; Not started; the format was decided 2026-10-29 (ID-FORMAT-DECISION). Gate to write: per collection and path, identifier 7, "", null and an over-long string are refused or treated as absent as decided; control: today's dev stores each.
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** Checks in order of value (identifier-format-2026-10-17 §6.3): length over the limit (a 1,000-character identifier fails to insert on MongoDB 3.6.8, measured); exactly 24 hex that is not the record's own _id; reserved words and client sentinels (history, ., .., invalid from G7SensorKit, undefined, null, NaN); characters outside the set, first as a warning because Loop's current CGM keys contain spaces. No UUID pattern check: it would reject 489 stored corpus values and every non-UUID key. Earlier notes follow. BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection. ID-DUP-MEASURE found no stored identifier that is null, "" or non-string in the corpus, and every stored one is a UUID-shaped or Loop syncIdentifier value; the corpus has no v3 writer, so this does not bound what AndroidAPS stores.
+**Notes.** 2026-10-29: the format is decided (ID-FORMAT-DECISION): 1 to 256 URL-safe characters, UUID recommended, placeholders refused. Nothing enforces it yet. Under identifier-first two clients sending the same placeholder would be merged, so this ships with or before ID-FIRST-MATCH (now in its blocks_on) and before ID-UNIQUE-INDEX. Checks in order of value (identifier-format-2026-10-17 §6.3): length over the limit (a 1,000-character identifier fails to insert on MongoDB 3.6.8, measured); exactly 24 hex that is not the record's own _id; reserved words and client sentinels (history, ., .., invalid from G7SensorKit, undefined, null, NaN); characters outside the set, first as a warning because Loop's current CGM keys contain spaces. No UUID pattern check: it would reject 489 stored corpus values and every non-UUID key. Earlier notes follow. BF-141's fix (#8781) treats an empty treatment identity as absent; this extends the rule to identifier on every collection. ID-DUP-MEASURE found no stored identifier that is null, "" or non-string in the corpus, and every stored one is a UUID-shaped or Loop syncIdentifier value; the corpus has no v3 writer, so this does not bound what AndroidAPS stores.
 
 ### `ID-V1-LOOKUP` &mdash; Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window
 
@@ -9017,7 +9150,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `answered` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `official/dev@fade2299` |
@@ -9041,7 +9174,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/v3-identifier-immutable/results/v3-identifier-immutable-2026-10-17.md`
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 
-**Notes.** The three paths disagree today. The reply asks Loop whether an identified record's time can be corrected by a re-send. 2026-10-17: the rewritten Loop reply no longer asks this; it lists the v3 immutable date and device, and edit-versus-duplicate, under "later, only if needed". After ID-SIMPLE-MATCH, a v1 entries re-send with the same identifier and a new time would update the stored entry, as v1 treatments do.
+**Notes.** Decided 2026-10-29 (maintainer, D-LOOP-ID rule 3, after the client survey docs/60-research/tenancy/identity-resend-survey-2026-10-29.md): merge on match stays the default for a re-send with changed fields, because Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by POST over v1 and rely on the update. API v3 keeps refusing a changed date, device or eventType. PUT replaces. A site setting plus per-client D20 quirks may opt clients into keep-first or refuse (ID-RESEND-SWITCH). A default changes only in a major: 16.0.0 if it clears the entry bar (plan §1a), otherwise 17.0.0. Merge on match means fields the re-send leaves out are kept (RFC 7386); the census reads replace on several paths today, not yet measured, and the extended matrix measures each path before ID-FIRST-MATCH changes it. The three paths disagree today. The reply asks Loop whether an identified record's time can be corrected by a re-send. 2026-10-17: the rewritten Loop reply no longer asks this; it lists the v3 immutable date and device, and edit-versus-duplicate, under "later, only if needed". After ID-SIMPLE-MATCH, a v1 entries re-send with the same identifier and a new time would update the stored entry, as v1 treatments do.
 
 ### `ID-UNIQUE-INDEX` &mdash; Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates
 
@@ -9054,7 +9187,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-seam` |
 | semver | `minor` |
 | review | maintainer, plus a second human - it changes indexes on every site |
-| blocks on | `ID-DUP-MEASURE`, `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
+| blocks on | `ID-DUP-MEASURE`, `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION`, `ID-VALIDATE` |
 
 **Blast radius.** lib/storage/mongo-storage.js ensureIndexes (211-219 at dev fade2299) and the per-collection index lists in lib/server/{entries, treatments, devicestatus}.js: today's non-unique identifier index is replaced by a partial unique index {identifier: {$type: "string", $gt: ""}} (not sparse: a sparse index still indexes null). The same key pattern conflicts with the existing index, so it is dropped and rebuilt. The write step retries an E11000 as an update. A pre-flight duplicate report (admin tool). The PostgreSQL seam needs the equivalent partial unique index (WHERE identifier IS NOT NULL AND identifier <> '').
 
@@ -9071,7 +9204,95 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** ID-DUP-MEASURE: the index would build on every collection at every corpus site, but the corpus has almost no identifier (505 documents) and no v3 writer; if Loop sent syncIdentifier as identifier it would not build at 2 of 12 sites. The pre-flight report is what decides on a real site.
+**Notes.** 2026-10-29: ID-V3-IMMUTABLE-DECISION is answered (merge on match stays the default). ID-VALIDATE joins blocks_on: with placeholders refused first, two clients sending the same placeholder cannot collide on the index. Not in the 16.0.0 entry-bar list (ID-FIRST-MATCH, ID-BATCH and the re-send switch are). ID-DUP-MEASURE: the index would build on every collection at every corpus site, but the corpus has almost no identifier (505 documents) and no v3 writer; if Loop sent syncIdentifier as identifier it would not build at 2 of 12 sites. The pre-flight report is what decides on a real site.
+
+### `ID-NATURAL-KEY` &mdash; Natural keys for re-sends that carry no identifier: device status and profile, with a corpus check of what would merge
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@e1f7ac41` |
+| worktree | `-` |
+| semver | `major` |
+| review | maintainer, plus a second human - re-send outcomes clients see change |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** The write step's natural-key rule per collection (lib/storage/write-intent.js once WC-STEP-PATCH lands). Device status and profile gain a key for a re-send without identifier; food and activity have no natural key and are not changed.
+
+**What an operator sees.** An app that sends no record label and sends the same loop status or profile twice would get one stored copy instead of two.
+
+**Why `major`.** Re-sends that store a second record today would be matched instead; a default changes only in a major (D-LOOP-ID, 2026-10-29).
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Gate to write: a corpus check that counts, per collection and site, the stored records a proposed key would merge (device status: Loop writes distinct statuses that share created_at and device, 3,078 groups at 11 of 12 sites, measured 2026-10-12), and the write-contract matrix's duplicate cells for re-sends without identifier turning into updated or kept cells. Control: today's dev, where those cells store a second record.
+
+**Evidence.**
+
+- `docs/10-domain/record-identity-reference.md`
+- `docs/30-design/platform/next-gen-platform-plan.md`
+
+**Notes.** Split out 2026-10-29 (maintainer, D-LOOP-ID): the duplicate cells in the record identity reference §2.7 are re-sends without identifier, which identifier-first (ID-FIRST-MATCH) cannot reach. Closing them needs a natural key per collection, and that changes outcomes, so it is a separate item with its own corpus check.
+
+### `ID-RESEND-SWITCH` &mdash; A site setting plus per-client D20 quirks that opt a client into keep-first or refuse for a re-send with changed fields
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@e1f7ac41` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer, plus a second human - re-send outcomes for opted-in clients change |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** The write step's on-match outcome (merge today) becomes selectable: a site setting and per-client entries in the D20 quirks registry choose merge (the default), keep-first or refuse for an identified re-send whose fields differ from the stored record. API v3's refusal of a changed date, device or eventType and PUT's replace are unchanged.
+
+**What an operator sees.** Nothing changes unless a site turns the setting on or an app is listed for it. When on, a record re-sent with changed values either keeps the first version or is refused, instead of being updated.
+
+**Why `minor`.** Additive and off by default; the merge-on-match default does not move (D-LOOP- ID rule 3, 2026-10-29). Eligible for 16.0.0 through the entry bar.
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started. Gate to write: the write-contract matrix with the setting off equals today's pin in every cell; with keep-first on, an identified re-send with a changed amount answers with the stored record unchanged; with refuse on, it is refused. Control: the setting on with the switch's code removed turns those cells back to merge.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/identity-resend-survey-2026-10-29.md`
+- `docs/30-design/platform/next-gen-platform-plan.md`
+
+**Notes.** Decided 2026-10-29 (maintainer, D-LOOP-ID rule 3): merge on match stays the default, because Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by POST over v1 and rely on the update, and a refusal makes Loop and Trio retry without end (client survey). This item is the opt-in. Eligible for 16.0.0 through the entry bar (plan §1a) with ID- FIRST-MATCH and ID-BATCH-RESULTS.
+
+### `DISPLAY-MEAL-GROUP` &mdash; Show a bolus and its carbs as one meal in the display layer; storage de-duplication collapses only true re-sends
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@e1f7ac41` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+
+**Blast radius.** The client's treatment rendering (lib/client/renderer.js and the treatment pop-ups) and the reports that list meals: a bolus and the carbs it was given for, stored as separate records, are shown together as one meal. No storage, API or match rule changes.
+
+**What an operator sees.** A bolus and the carbs it covers, when an app stores them as two records, would be shown together as one meal on the chart. What is stored, and what insulin and carbs on board count, would not change.
+
+**Why `minor`.** a display change; no stored data, API or setting moves
+
+**Gates.**
+
+- **NO GATE** &mdash; Not started, and the grouping rule is not designed. A gate would render a bolus record and a carbs record that belong together and assert one meal is drawn, with insulin and carbs on board unchanged from the ungrouped rendering. Control: two records that do not belong together stay separate.
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** Maintainer, 2026-10-29, when BF-210 was withdrawn: linking a bolus to carbs eaten later as one meal belongs in the display layer, not in storage de- duplication, which collapses only true re-sends. The withdrawn fix had made a carbs-only re-send next to a stored carbs-and-insulin record a second record, which double-counts carbs on board.
 
 ### `BFQ-66` &mdash; BF-66 - the deployment's own tokens fail its own tenant check
 
@@ -9957,7 +10178,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 35 items
+`parcel: platform` &mdash; 36 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -9993,6 +10214,7 @@ reproduced ones.
 | `LAB-HUB-ACTIVE-STATE` | Lab: cgm-remote-monitor and Nocturne answer 'what is active at t' for the same intent records | `done` | `main` | n/a | 1 run |
 | `LOOP-ID-REPLY` | Draft a reply to the Loop maintainers' proposal that Nightscout accept a client-supplied identifier | `done` | `main` | n/a | 0 run + 1 no-gate |
 | `LOOP-ID-V3-IMMUTABLE` | Reproduce over HTTP that API v3 answers a re-send with the same identifier and a different date, device or eventType with 400 | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run + 1 no-gate |
+| `LOOP-UPSTREAM-CARB-EDIT` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cache (raised with the Loop maintainers) | `in-flight-upstream` | `-` | n/a | 0 run + 1 no-gate |
 | `SPEC-ID` | Platform spec L0: the identity specification as one living document (two ids, contract ids, match order, identifier format, open decisions) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 1 run |
 | `SPEC-REGISTRATION` | Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `SPEC-STATE-INTENT` | Platform spec L3: the state and intent specification (kinds, slots, states, end reasons, requested and applied, initiators, composition) | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
@@ -10819,6 +11041,36 @@ reproduced ones.
 
 **Notes.** The reply's last "Not decided anywhere" bullet said, from reading lib/api3/generic/update/validate.js:21-43 at 15.0.8, that a v3 re-send with the same identifier and a different date is answered 400, not stored twice. POST reaches that check through create/operation.js: a match on identifier becomes replace(..., { isDeduplication: true }), and replace runs update/validate.js, which skips only `identifier` under deduplication. Done 2026-10-17, reproduced over HTTP with tools/lab/v3-identifier-immutable at 15.0.8 (92d08342) and dev fade2299, MongoDB 7.0.43 in a dedicated container, Node 22.23.2. On entries, treatments and devicestatus a v3 POST with a stored identifier and a different date, device or (treatments) eventType is 400 "Field <name> cannot be modified by the client", the stored record unchanged and single; PUT by identifier with a new date the same; the identical re-send (control) is 200. The refs differ only for a record first written through v1: dev accepts a first device and a date equal to created_at (isSameAsStored), 15.0.8 answers 400 date. v1 contrast: treatments update created_at on the identifier match; entries store a second record. Not filed as a backfix (documented v3 rule; the open question is in the reply). Reply passage and README evidence row updated.
 
+### `LOOP-UPSTREAM-CARB-EDIT` &mdash; Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cache (raised with the Loop maintainers)
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `LoopKit/NightscoutService` |
+| branch | `-` |
+| base | `LoopWorkspace v3.14.9 548b332` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | the Loop maintainers |
+
+**Blast radius.** Loop's Nightscout upload (NightscoutService, NightscoutKit): a carb edit is sent as a v1 PUT by an _id cached for 24 hours; when the _id is not cached the edit is not sent. Nothing in cgm-remote-monitor changes.
+
+**What an operator sees.** If a carb entry is edited in Loop more than a day after it was first uploaded, the change can be missing from Nightscout, which keeps showing the old amount or time. Loop's own records are not affected.
+
+**Why `n/a`.** a client behaviour, raised upstream; nothing ships from here
+
+**Gates.**
+
+- **NO GATE** &mdash; Read from Loop source at LoopWorkspace v3.14.9 (client survey, finding 4: NightscoutUploader.swift:30-50, NightscoutService.swift:27, 227, NightscoutClient.swift:83-85), not run. Whether Loop changes it cannot be checked from here.
+
+**Evidence.**
+
+- `docs/60-research/tenancy/identity-resend-survey-2026-10-29.md`
+- `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
+- `docs/30-design/platform/upstream-asks-loop-identifier/README.md`
+
+**Notes.** Raised 2026-10-29 in the published reply's caution ("A carb edit can be lost") and recorded in the Loop dialogue page's conversation table. With identifier- first (ID-FIRST-MATCH), a PUT or re-send by syncIdentifier would not need the cached _id; that is Loop's choice.
+
 ### `SPEC-ID` &mdash; Platform spec L0: the identity specification as one living document (two ids, contract ids, match order, identifier format, open decisions)
 
 | | |
@@ -10848,7 +11100,7 @@ reproduced ones.
 - `docs/30-design/platform/README.md`
 - `docs/30-design/platform/spec/glossary.md`
 
-**Notes.** First extraction of the platform reorganisation the maintainer approved on 2026-10-18: six layers (L0 identity, L1 records, L2 definitions and instances, L3 state and intent, L4 change and sync, L5 authority), each with one undated living spec under docs/30-design/platform/spec/, the dated documents kept as snapshots with a pointer. Non-vacuity, run 2026-10-18 with platform-spec- control.sh in a scratch root, one break at a time, each red with exactly the one matching finding: an appended "(Withdrawn ...)" note; a cited case file renamed; the stated count changed to 999; the hub-sync design's link removed. Found while writing it: no conformance case covers rule I7 across two instances (typed-write-resend-same-ids re-sends from one instance), and the write contract's §3 U2 ("an identical re-send is unchanged") was dropped by §6.1 Q2 on 2026-10-12, which the first glossary draft had repeated; the glossary and index were corrected before commit.
+**Notes.** 2026-10-29 (records/accuracy-2026-10-29): §3, §4, §5 and §6 brought in line with D-LOOP-ID (maintainer, 2026-10-29): a re-send after delete is acknowledged and stays deleted on every path (the spec had said "stored again"; code differs per path today); the identifier format decided; the re- send-with-changed-fields rule, the socket identifier addressing and ID- NATURAL-KEY stated; ID-SIMPLE-MATCH on dev. SPEC-ID-AMEND (next-gen plan §4.2) has no queue item of its own. First extraction of the platform reorganisation the maintainer approved on 2026-10-18: six layers (L0 identity, L1 records, L2 definitions and instances, L3 state and intent, L4 change and sync, L5 authority), each with one undated living spec under docs/30-design/platform/spec/, the dated documents kept as snapshots with a pointer. Non-vacuity, run 2026-10-18 with platform-spec-control.sh in a scratch root, one break at a time, each red with exactly the one matching finding: an appended "(Withdrawn ...)" note; a cited case file renamed; the stated count changed to 999; the hub-sync design's link removed. Found while writing it: no conformance case covers rule I7 across two instances (typed- write-resend-same-ids re-sends from one instance), and the write contract's §3 U2 ("an identical re-send is unchanged") was dropped by §6.1 Q2 on 2026-10-12, which the first glossary draft had repeated; the glossary and index were corrected before commit.
 
 ### `SPEC-REGISTRATION` &mdash; Platform spec L2: the registration specification (grammar, negotiation, definitions, instances, labels, read selection, projected views, quirks rules 1-4) as one living document
 

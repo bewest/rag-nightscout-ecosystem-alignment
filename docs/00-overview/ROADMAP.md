@@ -175,10 +175,8 @@ Until then, the order below is the order of development, not of release.
 | wave | id | what | claimed state | waits on |
 |---:|---|---|---|---|
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
-| 1 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | `needs-decision` | &mdash; |
+| 1 | `DISPLAY-MEAL-GROUP` | Show a bolus and its carbs as one meal in the display layer; storage de-duplicat | `not-started` | &mdash; |
 | 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
-| 1 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (opaque string with limits; UUID not requ | `needs-decision` | &mdash; |
-| 1 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `needs-decision` | &mdash; |
 | 1 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and Mongo | `not-started` | &mdash; |
 | 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
@@ -188,9 +186,10 @@ Until then, the order below is the order of development, not of release.
 | 1 | `WC-R1-QI` | Retire websocket.js idMatch when the socket update slice moves into the step | `not-started` | &mdash; |
 | 1 | `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | `in-flight-upstream` | &mdash; |
 | 2 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `blocked` | `WC-STEP-PATCH` |
-| 2 | `ID-FIRST-MATCH` | Release 2 (minor): identifier-first matching for entries, devicestatus and socke | `blocked` | `WC-STEP-PATCH` |
+| 2 | `ID-NATURAL-KEY` | Natural keys for re-sends that carry no identifier: device status and profile, w | `not-started` | `WC-STEP-PATCH` |
+| 2 | `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or r | `not-started` | `WC-STEP-PATCH` |
 | 2 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | `WC-STEP-PATCH` |
-| 2 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection; empty and null mean  | `blocked` | `WC-STEP-PATCH` |
+| 2 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | `WC-STEP-PATCH` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `T30-RESEARCH` |
 | 2 | `WC-R2-QA` | Release 2: Re-express API v3 writes as filter writes under the step, or keep two | `not-started` | `WC-STEP-PATCH` |
 | 2 | `WC-R2-QB` | Release 2: One timing for removing a stored string-form _id twin on every path | `not-started` | `WC-STEP-PATCH` |
@@ -201,9 +200,10 @@ Until then, the order below is the order of development, not of release.
 | 2 | `WC-R2-QH` | Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-m | `not-started` | `WC-STEP-PATCH` |
 | 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
 | 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
-| 3 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION` |
+| 3 | `ID-FIRST-MATCH` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules ( | `blocked` | `WC-STEP-PATCH`, `ID-VALIDATE` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CONFIG` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |
+| 4 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `blocked` | `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-VALIDATE` |
 | 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |
