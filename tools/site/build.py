@@ -580,12 +580,14 @@ class Site:
                         text = text.replace(k, v)
                 body = self.search.apply(d, L.label(d, self.rewrite_markdown(d, text), date_source=src), "living")
             else:
-                body = self.search.apply(d, label_generated(L, self.render_index(dirpath), head_date, head_sha),
+                body = self.search.apply(d, label_generated(L, self.render_index(dirpath),
+                                                            *L.folder_dates.get(dirpath, (head_date, head_sha))),
                                          "living", generated=True)
             write(d, body)
         for d in self.gallery_dirs:
             g = posixpath.join(d, GALLERY_NAME)
-            write(g, self.search.apply(g, label_generated(L, self.render_gallery(d), head_date, head_sha),
+            write(g, self.search.apply(g, label_generated(L, self.render_gallery(d),
+                                                          *L.folder_dates.get(d, (head_date, head_sha))),
                                        "living", generated=True))
         (SRC / "robots.txt").write_text("User-agent: *\nDisallow: /\n")
         NAV_FILE.write_text(P.text(yaml.safe_dump(self.nav(), sort_keys=False, allow_unicode=True),

@@ -25,23 +25,31 @@ LIVING_HINTS = re.compile(r"(?i)(plan|register|roadmap|policy|proposal|matrix|gu
                           r"brief|status|backlog|map|queue|index|readme|record|tracker|spec)")
 
 
-def last_changed(repo: Path) -> dict[str, tuple[str, str]]:
-    """path -> (commit date YYYY-MM-DD, short sha) of the newest commit touching it."""
+def last_changed(repo: Path) -> tuple[dict[str, tuple[str, str]], dict[str, tuple[str, str]]]:
+    """path -> (commit date YYYY-MM-DD, short sha) of the newest commit touching it, and the
+    same for each folder ("" is the root): the newest commit touching anything under it."""
     out = subprocess.run(["git", "-C", str(repo), "-c", "core.abbrev=9", "log", "--no-renames", "--name-only",
                           "--format=%x01%h %cs"], check=True, capture_output=True, text=True).stdout
     seen: dict[str, tuple[str, str]] = {}
+    folders: dict[str, tuple[str, str]] = {}
     sha = date = None
     for line in out.splitlines():
         if line.startswith("\x01"):
             sha, date = line[1:].split(" ", 1)
         elif line and line not in seen:
             seen[line] = (date, sha)
-    return seen
+            d = line
+            while d:
+                d = d.rsplit("/", 1)[0] if "/" in d else ""
+                if d in folders:
+                    break
+                folders[d] = (date, sha)
+    return seen, folders
 
 
 class Labeller:
     def __init__(self, repo: Path, overrides_file: Path):
-        self.dates = last_changed(repo)
+        self.dates, self.folder_dates = last_changed(repo)
         data = yaml.safe_load(overrides_file.read_text()) if overrides_file.exists() else None
         self.overrides = {}
         for n, e in enumerate((data or {}).get("overrides") or []):
@@ -88,7 +96,8 @@ class Labeller:
 
 
 def label_generated(labeller: "Labeller", text: str, head_date: str, head_sha: str) -> str:
-    """Generated index and gallery pages are rebuilt from the tree at HEAD."""
+    """Generated index and gallery pages are rebuilt from the tree; the caller passes the
+    newest commit touching the page's folder, so an unchanged folder keeps its stamp."""
     labeller.counts["living-generated"] += 1
     return insert_after_title(text, f"*Living document, last changed {head_date} at `{head_sha}` "
                                     f"(generated from the repository tree).*\n")
