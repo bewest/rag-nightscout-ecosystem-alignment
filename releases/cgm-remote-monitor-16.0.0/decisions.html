@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>2e33f02a9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>37fabba3a</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2629,6 +2629,30 @@ public.</em></p>
 <td>maintainer, 2026-10-30, via session -49</td>
 <td><code>ID-FIRST-MATCH</code>, <code>ID-UNIQUE-INDEX</code>, <code>ID-BATCH-RESULTS</code>, <code>WC-STEP-PATCH</code></td>
 <td>recorded. <strong>PR shape, decided later the same day: three PRs.</strong> #8874 merges as it is; one identity PR carries A, B and C1 (slices 1, 2, 5, 3, 4, 6, 6a) as ordered commits stacked on #8874's branch, with per-slice predicted cells and pins in its body; ID-UNIQUE-INDEX is its own PR, because its revert must also drop the index. Session -4f confirmed the order (A before B and C: slice 6 needs 2 and 5, and the index needs 5's no-second-record rule); slice 5 shrinks to the P4 pick and the no-second-record rule, since BF-212's split fix is on <code>dev</code> (#8878). Changes the 2026-10-29 entry bar's per-item time on <code>dev</code> into one window for the set</td>
+</tr>
+<tr>
+<td><strong>The placeholder identifiers are <code>undefined</code>, <code>null</code>, <code>invalid</code>, <code>NaN</code>, <code>unknown</code>, empty and whitespace-only, matched case-insensitively</strong> (ID-PLACEHOLDER-LIST, widening ID-Q6's list): treated as absent with a warning, refused under <code>WRITE_IDENTIFIER=strict</code>. A non-string <code>identifier</code> is treated the same way (BF-215)</td>
+<td>maintainer, 2026-10-30, via session -49, on session -4f's QC-MATRIX-IDFMT cells</td>
+<td><code>ID-FIRST-MATCH</code> (slice 2), BF-215, BF-216</td>
+<td>recorded; slice 2 is built on it in #8879. Before it, two apps sending the same placeholder shared one record on API v1 (BF-216, measured on <code>dev</code> <code>991b0654</code>)</td>
+</tr>
+<tr>
+<td><strong>Activity creates matching on <code>identifier</code> move from slice 1 to slice 6a</strong>, in the same identity PR, so activity gets the final pick, stays-deleted and merge rules once instead of a temporary rule</td>
+<td>plan owner (session -49), 2026-10-30, on session -4f's proposal; within ID-Q9, which asks only that it ships with the identity work</td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>recorded; #8879's slice table lists it under 6a</td>
+</tr>
+<tr>
+<td><strong>#8875 goes into 16.0.0 in steps:</strong> first the two alarm-message text differences the replay lab found (a missing zero IOB/COB line; a lower COB on one dataset) are fixed in the view's bounds and the six newest-of-kind reads get timelines; the view is then wired under the multitenant <code>serve</code> roles as alpha, and <code>single</code> keeps the resident path</td>
+<td>maintainer, 2026-10-30, via session -49, on the replay lab (crm <code>lab/views-replay</code> <code>b4762955</code>: identical alarms on 120,766 replayed minutes, resident-vs-resident noise floor 0)</td>
+<td><code>ST-VIEWS</code></td>
+<td>text fixes and timelines being built; <code>serve</code> refuses every role today, so the wiring follows the alpha roles</td>
+</tr>
+<tr>
+<td><strong>BF-213 (a missed URGENT reservoir alarm) is fixed in 16.0.0</strong>, in one themed PR with BF-214 (device-status delete by query leaves its cache empty until the heartbeat)</td>
+<td>maintainer, 2026-10-30 (BF-213); BF-214 joined by the plan owner as the same theme</td>
+<td>BF-213, BF-214</td>
+<td>branch <code>bf/16.0.0-alarm-display</code> being built</td>
 </tr>
 <tr>
 <td><strong>Registration's flat instance root: the body's <code>product</code> is an address, not content</strong>: the hub places the instance by it and keeps it out of the stored instance and the etag; a renewal naming another product stays 422 <code>invalid-instance</code> (2026-10-26)</td>

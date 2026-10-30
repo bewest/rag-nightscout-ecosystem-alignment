@@ -6077,7 +6077,7 @@
 
 
 <h1 id="l0-identity-how-records-definitions-instances-and-subjects-are-named">L0 Identity: how records, definitions, instances and subjects are named<a class="headerlink" href="#l0-identity-how-records-definitions-instances-and-subjects-are-named" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>b982fbdd8</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>37fabba3a</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at 2026-10-30 (cgm-remote-monitor <code>dev</code>
 <code>47723cda</code>, and <code>e1f7ac41</code> or <code>991b0654</code> where named). Layer L0 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Status: specified, not implemented; §6, today's behaviour, is evidenced.
@@ -6446,7 +6446,7 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <tr>
 <td><code>ID-PLACEHOLDER-LIST</code></td>
 <td>which values are placeholders?</td>
-<td>ID-Q6 lists <code>undefined</code>, <code>null</code>, <code>invalid</code> and an empty string. Plan §4.2's format line and the conventions' C5 also name <code>NaN</code>, and the conventions name <code>unknown</code>; a whitespace-only value is not named</td>
+<td><strong>Decided (maintainer, 2026-10-30):</strong> <code>undefined</code>, <code>null</code>, <code>invalid</code>, <code>NaN</code>, <code>unknown</code>, the empty string and any whitespace-only value, matched case-insensitively, are treated as absent with a warning (<code>WRITE_IDENTIFIER=strict</code> refuses them). Each of the non-empty values merges two apps' records on API v1 today (BF-216)</td>
 </tr>
 <tr>
 <td><code>ID-WARNING-FORM</code></td>

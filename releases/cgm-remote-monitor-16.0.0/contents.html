@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>8426673c2</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>37fabba3a</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3112,7 +3112,7 @@ and the queue):</p>
 </tr>
 <tr>
 <td>ID-FIRST-MATCH: identifier-first on every collection and path, as slices in the order 1 (no outcome change, with the two additive items), 2 (identifier format), 5 (shared identifiers, BF-212's pick), 3 (stays deleted), 4 (merge on match), 6 (identifier first where it is new), 6a (activity)</td>
-<td>slice 1 started <em>later</em> 2026-10-30 by session -4f, local <code>feat/id-first-s1</code> on <code>9919f8ef</code>, not pushed; design note 2026-10-29</td>
+<td><strong>draft #8879</strong> (<em>later</em> 2026-10-30, base <code>feat/write-intent</code>, head <code>feat/id-first-match</code> <code>521e7583</code>): slice 1 gated, 4 commits on <code>9919f8ef</code>; slices 2, 5, 3, 4, 6, 6a follow as commits; design note 2026-10-29</td>
 <td>—</td>
 <td>slice 1's gate: the 456 earlier cells unchanged, and among the new cells only the two additive items' cells, predicted by id before the run (about 24 activity cells), with UUID handling on and off. The rules are decided (D-LOOP-ID rules 1–3, ID-Q1..ID-Q11, 2026-10-29); each slice goes to the bar on its own. Slice 1 moves 0 of 1,929 matrix cells; slices 3 to 6a change outcomes (40, 232, 112 and 33 cells, read from the design note's predictions)</td>
 <td><code>ID-FIRST-MATCH</code>, <code>ID-VALIDATE</code></td>
@@ -3608,7 +3608,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/57c51e7401f0465694476977bdae21400ff886ac/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/37fabba3afbfc0717ab5a33704381574e21b3ebf/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
