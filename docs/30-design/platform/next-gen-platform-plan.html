@@ -5654,7 +5654,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>fdccb9fe6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>d9f9526e1</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>e1f7ac41</code> (2026-10-29). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5774,7 +5774,7 @@ tagged, beside registration, instead of after <code>write(intent)</code>.</p>
 <tr>
 <td>5</td>
 <td>#8824, dev to master</td>
-<td>blocked by master protection (<code>Run Tests (22, 4.4)</code>)</td>
+<td>blocked by master protection, which requires <code>Run Tests (22, 6)</code>, <code>(22, 4.4)</code> and <code>(24, 6)</code> plus one approving review</td>
 <td>fix the required check, then merge and tag</td>
 </tr>
 </tbody>
@@ -5784,7 +5784,7 @@ re-send switch, in that order. Each joins the merge list when its matrix result 
 controls and ablations pass, a revert has been rehearsed, and it has had time on <code>dev</code> with its cohort
 check. Whatever has not cleared the bar at the tag rolls to 16.1.0. 16.0.0 is already a major, so identity
 rules that change outcomes may land there instead of 17.0.0.</p>
-<p><strong>After the tag</strong>, when <code>dev</code> reopens (or earlier, for rows that clear the bar):</p>
+<p><strong>Next, through the bar</strong> (2026-10-30: every single-tenant row targets 16.0.0; a miss rolls to 16.1.0, or to 17.0.0 if it changes a default):</p>
 <table>
 <thead>
 <tr>
@@ -5799,42 +5799,42 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 <tr>
 <td>6</td>
 <td>SPEC-ID-AMEND (spec and conformance only)</td>
-<td>16.1.0</td>
+<td>16.0.0 through the bar</td>
 <td>none for sites</td>
 <td>case-by-case conformance report</td>
 </tr>
 <tr>
 <td>7</td>
 <td>#8857, registration S0-S2, S5</td>
-<td>16.1.0</td>
-<td>off by default; 78 commits behind with conflicts</td>
+<td>16.0.0 through the bar</td>
+<td>off by default; 109 commits behind dev with conflicts (2026-10-30)</td>
 <td>the flag stays off; D-REG-FLAG (where the catalogue lives)</td>
 </tr>
 <tr>
 <td>8</td>
 <td>#8874 plus slices 4 and 6, <code>write(intent)</code> release 1 (push-ready at <code>e8224807</code>, 2026-10-29: matrix 0 cells, revert rehearsed)</td>
-<td>16.2.0, or 16.0.0 through the bar</td>
+<td>16.0.0 through the bar (#8874 pushed at <code>4f9fc4cd</code>, dev <code>991b0654</code> merged, CI green, 2026-10-30)</td>
 <td>every write moves, behaviour-neutral by the matrix</td>
 <td>G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit</td>
 </tr>
 <tr>
 <td>9</td>
-<td>ID-FIRST-MATCH where it changes no outcome, and ID-BATCH</td>
-<td>16.2.0</td>
+<td>ID-FIRST-MATCH slices 1, 2, 5, 3, 4, 6, 6a, then ID-UNIQUE-INDEX (<code>WRITE_IDENTIFIER_INDEX</code>), then ID-BATCH</td>
+<td>16.0.0 through the bar, in that order</td>
 <td>re-send matching on every path</td>
 <td>the re-send table in the <a href="../../10-domain/record-identity-reference.html">identity reference §2.7</a>; D-LOOP-ID's per-client switch</td>
 </tr>
 <tr>
 <td>10</td>
 <td>#8875 ST-VIEWS, once wired</td>
-<td>16.2.0 or later</td>
+<td>16.0.0 only if it clears the bar, else 16.1.0</td>
 <td>alarms are safety-relevant</td>
 <td>wiring is the maintainer's call; alarm cohort checks (execution plan §7b)</td>
 </tr>
 <tr>
 <td>11</td>
 <td>#8810, AndroidAPS iOS push</td>
-<td>16.1.0</td>
+<td>16.0.0 if its review items close, else 16.1.0</td>
 <td>device tokens are readable by read tokens</td>
 <td>its four review items, with the author</td>
 </tr>
