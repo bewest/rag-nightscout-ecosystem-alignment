@@ -464,8 +464,23 @@ The questions in §6, numbered in order: (i) is ID-Q1, (ii) ID-Q2, (iii) ID-Q3, 
 - **ID-Q7, decided:** a matched profile re-send replaces `store` as a whole, and its other fields merge. No
   released client depends on a merge of `store`: 15.0.9 refused that re-send (BF-166), and API v3 and the socket
   replace. This adjusts the `dev`-only Q1b rule for `store`.
-- **ID-Q3, ID-Q8 to ID-Q11:** open. ID-Q3 has a client survey
-  ([edits of deleted records](../../60-research/tenancy/deleted-record-edit-survey-2026-10-29.md)).
+- **ID-Q3, decided** after a [client survey](../../60-research/tenancy/deleted-record-edit-survey-2026-10-29.md):
+  - an edit of a soft-deleted record over API v1 (PUT, the socket's `dbUpdate`, in-process `save`) is answered
+    2xx and **not applied**, so the record stays deleted. Today it revives;
+  - API v3 keeps its documented 410;
+  - a setting, off by default, makes v1 refuse instead (410);
+  - the spec documents both, and client authors are asked to handle a 410, starting with AndroidAPS, whose upload
+    queue stalls on a 410 PATCH;
+  - a deliberate restore is a separate item.
+
+  Why 2xx on v1: every surveyed v1 editor retries a 4xx without limit, and Loop and xDrip+ then block other
+  uploads. The server also cannot tell an xDrip+ edit from its retry, because both are a PUT.
+- **ID-Q8, decided:** merge, one rule. A matched v1 food or activity create merges, and only PUT replaces.
+- **ID-Q9, decided:** both additive items ship with slice 1 (a socket edit or remove by `identifier` without
+  `_id`; activity creates matching `identifier`). No existing request changes.
+- **ID-Q11, decided:** data protection first. The slices go to the 16.0.0 entry bar in the order 1 (with the
+  additive items), 2, 5, 3, 4, 6, 6a. Whatever has not cleared the bar at the tag rolls to 17.0.0.
+- **ID-Q10:** open.
 
 ## 7. How this was produced
 
