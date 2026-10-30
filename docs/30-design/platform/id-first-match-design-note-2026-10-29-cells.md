@@ -1,6 +1,6 @@
 # ID-FIRST-MATCH: cell-by-cell impact (appendix)
 
-*Generated 2026-10-29 by a classification script (session scratch, not committed; its rules are in the note, section 2) from the pin `tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json` (1,929 cells: 456 earlier, 1,473 new). The design note is [`id-first-match-design-note-2026-10-29.md`](id-first-match-design-note-2026-10-29.md). "Today" columns are **[M]**, the pin. Every "predicted" column is **[R, prediction]**: read from code at crm `e8224807` and the rule in the note §1, not run. The implementation slice measures each one.*
+*Generated 2026-10-29 by `tools/qc/idfirst/classify.py` (its rules are in the note, section 2) and `render.py` from the pin `tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json` (1,929 cells: 456 earlier, 1,473 new). The design note is [`id-first-match-design-note-2026-10-29.md`](id-first-match-design-note-2026-10-29.md). "Today" columns are **[M]**, the pin. Every "predicted" column is **[R, prediction]**: read from code at crm `e8224807` and the rule in the note §1, not run. The implementation slice measures each one.*
 
 Rule options used: socket treatments merge on an identifier match (**option M**, decision 1 as written); shared-identifier pick **P1** (each path keeps today's pick; a path new to identifier matching picks the first stored record). Option K (socket treatments keep the stored record on an identifier match) differs only where listed at the end.
 

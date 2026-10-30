@@ -439,7 +439,6 @@ notice.
   `n=2`; API v3 create after a soft delete revives except on devicestatus, `devicestatus v3 idf-softdel-plain`
   `n=1 OID:inv`; the split target is deterministic, A on v1 and B on v3). Code: crm `e8224807` for the step,
   the socket, API v3 and the gate. #8877 at `ac5d77fb` for the similar match's identity rule.
-- The classification script and its outputs are in the session scratch
-  (`/tmp/claude-1000/-home-bewest-src-rag-nightscout-ecosystem-alignment/d5a51d10-d8a6-48c5-ad34-edc8fe1d0323/scratchpad/idfirst-design/`:
-  `classify.py`, `render.py`, `out-M.txt`, `out-K.txt`, `out-uuidoff-M.txt`). The appendix is `render.py`'s
-  output. Nothing was run against a server, and no prediction here is measured.
+- The classification is `tools/qc/idfirst/classify.py <pin.json> [M|K]` (option M or K for socket treatments),
+  and the appendix is `tools/qc/idfirst/render.py <out-M> <out-K> <out-uuidoff-M> <appendix.md>` over its outputs
+  for the pin, option K and the `-uuidoff` pin. Nothing was run against a server, and no prediction here is measured.
