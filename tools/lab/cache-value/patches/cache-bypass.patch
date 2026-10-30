@@ -1,0 +1,55 @@
+diff --git a/lib/api/devicestatus/index.js b/lib/api/devicestatus/index.js
+index d8be2f06..598e04dc 100644
+--- a/lib/api/devicestatus/index.js
++++ b/lib/api/devicestatus/index.js
+@@ -112,7 +112,7 @@ function configure (app, wares, ctx, env) {
+         }
+     }
+ 
+-    const canServeFromMemory = isSimpleQuery && inMemoryData.length >= numCount;
++    const canServeFromMemory = false; // cache-value lab bypass: always read MongoDB
+ 
+     if (canServeFromMemory) {
+       // Sort a copy of the array to avoid modifying the cache directly
+diff --git a/lib/api/entries/index.js b/lib/api/entries/index.js
+index 8c9120ed..9b16c86b 100644
+--- a/lib/api/entries/index.js
++++ b/lib/api/entries/index.js
+@@ -408,7 +408,7 @@ function configure (app, wares, ctx, env) {
+     }
+ 
+     // Check if we can process the query using in-memory data only
+-    let inMemoryPossible = storage === ctx.entries;
++    let inMemoryPossible = false; // cache-value lab bypass: always read MongoDB
+     let typeQuery;
+ 
+     if (query.find) {
+diff --git a/lib/api/treatments/index.js b/lib/api/treatments/index.js
+index 101c43fb..477bffdb 100644
+--- a/lib/api/treatments/index.js
++++ b/lib/api/treatments/index.js
+@@ -91,7 +91,7 @@ function configure (app, wares, ctx, env) {
+         query.count = query.find ? 1000 : 100;
+       }
+ 
+-    const inMemoryData = ctx.cache.treatments;    const canServeFromMemory = inMemoryData && inMemoryData.length >= query.count && Object.keys(query).length == 1 ? true : false;
++    const inMemoryData = ctx.cache.treatments;    const canServeFromMemory = false; // cache-value lab bypass: always read MongoDB
+ 
+     if (canServeFromMemory) {
+       serveTreatments(req, res, null, inMemoryData.slice(0, query.count));
+diff --git a/lib/server/cache.js b/lib/server/cache.js
+index c6d431b7..594f8d47 100644
+--- a/lib/server/cache.js
++++ b/lib/server/cache.js
+@@ -70,8 +70,10 @@ function cache (env, ctx) {
+ 
+   }
+ 
++  // cache-value lab bypass: report every cache as empty, so the dataloader
++  // always takes its long load (48 h entries, 60 h treatments, 24 h devicestatus).
+   data.isEmpty = (datatype) => {
+-    return data[datatype].length < 20;
++    return true;
+   }
+   data.getData = (datatype) => {
+     // Deep clone data to prevent external modifications affecting cache

@@ -1,0 +1,6 @@
+bypass check (base-a-misdeclared, expect bypass): 40 simple v1 GETs caused 0 MongoDB queries: FAIL: expected every one to read MongoDB
+exit 1
+Terminated
+bypass check (bypass-pool5-misdeclared, expect cache): 40 simple v1 GETs caused 40 MongoDB queries: FAIL: expected them served from memory
+exit 1
+Terminated

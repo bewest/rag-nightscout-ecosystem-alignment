@@ -1,0 +1,142 @@
+{
+  "base-a": {
+    "check": "bypass check (base-a, expect cache): 40 simple v1 GETs caused 0 MongoDB queries: PASS",
+    "rows": [
+      {
+        "hour": 1,
+        "secs": 119.997,
+        "crudOps": 1020,
+        "queryOps": 994,
+        "commandOps": 123,
+        "opsPerSec": 9.525,
+        "docsReturned": 5003,
+        "bytesOut": 2338913,
+        "reloads": 74,
+        "requests": 158,
+        "errors": 0,
+        "getP50": 3.378046,
+        "getP95": 18.065368,
+        "postP50": 8.594037,
+        "postP95": 16.600879,
+        "rssMaxMB": 142.2,
+        "rssEndMB": 139.1,
+        "connections": 10,
+        "m0OpsPct": 9.53,
+        "m0BytesOut7dPct": 117.88,
+        "m0ConnPct": 2
+      }
+    ]
+  },
+  "base-b": {
+    "check": "bypass check (base-b, expect cache): 40 simple v1 GETs caused 0 MongoDB queries: PASS",
+    "rows": [
+      {
+        "hour": 1,
+        "secs": 120.002,
+        "crudOps": 1020,
+        "queryOps": 994,
+        "commandOps": 123,
+        "opsPerSec": 9.525,
+        "docsReturned": 5003,
+        "bytesOut": 2338913,
+        "reloads": 74,
+        "requests": 158,
+        "errors": 0,
+        "getP50": 3.573691,
+        "getP95": 28.698648,
+        "postP50": 9.110968,
+        "postP95": 26.952409,
+        "rssMaxMB": 140.3,
+        "rssEndMB": 126.4,
+        "connections": 10,
+        "m0OpsPct": 9.52,
+        "m0BytesOut7dPct": 117.88,
+        "m0ConnPct": 2
+      }
+    ]
+  },
+  "cache-pool100": {
+    "check": "bypass check (cache-pool100, expect cache): 40 simple v1 GETs caused 0 MongoDB queries: PASS",
+    "rows": [
+      {
+        "hour": 1,
+        "secs": 120.001,
+        "crudOps": 1020,
+        "queryOps": 994,
+        "commandOps": 123,
+        "opsPerSec": 9.525,
+        "docsReturned": 5003,
+        "bytesOut": 2338913,
+        "reloads": 74,
+        "requests": 158,
+        "errors": 0,
+        "getP50": 3.403238,
+        "getP95": 6.412945,
+        "postP50": 8.324325,
+        "postP95": 18.772998,
+        "rssMaxMB": 139.8,
+        "rssEndMB": 136.2,
+        "connections": 19,
+        "m0OpsPct": 9.52,
+        "m0BytesOut7dPct": 117.88,
+        "m0ConnPct": 3.8
+      }
+    ]
+  },
+  "bypass-pool5": {
+    "check": "bypass check (bypass-pool5, expect bypass): 40 simple v1 GETs caused 40 MongoDB queries: PASS",
+    "rows": [
+      {
+        "hour": 1,
+        "secs": 120.002,
+        "crudOps": 1128,
+        "queryOps": 1102,
+        "commandOps": 123,
+        "opsPerSec": 10.425,
+        "docsReturned": 74313,
+        "bytesOut": 55604698,
+        "reloads": 74,
+        "requests": 158,
+        "errors": 0,
+        "getP50": 5.746552,
+        "getP95": 43.22647,
+        "postP50": 8.350575,
+        "postP95": 19.341768,
+        "rssMaxMB": 146.7,
+        "rssEndMB": 144.3,
+        "connections": 10,
+        "m0OpsPct": 10.42,
+        "m0BytesOut7dPct": 2802.43,
+        "m0ConnPct": 2
+      }
+    ]
+  },
+  "bypass-pool100": {
+    "check": "bypass check (bypass-pool100, expect bypass): 40 simple v1 GETs caused 40 MongoDB queries: PASS",
+    "rows": [
+      {
+        "hour": 1,
+        "secs": 120.001,
+        "crudOps": 1128,
+        "queryOps": 1102,
+        "commandOps": 125,
+        "opsPerSec": 10.442,
+        "docsReturned": 74313,
+        "bytesOut": 55605356,
+        "reloads": 74,
+        "requests": 158,
+        "errors": 0,
+        "getP50": 5.180709,
+        "getP95": 35.232851,
+        "postP50": 7.681594,
+        "postP95": 15.834397,
+        "rssMaxMB": 145.5,
+        "rssEndMB": 143.4,
+        "connections": 20,
+        "m0OpsPct": 10.44,
+        "m0BytesOut7dPct": 2802.49,
+        "m0ConnPct": 4
+      }
+    ]
+  }
+}
