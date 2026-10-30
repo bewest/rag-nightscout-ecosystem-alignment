@@ -128,7 +128,9 @@ re-run on `v15.0.9` `c6a0d8ed`.
    editor and every v1 path delete hard, and no client in the corpus calls the v3 profile delete). After
    that, no local edit, and then an NSClient full sync, a database reset or a lost acknowledgement.
 4. An amount field the write does not carry is not part of the match (same on 15.0.9). Filed as **BF-210**,
-   fixed in the same backfix as BF-209: a missing amount is treated as none.
+   then withdrawn by the maintainer the same day as not a defect: absorbing a nearby matching upload is
+   intended, and treating a missing amount as none would double-count a carbs-only re-send. Meal grouping
+   belongs in the display layer.
 
 A side finding: the chart-drag split (`treatmenttime.js` `splitRecord`) keeps the original's client identity
 on the new half. This is reproduced on `dev` `e1f7ac41` (probe `probe/split-ident-2026-10-29` `95570d41`, local,
