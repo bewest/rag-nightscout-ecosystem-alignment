@@ -6463,7 +6463,7 @@
 
 
 <h1 id="l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it">L2 Registration: how a controller declares what its data means, and how a hub accepts it<a class="headerlink" href="#l2-registration-how-a-controller-declares-what-its-data-means-and-how-a-hub-accepts-it" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>36487a5dd</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>0f8cfc3b5</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>8d2b93ed</code> (2026-10-18). Layer L2 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; ids are defined in
 the <a href="identity.html">identity specification</a>. Status: specified, not implemented; the first hub implementation is <code>HUB-REG-CRM</code>.
@@ -7064,7 +7064,7 @@ without provenance and a (channel, role) claimed twice), <code>unknown-definitio
 response carries it and per-role results (outcome <code>accepted</code>, or <code>partial</code> when a role is refused;
 201 on create, 200 on renewal). An instance that stops renewing lapses and holds no roles, with no
 housekeeping. A renewal is not a capability re-check.</p>
-<p><strong>Etag.</strong> <code>sha256:</code> over the canonical JSON of <code>{instance, boundTo, granted}</code>. The lease is outside
+<p><strong>Etag.</strong> <code>sha256:</code> over the canonical JSON of <code>{instance, boundTo, granted}</code>. The body's <code>product</code> is the instance's address, not its content (maintainer, 2026-10-30): the hub reads it to place the instance and leaves it out of the stored <code>instance</code> and out of the etag, so an instance and its etag are the same as under the nested path; a renewal naming another product is still 422 <code>invalid-instance</code>. The lease is outside
 it, so a renewal that changes nothing keeps it (<code>noop: true</code>) and a retried renewal still matches.
 A role granted on renewal, moved by the owner, or dropped by a rebind (§9) changes it, so the
 instance learns of the change through a 412 on its next renewal, and two owner actions racing on

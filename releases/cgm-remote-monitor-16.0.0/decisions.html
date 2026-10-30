@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>c6a88fad6</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>2e33f02a9</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2623,6 +2623,18 @@ public.</em></p>
 <td>maintainer, 2026-10-30, via session -49, on the <a href="../../docs/30-design/platform/id-batch-design-note-2026-10-30.html">ID-BATCH design note</a> open question (i)</td>
 <td><code>ID-UNIQUE-INDEX</code>, <code>ID-BATCH-RESULTS</code></td>
 <td>recorded; neither built. ID-BATCH's other open questions (the opt-in form, per-item profile permission, the preBolus record in the reply, 409 or 5xx on a duplicate <code>_id</code>, <code>acknowledged</code> or <code>unchanged</code>) are held until ID-BATCH is next</td>
+</tr>
+<tr>
+<td><strong>The identity slices land as three grouped PRs, in hours to days, with one cohort window over the whole set before the tag</strong> instead of time on <code>dev</code> between steps: A = ID-FIRST-MATCH slices 1, 2, 5; B = slices 3, 4; C = slices 6, 6a, then ID-UNIQUE-INDEX; ID-BATCH after C or in 16.1.0, not blocking the tag. Each landing keeps its pre-merge checks (the matrix moves exactly its predicted cells, listed by id; red controls; a rehearsed merge revert) and is its own PR so it can be reverted alone. The cohort request goes out when B lands, because B changes how re-sent treatments merge</td>
+<td>maintainer, 2026-10-30, via session -49</td>
+<td><code>ID-FIRST-MATCH</code>, <code>ID-UNIQUE-INDEX</code>, <code>ID-BATCH-RESULTS</code>, <code>WC-STEP-PATCH</code></td>
+<td>recorded. <strong>PR shape, decided later the same day: three PRs.</strong> #8874 merges as it is; one identity PR carries A, B and C1 (slices 1, 2, 5, 3, 4, 6, 6a) as ordered commits stacked on #8874's branch, with per-slice predicted cells and pins in its body; ID-UNIQUE-INDEX is its own PR, because its revert must also drop the index. Session -4f confirmed the order (A before B and C: slice 6 needs 2 and 5, and the index needs 5's no-second-record rule); slice 5 shrinks to the P4 pick and the no-second-record rule, since BF-212's split fix is on <code>dev</code> (#8878). Changes the 2026-10-29 entry bar's per-item time on <code>dev</code> into one window for the set</td>
+</tr>
+<tr>
+<td><strong>Registration's flat instance root: the body's <code>product</code> is an address, not content</strong>: the hub places the instance by it and keeps it out of the stored instance and the etag; a renewal naming another product stays 422 <code>invalid-instance</code> (2026-10-26)</td>
+<td>maintainer, 2026-10-30, via session -49</td>
+<td><code>HUB-REG-CRM</code></td>
+<td>spec amended (registration.md, Etag); #8857 change in progress. Before it, 25 <code>put-instance</code> conformance cases failed because the etag covered <code>product</code>; stripping it restored 35 passed / 88 mapped / 0 failed (measured)</td>
 </tr>
 <tr>
 <td><strong>#8854 is outcome B: in 16.0.0, aligned first</strong>, after four conditions: (1) under <code>reject</code> the socket answers per item, or socket validation waits; (2) <code>Nightscout-Data-Warnings</code> off by default or held; (3) <code>storage-write-committed</code> internal and unstable; (4) a separate name for this repository's <code>write(intent)</code> layer. The client replay is re-run on the merged tree</td>
