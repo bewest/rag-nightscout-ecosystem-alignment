@@ -27,7 +27,7 @@ LIVING_HINTS = re.compile(r"(?i)(plan|register|roadmap|policy|proposal|matrix|gu
 
 def last_changed(repo: Path) -> dict[str, tuple[str, str]]:
     """path -> (commit date YYYY-MM-DD, short sha) of the newest commit touching it."""
-    out = subprocess.run(["git", "-C", str(repo), "log", "--no-renames", "--name-only",
+    out = subprocess.run(["git", "-C", str(repo), "-c", "core.abbrev=9", "log", "--no-renames", "--name-only",
                           "--format=%x01%h %cs"], check=True, capture_output=True, text=True).stdout
     seen: dict[str, tuple[str, str]] = {}
     sha = date = None

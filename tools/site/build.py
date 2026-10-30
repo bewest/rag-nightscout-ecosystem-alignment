@@ -75,7 +75,9 @@ TAB_MIN = 20
 # git
 # --------------------------------------------------------------------------
 def git(*args: str) -> str:
-    return subprocess.run(["git", "-C", str(REPO), *args], check=True,
+    # core.abbrev pinned: the default length grows with the object count, so a
+    # CI clone and a local checkout would print different short hashes.
+    return subprocess.run(["git", "-C", str(REPO), "-c", "core.abbrev=9", *args], check=True,
                           capture_output=True, text=True).stdout
 
 
