@@ -18006,7 +18006,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-socket-similar-match
     base: official/dev@e1f7ac41
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8877]
     ships_to_operators_today: true
     blast_radius: >
@@ -18028,17 +18028,18 @@ items:
       v1 and in-process).
     register: [BF-209]
     gates:
-      - no-gate: >
-          The behaviour gate is the socket dedupe gate on the branch
-          (test/ws-dedupe, 58 tests, each rule's ablation red alone), run in
-          the crm worktree; not wired here because it needs the branch's
-          node_modules. Measured 2026-10-29: npm test 4759 to 4853/0/3; the
-          exact match's selector identical over 559,872 inputs.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 567f0612 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-209's fix ebed6323 with the amount rule restored, 567f0612 (merged 2026-10-30 as cf3d4b8f, #8877);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/platform/wc-step-design-note-2026-10-27.md
     notes: >
+      2026-10-30: #8877 merged to dev as cf3d4b8f (head ac5d77fb) by the
+      maintainer; not released.
       2026-10-29: draft PR #8877 opened by the maintainer (GitHub head
       ebed6323, which still carries BF-210's withdrawn rule and names it in
       the title). Local bf/16.0.0-socket-similar-match ac5d77fb adds the
@@ -18084,7 +18085,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-socket-similar-match
     base: official/dev@e1f7ac41
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8877]
     ships_to_operators_today: true
     blast_radius: >
@@ -18100,16 +18101,17 @@ items:
     semver_reason: fewer cache reloads; no reply or stored record changes
     register: [BF-211]
     gates:
-      - no-gate: >
-          The fix carries 3 tests that fail on dev (13107d1e on
-          bf/16.0.0-cache-flush-scope; npm test 4759 to 4762/0/3), run in the
-          crm worktree. The cache-value lab (tools/lab/cache-value) measures
-          the reload: 890 documents and 716,202 bytes on dev, 32 documents and
-          10,289 bytes with the fix.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ac5d77fb official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-211's fix ac5d77fb (merged 2026-10-30 as cf3d4b8f, #8877);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-30: #8877 merged to dev as cf3d4b8f (head ac5d77fb) by the
+      maintainer; not released.
       2026-10-29: in the 16.0.0 merge list (maintainer), added to #8877.
       Fix 13107d1e on bf/16.0.0-cache-flush-scope, cherry-picked onto local
       bf/16.0.0-socket-similar-match as ac5d77fb; not pushed (GitHub head of

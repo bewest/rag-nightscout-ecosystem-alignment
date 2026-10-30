@@ -30,13 +30,11 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 18 items
+### Maintainer &mdash; 16 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
-| `BFQ-209` | `in-flight-upstream` | BF-209 - two identical treatments sent over the socket within 2 s are stored as  | #8877 |
-| `BFQ-211` | `in-flight-upstream` | BF-211 - a delete by query in one collection empties all three in-memory caches | #8877 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
@@ -80,8 +78,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
 | **#8874** | `WC-STEP-PATCH` | `feat/write-intent` | Release 1 (patch): one write step for every v1, v3 and socke | Maintainer |
-| **#8877** | `BFQ-209` | `bf/16.0.0-socket-similar-match` | BF-209 - two identical treatments sent over the socket withi | Maintainer |
-| **#8877** | `BFQ-211` | `bf/16.0.0-socket-similar-match` | BF-211 - a delete by query in one collection empties all thr | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

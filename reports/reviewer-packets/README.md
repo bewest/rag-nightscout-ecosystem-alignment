@@ -26,8 +26,6 @@ repository.
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`PLAT-SERVE`](plat-serve-feat-nightscout-serve.md) | #8865 | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately |
 | [`WC-STEP-PATCH`](wc-step-patch-feat-write-intent.md) | #8874 | `in-flight-upstream` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply |
-| [`BFQ-209`](bfq-209-bf-16-0-0-socket-similar-match.md) | #8877 | `in-flight-upstream` | BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even from different clients |
-| [`BFQ-211`](bfq-211-bf-16-0-0-socket-similar-match.md) | #8877 | `in-flight-upstream` | BF-211 - a delete by query in one collection empties all three in-memory caches |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
