@@ -790,6 +790,8 @@ candidate is named.
   is a new executable with `single`, `healthcheck`, `version`, `env` and `diagnose data`;
   `nightscout serve` is reserved for a multitenant Nightscout, which is not built yet, so every
   role exits 64.
+- (BF-213, if merged) Sites with `PUMP_ENABLE_ALERTS` get pump alarms at the severity Loop assigns to its pump
+  status, with Loop's text: "No Insulin", "Pod Expired" and Medtronic "Signal Loss" now alarm, which they never did.
   Candidate note, read from #8865 at `1b2801f7` by session -7d, not run: a custom entrypoint or command that
   puts `node` in front of the image's default command now runs `node nightscout single` and fails to start.
 
