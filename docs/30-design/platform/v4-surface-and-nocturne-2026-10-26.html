@@ -5893,7 +5893,7 @@ the same day for the maintainer's decisions in §0),
 cgm-remote-monitor draft PR #8857 at <code>3be98536</code>, Nocturne <code>main</code> <code>89dcaf1dd</code>. Every Nocturne
 statement below was read from source at <code>89dcaf1dd</code> and nothing was run against it (read-derived).
 The proposed surface is described in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5612d654a174c00c9e0f2b68959a41260928f109/specs/openapi/proposed/nightscout-v4.yaml"><code>specs/openapi/proposed/nightscout-v4.yaml</code></a>;
 the current API in <a href="../../../specs/openapi/upstream/cgm-remote-monitor/index.html"><code>specs/openapi/upstream/cgm-remote-monitor/</code></a>.
 Nocturne paths are relative to <code>src/API/Nocturne.API/</code> unless they begin with <code>Core.</code> (under
 <code>src/Core/Nocturne.</code>) or <code>tests/</code>. Nothing here has been sent to either project.</em></p>
@@ -5987,7 +5987,7 @@ candidate for a shared contract.</p>
   second, after the identity decisions. Everything else in Nocturne's v4 stays hub-specific (§6).</li>
 </ul>
 <h2 id="2-the-proposed-v4-surface-operation-by-operation">2. The proposed v4 surface, operation by operation<a class="headerlink" href="#2-the-proposed-v4-surface-operation-by-operation" title="Permanent link">&para;</a></h2>
-<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
+<p>From <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5612d654a174c00c9e0f2b68959a41260928f109/specs/openapi/proposed/nightscout-v4.yaml"><code>nightscout-v4.yaml</code></a>. Listener names
 follow <a href="spec/authority.html#2-principals-and-credentials">authority AU2</a> (D16): <code>data</code> is <code>ns-api</code>
 (devices, clients, viewers); <code>tenant-admin</code> is <code>ns-tenant-admin</code>, the owner's second bound socket
 inside <code>ns-api</code>. Under <code>TENANCY_MODE=single</code> there is one listener and <code>API_SECRET</code> acts as the
@@ -6383,7 +6383,7 @@ at <code>PUT</code> and <code>DELETE /api/v4/registrations/{vendor}/{product}/in
   the product resource (operation 6). Operation 10's path follows the flat instance root (§0).</li>
 <li>Operations 32–41 are Nocturne's ten statistics reads over stored data, by the maintainer's
   decision (§0, §6.4). Their response shapes are in
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>, read from
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5612d654a174c00c9e0f2b68959a41260928f109/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>, read from
   Nocturne's models.</li>
 </ul>
 <p><strong>Defined without a path, so not in the OpenAPI file.</strong> These are open:</p>
@@ -6926,7 +6926,7 @@ the operator plane secured by unreachability is ORY's public and admin port spli
 time-zone bucketing, the under-ten-readings rule and its read scopes. The OpenAPI file has its ten
 <code>GET</code> reads over stored data (operations 32–41, anchored per operation to
 <code>Controllers/V4/Analytics/StatisticsController.cs</code>), with response shapes read from Nocturne's
-models into <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>
+models into <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5612d654a174c00c9e0f2b68959a41260928f109/specs/openapi/proposed/statistics-v4.schema.json"><code>statistics-v4.schema.json</code></a>
 (83 types; read-derived from property declarations, nested types not checked by hand). Not
 included: its 15 <code>POST</code> actions that compute over a posted body, and its five stateless calculators
 (<code>gmi/{meanGlucose}</code>, <code>estimated-a1c/{averageGlucose}</code>, <code>clinical-targets/{population}</code>, and the two
@@ -6948,7 +6948,7 @@ pointing at this decision and are otherwise unchanged. The proposal's MCP resour
 agents") would sit on top of the v4 reads.</p>
 <p><strong>Why v4 rather than v3</strong>, the evidence before the decision: API v3 is a per-collection contract
 (<code>/{collection}</code>, <code>/{collection}/{identifier}</code>, <code>/history</code>, with <code>version</code>, <code>status</code> and
-<code>lastModified</code> beside them, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>),
+<code>lastModified</code> beside them, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5612d654a174c00c9e0f2b68959a41260928f109/specs/openapi/upstream/cgm-remote-monitor/api-v3.yaml">api-v3.yaml</a>),
 mounted per enabled collection (<code>lib/api3/generic/collection.js:42-57</code>, <code>lib/api3/index.js:66</code>), so
 a documented client would read <code>/api/v3/stats/daily</code> as a record of a collection <code>stats</code>; and
 Nocturne already serves statistics under v4.</p>
