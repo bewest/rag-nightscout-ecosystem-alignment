@@ -115,9 +115,12 @@ prefix of; a short form that matches none or several fails the build.
   names carry a pseudonym should stay stable.
 - Neither the key nor any ID-to-pseudonym mapping is written to the repo, the
   build output or `build/site-report.json` (it records counts only).
-- The key stays on the maintainer's machine. The site is built and published
-  locally (`make site-publish`); there is no Actions workflow and no Actions
-  secret.
+- The key is kept in two places with the same value: the maintainer's key file,
+  for local builds, and the repository secret `SITE_PSEUDONYM_KEY`, for the CI
+  job that publishes on each push to `main` (see [Publishing](#publishing)).
+  Set or rotate the secret from the key file without printing it:
+  `gh secret set SITE_PSEUDONYM_KEY -R bewest/rag-nightscout-ecosystem-alignment < ~/.config/nightscout-alignment/pseudonym.key`.
+  A different value in the secret changes every pseudonym on the site.
 - The `participant-id` scan kind fails the build and `make site-check` on any
   raw `odc-<2 to 12 digits>` left in `build/site-src/` or `build/site/` (HTML,
   search index, sitemap, file names). It cannot be allowlisted.
@@ -197,6 +200,17 @@ The build fails when an API page's banner does not carry the status in
 to the commit it prints.
 
 ## Publishing
+
+**On each push to `main`**, the `site` job in `.github/workflows/ci.yml` runs
+after the other CI checks pass. It runs `make site-publish` with the
+`SITE_PSEUDONYM_KEY` secret and pushes the new gh-pages commit (a fast-forward;
+a rejected push means someone published in between, and the next push to
+`main` builds on theirs). Without the secret it skips the publish with a
+warning. A failed `make site-check`, for example a living page whose sources
+moved past its `source_commit`, fails the job and publishes nothing: re-render
+the page, move `source_commit` and push again.
+
+**Locally**, the same command works as before:
 
 `make site-publish` refuses unless the working tree is clean, `HEAD` is on a
 remote branch (`git branch -r --contains HEAD`), `SITE_PSEUDONYM_KEY` is set
