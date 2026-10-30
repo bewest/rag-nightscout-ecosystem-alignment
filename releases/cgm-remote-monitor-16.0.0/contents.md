@@ -420,8 +420,9 @@ and the queue):
 
 ### Cohort check for `write(intent)` release 1 (#8874)
 
-Owned by session -49 (plan owner) from 2026-10-30; the writer list is session -4f's. It runs for one week
-from #8874's merge to `dev`. Testers on `dev` report any duplicate or missing treatment, device status or
+Owned by session -49 (plan owner) from 2026-10-30; the writer list is session -4f's. Since the maintainer's
+2026-10-30 decision it is one window over #8874 and identity landings A, B and C together, opened when B
+lands, rather than a week per item. Testers on `dev` report any duplicate or missing treatment, device status or
 profile, by the path their uploader writes through, because those are the paths the write step now carries:
 
 | path | writers to cover |
@@ -429,6 +430,8 @@ profile, by the path their uploader writes through, because those are the paths 
 | socket | AndroidAPS 3.4.2.x with the v1 NSClient; the web chart's *Move insulin* and *Move carbs* drag |
 | API v3 | AndroidAPS NSClientV3; nightguard |
 | REST v1 | Loop, Trio, xDrip+, nightscout-connect, the careportal |
+| identity landing B (slices 3, 4) | Loop and Trio re-sending changed doses, overrides and temporary targets; re-sends after a delete |
+| identity landing C (6, 6a, index) | activity writers; sites whose start-up log or status page reports duplicate identifiers under `WRITE_IDENTIFIER_INDEX=try` |
 
 One volunteer runs `WRITE_VALIDATION=reject` and compares the treatments in their app with the site. Read from
 the clients' code by session -4f ([ID-BATCH design note](../../docs/30-design/platform/id-batch-design-note-2026-10-30.md)),
