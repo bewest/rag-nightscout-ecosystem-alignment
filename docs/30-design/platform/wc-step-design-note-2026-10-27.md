@@ -91,6 +91,28 @@ fell from 37 to 28. New release-2 questions:
 - **Q-U:** autoPrune (`collection.js:158`, `deleteManyOr`) is a query-based v3 delete outside the step. It is
   a candidate for Q-A's watermark catch-up.
 
+**Progress, 2026-10-29: slice 6 is built, and #8874 is push-ready.** Slice 6 is local `feat/write-intent-s6`
+`82dd0c83`: the dedupe gate `a9cfa83f`, the rule table `9babbbeb`, then `dbAdd`, `dbUpdate` and `dbUpdateUnset`
+through `write(intent)` in `7b145960`, plus a guard `82dd0c83`. G1 shows 0 of 360 cells. `npm test` gives
+5097/0/3. No dedupe fixture changed, and all 40 dedupe ablations, re-targeted at the step, go red as before.
+`idMatch` is gone (Q-I closed). Rule copies fell from 28 to 23. The push-ready head is `feat/write-intent-release`
+`e8224807`: slices 1 to 6, merged with `dev` `e1f7ac41`. It gives `npm test` 5106/0/3 against dev's 4759/0/3, the
+matrix and the commit-event copy differ in 0 cells from dev, and a rehearsed revert restores dev's tree exactly.
+New release-2 questions:
+- **Q-V:** `dbUpdate` by a hex `_id` writes every stored form but announces only one.
+- **Q-W:** BF-194's unit conversion runs in the socket's check but in v1's write. Putting it in one place
+  changes either the socket's reply slots or v1's order of validation.
+- **Q-X:** `dbUpdate` of a record that does not exist replies success. The step knows it found nothing.
+- **Q-Y:** `prepareDbAddDocument`'s defaults (`eventType` `<none>`, `created_at` now) stay outside the step, so a
+  re-send without `created_at` can never exact-match.
+
+**Cache lab, 2026-10-29** (`tools/lab/cache-value`, `dev` `e1f7ac41`; 3 real hours, 5 parallel arms). The cache
+cuts bytes returned by MongoDB about 32 times: 2.0 MB an hour against 63.9 MB bypassed. Operations barely change.
+Without the cache, the modelled site exceeds MongoDB Atlas M0's published transfer limit of 10 GB per 7 days;
+with it, the site uses 3.3 to 3.7 % of that limit. Pool size 5 against 100 made no latency difference. This
+supports keeping the cache for `single` (D4), and it makes Q-A's watermark catch-up, which avoids full reloads,
+worth building. The lab also reproduced the over-broad flush, BF-211.
+
 **Slice 6 dedupe gate, 2026-10-29.** Session -4f's gate (`test/ws-dedupe` `fe1aee82`, 58 tests, an
 ablation per rule) pins today's socket behaviour and found four differences from the rule list. They were
 re-run on `v15.0.9` `c6a0d8ed`.

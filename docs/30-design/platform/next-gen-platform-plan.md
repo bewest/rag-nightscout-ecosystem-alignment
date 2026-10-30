@@ -51,7 +51,7 @@ rules that change outcomes may land there instead of 17.0.0.
 |---|---|---|---|---|
 | 6 | SPEC-ID-AMEND (spec and conformance only) | 16.1.0 | none for sites | case-by-case conformance report |
 | 7 | #8857, registration S0-S2, S5 | 16.1.0 | off by default; 78 commits behind with conflicts | the flag stays off; D-REG-FLAG (where the catalogue lives) |
-| 8 | #8874 plus slices 4 and 6, `write(intent)` release 1 | 16.2.0 | every write moves, behaviour-neutral by the matrix | G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit |
+| 8 | #8874 plus slices 4 and 6, `write(intent)` release 1 (push-ready at `e8224807`, 2026-10-29: matrix 0 cells, revert rehearsed) | 16.2.0, or 16.0.0 through the bar | every write moves, behaviour-neutral by the matrix | G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit |
 | 9 | ID-FIRST-MATCH where it changes no outcome, and ID-BATCH | 16.2.0 | re-send matching on every path | the re-send table in the [identity reference §2.7](../../10-domain/record-identity-reference.md); D-LOOP-ID's per-client switch |
 | 10 | #8875 ST-VIEWS, once wired | 16.2.0 or later | alarms are safety-relevant | wiring is the maintainer's call; alarm cohort checks (execution plan §7b) |
 | 11 | #8810, AndroidAPS iOS push | 16.1.0 | device tokens are readable by read tokens | its four review items, with the author |
@@ -123,6 +123,18 @@ Rules in force (maintainer, 2026-10-26 and 2026-10-27):
 - **Re-send after delete.** It is acknowledged with a 2xx naming the stored, deleted record, and the record stays deleted.
 - **Format (2026-10-29).** 1 to 256 URL-safe characters; a UUID is recommended; placeholders (`invalid`, `undefined`, `null`, `NaN`) are refused.
 - **`_id` (2026-10-29).** A client may still send an ObjectId `_id` over API v1 (legacy). Going forward the server sets `_id` and the client sets `identifier`.
+- **Merge on match (2026-10-29).** When a re-send matching a stored record is applied, fields it leaves out are
+  kept (RFC 7386), and `PUT` replaces. The census reads replace on several paths today. The extended matrix
+  measures each path first, and each path that changes is listed cell by cell.
+- **Re-send after delete, every path (2026-10-29).** "Acknowledged, stays deleted" applies on every path, and
+  the spec text is corrected. Every changed cell is documented, so the change can be reverted or adjusted
+  as cohort feedback arrives.
+- **Records without an identifier.** Natural keys for device status and profile are a separate item,
+  ID-NATURAL-KEY, with its own corpus check of what would merge. Food and activity have no natural key.
+- **Socket edits and removes, and activity.** Identifier addressing is added where it changes nothing for
+  writes that carry no `identifier`: socket `dbUpdate`, `dbUpdateUnset` and `dbRemove` accept an
+  `identifier` when there is no `_id`, and activity creates match on `identifier`. This is conditional on
+  the extended matrix showing every existing form unchanged.
 - **Re-send with changed fields (2026-10-29).** Merge on match stays the default, because Loop and Trio re-send changed doses, overrides and temp targets by `POST` ([client survey](../../60-research/tenancy/identity-resend-survey-2026-10-29.md)). API v3 keeps refusing a changed date, device or event type, and `PUT` replaces. A site setting plus per-client quirks (D20) may opt a client into keep-first or refuse. A default changes only in a major: 16.0.0 if it clears the entry bar (§1a), otherwise 17.0.0.
 
 The rules are in the [identity specification](spec/identity.md) and the [identifier conventions](identifier-conventions.md); the conversation with the Loop maintainers is in [upstream-asks-loop-identifier](upstream-asks-loop-identifier/README.md).
