@@ -1,0 +1,5980 @@
+{
+ "run": "cc8f19428b",
+ "reps": 10,
+ "size": "heavy",
+ "sizes": {
+  "entries": 2880,
+  "treatments": 375,
+  "devicestatus": 1440
+ },
+ "node": "v22.23.4",
+ "arms": [
+  {
+   "name": "dev",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-cache-dev",
+   "env": {},
+   "head": "991b065449ac5cf1e551c81887122dcebb751406",
+   "dirty": ""
+  },
+  {
+   "name": "flush",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-cache-catchup",
+   "env": {
+    "CACHE_CATCHUP": "flush"
+   },
+   "head": "5f8e95bf4e5fe0ac79ce9689d80826e2386692d7",
+   "dirty": ""
+  },
+  {
+   "name": "ids",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-cache-catchup",
+   "env": {
+    "CACHE_CATCHUP": "ids"
+   },
+   "head": "5f8e95bf4e5fe0ac79ce9689d80826e2386692d7",
+   "dirty": ""
+  },
+  {
+   "name": "wm5",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-cache-catchup",
+   "env": {
+    "CACHE_CATCHUP": "watermark",
+    "CACHE_CATCHUP_OVERLAP_MS": "5"
+   },
+   "head": "5f8e95bf4e5fe0ac79ce9689d80826e2386692d7",
+   "dirty": ""
+  },
+  {
+   "name": "wm1000",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-cache-catchup",
+   "env": {
+    "CACHE_CATCHUP": "watermark",
+    "CACHE_CATCHUP_OVERLAP_MS": "1000"
+   },
+   "head": "5f8e95bf4e5fe0ac79ce9689d80826e2386692d7",
+   "dirty": ""
+  },
+  {
+   "name": "idsbreak",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-cache-catchup",
+   "env": {
+    "CACHE_CATCHUP": "ids",
+    "CACHE_CATCHUP_BREAK": "drop-last"
+   },
+   "head": "5f8e95bf4e5fe0ac79ce9689d80826e2386692d7",
+   "dirty": ""
+  }
+ ],
+ "wallSeconds": 2929.593,
+ "scenarios": {
+  "query-delete-entries-10": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 27.27613,
+     "p95": 35.417086,
+     "mean": 25.2820568
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 327,
+     "p95": 528,
+     "mean": 308.7
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 3210,
+     "p95": 3385,
+     "mean": 3153.5
+    },
+    "bytes": {
+     "n": 10,
+     "median": 782460,
+     "p95": 829320,
+     "mean": 767342
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 22.601156,
+     "p95": 45.558797,
+     "mean": 23.9653916
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 283,
+     "p95": 472,
+     "mean": 279.8
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 3210,
+     "p95": 3385,
+     "mean": 3153.5
+    },
+    "bytes": {
+     "n": 10,
+     "median": 782460,
+     "p95": 829320,
+     "mean": 767342
+    },
+    "flushes": 10,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 34.015053,
+     "p95": 57.346302,
+     "mean": 34.0069428
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 92,
+     "p95": 169,
+     "mean": 81.3
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 33.266096,
+     "p95": 67.124235,
+     "mean": 34.6824729
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 87,
+     "p95": 270,
+     "mean": 99.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 35.093498,
+     "p95": 69.59861,
+     "mean": 36.3029946
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 94,
+     "p95": 119,
+     "mean": 88.7
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 34.463822,
+     "p95": 51.054051,
+     "mean": 32.334168700000006
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 10,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4186661d5daef259599a6"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae419ad61d5daef25959bea"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41a8961d5daef25959da2"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41b5f61d5daef25959f64"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41ce361d5daef2595a22a"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41eae61d5daef2595a572"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41f0961d5daef2595a676"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4203f61d5daef2595a8f6"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4218561d5daef2595ab1c"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4223761d5daef2595acf2"
+      ]
+     ]
+    ]
+   }
+  },
+  "query-delete-treatments-10": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 20.545305,
+     "p95": 29.568181,
+     "mean": 17.7627379
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 249,
+     "p95": 344,
+     "mean": 233.5
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 26,
+     "mean": 14.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 425,
+     "p95": 475,
+     "mean": 425
+    },
+    "bytes": {
+     "n": 10,
+     "median": 89775,
+     "p95": 101925,
+     "mean": 89775
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 16.173718,
+     "p95": 36.194973,
+     "mean": 17.706435900000002
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 238,
+     "p95": 335,
+     "mean": 235.7
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 26,
+     "mean": 14.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 425,
+     "p95": 475,
+     "mean": 425
+    },
+    "bytes": {
+     "n": 10,
+     "median": 89775,
+     "p95": 101925,
+     "mean": 89775
+    },
+    "flushes": 10,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 27.803656,
+     "p95": 32.603821,
+     "mean": 23.1976324
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 102,
+     "p95": 168,
+     "mean": 96.7
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 20.920549,
+     "p95": 32.477949,
+     "mean": 18.9652001
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 95,
+     "p95": 192,
+     "mean": 99.4
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 27,
+     "mean": 16.6
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 23.262569,
+     "p95": 42.041317,
+     "mean": 20.9223651
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 100,
+     "p95": 145,
+     "mean": 96
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 27,
+     "mean": 15.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 19.60325,
+     "p95": 29.236188,
+     "mean": 17.5300309
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 10,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 27,
+     "mean": 16.6
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae4185161d5daef2595997e"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae419e361d5daef25959c80"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae41ad061d5daef25959e24"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae41c2f61d5daef2595a0ea"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae41cb361d5daef2595a1a8"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae41e2761d5daef2595a4b4"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae41fa961d5daef2595a78e"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae420f361d5daef2595aa40"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae4212661d5daef2595aa4a"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "treatments",
+       "6ae422d461d5daef2595ae46"
+      ]
+     ]
+    ]
+   }
+  },
+  "query-delete-devicestatus-10": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 16.144785,
+     "p95": 28.643921,
+     "mean": 16.9423359
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 14400,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 0,
+     "p95": 0,
+     "mean": 0
+    },
+    "docs": {
+     "n": 10,
+     "median": 0,
+     "p95": 0,
+     "mean": 0
+    },
+    "bytes": {
+     "n": 10,
+     "median": 0,
+     "p95": 0,
+     "mean": 0
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fc"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fd"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10fe"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e10ff"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1100"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1101"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1102"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1103"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1104"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1105"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1106"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a341eaa7cd710e1107"
+      ]
+     ]
+    ]
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 16.151621,
+     "p95": 28.591305,
+     "mean": 17.374072400000003
+    },
+    "consistentMs": {
+     "n": 1,
+     "median": 5298,
+     "p95": 5298,
+     "mean": 5298
+    },
+    "neverConsistent": 9,
+    "missing": 12960,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 0,
+     "p95": 13,
+     "mean": 1.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 0,
+     "p95": 1440,
+     "mean": 144
+    },
+    "bytes": {
+     "n": 10,
+     "median": 0,
+     "p95": 1776960,
+     "mean": 177696
+    },
+    "flushes": 10,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ],
+     [
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d193"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d194"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d195"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d196"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d197"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d198"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d199"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19a"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19b"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19c"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19d"
+      ],
+      [
+       "missing",
+       "devicestatus",
+       "6ae417a62146c5100de9d19e"
+      ]
+     ]
+    ]
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 25.765108,
+     "p95": 50.142932,
+     "mean": 26.924463100000004
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 56,
+     "p95": 94,
+     "mean": 54.9
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 1,
+     "p95": 1,
+     "mean": 1
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 31.517044,
+     "p95": 46.078232,
+     "mean": 26.7989758
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 60,
+     "p95": 82,
+     "mean": 49.9
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 1,
+     "p95": 1,
+     "mean": 1
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 26.837482,
+     "p95": 49.995074,
+     "mean": 27.5082244
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 62,
+     "p95": 111,
+     "mean": 56.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 1,
+     "p95": 1,
+     "mean": 1
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 21.878312,
+     "p95": 45.70792,
+     "mean": 23.978802
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 10,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 1,
+     "p95": 14,
+     "mean": 2.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae417eb9844c63ceb6a9456"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae419639844c63ceb6a9460"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae41a529844c63ceb6a946a"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae41bce9844c63ceb6a9474"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae41ca29844c63ceb6a947e"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae41e7f9844c63ceb6a9488"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae41f819844c63ceb6a9492"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae420ce9844c63ceb6a949c"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae421069844c63ceb6a94a6"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "devicestatus",
+       "6ae422fd9844c63ceb6a94b0"
+      ]
+     ]
+    ]
+   }
+  },
+  "filter-update-entries-10": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 14.319925,
+     "p95": 21.906088,
+     "mean": 13.2405938
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 352,
+     "p95": 493,
+     "mean": 303.6
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 3165,
+     "p95": 3400,
+     "mean": 3157.5
+    },
+    "bytes": {
+     "n": 10,
+     "median": 770470,
+     "p95": 833350,
+     "mean": 768435
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 13.189105,
+     "p95": 24.272545,
+     "mean": 13.3637381
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 343,
+     "p95": 427,
+     "mean": 282.4
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 26,
+     "mean": 14.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 3165,
+     "p95": 3400,
+     "mean": 3157.5
+    },
+    "bytes": {
+     "n": 10,
+     "median": 770470,
+     "p95": 833350,
+     "mean": 768435
+    },
+    "flushes": 10,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 14.471634,
+     "p95": 24.066671,
+     "mean": 13.398503599999998
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 393,
+     "p95": 518,
+     "mean": 326.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 3145,
+     "p95": 3363,
+     "mean": 3138.9
+    },
+    "bytes": {
+     "n": 10,
+     "median": 765310,
+     "p95": 823804,
+     "mean": 763636.2
+    },
+    "flushes": 10,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 39.591213,
+     "p95": 52.523262,
+     "mean": 34.7478586
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 79,
+     "p95": 183,
+     "mean": 96.6
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 2740,
+     "p95": 2740,
+     "mean": 2740
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 33.100017,
+     "p95": 49.58922,
+     "mean": 31.8163249
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 91,
+     "p95": 107,
+     "mean": 86.8
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 2740,
+     "p95": 2740,
+     "mean": 2740
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 14.304771,
+     "p95": 29.794891,
+     "mean": 13.5774724
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 321,
+     "p95": 434,
+     "mean": 269.2
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 3153,
+     "p95": 3372,
+     "mean": 3146.2
+    },
+    "bytes": {
+     "n": 10,
+     "median": 767374,
+     "p95": 826126,
+     "mean": 765519.6
+    },
+    "flushes": 10,
+    "errors": 0
+   }
+  },
+  "filter-update-treatments-10": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 10.090674,
+     "p95": 24.833324,
+     "mean": 10.214852
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 275,
+     "p95": 296,
+     "mean": 230.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 435,
+     "p95": 475,
+     "mean": 430
+    },
+    "bytes": {
+     "n": 10,
+     "median": 92205,
+     "p95": 101925,
+     "mean": 90990
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 8.926998,
+     "p95": 17.425472,
+     "mean": 9.2033108
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 243,
+     "p95": 306,
+     "mean": 228.6
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 435,
+     "p95": 475,
+     "mean": 430
+    },
+    "bytes": {
+     "n": 10,
+     "median": 92205,
+     "p95": 101925,
+     "mean": 90990
+    },
+    "flushes": 10,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 8.791539,
+     "p95": 28.366708,
+     "mean": 11.117019299999999
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 217,
+     "p95": 327,
+     "mean": 214.2
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 435,
+     "p95": 475,
+     "mean": 430
+    },
+    "bytes": {
+     "n": 10,
+     "median": 92205,
+     "p95": 101925,
+     "mean": 90990
+    },
+    "flushes": 10,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 12.944376,
+     "p95": 27.513733,
+     "mean": 14.3790628
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 88,
+     "p95": 118,
+     "mean": 81.5
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 2430,
+     "p95": 2430,
+     "mean": 2430
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 14.14593,
+     "p95": 30.745431,
+     "mean": 15.3734446
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 105,
+     "p95": 207,
+     "mean": 109.2
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 14,
+     "p95": 14,
+     "mean": 14
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 2430,
+     "p95": 2430,
+     "mean": 2430
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 8.660514,
+     "p95": 23.595328,
+     "mean": 10.863160599999999
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 217,
+     "p95": 337,
+     "mean": 229.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 13,
+     "p95": 13,
+     "mean": 13
+    },
+    "docs": {
+     "n": 10,
+     "median": 435,
+     "p95": 475,
+     "mean": 430
+    },
+    "bytes": {
+     "n": 10,
+     "median": 92205,
+     "p95": 101925,
+     "mean": 90990
+    },
+    "flushes": 10,
+    "errors": 0
+   }
+  },
+  "race-delete-entries": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 69.871972,
+     "p95": 264.782018,
+     "mean": 110.19840840000002
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 1146,
+     "p95": 1473,
+     "mean": 1023.5
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 26,
+     "p95": 27,
+     "mean": 26.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 3200,
+     "p95": 3390,
+     "mean": 3161.5
+    },
+    "bytes": {
+     "n": 10,
+     "median": 779800,
+     "p95": 830610,
+     "mean": 769449
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 158.904173,
+     "p95": 236.812997,
+     "mean": 131.08646040000002
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 1143,
+     "p95": 1457,
+     "mean": 866.4
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 26,
+     "p95": 39,
+     "mean": 27.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 3200,
+     "p95": 3390,
+     "mean": 3161.5
+    },
+    "bytes": {
+     "n": 10,
+     "median": 779800,
+     "p95": 830610,
+     "mean": 769449
+    },
+    "flushes": 10,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 239.828562,
+     "p95": 365.943147,
+     "mean": 198.1129683
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 37,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 40,
+     "mean": 28.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4188161d5daef259599e5"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4188161d5daef259599e4"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4188161d5daef259599e3"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae418e761d5daef25959ab9"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae418e761d5daef25959ab8"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae418e761d5daef25959ab7"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae418e761d5daef25959ab6"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae418e761d5daef25959ab5"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41b3561d5daef25959f0c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b3561d5daef25959f0b"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41bfa61d5daef2595a095"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41bfa61d5daef2595a094"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41bfa61d5daef2595a093"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41bfa61d5daef2595a092"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41bfa61d5daef2595a091"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41d1861d5daef2595a2a2"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d1861d5daef2595a2a1"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d1861d5daef2595a2a0"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d1861d5daef2595a29f"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d1861d5daef2595a29e"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41e5161d5daef2595a4f7"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e5161d5daef2595a4f6"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41f4061d5daef2595a6e9"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f4061d5daef2595a6e8"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f4061d5daef2595a6e7"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f4061d5daef2595a6e6"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f4061d5daef2595a6e5"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4208161d5daef2595a97c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4208161d5daef2595a97b"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4208161d5daef2595a97a"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4208161d5daef2595a979"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae421ac61d5daef2595ab5b"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421ac61d5daef2595ab5a"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421ac61d5daef2595ab59"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4225361d5daef2595ad3b"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4225361d5daef2595ad3a"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4225361d5daef2595ad39"
+      ]
+     ]
+    ]
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 246.090723,
+     "p95": 299.478921,
+     "mean": 188.37315439999998
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 31,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 40,
+     "mean": 29.7
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4188d61d5daef259599f6"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4188d61d5daef259599f5"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4188d61d5daef259599f4"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4188d61d5daef259599f3"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4188d61d5daef259599f2"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4191261d5daef25959b01"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4191261d5daef25959b00"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41b1a61d5daef25959ee2"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b1a61d5daef25959ee1"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b1a61d5daef25959ee0"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b1a61d5daef25959edf"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b1a61d5daef25959ede"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41c1461d5daef2595a0be"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41d2f61d5daef2595a2bc"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41e3661d5daef2595a4ca"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e3661d5daef2595a4c9"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41f5661d5daef2595a707"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f5661d5daef2595a706"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f5661d5daef2595a705"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f5661d5daef2595a704"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f5661d5daef2595a703"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4206b61d5daef2595a95d"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4206b61d5daef2595a95c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4206b61d5daef2595a95b"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae421a161d5daef2595ab4d"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421a161d5daef2595ab4c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421a161d5daef2595ab4b"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421a161d5daef2595ab4a"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4227b61d5daef2595ad86"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4227b61d5daef2595ad85"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4227b61d5daef2595ad84"
+      ]
+     ]
+    ]
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 213.148123,
+     "p95": 261.877462,
+     "mean": 172.76220829999997
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 33,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 40,
+     "mean": 28.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4189961d5daef25959a05"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4189961d5daef25959a04"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4189961d5daef25959a03"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4189961d5daef25959a02"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4189961d5daef25959a01"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae418f861d5daef25959ad4"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae418f861d5daef25959ad3"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41b0e61d5daef25959ed0"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b0e61d5daef25959ecf"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41c2561d5daef2595a0dd"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41c2461d5daef2595a0dc"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41d0c61d5daef2595a290"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d0c61d5daef2595a28f"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41e6161d5daef2595a518"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e6161d5daef2595a517"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e6161d5daef2595a516"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e6161d5daef2595a515"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e6161d5daef2595a514"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41f4b61d5daef2595a6f7"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f4b61d5daef2595a6f6"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f4b61d5daef2595a6f5"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f4b61d5daef2595a6f4"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4208c61d5daef2595a98c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4208c61d5daef2595a98b"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4208c61d5daef2595a98a"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4208c61d5daef2595a989"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4208c61d5daef2595a988"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4219761d5daef2595ab3e"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4219761d5daef2595ab3d"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4219761d5daef2595ab3c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4219761d5daef2595ab3b"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4226d61d5daef2595ad67"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4226d61d5daef2595ad66"
+      ]
+     ]
+    ]
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 131.030425,
+     "p95": 293.963054,
+     "mean": 162.24925690000003
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 38,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 40,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 220,
+     "p95": 220,
+     "mean": 220
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae418a961d5daef25959a20"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae418a961d5daef25959a1f"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae418a761d5daef25959a1e"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4190661d5daef25959af1"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4190561d5daef25959af0"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41b2961d5daef25959efd"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b2961d5daef25959efc"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41b2761d5daef25959efb"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41c0561d5daef2595a0a1"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41c0561d5daef2595a0a0"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41c0461d5daef2595a09f"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41d2361d5daef2595a2b1"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d2361d5daef2595a2b0"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d2361d5daef2595a2af"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d2361d5daef2595a2ae"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d2361d5daef2595a2ad"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41d2261d5daef2595a2ac"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41e4661d5daef2595a4e8"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e4661d5daef2595a4e7"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41e4461d5daef2595a4e6"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae41f3561d5daef2595a6d7"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f3561d5daef2595a6d6"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae41f3461d5daef2595a6d5"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4207661d5daef2595a96d"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4207661d5daef2595a96c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4207661d5daef2595a96b"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4207661d5daef2595a96a"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4207561d5daef2595a969"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae421bb61d5daef2595ab79"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421bb61d5daef2595ab78"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421bb61d5daef2595ab77"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae421ba61d5daef2595ab76"
+      ]
+     ],
+     [
+      [
+       "ghost",
+       "entries",
+       "6ae4225e61d5daef2595ad4c"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4225e61d5daef2595ad4b"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4225e61d5daef2595ad4a"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4225e61d5daef2595ad49"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4225e61d5daef2595ad48"
+      ],
+      [
+       "ghost",
+       "entries",
+       "6ae4225d61d5daef2595ad47"
+      ]
+     ]
+    ]
+   }
+  },
+  "inflight-gap-0": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 100.362771,
+     "p95": 120.291974,
+     "mean": 80.5366928
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 330,
+     "p95": 374,
+     "mean": 269.6
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 40,
+     "mean": 28.3
+    },
+    "docs": {
+     "n": 10,
+     "median": 6420,
+     "p95": 6860,
+     "mean": 6321
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1564920,
+     "p95": 1682760,
+     "mean": 1538400
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 94.651703,
+     "p95": 150.976609,
+     "mean": 85.7565708
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 354,
+     "p95": 408,
+     "mean": 280.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6420,
+     "p95": 6860,
+     "mean": 6321
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1564920,
+     "p95": 1682760,
+     "mean": 1538400
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 88.41806,
+     "p95": 147.441003,
+     "mean": 85.62533099999999
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 299,
+     "p95": 391,
+     "mean": 261.6
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6376,
+     "p95": 6786,
+     "mean": 6284.4
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1553568,
+     "p95": 1663668,
+     "mean": 1528957.2
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 170.68736,
+     "p95": 241.572491,
+     "mean": 146.3060732
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 67,
+     "p95": 100,
+     "mean": 57.2
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 28,
+     "mean": 26.7
+    },
+    "docs": {
+     "n": 10,
+     "median": 15,
+     "p95": 15,
+     "mean": 15
+    },
+    "bytes": {
+     "n": 10,
+     "median": 3990,
+     "p95": 3990,
+     "mean": 3990
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 161.814026,
+     "p95": 277.527815,
+     "mean": 164.4195277
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 60,
+     "p95": 72,
+     "mean": 48.7
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 28,
+     "mean": 26.7
+    },
+    "docs": {
+     "n": 10,
+     "median": 20,
+     "p95": 20,
+     "mean": 20
+    },
+    "bytes": {
+     "n": 10,
+     "median": 5265,
+     "p95": 5265,
+     "mean": 5265
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 98.923061,
+     "p95": 146.005873,
+     "mean": 86.5444491
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 365,
+     "p95": 484,
+     "mean": 300
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6392,
+     "p95": 6804,
+     "mean": 6298.4
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1557696,
+     "p95": 1668312,
+     "mean": 1532569.2
+    },
+    "flushes": 20,
+    "errors": 0
+   }
+  },
+  "inflight-gap-10": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 121.284532,
+     "p95": 166.533772,
+     "mean": 100.4630986
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 385,
+     "p95": 437,
+     "mean": 294.2
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6370,
+     "p95": 6770,
+     "mean": 6322
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1551660,
+     "p95": 1658640,
+     "mean": 1538700
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 104.433774,
+     "p95": 135.242697,
+     "mean": 89.54314680000002
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 366,
+     "p95": 452,
+     "mean": 299
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6370,
+     "p95": 6770,
+     "mean": 6322
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1551660,
+     "p95": 1658640,
+     "mean": 1538700
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 109.595872,
+     "p95": 137.119144,
+     "mean": 93.88782280000001
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 332,
+     "p95": 448,
+     "mean": 273.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6330,
+     "p95": 6702,
+     "mean": 6285.2
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1541340,
+     "p95": 1641096,
+     "mean": 1529205.6
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 194.5347,
+     "p95": 249.146716,
+     "mean": 168.845385
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 50,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 41,
+     "mean": 33.2
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 2670,
+     "p95": 2670,
+     "mean": 2670
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4184061d5daef25959957",
+       1793333312335,
+       1793333313906
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4184061d5daef25959958",
+       1793333312336,
+       1793333313906
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4184061d5daef25959959",
+       1793333312337,
+       1793333313906
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4184061d5daef2595995a",
+       1793333312338,
+       1793333313906
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4184061d5daef2595995b",
+       1793333312339,
+       1793333313906
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41a0061d5daef25959cbd",
+       1793333760484,
+       1793333761959
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a0061d5daef25959cbe",
+       1793333760485,
+       1793333761959
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a0061d5daef25959cbf",
+       1793333760486,
+       1793333761959
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a0061d5daef25959cc0",
+       1793333760487,
+       1793333761959
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a0061d5daef25959cc1",
+       1793333760488,
+       1793333761959
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41a3661d5daef25959d2b",
+       1793333814912,
+       1793333816507
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a3661d5daef25959d2c",
+       1793333814913,
+       1793333816507
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a3661d5daef25959d2d",
+       1793333814914,
+       1793333816507
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a3661d5daef25959d2e",
+       1793333814915,
+       1793333816507
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a3661d5daef25959d2f",
+       1793333814916,
+       1793333816507
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41bbb61d5daef2595a069",
+       1793334203728,
+       1793334205206
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41bbb61d5daef2595a06a",
+       1793334203729,
+       1793334205206
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41bbb61d5daef2595a06b",
+       1793334203730,
+       1793334205206
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41bbb61d5daef2595a06c",
+       1793334203731,
+       1793334205206
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41bbb61d5daef2595a06d",
+       1793334203732,
+       1793334205206
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41d9361d5daef2595a375",
+       1793334675836,
+       1793334677388
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d9361d5daef2595a376",
+       1793334675837,
+       1793334677388
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d9361d5daef2595a377",
+       1793334675838,
+       1793334677388
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d9361d5daef2595a378",
+       1793334675839,
+       1793334677388
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d9361d5daef2595a379",
+       1793334675840,
+       1793334677388
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41de261d5daef2595a40b",
+       1793334754984,
+       1793334756306
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41de261d5daef2595a40c",
+       1793334754985,
+       1793334756306
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41de261d5daef2595a40d",
+       1793334754986,
+       1793334756306
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41de261d5daef2595a40e",
+       1793334754987,
+       1793334756306
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41de261d5daef2595a40f",
+       1793334754988,
+       1793334756306
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41ed661d5daef2595a5d7",
+       1793334998070,
+       1793334999428
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ed661d5daef2595a5d8",
+       1793334998071,
+       1793334999428
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ed661d5daef2595a5d9",
+       1793334998072,
+       1793334999428
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ed661d5daef2595a5da",
+       1793334998073,
+       1793334999428
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ed661d5daef2595a5db",
+       1793334998074,
+       1793334999428
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae420a561d5daef2595a9c9",
+       1793335461924,
+       1793335463221
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae420a561d5daef2595a9ca",
+       1793335461925,
+       1793335463221
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae420a561d5daef2595a9cb",
+       1793335461926,
+       1793335463221
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae420a561d5daef2595a9cc",
+       1793335461927,
+       1793335463221
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae420a561d5daef2595a9cd",
+       1793335461928,
+       1793335463221
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4216a61d5daef2595aacd",
+       1793335658716,
+       1793335660015
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4216a61d5daef2595aace",
+       1793335658717,
+       1793335660015
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4216a61d5daef2595aacf",
+       1793335658718,
+       1793335660015
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4216a61d5daef2595aad0",
+       1793335658719,
+       1793335660015
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4216a61d5daef2595aad1",
+       1793335658720,
+       1793335660015
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4221f61d5daef2595acad",
+       1793335839377,
+       1793335840653
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4221f61d5daef2595acae",
+       1793335839378,
+       1793335840653
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4221f61d5daef2595acaf",
+       1793335839379,
+       1793335840653
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4221f61d5daef2595acb0",
+       1793335839380,
+       1793335840653
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4221f61d5daef2595acb1",
+       1793335839381,
+       1793335840653
+      ]
+     ]
+    ]
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 234.31986,
+     "p95": 286.478999,
+     "mean": 198.5707043
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 67,
+     "p95": 94,
+     "mean": 55.7
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 28,
+     "mean": 28
+    },
+    "docs": {
+     "n": 10,
+     "median": 20,
+     "p95": 20,
+     "mean": 20
+    },
+    "bytes": {
+     "n": 10,
+     "median": 5285,
+     "p95": 5285,
+     "mean": 5285
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 102.683617,
+     "p95": 141.934166,
+     "mean": 87.296383
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 278,
+     "p95": 444,
+     "mean": 262.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6346,
+     "p95": 6724,
+     "mean": 6299.6
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1545468,
+     "p95": 1646772,
+     "mean": 1532920.8
+    },
+    "flushes": 20,
+    "errors": 0
+   }
+  },
+  "inflight-gap-100": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 203.323332,
+     "p95": 224.739274,
+     "mean": 174.23301800000002
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 371,
+     "p95": 1340,
+     "mean": 377.3
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 25.6
+    },
+    "docs": {
+     "n": 10,
+     "median": 6390,
+     "p95": 6840,
+     "mean": 6016.5
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1557020,
+     "p95": 1677440,
+     "mean": 1464583
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 224.361337,
+     "p95": 254.849183,
+     "mean": 198.8176664
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 350,
+     "p95": 452,
+     "mean": 286.3
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 25.7
+    },
+    "docs": {
+     "n": 10,
+     "median": 6390,
+     "p95": 6840,
+     "mean": 6322
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1557020,
+     "p95": 1677440,
+     "mean": 1538678
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 194.612392,
+     "p95": 271.806467,
+     "mean": 188.17117119999997
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 335,
+     "p95": 1433,
+     "mean": 375.8
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 25.6
+    },
+    "docs": {
+     "n": 10,
+     "median": 6350,
+     "p95": 6766,
+     "mean": 5985
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1546700,
+     "p95": 1658348,
+     "mean": 1456510
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 314.786871,
+     "p95": 382.812182,
+     "mean": 277.4773994
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 50,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 41,
+     "mean": 30.6
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 2680,
+     "p95": 2680,
+     "mean": 2680
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "stale",
+       "entries",
+       "6ae418ba61d5daef25959a3d",
+       1793333434056,
+       1793333435611
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae418ba61d5daef25959a3e",
+       1793333434057,
+       1793333435611
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae418ba61d5daef25959a3f",
+       1793333434058,
+       1793333435611
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae418ba61d5daef25959a40",
+       1793333434059,
+       1793333435611
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae418ba61d5daef25959a41",
+       1793333434060,
+       1793333435611
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4198261d5daef25959b73",
+       1793333634948,
+       1793333636510
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4198261d5daef25959b74",
+       1793333634949,
+       1793333636510
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4198261d5daef25959b75",
+       1793333634950,
+       1793333636510
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4198261d5daef25959b76",
+       1793333634951,
+       1793333636510
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4198261d5daef25959b77",
+       1793333634952,
+       1793333636510
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41a1661d5daef25959ce5",
+       1793333782341,
+       1793333783770
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a1661d5daef25959ce6",
+       1793333782342,
+       1793333783770
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a1661d5daef25959ce7",
+       1793333782343,
+       1793333783770
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a1661d5daef25959ce8",
+       1793333782344,
+       1793333783770
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41a1661d5daef25959ce9",
+       1793333782345,
+       1793333783770
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41b5361d5daef25959f51",
+       1793334099971,
+       1793334101514
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41b5361d5daef25959f52",
+       1793334099972,
+       1793334101514
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41b5361d5daef25959f53",
+       1793334099973,
+       1793334101514
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41b5361d5daef25959f54",
+       1793334099974,
+       1793334101514
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41b5361d5daef25959f55",
+       1793334099975,
+       1793334101514
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41d4561d5daef2595a2e9",
+       1793334597859,
+       1793334599304
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d4561d5daef2595a2ea",
+       1793334597860,
+       1793334599304
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d4561d5daef2595a2eb",
+       1793334597861,
+       1793334599304
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d4561d5daef2595a2ec",
+       1793334597862,
+       1793334599304
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d4561d5daef2595a2ed",
+       1793334597863,
+       1793334599304
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41e0f61d5daef2595a479",
+       1793334799195,
+       1793334800695
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41e0f61d5daef2595a47a",
+       1793334799196,
+       1793334800695
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41e0f61d5daef2595a47b",
+       1793334799197,
+       1793334800695
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41e0f61d5daef2595a47c",
+       1793334799198,
+       1793334800695
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41e0f61d5daef2595a47d",
+       1793334799199,
+       1793334800695
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41f1c61d5daef2595a695",
+       1793335068476,
+       1793335069812
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41f1c61d5daef2595a696",
+       1793335068477,
+       1793335069812
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41f1c61d5daef2595a697",
+       1793335068478,
+       1793335069812
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41f1c61d5daef2595a698",
+       1793335068479,
+       1793335069812
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41f1c61d5daef2595a699",
+       1793335068480,
+       1793335069812
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4204c61d5daef2595a901",
+       1793335372843,
+       1793335374147
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4204c61d5daef2595a902",
+       1793335372844,
+       1793335374147
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4204c61d5daef2595a903",
+       1793335372845,
+       1793335374147
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4204c61d5daef2595a904",
+       1793335372846,
+       1793335374147
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4204c61d5daef2595a905",
+       1793335372847,
+       1793335374147
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae421f161d5daef2595ac21",
+       1793335793175,
+       1793335794478
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae421f161d5daef2595ac22",
+       1793335793176,
+       1793335794478
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae421f161d5daef2595ac23",
+       1793335793177,
+       1793335794478
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae421f161d5daef2595ac24",
+       1793335793178,
+       1793335794478
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae421f161d5daef2595ac25",
+       1793335793179,
+       1793335794478
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae422c661d5daef2595ae29",
+       1793336006834,
+       1793336008149
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422c661d5daef2595ae2a",
+       1793336006835,
+       1793336008149
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422c661d5daef2595ae2b",
+       1793336006836,
+       1793336008149
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422c661d5daef2595ae2c",
+       1793336006837,
+       1793336008149
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422c661d5daef2595ae2d",
+       1793336006838,
+       1793336008149
+      ]
+     ]
+    ]
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 372.839327,
+     "p95": 401.880896,
+     "mean": 313.2172105
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 65,
+     "p95": 105,
+     "mean": 55.7
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 28,
+     "mean": 28
+    },
+    "docs": {
+     "n": 10,
+     "median": 20,
+     "p95": 20,
+     "mean": 20
+    },
+    "bytes": {
+     "n": 10,
+     "median": 5305,
+     "p95": 5305,
+     "mean": 5305
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 191.386093,
+     "p95": 232.585236,
+     "mean": 180.64875
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 303,
+     "p95": 407,
+     "mean": 260.1
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6366,
+     "p95": 6784,
+     "mean": 6298.4
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1550828,
+     "p95": 1662992,
+     "mean": 1532589.2
+    },
+    "flushes": 20,
+    "errors": 0
+   }
+  },
+  "inflight-gap-1000": {
+   "dev": {
+    "lat": {
+     "n": 10,
+     "median": 1102.329175,
+     "p95": 1149.301359,
+     "mean": 1086.7393828
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 384,
+     "p95": 506,
+     "mean": 306.6
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6350,
+     "p95": 6820,
+     "mean": 6316
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1546320,
+     "p95": 1672080,
+     "mean": 1537096
+    },
+    "flushes": 0,
+    "errors": 0
+   },
+   "flush": {
+    "lat": {
+     "n": 10,
+     "median": 1093.409477,
+     "p95": 1173.722692,
+     "mean": 1089.5764833999997
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 322,
+     "p95": 468,
+     "mean": 273.9
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6350,
+     "p95": 6820,
+     "mean": 6316
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1546320,
+     "p95": 1672080,
+     "mean": 1537096
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "ids": {
+    "lat": {
+     "n": 10,
+     "median": 1114.158634,
+     "p95": 1149.267964,
+     "mean": 1091.5812492
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 355,
+     "p95": 453,
+     "mean": 288.8
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6310,
+     "p95": 6746,
+     "mean": 6277.4
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1536000,
+     "p95": 1652988,
+     "mean": 1527137.2
+    },
+    "flushes": 20,
+    "errors": 0
+   },
+   "wm5": {
+    "lat": {
+     "n": 10,
+     "median": 1187.872395,
+     "p95": 1265.679094,
+     "mean": 1168.0437829999998
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 50,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 41,
+     "mean": 30.6
+    },
+    "docs": {
+     "n": 10,
+     "median": 10,
+     "p95": 10,
+     "mean": 10
+    },
+    "bytes": {
+     "n": 10,
+     "median": 2690,
+     "p95": 2690,
+     "mean": 2690
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "stale",
+       "entries",
+       "6ae417c161d5daef2595988f",
+       1793333185852,
+       1793333187351
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417c161d5daef25959890",
+       1793333185853,
+       1793333187351
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417c161d5daef25959891",
+       1793333185854,
+       1793333187351
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417c161d5daef25959892",
+       1793333185855,
+       1793333187351
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417c161d5daef25959893",
+       1793333185856,
+       1793333187351
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4192d61d5daef25959b19",
+       1793333549737,
+       1793333551214
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4192d61d5daef25959b1a",
+       1793333549738,
+       1793333551214
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4192d61d5daef25959b1b",
+       1793333549739,
+       1793333551214
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4192d61d5daef25959b1c",
+       1793333549740,
+       1793333551214
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4192d61d5daef25959b1d",
+       1793333549741,
+       1793333551214
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41ab061d5daef25959df3",
+       1793333936124,
+       1793333937578
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ab061d5daef25959df4",
+       1793333936125,
+       1793333937578
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ab061d5daef25959df5",
+       1793333936126,
+       1793333937578
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ab061d5daef25959df6",
+       1793333936127,
+       1793333937578
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41ab061d5daef25959df7",
+       1793333936128,
+       1793333937578
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41c5161d5daef2595a131",
+       1793334353876,
+       1793334355435
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c5161d5daef2595a132",
+       1793334353877,
+       1793334355435
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c5161d5daef2595a133",
+       1793334353878,
+       1793334355435
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c5161d5daef2595a134",
+       1793334353879,
+       1793334355435
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c5161d5daef2595a135",
+       1793334353880,
+       1793334355435
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41d7d61d5daef2595a34d",
+       1793334653148,
+       1793334654725
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7d61d5daef2595a34e",
+       1793334653149,
+       1793334654725
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7d61d5daef2595a34f",
+       1793334653150,
+       1793334654725
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7d61d5daef2595a350",
+       1793334653151,
+       1793334654725
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7d61d5daef2595a351",
+       1793334653152,
+       1793334654725
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41dd661d5daef2595a401",
+       1793334742348,
+       1793334743903
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dd661d5daef2595a402",
+       1793334742349,
+       1793334743903
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dd661d5daef2595a403",
+       1793334742350,
+       1793334743903
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dd661d5daef2595a404",
+       1793334742351,
+       1793334743903
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dd661d5daef2595a405",
+       1793334742352,
+       1793334743903
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41fcb61d5daef2595a7b7",
+       1793335243621,
+       1793335244924
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fcb61d5daef2595a7b8",
+       1793335243622,
+       1793335244924
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fcb61d5daef2595a7b9",
+       1793335243623,
+       1793335244924
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fcb61d5daef2595a7ba",
+       1793335243624,
+       1793335244924
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fcb61d5daef2595a7bb",
+       1793335243625,
+       1793335244924
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4200261d5daef2595a857",
+       1793335298902,
+       1793335300169
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4200261d5daef2595a858",
+       1793335298903,
+       1793335300169
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4200261d5daef2595a859",
+       1793335298904,
+       1793335300169
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4200261d5daef2595a85a",
+       1793335298905,
+       1793335300169
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4200261d5daef2595a85b",
+       1793335298906,
+       1793335300169
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4213e61d5daef2595aa7d",
+       1793335614925,
+       1793335616228
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4213e61d5daef2595aa7e",
+       1793335614926,
+       1793335616228
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4213e61d5daef2595aa7f",
+       1793335614927,
+       1793335616228
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4213e61d5daef2595aa80",
+       1793335614928,
+       1793335616228
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4213e61d5daef2595aa81",
+       1793335614929,
+       1793335616228
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4229861d5daef2595adcf",
+       1793335960790,
+       1793335962119
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4229861d5daef2595add0",
+       1793335960791,
+       1793335962119
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4229861d5daef2595add1",
+       1793335960792,
+       1793335962119
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4229861d5daef2595add2",
+       1793335960793,
+       1793335962119
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4229861d5daef2595add3",
+       1793335960794,
+       1793335962119
+      ]
+     ]
+    ]
+   },
+   "wm1000": {
+    "lat": {
+     "n": 10,
+     "median": 1224.178333,
+     "p95": 1316.529784,
+     "mean": 1185.6361384
+    },
+    "consistentMs": null,
+    "neverConsistent": 10,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 50,
+    "queries": {
+     "n": 10,
+     "median": 28,
+     "p95": 41,
+     "mean": 30.6
+    },
+    "docs": {
+     "n": 10,
+     "median": 15,
+     "p95": 15,
+     "mean": 15
+    },
+    "bytes": {
+     "n": 10,
+     "median": 3980,
+     "p95": 3980,
+     "mean": 3980
+    },
+    "flushes": 0,
+    "errors": 0,
+    "detail": [
+     [
+      [
+       "stale",
+       "entries",
+       "6ae417d361d5daef259598a3",
+       1793333203074,
+       1793333204630
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417d361d5daef259598a4",
+       1793333203075,
+       1793333204630
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417d361d5daef259598a5",
+       1793333203076,
+       1793333204630
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417d361d5daef259598a6",
+       1793333203077,
+       1793333204630
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae417d361d5daef259598a7",
+       1793333203078,
+       1793333204630
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4191c61d5daef25959b05",
+       1793333532719,
+       1793333534264
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4191c61d5daef25959b06",
+       1793333532720,
+       1793333534264
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4191c61d5daef25959b07",
+       1793333532721,
+       1793333534264
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4191c61d5daef25959b08",
+       1793333532722,
+       1793333534264
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4191c61d5daef25959b09",
+       1793333532723,
+       1793333534264
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41abc61d5daef25959dfd",
+       1793333948796,
+       1793333950279
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41abc61d5daef25959dfe",
+       1793333948797,
+       1793333950279
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41abc61d5daef25959dff",
+       1793333948798,
+       1793333950279
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41abc61d5daef25959e00",
+       1793333948799,
+       1793333950279
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41abc61d5daef25959e01",
+       1793333948800,
+       1793333950279
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41c6261d5daef2595a145",
+       1793334370886,
+       1793334372385
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c6261d5daef2595a146",
+       1793334370887,
+       1793334372385
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c6261d5daef2595a147",
+       1793334370888,
+       1793334372385
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c6261d5daef2595a148",
+       1793334370889,
+       1793334372385
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41c6261d5daef2595a149",
+       1793334370890,
+       1793334372385
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41d7061d5daef2595a343",
+       1793334640339,
+       1793334641813
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7061d5daef2595a344",
+       1793334640340,
+       1793334641813
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7061d5daef2595a345",
+       1793334640341,
+       1793334641813
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7061d5daef2595a346",
+       1793334640342,
+       1793334641813
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41d7061d5daef2595a347",
+       1793334640343,
+       1793334641813
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41dc561d5daef2595a3ed",
+       1793334725402,
+       1793334726914
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dc561d5daef2595a3ee",
+       1793334725403,
+       1793334726914
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dc561d5daef2595a3ef",
+       1793334725404,
+       1793334726914
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dc561d5daef2595a3f0",
+       1793334725405,
+       1793334726914
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41dc561d5daef2595a3f1",
+       1793334725406,
+       1793334726914
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae41fb461d5daef2595a78f",
+       1793335220562,
+       1793335221874
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fb461d5daef2595a790",
+       1793335220563,
+       1793335221874
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fb461d5daef2595a791",
+       1793335220564,
+       1793335221874
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fb461d5daef2595a792",
+       1793335220565,
+       1793335221874
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae41fb461d5daef2595a793",
+       1793335220566,
+       1793335221874
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4201661d5daef2595a875",
+       1793335318177,
+       1793335319473
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4201661d5daef2595a876",
+       1793335318178,
+       1793335319473
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4201661d5daef2595a877",
+       1793335318179,
+       1793335319473
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4201661d5daef2595a878",
+       1793335318180,
+       1793335319473
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4201661d5daef2595a879",
+       1793335318181,
+       1793335319473
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae4214a61d5daef2595aa87",
+       1793335626733,
+       1793335628022
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4214a61d5daef2595aa88",
+       1793335626734,
+       1793335628022
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4214a61d5daef2595aa89",
+       1793335626735,
+       1793335628022
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4214a61d5daef2595aa8a",
+       1793335626736,
+       1793335628022
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae4214a61d5daef2595aa8b",
+       1793335626737,
+       1793335628022
+      ]
+     ],
+     [
+      [
+       "stale",
+       "entries",
+       "6ae422ac61d5daef2595aded",
+       1793335980065,
+       1793335981361
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422ac61d5daef2595adee",
+       1793335980066,
+       1793335981361
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422ac61d5daef2595adef",
+       1793335980067,
+       1793335981361
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422ac61d5daef2595adf0",
+       1793335980068,
+       1793335981361
+      ],
+      [
+       "stale",
+       "entries",
+       "6ae422ac61d5daef2595adf1",
+       1793335980069,
+       1793335981361
+      ]
+     ]
+    ]
+   },
+   "idsbreak": {
+    "lat": {
+     "n": 10,
+     "median": 1113.565888,
+     "p95": 1148.629572,
+     "mean": 1092.7763291
+    },
+    "consistentMs": {
+     "n": 10,
+     "median": 351,
+     "p95": 469,
+     "mean": 292
+    },
+    "neverConsistent": 0,
+    "missing": 0,
+    "ghost": 0,
+    "stale": 0,
+    "queries": {
+     "n": 10,
+     "median": 27,
+     "p95": 27,
+     "mean": 27
+    },
+    "docs": {
+     "n": 10,
+     "median": 6326,
+     "p95": 6764,
+     "mean": 6292.6
+    },
+    "bytes": {
+     "n": 10,
+     "median": 1540128,
+     "p95": 1657632,
+     "mean": 1531058.8
+    },
+    "flushes": 20,
+    "errors": 0
+   }
+  }
+ }
+}
