@@ -376,7 +376,7 @@ response carries it and per-role results (outcome `accepted`, or `partial` when 
 201 on create, 200 on renewal). An instance that stops renewing lapses and holds no roles, with no
 housekeeping. A renewal is not a capability re-check.
 
-**Etag.** `sha256:` over the canonical JSON of `{instance, boundTo, granted}`. The lease is outside
+**Etag.** `sha256:` over the canonical JSON of `{instance, boundTo, granted}`. The body's `product` is the instance's address, not its content (maintainer, 2026-10-30): the hub reads it to place the instance and leaves it out of the stored `instance` and out of the etag, so an instance and its etag are the same as under the nested path; a renewal naming another product is still 422 `invalid-instance`. The lease is outside
 it, so a renewal that changes nothing keeps it (`noop: true`) and a retried renewal still matches.
 A role granted on renewal, moved by the owner, or dropped by a rebind (§9) changes it, so the
 instance learns of the change through a 412 on its next renewal, and two owner actions racing on
