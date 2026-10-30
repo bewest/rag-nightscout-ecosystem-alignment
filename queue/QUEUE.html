@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>8c31c34b1</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3230,15 +3230,15 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>386</td>
+<td>388</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>362</td>
+<td>360</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 362 of the 748 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 748 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3276,13 +3276,13 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>8</td>
-<td>WC-STEP-PATCH, BFQ-72, BFQ-161, BFQ-209, BFQ-211, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, PLAT-SERVE</td>
+<td>6</td>
+<td>WC-STEP-PATCH, BFQ-72, BFQ-161, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, PLAT-SERVE</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
-<td>63</td>
-<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH</td>
+<td>65</td>
+<td>BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH</td>
 </tr>
 <tr>
 <td><code>released</code></td>
@@ -9355,10 +9355,10 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-209</code></td>
 <td>BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even from different clients</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>bf/16.0.0-socket-similar-match</code></td>
 <td>patch</td>
-<td>0 run + 1 no-gate</td>
+<td>1 run</td>
 </tr>
 <tr>
 <td><code>BFQ-210</code></td>
@@ -9371,10 +9371,10 @@ distinction is the only thing that makes the register mean anything - widening
 <tr>
 <td><code>BFQ-211</code></td>
 <td>BF-211 - a delete by query in one collection empties all three in-memory caches</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 <td><code>bf/16.0.0-socket-similar-match</code></td>
 <td>patch</td>
-<td>0 run + 1 no-gate</td>
+<td>1 run</td>
 </tr>
 <tr>
 <td><code>BFQ-212</code></td>
@@ -17428,7 +17428,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -17469,14 +17469,15 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> A record that was swallowed is stored; in the 16.0.0 merge list. One matrix cell moves on purpose (treatments x v3 x ws, now 2 records, like v1 and in- process).</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; The behaviour gate is the socket dedupe gate on the branch (test/ws-dedupe, 58 tests, each rule's ablation red alone), run in the crm worktree; not wired here because it needs the branch's node_modules. Measured 2026-10-29: npm test 4759 to 4853/0/3; the exact match's selector identical over 559,872 inputs.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 567f0612 official/dev</code></li>
+<li>official/dev contains BF-209's fix ebed6323 with the amount rule restored, 567f0612 (merged 2026-10-30 as cf3d4b8f, #8877); red if dev is rewritten or the merge is reverted</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 <li><code>docs/30-design/platform/wc-step-design-note-2026-10-27.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-29: draft PR #8877 opened by the maintainer (GitHub head ebed6323, which still carries BF-210's withdrawn rule and names it in the title). Local bf/16.0.0-socket-similar-match ac5d77fb adds the BF-210 withdrawal (567f0612) and BF-211's fix (ac5d77fb, from 13107d1e); not pushed. In the 16.0.0 merge list (maintainer, 2026-10-29).</p>
+<p><strong>Notes.</strong> 2026-10-30: #8877 merged to dev as cf3d4b8f (head ac5d77fb) by the maintainer; not released. 2026-10-29: draft PR #8877 opened by the maintainer (GitHub head ebed6323, which still carries BF-210's withdrawn rule and names it in the title). Local bf/16.0.0-socket-similar-match ac5d77fb adds the BF-210 withdrawal (567f0612) and BF-211's fix (ac5d77fb, from 13107d1e); not pushed. In the 16.0.0 merge list (maintainer, 2026-10-29).</p>
 <h3 id="bfq-210--bf-210---a-socket-treatment-without-an-amount-is-matched-to-a-stored-one-that-has-one-closed-not-a-defect"><code>BFQ-210</code> &mdash; BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect)<a class="headerlink" href="#bfq-210--bf-210---a-socket-treatment-without-an-amount-is-matched-to-a-stored-one-that-has-one-closed-not-a-defect" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -17547,7 +17548,7 @@ distinction is the only thing that makes the register mean anything - widening
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>merged-upstream</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -17588,13 +17589,14 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> fewer cache reloads; no reply or stored record changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; The fix carries 3 tests that fail on dev (13107d1e on bf/16.0.0-cache-flush-scope; npm test 4759 to 4762/0/3), run in the crm worktree. The cache-value lab (tools/lab/cache-value) measures the reload: 890 documents and 716,202 bytes on dev, 32 documents and 10,289 bytes with the fix.</li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ac5d77fb official/dev</code></li>
+<li>official/dev contains BF-211's fix ac5d77fb (merged 2026-10-30 as cf3d4b8f, #8877); red if dev is rewritten or the merge is reverted</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-29: in the 16.0.0 merge list (maintainer), added to #8877. Fix 13107d1e on bf/16.0.0-cache-flush-scope, cherry-picked onto local bf/16.0.0-socket-similar-match as ac5d77fb; not pushed (GitHub head of #8877 is ebed6323).</p>
+<p><strong>Notes.</strong> 2026-10-30: #8877 merged to dev as cf3d4b8f (head ac5d77fb) by the maintainer; not released. 2026-10-29: in the 16.0.0 merge list (maintainer), added to #8877. Fix 13107d1e on bf/16.0.0-cache-flush-scope, cherry-picked onto local bf/16.0.0-socket-similar-match as ac5d77fb; not pushed (GitHub head of #8877 is ebed6323).</p>
 <h3 id="bfq-212--bf-212---a-chart-drag-split-leaves-two-treatments-with-one-client-identity-a-re-send-can-overwrite-ones-amount-and-a-re-upload-can-show-the-moved-insulin-twice"><code>BFQ-212</code> &mdash; BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice<a class="headerlink" href="#bfq-212--bf-212---a-chart-drag-split-leaves-two-treatments-with-one-client-identity-a-re-send-can-overwrite-ones-amount-and-a-re-upload-can-show-the-moved-insulin-twice" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
