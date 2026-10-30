@@ -12,7 +12,9 @@
 //       an update by filter that names no records, as a write by filter does:
 //       stamped through the tree's srv-dates, then announced the way the tree
 //       announces a write by filter ('catchup' on the prototype, which flushes
-//       unless CACHE_CATCHUP=watermark; a 'remove' with no changes on dev)
+//       unless CACHE_CATCHUP=watermark; a 'remove' with no changes on dev).
+//       With CACHE_CATCHUP=resolve the update reads its ids first, is scoped
+//       to them, and the 'catchup' names them
 //   {cmd: 'inflight', type, first, second, gapMs}
 //       two updates by filter; the first is stamped, then gapMs later the second
 //       is stamped, written and announced, and only then is the first written
@@ -47,15 +49,28 @@ R('lib/server/bootevent')(env, language).boot(async function booted (ctx) {
   const srvDates = R('lib/server/srv-dates');
   const proto = typeof ctx.cache.catchUpStats === 'function';
 
+  // CACHE_CATCHUP=resolve (proto/cache-resolve): a write by filter reads its
+  // ids first, writes {filter AND _id in ids} and names them.
+  const resolveMode = proto && process.env.CACHE_CATCHUP === 'resolve';
+  const catchupIds = resolveMode ? R('lib/server/cache-catchup-ids') : null;
+
   // Announce a write by filter and wait for the cache to take it in.
-  function announce (type) {
+  function announce (type, ids) {
     return new Promise(resolve => {
-      if (proto) ctx.bus.emit('data-update', { type, op: 'catchup', done: resolve });
+      if (proto) ctx.bus.emit('data-update', { type, op: 'catchup', ids: ids || undefined, done: resolve });
       else { ctx.bus.emit('data-update', { type, op: 'remove' }); resolve(); }
     }).then(() => ctx.bus.emit('data-received'));
   }
   const col = type => ctx.store.collection(env[type + '_collection'] || type);
   const stamped = set => { const s = Object.assign({}, set); srvDates.stampModified(s); return s; };
+  // An update by filter with a set already stamped; returns what to name (resolve) or null.
+  async function filterWrite (type, tag, set) {
+    const filter = { bench: tag };
+    if (!resolveMode) return { r: await col(type).updateMany(filter, { $set: set }), ids: null };
+    const ids = await catchupIds.idsBefore(ctx, env, type, filter);
+    const r = await col(type).updateMany(catchupIds.scope(filter, ids), { $set: set });
+    return { r, ids: ids && catchupIds.named(ids) };
+  }
 
   process.on('message', async m => {
     try {
@@ -67,18 +82,18 @@ R('lib/server/bootevent')(env, language).boot(async function booted (ctx) {
         process.send({ cmd: 'cache', id: m.id, cache: out, stats: proto ? ctx.cache.catchUpStats() : null });
       }
       if (m.cmd === 'filterUpdate') {
-        const r = await col(m.type).updateMany({ bench: m.tag }, { $set: stamped(m.set) });
-        await announce(m.type);
-        process.send({ cmd: 'filterUpdate', id: m.id, modified: r.modifiedCount });
+        const w = await filterWrite(m.type, m.tag, stamped(m.set));
+        await announce(m.type, w.ids);
+        process.send({ cmd: 'filterUpdate', id: m.id, modified: w.r.modifiedCount });
       }
       if (m.cmd === 'inflight') {
         const first = stamped(m.first.set);
         await sleep(m.gapMs);
         const second = stamped(m.second.set);
-        await col(m.type).updateMany({ bench: m.second.tag }, { $set: second });
-        await announce(m.type);
-        await col(m.type).updateMany({ bench: m.first.tag }, { $set: first });
-        await announce(m.type);
+        const w2 = await filterWrite(m.type, m.second.tag, second);
+        await announce(m.type, w2.ids);
+        const w1 = await filterWrite(m.type, m.first.tag, first);
+        await announce(m.type, w1.ids);
         process.send({ cmd: 'inflight', id: m.id, first: first.srvModified, second: second.srvModified });
       }
       if (m.cmd === 'resync') {

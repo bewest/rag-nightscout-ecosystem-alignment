@@ -1,0 +1,382 @@
+{
+ "run": "54d427",
+ "reps": 5,
+ "break": "counts-from-records",
+ "node": "v22.23.4",
+ "arms": [
+  {
+   "name": "pre",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-proto",
+   "head": "8a39671502bbe9fb6bcdf027493290eb4a0910a1"
+  },
+  {
+   "name": "post",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-post",
+   "head": "408c7d03b065e733bf35d78d7d7f81d11ed00ed1"
+  },
+  {
+   "name": "postnodel",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-postnodel",
+   "head": "70e2d2181ea7d089ba7cc6edd7533f334dddc000"
+  },
+  {
+   "name": "capped",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-capped",
+   "head": "8432ea6624cd0682b3f353e37124c78ea9ba9a17"
+  }
+ ],
+ "rows": [
+  {
+   "arm": "pre",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 0,
+   "extra": 10
+  },
+  {
+   "arm": "pre",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 0,
+   "extra": 10
+  },
+  {
+   "arm": "post",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 0,
+   "extra": 5
+  },
+  {
+   "arm": "post",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "postnodel",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "postnodel",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "postnodel",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "postnodel",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 0,
+   "extra": 10
+  },
+  {
+   "arm": "postnodel",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 0,
+   "extra": 5
+  },
+  {
+   "arm": "postnodel",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "postnodel",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 30,
+   "extra": 0
+  },
+  {
+   "arm": "postnodel",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "capped",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "capped",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "capped",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "capped",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 0,
+   "extra": 10
+  },
+  {
+   "arm": "capped",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "capped",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "capped",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "capped",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  }
+ ]
+}

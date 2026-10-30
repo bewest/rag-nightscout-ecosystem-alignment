@@ -1,0 +1,549 @@
+{
+ "run": "15c4ff",
+ "node": "v22.23.4",
+ "seconds": 20,
+ "pruner": false,
+ "break": null,
+ "arms": [
+  {
+   "name": "base",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-base",
+   "head": "9668b179ff4efbdd335e400dec40b712bd5b9af6"
+  },
+  {
+   "name": "proto",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-proto",
+   "head": "8a39671502bbe9fb6bcdf027493290eb4a0910a1"
+  }
+ ],
+ "rows": [
+  {
+   "level": 1,
+   "round": 0,
+   "arm": "base",
+   "wall": 20.032,
+   "requests": 2822,
+   "failed": 0,
+   "perSecond": 140.87460063897763,
+   "latency": {
+    "n": 2822,
+    "median": 6.508384,
+    "p95": 12.157158,
+    "mean": 7.163625401133935
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1267,
+     "median": 6.100565,
+     "p95": 10.960979,
+     "mean": 6.60750773401736
+    },
+    "cgm": {
+     "n": 454,
+     "median": 6.038898,
+     "p95": 10.401374,
+     "mean": 6.416904374449333
+    },
+    "care": {
+     "n": 1101,
+     "median": 7.468617,
+     "p95": 13.112423,
+     "mean": 8.111502267938244
+    }
+   },
+   "events": 2822,
+   "unnamed": 2822,
+   "truthOps": 3048,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 3048,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 1,
+   "round": 0,
+   "arm": "proto",
+   "wall": 20.05,
+   "requests": 2773,
+   "failed": 0,
+   "perSecond": 138.30423940149626,
+   "latency": {
+    "n": 2773,
+    "median": 6.974947,
+    "p95": 12.824684,
+    "mean": 7.561697015146036
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1239,
+     "median": 6.361381,
+     "p95": 12.179448,
+     "mean": 6.997699602905571
+    },
+    "cgm": {
+     "n": 448,
+     "median": 6.857603,
+     "p95": 11.219407,
+     "mean": 7.148938214285714
+    },
+    "care": {
+     "n": 1086,
+     "median": 7.646537,
+     "p95": 13.406183,
+     "mean": 8.375425133517506
+    }
+   },
+   "events": 2773,
+   "unnamed": 0,
+   "truthOps": 2997,
+   "namedRecords": 2997,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "arm": "proto",
+   "wall": 20.083,
+   "requests": 2805,
+   "failed": 0,
+   "perSecond": 139.67036797291243,
+   "latency": {
+    "n": 2805,
+    "median": 6.746684,
+    "p95": 12.509209,
+    "mean": 7.397162453119419
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1256,
+     "median": 6.163832,
+     "p95": 11.893228,
+     "mean": 6.79647348089172
+    },
+    "cgm": {
+     "n": 448,
+     "median": 6.712808,
+     "p95": 11.462655,
+     "mean": 7.207296997767856
+    },
+    "care": {
+     "n": 1101,
+     "median": 7.463735,
+     "p95": 13.194325,
+     "mean": 8.159673872842871
+    }
+   },
+   "events": 2805,
+   "unnamed": 0,
+   "truthOps": 3029,
+   "namedRecords": 3029,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "arm": "base",
+   "wall": 20.079,
+   "requests": 2883,
+   "failed": 0,
+   "perSecond": 143.58284775138205,
+   "latency": {
+    "n": 2883,
+    "median": 6.253883,
+    "p95": 11.732617,
+    "mean": 6.847714397849463
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1296,
+     "median": 5.78302,
+     "p95": 10.710402,
+     "mean": 6.313832714506168
+    },
+    "cgm": {
+     "n": 456,
+     "median": 5.805112,
+     "p95": 10.2348,
+     "mean": 6.252592699561401
+    },
+    "care": {
+     "n": 1131,
+     "median": 7.091206,
+     "p95": 12.630136,
+     "mean": 7.699426295313883
+    }
+   },
+   "events": 2883,
+   "unnamed": 2883,
+   "truthOps": 3111,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 3111,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "arm": "base",
+   "wall": 20.107,
+   "requests": 5818,
+   "failed": 0,
+   "perSecond": 289.3519669766748,
+   "latency": {
+    "n": 5818,
+    "median": 6.040245,
+    "p95": 10.792737,
+    "mean": 6.758972668614626
+   },
+   "byWriter": {
+    "loop": {
+     "n": 2626,
+     "median": 5.526374,
+     "p95": 9.750586,
+     "mean": 6.142933575399839
+    },
+    "cgm": {
+     "n": 912,
+     "median": 5.45814,
+     "p95": 9.815064,
+     "mean": 6.496841293859651
+    },
+    "care": {
+     "n": 2280,
+     "median": 6.809707,
+     "p95": 12.079913,
+     "mean": 7.573350946052637
+    }
+   },
+   "events": 5818,
+   "unnamed": 5818,
+   "truthOps": 6274,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 6274,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 2,
+   "round": 0,
+   "arm": "proto",
+   "wall": 20.12,
+   "requests": 5712,
+   "failed": 0,
+   "perSecond": 283.89662027833003,
+   "latency": {
+    "n": 5712,
+    "median": 6.3805,
+    "p95": 11.666898,
+    "mean": 7.137379014355726
+   },
+   "byWriter": {
+    "loop": {
+     "n": 2580,
+     "median": 5.722894,
+     "p95": 10.698264,
+     "mean": 6.406245604651168
+    },
+    "cgm": {
+     "n": 897,
+     "median": 6.442474,
+     "p95": 11.666898,
+     "mean": 7.244004007803785
+    },
+    "care": {
+     "n": 2235,
+     "median": 7.161546,
+     "p95": 12.426981,
+     "mean": 7.938578825503352
+    }
+   },
+   "events": 5712,
+   "unnamed": 0,
+   "truthOps": 6160,
+   "namedRecords": 6160,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "arm": "proto",
+   "wall": 20.14,
+   "requests": 5700,
+   "failed": 0,
+   "perSecond": 283.0188679245283,
+   "latency": {
+    "n": 5700,
+    "median": 6.451047,
+    "p95": 11.829401,
+    "mean": 7.212678900526331
+   },
+   "byWriter": {
+    "loop": {
+     "n": 2568,
+     "median": 5.804759,
+     "p95": 10.92827,
+     "mean": 6.516889837616816
+    },
+    "cgm": {
+     "n": 894,
+     "median": 6.498549,
+     "p95": 11.858271,
+     "mean": 7.424680852348996
+    },
+    "care": {
+     "n": 2238,
+     "median": 7.182742,
+     "p95": 12.464349,
+     "mean": 7.926377099195724
+    }
+   },
+   "events": 5700,
+   "unnamed": 0,
+   "truthOps": 6146,
+   "namedRecords": 6146,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 2,
+   "round": 1,
+   "arm": "base",
+   "wall": 20.206,
+   "requests": 5830,
+   "failed": 0,
+   "perSecond": 288.5281599524894,
+   "latency": {
+    "n": 5830,
+    "median": 5.985349,
+    "p95": 11.219614,
+    "mean": 6.790049292967409
+   },
+   "byWriter": {
+    "loop": {
+     "n": 2624,
+     "median": 5.546416,
+     "p95": 10.002402,
+     "mean": 6.2404369954268395
+    },
+    "cgm": {
+     "n": 914,
+     "median": 5.595515,
+     "p95": 9.853579,
+     "mean": 6.418775028446383
+    },
+    "care": {
+     "n": 2292,
+     "median": 6.771253,
+     "p95": 12.258958,
+     "mean": 7.5673299851657925
+    }
+   },
+   "events": 5830,
+   "unnamed": 5830,
+   "truthOps": 6286,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 6286,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 0,
+   "arm": "base",
+   "wall": 20.49,
+   "requests": 10978,
+   "failed": 0,
+   "perSecond": 535.7735480722304,
+   "latency": {
+    "n": 10978,
+    "median": 6.679564,
+    "p95": 13.214769,
+    "mean": 8.253836076334482
+   },
+   "byWriter": {
+    "loop": {
+     "n": 5008,
+     "median": 5.920092,
+     "p95": 11.570962,
+     "mean": 7.219724130790714
+    },
+    "cgm": {
+     "n": 1779,
+     "median": 5.960918,
+     "p95": 11.857607,
+     "mean": 8.200585430578984
+    },
+    "care": {
+     "n": 4191,
+     "median": 7.95383,
+     "p95": 14.628419,
+     "mean": 9.5121432875209
+    }
+   },
+   "events": 10978,
+   "unnamed": 10978,
+   "truthOps": 11866,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 11866,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 0,
+   "arm": "proto",
+   "wall": 20.472,
+   "requests": 10548,
+   "failed": 0,
+   "perSecond": 515.2403282532239,
+   "latency": {
+    "n": 10548,
+    "median": 7.368242,
+    "p95": 15.24238,
+    "mean": 9.170688385286324
+   },
+   "byWriter": {
+    "loop": {
+     "n": 4817,
+     "median": 6.328628,
+     "p95": 13.380861,
+     "mean": 7.845369205522099
+    },
+    "cgm": {
+     "n": 1720,
+     "median": 7.244787,
+     "p95": 14.725872,
+     "mean": 10.050090168604653
+    },
+    "care": {
+     "n": 4011,
+     "median": 8.600083,
+     "p95": 16.849966,
+     "mean": 10.385221275243063
+    }
+   },
+   "events": 10548,
+   "unnamed": 0,
+   "truthOps": 11408,
+   "namedRecords": 11408,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 1,
+   "arm": "proto",
+   "wall": 20.353,
+   "requests": 10530,
+   "failed": 0,
+   "perSecond": 517.3684469120032,
+   "latency": {
+    "n": 10530,
+    "median": 7.365497,
+    "p95": 15.204731,
+    "mean": 9.059170754036089
+   },
+   "byWriter": {
+    "loop": {
+     "n": 4796,
+     "median": 6.352812,
+     "p95": 13.77797,
+     "mean": 7.841904072351953
+    },
+    "care": {
+     "n": 4032,
+     "median": 8.326123,
+     "p95": 16.655363,
+     "mean": 10.098605343005941
+    },
+    "cgm": {
+     "n": 1702,
+     "median": 7.428309,
+     "p95": 15.025931,
+     "mean": 10.026862142185667
+    }
+   },
+   "events": 10530,
+   "unnamed": 0,
+   "truthOps": 11378,
+   "namedRecords": 11378,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 0,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 1,
+   "arm": "base",
+   "wall": 20.053,
+   "requests": 10940,
+   "failed": 0,
+   "perSecond": 545.5542811549394,
+   "latency": {
+    "n": 10940,
+    "median": 6.555963,
+    "p95": 13.096619,
+    "mean": 7.9039079759597595
+   },
+   "byWriter": {
+    "loop": {
+     "n": 5007,
+     "median": 5.782819,
+     "p95": 11.203377,
+     "mean": 6.874360973437195
+    },
+    "cgm": {
+     "n": 1769,
+     "median": 5.910042,
+     "p95": 11.431129,
+     "mean": 7.746034496890901
+    },
+    "care": {
+     "n": 4164,
+     "median": 7.827732,
+     "p95": 14.48015,
+     "mean": 9.20895601296829
+    }
+   },
+   "events": 10940,
+   "unnamed": 10940,
+   "truthOps": 11824,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 11824,
+   "extra": 0,
+   "pruneEvents": 0
+  }
+ ]
+}

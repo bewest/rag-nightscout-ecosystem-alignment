@@ -1,0 +1,1609 @@
+{
+ "run": "66906f",
+ "node": "v22.23.4",
+ "reps": 20,
+ "arms": [
+  {
+   "name": "base",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-base",
+   "head": "9668b179ff4efbdd335e400dec40b712bd5b9af6"
+  },
+  {
+   "name": "proto",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-proto",
+   "head": "8a39671502bbe9fb6bcdf027493290eb4a0910a1"
+  }
+ ],
+ "calls": {
+  "1 insertMany base listen": {
+   "n": 1,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 150,
+   "records": 0,
+   "counts": {
+    "inserted": 1,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 2.9709362983703613,
+    "p95": 10.178443431854248,
+    "mean": 3.3231368541717528
+   }
+  },
+  "1 updateMany base listen": {
+   "n": 1,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 150,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 2.9133782386779785,
+    "p95": 6.086472988128662,
+    "mean": 3.157657790184021
+   }
+  },
+  "1 deleteMany base listen": {
+   "n": 1,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 150,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 1
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 2.1565980911254883,
+    "p95": 6.227132797241211,
+    "mean": 2.72209792137146
+   }
+  },
+  "1 bulkWrite-upsert-fresh base listen": {
+   "n": 1,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 149,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 1,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 3.134054183959961,
+    "p95": 5.888873100280762,
+    "mean": 3.279266095161438
+   }
+  },
+  "1 bulkWrite-upsert-resend base listen": {
+   "n": 1,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 149,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 2.878422260284424,
+    "p95": 6.251275062561035,
+    "mean": 2.9958232164382936
+   }
+  },
+  "1 insertMany proto listen": {
+   "n": 1,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 262,
+   "records": 1,
+   "counts": {
+    "inserted": 1,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 3.348504066467285,
+    "p95": 9.016199111938477,
+    "mean": 3.477334141731262
+   }
+  },
+  "1 updateMany proto listen": {
+   "n": 1,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 262,
+   "records": 1,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 4.599328994750977,
+    "p95": 8.132213115692139,
+    "mean": 4.459613633155823
+   }
+  },
+  "1 deleteMany proto listen": {
+   "n": 1,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 261,
+   "records": 1,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 1
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 4.436133861541748,
+    "p95": 7.589012145996094,
+    "mean": 3.9969553470611574
+   }
+  },
+  "1 bulkWrite-upsert-fresh proto listen": {
+   "n": 1,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 216,
+   "records": 1,
+   "counts": {
+    "inserted": 0,
+    "upserted": 1,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 4.869176387786865,
+    "p95": 6.411961078643799,
+    "mean": 4.33901436328888
+   }
+  },
+  "1 bulkWrite-upsert-resend proto listen": {
+   "n": 1,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 216,
+   "records": 1,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 5.032580852508545,
+    "p95": 7.906047821044922,
+    "mean": 4.84281907081604
+   }
+  },
+  "1 insertMany proto quiet": {
+   "n": 1,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.867236614227295,
+    "p95": 6.213979721069336,
+    "mean": 3.0432022333145143
+   }
+  },
+  "1 updateMany proto quiet": {
+   "n": 1,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.0384860038757324,
+    "p95": 4.5054612159729,
+    "mean": 2.647382354736328
+   }
+  },
+  "1 deleteMany proto quiet": {
+   "n": 1,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.290681838989258,
+    "p95": 5.168323993682861,
+    "mean": 2.651589822769165
+   }
+  },
+  "1 bulkWrite-upsert-fresh proto quiet": {
+   "n": 1,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 3.0734000205993652,
+    "p95": 6.211333751678467,
+    "mean": 3.203417110443115
+   }
+  },
+  "1 bulkWrite-upsert-resend proto quiet": {
+   "n": 1,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.9588570594787598,
+    "p95": 6.027530193328857,
+    "mean": 3.0357992887496947
+   }
+  },
+  "1 insertMany base quiet": {
+   "n": 1,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.9142189025878906,
+    "p95": 4.85648775100708,
+    "mean": 3.1021641969680784
+   }
+  },
+  "1 updateMany base quiet": {
+   "n": 1,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.2364888191223145,
+    "p95": 4.421252727508545,
+    "mean": 2.5091011762619018
+   }
+  },
+  "1 deleteMany base quiet": {
+   "n": 1,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.183688163757324,
+    "p95": 5.947474002838135,
+    "mean": 2.5668894767761232
+   }
+  },
+  "1 bulkWrite-upsert-fresh base quiet": {
+   "n": 1,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.5683541297912598,
+    "p95": 5.419753074645996,
+    "mean": 2.7334545373916628
+   }
+  },
+  "1 bulkWrite-upsert-resend base quiet": {
+   "n": 1,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 2.8272581100463867,
+    "p95": 5.157271862030029,
+    "mean": 3.0356823921203615
+   }
+  },
+  "100 insertMany base quiet": {
+   "n": 100,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 5.609647750854492,
+    "p95": 6.999403953552246,
+    "mean": 5.659589195251465
+   }
+  },
+  "100 updateMany base quiet": {
+   "n": 100,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 6.519272804260254,
+    "p95": 9.926143169403076,
+    "mean": 6.890826344490051
+   }
+  },
+  "100 deleteMany base quiet": {
+   "n": 100,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 6.130245685577393,
+    "p95": 8.87375020980835,
+    "mean": 6.212449526786804
+   }
+  },
+  "100 bulkWrite-upsert-fresh base quiet": {
+   "n": 100,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 16.137574195861816,
+    "p95": 25.744781017303467,
+    "mean": 17.187324261665346
+   }
+  },
+  "100 bulkWrite-upsert-resend base quiet": {
+   "n": 100,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 14.147294044494629,
+    "p95": 24.062015056610107,
+    "mean": 15.289780044555664
+   }
+  },
+  "100 insertMany proto quiet": {
+   "n": 100,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 5.476511001586914,
+    "p95": 6.764187335968018,
+    "mean": 5.490196275711059
+   }
+  },
+  "100 updateMany proto quiet": {
+   "n": 100,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 6.472370147705078,
+    "p95": 9.647181034088135,
+    "mean": 6.669565153121948
+   }
+  },
+  "100 deleteMany proto quiet": {
+   "n": 100,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 6.241870880126953,
+    "p95": 10.740403652191162,
+    "mean": 6.569079160690308
+   }
+  },
+  "100 bulkWrite-upsert-fresh proto quiet": {
+   "n": 100,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 18.223687171936035,
+    "p95": 29.945209980010986,
+    "mean": 18.51920862197876
+   }
+  },
+  "100 bulkWrite-upsert-resend proto quiet": {
+   "n": 100,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 14.696648120880127,
+    "p95": 23.59599208831787,
+    "mean": 15.446810245513916
+   }
+  },
+  "100 insertMany proto listen": {
+   "n": 100,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 10454,
+   "records": 100,
+   "counts": {
+    "inserted": 100,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 5.700057029724121,
+    "p95": 7.828865051269531,
+    "mean": 5.886331701278687
+   }
+  },
+  "100 updateMany proto listen": {
+   "n": 100,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 10454,
+   "records": 100,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 100,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 8.2258939743042,
+    "p95": 12.448355197906494,
+    "mean": 8.58242642879486
+   }
+  },
+  "100 deleteMany proto listen": {
+   "n": 100,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 10354,
+   "records": 100,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 100
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 7.724287986755371,
+    "p95": 14.817075252532959,
+    "mean": 8.432512998580933
+   }
+  },
+  "100 bulkWrite-upsert-fresh proto listen": {
+   "n": 100,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 5663,
+   "records": 100,
+   "counts": {
+    "inserted": 0,
+    "upserted": 100,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 21.507248878479004,
+    "p95": 31.099298000335693,
+    "mean": 22.19187488555908
+   }
+  },
+  "100 bulkWrite-upsert-resend proto listen": {
+   "n": 100,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 5663,
+   "records": 100,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 100,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 18.450037002563477,
+    "p95": 23.68508815765381,
+    "mean": 19.11859986782074
+   }
+  },
+  "100 insertMany base listen": {
+   "n": 100,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 152,
+   "records": 0,
+   "counts": {
+    "inserted": 100,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 5.80689811706543,
+    "p95": 9.623905181884766,
+    "mean": 6.167293500900269
+   }
+  },
+  "100 updateMany base listen": {
+   "n": 100,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 152,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 100,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 6.968442916870117,
+    "p95": 9.527844905853271,
+    "mean": 7.044341015815735
+   }
+  },
+  "100 deleteMany base listen": {
+   "n": 100,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 152,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 100
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 6.345116138458252,
+    "p95": 8.614449977874756,
+    "mean": 6.523082423210144
+   }
+  },
+  "100 bulkWrite-upsert-fresh base listen": {
+   "n": 100,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 151,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 100,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 17.69937801361084,
+    "p95": 26.726393222808838,
+    "mean": 18.17376928329468
+   }
+  },
+  "100 bulkWrite-upsert-resend base listen": {
+   "n": 100,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 151,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 100,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 14.179986000061035,
+    "p95": 20.696235179901123,
+    "mean": 14.928877067565917
+   }
+  },
+  "1000 insertMany proto quiet": {
+   "n": 1000,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 15.674537181854248,
+    "p95": 20.092196941375732,
+    "mean": 15.773802375793457
+   }
+  },
+  "1000 updateMany proto quiet": {
+   "n": 1000,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 21.94743585586548,
+    "p95": 28.343992710113525,
+    "mean": 22.20751702785492
+   }
+  },
+  "1000 deleteMany proto quiet": {
+   "n": 1000,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 14.939109802246094,
+    "p95": 36.807466983795166,
+    "mean": 16.367672443389893
+   }
+  },
+  "1000 bulkWrite-upsert-fresh proto quiet": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 98.83913612365723,
+    "p95": 115.87356281280518,
+    "mean": 100.40562653541565
+   }
+  },
+  "1000 bulkWrite-upsert-resend proto quiet": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 99.78093719482422,
+    "p95": 135.2053952217102,
+    "mean": 103.3082267999649
+   }
+  },
+  "1000 insertMany base quiet": {
+   "n": 1000,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 14.09205961227417,
+    "p95": 31.031816005706787,
+    "mean": 15.075848937034607
+   }
+  },
+  "1000 updateMany base quiet": {
+   "n": 1000,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 20.01286268234253,
+    "p95": 23.19797420501709,
+    "mean": 20.604934811592102
+   }
+  },
+  "1000 deleteMany base quiet": {
+   "n": 1000,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 14.948607921600342,
+    "p95": 46.5812931060791,
+    "mean": 16.693591713905334
+   }
+  },
+  "1000 bulkWrite-upsert-fresh base quiet": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 101.05137300491333,
+    "p95": 132.84067106246948,
+    "mean": 102.49479951858521
+   }
+  },
+  "1000 bulkWrite-upsert-resend base quiet": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 20,
+    "median": 103.69380283355713,
+    "p95": 121.38643264770508,
+    "mean": 105.3851147890091
+   }
+  },
+  "1000 insertMany proto listen": {
+   "n": 1000,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 105055,
+   "records": 1000,
+   "counts": {
+    "inserted": 1000,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 14.589891910552979,
+    "p95": 25.743420600891113,
+    "mean": 15.491412472724914
+   }
+  },
+  "1000 updateMany proto listen": {
+   "n": 1000,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 105055,
+   "records": 1000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 24.37116527557373,
+    "p95": 33.20036220550537,
+    "mean": 25.656364250183106
+   }
+  },
+  "1000 deleteMany proto listen": {
+   "n": 1000,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 104055,
+   "records": 1000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 1000
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 19.540555000305176,
+    "p95": 26.734026432037354,
+    "mean": 20.33187415599823
+   }
+  },
+  "1000 bulkWrite-upsert-fresh proto listen": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 55164,
+   "records": 1000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 1000,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 137.64523124694824,
+    "p95": 171.54419898986816,
+    "mean": 141.4417227268219
+   }
+  },
+  "1000 bulkWrite-upsert-resend proto listen": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 55164,
+   "records": 1000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 139.28690576553345,
+    "p95": 173.76114082336426,
+    "mean": 142.072501373291
+   }
+  },
+  "1000 insertMany base listen": {
+   "n": 1000,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 153,
+   "records": 0,
+   "counts": {
+    "inserted": 1000,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 14.195534229278564,
+    "p95": 17.743544101715088,
+    "mean": 14.253429460525513
+   }
+  },
+  "1000 updateMany base listen": {
+   "n": 1000,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 153,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 20.315464973449707,
+    "p95": 26.193170070648193,
+    "mean": 21.13337926864624
+   }
+  },
+  "1000 deleteMany base listen": {
+   "n": 1000,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 153,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 1000
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 14.763601779937744,
+    "p95": 16.776714324951172,
+    "mean": 14.85229275226593
+   }
+  },
+  "1000 bulkWrite-upsert-fresh base listen": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 152,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 1000,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 98.65729427337646,
+    "p95": 130.19490003585815,
+    "mean": 101.64486269950866
+   }
+  },
+  "1000 bulkWrite-upsert-resend base listen": {
+   "n": 1000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 152,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 1000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 20,
+    "median": 101.819260597229,
+    "p95": 118.63614702224731,
+    "mean": 103.13104264736175
+   }
+  },
+  "10000 insertMany base quiet": {
+   "n": 10000,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 113.17445373535156,
+    "p95": 127.08272504806519,
+    "mean": 109.03502473831176
+   }
+  },
+  "10000 updateMany base quiet": {
+   "n": 10000,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 154.83734321594238,
+    "p95": 271.18313217163086,
+    "mean": 180.23676443099976
+   }
+  },
+  "10000 deleteMany base quiet": {
+   "n": 10000,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 112.63813591003418,
+    "p95": 115.55340480804443,
+    "mean": 111.90105848312378
+   }
+  },
+  "10000 bulkWrite-upsert-fresh base quiet": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 969.1705513000488,
+    "p95": 1026.2080903053284,
+    "mean": 970.8749605178833
+   }
+  },
+  "10000 bulkWrite-upsert-resend base quiet": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 961.4757370948792,
+    "p95": 975.1665930747986,
+    "mean": 958.2361446380615
+   }
+  },
+  "10000 insertMany proto quiet": {
+   "n": 10000,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 97.78516817092896,
+    "p95": 120.64543867111206,
+    "mean": 105.53842334747314
+   }
+  },
+  "10000 updateMany proto quiet": {
+   "n": 10000,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 151.97415590286255,
+    "p95": 208.07446193695068,
+    "mean": 164.02244892120362
+   }
+  },
+  "10000 deleteMany proto quiet": {
+   "n": 10000,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 104.29494142532349,
+    "p95": 106.39776706695557,
+    "mean": 104.48895654678344
+   }
+  },
+  "10000 bulkWrite-upsert-fresh proto quiet": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 960.9547357559204,
+    "p95": 1056.472336769104,
+    "mean": 979.7938962936402
+   }
+  },
+  "10000 bulkWrite-upsert-resend proto quiet": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "quiet",
+   "bytes": null,
+   "records": null,
+   "stats": {
+    "n": 5,
+    "median": 963.5875673294067,
+    "p95": 995.939432144165,
+    "mean": 965.7037043571472
+   }
+  },
+  "10000 insertMany base listen": {
+   "n": 10000,
+   "op": "insertMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 154,
+   "records": 0,
+   "counts": {
+    "inserted": 10000,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 95.99224376678467,
+    "p95": 119.61795473098755,
+    "mean": 102.92297639846802
+   }
+  },
+  "10000 updateMany base listen": {
+   "n": 10000,
+   "op": "updateMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 154,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 10000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 225.57577419281006,
+    "p95": 266.5626230239868,
+    "mean": 205.01199102401733
+   }
+  },
+  "10000 deleteMany base listen": {
+   "n": 10000,
+   "op": "deleteMany",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 154,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 10000
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 106.12852001190186,
+    "p95": 133.153826713562,
+    "mean": 111.13807544708251
+   }
+  },
+  "10000 bulkWrite-upsert-fresh base listen": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 153,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 10000,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 978.6458039283752,
+    "p95": 1025.3785581588745,
+    "mean": 989.4893161773682
+   }
+  },
+  "10000 bulkWrite-upsert-resend base listen": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "base",
+   "mode": "listen",
+   "bytes": 153,
+   "records": 0,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 10000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 969.2118430137634,
+    "p95": 990.1222991943359,
+    "mean": 961.5301151275635
+   }
+  },
+  "10000 insertMany proto listen": {
+   "n": 10000,
+   "op": "insertMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 1059056,
+   "records": 10000,
+   "counts": {
+    "inserted": 10000,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 100.6769027709961,
+    "p95": 105.27356576919556,
+    "mean": 100.45100803375244
+   }
+  },
+  "10000 updateMany proto listen": {
+   "n": 10000,
+   "op": "updateMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 1059056,
+   "records": 10000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 10000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 230.27884912490845,
+    "p95": 251.16205978393555,
+    "mean": 225.89469833374022
+   }
+  },
+  "10000 deleteMany proto listen": {
+   "n": 10000,
+   "op": "deleteMany",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 1049056,
+   "records": 10000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 0,
+    "deleted": 10000
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 141.90326499938965,
+    "p95": 180.58375692367554,
+    "mean": 151.63502817153932
+   }
+  },
+  "10000 bulkWrite-upsert-fresh proto listen": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-fresh",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 550165,
+   "records": 10000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 10000,
+    "modified": 0,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 1330.9466948509216,
+    "p95": 1407.8164501190186,
+    "mean": 1355.3087774276732
+   }
+  },
+  "10000 bulkWrite-upsert-resend proto listen": {
+   "n": 10000,
+   "op": "bulkWrite-upsert-resend",
+   "arm": "proto",
+   "mode": "listen",
+   "bytes": 550165,
+   "records": 10000,
+   "counts": {
+    "inserted": 0,
+    "upserted": 0,
+    "modified": 10000,
+    "deleted": 0
+   },
+   "eventsPerCall": 1,
+   "stats": {
+    "n": 5,
+    "median": 1364.364872932434,
+    "p95": 1385.476273059845,
+    "mean": 1368.1693985939025
+   }
+  }
+ },
+ "listeners": {
+  "1 insertMany base": {
+   "json": 0.0005440711975097656
+  },
+  "1 updateMany base": {
+   "json": 0.0005359649658203125
+  },
+  "1 deleteMany base": {
+   "json": 0.0005431175231933594,
+   "cacheLeft": 0,
+   "cache": 0.0018401145935058594
+  },
+  "1 bulkWrite-upsert-fresh base": {
+   "json": 0.0005578994750976562
+  },
+  "1 bulkWrite-upsert-resend base": {
+   "json": 0.0005717277526855469
+  },
+  "1 insertMany proto": {
+   "json": 0.0011548995971679688,
+   "index": 0.000225067138671875
+  },
+  "1 updateMany proto": {
+   "json": 0.0011630058288574219,
+   "index": 0.000286102294921875
+  },
+  "1 deleteMany proto": {
+   "json": 0.0011420249938964844,
+   "index": 0.00021076202392578125,
+   "cacheLeft": 576,
+   "cache": 0.006688117980957031
+  },
+  "1 bulkWrite-upsert-fresh proto": {
+   "json": 0.0009379386901855469,
+   "index": 0.00014829635620117188
+  },
+  "1 bulkWrite-upsert-resend proto": {
+   "json": 0.0010061264038085938,
+   "index": 0.0001468658447265625
+  },
+  "100 insertMany proto": {
+   "json": 0.014291763305664062,
+   "index": 0.005050182342529297
+  },
+  "100 updateMany proto": {
+   "json": 0.01409912109375,
+   "index": 0.0052013397216796875
+  },
+  "100 deleteMany proto": {
+   "json": 0.01509714126586914,
+   "index": 0.0009632110595703125,
+   "cacheLeft": 576,
+   "cache": 0.024837017059326172
+  },
+  "100 bulkWrite-upsert-fresh proto": {
+   "json": 0.010282039642333984,
+   "index": 0.00150299072265625
+  },
+  "100 bulkWrite-upsert-resend proto": {
+   "json": 0.010220050811767578,
+   "index": 0.0015354156494140625
+  },
+  "100 insertMany base": {
+   "json": 0.00045013427734375
+  },
+  "100 updateMany base": {
+   "json": 0.000453948974609375
+  },
+  "100 deleteMany base": {
+   "json": 0.00045680999755859375,
+   "cacheLeft": 0,
+   "cache": 0.000701904296875
+  },
+  "100 bulkWrite-upsert-fresh base": {
+   "json": 0.0005340576171875
+  },
+  "100 bulkWrite-upsert-resend base": {
+   "json": 0.0005321502685546875
+  },
+  "1000 insertMany proto": {
+   "json": 0.13105297088623047,
+   "index": 0.02025604248046875
+  },
+  "1000 updateMany proto": {
+   "json": 0.13263320922851562,
+   "index": 0.020727157592773438
+  },
+  "1000 deleteMany proto": {
+   "json": 0.13944292068481445,
+   "index": 0.009386062622070312,
+   "cacheLeft": 576,
+   "cache": 0.13741731643676758
+  },
+  "1000 bulkWrite-upsert-fresh proto": {
+   "json": 0.09380006790161133,
+   "index": 0.019989967346191406
+  },
+  "1000 bulkWrite-upsert-resend proto": {
+   "json": 0.09450674057006836,
+   "index": 0.020732879638671875
+  },
+  "1000 insertMany base": {
+   "json": 0.0004978179931640625
+  },
+  "1000 updateMany base": {
+   "json": 0.00048732757568359375
+  },
+  "1000 deleteMany base": {
+   "json": 0.0004730224609375,
+   "cacheLeft": 0,
+   "cache": 0.0006961822509765625
+  },
+  "1000 bulkWrite-upsert-fresh base": {
+   "json": 0.0005578994750976562
+  },
+  "1000 bulkWrite-upsert-resend base": {
+   "json": 0.0005550384521484375
+  },
+  "10000 insertMany base": {
+   "json": 0.0005626678466796875
+  },
+  "10000 updateMany base": {
+   "json": 0.0005602836608886719
+  },
+  "10000 deleteMany base": {
+   "json": 0.000560760498046875,
+   "cacheLeft": 0,
+   "cache": 0.0004730224609375
+  },
+  "10000 bulkWrite-upsert-fresh base": {
+   "json": 0.0005393028259277344
+  },
+  "10000 bulkWrite-upsert-resend base": {
+   "json": 0.0005469322204589844
+  },
+  "10000 insertMany proto": {
+   "json": 1.75108003616333,
+   "index": 0.24718904495239258
+  },
+  "10000 updateMany proto": {
+   "json": 1.7001171112060547,
+   "index": 0.24306678771972656
+  },
+  "10000 deleteMany proto": {
+   "json": 1.8265819549560547,
+   "index": 0.10555791854858398,
+   "cacheLeft": 576,
+   "cache": 5.5038957595825195
+  },
+  "10000 bulkWrite-upsert-fresh proto": {
+   "json": 1.1296777725219727,
+   "index": 0.2573971748352051
+  },
+  "10000 bulkWrite-upsert-resend proto": {
+   "json": 1.166144847869873,
+   "index": 0.2678194046020508
+  }
+ },
+ "reread": {
+  "n": 50,
+  "median": 2.2932357788085938,
+  "p95": 3.801332950592041,
+  "mean": 2.4839628887176515
+ },
+ "byid": {
+  "1": {
+   "n": 30,
+   "median": 0.8473548889160156,
+   "p95": 1.1899008750915527,
+   "mean": 0.8446534156799317
+  },
+  "100": {
+   "n": 30,
+   "median": 0.995391845703125,
+   "p95": 1.1758952140808105,
+   "mean": 0.9963533083597819
+  },
+  "1000": {
+   "n": 30,
+   "median": 4.182593822479248,
+   "p95": 5.710055828094482,
+   "mean": 4.423388481140137
+  },
+  "10000": {
+   "n": 10,
+   "median": 38.03848600387573,
+   "p95": 48.55621290206909,
+   "mean": 39.717825984954835
+  }
+ }
+}

@@ -1,0 +1,1076 @@
+{
+ "run": "6c7226",
+ "node": "v22.23.4",
+ "seconds": 20,
+ "pruner": true,
+ "break": null,
+ "arms": [
+  {
+   "name": "base",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-base",
+   "head": "9668b179ff4efbdd335e400dec40b712bd5b9af6"
+  },
+  {
+   "name": "base2",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-base",
+   "head": "9668b179ff4efbdd335e400dec40b712bd5b9af6"
+  },
+  {
+   "name": "pre",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-proto",
+   "head": "8a39671502bbe9fb6bcdf027493290eb4a0910a1"
+  },
+  {
+   "name": "post",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-post",
+   "head": "408c7d03b065e733bf35d78d7d7f81d11ed00ed1"
+  },
+  {
+   "name": "since",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  }
+ ],
+ "rows": [
+  {
+   "level": 1,
+   "round": 0,
+   "arm": "base",
+   "wall": 20.042,
+   "requests": 2776,
+   "failed": 0,
+   "perSecond": 138.50913082526694,
+   "latency": {
+    "n": 2776,
+    "median": 7.5825,
+    "p95": 12.902768,
+    "mean": 8.075360050072044
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 97,
+     "median": 5.781817,
+     "p95": 9.047808,
+     "mean": 6.151762206185569
+    },
+    "loop": {
+     "n": 1201,
+     "median": 7.107612,
+     "p95": 11.650246,
+     "mean": 7.477295461282265
+    },
+    "cgm": {
+     "n": 446,
+     "median": 6.786939,
+     "p95": 10.949991,
+     "mean": 7.180341217488785
+    },
+    "care": {
+     "n": 1032,
+     "median": 9.154598,
+     "p95": 13.929318,
+     "mean": 9.338967570736441
+    }
+   },
+   "events": 2775,
+   "unnamed": 2775,
+   "collapsed": 0,
+   "truthOps": 3343,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 3343,
+   "missedKeys": 3343,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 1,
+   "round": 0,
+   "arm": "base2",
+   "wall": 20.055,
+   "requests": 2803,
+   "failed": 0,
+   "perSecond": 139.76564447768635,
+   "latency": {
+    "n": 2803,
+    "median": 7.44902,
+    "p95": 12.606585,
+    "mean": 7.903334710667139
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 97,
+     "median": 5.730163,
+     "p95": 9.899228,
+     "mean": 6.17343831958763
+    },
+    "loop": {
+     "n": 1219,
+     "median": 6.95643,
+     "p95": 11.236962,
+     "mean": 7.237750287940933
+    },
+    "cgm": {
+     "n": 449,
+     "median": 6.600401,
+     "p95": 10.900556,
+     "mean": 7.013868429844098
+    },
+    "care": {
+     "n": 1038,
+     "median": 9.076758,
+     "p95": 13.825044,
+     "mean": 9.231386465317922
+    }
+   },
+   "events": 2802,
+   "unnamed": 2802,
+   "collapsed": 0,
+   "truthOps": 3372,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 3372,
+   "missedKeys": 3372,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 1,
+   "round": 0,
+   "arm": "pre",
+   "wall": 20.119,
+   "requests": 2762,
+   "failed": 0,
+   "perSecond": 137.28316516725482,
+   "latency": {
+    "n": 2762,
+    "median": 7.774852,
+    "p95": 13.076139,
+    "mean": 8.266779763577143
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 97,
+     "median": 6.697611,
+     "p95": 10.611417,
+     "mean": 7.246625113402063
+    },
+    "loop": {
+     "n": 1195,
+     "median": 7.046592,
+     "p95": 12.357639,
+     "mean": 7.579200131380752
+    },
+    "cgm": {
+     "n": 444,
+     "median": 7.192653,
+     "p95": 11.632277,
+     "mean": 7.564066245495498
+    },
+    "care": {
+     "n": 1026,
+     "median": 9.187804,
+     "p95": 14.238276,
+     "mean": 9.468161307017548
+    }
+   },
+   "events": 2761,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 3318,
+   "namedRecords": 3316,
+   "cross": 0,
+   "countMismatch": 2,
+   "missed": 2,
+   "missedKeys": 2,
+   "extra": 0,
+   "pruneEvents": 96
+  },
+  {
+   "level": 1,
+   "round": 0,
+   "arm": "post",
+   "wall": 20.184,
+   "requests": 2651,
+   "failed": 0,
+   "perSecond": 131.34165675782796,
+   "latency": {
+    "n": 2651,
+    "median": 8.673604,
+    "p95": 15.179057,
+    "mean": 9.132789430403616
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 97,
+     "median": 7.76398,
+     "p95": 12.550112,
+     "mean": 7.81272969072165
+    },
+    "loop": {
+     "n": 1153,
+     "median": 7.665381,
+     "p95": 13.882863,
+     "mean": 8.155448888117949
+    },
+    "cgm": {
+     "n": 432,
+     "median": 8.149202,
+     "p95": 14.995381,
+     "mean": 8.790899201388887
+    },
+    "care": {
+     "n": 969,
+     "median": 10.192107,
+     "p95": 16.150552,
+     "mean": 10.580277582043353
+    }
+   },
+   "events": 2650,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 3199,
+   "namedRecords": 3190,
+   "cross": 0,
+   "countMismatch": 5,
+   "missed": 9,
+   "missedKeys": 9,
+   "extra": 0,
+   "pruneEvents": 96
+  },
+  {
+   "level": 1,
+   "round": 0,
+   "arm": "since",
+   "wall": 20.049,
+   "requests": 2648,
+   "failed": 0,
+   "perSecond": 132.07641278866777,
+   "latency": {
+    "n": 2648,
+    "median": 8.625047,
+    "p95": 15.216164,
+    "mean": 9.1822912186556
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1148,
+     "median": 7.691829,
+     "p95": 13.714556,
+     "mean": 8.256289489547033
+    },
+    "pruner": {
+     "n": 96,
+     "median": 7.860793,
+     "p95": 16.907441,
+     "mean": 8.351940979166667
+    },
+    "cgm": {
+     "n": 432,
+     "median": 8.033506,
+     "p95": 14.35384,
+     "mean": 8.798919289351845
+    },
+    "care": {
+     "n": 972,
+     "median": 10.030346,
+     "p95": 16.340179,
+     "mean": 10.5283614670782
+    }
+   },
+   "events": 2647,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 3191,
+   "namedRecords": 3340,
+   "cross": 151,
+   "countMismatch": 154,
+   "missed": 3,
+   "missedKeys": 3,
+   "extra": 152,
+   "pruneEvents": 95
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "arm": "since",
+   "wall": 20.191,
+   "requests": 2440,
+   "failed": 0,
+   "perSecond": 120.84592145015107,
+   "latency": {
+    "n": 2440,
+    "median": 10.281,
+    "p95": 18.171425,
+    "mean": 11.026193399590147
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 96,
+     "median": 9.087038,
+     "p95": 16.304244,
+     "mean": 10.21806428125
+    },
+    "loop": {
+     "n": 1049,
+     "median": 9.24132,
+     "p95": 16.213448,
+     "mean": 9.90538670162058
+    },
+    "cgm": {
+     "n": 416,
+     "median": 9.562652,
+     "p95": 17.580215,
+     "mean": 10.482111723557692
+    },
+    "care": {
+     "n": 879,
+     "median": 12.048679,
+     "p95": 19.465829,
+     "mean": 12.709520588168381
+    }
+   },
+   "events": 2439,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 2968,
+   "namedRecords": 3127,
+   "cross": 166,
+   "countMismatch": 170,
+   "missed": 9,
+   "missedKeys": 9,
+   "extra": 168,
+   "pruneEvents": 95
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "arm": "post",
+   "wall": 20.041,
+   "requests": 2426,
+   "failed": 0,
+   "perSecond": 121.05184372037323,
+   "latency": {
+    "n": 2426,
+    "median": 10.604496,
+    "p95": 17.505873,
+    "mean": 11.147199009480628
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 95,
+     "median": 10.048042,
+     "p95": 16.958897,
+     "mean": 10.676205989473683
+    },
+    "loop": {
+     "n": 1041,
+     "median": 9.430978,
+     "p95": 15.593075,
+     "mean": 10.057572282420749
+    },
+    "cgm": {
+     "n": 417,
+     "median": 9.498851,
+     "p95": 16.75166,
+     "mean": 10.347171776978412
+    },
+    "care": {
+     "n": 873,
+     "median": 12.381001,
+     "p95": 18.973662,
+     "mean": 12.879910482245142
+    }
+   },
+   "events": 2425,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 2943,
+   "namedRecords": 2930,
+   "cross": 0,
+   "countMismatch": 5,
+   "missed": 13,
+   "missedKeys": 13,
+   "extra": 0,
+   "pruneEvents": 94
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "arm": "pre",
+   "wall": 20.181,
+   "requests": 2394,
+   "failed": 0,
+   "perSecond": 118.62643080124869,
+   "latency": {
+    "n": 2394,
+    "median": 11.21201,
+    "p95": 17.792252,
+    "mean": 11.526674802422693
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 96,
+     "median": 9.449031,
+     "p95": 15.691544,
+     "mean": 10.064011416666665
+    },
+    "loop": {
+     "n": 1008,
+     "median": 10.142073,
+     "p95": 17.186368,
+     "mean": 10.667234716269832
+    },
+    "cgm": {
+     "n": 405,
+     "median": 11.218927,
+     "p95": 18.146112,
+     "mean": 11.764785911111115
+    },
+    "care": {
+     "n": 885,
+     "median": 12.166704,
+     "p95": 17.969677,
+     "mean": 12.555258184180799
+    }
+   },
+   "events": 2393,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 2910,
+   "namedRecords": 2909,
+   "cross": 0,
+   "countMismatch": 4,
+   "missed": 3,
+   "missedKeys": 3,
+   "extra": 2,
+   "pruneEvents": 95
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "arm": "base2",
+   "wall": 20.104,
+   "requests": 2408,
+   "failed": 0,
+   "perSecond": 119.77715877437326,
+   "latency": {
+    "n": 2408,
+    "median": 10.68642,
+    "p95": 17.969381,
+    "mean": 11.29591986835549
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 96,
+     "median": 8.910412,
+     "p95": 15.470322,
+     "mean": 9.242985541666666
+    },
+    "loop": {
+     "n": 1014,
+     "median": 10.027137,
+     "p95": 16.636498,
+     "mean": 10.55831651873767
+    },
+    "cgm": {
+     "n": 413,
+     "median": 9.959227,
+     "p95": 17.919163,
+     "mean": 10.833336302663426
+    },
+    "care": {
+     "n": 885,
+     "median": 11.956709,
+     "p95": 19.169416,
+     "mean": 12.579601794350284
+    }
+   },
+   "events": 2407,
+   "unnamed": 2407,
+   "collapsed": 0,
+   "truthOps": 2926,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 2926,
+   "missedKeys": 2926,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 1,
+   "round": 1,
+   "arm": "base",
+   "wall": 20.071,
+   "requests": 2460,
+   "failed": 0,
+   "perSecond": 122.56489462408449,
+   "latency": {
+    "n": 2460,
+    "median": 10.287922,
+    "p95": 16.681567,
+    "mean": 10.779816056097548
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 96,
+     "median": 8.03962,
+     "p95": 13.559466,
+     "mean": 8.554060979166666
+    },
+    "loop": {
+     "n": 1038,
+     "median": 9.471991,
+     "p95": 15.899556,
+     "mean": 10.107313045279373
+    },
+    "cgm": {
+     "n": 417,
+     "median": 9.513221,
+     "p95": 16.382812,
+     "mean": 10.292157707434058
+    },
+    "care": {
+     "n": 909,
+     "median": 11.633226,
+     "p95": 18.005729,
+     "mean": 12.006531286028604
+    }
+   },
+   "events": 2459,
+   "unnamed": 2459,
+   "collapsed": 0,
+   "truthOps": 2977,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 2977,
+   "missedKeys": 2977,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 0,
+   "arm": "base",
+   "wall": 20.412,
+   "requests": 8865,
+   "failed": 0,
+   "perSecond": 434.3033509700177,
+   "latency": {
+    "n": 8865,
+    "median": 11.496808,
+    "p95": 22.256681,
+    "mean": 12.957692228539198
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 95,
+     "median": 10.918576,
+     "p95": 28.405083,
+     "mean": 14.831762452631583
+    },
+    "loop": {
+     "n": 3879,
+     "median": 10.741242,
+     "p95": 20.00641,
+     "mean": 11.689113134055189
+    },
+    "cgm": {
+     "n": 1624,
+     "median": 10.728242,
+     "p95": 20.220455,
+     "mean": 12.19821568041871
+    },
+    "care": {
+     "n": 3267,
+     "median": 12.99912,
+     "p95": 24.058712,
+     "mean": 14.786945840526489
+    }
+   },
+   "events": 8864,
+   "unnamed": 8864,
+   "collapsed": 0,
+   "truthOps": 11218,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 11218,
+   "missedKeys": 11218,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 0,
+   "arm": "base2",
+   "wall": 20.362,
+   "requests": 8338,
+   "failed": 0,
+   "perSecond": 409.4882624496612,
+   "latency": {
+    "n": 8338,
+    "median": 12.137578,
+    "p95": 29.310012,
+    "mean": 14.509831004317608
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 95,
+     "median": 11.129904,
+     "p95": 23.749019,
+     "mean": 14.319685663157895
+    },
+    "loop": {
+     "n": 3628,
+     "median": 11.244218,
+     "p95": 26.250542,
+     "mean": 13.126543021499447
+    },
+    "cgm": {
+     "n": 1573,
+     "median": 11.281878,
+     "p95": 27.504438,
+     "mean": 13.815480420851873
+    },
+    "care": {
+     "n": 3042,
+     "median": 13.685924,
+     "p95": 33.594817,
+     "mean": 16.524573304405006
+    }
+   },
+   "events": 8337,
+   "unnamed": 8337,
+   "collapsed": 0,
+   "truthOps": 10593,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 10593,
+   "missedKeys": 10593,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 0,
+   "arm": "pre",
+   "wall": 20.381,
+   "requests": 8766,
+   "failed": 0,
+   "perSecond": 430.10647171385114,
+   "latency": {
+    "n": 8766,
+    "median": 11.803098,
+    "p95": 23.167439,
+    "mean": 13.324588442048851
+   },
+   "byWriter": {
+    "loop": {
+     "n": 3815,
+     "median": 10.857315,
+     "p95": 21.088527,
+     "mean": 12.014592593709084
+    },
+    "pruner": {
+     "n": 94,
+     "median": 13.491445,
+     "p95": 26.189542,
+     "mean": 16.745985106382975
+    },
+    "cgm": {
+     "n": 1581,
+     "median": 11.70423,
+     "p95": 23.14046,
+     "mean": 13.487523843769779
+    },
+    "care": {
+     "n": 3276,
+     "median": 12.789628,
+     "p95": 24.836173,
+     "mean": 14.67331310775334
+    }
+   },
+   "events": 8765,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 11020,
+   "namedRecords": 11006,
+   "cross": 0,
+   "countMismatch": 10,
+   "missed": 14,
+   "missedKeys": 14,
+   "extra": 0,
+   "pruneEvents": 93
+  },
+  {
+   "level": 4,
+   "round": 0,
+   "arm": "post",
+   "wall": 20.217,
+   "requests": 8450,
+   "failed": 0,
+   "perSecond": 417.9650788940001,
+   "latency": {
+    "n": 8450,
+    "median": 11.820232,
+    "p95": 27.361759,
+    "mean": 13.960271848284036
+   },
+   "byWriter": {
+    "loop": {
+     "n": 3752,
+     "median": 10.694517,
+     "p95": 23.427962,
+     "mean": 12.227489856076746
+    },
+    "cgm": {
+     "n": 1584,
+     "median": 10.908514,
+     "p95": 25.849859,
+     "mean": 13.014984087752527
+    },
+    "care": {
+     "n": 3021,
+     "median": 14.271279,
+     "p95": 31.495582,
+     "mean": 16.50480627242635
+    },
+    "pruner": {
+     "n": 93,
+     "median": 13.032394,
+     "p95": 38.677205,
+     "mean": 17.311834774193542
+    }
+   },
+   "events": 8450,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 10710,
+   "namedRecords": 10624,
+   "cross": 0,
+   "countMismatch": 39,
+   "missed": 86,
+   "missedKeys": 86,
+   "extra": 0,
+   "pruneEvents": 93
+  },
+  {
+   "level": 4,
+   "round": 0,
+   "arm": "since",
+   "wall": 20.32,
+   "requests": 8847,
+   "failed": 0,
+   "perSecond": 435.3838582677165,
+   "latency": {
+    "n": 8847,
+    "median": 11.426041,
+    "p95": 22.922619,
+    "mean": 13.046881294902226
+   },
+   "byWriter": {
+    "loop": {
+     "n": 3930,
+     "median": 10.479026,
+     "p95": 19.193828,
+     "mean": 11.452019034860065
+    },
+    "cgm": {
+     "n": 1622,
+     "median": 10.506489,
+     "p95": 21.455595,
+     "mean": 12.347388017879164
+    },
+    "pruner": {
+     "n": 94,
+     "median": 11.271372,
+     "p95": 26.05258,
+     "mean": 13.231137468085107
+    },
+    "care": {
+     "n": 3201,
+     "median": 13.607987,
+     "p95": 25.753133,
+     "mean": 15.353993665104657
+    }
+   },
+   "events": 8847,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 11151,
+   "namedRecords": 15806,
+   "cross": 1618,
+   "countMismatch": 1647,
+   "missed": 54,
+   "missedKeys": 54,
+   "extra": 4709,
+   "pruneEvents": 94
+  },
+  {
+   "level": 4,
+   "round": 1,
+   "arm": "since",
+   "wall": 20.229,
+   "requests": 8538,
+   "failed": 0,
+   "perSecond": 422.067329082011,
+   "latency": {
+    "n": 8538,
+    "median": 11.949267,
+    "p95": 24.375564,
+    "mean": 13.848282601077505
+   },
+   "byWriter": {
+    "loop": {
+     "n": 3811,
+     "median": 10.810081,
+     "p95": 20.878468,
+     "mean": 12.025340158226198
+    },
+    "pruner": {
+     "n": 93,
+     "median": 13.031507,
+     "p95": 27.007743,
+     "mean": 15.304989505376339
+    },
+    "cgm": {
+     "n": 1595,
+     "median": 10.954971,
+     "p95": 22.676704,
+     "mean": 12.910892145454527
+    },
+    "care": {
+     "n": 3039,
+     "median": 14.459901,
+     "p95": 27.93473,
+     "mean": 16.58171388910827
+    }
+   },
+   "events": 8538,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 10819,
+   "namedRecords": 15371,
+   "cross": 1532,
+   "countMismatch": 1556,
+   "missed": 45,
+   "missedKeys": 45,
+   "extra": 4597,
+   "pruneEvents": 93
+  },
+  {
+   "level": 4,
+   "round": 1,
+   "arm": "post",
+   "wall": 20.35,
+   "requests": 8580,
+   "failed": 0,
+   "perSecond": 421.6216216216216,
+   "latency": {
+    "n": 8580,
+    "median": 11.712601,
+    "p95": 25.560924,
+    "mean": 13.755383186013976
+   },
+   "byWriter": {
+    "loop": {
+     "n": 3810,
+     "median": 10.539101,
+     "p95": 21.876096,
+     "mean": 12.067230263779503
+    },
+    "cgm": {
+     "n": 1590,
+     "median": 10.678192,
+     "p95": 24.519712,
+     "mean": 12.810729332075473
+    },
+    "pruner": {
+     "n": 93,
+     "median": 14.177836,
+     "p95": 37.106447,
+     "mean": 18.81044498924731
+    },
+    "care": {
+     "n": 3087,
+     "median": 13.822754,
+     "p95": 29.634946,
+     "mean": 16.173180890508554
+    }
+   },
+   "events": 8580,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 10832,
+   "namedRecords": 10764,
+   "cross": 0,
+   "countMismatch": 32,
+   "missed": 68,
+   "missedKeys": 68,
+   "extra": 0,
+   "pruneEvents": 93
+  },
+  {
+   "level": 4,
+   "round": 1,
+   "arm": "pre",
+   "wall": 20.386,
+   "requests": 8619,
+   "failed": 0,
+   "perSecond": 422.7901501030119,
+   "latency": {
+    "n": 8619,
+    "median": 12.120618,
+    "p95": 23.127747,
+    "mean": 13.734851929806208
+   },
+   "byWriter": {
+    "loop": {
+     "n": 3771,
+     "median": 11.085399,
+     "p95": 20.690682,
+     "mean": 12.249177921506238
+    },
+    "pruner": {
+     "n": 94,
+     "median": 12.45365,
+     "p95": 33.407598,
+     "mean": 16.757471797872338
+    },
+    "cgm": {
+     "n": 1574,
+     "median": 12.005704,
+     "p95": 22.531303,
+     "mean": 13.736382035578137
+    },
+    "care": {
+     "n": 3180,
+     "median": 13.571036,
+     "p95": 25.717762,
+     "mean": 15.406531813836471
+    }
+   },
+   "events": 8618,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 10833,
+   "namedRecords": 10823,
+   "cross": 0,
+   "countMismatch": 6,
+   "missed": 10,
+   "missedKeys": 10,
+   "extra": 0,
+   "pruneEvents": 93
+  },
+  {
+   "level": 4,
+   "round": 1,
+   "arm": "base2",
+   "wall": 20.18,
+   "requests": 8772,
+   "failed": 0,
+   "perSecond": 434.6878097125867,
+   "latency": {
+    "n": 8772,
+    "median": 11.570447,
+    "p95": 22.670144,
+    "mean": 12.986098392156837
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 95,
+     "median": 10.119531,
+     "p95": 17.608707,
+     "mean": 12.326703463157894
+    },
+    "loop": {
+     "n": 3839,
+     "median": 10.747537,
+     "p95": 20.652359,
+     "mean": 11.746489191716583
+    },
+    "cgm": {
+     "n": 1616,
+     "median": 10.540652,
+     "p95": 21.374779,
+     "mean": 12.059629404702953
+    },
+    "care": {
+     "n": 3222,
+     "median": 13.326941,
+     "p95": 24.664291,
+     "mean": 14.94720209248916
+    }
+   },
+   "events": 8771,
+   "unnamed": 8771,
+   "collapsed": 0,
+   "truthOps": 11117,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 11117,
+   "missedKeys": 11117,
+   "extra": 0,
+   "pruneEvents": 0
+  },
+  {
+   "level": 4,
+   "round": 1,
+   "arm": "base",
+   "wall": 20.249,
+   "requests": 8753,
+   "failed": 0,
+   "perSecond": 432.2682601609956,
+   "latency": {
+    "n": 8753,
+    "median": 11.45369,
+    "p95": 23.151879,
+    "mean": 13.180110892265544
+   },
+   "byWriter": {
+    "pruner": {
+     "n": 94,
+     "median": 11.236174,
+     "p95": 29.147572,
+     "mean": 13.081143372340426
+    },
+    "loop": {
+     "n": 3837,
+     "median": 10.624458,
+     "p95": 20.899647,
+     "mean": 11.865567281991106
+    },
+    "cgm": {
+     "n": 1615,
+     "median": 10.415704,
+     "p95": 22.300249,
+     "mean": 12.284981370897835
+    },
+    "care": {
+     "n": 3207,
+     "median": 13.190454,
+     "p95": 25.683219,
+     "mean": 15.206565821016536
+    }
+   },
+   "events": 8752,
+   "unnamed": 8752,
+   "collapsed": 0,
+   "truthOps": 11063,
+   "namedRecords": 0,
+   "cross": 0,
+   "countMismatch": 0,
+   "missed": 11063,
+   "missedKeys": 11063,
+   "extra": 0,
+   "pruneEvents": 0
+  }
+ ]
+}

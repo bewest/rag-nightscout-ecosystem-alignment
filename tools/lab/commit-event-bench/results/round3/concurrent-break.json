@@ -1,0 +1,62 @@
+{
+ "run": "d395a7",
+ "node": "v22.23.4",
+ "seconds": 10,
+ "pruner": false,
+ "break": "swap-writer",
+ "arms": [
+  {
+   "name": "since",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  }
+ ],
+ "rows": [
+  {
+   "level": 2,
+   "round": 0,
+   "arm": "since",
+   "wall": 10.039,
+   "requests": 2348,
+   "failed": 0,
+   "perSecond": 233.88783743400737,
+   "latency": {
+    "n": 2348,
+    "median": 10.307252,
+    "p95": 18.825364,
+    "mean": 11.072567552810897
+   },
+   "byWriter": {
+    "loop": {
+     "n": 1045,
+     "median": 9.290143,
+     "p95": 16.972967,
+     "mean": 10.025335488038285
+    },
+    "cgm": {
+     "n": 412,
+     "median": 9.93731,
+     "p95": 19.297162,
+     "mean": 10.856850796116497
+    },
+    "care": {
+     "n": 891,
+     "median": 11.728116,
+     "p95": 20.720119,
+     "mean": 12.400550506172852
+    }
+   },
+   "events": 2348,
+   "unnamed": 0,
+   "collapsed": 0,
+   "truthOps": 2552,
+   "namedRecords": 3197,
+   "cross": 539,
+   "countMismatch": 744,
+   "missed": 0,
+   "missedKeys": 0,
+   "extra": 645,
+   "pruneEvents": 0
+  }
+ ]
+}

@@ -1,0 +1,64 @@
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0
+{"k":1,"round":0,"arm":"base","req":2670,"rps":"133.3","med":"7.77","p95":"13.26","events":2670,"truth":2892,"cross":0,"countMismatch":0,"missed":2892,"missedKeys":2892,"extra":0,"unnamed":2670}
+{"k":1,"round":0,"arm":"base2","req":2688,"rps":"134.1","med":"7.65","p95":"12.92","events":2688,"truth":2912,"cross":0,"countMismatch":0,"missed":2912,"missedKeys":2912,"extra":0,"unnamed":2688}
+{"k":1,"round":0,"arm":"pre","req":2608,"rps":"130.1","med":"8.27","p95":"13.78","events":2608,"truth":2826,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":1,"round":0,"arm":"post","req":2645,"rps":"132.1","med":"7.94","p95":"13.66","events":2645,"truth":2867,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":1,"round":0,"arm":"since","req":2620,"rps":"130.8","med":"8.10","p95":"14.27","events":2620,"truth":2840,"cross":138,"countMismatch":138,"missed":0,"missedKeys":0,"extra":140,"unnamed":0}
+{"k":1,"round":1,"arm":"since","req":2424,"rps":"120.9","med":"9.81","p95":"16.43","events":2424,"truth":2634,"cross":136,"countMismatch":136,"missed":0,"missedKeys":0,"extra":136,"unnamed":0}
+{"k":1,"round":1,"arm":"post","req":2314,"rps":"115.5","med":"10.73","p95":"18.33","events":2314,"truth":2520,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":1,"round":1,"arm":"pre","req":2339,"rps":"116.7","med":"10.81","p95":"17.16","events":2339,"truth":2543,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":1,"round":1,"arm":"base2","req":2475,"rps":"123.5","med":"9.45","p95":"15.98","events":2475,"truth":2687,"cross":0,"countMismatch":0,"missed":2687,"missedKeys":2687,"extra":0,"unnamed":2475}
+{"k":1,"round":1,"arm":"base","req":2476,"rps":"123.4","med":"9.44","p95":"15.38","events":2476,"truth":2690,"cross":0,"countMismatch":0,"missed":2690,"missedKeys":2690,"extra":0,"unnamed":2476}
+{"k":2,"round":0,"arm":"base","req":5048,"rps":"251.0","med":"8.90","p95":"15.84","events":5048,"truth":5476,"cross":0,"countMismatch":0,"missed":5476,"missedKeys":5476,"extra":0,"unnamed":5048}
+{"k":2,"round":0,"arm":"base2","req":4782,"rps":"237.4","med":"9.83","p95":"18.60","events":4782,"truth":5200,"cross":0,"countMismatch":0,"missed":5200,"missedKeys":5200,"extra":0,"unnamed":4782}
+{"k":2,"round":0,"arm":"pre","req":4696,"rps":"233.4","med":"10.59","p95":"17.98","events":4696,"truth":5104,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":2,"round":0,"arm":"post","req":5083,"rps":"251.8","med":"8.75","p95":"15.59","events":5083,"truth":5511,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":2,"round":0,"arm":"since","req":5735,"rps":"283.9","med":"6.04","p95":"13.26","events":5735,"truth":6185,"cross":874,"countMismatch":874,"missed":0,"missedKeys":0,"extra":1353,"unnamed":0}
+{"k":2,"round":1,"arm":"since","req":6102,"rps":"302.8","med":"5.28","p95":"9.32","events":6102,"truth":6566,"cross":905,"countMismatch":905,"missed":0,"missedKeys":0,"extra":1473,"unnamed":0}
+{"k":2,"round":1,"arm":"post","req":5908,"rps":"294.9","med":"5.80","p95":"10.46","events":5908,"truth":6366,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":2,"round":1,"arm":"pre","req":5705,"rps":"282.1","med":"6.41","p95":"11.63","events":5705,"truth":6153,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":2,"round":1,"arm":"base2","req":5616,"rps":"277.8","med":"6.57","p95":"12.33","events":5616,"truth":6064,"cross":0,"countMismatch":0,"missed":6064,"missedKeys":6064,"extra":0,"unnamed":5616}
+{"k":2,"round":1,"arm":"base","req":5034,"rps":"249.5","med":"8.10","p95":"19.25","events":5034,"truth":5460,"cross":0,"countMismatch":0,"missed":5460,"missedKeys":5460,"extra":0,"unnamed":5034}
+{"k":4,"round":0,"arm":"base","req":8595,"rps":"420.8","med":"11.37","p95":"24.85","events":8595,"truth":9391,"cross":0,"countMismatch":0,"missed":9391,"missedKeys":9391,"extra":0,"unnamed":8595}
+{"k":4,"round":0,"arm":"base2","req":8650,"rps":"423.2","med":"11.43","p95":"21.68","events":8650,"truth":9448,"cross":0,"countMismatch":0,"missed":9448,"missedKeys":9448,"extra":0,"unnamed":8650}
+{"k":4,"round":0,"arm":"pre","req":8206,"rps":"402.7","med":"12.27","p95":"27.31","events":8206,"truth":8964,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":4,"round":0,"arm":"post","req":10041,"rps":"490.2","med":"7.91","p95":"17.72","events":10041,"truth":10889,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":4,"round":0,"arm":"since","req":10551,"rps":"512.3","med":"7.09","p95":"14.89","events":10551,"truth":11415,"cross":1946,"countMismatch":1946,"missed":0,"missedKeys":0,"extra":5845,"unnamed":0}
+{"k":4,"round":1,"arm":"since","req":10219,"rps":"497.2","med":"7.51","p95":"15.81","events":10219,"truth":11073,"cross":1844,"countMismatch":1844,"missed":0,"missedKeys":0,"extra":5082,"unnamed":0}
+{"k":4,"round":1,"arm":"post","req":10530,"rps":"510.0","med":"6.96","p95":"15.30","events":10530,"truth":11396,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":4,"round":1,"arm":"pre","req":10355,"rps":"504.2","med":"7.51","p95":"15.25","events":10355,"truth":11203,"cross":0,"countMismatch":0,"missed":0,"missedKeys":0,"extra":0,"unnamed":0}
+{"k":4,"round":1,"arm":"base2","req":10916,"rps":"527.5","med":"6.53","p95":"13.28","events":10916,"truth":11792,"cross":0,"countMismatch":0,"missed":11792,"missedKeys":11792,"extra":0,"unnamed":10916}
+{"k":4,"round":1,"arm":"base","req":10960,"rps":"536.4","med":"6.52","p95":"12.74","events":10960,"truth":11846,"cross":0,"countMismatch":0,"missed":11846,"missedKeys":11846,"extra":0,"unnamed":10960}
+| k | round | arm | requests | failed | req/s | median ms | p95 ms | events | unnamed (collapsed) | change-stream ops | named | cross-attributed | records≠counts | missed | never named | extra |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 0 | base | 2670 | 0 | 133.3 | 7.77 | 13.26 | 2670 | 2670 (0) | 2892 | 0 | 0 | 0 | 2892 | 2892 | 0 |
+| 1 | 0 | base2 | 2688 | 0 | 134.1 | 7.65 | 12.92 | 2688 | 2688 (0) | 2912 | 0 | 0 | 0 | 2912 | 2912 | 0 |
+| 1 | 0 | pre | 2608 | 0 | 130.1 | 8.27 | 13.78 | 2608 | 0 (0) | 2826 | 2826 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 0 | post | 2645 | 0 | 132.1 | 7.94 | 13.66 | 2645 | 0 (0) | 2867 | 2867 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 0 | since | 2620 | 0 | 130.8 | 8.10 | 14.27 | 2620 | 0 (0) | 2840 | 2980 | 138 | 138 | 0 | 0 | 140 |
+| 1 | 1 | since | 2424 | 0 | 120.9 | 9.81 | 16.43 | 2424 | 0 (0) | 2634 | 2770 | 136 | 136 | 0 | 0 | 136 |
+| 1 | 1 | post | 2314 | 0 | 115.5 | 10.73 | 18.33 | 2314 | 0 (0) | 2520 | 2520 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 1 | pre | 2339 | 0 | 116.7 | 10.81 | 17.16 | 2339 | 0 (0) | 2543 | 2543 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 1 | base2 | 2475 | 0 | 123.5 | 9.45 | 15.98 | 2475 | 2475 (0) | 2687 | 0 | 0 | 0 | 2687 | 2687 | 0 |
+| 1 | 1 | base | 2476 | 0 | 123.4 | 9.44 | 15.38 | 2476 | 2476 (0) | 2690 | 0 | 0 | 0 | 2690 | 2690 | 0 |
+| 2 | 0 | base | 5048 | 0 | 251.0 | 8.90 | 15.84 | 5048 | 5048 (0) | 5476 | 0 | 0 | 0 | 5476 | 5476 | 0 |
+| 2 | 0 | base2 | 4782 | 0 | 237.4 | 9.83 | 18.60 | 4782 | 4782 (0) | 5200 | 0 | 0 | 0 | 5200 | 5200 | 0 |
+| 2 | 0 | pre | 4696 | 0 | 233.4 | 10.59 | 17.98 | 4696 | 0 (0) | 5104 | 5104 | 0 | 0 | 0 | 0 | 0 |
+| 2 | 0 | post | 5083 | 0 | 251.8 | 8.75 | 15.59 | 5083 | 0 (0) | 5511 | 5511 | 0 | 0 | 0 | 0 | 0 |
+| 2 | 0 | since | 5735 | 0 | 283.9 | 6.04 | 13.26 | 5735 | 0 (0) | 6185 | 7538 | 874 | 874 | 0 | 0 | 1353 |
+| 2 | 1 | since | 6102 | 0 | 302.8 | 5.28 | 9.32 | 6102 | 0 (0) | 6566 | 8039 | 905 | 905 | 0 | 0 | 1473 |
+| 2 | 1 | post | 5908 | 0 | 294.9 | 5.80 | 10.46 | 5908 | 0 (0) | 6366 | 6366 | 0 | 0 | 0 | 0 | 0 |
+| 2 | 1 | pre | 5705 | 0 | 282.1 | 6.41 | 11.63 | 5705 | 0 (0) | 6153 | 6153 | 0 | 0 | 0 | 0 | 0 |
+| 2 | 1 | base2 | 5616 | 0 | 277.8 | 6.57 | 12.33 | 5616 | 5616 (0) | 6064 | 0 | 0 | 0 | 6064 | 6064 | 0 |
+| 2 | 1 | base | 5034 | 0 | 249.5 | 8.10 | 19.25 | 5034 | 5034 (0) | 5460 | 0 | 0 | 0 | 5460 | 5460 | 0 |
+| 4 | 0 | base | 8595 | 0 | 420.8 | 11.37 | 24.85 | 8595 | 8595 (0) | 9391 | 0 | 0 | 0 | 9391 | 9391 | 0 |
+| 4 | 0 | base2 | 8650 | 0 | 423.2 | 11.43 | 21.68 | 8650 | 8650 (0) | 9448 | 0 | 0 | 0 | 9448 | 9448 | 0 |
+| 4 | 0 | pre | 8206 | 0 | 402.7 | 12.27 | 27.31 | 8206 | 0 (0) | 8964 | 8964 | 0 | 0 | 0 | 0 | 0 |
+| 4 | 0 | post | 10041 | 0 | 490.2 | 7.91 | 17.72 | 10041 | 0 (0) | 10889 | 10889 | 0 | 0 | 0 | 0 | 0 |
+| 4 | 0 | since | 10551 | 0 | 512.3 | 7.09 | 14.89 | 10551 | 0 (0) | 11415 | 17260 | 1946 | 1946 | 0 | 0 | 5845 |
+| 4 | 1 | since | 10219 | 0 | 497.2 | 7.51 | 15.81 | 10219 | 0 (0) | 11073 | 16155 | 1844 | 1844 | 0 | 0 | 5082 |
+| 4 | 1 | post | 10530 | 0 | 510.0 | 6.96 | 15.30 | 10530 | 0 (0) | 11396 | 11396 | 0 | 0 | 0 | 0 | 0 |
+| 4 | 1 | pre | 10355 | 0 | 504.2 | 7.51 | 15.25 | 10355 | 0 (0) | 11203 | 11203 | 0 | 0 | 0 | 0 | 0 |
+| 4 | 1 | base2 | 10916 | 0 | 527.5 | 6.53 | 13.28 | 10916 | 10916 (0) | 11792 | 0 | 0 | 0 | 11792 | 11792 | 0 |
+| 4 | 1 | base | 10960 | 0 | 536.4 | 6.52 | 12.74 | 10960 | 10960 (0) | 11846 | 0 | 0 | 0 | 11846 | 11846 | 0 |
+/devent-mongo-27601 running started=2026-10-29T20:11:32.666298807Z restarts=0

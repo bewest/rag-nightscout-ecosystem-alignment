@@ -176,7 +176,7 @@ function shuffle (x) { for (let i = x.length - 1; i > 0; i--) { const j = Math.f
   }
   const names = Object.keys(SCEN).filter(n => !ONLY || ONLY.split(',').includes(n));
   const res = {};
-  names.forEach(n => { res[n] = {}; live.forEach(a => { res[n][a.name] = { lat: [], consistentMs: [], neverConsistent: 0, missing: 0, ghost: 0, stale: 0, queries: [], docs: [], bytes: [], flushes: 0, errors: 0 }; }); });
+  names.forEach(n => { res[n] = {}; live.forEach(a => { res[n][a.name] = { lat: [], consistentMs: [], neverConsistent: 0, missing: 0, ghost: 0, stale: 0, queries: [], docs: [], bytes: [], flushes: 0, errors: 0, left: 0 }; }); });
   const t0 = Date.now();
   for (let rep = 0; rep < REPS; rep++) {
     for (const name of shuffle(names.slice())) {
@@ -198,6 +198,9 @@ function shuffle (x) { for (let i = x.length - 1; i > 0; i--) { const j = Math.f
         const r1 = (await a.ipc({ cmd: 'reads' })).tally; const f1 = (await a.ipc({ cmd: 'cache' })).stats;
         g.lat.push(lat); g.consistentMs.push(z.consistentMs); if (z.consistentMs == null) g.neverConsistent++;
         g.missing += after.missing; g.ghost += after.ghost; g.stale += after.stale;
+        // records of this call still in the database: after a delete, the ones it did
+        // not delete (in the race, inserts that arrived while it ran)
+        for (const type of TYPES) g.left += await cli.db(a.db).collection(type).countDocuments({ bench: tag });
         if (bad(after)) { (g.detail = g.detail || []).push(after.detail.slice(0, 12)); console.error(name + ' ' + a.name + ' ' + JSON.stringify(after.detail.slice(0, 12)) + (out && out.first ? ' stamps ' + JSON.stringify({ first: out.first, second: out.second }) : '')); }
         g.queries.push(r1.queries - r0.queries); g.docs.push(r1.docs - r0.docs); g.bytes.push(r1.bytes - r0.bytes);
         if (f0 && f1) g.flushes += f1.flushes - f0.flushes;
@@ -215,12 +218,12 @@ function shuffle (x) { for (let i = x.length - 1; i > 0; i--) { const j = Math.f
     dirty: require('child_process').execFileSync('git', ['-C', a.tree, 'status', '--short', '--untracked-files=no']).toString().trim() }));
   fs.writeFileSync(OUT, JSON.stringify({ run, reps: REPS, size: SIZE, sizes: SIZES[SIZE], node: process.version, arms: heads, wallSeconds: (Date.now() - t0) / 1000, scenarios: res }, null, 1));
   console.log('size ' + SIZE + ' ' + JSON.stringify(SIZES[SIZE]) + ', reps ' + REPS + ', run ' + run);
-  console.log('| scenario | arm | errors | latency med ms | consistent after med / p95 ms (never) | missing | ghost | stale | flushes | reads med: queries / docs / KB |');
-  console.log('|---|---|---|---|---|---|---|---|---|---|');
+  console.log('| scenario | arm | errors | latency med ms | consistent after med / p95 ms (never) | missing | ghost | stale | flushes | left in db | reads med: queries / docs / KB |');
+  console.log('|---|---|---|---|---|---|---|---|---|---|---|');
   for (const n of names) for (const a of live) {
     const g = res[n][a.name];
     const ms = g.consistentMs ? g.consistentMs.median + ' / ' + g.consistentMs.p95 : '-';
-    console.log('| ' + [n, a.name, g.errors, g.lat.median.toFixed(1), ms + ' (' + g.neverConsistent + ')', g.missing, g.ghost, g.stale, g.flushes, g.queries.median + ' / ' + g.docs.median + ' / ' + (g.bytes.median / 1024).toFixed(1)].join(' | ') + ' |');
+    console.log('| ' + [n, a.name, g.errors, g.lat.median.toFixed(1), ms + ' (' + g.neverConsistent + ')', g.missing, g.ghost, g.stale, g.flushes, g.left, g.queries.median + ' / ' + g.docs.median + ' / ' + (g.bytes.median / 1024).toFixed(1)].join(' | ') + ' |');
   }
   await cli.close();
   process.exit(0);

@@ -168,19 +168,70 @@ API v3's delete paths (`mongoCachedCollection` `deleteManyOr` / `deleteEveryForm
 to 1,000 `_id`s before deleting. They then flush anyway unless exactly one document was deleted.
 The pre-read cost Q1 measures is already paid on v3 and autoPrune. Only the flush is extra.
 
+## Round 2 (2026-10-30): the write scoped to the ids read
+
+The maintainer decided Q9 on 2026-10-30: "the cache needs records named" is no longer a reason to reopen D-EVENT.
+Release 2's direction for Q-A/Q-U is for the write step to resolve each write by filter to ids first. It then
+writes `{filter AND _id in ids}` and names those ids. Over 1,000 ids it falls back to the plain filter and a
+reload. There is no timestamp watermark. That direction depended on this arm confirming the scoped write.
+
+The new arm is **`resolve`** (`CACHE_CATCHUP=resolve`, `proto/cache-resolve` `cd7a5b6c`, which is
+`proto/cache-catchup` with dev `305a6533` merged in):
+
+- A v1 delete by query reads its `_id`s (cap 1,000), deletes `{query AND _id in ids}` and names the ids.
+- An update by filter (the lab server's IPC) reads its `_id`s, updates `{filter AND _id in ids}`, and the cache
+  re-reads exactly those ids.
+
+`resolvebreak` is the same arm with the last id left unnamed. `dev` is now `305a6533`, which includes the BF-214
+fix. The new **left in db** column counts each call's records still in the database afterwards. For a delete,
+those are the records it didn't delete: in the race, the inserts that arrived while it ran. Full tables are in
+`results/round2/{realistic,heavy}.log`.
+
+| scenario (10 reps) | size | `dev` consistent after | `resolve` consistent after | `resolve` missing / ghost / stale | `resolve` reads | `dev` reads |
+|---|---|---|---|---|---|---|
+| query delete, entries | realistic | 104 ms | 31 ms | 0 / 0 / 0 | 0.2 KB | 210 KB |
+| query delete, entries | heavy | 468 ms | 104 ms | 0 / 0 / 0 | 0.2 KB | 762 KB |
+| query delete, devicestatus | heavy | 679 ms | 112 ms | 0 / 0 / 0 | 0.2 KB | 1,735 KB |
+| update by filter, entries | realistic | 124 ms | 28 ms | 0 / 0 / 0 | 2.9 KB | 222 KB |
+| update by filter, entries | heavy | 389 ms | 116 ms | 0 / 0 / 0 | 2.9 KB | 762 KB |
+| race (stress) | realistic | 54 ms | 29 ms | 0 / 0 / 0 | 0.2 KB | 216 KB |
+| race (stress) | heavy | 439 ms | 121 ms | 0 / 0 / 0 | 0.2 KB | 754 KB |
+| in-flight, gap 1,000 ms | heavy | 508 ms | 80 ms | 0 / 0 / 0 | 2.8 KB | 1,513 KB |
+
+Findings:
+
+- **`resolve` is exact in every scenario at both sizes.** No rep was left inconsistent at the timeout, and there
+  were 0 missing, ghost or stale records.
+  - **Race:** `ids` left 16 (realistic) and 36 (heavy) ghosts per 10 reps. `resolve` left 0.
+  - **In-flight writes:** at every gap (0, 10, 100, 1,000 ms), `resolve` left 0 stale. The watermark arms of round 1
+    missed every gap above their overlap.
+- **The behaviour change is as designed.** In the race, every insert sent while the delete ran survives in the
+  database: 50 of 50 per size, the same as `dev`, because they arrived after the delete's read. `ids` deleted them
+  without naming them, leaving 34 (realistic) and 14 (heavy) in the database.
+- **Non-vacuity.** `resolvebreak` was flagged in 10 of 10 reps in every scenario at both sizes. A deleted record
+  that isn't named shows as a ghost; an updated record that isn't named shows as stale.
+- **Cost.** One extra `_id` read per write by filter. With realistic data the write's own latency is about the same
+  as `dev`. At heavy size it is slower: an update by filter takes 50 ms against 21 ms, and a delete 41 ms against
+  26 ms. The lab's filter field (`bench`) has no index, so the `_id` read scans the collection, and the cost grows
+  with its size. Real filters mostly use indexed fields (`created_at`, `date`, `srvModified`), but this was not
+  measured with one.
+- **BF-214 is fixed on dev `305a6533`.** dev's devicestatus delete by query is now consistent in 122 ms (realistic)
+  and 679 ms (heavy). On `991b0654` it stayed empty until the next heartbeat.
+
 ## Prototype
 
 `proto/cache-catchup` in `cgm-remote-monitor`, local and not pushed. The results above ran on
 `5f8e95bf`. `02d974c2` only moves API v3's mode read into `cache-catchup-ids.mode()`, because
 `tests/env.api3.test.js` forbids a direct `process.env` read in `lib/api3`. There's no change in
 behaviour. `npm test` on `02d974c2`: 4917 passing, 0 failing, 3 pending (Node 22.23.4,
-MongoDB 8.0.29).
+MongoDB 8.0.29). Round 2 ran on `proto/cache-resolve` `cd7a5b6c` (local, not pushed).
 
 ## Running it
 
 ```
 tools/lab/cache-catchup/run.sh up     # mongo:8.0.29 standalone on 127.0.0.1:27621
 tools/lab/cache-catchup/run.sh all    # results/{realistic,heavy}.{log,json}, ~50 min each
+tools/lab/cache-catchup/run.sh round2 # results/round2/{realistic,heavy}.{log,json}, ~45 min each
 tools/lab/cache-catchup/run.sh down
 ```
 
