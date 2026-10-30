@@ -2377,6 +2377,8 @@
       
         
       
+        
+      
     
     
     
@@ -3581,6 +3583,34 @@
     
   
     Glucose units at the profile boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../id-batch-design-note-2026-10-30.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-BATCH: per-item results in API v1 batch replies
   
 
     
@@ -6047,9 +6077,9 @@
 
 
 <h1 id="l0-identity-how-records-definitions-instances-and-subjects-are-named">L0 Identity: how records, definitions, instances and subjects are named<a class="headerlink" href="#l0-identity-how-records-definitions-instances-and-subjects-are-named" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
-<p><em>Contributor-facing. Living specification, current at 2026-10-29 (cgm-remote-monitor <code>dev</code>
-<code>47723cda</code>, and <code>e1f7ac41</code> where named). Layer L0 of the <a href="../index.html">platform index</a>; terms are in the
+<p><em>Living document, last changed 2026-10-29 at <code>b982fbdd8</code>.</em></p>
+<p><em>Contributor-facing. Living specification, current at 2026-10-30 (cgm-remote-monitor <code>dev</code>
+<code>47723cda</code>, and <code>e1f7ac41</code> or <code>991b0654</code> where named). Layer L0 of the <a href="../index.html">platform index</a>; terms are in the
 <a href="glossary.html">glossary</a>. Status: specified, not implemented; §6, today's behaviour, is evidenced.
 Decisions:
 <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>,
@@ -6057,8 +6087,12 @@ the <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-1
 and the <a href="../../../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions</a> (I2 on API
 v3, BF-170; the null rule of §3, Q1b), and D-LOOP-ID
 (<a href="../next-gen-platform-plan.html#42-identity">next-gen plan §4.2</a>, maintainer, 2026-10-29: the
-<code>identifier</code> format, <code>_id</code> over API v1, re-sends with changed fields, re-send after delete).
-Queue: <code>SPEC-ID</code>.</em></p>
+<code>identifier</code> format, <code>_id</code> over API v1, re-sends with changed fields, re-send after delete), with
+the answers to ID-Q1–ID-Q11 and the <code>WRITE_*</code> setting names of the same day
+(<a href="../../../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions</a>; the questions are
+in the <a href="../id-first-match-design-note-2026-10-29.html#6a-question-ids-and-answers-session--a5-2026-10-29">ID-FIRST-MATCH design note §6a</a>)
+and the unique index under <code>WRITE_IDENTIFIER_INDEX</code> (maintainer, 2026-10-30, same file).
+Queue: <code>SPEC-ID</code>, <code>SPEC-ID-AMEND</code>.</em></p>
 <p><em>Specification 1 of 8 in the <a href="../index.html#reading-order">reading order</a>; every other specification uses these ids. Expect rules I1–I9, the contract ids, the match order per collection, the <code>identifier</code> format, today's behaviour in cgm-remote-monitor, and the conformance cases.</em></p>
 <p>This page defines how records, definitions, instances and subjects are identified, and how a hub
 decides that a write is a re-send of something it already stores. Every other layer uses these
@@ -6078,7 +6112,7 @@ ids; none of them redefines one.</p>
 </tr>
 <tr>
 <td>I2</td>
-<td><strong><code>_id</code> is 24 hex on every legacy surface.</strong> The hub assigns a 24-hex <code>_id</code>, on MongoDB and PostgreSQL alike; API v1 serves it, and API v3 reads do not return it (§6). <strong>On API v1</strong>, a client <code>_id</code> that is 24 hex, in either case, or <code>{"$oid": …}</code>, is kept as that ObjectId in lower case, and a client <code>_id</code> that is any other string is never stored as <code>_id</code>; it is handled by the quirks registry (I9). <strong>On API v3</strong>, a client-supplied <code>_id</code> in the body of a create, <code>PUT</code> or <code>PATCH</code> is refused with HTTP 400, whatever its form, and no quirk applies: a v3 client names its records by <code>identifier</code> (maintainer, 2026-10-25; BF-170). A hub's own newer APIs may use other ids.</td>
+<td><strong><code>_id</code> is 24 hex on every legacy surface.</strong> The hub assigns a 24-hex <code>_id</code>, on MongoDB and PostgreSQL alike; API v1 serves it, and API v3 reads do not return it (§6). <strong>On API v1</strong>, a client <code>_id</code> that is 24 hex, in either case, or <code>{"$oid": …}</code>, is kept as that ObjectId in lower case, and a client <code>_id</code> that is any other string is never stored as <code>_id</code>; it is handled by the quirks registry (I9). A client ObjectId <code>_id</code> over API v1 is the legacy form: going forward the hub sets <code>_id</code> and the client sets <code>identifier</code> (maintainer, 2026-10-29, D-LOOP-ID rule 2). <strong>On API v3</strong>, a client-supplied <code>_id</code> in the body of a create, <code>PUT</code> or <code>PATCH</code> is refused with HTTP 400, whatever its form, nothing is written, and no quirk applies: a v3 client names its records by <code>identifier</code> (maintainer, 2026-10-25; BF-170, on <code>dev</code> since #8845). A hub's own newer APIs may use other ids.</td>
 </tr>
 <tr>
 <td>I3</td>
@@ -6094,7 +6128,7 @@ ids; none of them redefines one.</p>
 </tr>
 <tr>
 <td>I6</td>
-<td><strong>One identifier names one record</strong> per collection, for as long as the record is stored, and is compared exactly: case-sensitive, with no trimming or normalisation. For devicestatus, a re-send whose <code>identifier</code> is already stored writes nothing (no merge, no new record, no <code>srvModified</code> change) and is answered with the stored <code>_id</code>, on API v1 and v3 alike (maintainer, 2026-10-26; §3).</td>
+<td><strong>One identifier names one record</strong> per collection, for as long as the record is stored, and is compared exactly: case-sensitive, with no trimming or normalisation. A write never creates a second record with an <code>identifier</code> already stored in its collection (maintainer, 2026-10-29, ID-Q5); uniqueness and its index are in §3. Devicestatus follows the same default as the other collections, merge on an <code>identifier</code> match; <code>WRITE_RESEND=acknowledge</code> selects instead a re-send that writes nothing (no merge, no new record, no <code>srvModified</code> change) and is answered with the stored <code>_id</code> (maintainer, 2026-10-29, ID-Q2; §3).</td>
 </tr>
 <tr>
 <td>I7</td>
@@ -6194,12 +6228,12 @@ first that resolves wins.</p>
 <tr>
 <td>devicestatus</td>
 <td><code>identifier</code>, <code>_id</code>, <code>NSCLIENT_ID</code>, <code>created_at</code> + <code>device</code> for an identical body only</td>
-<td>an <code>identifier</code> match is unchanged whatever the body: nothing is written, no <code>srvModified</code> changes, and the reply carries the stored <code>_id</code>; on the other keys an identical body is unchanged and a differing body is a new record</td>
+<td>merge on an <code>identifier</code> match (ID-Q2), or, under <code>WRITE_RESEND=acknowledge</code>, nothing written, no <code>srvModified</code> change and the stored <code>_id</code> in the reply; on the other keys an identical body is unchanged and a differing body is a new record</td>
 </tr>
 <tr>
 <td>profile</td>
 <td><code>identifier</code>, <code>_id</code>, <code>NSCLIENT_ID</code>, <code>created_at</code></td>
-<td>merge</td>
+<td>merge, with <code>store</code> replaced whole (ID-Q7)</td>
 </tr>
 <tr>
 <td>food</td>
@@ -6208,7 +6242,7 @@ first that resolves wins.</p>
 </tr>
 <tr>
 <td>activity</td>
-<td><code>_id</code></td>
+<td><code>identifier</code>, <code>_id</code></td>
 <td>merge</td>
 </tr>
 </tbody>
@@ -6223,25 +6257,51 @@ first that resolves wins.</p>
   a <code>null</code> as sent. On API v1 it runs after <code>prepareData</code>, so a field that <code>prepareData</code> removes or
   rewrites never reaches it. The socket's <code>dbUpdateUnset</code> stays as the explicit removal of named
   fields (maintainer, 2026-10-26; write contract Q1b; ships in 16.0.0).</li>
-<li>Because the merge is recursive, a profile re-send whose <code>store</code> leaves out a named profile keeps
-  that stored profile; removing it takes <code>store: {"&lt;name&gt;": null}</code> or a replace (<code>PUT</code>, which the
-  profile editor uses). The same nested merge applies to an API v3 <code>PATCH</code> and a socket
-  <code>dbUpdate</code> (maintainer, 2026-10-26, accepted with this consequence).</li>
+<li><em>Profile <code>store</code>.</em> A matched profile re-send replaces <code>store</code> as a whole and merges the
+  profile's other fields, so a re-send that leaves out a named profile removes it (maintainer,
+  2026-10-29, ID-Q7). For an API v3 <code>PATCH</code> and a socket <code>dbUpdate</code>, the decision of 2026-10-26
+  stands: the merge is recursive, so a named profile left out of <code>store</code> is kept and removing it
+  takes <code>store: {"&lt;name&gt;": null}</code> or a replace (<code>PUT</code>, which the profile editor uses). Whether
+  ID-Q7's whole-<code>store</code> replace extends to them is open (§5).</li>
 <li><em>Client identity</em> is <code>treatment-fallback-key</code>'s client ids, with its rule that a write without
   identity matches only a stored record without identity.</li>
 <li>The devicestatus natural key matches identical retries only, because Loop writes distinct
   statuses that share <code>created_at</code> and <code>device</code> (3,078 groups, 14,757 documents, at 11 of 12
   corpus sites, measured 2026-10-12).</li>
 <li>An <code>_id</code> matches every stored form of that id.</li>
-<li><em>Re-send after delete.</em> A re-send that matches a deleted record is acknowledged with a 2xx naming
-  the stored, deleted record, and the record stays deleted, on every path (maintainer, 2026-10-27;
-  every path, 2026-10-29). Each cell this changes is documented, so the change can be reverted or
-  adjusted. Today's code differs per path (§6); <code>ID-FIRST-MATCH</code> builds the rule.</li>
+<li><em>Re-send after delete.</em> A create that matches a deleted record on an identity field
+  (<code>identifier</code>, <code>syncIdentifier</code>, <code>id</code>, <code>uuid</code>, <code>NSCLIENT_ID</code>, <code>_id</code>) is acknowledged with a 2xx
+  naming the stored, deleted record, and the record stays deleted, on every path (maintainer,
+  2026-10-27; every path, 2026-10-29; identity fields only, ID-Q4, 2026-10-29). A match on a time
+  key against a deleted record stores the new record (ID-Q4). Each cell this changes is
+  documented, so the change can be reverted or adjusted. Today's code differs per path (§6);
+  <code>ID-FIRST-MATCH</code> builds the rule.</li>
+<li><em>Edit of a deleted record.</em> An edit of a soft-deleted record over API v1 (<code>PUT</code>, the socket's
+  <code>dbUpdate</code>, in-process <code>save</code>) is answered 2xx and not applied, so the record stays deleted.
+  API v3 keeps its 410. <code>WRITE_DELETED_EDIT=refuse</code> makes API v1 answer 410 instead; the default
+  is <code>ignore</code>. A deliberate restore is a separate item (maintainer, 2026-10-29, ID-Q3 and the
+  setting names).</li>
 <li><em>Re-send with changed fields.</em> Where the table says merge, merge on match is the default. API v3
   refuses a re-send whose <code>date</code>, <code>device</code> or <code>eventType</code> differs from the stored record (HTTP
-  400), and <code>PUT</code> replaces. A site setting plus per-client quirks (I9's registry) may opt a client
-  into keep-first or refuse (<code>ID-RESEND-SWITCH</code>). A default changes only in a major version
-  (maintainer, 2026-10-29).</li>
+  400), and <code>PUT</code> replaces. <code>WRITE_RESEND=merge|acknowledge|refuse</code> (default <code>merge</code>) is the site
+  setting, and per-client quirks (I9's registry) may select a mode for one registered client
+  (<code>ID-RESEND-SWITCH</code>). A default changes only in a major version (maintainer, 2026-10-29).</li>
+<li><em>Food and activity creates.</em> A matched API v1 food or activity create merges; only <code>PUT</code>
+  replaces (maintainer, 2026-10-29, ID-Q8).</li>
+<li><em>Records that already share an identifier.</em> Identifier-first matching picks between them by the
+  time key, then the newest (P4). An edit addressed by that <code>identifier</code> lands on the record P4
+  picks, and a delete addressed by it reaches every record sharing it. The chart's split stops
+  copying identity fields (BF-212) (maintainer, 2026-10-29, ID-Q5 and ID-Q10).</li>
+<li><em>Uniqueness.</em> <code>identifier</code> is unique per collection, with the tenant in the key under multi;
+  values stay globally unique by convention, the kind segment of the
+  <a href="../identifier-conventions.html">identifier conventions</a> keeping collections apart (maintainer,
+  2026-10-27). The hub keeps a partial unique index on <code>identifier</code> per collection, over records
+  that carry one, soft-deleted records included, under <code>WRITE_IDENTIFIER_INDEX</code> (maintainer,
+  2026-10-30): <code>try</code> (the default) builds it online, and where existing duplicates block it, logs
+  the counts per collection (never the values), shows them on the status page and runs without
+  the index, while the write rule of I6 still keeps a second record from being created;
+  <code>require</code> refuses to start without the index; <code>off</code> skips it. An operator-run tool reports
+  duplicate groups and resolves them by the P4 pick.</li>
 <li><em>Fields left out of a re-send</em> are kept on a merge on match (RFC 7386). The census reads replace on
   several paths today, which is not yet measured; the extended write-contract matrix measures each
   path before it changes, and every changed cell is listed.</li>
@@ -6261,47 +6321,68 @@ the model as the first segment (<code>dexcom://g7/&lt;serial&gt;/&lt;offset&gt;<
 made in an app (<code>loop://carbs/&lt;uuid&gt;</code>) (maintainer, 2026-10-18). What makes two devices agree is
 that they derive the id from the same inputs, not its format. A UUID is recommended and not
 required.</p>
-<p>The format (maintainer, 2026-10-29, D-LOOP-ID) is 1 to 256 URL-safe characters (C1–C3), a UUID
-recommended, with placeholders refused (C5). C4 and C5's reserved path words (<code>history</code>, <code>.</code>,
-<code>..</code>) are proposed. Nothing enforces the format yet. Identifier-first matching would merge two
-clients' writes that carry the same placeholder, so <code>ID-VALIDATE</code> ships with or before
-<code>ID-FIRST-MATCH</code>. Each constraint is grounded in the
-<a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#0-answer">identifier format research §0</a>:</p>
+<p>The format (maintainer, 2026-10-29: D-LOOP-ID rule 1, with ID-Q6's answer of the same day, which
+the <a href="../../../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions</a> record as
+refining it):</p>
+<ul>
+<li>an <code>identifier</code> is any string of 1 to 256 characters (256 being MongoDB's index key limit),
+  with no character restriction, and a UUID is recommended;</li>
+<li>an identifier used in a URL path is percent-encoded;</li>
+<li>a placeholder (<code>undefined</code>, <code>null</code>, <code>invalid</code>, an empty string) or an over-length value is
+  treated as absent: it is ignored for matching, not stored, and the write is answered with a
+  warning;</li>
+<li><code>WRITE_IDENTIFIER=strict</code> refuses such a write instead; the default is <code>lenient</code>;</li>
+<li>the check runs right after the <code>_id</code> step, so a placeholder <code>_id</code> that <code>UUID_HANDLING</code> moves
+  into <code>identifier</code> (I9) is caught as well.</li>
+</ul>
+<p>Nothing enforces the format yet. Identifier-first matching would merge two clients' writes that
+carry the same placeholder, so <code>ID-VALIDATE</code> ships with or before <code>ID-FIRST-MATCH</code>. The
+constraints below are grounded in the
+<a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#0-answer">identifier format research §0</a>;
+the status column says which are decided:</p>
 <table>
 <thead>
 <tr>
 <th>#</th>
 <th>constraint</th>
+<th>status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>C1</td>
 <td>a JSON string with at least one non-whitespace character</td>
+<td>at least 1 character decided (D-LOOP-ID rule 1); whether a whitespace-only value is a placeholder is open (§5); API v3 create enforces C1 today (identifier conventions §2)</td>
 </tr>
 <tr>
 <td>C2</td>
-<td>at most 256 characters</td>
+<td>at most 256 characters; a longer value is treated as absent</td>
+<td>decided (ID-Q6)</td>
 </tr>
 <tr>
 <td>C3</td>
-<td>characters from <code>A-Z a-z 0-9 - . _ ~ : /</code>; in an API v3 path the identifier is percent-encoded as one segment (an encoded <code>/</code> works on every v3 by-identifier route at 15.0.8 and <code>fade2299</code>, a raw <code>/</code> is 404: <a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#34-url-form-identifiers-end-to-end-2026-10-18-m">format research §3.4</a>)</td>
+<td>any characters; in an API v3 path the identifier is percent-encoded as one segment (an encoded <code>/</code> works on every v3 by-identifier route at 15.0.8 and <code>fade2299</code>, a raw <code>/</code> is 404: <a href="../../../60-research/tenancy/identifier-format-2026-10-17.html#34-url-form-identifiers-end-to-end-2026-10-18-m">format research §3.4</a>). The <a href="../identifier-conventions.html">identifier conventions</a> give clients a character set and URL syntax to build values from; the hub does not check them</td>
+<td>decided (ID-Q6: no character restriction)</td>
 </tr>
 <tr>
 <td>C4</td>
 <td>not exactly 24 hex characters, unless it equals the record's own <code>_id</code></td>
+<td>proposed</td>
 </tr>
 <tr>
 <td>C5</td>
-<td>not <code>history</code>, <code>.</code> or <code>..</code>, and not a client placeholder such as <code>invalid</code>, <code>undefined</code>, <code>null</code> or <code>NaN</code></td>
+<td>a placeholder (<code>undefined</code>, <code>null</code>, <code>invalid</code>, an empty string) is treated as absent; the reserved path words <code>history</code>, <code>.</code> and <code>..</code> are proposed</td>
+<td>placeholders decided (ID-Q6); path words proposed</td>
 </tr>
 <tr>
 <td>C6</td>
 <td>one identifier, one record (I6)</td>
+<td>decided</td>
 </tr>
 <tr>
 <td>C7</td>
 <td>compared exactly (I6)</td>
+<td>decided</td>
 </tr>
 </tbody>
 </table>
@@ -6320,7 +6401,7 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <tr>
 <td><code>ID-FORMAT-DECISION</code></td>
 <td>adopt C1–C7?</td>
-<td>decided (maintainer, 2026-10-29): 1 to 256 URL-safe characters, a UUID recommended, placeholders refused (C1–C3, C5); opaque values, URL syntax and the source and app schemes decided 2026-10-18; C4 and the reserved path words proposed; not enforced yet (<code>ID-VALIDATE</code>)</td>
+<td>decided (maintainer, 2026-10-29, D-LOOP-ID rule 1 with ID-Q6): any string of 1 to 256 characters, no character restriction, percent-encoded in a URL path, a UUID recommended; a placeholder or an over-length value treated as absent with a warning, refused under <code>WRITE_IDENTIFIER=strict</code> (§4); opaque values, URL syntax and the source and app schemes decided 2026-10-18; C4 and the reserved path words proposed; not enforced yet (<code>ID-VALIDATE</code>)</td>
 </tr>
 <tr>
 <td><code>ID-CLIENT-OID-DECISION</code></td>
@@ -6335,17 +6416,17 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <tr>
 <td><code>ID-ABSENT-DECISION</code></td>
 <td>a write with no <code>identifier</code>: keep the time-key fallback, deprecate it, or require <code>identifier</code>?</td>
-<td>decided (maintainer, 2026-10-27): <code>identifier</code> is SHOULD for legacy writers, and the time-key fallback stays; it is MUST for registered controller instances; revisited as adoption grows. Open: how a hub recognises a registered instance's write on a legacy path. New natural keys are <code>ID-NATURAL-KEY</code>. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one <code>created_at</code> and <code>eventType</code> and no identifier are merged by §3 (UCA-SYNC-STORE-007)</td>
+<td>decided (maintainer, 2026-10-27): <code>identifier</code> is SHOULD for legacy writers, and the time-key fallback stays; it is MUST for registered controller instances; revisited as adoption grows. Cases: <code>identity/legacy-without-identifier-written</code>, <code>identity/registered-instance-identifier-written</code>. Open: how a hub recognises a registered instance's write on a legacy path, and what it answers one that carries no <code>identifier</code> (<code>ID-REGISTERED-NO-IDENTIFIER</code>). New natural keys are <code>ID-NATURAL-KEY</code>. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one <code>created_at</code> and <code>eventType</code> and no identifier are merged by §3 (UCA-SYNC-STORE-007)</td>
 </tr>
 <tr>
 <td><code>ID-DELETE-REUSE-DECISION</code></td>
 <td>after a delete, does a re-send of the same <code>identifier</code> resurrect, get refused, or create new? A resurrected dose is UCA-SYNC-STORE-003 in the <a href="control-loops.html">control-loop analysis</a></td>
-<td>decided (maintainer, 2026-10-27; every path, 2026-10-29): acknowledged, and the record stays deleted (§3). Not built: today API v1 stores the re-send again after its hard delete and API v3 <code>POST</code> resurrects a soft-deleted record (measured 2026-10-18, <a href="../../../10-domain/record-identity-reference.html">record identity reference</a>)</td>
+<td>decided (maintainer, 2026-10-27; every path, 2026-10-29; identity fields only, ID-Q4; edits, ID-Q3): acknowledged, and the record stays deleted; an API v1 edit of a deleted record is answered 2xx and not applied, and API v3 keeps its 410 (§3). Not built: today API v1 stores the re-send again after its hard delete and API v3 <code>POST</code> resurrects a soft-deleted record (measured 2026-10-18, <a href="../../../10-domain/record-identity-reference.html">record identity reference</a>)</td>
 </tr>
 <tr>
 <td><code>ID-SCOPE-DECISION</code></td>
 <td>is <code>identifier</code> unique per collection, across collections, and per tenant?</td>
-<td>decided (maintainer, 2026-10-27): unique per collection, with the tenant in the key under multi; values stay globally unique by convention (the URL kind segment). Not enforced: no index on <code>identifier</code> is unique today (<code>ID-UNIQUE-INDEX</code>)</td>
+<td>decided (maintainer, 2026-10-27): unique per collection, with the tenant in the key under multi; values stay globally unique by convention (the URL kind segment). The partial unique index per collection under <code>WRITE_IDENTIFIER_INDEX=try\|require\|off</code> is decided for 16.0.0 (maintainer, 2026-10-30; §3). Not built: no index on <code>identifier</code> is unique today (<code>ID-UNIQUE-INDEX</code>)</td>
 </tr>
 <tr>
 <td>D20 choice 6 (<a href="../nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">text</a>)</td>
@@ -6356,6 +6437,31 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <td>D20 choice 7</td>
 <td>does a typed re-send match across instances of one product?</td>
 <td>I7 states yes, pending confirmation</td>
+</tr>
+<tr>
+<td><code>ID-REGISTERED-NO-IDENTIFIER</code></td>
+<td>what does a hub answer a registered controller instance's write that carries no <code>identifier</code> (a carrier write without <code>identifier</code>, a typed write without a record id): refuse it, with which status and reason code, or accept it as a legacy write with a warning?</td>
+<td><code>ID-ABSENT-DECISION</code> makes <code>identifier</code> MUST for registered instances (2026-10-27) and does not state the hub's answer; how a hub recognises a registered instance's write on a legacy path is open with it. No case states the answer (§7)</td>
+</tr>
+<tr>
+<td><code>ID-PLACEHOLDER-LIST</code></td>
+<td>which values are placeholders?</td>
+<td>ID-Q6 lists <code>undefined</code>, <code>null</code>, <code>invalid</code> and an empty string. Plan §4.2's format line and the conventions' C5 also name <code>NaN</code>, and the conventions name <code>unknown</code>; a whitespace-only value is not named</td>
+</tr>
+<tr>
+<td><code>ID-WARNING-FORM</code></td>
+<td>what does the warning on a write whose <code>identifier</code> was treated as absent look like on API v1, API v3 and the socket?</td>
+<td>ID-Q6 says the write is answered with a warning and does not state its form</td>
+</tr>
+<tr>
+<td><code>ID-V3-ID-REASON</code></td>
+<td>which reason code names API v3's refusal of a client <code>_id</code> in the conformance vocabulary?</td>
+<td>I2 states 400 and nothing written; cgm-remote-monitor answers with its own message. The cases use the open vocabulary's <code>other</code> with the reference's term <code>client-id-not-accepted</code> until a code is listed</td>
+</tr>
+<tr>
+<td><code>ID-PROFILE-PATCH-STORE</code></td>
+<td>does ID-Q7's whole-<code>store</code> replace apply to an API v3 <code>PATCH</code> and a socket <code>dbUpdate</code> of a profile?</td>
+<td>ID-Q7 decides it for a matched re-send; the recursive merge of 2026-10-26 is the stated rule for <code>PATCH</code> and <code>dbUpdate</code> (§3)</td>
 </tr>
 </tbody>
 </table>
@@ -6374,14 +6480,18 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 <li><strong>API v3</strong> keeps a client <code>identifier</code>. When none is sent it computes a UUID v5 over the device,
   date and, for treatments, <code>eventType</code> (<code>lib/api3/shared/operationTools.js:6</code>, <code>:106</code>). It
   refuses a re-send whose <code>date</code>, <code>device</code> or <code>eventType</code> differs (400, reproduced).</li>
-<li><strong>API v3 and a body <code>_id</code></strong> (<code>dev</code> <code>47723cda</code>, since #8845): create, <code>PUT</code> and <code>PATCH</code> refuse a
-  client-supplied <code>_id</code> with 400 (<code>lib/api3/shared/operationTools.js:197-203</code>, read), as I2 states.
+<li><strong>API v3 and a body <code>_id</code></strong> (<code>dev</code> since #8845; read again at <code>991b0654</code>): create and <code>PUT</code>
+  refuse a body that has an <code>_id</code> member, whatever its value, with 400 before anything is written
+  (<code>refuseClientId</code>, <code>lib/api3/shared/operationTools.js:170-175</code>, called from
+  <code>generic/create/operation.js:36</code> and <code>generic/update/operation.js:32</code>); <code>PATCH</code> refuses it with
+  400 as an immutable field (<code>generic/patch/operation.js:33-35</code>). This is I2.
   On <code>v15.0.9</code> a 24-hex body <code>_id</code> is stored as a string (BF-170, reproduced). v3 reads do not
   return <code>_id</code> (<code>lib/api3/storage/mongoCollection/utils.js:10-16</code>, read).</li>
 <li><strong>A devicestatus re-send with a stored <code>identifier</code></strong> (<code>dev</code> <code>47723cda</code>): API v1 stores a second
   record (no identifier match) and API v3 replaces the stored record and moves its <code>srvModified</code>
-  (reproduced, the devicestatus study of 2026-10-26). I6's rule is on <code>dev</code> since #8859
-  (<code>ID-SIMPLE-MATCH</code>).</li>
+  (reproduced, the devicestatus study of 2026-10-26). Since #8859 (<code>ID-SIMPLE-MATCH</code>), <code>dev</code>
+  answers such a re-send with the stored <code>_id</code> and writes nothing, on API v1 and v3; that is the
+  behaviour <code>WRITE_RESEND=acknowledge</code> keeps, and ID-Q2's merge default is not built.</li>
 <li><strong>A <code>null</code> in an update</strong> (<code>dev</code> <code>47723cda</code>): a merge on match stores a field sent as <code>null</code> as
   <code>null</code> (<code>$set</code>), on every path, and <code>tests/api.profiles.resend.test.js:218</code> pins that. §3's
   removal is on <code>dev</code> since #8859, with BF-195's fix, for 16.0.0.</li>
@@ -6404,9 +6514,12 @@ uses today's v1 by-<code>_id</code> routes needs a UUID (§6).</p>
 the identifier format research §1, and the quirks registry: QUIRK-TREATMENTS-006 (Loop override
 <code>_id</code>), QUIRK-ENTRIES-004 and QUIRK-TREATMENTS-007 (Trio's <code>id</code> member).</p>
 <h2 id="7-conformance-cases">7. Conformance cases<a class="headerlink" href="#7-conformance-cases" title="Permanent link">&para;</a></h2>
-<p>20 cases, under <code>specs/sync/conformance/</code>. Checked by <code>tools/nsschema/test_registration_quirks.py</code>
-and <code>tools/nsschema/test_registration_instances.py</code>; the reference functions check the cases, they
-are not a hub.</p>
+<p>27 cases, under <code>specs/sync/conformance/</code>. Checked by <code>tools/nsschema/test_registration_quirks.py</code>,
+<code>tools/nsschema/test_registration_instances.py</code> and, for the seven under <code>identity/</code>,
+<code>tools/nsschema/test_identity_cases.py</code>; the reference functions check the cases, they are not a
+hub. A carrier write in an <code>identity/</code> case names its API (<code>write.api</code>: <code>v1</code> or <code>v3</code>); the other
+carrier cases name none. A reply's status 200 <code>written</code> stands for a write accepted; a booted
+cgm-remote-monitor answers an API v3 create 201 (write contract U6), and a harness maps it.</p>
 <table>
 <thead>
 <tr>
@@ -6495,11 +6608,42 @@ are not a hub.</p>
 <td><code>instances/dual-write-not-linked-across-instances</code></td>
 <td>§2 dual-write link</td>
 </tr>
+<tr>
+<td><code>identity/v3-client-id-refused</code></td>
+<td>I2 (API v3, 24-hex <code>_id</code>)</td>
+</tr>
+<tr>
+<td><code>identity/v3-client-oid-refused</code></td>
+<td>I2 (API v3, <code>{"$oid": …}</code>)</td>
+</tr>
+<tr>
+<td><code>identity/v3-client-uuid-id-refused</code></td>
+<td>I2 (API v3, no quirk applies)</td>
+</tr>
+<tr>
+<td><code>identity/v3-identifier-written</code></td>
+<td>I1, I2, I4 (control)</td>
+</tr>
+<tr>
+<td><code>identity/v1-client-id-kept</code></td>
+<td>I2 (API v1, legacy)</td>
+</tr>
+<tr>
+<td><code>identity/legacy-without-identifier-written</code></td>
+<td>§5 <code>ID-ABSENT-DECISION</code> (SHOULD)</td>
+</tr>
+<tr>
+<td><code>identity/registered-instance-identifier-written</code></td>
+<td>§5 <code>ID-ABSENT-DECISION</code> (MUST), I4</td>
+</tr>
 </tbody>
 </table>
-<p>Not covered by a case: I2's API v3 refusal (the carrier cases do not name an API version); I7 across two instances (<code>typed-write-resend-same-ids</code> re-sends from one
-instance); §3's per-collection keys, which the write contract's gates measure against
-cgm-remote-monitor rather than a reference function; and §4's format, which nothing enforces yet.</p>
+<p>Not covered by a case: I2's refusal on API v3 <code>PUT</code> and <code>PATCH</code> (the cases model a create); a
+registered instance's write without <code>identifier</code>, whose answer is open
+(<code>ID-REGISTERED-NO-IDENTIFIER</code>); I7 across two instances (<code>typed-write-resend-same-ids</code> re-sends
+from one instance); §3's per-collection keys, re-send after delete and uniqueness, which the write
+contract's gates measure against cgm-remote-monitor rather than a reference function; and §4's
+format, which nothing enforces yet.</p>
 
 
 

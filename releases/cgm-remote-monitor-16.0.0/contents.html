@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>ba29efa57</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>c6a88fad6</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3089,7 +3089,7 @@ on <code>dev</code> with its cohort check (entry bar, 2026-10-29). An item that 
 or to 17.0.0 if it changes a default. The identity work is the core: it is the substance of the agreement with
 the Loop maintainers. Multitenant items may ship dormant, labelled alpha behind <code>serve</code>, or not ship. The tag
 is gated by the bar and the pre-tag items, not by a date.</p>
-<p>In flight on 2026-10-30 (read about 02:30Z with <code>gh pr view</code> and <code>gh api .../compare</code>; work not yet in a PR
+<p>In flight on 2026-10-30 (read about 02:30Z with <code>gh pr view</code> and <code>gh api .../compare</code>, and again later on 2026-10-30 for the rows marked <em>later</em>; work not yet in a PR
 is read from the plan, the <a href="../../docs/30-design/platform/id-first-match-design-note-2026-10-29.html">ID-FIRST-MATCH design note</a>
 and the queue):</p>
 <table>
@@ -3105,16 +3105,16 @@ and the queue):</p>
 <tbody>
 <tr>
 <td><code>write(intent)</code> release 1: every v1, API v3 and socket write path through one write step, no behaviour change except BF-165's <code>_id</code> in the fallback-key re-send reply</td>
-<td><code>feat/write-intent</code>, <strong>draft #8874</strong> (base <code>dev</code>, opened by the maintainer 2026-10-28)</td>
-<td><code>4f9fc4cd</code> (2026-10-30 02:06Z, a merge of <code>dev</code> <code>991b0654</code>): 20 commits, 27 files, +7187/−1531 against <code>dev</code>; 0 behind <code>dev</code></td>
-<td>slices 1–6 built; slices 4 (API v3) and 6 (socket treatments, devicestatus, profile) released by the maintainer 2026-10-29, slice 6 with its extra dedupe gate. On the push-ready head <code>e8224807</code> (17 commits on <code>dev</code> <code>e1f7ac41</code>, 2026-10-29): the write-contract matrix differs from <code>dev</code> in 0 cells, the revert was rehearsed, <code>npm test</code> 5106/0/3 against <code>dev</code>'s 4759/0/3 (read from the queue). CI on <code>4f9fc4cd</code>: <code>pull_request</code> run 40990198561 and CodeQL passed. First in the entry-bar order; not yet through the bar (time on <code>dev</code> and its cohort check)</td>
+<td><code>feat/write-intent</code>, <strong>#8874</strong> (base <code>dev</code>, opened by the maintainer 2026-10-28; <em>later</em> 2026-10-30: out of draft at <code>9919f8ef</code>)</td>
+<td><code>9919f8ef</code> (<em>later</em>): <code>4f9fc4cd</code> (2026-10-30 02:06Z, a merge of <code>dev</code> <code>991b0654</code>; 20 commits, 27 files, +7187/−1531 against <code>dev</code>) plus one commit adding <code>docs/architecture/write-intent.md</code> only</td>
+<td>slices 1–6 built; slices 4 (API v3) and 6 (socket treatments, devicestatus, profile) released by the maintainer 2026-10-29, slice 6 with its extra dedupe gate. On the push-ready head <code>e8224807</code> (17 commits on <code>dev</code> <code>e1f7ac41</code>, 2026-10-29): the write-contract matrix differs from <code>dev</code> in 0 cells, the revert was rehearsed, <code>npm test</code> 5106/0/3 against <code>dev</code>'s 4759/0/3 (read from the queue). CI on <code>4f9fc4cd</code>: <code>pull_request</code> run 40990198561 and CodeQL passed. <em>Later</em>, measured by session -4f at <code>4f9fc4cd</code> against <code>dev</code> <code>991b0654</code>, run one after the other: <code>npm test</code> 5206/0/3 against <code>dev</code>'s 4917/0/3 (+289 titles, none removed or renamed); tiers 415 files ok; the write-contract matrix (1,929 cells) differs in 0 cells outside <code>cache</code> and in 1 cell in <code>cache</code> only, no earlier cell differs (pin <code>tools/qc/results/write-contract-matrix/dev-991b0654-idfirst.json</code>); the commit-event copy (360 cells) 0 differing, from an earlier overlapping pair, not re-run. The merge revert was rehearsed at <code>4f9fc4cd</code>: the reverted tree equals <code>dev</code>'s (<code>a9ae9536</code>). The PR body names the merge revert as the supported revert; a commit-by-commit revert conflicts after the <code>dev</code> merges and, forced, drops BF-209. Needs the maintainer's review and merge; the cohort check below starts at the merge. First in the entry-bar order; not yet through the bar</td>
 <td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td>ID-FIRST-MATCH: identifier-first on every collection and path, as slices in the order 1 (no outcome change, with the two additive items), 2 (identifier format), 5 (shared identifiers, BF-212's pick), 3 (stays deleted), 4 (merge on match), 6 (identifier first where it is new), 6a (activity)</td>
-<td>not started; design note 2026-10-29</td>
+<td>slice 1 started <em>later</em> 2026-10-30 by session -4f, local <code>feat/id-first-s1</code> on <code>9919f8ef</code>, not pushed; design note 2026-10-29</td>
 <td>—</td>
-<td>the rules are decided (D-LOOP-ID rules 1–3, ID-Q1..ID-Q11, 2026-10-29); each slice goes to the bar on its own. Slice 1 moves 0 of 1,929 matrix cells; slices 3 to 6a change outcomes (40, 232, 112 and 33 cells, read from the design note's predictions)</td>
+<td>slice 1's gate: the 456 earlier cells unchanged, and among the new cells only the two additive items' cells, predicted by id before the run (about 24 activity cells), with UUID handling on and off. The rules are decided (D-LOOP-ID rules 1–3, ID-Q1..ID-Q11, 2026-10-29); each slice goes to the bar on its own. Slice 1 moves 0 of 1,929 matrix cells; slices 3 to 6a change outcomes (40, 232, 112 and 33 cells, read from the design note's predictions)</td>
 <td><code>ID-FIRST-MATCH</code>, <code>ID-VALIDATE</code></td>
 </tr>
 <tr>
@@ -3128,14 +3128,14 @@ and the queue):</p>
 <td>ID-UNIQUE-INDEX: a partial unique index on <code>identifier</code> per collection, with the try, require and off modes, and an operator-run report and clean tool (P4 pick)</td>
 <td>not started</td>
 <td>—</td>
-<td>in 16.0.0 scope through the bar (maintainer, 2026-10-30); moved from 17.0.0. Under <code>try</code> (the default) boot builds the index online; on existing duplicates it logs the counts per collection (never the values), shows them on the status page and runs without it, while the ID-Q5 write rule still refuses a second record with a stored identifier. <code>require</code> refuses to start without the index; <code>off</code> skips it</td>
+<td>in 16.0.0 scope through the bar (maintainer, 2026-10-30); moved from 17.0.0. Under <code>try</code> (the default) boot builds the index online; on existing duplicates it logs the counts per collection (never the values), shows them on the status page and runs without it, while the ID-Q5 write rule still refuses a second record with a stored identifier. <code>require</code> refuses to start without the index; <code>off</code> skips it. Comes before ID-BATCH, with the duplicate-key retry inside the write step (maintainer, <em>later</em> 2026-10-30; <a href="decisions.html">decisions</a>)</td>
 <td><code>ID-UNIQUE-INDEX</code></td>
 </tr>
 <tr>
 <td>ID-BATCH: per-item results in v1 batch replies</td>
-<td>not started</td>
+<td><a href="../../docs/30-design/platform/id-batch-design-note-2026-10-30.html">design note</a> (session -4f, <em>later</em> 2026-10-30); not built</td>
 <td>—</td>
-<td>eligible through the bar (2026-10-29), after <code>write(intent)</code></td>
+<td>eligible through the bar (2026-10-29), after the unique index (2026-10-30). The note proposes one slot per sent item, 200 if any item is not refused and 400 if all are, no 207 (it breaks Loop and three other uploaders), transient failures as a whole-request 5xx, and full <code>items[]</code> only on opt-in; five questions stay open until ID-BATCH is next</td>
 <td><code>ID-BATCH-RESULTS</code></td>
 </tr>
 <tr>
@@ -3147,7 +3147,7 @@ and the queue):</p>
 </tr>
 <tr>
 <td>SPEC-ID-AMEND: the identity specification and conformance cases (mandatory identifier on registered instances; API v3's refusal of a client <code>_id</code>)</td>
-<td>alignment repository</td>
+<td>alignment repository, branch <code>spec/id-amend-2026-10-30</code> (<em>later</em> 2026-10-30: an agent of session -49 is building it)</td>
 <td>—</td>
 <td>spec and conformance only; no site behaviour (plan item)</td>
 <td>—</td>
@@ -3156,7 +3156,7 @@ and the queue):</p>
 <td>controller registration S0, S1, S2, S5, off by default</td>
 <td><strong>draft #8857</strong></td>
 <td><code>f7a43fed</code> (last updated 2026-10-27): 109 commits behind <code>dev</code>, 12 ahead (<code>gh api .../compare/dev...f7a43fed</code>); <code>mergeable</code> reads <code>UNKNOWN</code></td>
-<td>needs a rebase onto <code>dev</code>, with conflicts reported in the plan; D-REG-FLAG (where the catalogue lives) is open</td>
+<td>needs <code>dev</code> merged in, with conflicts reported in the plan; <em>later</em> 2026-10-30: an agent of session -49 is merging <code>dev</code> into it in <code>externals/work/crm-regcat-flat</code> (merge, not rebase), with push commands for the maintainer; D-REG-FLAG (where the catalogue lives) is open</td>
 <td><code>HUB-REG-CRM</code></td>
 </tr>
 <tr>
@@ -3170,7 +3170,7 @@ and the queue):</p>
 <td>ST-EVENT and ST-VIEWS, if they clear the bar</td>
 <td>ST-VIEWS: <strong>draft #8875</strong> (<code>a0470a72</code>, not wired in)</td>
 <td>—</td>
-<td>ST-EVENT: D-EVENT deferred 2026-10-27, research continuing. ST-VIEWS: wiring is the maintainer's call, with alarm cohort checks; the alarms are safety-relevant</td>
+<td>ST-EVENT: D-EVENT deferred 2026-10-27, research continuing. ST-VIEWS: wiring is the maintainer's call, with alarm cohort checks; the alarms are safety-relevant. <em>Later</em> 2026-10-30: proposed to the maintainer, not decided: use the views only under <code>serve</code> (multitenant alpha) and leave <code>single</code> on the resident path, deciding a single-tenant switch from evidence. The maintainer asked for that evidence from labs: a time-stepped replay lab (minute by minute over days of the corpus and synthetic fixtures, with acks, snoozes, two uploaders and the lookback edges, a resident-vs-resident noise floor and the drop-query and tamper controls) is being built by an agent of session -49 on local <code>lab/views-replay</code></td>
 <td>—</td>
 </tr>
 <tr>
@@ -3203,6 +3203,38 @@ and the queue):</p>
 </tr>
 </tbody>
 </table>
+<h3 id="cohort-check-for-writeintent-release-1-8874">Cohort check for <code>write(intent)</code> release 1 (#8874)<a class="headerlink" href="#cohort-check-for-writeintent-release-1-8874" title="Permanent link">&para;</a></h3>
+<p>Owned by session -49 (plan owner) from 2026-10-30; the writer list is session -4f's. It runs for one week
+from #8874's merge to <code>dev</code>. Testers on <code>dev</code> report any duplicate or missing treatment, device status or
+profile, by the path their uploader writes through, because those are the paths the write step now carries:</p>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>writers to cover</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>socket</td>
+<td>AndroidAPS 3.4.2.x with the v1 NSClient; the web chart's <em>Move insulin</em> and <em>Move carbs</em> drag</td>
+</tr>
+<tr>
+<td>API v3</td>
+<td>AndroidAPS NSClientV3; nightguard</td>
+</tr>
+<tr>
+<td>REST v1</td>
+<td>Loop, Trio, xDrip+, nightscout-connect, the careportal</td>
+</tr>
+</tbody>
+</table>
+<p>One volunteer runs <code>WRITE_VALIDATION=reject</code> and compares the treatments in their app with the site. Read from
+the clients' code by session -4f (<a href="../../docs/30-design/platform/id-batch-design-note-2026-10-30.html">ID-BATCH design note</a>),
+not reproduced: under <code>reject</code>, a refused treatment in a v1 batch keeps its reply slot with a <code>refused</code> member
+and no <code>_id</code>; Loop counts a slot without <code>_id</code> as uploaded, and Trio and xDrip+ check only the status, so all
+three treat the refused treatment as uploaded and do not re-send it. This is behaviour on <code>dev</code> today, not
+introduced by #8874.</p>
 <p><em>Rows as recorded to 2026-10-28</em> (read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161, the CI test fixes, #8864 and the next-gen drafts on 2026-10-27). Every cut is merged
 (<a href="#merge-state">Merge state</a>); #8854 is merged (<a href="#what-is-merged-so-far">What is merged so far</a>).</p>
 <table>
@@ -3567,7 +3599,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/539d344268aa5f805ccf0e62344660a68bd5a29f/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a1580aae231feceb51dbe58b473da7769b9b61d3/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -3728,7 +3760,9 @@ candidate is named.</p>
   as an explicit command); tooling that matches PID 1's command line sees the new name. <code>nightscout</code>
   is a new executable with <code>single</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code> and <code>diagnose data</code>;
   <code>nightscout serve</code> is reserved for a multitenant Nightscout, which is not built yet, so every
-  role exits 64.</p>
+  role exits 64.
+  Candidate note, read from #8865 at <code>1b2801f7</code> by session -7d, not run: a custom entrypoint or command that
+  puts <code>node</code> in front of the image's default command now runs <code>node nightscout single</code> and fails to start.</p>
 </li>
 <li>
 <p>The Node floor <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>, and the message the server prints when it refuses

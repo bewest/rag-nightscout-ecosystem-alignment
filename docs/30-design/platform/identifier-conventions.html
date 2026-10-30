@@ -2377,6 +2377,8 @@
       
         
       
+        
+      
     
     
     
@@ -3130,6 +3132,34 @@
     
   
     Glucose units at the profile boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="id-batch-design-note-2026-10-30.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ID-BATCH: per-item results in API v1 batch replies
   
 
     
@@ -5776,9 +5806,12 @@
 
 
 <h1 id="identifier-conventions-one-identifier-per-real-thing">Identifier conventions: one <code>identifier</code> per real thing<a class="headerlink" href="#identifier-conventions-one-identifier-per-real-thing" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-18 at <code>9442b2243</code>.</em></p>
-<p><em>Contributor-facing. </em><em>Living draft</em><em>, as of 2026-10-18. Decisions recorded here are the
-maintainer's of 2026-10-18; the templates in §4 are proposals unless a cell says otherwise. Read
+<p><em>Living document, last changed 2026-10-29 at <code>b982fbdd8</code>.</em></p>
+<p><em>Contributor-facing. </em><em>Living draft</em><em>, as of 2026-10-30. Decisions recorded here are the
+maintainer's of 2026-10-18, with the scope and absent-identifier decisions of 2026-10-27 and the
+format decisions of 2026-10-29 (D-LOOP-ID rule 1 and ID-Q6, in the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">16.0.0 decisions</a>) marked where they
+apply; the templates in §4 are proposals unless a cell says otherwise. Read
 after the <a href="spec/identity.html">identity specification</a> (L0), whose format section this page fills in.
 Evidence: <a href="../../60-research/tenancy/identifier-format-2026-10-17.html">identifier format research</a>
 (§1 per-app identity, §3.4 URL-form identifiers measured, §7 the G7 counter) and
@@ -5794,7 +5827,7 @@ is how two apps that see the same sensor or pump arrive at the same value. Measu
 on API v1 <code>find[identifier]=</code>; a raw <code>/</code> in a v3 path is 404.</p>
 <p>Marks: <strong>[R]</strong> read from code at the commit given; <strong>[M]</strong> measured (the cited page says how);
 <strong>[proposed]</strong> a template or rule for the maintainer and client developers to confirm;
-<strong>[decided]</strong> the maintainer's decision of 2026-10-18.</p>
+<strong>[decided]</strong> the maintainer's decision of 2026-10-18, or of the date given.</p>
 <h2 id="1-decisions">1. Decisions<a class="headerlink" href="#1-decisions" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5807,7 +5840,7 @@ on API v1 <code>find[identifier]=</code>; a raw <code>/</code> in a v3 path is 4
 <tbody>
 <tr>
 <td>1</td>
-<td><strong><code>identifier</code> becomes mandatory</strong> at a future version boundary, and for registered instances of controllers (<a href="spec/registration.html#8-instances">registration §8</a>). Until then the legacy paths keep the time-key fallback for a write that carries none (entries <code>sysTime</code> + <code>type</code>, treatments <code>created_at</code> + <code>eventType</code>). The version boundary and how a hub tells a registered instance's writes apart are open (<code>ID-ABSENT-DECISION</code>).</td>
+<td><strong><code>identifier</code> becomes mandatory</strong> at a future version boundary, and for registered instances of controllers (<a href="spec/registration.html#8-instances">registration §8</a>). Until then the legacy paths keep the time-key fallback for a write that carries none (entries <code>sysTime</code> + <code>type</code>, treatments <code>created_at</code> + <code>eventType</code>). The version boundary and how a hub tells a registered instance's writes apart are open (<code>ID-ABSENT-DECISION</code>). Until the boundary, <code>identifier</code> is SHOULD for legacy writers and MUST for registered controller instances (2026-10-27); what a hub answers a registered instance's write without one is open (<a href="spec/identity.html#5-open-decisions">identity §5</a>, <code>ID-REGISTERED-NO-IDENTIFIER</code>).</td>
 <td>[decided]</td>
 </tr>
 <tr>
@@ -5838,10 +5871,12 @@ reading, which is the opposite of what decision 2 asks. With the manufacturer as
 app that reads the sensor's own serial and counter produces the same bytes. One scheme per vendor
 covers all its models, serial numbers are a manufacturer's namespace, and the shape matches
 <code>loop://g7/…</code>.</p>
-<p><strong>Recommended, not decided (<code>ID-SCOPE-DECISION</code>).</strong> Uniqueness is enforced per collection (each
-collection has its own index), while values are globally unique by convention: the kind segment
-(<code>carbs</code>, <code>tempbasal</code>, <code>devicestatus</code>, or the model for a source scheme) keeps two collections
-from ever holding the same value.</p>
+<p><strong>Scope, decided (maintainer, 2026-10-27; <code>ID-SCOPE-DECISION</code>).</strong> Uniqueness is per collection,
+with the tenant in the key under multi, while values are globally unique by convention: the kind
+segment (<code>carbs</code>, <code>tempbasal</code>, <code>devicestatus</code>, or the model for a source scheme) keeps two
+collections from ever holding the same value. Each collection's partial unique index on
+<code>identifier</code> is in 16.0.0 under <code>WRITE_IDENTIFIER_INDEX=try|require|off</code> (maintainer, 2026-10-30;
+<a href="spec/identity.html#3-match-order-per-collection">identity §3</a>).</p>
 <p><strong>The kind segment fixes a measured hazard.</strong> 13 Loop <code>syncIdentifier</code> values are each on 2 to 4
 treatments in the corpus; 9 of them are a Suspend Pump and a Temp Basal at the same <code>created_at</code>
 (<a href="../../60-research/tenancy/identifier-duplicates-2026-10-17.html#22-syncidentifier-on-treatments-as-a-proxy-m">identifier duplicates §2.2</a>) [M].
@@ -5866,13 +5901,13 @@ Loop's side is not known.</p>
 </tr>
 <tr>
 <td>C2</td>
-<td>at most 256 characters</td>
-<td>[proposed]; an indexed value near 1 KB fails the insert on MongoDB before 4.2 [M]</td>
+<td>at most 256 characters; a longer value is treated as absent, with a warning</td>
+<td>[decided] 2026-10-29 (D-LOOP-ID rule 1, ID-Q6); an indexed value near 1 KB fails the insert on MongoDB before 4.2 [M]</td>
 </tr>
 <tr>
 <td>C3</td>
 <td>characters from <code>A-Z a-z 0-9 - . _ ~ : /</code>; no <code>%</code>, <code>?</code>, <code>#</code>, space or control characters</td>
-<td>[proposed]; <code>/</code> and <code>:</code> are allowed because the URL form needs them and the measurement below holds</td>
+<td>[proposed] as the set clients build values from; the server applies no character restriction and an identifier in a URL path is percent-encoded ([decided] 2026-10-29, ID-Q6). <code>/</code> and <code>:</code> are in the set because the URL form needs them and the measurement below holds</td>
 </tr>
 <tr>
 <td>C4</td>
@@ -5882,7 +5917,7 @@ Loop's side is not known.</p>
 <tr>
 <td>C5</td>
 <td>not <code>history</code>, <code>.</code> or <code>..</code>, and no client placeholder (<code>invalid</code>, <code>undefined</code>, <code>null</code>, <code>NaN</code>, <code>unknown</code>)</td>
-<td>[proposed]</td>
+<td>placeholders: [decided] 2026-10-29 (ID-Q6) for <code>undefined</code>, <code>null</code>, <code>invalid</code> and an empty string, which the server treats as absent with a warning (refused under <code>WRITE_IDENTIFIER=strict</code>); <code>NaN</code> and <code>unknown</code> are open (<a href="spec/identity.html#5-open-decisions">identity §5</a>, <code>ID-PLACEHOLDER-LIST</code>); the path words are [proposed]</td>
 </tr>
 <tr>
 <td>C6</td>
@@ -6184,8 +6219,12 @@ for each app is [proposed] and is the app developers' to confirm.</p>
 those files are <code>device</code> and <code>enteredBy</code> values.</p>
 <h2 id="7-open">7. Open<a class="headerlink" href="#7-open" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The version boundary</strong> at which <code>identifier</code> becomes mandatory on legacy paths, and how a hub
-  recognises a registered instance's write on a legacy path (<code>ID-ABSENT-DECISION</code>).</li>
+<li><strong>The version boundary</strong> at which <code>identifier</code> becomes mandatory on legacy paths, how a hub
+  recognises a registered instance's write on a legacy path (<code>ID-ABSENT-DECISION</code>), and what it
+  answers one without <code>identifier</code> (<code>ID-REGISTERED-NO-IDENTIFIER</code>).</li>
+<li><strong>Placeholders</strong> beyond ID-Q6's four (<code>NaN</code>, <code>unknown</code>, a whitespace-only value), and the form
+  of the warning a write gets when its value is treated as absent (<code>ID-PLACEHOLDER-LIST</code>,
+  <code>ID-WARNING-FORM</code>).</li>
 <li><strong>The client developers' answers</strong>: whether the source-scheme templates work for them, and each
   app's scheme spelling (Loop is asked first, <a href="upstream-asks-loop-identifier/reply.body.html">reply</a>).</li>
 <li><strong>Unknown cells</strong> in §4: Dexcom ONE+ and Stelo model segments, the Libre 2 serial source,
