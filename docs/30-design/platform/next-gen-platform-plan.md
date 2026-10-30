@@ -140,11 +140,11 @@ Done, in 16.0.0: DEV-8845, ID-SIMPLE-MATCH.
 Rules in force (maintainer, 2026-10-26 and 2026-10-27):
 
 - **Null removes.** An explicit null removes a field on merge-on-match, API v3 PATCH and the socket's `dbUpdate` (RFC 7386; [write contract §6.1](../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)). It never does so on PUT or create, and devicestatus never merges.
-- **Fallback.** A v1 entries re-send whose identifier matches nothing still matches on `sysTime`+`type`; treatments never fall back. A devicestatus re-send whose identifier is stored writes nothing and is answered with the stored `_id`.
+- **Fallback.** A v1 entries re-send whose identifier matches nothing still matches on `sysTime`+`type`; treatments never fall back. A devicestatus re-send whose identifier is stored merges by default since ID-Q2 (2026-10-29); `WRITE_RESEND=acknowledge` keeps the earlier rule (write nothing, answer with the stored `_id`).
 - **Absent identifier.** `identifier` is SHOULD for legacy writers, and the time-key fallback stays. It is MUST for registered controller instances. Revisited as adoption grows.
 - **Scope.** Uniqueness is per collection, with the tenant in the key under multi. Values stay globally unique by convention.
 - **Re-send after delete.** It is acknowledged with a 2xx naming the stored, deleted record, and the record stays deleted.
-- **Format (2026-10-29).** 1 to 256 URL-safe characters; a UUID is recommended; placeholders (`invalid`, `undefined`, `null`, `NaN`) are refused.
+- **Format (2026-10-29, D-LOOP-ID rule 1 and ID-Q6).** Any string of 1 to 256 characters, with no character restriction, percent-encoded in a URL path; a UUID is recommended. A placeholder or over-length value is treated as absent with a warning; refusing it is `WRITE_IDENTIFIER=strict`, off by default. Which placeholders are named is open (ID-PLACEHOLDER-LIST, [identity specification](spec/identity.md) §5).
 - **`_id` (2026-10-29).** A client may still send an ObjectId `_id` over API v1 (legacy). Going forward the server sets `_id` and the client sets `identifier`.
 - **Merge on match (2026-10-29).** When a re-send matching a stored record is applied, fields it leaves out are
   kept (RFC 7386), and `PUT` replaces. The census reads replace on several paths today. The extended matrix
