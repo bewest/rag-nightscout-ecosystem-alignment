@@ -8290,7 +8290,7 @@ not to reorder, because <code>null</code>+<code>number</code> is the one pairing
    (<code>date numeric GENERATED ALWAYS AS ((doc-&gt;&gt;'date')::numeric) STORED</code>), so it is not the shipped
    shape. <strong>The ordering that actually ships has never been run against mongod on mixed-type data.</strong>
    [Note 2026-09-22: a guarded-column arm was added the same day,
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c96886327883fe3501d7723a439d7449c98bd122/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>; results are summarised in the
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/34a4d0030a03805462be05e7efe8ee3d9d6656e4/tools/qc/typeguard-arm.js"><code>tools/qc/typeguard-arm.js</code></a>; results are summarised in the
    2026-09-15 update to <a href="seam-ordering-and-pagination-2026-09-14.html">the ordering report</a> §2 and in
    the ordering design §3.1b.]
    Adding a fifth arm that mirrors the emitted DDL, with a <code>null</code>+<code>number</code> fixture and a
