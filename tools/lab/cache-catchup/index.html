@@ -1615,6 +1615,8 @@
       
         
       
+        
+      
     
     
     
@@ -1958,6 +1960,64 @@
     
   
     cache-value/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../commit-event-bench/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    commit-event-bench/
   
 
     
@@ -4115,6 +4175,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#round-2-2026-10-30-the-write-scoped-to-the-ids-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Round 2 (2026-10-30): the write scoped to the ids read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prototype" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4154,7 +4225,7 @@
 
 
 <h1 id="cache-catchup-lab">cache-catchup lab<a class="headerlink" href="#cache-catchup-lab" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>88fd06405</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>07d94d662</code>.</em></p>
 <p>Some writes don't name the records they change: a v1 delete by query, or an update by filter.
 After one of these, can the server's in-memory cache (<code>lib/server/cache.js</code>) be brought back in
 line without dropping and reloading the whole cache? And what does each way of doing it cost?
@@ -4545,16 +4616,140 @@ the deleted records and needs no reload.</p>
 <p>API v3's delete paths (<code>mongoCachedCollection</code> <code>deleteManyOr</code> / <code>deleteEveryForm</code>) already pre-read up
 to 1,000 <code>_id</code>s before deleting. They then flush anyway unless exactly one document was deleted.
 The pre-read cost Q1 measures is already paid on v3 and autoPrune. Only the flush is extra.</p>
+<h2 id="round-2-2026-10-30-the-write-scoped-to-the-ids-read">Round 2 (2026-10-30): the write scoped to the ids read<a class="headerlink" href="#round-2-2026-10-30-the-write-scoped-to-the-ids-read" title="Permanent link">&para;</a></h2>
+<p>The maintainer decided Q9 on 2026-10-30: "the cache needs records named" is no longer a reason to reopen D-EVENT.
+Release 2's direction for Q-A/Q-U is for the write step to resolve each write by filter to ids first. It then
+writes <code>{filter AND _id in ids}</code> and names those ids. Over 1,000 ids it falls back to the plain filter and a
+reload. There is no timestamp watermark. That direction depended on this arm confirming the scoped write.</p>
+<p>The new arm is <strong><code>resolve</code></strong> (<code>CACHE_CATCHUP=resolve</code>, <code>proto/cache-resolve</code> <code>cd7a5b6c</code>, which is
+<code>proto/cache-catchup</code> with dev <code>305a6533</code> merged in):</p>
+<ul>
+<li>A v1 delete by query reads its <code>_id</code>s (cap 1,000), deletes <code>{query AND _id in ids}</code> and names the ids.</li>
+<li>An update by filter (the lab server's IPC) reads its <code>_id</code>s, updates <code>{filter AND _id in ids}</code>, and the cache
+  re-reads exactly those ids.</li>
+</ul>
+<p><code>resolvebreak</code> is the same arm with the last id left unnamed. <code>dev</code> is now <code>305a6533</code>, which includes the BF-214
+fix. The new <strong>left in db</strong> column counts each call's records still in the database afterwards. For a delete,
+those are the records it didn't delete: in the race, the inserts that arrived while it ran. Full tables are in
+<code>results/round2/{realistic,heavy}.log</code>.</p>
+<table>
+<thead>
+<tr>
+<th>scenario (10 reps)</th>
+<th>size</th>
+<th><code>dev</code> consistent after</th>
+<th><code>resolve</code> consistent after</th>
+<th><code>resolve</code> missing / ghost / stale</th>
+<th><code>resolve</code> reads</th>
+<th><code>dev</code> reads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>query delete, entries</td>
+<td>realistic</td>
+<td>104 ms</td>
+<td>31 ms</td>
+<td>0 / 0 / 0</td>
+<td>0.2 KB</td>
+<td>210 KB</td>
+</tr>
+<tr>
+<td>query delete, entries</td>
+<td>heavy</td>
+<td>468 ms</td>
+<td>104 ms</td>
+<td>0 / 0 / 0</td>
+<td>0.2 KB</td>
+<td>762 KB</td>
+</tr>
+<tr>
+<td>query delete, devicestatus</td>
+<td>heavy</td>
+<td>679 ms</td>
+<td>112 ms</td>
+<td>0 / 0 / 0</td>
+<td>0.2 KB</td>
+<td>1,735 KB</td>
+</tr>
+<tr>
+<td>update by filter, entries</td>
+<td>realistic</td>
+<td>124 ms</td>
+<td>28 ms</td>
+<td>0 / 0 / 0</td>
+<td>2.9 KB</td>
+<td>222 KB</td>
+</tr>
+<tr>
+<td>update by filter, entries</td>
+<td>heavy</td>
+<td>389 ms</td>
+<td>116 ms</td>
+<td>0 / 0 / 0</td>
+<td>2.9 KB</td>
+<td>762 KB</td>
+</tr>
+<tr>
+<td>race (stress)</td>
+<td>realistic</td>
+<td>54 ms</td>
+<td>29 ms</td>
+<td>0 / 0 / 0</td>
+<td>0.2 KB</td>
+<td>216 KB</td>
+</tr>
+<tr>
+<td>race (stress)</td>
+<td>heavy</td>
+<td>439 ms</td>
+<td>121 ms</td>
+<td>0 / 0 / 0</td>
+<td>0.2 KB</td>
+<td>754 KB</td>
+</tr>
+<tr>
+<td>in-flight, gap 1,000 ms</td>
+<td>heavy</td>
+<td>508 ms</td>
+<td>80 ms</td>
+<td>0 / 0 / 0</td>
+<td>2.8 KB</td>
+<td>1,513 KB</td>
+</tr>
+</tbody>
+</table>
+<p>Findings:</p>
+<ul>
+<li><strong><code>resolve</code> is exact in every scenario at both sizes.</strong> No rep was left inconsistent at the timeout, and there
+  were 0 missing, ghost or stale records.</li>
+<li><strong>Race:</strong> <code>ids</code> left 16 (realistic) and 36 (heavy) ghosts per 10 reps. <code>resolve</code> left 0.</li>
+<li><strong>In-flight writes:</strong> at every gap (0, 10, 100, 1,000 ms), <code>resolve</code> left 0 stale. The watermark arms of round 1
+    missed every gap above their overlap.</li>
+<li><strong>The behaviour change is as designed.</strong> In the race, every insert sent while the delete ran survives in the
+  database: 50 of 50 per size, the same as <code>dev</code>, because they arrived after the delete's read. <code>ids</code> deleted them
+  without naming them, leaving 34 (realistic) and 14 (heavy) in the database.</li>
+<li><strong>Non-vacuity.</strong> <code>resolvebreak</code> was flagged in 10 of 10 reps in every scenario at both sizes. A deleted record
+  that isn't named shows as a ghost; an updated record that isn't named shows as stale.</li>
+<li><strong>Cost.</strong> One extra <code>_id</code> read per write by filter. With realistic data the write's own latency is about the same
+  as <code>dev</code>. At heavy size it is slower: an update by filter takes 50 ms against 21 ms, and a delete 41 ms against
+  26 ms. The lab's filter field (<code>bench</code>) has no index, so the <code>_id</code> read scans the collection, and the cost grows
+  with its size. Real filters mostly use indexed fields (<code>created_at</code>, <code>date</code>, <code>srvModified</code>), but this was not
+  measured with one.</li>
+<li><strong>BF-214 is fixed on dev <code>305a6533</code>.</strong> dev's devicestatus delete by query is now consistent in 122 ms (realistic)
+  and 679 ms (heavy). On <code>991b0654</code> it stayed empty until the next heartbeat.</li>
+</ul>
 <h2 id="prototype">Prototype<a class="headerlink" href="#prototype" title="Permanent link">&para;</a></h2>
 <p><code>proto/cache-catchup</code> in <code>cgm-remote-monitor</code>, local and not pushed. The results above ran on
 <code>5f8e95bf</code>. <code>02d974c2</code> only moves API v3's mode read into <code>cache-catchup-ids.mode()</code>, because
 <code>tests/env.api3.test.js</code> forbids a direct <code>process.env</code> read in <code>lib/api3</code>. There's no change in
 behaviour. <code>npm test</code> on <code>02d974c2</code>: 4917 passing, 0 failing, 3 pending (Node 22.23.4,
-MongoDB 8.0.29).</p>
+MongoDB 8.0.29). Round 2 ran on <code>proto/cache-resolve</code> <code>cd7a5b6c</code> (local, not pushed).</p>
 <h2 id="running-it">Running it<a class="headerlink" href="#running-it" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tools/lab/cache-catchup/run.sh up     # mongo:8.0.29 standalone on 127.0.0.1:27621
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>tools/lab/cache-catchup/run.sh all    # results/{realistic,heavy}.{log,json}, ~50 min each
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>tools/lab/cache-catchup/run.sh down
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>tools/lab/cache-catchup/run.sh round2 # results/round2/{realistic,heavy}.{log,json}, ~45 min each
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>tools/lab/cache-catchup/run.sh down
 </code></pre></div>
 <p>Each tree needs its own <code>npm ci</code>. <code>CC_DEV</code>, <code>CC_PROTO</code>, <code>CC_PORT</code> and <code>CC_CONTAINER</code> override the
 defaults. <code>lab.js</code> also takes:</p>

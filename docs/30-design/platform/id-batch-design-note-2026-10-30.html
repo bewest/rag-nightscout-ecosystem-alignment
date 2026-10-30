@@ -3289,6 +3289,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#6b-lab-evidence-2026-10-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6b. Lab evidence (2026-10-30)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#7-how-this-was-produced" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5744,6 +5755,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#6b-lab-evidence-2026-10-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6b. Lab evidence (2026-10-30)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#7-how-this-was-produced" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5779,8 +5801,8 @@
 <p><em>Contributor-facing design note for ID-BATCH (queue <code>ID-BATCH-RESULTS</code>, plan §4.2 row ID-BATCH), written
 2026-10-30. Design only: no <code>cgm-remote-monitor</code> code was changed or run for it.</em> Every claim carries a
 mark: <strong>[M]</strong> measured, with the cell id of the write-contract matrix pin
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7aab61504d0fd56d911ac1ee9f9bf9c0874eb371/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json"><code>dev-e1f7ac41-idfirst.json</code></a>
-(1,929 cells) or of its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7aab61504d0fd56d911ac1ee9f9bf9c0874eb371/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst-uuidoff.json"><code>-uuidoff</code></a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b786ec28cea41e2c15600670f23bdfbe6f00dd53/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json"><code>dev-e1f7ac41-idfirst.json</code></a>
+(1,929 cells) or of its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b786ec28cea41e2c15600670f23bdfbe6f00dd53/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst-uuidoff.json"><code>-uuidoff</code></a>
 companion (504 cells); <strong>[R]</strong> read from source. Server <code>file:line</code> is at crm <code>9919f8ef</code> (the #8874 head,
 <code>write(intent)</code> release 1) unless another revision is named. Client <code>file:line</code> is at the revision named in
 §2. Read-derived claims about clients are often wrong in this project; each one is a candidate for a
@@ -6149,6 +6171,26 @@ refuses an invalid identifier on API v3 and the socket from slice 2 on. On API v
 enforced with this item's per-item replies; until then those paths treat an invalid identifier as absent,
 as under <code>lenient</code> (<code>IDENTIFIER_STRICT</code> in <code>lib/storage/write-intent.js</code>, <code>'v1/internal': 'absent'</code>). The
 reply-format prototype includes strict on v1 as a case.</p>
+<h2 id="6b-lab-evidence-2026-10-30">6b. Lab evidence (2026-10-30)<a class="headerlink" href="#6b-lab-evidence-2026-10-30" title="Permanent link">&para;</a></h2>
+<p>The reply-format prototype (crm <code>proto/id-batch-replies</code> <code>7d81e1c1</code>, local; no write rule changed, 0 matrix
+cells moved with the opt-in off) and the client lab (<a href="../../../tools/lab/id-batch-replies/index.html"><code>tools/lab/id-batch-replies</code></a>,
+<code>RESULTS.md</code>, synthetic data) give findings for (ii)–(vii); the maintainer decides:</p>
+<ul>
+<li>(ii) A header and a query parameter behave the same; an <code>Accept</code> opt-in is dropped on any <code>.json</code> path
+  (<code>lib/middleware/express-extension-to-accept.js:30-36</code>), which Trio and nightscout-connect use.</li>
+<li>(iii) Per-item profile refusal stores the rest of the batch; today's whole-batch 401 loses a new profile too.</li>
+<li>(iv) Keeping the derived preBolus record in the reply makes Loop re-send forever and, run for real, makes
+  nightscout-connect lose a later record (BF-219); omitting it fixes both.</li>
+<li>(v) A duplicate <code>_id</code> answered 5xx leaves the items after it unstored while clients re-send (BF-220); 409
+  stores the rest.</li>
+<li>(vi) <code>acknowledged</code> and <code>unchanged</code> give byte-identical slots; keeping <code>refused</code> turns a lone device-status
+  re-send into a 400.</li>
+<li>(vii) Under <code>reject</code>, Loop, Trio, xDrip+ and nightscout-connect count a refused treatment as uploaded;
+  xDrip4iOS re-sends it while it is among its latest 50.</li>
+<li>Strict on v1 turns "stored without the identifier" into "record dropped" for every client except xDrip4iOS.</li>
+</ul>
+<p>Corrections to §2 from the lab: xDrip+ treatments are PUT one object at a time, not batched; the NightscoutKit
+pin inside LoopWorkspace is the standalone checkout <code>4ec9fd12a1</code>; Loop's retry has no bound.</p>
 <h2 id="7-how-this-was-produced">7. How this was produced<a class="headerlink" href="#7-how-this-was-produced" title="Permanent link">&para;</a></h2>
 <p>Server code read with <code>git show 9919f8ef:&lt;path&gt;</code> from the <code>crm-wc-step</code> work tree, nothing checked out.
 Client code read at the revisions in §2, with the Loop, Trio, xDrip+, xdripswift and nightscout-connect
