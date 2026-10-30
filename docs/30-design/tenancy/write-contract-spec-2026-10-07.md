@@ -501,6 +501,11 @@ through `patch`. The step on PostgreSQL waits on those.
    halves of a twin match, the ObjectId copy is the target (BF-117's sort) and the string form is
    listed for removal. A soft-deleted record (`isValid: false`) is not a target for `create`: a
    re-send of a deleted record is stored again (BF-135's decision).
+   *(2026-10-29, D-LOOP-ID, maintainer: superseded. A re-send of a deleted record is acknowledged
+   with a 2xx naming the stored, deleted record, and the record stays deleted, on every path, with
+   each changed cell documented for revert. Today's code differs per path: API v1 stores it again
+   after its hard delete, API v3 `POST` brings a soft-deleted record back and `PUT` answers 410.
+   Current rule: [identity specification §3](../platform/spec/identity.md#3-match-order-per-collection).)*
 3. **Outcome.** No target: `inserted`. Target equal to the item on every client field:
    `unchanged`, nothing written. Otherwise `onMatch` (`merged` or `replaced`), subject to the
    immutable-field rule: on API v3 its full set (`isSameAsStored`, BF-136), which can answer

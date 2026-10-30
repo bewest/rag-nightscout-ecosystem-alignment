@@ -35,6 +35,9 @@ every item that was `merged-upstream` then is `released`.
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
+| `BFQ-209` | `in-flight-upstream` | BF-209 - two identical treatments sent over the socket within 2 s are stored as  | #8877 |
+| `BFQ-211` | `in-flight-upstream` | BF-211 - a delete by query in one collection empties all three in-memory caches | #8877 |
+| `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `PLAT-SERVE` | `in-flight-upstream` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a ti | #8865 |
 | `WC-STEP-PATCH` | `in-flight-upstream` | Release 1 (patch): one write step for every v1, v3 and socket path, today's beha | #8874 |
@@ -43,9 +46,6 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
 | `BFQ-ENV` | `needs-decision` | BF-48, BF-49, BF-50, BF-51 - four ways the configuration surface lies | #8849 |
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
-| `ID-CLIENT-OID-DECISION` | `needs-decision` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decid | &mdash; |
-| `ID-FORMAT-DECISION` | `needs-decision` | Decide: the client identifier's format (opaque string with limits; UUID not requ | &mdash; |
-| `ID-V3-IMMUTABLE-DECISION` | `needs-decision` | Decide: on an identifier match, may date, device or eventType change? | &mdash; |
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
@@ -80,6 +80,8 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8865** | `PLAT-SERVE` | `feat/nightscout-serve` | `nightscout serve <roles>` (D21): hosted roles carved from b | Maintainer |
 | **#8874** | `WC-STEP-PATCH` | `feat/write-intent` | Release 1 (patch): one write step for every v1, v3 and socke | Maintainer |
+| **#8877** | `BFQ-209` | `bf/16.0.0-socket-similar-match` | BF-209 - two identical treatments sent over the socket withi | Maintainer |
+| **#8877** | `BFQ-211` | `bf/16.0.0-socket-similar-match` | BF-211 - a delete by query in one collection empties all thr | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

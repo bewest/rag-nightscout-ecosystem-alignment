@@ -139,7 +139,7 @@ resolve to the new half. A v1 upsert by `identifier` replaces the original but r
 `_id`. Separately, and also with the identity removed: a full re-upload of the original by the client that
 still holds it writes the moved insulin back, so the insulin appears twice. Not run on 15.0.9. The maintainer's direction: editing is mainly for fixing broken records, so a lossy edit of a
 record that an automated controller claims (one with a client identity) should need an extra manual
-confirmation.
+confirmation. Filed as **BF-212** in the backfix register.
 
 ## 1. Placement: two layers, not one
 
