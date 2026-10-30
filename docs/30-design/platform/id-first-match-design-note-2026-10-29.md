@@ -480,7 +480,17 @@ The questions in §6, numbered in order: (i) is ID-Q1, (ii) ID-Q2, (iii) ID-Q3, 
   `_id`; activity creates matching `identifier`). No existing request changes.
 - **ID-Q11, decided:** data protection first. The slices go to the 16.0.0 entry bar in the order 1 (with the
   additive items), 2, 5, 3, 4, 6, 6a. Whatever has not cleared the bar at the tag rolls to 17.0.0.
-- **ID-Q10:** open.
+- **ID-Q10, decided:** an edit addressed by an `identifier` that two stored records share lands on the record
+  the P4 pick names. A delete addressed that way reaches every record sharing it, as API v3 DELETE does today.
+- **Settings, proposed by session -4f** (not yet confirmed by the maintainer). They follow `WRITE_VALIDATION`:
+  a `WRITE_` prefix, and modes rather than booleans, with the default first:
+  - `WRITE_RESEND=merge|acknowledge|refuse`;
+  - `WRITE_IDENTIFIER=lenient|strict`;
+  - `WRITE_DELETED_EDIT=ignore|refuse`.
+
+  All four, `WRITE_VALIDATION` included, are parsed by one module and read once, and an unknown value refuses to
+  start. Per-client D20 quirks select a `WRITE_RESEND` mode for one registered client. Under multitenancy they
+  are policy rows (D22), a question for the tenant-config schema.
 
 ## 7. How this was produced
 
