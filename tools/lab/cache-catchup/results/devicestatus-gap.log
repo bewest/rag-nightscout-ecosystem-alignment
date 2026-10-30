@@ -1,0 +1,72 @@
+/cache-lab-27621 running started=2026-10-30T03:03:24.21574101Z restarts=0 oom=false
+SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so while TRUST_PROXY is unset this delay does NOT protect against guessing passwords or tokens. To key it on the real client address, set TRUST_PROXY to the IP address(es) or CIDR range(s) of the proxy in front of Nightscout, or to false if clients connect directly. Until then, restrict access at your proxy or hosting provider.
+For the Basal plugin to function you need a treatment profile
+SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so while TRUST_PROXY is unset this delay does NOT protect against guessing passwords or tokens. To key it on the real client address, set TRUST_PROXY to the IP address(es) or CIDR range(s) of the proxy in front of Nightscout, or to false if clients connect directly. Until then, restrict access at your proxy or hosting provider.
+For the Basal plugin to function you need a treatment profile
+SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so while TRUST_PROXY is unset this delay does NOT protect against guessing passwords or tokens. To key it on the real client address, set TRUST_PROXY to the IP address(es) or CIDR range(s) of the proxy in front of Nightscout, or to false if clients connect directly. Until then, restrict access at your proxy or hosting provider.
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+seeded dev {"counts":{"entries":576,"treatments":75,"devicestatus":288},"consistentMs":20,"c":{"missing":0,"ghost":0,"stale":0,"detail":[]}}
+seeded flush {"counts":{"entries":576,"treatments":75,"devicestatus":288},"consistentMs":12,"c":{"missing":0,"ghost":0,"stale":0,"detail":[]}}
+seeded ids {"counts":{"entries":576,"treatments":75,"devicestatus":288},"consistentMs":9,"c":{"missing":0,"ghost":0,"stale":0,"detail":[]}}
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+rep 0 (119 s)
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+rep 1 (239 s)
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+rep 2 (360 s)
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+rep 3 (479 s)
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+rep 4 (599 s)
+size realistic {"entries":576,"treatments":75,"devicestatus":288}, reps 5, run cc9783f265
+| scenario | arm | errors | latency med ms | consistent after med / p95 ms (never) | missing | ghost | stale | flushes | reads med: queries / docs / KB |
+|---|---|---|---|---|---|---|---|---|---|
+| query-delete-devicestatus-10 | dev | 0 | 6.7 | 56419 / 56457 (0) | 0 | 0 | 0 | 0 | 13 / 288 / 347.1 |
+| query-delete-devicestatus-10 | flush | 0 | 5.3 | 56194 / 58707 (0) | 0 | 0 | 0 | 5 | 13 / 288 / 347.1 |
+| query-delete-devicestatus-10 | ids | 0 | 12.5 | 14 / 14 (0) | 0 | 0 | 0 | 0 | 14 / 10 / 0.2 |
+exit=0
+/cache-lab-27621 running started=2026-10-30T03:03:24.21574101Z restarts=0 oom=false
