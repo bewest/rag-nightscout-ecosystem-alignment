@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>37fabba3a</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>ac2f545e6</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3608,7 +3608,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5612d654a174c00c9e0f2b68959a41260928f109/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ac2f545e62db95c507985fdf3a83dbb9f06db0ed/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -3759,8 +3759,7 @@ capture, the reconciliation in <a href="../index.html">releases/README.md</a>.</
 <p>A draft list of what the release notes must say; the notes themselves are written last, once the
 candidate is named.</p>
 <ul>
-<li>
-<p>(#8865, if merged) Nightscout stops cleanly on SIGTERM and SIGINT on every start path: it closes
+<li>(#8865, if merged) Nightscout stops cleanly on SIGTERM and SIGINT on every start path: it closes
   its connections and exits 0, or exits 1 if it is still open after 8 s. In the Docker image,
   <code>docker stop</code> takes well under a second instead of 10 s and a forced kill. One case changes
   outcome: a container under <code>restart: on-failure</code> that receives SIGTERM from something other than
@@ -3769,7 +3768,10 @@ candidate is named.</p>
   as an explicit command); tooling that matches PID 1's command line sees the new name. <code>nightscout</code>
   is a new executable with <code>single</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code> and <code>diagnose data</code>;
   <code>nightscout serve</code> is reserved for a multitenant Nightscout, which is not built yet, so every
-  role exits 64.
+  role exits 64.</li>
+<li>
+<p>(BF-213, if merged) Sites with <code>PUMP_ENABLE_ALERTS</code> get pump alarms at the severity Loop assigns to its pump
+  status, with Loop's text: "No Insulin", "Pod Expired" and Medtronic "Signal Loss" now alarm, which they never did.
   Candidate note, read from #8865 at <code>1b2801f7</code> by session -7d, not run: a custom entrypoint or command that
   puts <code>node</code> in front of the image's default command now runs <code>node nightscout single</code> and fails to start.</p>
 </li>
