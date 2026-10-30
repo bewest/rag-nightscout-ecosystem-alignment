@@ -947,6 +947,15 @@ def write(caps, hub_state, request, now, well_known, assigner=None):
         return _refused(409, "projected-read-only", "target",
                         "a projected document is served, never stored, and is read-only"), hub_state
     if w["as"] == "carrier":
+        if w.get("api") == "v3" and "_id" in (w.get("sent") or {}):
+            # Identity I2 (maintainer, 2026-10-25; BF-170, #8845): API v3 refuses a
+            # client `_id`, whatever its form, and writes nothing. No quirk applies.
+            # No listed reason code is decided (identity §5, ID-V3-ID-REASON), so the
+            # refusal uses the open vocabulary's `other` with a term of the reference's.
+            reason = dict(_reason("other", None,
+                                  "_id is assigned by the hub; name the record by identifier"),
+                          term="client-id-not-accepted")
+            return _response(400, "rejected", reasons=[reason]), hub_state
         result = {"accepted": True, "as": "carrier", "attributedTo": attribution}
         after = hub_state
         if stored is not None and w.get("collection") == "devicestatus" and \

@@ -1,7 +1,10 @@
 # Identifier conventions: one `identifier` per real thing
 
-*Contributor-facing. **Living draft**, as of 2026-10-18. Decisions recorded here are the
-maintainer's of 2026-10-18; the templates in §4 are proposals unless a cell says otherwise. Read
+*Contributor-facing. **Living draft**, as of 2026-10-30. Decisions recorded here are the
+maintainer's of 2026-10-18, with the scope and absent-identifier decisions of 2026-10-27 and the
+format decisions of 2026-10-29 (D-LOOP-ID rule 1 and ID-Q6, in the
+[16.0.0 decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md)) marked where they
+apply; the templates in §4 are proposals unless a cell says otherwise. Read
 after the [identity specification](spec/identity.md) (L0), whose format section this page fills in.
 Evidence: [identifier format research](../../60-research/tenancy/identifier-format-2026-10-17.md)
 (§1 per-app identity, §3.4 URL-form identifiers measured, §7 the G7 counter) and
@@ -19,13 +22,13 @@ on API v1 `find[identifier]=`; a raw `/` in a v3 path is 404.
 
 Marks: **[R]** read from code at the commit given; **[M]** measured (the cited page says how);
 **[proposed]** a template or rule for the maintainer and client developers to confirm;
-**[decided]** the maintainer's decision of 2026-10-18.
+**[decided]** the maintainer's decision of 2026-10-18, or of the date given.
 
 ## 1. Decisions
 
 | # | decision | status |
 |---|---|---|
-| 1 | **`identifier` becomes mandatory** at a future version boundary, and for registered instances of controllers ([registration §8](spec/registration.md#8-instances)). Until then the legacy paths keep the time-key fallback for a write that carries none (entries `sysTime` + `type`, treatments `created_at` + `eventType`). The version boundary and how a hub tells a registered instance's writes apart are open (`ID-ABSENT-DECISION`). | [decided] |
+| 1 | **`identifier` becomes mandatory** at a future version boundary, and for registered instances of controllers ([registration §8](spec/registration.md#8-instances)). Until then the legacy paths keep the time-key fallback for a write that carries none (entries `sysTime` + `type`, treatments `created_at` + `eventType`). The version boundary and how a hub tells a registered instance's writes apart are open (`ID-ABSENT-DECISION`). Until the boundary, `identifier` is SHOULD for legacy writers and MUST for registered controller instances (2026-10-27); what a hub answers a registered instance's write without one is open ([identity §5](spec/identity.md#5-open-decisions), `ID-REGISTERED-NO-IDENTIFIER`). | [decided] |
 | 2 | **Meaning.** `_id` identifies the stored record (uniqueness in the database). `identifier` is the record's semantic identity in the data model: two uploads of the same real thing carry the same identifier, whichever device or app sends it. The server enforces uniqueness and states the format; clients compute the values. This refines the wording of D20 rule 5 ("the sync identity the client assigns") without changing its mechanics. | [decided] |
 | 3 | **Format.** Opaque to the server, one rule for every collection, plus this published table per record kind so different apps converge on one value. URL syntax: `<scheme>://<segment>/<segment>/…`. | [decided] |
 | 4 | **Scheme.** Things that exist outside the app (sensor readings, pump events) use a **source scheme**: the manufacturer is the scheme and the model is the first segment (`dexcom://g7/…`, `dexcom://g6/…`, `abbott://libre3/…`). Things created inside an app (manual carbs, boluses, overrides, temporary targets, device status) use an **app scheme** (`loop://carbs/…`). | [decided] |
@@ -38,10 +41,12 @@ app that reads the sensor's own serial and counter produces the same bytes. One 
 covers all its models, serial numbers are a manufacturer's namespace, and the shape matches
 `loop://g7/…`.
 
-**Recommended, not decided (`ID-SCOPE-DECISION`).** Uniqueness is enforced per collection (each
-collection has its own index), while values are globally unique by convention: the kind segment
-(`carbs`, `tempbasal`, `devicestatus`, or the model for a source scheme) keeps two collections
-from ever holding the same value.
+**Scope, decided (maintainer, 2026-10-27; `ID-SCOPE-DECISION`).** Uniqueness is per collection,
+with the tenant in the key under multi, while values are globally unique by convention: the kind
+segment (`carbs`, `tempbasal`, `devicestatus`, or the model for a source scheme) keeps two
+collections from ever holding the same value. Each collection's partial unique index on
+`identifier` is in 16.0.0 under `WRITE_IDENTIFIER_INDEX=try|require|off` (maintainer, 2026-10-30;
+[identity §3](spec/identity.md#3-match-order-per-collection)).
 
 **The kind segment fixes a measured hazard.** 13 Loop `syncIdentifier` values are each on 2 to 4
 treatments in the corpus; 9 of them are a Suspend Pump and a Temp Basal at the same `created_at`
@@ -56,10 +61,10 @@ Loop's side is not known.
 | # | constraint | status |
 |---|---|---|
 | C1 | a JSON string with at least one non-whitespace character | enforced on API v3 create today [R] |
-| C2 | at most 256 characters | [proposed]; an indexed value near 1 KB fails the insert on MongoDB before 4.2 [M] |
-| C3 | characters from `A-Z a-z 0-9 - . _ ~ : /`; no `%`, `?`, `#`, space or control characters | [proposed]; `/` and `:` are allowed because the URL form needs them and the measurement below holds |
+| C2 | at most 256 characters; a longer value is treated as absent, with a warning | [decided] 2026-10-29 (D-LOOP-ID rule 1, ID-Q6); an indexed value near 1 KB fails the insert on MongoDB before 4.2 [M] |
+| C3 | characters from `A-Z a-z 0-9 - . _ ~ : /`; no `%`, `?`, `#`, space or control characters | [proposed] as the set clients build values from; the server applies no character restriction and an identifier in a URL path is percent-encoded ([decided] 2026-10-29, ID-Q6). `/` and `:` are in the set because the URL form needs them and the measurement below holds |
 | C4 | not exactly 24 hex characters, unless it equals the record's own `_id` | [proposed]; both APIs read a 24-hex value as an `_id` too [R] |
-| C5 | not `history`, `.` or `..`, and no client placeholder (`invalid`, `undefined`, `null`, `NaN`, `unknown`) | [proposed] |
+| C5 | not `history`, `.` or `..`, and no client placeholder (`invalid`, `undefined`, `null`, `NaN`, `unknown`) | placeholders: [decided] 2026-10-29 (ID-Q6) for `undefined`, `null`, `invalid` and an empty string, which the server treats as absent with a warning (refused under `WRITE_IDENTIFIER=strict`); `NaN` and `unknown` are open ([identity §5](spec/identity.md#5-open-decisions), `ID-PLACEHOLDER-LIST`); the path words are [proposed] |
 | C6 | one identifier, one record, per collection, for as long as the record is stored | identity rule I6 |
 | C7 | compared exactly: case-sensitive, never trimmed or normalised | identity rule I6 |
 | C8 | URL syntax `<scheme>://<segments>`: scheme lower case, `[a-z][a-z0-9+.-]*`; segments separated by `/`; no empty segment | [proposed]; the server does not parse it, so this is a convention for clients, not a check |
@@ -168,8 +173,12 @@ those files are `device` and `enteredBy` values.
 
 ## 7. Open
 
-- **The version boundary** at which `identifier` becomes mandatory on legacy paths, and how a hub
-  recognises a registered instance's write on a legacy path (`ID-ABSENT-DECISION`).
+- **The version boundary** at which `identifier` becomes mandatory on legacy paths, how a hub
+  recognises a registered instance's write on a legacy path (`ID-ABSENT-DECISION`), and what it
+  answers one without `identifier` (`ID-REGISTERED-NO-IDENTIFIER`).
+- **Placeholders** beyond ID-Q6's four (`NaN`, `unknown`, a whitespace-only value), and the form
+  of the warning a write gets when its value is treated as absent (`ID-PLACEHOLDER-LIST`,
+  `ID-WARNING-FORM`).
 - **The client developers' answers**: whether the source-scheme templates work for them, and each
   app's scheme spelling (Loop is asked first, [reply](upstream-asks-loop-identifier/reply.body.md)).
 - **Unknown cells** in §4: Dexcom ONE+ and Stelo model segments, the Libre 2 serial source,

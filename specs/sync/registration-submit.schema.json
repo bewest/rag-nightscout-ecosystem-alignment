@@ -1727,13 +1727,20 @@
      "required": [
       "as"
      ],
-     "description": "One write: typed or carrier, its element, the writing instance (absent: none presented), the document's collection, the document (for an observed alias), the target of an update, and the controller's record id with the element's dual-write link. D20 (§3.7): `sent`, the id members the client sent (`_id`, `identifier`; for a typed write the controller's record id is `recordId`); `writer`, the vendor, product and version the hub identified for an older controller's write (how it identifies them is not specified here).",
+     "description": "One write: typed or carrier, its element, the writing instance (absent: none presented), the document's collection, the document (for an observed alias), the target of an update, and the controller's record id with the element's dual-write link. D20 (§3.7): `sent`, the id members the client sent (`_id`, `identifier`; for a typed write the controller's record id is `recordId`); `writer`, the vendor, product and version the hub identified for an older controller's write (how it identifies them is not specified here). Identity I2 (SPEC-ID-AMEND): `api`, the legacy API a carrier write is sent over; absent, the case names no API version.",
      "properties": {
       "as": {
        "enum": [
         "typed",
         "carrier"
        ]
+      },
+      "api": {
+       "enum": [
+        "v1",
+        "v3"
+       ],
+       "description": "The legacy API a carrier write is sent over. Identity I2 (maintainer, 2026-10-25; BF-170, #8845): over `v3` a `sent` member `_id`, in any form, is refused with 400 and nothing is written; over `v1` a 24-hex or `{\"$oid\": …}` `_id` is kept as the ObjectId and any other string is handled by the quirks registry (I9)."
       },
       "element": {
        "type": "string"
@@ -2003,9 +2010,11 @@
     },
     "status": {
      "type": "integer",
+     "description": "400: a carrier write over API v3 that carries a client `_id` (identity I2; BF-170).",
      "enum": [
       200,
       201,
+      400,
       403,
       404,
       409,
