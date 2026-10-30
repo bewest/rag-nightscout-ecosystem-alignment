@@ -259,6 +259,28 @@ enforced with this item's per-item replies; until then those paths treat an inva
 as under `lenient` (`IDENTIFIER_STRICT` in `lib/storage/write-intent.js`, `'v1/internal': 'absent'`). The
 reply-format prototype includes strict on v1 as a case.
 
+## 6b. Lab evidence (2026-10-30)
+
+The reply-format prototype (crm `proto/id-batch-replies` `7d81e1c1`, local; no write rule changed, 0 matrix
+cells moved with the opt-in off) and the client lab ([`tools/lab/id-batch-replies`](../../../tools/lab/id-batch-replies/README.md),
+`RESULTS.md`, synthetic data) give findings for (ii)–(vii); the maintainer decides:
+
+- (ii) A header and a query parameter behave the same; an `Accept` opt-in is dropped on any `.json` path
+  (`lib/middleware/express-extension-to-accept.js:30-36`), which Trio and nightscout-connect use.
+- (iii) Per-item profile refusal stores the rest of the batch; today's whole-batch 401 loses a new profile too.
+- (iv) Keeping the derived preBolus record in the reply makes Loop re-send forever and, run for real, makes
+  nightscout-connect lose a later record (BF-219); omitting it fixes both.
+- (v) A duplicate `_id` answered 5xx leaves the items after it unstored while clients re-send (BF-220); 409
+  stores the rest.
+- (vi) `acknowledged` and `unchanged` give byte-identical slots; keeping `refused` turns a lone device-status
+  re-send into a 400.
+- (vii) Under `reject`, Loop, Trio, xDrip+ and nightscout-connect count a refused treatment as uploaded;
+  xDrip4iOS re-sends it while it is among its latest 50.
+- Strict on v1 turns "stored without the identifier" into "record dropped" for every client except xDrip4iOS.
+
+Corrections to §2 from the lab: xDrip+ treatments are PUT one object at a time, not batched; the NightscoutKit
+pin inside LoopWorkspace is the standalone checkout `4ec9fd12a1`; Loop's retry has no bound.
+
 ## 7. How this was produced
 
 Server code read with `git show 9919f8ef:<path>` from the `crm-wc-step` work tree, nothing checked out.
