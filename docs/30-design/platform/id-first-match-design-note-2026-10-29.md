@@ -431,6 +431,25 @@ change a default. Mechanism: each slice is its own revert, so each can clear the
 Trade-off: 16.0.0 gets protections (slice 3) while the major is open, and 17.0.0 gives cohorts a release of
 notice.
 
+## 6a. Question ids and answers (session -a5, 2026-10-29)
+
+The questions in §6, numbered in order: (i) is ID-Q1, (ii) ID-Q2, (iii) ID-Q3, (iv) ID-Q4, (v) ID-Q5,
+(vi) ID-Q6, (vii) ID-Q7, (viii) ID-Q8, (ix) ID-Q9, (x) ID-Q10 and (xi) ID-Q11.
+
+- **ID-Q5, decided by the maintainer:**
+  - the chart split stops copying identity fields, as a 16.0.0 backfix under BF-212;
+  - identifier-first picks between existing duplicates by P4 (the time key, then the newest);
+  - identifier-first never creates a second record with an identifier already stored;
+  - a unique index comes later, after a per-site duplicate report and a cleanup step.
+- **ID-Q4, decided:** "stays deleted" applies only when the match is on an identity (`identifier`,
+  `syncIdentifier`, `id`, `uuid`, `NSCLIENT_ID`, `_id`). A match on a time key against a deleted record stores
+  the new record. The socket profile's revive is a separate small question.
+- **ID-Q1, decided:** socket treatments merge on an identifier match, after the split fix.
+- **ID-Q3:** the maintainer leans to refusing edits of a deleted record on every path, with a separate
+  restore action. He asked first which clients that would affect and what the AndroidAPS authors intend.
+  A client survey is under way.
+- **ID-Q2 and ID-Q6 to ID-Q11:** open.
+
 ## 7. How this was produced
 
 - Inputs: the pin and `-uuidoff` pin (alignment `2258c458c`, branch `qc/matrix-idfirst`), the harness at the
