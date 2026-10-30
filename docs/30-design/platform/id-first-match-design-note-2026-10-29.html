@@ -5827,9 +5827,9 @@
 <p><em>Contributor-facing design note for ID-FIRST-MATCH (plan §4.2), written 2026-10-29. Design only: no
 <code>cgm-remote-monitor</code> code was changed or run for it.</em> Every claim carries a mark: <strong>[M]</strong> measured, with the
 cell ids of the write-contract matrix pin
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/23789ef4e80d36c956f98a773e76f396d3c7a247/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json"><code>dev-e1f7ac41-idfirst.json</code></a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d218c73d86d3a81608df15bbd6bce6185683a61/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json"><code>dev-e1f7ac41-idfirst.json</code></a>
 (<code>dev</code> <code>e1f7ac41</code>, 1,929 cells: 456 earlier and 1,473 new; companion
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/23789ef4e80d36c956f98a773e76f396d3c7a247/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst-uuidoff.json"><code>-uuidoff</code></a>, 504 cells);
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5d218c73d86d3a81608df15bbd6bce6185683a61/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst-uuidoff.json"><code>-uuidoff</code></a>, 504 cells);
 <strong>[R]</strong> read from source, <code>file:line</code> at crm <code>e8224807</code> (the #8874 head, <code>write(intent)</code> release 1 with slices
 4 and 6) unless another revision is named; <strong>[R, prediction]</strong> a value the rule is expected to give, read and
 not run. Read-derived predictions are often wrong in this project; the implementation slices measure every
@@ -6634,6 +6634,13 @@ notice.</p>
   additive items), 2, 5, 3, 4, 6, 6a. Whatever has not cleared the bar at the tag rolls to 17.0.0.
 - <strong>ID-Q10, decided:</strong> an edit addressed by an <code>identifier</code> that two stored records share lands on the record
   the P4 pick names. A delete addressed that way reaches every record sharing it, as API v3 DELETE does today.
+- <strong>Unique index, decided 2026-10-30:</strong> in 16.0.0 behind <code>WRITE_IDENTIFIER_INDEX=try|require|off</code> (default <code>try</code>).
+  - <code>try</code>: build a partial unique index per collection (records with an <code>identifier</code>, soft-deleted included,
+    built online). On existing duplicates, log counts and show them on the status page, then run without the
+    index; the ID-Q5 write rule still blocks new duplicates.
+  - <code>require</code>: refuse to start without the index.
+  - <code>off</code>: skip it.
+  - An operator-run tool reports duplicate groups and resolves them by the P4 pick.
 - **Settings, proposed by session -4f and confirmed by the maintainer (2026-10-29). They follow <code>WRITE_VALIDATION</code>:
   a <code>WRITE_</code> prefix, and modes rather than booleans, with the default first:
   - <code>WRITE_RESEND=merge|acknowledge|refuse</code>;

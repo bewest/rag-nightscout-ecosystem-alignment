@@ -3361,6 +3361,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#1-1600-scope-maintainer-2026-10-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 16.0.0 scope (maintainer, 2026-10-30)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1a-priority-and-merge-order-2026-10-29" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5593,6 +5604,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#1-1600-scope-maintainer-2026-10-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 16.0.0 scope (maintainer, 2026-10-30)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1a-priority-and-merge-order-2026-10-29" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5632,7 +5654,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>8f45f41ed</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>fdccb9fe6</code>.</em></p>
 <p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>e1f7ac41</code> (2026-10-29). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5680,6 +5702,23 @@
 </tr>
 </tbody>
 </table>
+<h2 id="1-1600-scope-maintainer-2026-10-30">1. 16.0.0 scope (maintainer, 2026-10-30)<a class="headerlink" href="#1-1600-scope-maintainer-2026-10-30" title="Permanent link">&para;</a></h2>
+<p>16.0.0 targets <strong>every single-tenant item of this plan</strong>, through the entry bar and in priority order. A
+miss rolls to 16.1.0, or to 17.0.0 if it changes a default.
+- <strong>The identity work is the core.</strong> It is the substance of the agreement with the Loop maintainers:
+  identifier-first on every path, re-sends recognised, the format rules, and one record per identifier.
+- <strong>The unique index on <code>identifier</code> is in 16.0.0</strong>, behind <code>WRITE_IDENTIFIER_INDEX=try|require|off</code>
+  (default <code>try</code>).
+  - Under <code>try</code>, boot attempts a partial unique index per collection: records with an <code>identifier</code>,
+    soft-deleted ones included, built online. If existing duplicates block it, the counts per collection
+    (never the values) are logged and shown on the status page, and the server runs without the index.
+  - The write rule (ID-Q5) still refuses to create a second record with a stored identifier.
+  - <code>require</code> refuses to start until the index exists. <code>off</code> skips it.
+  - An operator-run tool reports duplicate groups and resolves them by the P4 pick.
+- <strong>Multitenant items may ship dormant, labelled alpha behind <code>serve</code>, or not ship.</strong></p>
+<p>Feasibility, from the 7 days to 2026-10-30: 53 PRs merged into <code>dev</code>, and 14 of this plan's 36 items went
+to done. Build speed is not the limit. Time on <code>dev</code>, cohort checks and review are, so items land in
+priority order and early, and the tag is gated by the bar, not by a date.</p>
 <h2 id="1a-priority-and-merge-order-2026-10-29">1a. Priority and merge order (2026-10-29)<a class="headerlink" href="#1a-priority-and-merge-order-2026-10-29" title="Permanent link">&para;</a></h2>
 <p>Identity moved up on 2026-10-29, because most of the week's defects came from records matched by
 different rules on different paths: BF-121's socket gap, BF-209, and the chart split's shared
