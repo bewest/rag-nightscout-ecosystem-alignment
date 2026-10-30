@@ -76,7 +76,9 @@ const CONSUMERS = {
     res[name] = {};
     for (const a of live) {
       const db = cli.db(a.db);
-      const agg = { calls: 0, events: 0, truthOps: 0, consumers: {} };
+      // missed/extra: the raw names of every event against the change stream
+      // (round 3). A cache catch-up counts only missed; a per-write event counts both.
+      const agg = { calls: 0, events: 0, truthOps: 0, named: 0, missed: 0, extra: 0, callsMissing: 0, callsExtra: 0, consumers: {} };
       Object.keys(CONSUMERS).forEach(c => { agg.consumers[c] = { exact: 0, wrong: 0, wrongUnflagged: 0, followUps: 0, eventsNeedingFollowUp: 0 }; });
       for (let rep = 0; rep < REPS; rep++) {
         const tag = name + '-' + run + '-' + rep + '-' + a.name;
@@ -110,6 +112,10 @@ const CONSUMERS = {
         const newest = (await db.collection(coll).find({}, { projection: { _id: 1 } }).sort({ _id: -1 }).limit(2000).toArray()).map(d => String(d._id));
         const T = keyset(truth);
         agg.calls++; agg.events += evs.length; agg.truthOps += truth.length;
+        const N = keyset(evs.flatMap(e => (e.records || []).map(r => [KIND[r.change], r._id])));
+        const missed = [...T].filter(x => !N.has(x)).length, extra = [...N].filter(x => !T.has(x)).length;
+        agg.named += N.size; agg.missed += missed; agg.extra += extra;
+        if (missed) agg.callsMissing++; if (extra) agg.callsExtra++;
         for (const [c, fn] of Object.entries(CONSUMERS)) {
           const r = fn(evs, { newest });
           const ok = same(keyset(r.set), T);
@@ -133,6 +139,12 @@ const CONSUMERS = {
     for (const [arm, g] of Object.entries(byArm)) {
       console.log('| ' + name + ' | ' + arm + ' | ' + g.calls + ' | ' + g.events + ' | ' + g.truthOps + ' | ' + cons.map(c => g.consumers[c].exact + '/' + g.calls + ' (' + g.consumers[c].eventsNeedingFollowUp + (g.consumers[c].wrongUnflagged ? '; UNFLAGGED ' + g.consumers[c].wrongUnflagged : '') + ')').join(' | ') + ' |');
     }
+  }
+  console.log('');
+  console.log('| shape | arm | calls | change-stream ops | named | missed (cache and event) | extra (event only) | calls with a miss | calls with an extra |');
+  console.log('|---|---|---|---|---|---|---|---|---|');
+  for (const [name, byArm] of Object.entries(res)) {
+    for (const [arm, g] of Object.entries(byArm)) console.log('| ' + [name, arm, g.calls, g.truthOps, g.named, g.missed, g.extra, g.callsMissing, g.callsExtra].join(' | ') + ' |');
   }
   process.exit(0);
 })().catch(e => { console.error(e); process.exit(2); });

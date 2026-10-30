@@ -41,8 +41,15 @@ const OUT = path.resolve(opt('--out', path.join(__dirname, 'results', 'latency.j
       if (it >= limit(name)) continue;
       const s = shapes[name];
       const seeds = {};
-      for (const a of live) seeds[a.name] = s.seed ? await s.seed(a, name + '-' + run + '-' + it + '-' + a.name) : undefined;
+      // A failed seed (round 3: a v3 POST without a JSON reply crashed the run)
+      // is counted as an error of that arm and shape; its call is not timed.
+      const SEED_FAILED = {};
+      for (const a of live) {
+        try { seeds[a.name] = s.seed ? await s.seed(a, name + '-' + run + '-' + it + '-' + a.name) : undefined; }
+        catch (e) { seeds[a.name] = SEED_FAILED; errors[name + ' ' + a.name + ' seed'] = (errors[name + ' ' + a.name + ' seed'] || 0) + 1; }
+      }
       for (const a of L.shuffle(live.slice())) {
+        if (seeds[a.name] === SEED_FAILED) continue;
         const tag = name + '-' + run + '-' + it + '-' + a.name;
         const st = process.hrtime.bigint();
         const r = await s.run(a, tag, seeds[a.name]);

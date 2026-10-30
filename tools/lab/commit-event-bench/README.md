@@ -22,6 +22,9 @@ that decision, and it continued after the deferral.
   - the post-write variant
   - the same variant with counts-only deletes
   - a pre-read capped at 500 records (the pattern Nocturne uses)
+- **Round 3** ([below](#round-3-2026-10-29-since-watermark)) adds Ben's since-watermark arm. Each
+  table reports misses (which matter for a cache catch-up) and cross-attribution (which matters for
+  a per-write event) separately.
 - **Prior art.** Comparable systems name records from the database's own log (change streams,
   an oplog or write-ahead log) or by a read before the write. A read after the write cannot see
   deleted records. It also misses records whose filter fields the update itself changed. Round 2
@@ -583,6 +586,256 @@ records, the pruner can delete them before the read.
   in-process mis-naming test does prove it for its cases.
 - Memory and client-visible socket latency.
 
+## Round 3 (2026-10-29): since-watermark
+
+### The arm and its two uses
+
+Ben proposed this arm. After a write, the arm reads the collection back for every document with
+`srvModified` after a **watermark**: the last `srvModified` the process issued before the write,
+less a small overlap. The records are deduplicated by `_id`. Two uses judge the result differently:
+
+- **(a) Cache catch-up.** A cache refreshes after a query-based write instead of flushing. Only
+  **misses** count: records this write changed that the read did not return. Records from other
+  writers do no harm there. Load counts too: queries, bytes and latency.
+- **(b) Per-write event.** The event names "this write's records". Records from other writers
+  are then errors, counted as **cross-attribution** (extra).
+
+Every table below gives both, as "missed" (both uses) and "extra" (event only).
+
+| arm | tree | head | what it does |
+|---|---|---|---|
+| since | `proto/d-event-since-watermark` | `978aa282` (on post `408c7d03`) | inserts and upserts are named from the result. Updates and replacements: one read after the write, only when `matchedCount > 0` and `modifiedCount > 0`, of `{srvModified: {$gt: watermark − 5}}` projected to `_id` and `identifier`, deduplicated by `_id` against the result's records. Deletes keep post's pre-read limited to the delete filters |
+| since0 | same tree | `978aa282` | overlap 0 (`CEB_SINCE_since0=overlap=0`) |
+| late0, late5 | same tree | `978aa282` | **break-it control**: the watermark one write late (the call's last stamp instead of its first stamp minus one), overlap 0 and 5 |
+
+- **The watermark.** It is the smallest `srvModified` the call's operations carry, minus one. That
+  is the last value `lib/server/srv-dates.js` issued before the call's first stamp. `write-step.js`
+  runs after the route has stamped, so it reads the watermark from the stamps. A call with no stamp
+  falls back to `srvDates.last()` (a new export) at the boundary.
+- **No upper bound and no filter.** The read returns everything any writer stamped after the
+  watermark. The table in (d) shows what that costs the event use.
+- **`npm test`** on `978aa282`: **4709 passing, 0 failing, 3 pending** (MongoDB 8.0.29, Node v22.23.4).
+  - New unit tests: names records an update moved out of its own filter, by `srvModified`; names each record once when the read also returns an upserted record; leaves a since-read mis-name visible (records ≠ counts); reads from the call's last stamp when the watermark is late.
+  - The post-write test that pinned the moves-out miss was replaced, and the post-read filter expectations now expect the `srvModified` filter.
+  - **Red control:** the since test file on post `408c7d03` has 5 failing tests.
+  - **Break-it:** removing the `_id` dedupe makes 1 test fail.
+
+### Facts behind the arm (checked at base `9668b179`)
+
+| claim | how checked | result |
+|---|---|---|
+| every server write path stamps `srvModified` (since `718efddc`, 15.0.9) | `718efddc` is an ancestor of base; every driver write call in `lib/` read by hand | v1 bulk/replace, socket update/merge/add/profile, v3 insert/replace/patch/soft delete all stamp. Activity and authorization storage do not, and neither is served by v3. **Read-derived, not reproduced** |
+| `srv-dates.js` issues increasing values | read `next()` | strictly increasing in one process; it runs ahead of the clock by 1 ms per document in a large batch |
+| `srvModified` is indexed | `MongoCollection.indexedFields` at `lib/api3/storage/mongoCollection/index.js` | yes. The in-process harnesses create the same index |
+| single-tenant Nightscout has no unstamped writers | from Ben; not tested | — |
+
+- **Harness change for every arm.** All in-process writers now stamp through the arm tree's own
+  `srv-dates`: the `internal-update-moves-out-10` shape in `server.js`, every write in `misname.js`
+  and `payload.js`, and the concurrent writer that `misname.js` simulates. Without the stamps the
+  since-read would see nothing those writers wrote.
+- **Side effect.** "Matched but unmodified" no longer happens: every matched record gets a new
+  `srvModified`. All arms are exact on that case now (round 2: extra 10).
+- **An edge, read-derived and not measured.** A socket `dbUpdate` that is a merge patch writes once per
+  target with one shared stamp. The since-read for target k then also returns targets 1 … k−1:
+  harmless to a cache, extra for an event.
+
+Environment:
+- Node v22.23.4; `mongo:8.0.29` single-node replica set on 127.0.0.1:27601, `--ulimit nofile=64000:64000`, no `--rm`.
+- Every log starts and ends with `docker inspect`. They show `restarts=0` and the same `StartedAt` (2026-10-29T20:11:32Z) throughout.
+
+**Two failed steps, not reported:**
+- **Reads from the profiler.** The first reads run counted identity reads with the database
+  profiler. It reported **0** identity reads on every 1,000- and 10,000-record re-send, for every
+  arm. The likely cause is that the profiler's 1 MB capped collection drops the read's entry behind
+  the backfill's per-operation entries. The table below comes from `readtap.js`, which counts in
+  the arm's process. A run on a separate mongod confirmed it: 1 query and 1,000 documents where the
+  profiler showed 0. Kept as `results/round3/reads-profiler-only.*`.
+- **Latency run.** The first latency run interleaved singles with the backfills at about 80 s per
+  iteration. A v3 seed POST returned no JSON and crashed it after iteration 25. Its six arm servers
+  were orphaned and held the log pipe open for about four hours. Kept as
+  `results/round3/latency-crashed.log`. Singles and backfills then ran separately, as in round 2.
+  `bench.js` now counts a failed seed as an error of that arm instead of crashing; there were none.
+
+### Reads per write (`reads.js` + `readtap.js`, 10 calls per shape, 2 at 10,000)
+
+Identity reads per write: queries / documents / BSON bytes returned. Base makes none.
+
+| shape group | pre | post | capped | since |
+|---|---|---|---|---|
+| inserts (devicestatus, v3 create) | 0 | 0 | 0 | 0 |
+| single upsert (v1 create) | 1 / 0 / 0 | 0 | 1 / 0 / 0 | 0 |
+| single update/replace/delete (v1, v3, socket) | 1 / 1 / 22–75 B (v1 PUT and soft delete: 2 queries) | same | same | same |
+| moves-out, 10 | 1 / 10 / 220 B | 1 / **0** / 0 | 1 / 10 / 220 B | 1 / 10 / 220 B |
+| query delete 100 / 1,000 | 1 / 100 / 2.2 KB; 1 / 1,000 / 22 KB | same | 1 / 100; 1 / **501** / 11 KB | same as pre |
+| backfill fresh 1,000 / 10,000 | 1 / 0 / 0 | 0 | 0 (collapsed) | 0 |
+| backfill re-send 1,000 / 10,000 | 1 / 1,000 / 22 KB; 1 / 10,000 / 220 KB | same | 0 (collapsed) | same |
+
+- **v1 PUT and soft delete make 2 identity queries in every naming arm.** The route also deletes the
+  record's string-`_id` twin, and that delete pays its pre-read even when it matches nothing.
+- **Single writer, same reads.** Since reads the same documents and bytes as post on every shape;
+  the difference is the query shape.
+- **More documents under concurrency.** With concurrent writers the since-read also returns other
+  writers' records (the extras in (d)). Those reads were not counted per write.
+- Other reads (the route's own, the loader's) came to 1–294 per write. They varied by up to about 1.5 per write between arms and calls, with no pattern by arm (`results/round3/reads.log`).
+
+### (a) Latency
+
+**Singles**, n = 200, 6 arms, 0 errors, 5,801 events at every arm. Noise floor: base2/base
+0.965–1.026 (median); no-op 0.957–1.011.
+
+| kind (shapes) | pre | post | since |
+|---|---|---|---|
+| insert (devicestatus, v3 create, socket dbAdd) | 0.967–0.979 | 0.957–0.999 | 0.974–1.004 |
+| single upsert (v1 entries/treatments create) | **1.155–1.185** | 0.991–1.002 | 1.003–1.006 |
+| update/replace (v1 put, softdelete, resend; v3 resend, patch, put; socket dbUpdate) | **1.079–1.248** | **1.065–1.234** | **1.088–1.229** (+1–2 ms) |
+| filter-changing update (internal moves-out, 10) | **1.273** | **1.312** | **1.187** |
+| delete (v1 query delete 10, delete id; v3 delete permanent; socket dbRemove) | **1.173–1.407** | **1.154–1.392** | **1.156–1.437** |
+
+**Backfills**, one v1 POST each, n = 50 at 1,000 and n = 8 at 10,000, 5 arms, 0 errors.
+
+| backfill | base median | base2 | pre | post | **since** |
+|---|---|---|---|---|---|
+| entries fresh 1,000 | 160 ms | ×1.002 | ×1.162 | ×1.008 | **×1.018** |
+| entries re-send 1,000 | 175 ms | ×1.011 | ×1.181 | ×1.164 | **×1.027** |
+| treatments fresh 1,000 | 353 ms | ×1.009 | ×1.280 | ×1.008 | **×1.014** |
+| treatments re-send 1,000 | 1,176 ms | ×0.990 | ×1.118 | ×1.095 | **×1.011** |
+| entries fresh 10,000 | 1,531 ms | ×1.017 | ×1.181 | ×1.024 | **×1.054** |
+| entries re-send 10,000 | 1,806 ms | ×0.960 | ×1.217 | ×1.162 | **×0.985** |
+| treatments fresh 10,000 | 3,575 ms | ×0.980 | ×1.270 | ×1.009 | **×0.986** |
+| treatments re-send 10,000 | 12,118 ms | ×0.982 | ×1.057 | ×1.125 | **×0.973** |
+
+Since is inside the floor (0.960–1.017) or close to it on every backfill, **re-sends included**.
+Pre and post pay for their 1,000-way `$or` there.
+
+### (b) Naming cost, in-process (listen − quiet, median ms)
+
+| N | call | pre | post | since |
+|---|---|---|---|---|
+| 1,000 | bulkWrite upsert, fresh | +36.5 | +0.2 | +2.2 |
+| 1,000 | bulkWrite upsert, re-send | +34.8 | +39.8 | **+3.7** |
+| 1,000 | updateMany | +3.2 | +3.8 | +5.0 |
+| 1,000 | deleteMany | +3.3 | +3.5 | +4.0 |
+| 10,000 | bulkWrite upsert, fresh | +352 | −47 | −12 |
+| 10,000 | bulkWrite upsert, re-send | +413 | +372 | **+8** |
+| 10,000 | deleteMany | +33.1 | +32.9 | +35.6 |
+
+- Base's own listen − quiet is the control. It reached −39 to +24 ms at 10,000 records.
+- **Bytes:** unchanged from rounds 1–2, about 55–105 B per record.
+- The one large difference is the re-sent upsert batch. There, the since-read is one indexed
+  range read, and pre and post read an `$or` of 1,000 or 10,000 filters. The mechanism is
+  inferred from the query shapes; the bench does not isolate it.
+
+### (c) Change-feed exactness against the change stream (27 shapes × 5 calls)
+
+| arm | calls exact | missed (both uses) | extra (event use) | inexact and unflagged |
+|---|---|---|---|---|
+| pre | 135 / 135 | 0 | 0 | 0 |
+| post | 130 / 135 | 50 (moves-out, every call) | 0 | 0 |
+| **since** | **135 / 135** | **0** | **0** | **0** |
+| since0 | 135 / 135 | 0 | 0 | 0 |
+| late0 (break-it) | **71 / 135**: 13 shapes inexact | 110,089 | 0 | 0 (all 64 flagged) |
+| late5 | 115 / 135: only the four re-send backfills | 109,900 (the overlap recovers 5 per call) | 0 | 0 (all 20 flagged) |
+
+- **Break-it works.** A watermark one write late misses records, and the check sees it.
+- **The overlap hides a late watermark only for small calls.** That includes an `updateMany`,
+  whose records share one stamp. Calls that span more stamps than the overlap still fail.
+- BROKEN-drop-last is wrong and unflagged on every call of every arm (135 / 135), as in round 2.
+
+**Mis-naming test** (`misname.js`, 5 per case; truth excludes the simulated concurrent writer):
+
+| case | pre | post | since | since0 | late0 |
+|---|---|---|---|---|---|
+| plain update / plain delete | exact / exact | exact / exact | exact / exact | exact / exact | **missed 25** / exact |
+| update moves records out of its filter | exact | missed 25 | **exact** | exact | missed 25 |
+| matched but unmodified | exact | exact | exact | exact | missed 25 |
+| concurrent insert just after the update | exact | extra 5 | **extra 5** | extra 5 | missed 25, extra 5 |
+| concurrent delete of an updated record just after the update | exact | missed 5 | missed 5 | missed 5 | missed 25 |
+| concurrent insert just before the delete | missed 5 | missed 5 | missed 5 | missed 5 | missed 5 |
+| validated (reject-mode) Temporary Target update | exact | exact | exact | exact | missed 5 |
+| **inexact and unflagged** | **0** | **0** | **0** | **0** | **0** |
+
+**Break-it** (`--break counts-from-records`, since): the check reports **15** inexact-and-unflagged events (the three race cases × 5), so the 0 above comes from a check that can see a difference.
+
+### (d) Concurrent writers, 3k uploaders, 20 s, two rounds, arm order reversed per round
+
+**Without the pruner:**
+
+| k | arm | req/s (r0, r1) | missed (both uses) | never named | cross-attributed events (event use) | extra records (event use) |
+|---|---|---|---|---|---|---|
+| 1 | base / base2 | 133.3, 123.4 / 134.1, 123.5 | all (counts only) | all | n/a | n/a |
+| 1 | pre / post | 130.1, 116.7 / 132.1, 115.5 | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| 1 | **since** | 130.8, 120.9 | **0** | **0** | **138, 136** | **140, 136** |
+| 2 | base / base2 | 251.0, 249.5 / 237.4, 277.8 | all | all | n/a | n/a |
+| 2 | pre / post | 233.4, 282.1 / 251.8, 294.9 | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| 2 | **since** | 283.9, 302.8 | **0** | **0** | **874, 905** | **1,353, 1,473** |
+| 4 | base / base2 | 420.8, 536.4 / 423.2, 527.5 | all | all | n/a | n/a |
+| 4 | pre / post | 402.7, 504.2 / 490.2, 510.0 | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| 4 | **since** | 512.3, 497.2 | **0** | **0** | **1,946, 1,844** | **5,845, 5,082** |
+
+- Every cross-attributed event also had records ≠ counts.
+- Base-vs-base throughput differs by up to 27% between rounds (k = 4: 420.8 vs 536.4). Every
+  naming arm is inside that spread.
+
+**Pruner race** (one writer deletes every bridge entry every 200 ms), k = 1 (r0, r1); k = 4 (r0, r1):
+
+| arm | missed (both uses) | records ≠ counts | cross-attributed events | extra records |
+|---|---|---|---|---|
+| pre | 2, 3; 14, 10 | 2, 4; 10, 6 | 0 | 0, 2; 0, 0 |
+| post | 9, 13; 86, 68 | 5, 5; 39, 32 | 0 | 0 |
+| **since** | **3, 9; 54, 45** | 154, 170; 1,647, 1,556 | **151, 166; 1,618, 1,532** | **152, 168; 4,709, 4,597** |
+| base / base2 | 2,926–11,218 (counts only) | — | — | — |
+
+The since misses come from the delete pre-read's race and from updated records the pruner deleted
+before the read. They fall between pre and post.
+
+**Break-it** (`--break swap-writer`, since, k = 2, 10 s): 539 cross-attributed, 744 records ≠ counts.
+**This control is not informative for since.** The arm already cross-attributes on its own, so
+the break cannot be told apart from its baseline. The evidence that the check sees
+cross-attribution is the comparison inside one harness and run: pre and post report 0, since
+reports 136–1,946.
+
+### Comparison (round 3 measurements; pre and post re-measured alongside)
+
+| axis | pre (uncapped) | post-write | **since-watermark** |
+|---|---|---|---|
+| single inserts / upserts | free / +16–19% | free / free | free / free |
+| single update/replace | +8–25% | +7–23% | +9–23% (+1–2 ms) |
+| single delete | +17–41% | +15–39% | +16–44% |
+| backfill fresh 1,000 / 10,000 | +16–28% | free | free |
+| backfill re-send 1,000 / 10,000 | +6–22% | +9–16% | **free** |
+| filter-changing update | exact | misses all | **exact** |
+| (a) cache: missed, single writer / concurrent / pruner race | 0 / 0 / 2–14 | 50 (moves-out) / 0 / 9–86 | **0 / 0 / 3–54** |
+| (b) event: cross-attributed events, concurrent / pruner race | 0 / 0 | 0 / 0 | **136–1,946 / 151–1,618 per round** |
+| inexact and unflagged (single writer, mis-naming test) | 0 | 0 | 0 |
+
+### Findings (D-EVENT deferred; research continuing)
+
+- **As a cache catch-up (use a):**
+  - Since-watermark missed nothing a single writer changed. That includes the filter-changing
+    update, which the post-write read misses.
+  - With concurrent writers and no pruner it missed nothing either.
+  - Under the pruner race it missed 3–54 records per round, between pre (2–14) and post (9–86).
+  - Its read is one indexed range read, so it costs nothing measurable on backfills of 1,000 and
+    10,000 records, re-sends included. The two `$or` arms pay +6–28% there.
+  - It cannot see hard deletes. Deletes keep a pre-read, and that read sets the delete latency
+    (+16–44% on single deletes, as for pre and post).
+- **As a per-write event (use b):**
+  - With one writer it is exact.
+  - With concurrent writers it attributes other writers' records to an event: 136–1,946
+    cross-attributed events per 20 s round, up to 5,845 extra records at k = 4. Pre and post
+    attribute none.
+  - Every such event was flagged by records ≠ counts.
+- **The watermark is the safety-critical part.** One write late with overlap 0, it misses every
+  record of 13 shapes; every one of those events is flagged. The 5 ms overlap hides a late
+  watermark only for calls that span fewer stamps than the overlap.
+- **Unmeasured:**
+  - a read with an upper bound (`srvModified ≤` the last value issued after the write), which
+    would cut cross-attribution from later writes;
+  - multi-process writers (one `srv-dates` clock per process);
+  - network latency;
+  - MongoDB versions other than 8.0.29;
+  - the socket merge-patch edge above.
+
 ## Files
 
 | file | role |
@@ -595,8 +848,9 @@ records, the pruner can delete them before the read.
 | `changefeed.js` | axis (c) |
 | `concurrent.js` | axis (d), with `--pruner` and `--break swap-writer` |
 | `misname.js` | round 2: which records each variant mis-names, with `--break counts-from-records` |
+| `reads.js`, `readtap.js` | round 3: identity reads per write (queries, documents, bytes), counted in each arm's process; the database profiler for context |
 | `run.sh` | up / all / round2 / down (the round-2 runs were driven by the same commands, with the arms listed in the round-2 section) |
-| `results/` | round 1: `*.log` (tables, `docker inspect` state) and `*.json` (raw); round 2: `results/round2/` |
+| `results/` | round 1: `*.log` (tables, `docker inspect` state) and `*.json` (raw); round 2: `results/round2/`; round 3: `results/round3/` |
 
 An earlier payload run attached the listener twice in some repetitions (a harness bug: modes
 were added without removing the previous listener). It was discarded and rerun after the fix.

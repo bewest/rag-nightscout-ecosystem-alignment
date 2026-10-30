@@ -21,7 +21,7 @@ const iso = t => new Date(t).toISOString();
 // ---- arms
 async function startArm (name, tree, mongo, db, listener, ioTree) {
   const child = fork(path.join(__dirname, 'server.js'), [tree, mongo + '/' + db + QS, '--listener', listener],
-    { stdio: ['ignore', 'ignore', 'inherit', 'ipc'], env: Object.assign({}, process.env, { BENCH_SECRET: SECRET }) });
+    { stdio: ['ignore', 'ignore', 'inherit', 'ipc'], env: Object.assign({}, process.env, { BENCH_SECRET: SECRET, BENCH_SINCE: process.env['CEB_SINCE_' + name] || '' }) });
   const ready = await new Promise((resolve, reject) => {
     const t = setTimeout(() => reject(new Error(name + ' boot timeout')), 120000);
     child.on('message', m => { if (m.cmd === 'ready') { clearTimeout(t); resolve(m); } });
@@ -65,6 +65,32 @@ async function startArm (name, tree, mongo, db, listener, ioTree) {
     async stop () { try { sock.close(); } catch (e) { /* closed */ } child.send({ cmd: 'exit' }); await sleep(100); }
   };
   return arm;
+}
+
+// ---- since-watermark arm options (round 3). CEB_SINCE_<arm>=late,overlap=0
+// sets the since-watermark tree's lab knobs for that arm; other trees have no
+// sinceOptions and ignore it.
+function sinceOptions (spec) {
+  const o = {};
+  String(spec || '').split(',').filter(Boolean).forEach(kv => {
+    const [k, v] = kv.split('=');
+    o[k] = v === undefined ? true : (v === 'false' ? false : Number(v));
+  });
+  return o;
+}
+function applySince (step, name) {
+  const spec = process.env['CEB_SINCE_' + name];
+  return typeof step.sinceOptions === 'function' ? step.sinceOptions(Object.assign({ late: false, overlap: 5 }, sinceOptions(spec))) : null;
+}
+// In-process writers stamp srvModified as every server write path does
+// (lib/server/srv-dates.js, since 718efddc), with the tree's own clock, so
+// every arm does the same work and the since-read sees what a server sees.
+function stamper (tree) {
+  const d = require(path.join(tree, 'lib/server/srv-dates'));
+  return {
+    created: doc => { d.stampCreated(doc); return doc; },
+    modified: fields => { d.stampModified(fields); return fields; }
+  };
 }
 
 // ---- synthetic bodies
@@ -184,4 +210,4 @@ function stats (xs) {
 }
 function shuffle (a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-module.exports = { nextB, QS, startArm, SHAPES, BULK, queryDelete, stats, shuffle, sleep, hex, iso, entry, treatment, v3treatment, devicestatus, nextT, idOf };
+module.exports = { sinceOptions, applySince, stamper, nextB, QS, startArm, SHAPES, BULK, queryDelete, stats, shuffle, sleep, hex, iso, entry, treatment, v3treatment, devicestatus, nextT, idOf };

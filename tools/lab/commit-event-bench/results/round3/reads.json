@@ -1,0 +1,1443 @@
+{
+ "run": "27f029",
+ "reps": 10,
+ "node": "v22.23.4",
+ "arms": [
+  {
+   "name": "base",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-base",
+   "since": null,
+   "head": "9668b179ff4efbdd335e400dec40b712bd5b9af6"
+  },
+  {
+   "name": "pre",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-proto",
+   "since": null,
+   "head": "8a39671502bbe9fb6bcdf027493290eb4a0910a1"
+  },
+  {
+   "name": "post",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-post",
+   "since": null,
+   "head": "408c7d03b065e733bf35d78d7d7f81d11ed00ed1"
+  },
+  {
+   "name": "capped",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-capped",
+   "since": null,
+   "head": "8432ea6624cd0682b3f353e37124c78ea9ba9a17"
+  },
+  {
+   "name": "since",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "since": null,
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  }
+ ],
+ "shapes": {
+  "v1-entries-create": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 13750,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 10,
+    "otherReads": 39,
+    "otherBytes": 13695,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 13750,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 10,
+    "otherReads": 39,
+    "otherBytes": 13860,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 13805,
+    "failed": 0
+   }
+  },
+  "v1-entries-resend": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 10,
+    "otherBytes": 3200,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 15,
+    "otherBytes": 8594,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 15,
+    "otherBytes": 8625,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 15,
+    "otherBytes": 8687,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 15,
+    "otherBytes": 8656,
+    "failed": 0
+   }
+  },
+  "v1-entries-query-delete-10": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 13,
+    "otherBytes": 8436,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 100,
+    "identityBytes": 2200,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 8403,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 100,
+    "identityBytes": 2200,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 8436,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 100,
+    "identityBytes": 2200,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 8502,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 100,
+    "identityBytes": 2200,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 8469,
+    "failed": 0
+   }
+  },
+  "v1-devicestatus-create": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 13014,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 12959,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 13014,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 13124,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 39,
+    "otherBytes": 13069,
+    "failed": 0
+   }
+  },
+  "v1-treatments-create": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 49,
+    "otherBytes": 22194,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 10,
+    "otherReads": 49,
+    "otherBytes": 22099,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 49,
+    "otherBytes": 22194,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 10,
+    "otherReads": 49,
+    "otherBytes": 22384,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 49,
+    "otherBytes": 22289,
+    "failed": 0
+   }
+  },
+  "v1-treatments-put": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 23,
+    "otherBytes": 12169,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 23,
+    "otherBytes": 12119,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 23,
+    "otherBytes": 11940,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 23,
+    "otherBytes": 12038,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 23,
+    "otherBytes": 11989,
+    "failed": 0
+   }
+  },
+  "v1-treatments-softdelete": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 23,
+    "otherBytes": 8256,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 23,
+    "otherBytes": 8223,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 15,
+    "otherBytes": 4137,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 23,
+    "otherBytes": 8322,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 20,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 20,
+    "otherReads": 23,
+    "otherBytes": 8289,
+    "failed": 0
+   }
+  },
+  "v1-treatments-delete-id": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 13,
+    "otherBytes": 5346,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5323,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5346,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5392,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5369,
+    "failed": 0
+   }
+  },
+  "v3-treatments-create": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 49,
+    "otherBytes": 18498,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 49,
+    "otherBytes": 18419,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 49,
+    "otherBytes": 18498,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 36,
+    "otherBytes": 13264,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 49,
+    "otherBytes": 18577,
+    "failed": 0
+   }
+  },
+  "v3-treatments-resend": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 43,
+    "otherBytes": 19896,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 19823,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 19896,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 20042,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 19969,
+    "failed": 0
+   }
+  },
+  "v3-treatments-patch": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 43,
+    "otherBytes": 20156,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 20083,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 38,
+    "otherBytes": 16775,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 20302,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 20229,
+    "failed": 0
+   }
+  },
+  "v3-treatments-put": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 43,
+    "otherBytes": 19836,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 19763,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 19836,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 30,
+    "otherBytes": 14590,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 43,
+    "otherBytes": 19909,
+    "failed": 0
+   }
+  },
+  "v3-treatments-delete-permanent": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 20,
+    "otherBytes": 8730,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 20,
+    "otherBytes": 8700,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 20,
+    "otherBytes": 8730,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 33,
+    "otherBytes": 14182,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 750,
+    "profiledIdentity": 10,
+    "otherReads": 33,
+    "otherBytes": 14129,
+    "failed": 0
+   }
+  },
+  "ws-treatments-dbAdd": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 59,
+    "otherBytes": 22893,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 9,
+    "identityDocs": 9,
+    "identityBytes": 198,
+    "profiledIdentity": 9,
+    "otherReads": 59,
+    "otherBytes": 22795,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 9,
+    "identityDocs": 9,
+    "identityBytes": 198,
+    "profiledIdentity": 9,
+    "otherReads": 59,
+    "otherBytes": 22893,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 9,
+    "identityDocs": 9,
+    "identityBytes": 198,
+    "profiledIdentity": 9,
+    "otherReads": 59,
+    "otherBytes": 23089,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 9,
+    "identityDocs": 9,
+    "identityBytes": 198,
+    "profiledIdentity": 9,
+    "otherReads": 59,
+    "otherBytes": 22991,
+    "failed": 0
+   }
+  },
+  "ws-treatments-dbUpdate": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 23,
+    "otherBytes": 10136,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 10,
+    "otherBytes": 4770,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 23,
+    "otherBytes": 10136,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 10,
+    "otherBytes": 4830,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 23,
+    "otherBytes": 10179,
+    "failed": 0
+   }
+  },
+  "internal-update-moves-out-10": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 13,
+    "otherBytes": 5346,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 100,
+    "identityBytes": 2200,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5323,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5346,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 100,
+    "identityBytes": 2200,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5392,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 100,
+    "identityBytes": 2200,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5369,
+    "failed": 0
+   }
+  },
+  "ws-treatments-dbRemove": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 13,
+    "otherBytes": 5346,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5323,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5346,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5392,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10,
+    "identityBytes": 220,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 5369,
+    "failed": 0
+   }
+  },
+  "v1-entries-fresh-1000": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 2465844,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 2466500,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 2468760,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 2473280,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 2471020,
+    "failed": 0
+   }
+  },
+  "v1-entries-resend-1000": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 10,
+    "otherBytes": 711530,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 0,
+    "otherReads": 36,
+    "otherBytes": 722166,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 0,
+    "otherReads": 36,
+    "otherBytes": 722222,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 10,
+    "otherBytes": 711550,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 0,
+    "otherReads": 10,
+    "otherBytes": 711540,
+    "failed": 0
+   }
+  },
+  "v1-treatments-fresh-1000": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 153,
+    "otherBytes": 3620574,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 3632040,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 3634300,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 3638820,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 140,
+    "otherBytes": 3636560,
+    "failed": 0
+   }
+  },
+  "v1-treatments-resend-1000": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 2930,
+    "otherBytes": 4489370,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 0,
+    "otherReads": 2940,
+    "otherBytes": 4487020,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 0,
+    "otherReads": 2926,
+    "otherBytes": 4486463,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 2930,
+    "otherBytes": 4499470,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 0,
+    "otherReads": 2930,
+    "otherBytes": 4494420,
+    "failed": 0
+   }
+  },
+  "v1-entries-fresh-10000": {
+   "base": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 493954,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 493502,
+    "failed": 0
+   },
+   "post": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 493954,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 494858,
+    "failed": 0
+   },
+   "since": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 494406,
+    "failed": 0
+   }
+  },
+  "v1-entries-resend-10000": {
+   "base": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 26,
+    "otherBytes": 10692,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 20000,
+    "identityBytes": 440000,
+    "profiledIdentity": 0,
+    "otherReads": 26,
+    "otherBytes": 10646,
+    "failed": 0
+   },
+   "post": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 20000,
+    "identityBytes": 440000,
+    "profiledIdentity": 0,
+    "otherReads": 26,
+    "otherBytes": 10692,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 26,
+    "otherBytes": 10784,
+    "failed": 0
+   },
+   "since": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 20000,
+    "identityBytes": 440000,
+    "profiledIdentity": 0,
+    "otherReads": 26,
+    "otherBytes": 10738,
+    "failed": 0
+   }
+  },
+  "v1-treatments-fresh-10000": {
+   "base": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 727062,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 726610,
+    "failed": 0
+   },
+   "post": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 727062,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 727966,
+    "failed": 0
+   },
+   "since": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 28,
+    "otherBytes": 727514,
+    "failed": 0
+   }
+  },
+  "v1-treatments-resend-10000": {
+   "base": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 586,
+    "otherBytes": 897874,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 20000,
+    "identityBytes": 440000,
+    "profiledIdentity": 0,
+    "otherReads": 588,
+    "otherBytes": 897404,
+    "failed": 0
+   },
+   "post": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 20000,
+    "identityBytes": 440000,
+    "profiledIdentity": 0,
+    "otherReads": 586,
+    "otherBytes": 897874,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 2,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 586,
+    "otherBytes": 899894,
+    "failed": 0
+   },
+   "since": {
+    "calls": 2,
+    "identityQueries": 2,
+    "identityDocs": 20000,
+    "identityBytes": 440000,
+    "profiledIdentity": 0,
+    "otherReads": 586,
+    "otherBytes": 898884,
+    "failed": 0
+   }
+  },
+  "v1-entries-query-delete-100": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 13,
+    "otherBytes": 59892,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 1000,
+    "identityBytes": 22000,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 59678,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 1000,
+    "identityBytes": 22000,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 59892,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 1000,
+    "identityBytes": 22000,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 60320,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 1000,
+    "identityBytes": 22000,
+    "profiledIdentity": 10,
+    "otherReads": 13,
+    "otherBytes": 60106,
+    "failed": 0
+   }
+  },
+  "v1-entries-query-delete-1000": {
+   "base": {
+    "calls": 10,
+    "identityQueries": 0,
+    "identityDocs": 0,
+    "identityBytes": 0,
+    "profiledIdentity": 0,
+    "otherReads": 26,
+    "otherBytes": 119784,
+    "failed": 0
+   },
+   "pre": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 10,
+    "otherReads": 26,
+    "otherBytes": 119356,
+    "failed": 0
+   },
+   "post": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 10,
+    "otherReads": 26,
+    "otherBytes": 119784,
+    "failed": 0
+   },
+   "capped": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 5010,
+    "identityBytes": 110220,
+    "profiledIdentity": 10,
+    "otherReads": 26,
+    "otherBytes": 120640,
+    "failed": 0
+   },
+   "since": {
+    "calls": 10,
+    "identityQueries": 10,
+    "identityDocs": 10000,
+    "identityBytes": 220000,
+    "profiledIdentity": 10,
+    "otherReads": 26,
+    "otherBytes": 120212,
+    "failed": 0
+   }
+  }
+ }
+}

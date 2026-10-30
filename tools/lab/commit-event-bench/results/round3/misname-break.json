@@ -1,0 +1,107 @@
+{
+ "run": "5c7816",
+ "reps": 5,
+ "break": "counts-from-records",
+ "node": "v22.23.4",
+ "arms": [
+  {
+   "name": "since",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "since": {
+    "overlap": 5,
+    "late": false
+   },
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  }
+ ],
+ "rows": [
+  {
+   "arm": "since",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 0,
+   "extra": 5
+  },
+  {
+   "arm": "since",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 0,
+   "inexactUnflagged": 5,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  }
+ ]
+}

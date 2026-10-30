@@ -42,6 +42,10 @@ R('lib/server/bootevent')(env, language).boot(async function booted (ctx) {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   R('lib/server/websocket')(env, ctx, server);
   const port = server.address().port;
+  // round 3: the since-watermark tree's lab knobs (BENCH_SINCE, from CEB_SINCE_<arm>)
+  const stepMod = R('lib/storage/write-step');
+  const since = typeof stepMod.sinceOptions === 'function'
+    ? stepMod.sinceOptions(Object.assign({ late: false, overlap: 5 }, require('./lib').sinceOptions(process.env.BENCH_SINCE))) : null;
 
   let events = [];
   let count = 0;
@@ -60,10 +64,13 @@ R('lib/server/bootevent')(env, language).boot(async function booted (ctx) {
     if (m.cmd === 'events') { process.send({ cmd: 'events', id: m.id, events, count }); events = []; }
     if (m.cmd === 'internal' && m.op === 'moveOut') {
       const col = R('lib/storage/write-step').collection(ctx.store.collection(env.entries_collection), { name: 'entries', source: 'internal', bus: ctx.bus });
-      col.updateMany({ bench: m.tag }, { $set: { bench: m.tag + '-moved' } })
+      // stamped as every server write path stamps (round 3; srv-dates since 718efddc)
+      const set = { bench: m.tag + '-moved' };
+      R('lib/server/srv-dates').stampModified(set);
+      col.updateMany({ bench: m.tag }, { $set: set })
         .then(r => process.send({ cmd: 'internal', id: m.id, ok: true, modified: r.modifiedCount }), e => process.send({ cmd: 'internal', id: m.id, ok: false, err: String(e.message) }));
     }
     if (m.cmd === 'exit') process.exit(0);
   });
-  process.send({ cmd: 'ready', port, jwt, collections: { entries: env.entries_collection, treatments: env.treatments_collection, devicestatus: env.devicestatus_collection } });
+  process.send({ cmd: 'ready', port, jwt, since, collections: { entries: env.entries_collection, treatments: env.treatments_collection, devicestatus: env.devicestatus_collection } });
 });

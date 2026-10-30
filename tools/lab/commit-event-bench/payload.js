@@ -43,18 +43,21 @@ const now = () => Number(process.hrtime.bigint()) / 1e6;
     const cli = await MongoClient.connect(MONGO + '/' + L.QS);
     const raw = cli.db('devent_pl_' + a.name + '_' + run).collection('entries');
     await raw.createIndex({ bench: 1 }); await raw.createIndex({ date: -1, type: 1 });
+    await raw.createIndex({ srvModified: 1 }); // API v3 indexes it on every served collection
     const step = require(path.join(a.tree, 'lib/storage/write-step'));
+    a.since = L.applySince(step, a.name);
     const bus = new EventEmitter();
     const events = [];
     const listener = e => events.push(e);
-    A.push({ name: a.name, tree: a.tree, cli, raw, bus, events, listener,
+    A.push({ name: a.name, tree: a.tree, S: L.stamper(a.tree), cli, raw, bus, events, listener,
       col: step.collection(raw, { name: 'entries', source: 'v1/internal', bus }) });
   }
   const ops = {
-    insertMany: (c, tag, n) => c.insertMany(Array.from({ length: n }, (_, i) => L.entry(tag, L.nextB(1), { identifier: tag + '-' + i }))),
-    'bulkWrite-upsert-fresh': (c, tag, n, s) => { s.docs = Array.from({ length: n }, () => L.entry(tag, L.nextB(1))); return c.bulkWrite(s.docs.map(d => ({ replaceOne: { filter: { date: d.date, type: d.type }, replacement: d, upsert: true } })), { ordered: true }); },
-    'bulkWrite-upsert-resend': (c, tag, n, s) => c.bulkWrite(s.docs.map(d => ({ replaceOne: { filter: { date: d.date, type: d.type }, replacement: Object.assign({}, d, { sgv: d.sgv + 1 }), upsert: true } })), { ordered: true }),
-    updateMany: (c, tag) => c.updateMany({ bench: tag }, { $set: { noise: 1 } }),
+    // round 3: every write is stamped (srvModified) as the server stamps it
+    insertMany: (c, tag, n, s) => c.insertMany(Array.from({ length: n }, (_, i) => s.S.created(L.entry(tag, L.nextB(1), { identifier: tag + '-' + i })))),
+    'bulkWrite-upsert-fresh': (c, tag, n, s) => { s.docs = Array.from({ length: n }, () => L.entry(tag, L.nextB(1))); return c.bulkWrite(s.docs.map(d => ({ replaceOne: { filter: { date: d.date, type: d.type }, replacement: s.S.modified(Object.assign({}, d)), upsert: true } })), { ordered: true }); },
+    'bulkWrite-upsert-resend': (c, tag, n, s) => c.bulkWrite(s.docs.map(d => ({ replaceOne: { filter: { date: d.date, type: d.type }, replacement: s.S.modified(Object.assign({}, d, { sgv: d.sgv + 1 })), upsert: true } })), { ordered: true }),
+    updateMany: (c, tag, n, s) => c.updateMany({ bench: tag }, { $set: s.S.modified({ noise: 1 }) }),
     deleteMany: (c, tag) => c.deleteMany({ bench: tag })
   };
   const res = {};
@@ -68,7 +71,7 @@ const now = () => Number(process.hrtime.bigint()) / 1e6;
           a.bus.removeAllListeners('storage-write-committed');
           if (mode === 'listen') a.bus.on('storage-write-committed', a.listener);
           const tag = 'pl-' + run + '-' + n + '-' + rep + '-' + mode + '-' + a.name;
-          const state = {};
+          const state = { S: a.S };
           // insertMany seeds the updateMany/deleteMany rows; the bulk pair has its own
           for (const op of ['insertMany', 'updateMany', 'deleteMany', 'bulkWrite-upsert-fresh', 'bulkWrite-upsert-resend']) {
             a.events.length = 0;

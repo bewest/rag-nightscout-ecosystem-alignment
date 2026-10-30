@@ -1,0 +1,586 @@
+{
+ "run": "afe10b",
+ "reps": 5,
+ "break": null,
+ "node": "v22.23.4",
+ "arms": [
+  {
+   "name": "pre",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-proto",
+   "since": null,
+   "head": "8a39671502bbe9fb6bcdf027493290eb4a0910a1"
+  },
+  {
+   "name": "post",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-post",
+   "since": null,
+   "head": "408c7d03b065e733bf35d78d7d7f81d11ed00ed1"
+  },
+  {
+   "name": "since",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "since": {
+    "overlap": 5,
+    "late": false
+   },
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  },
+  {
+   "name": "since0",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "since": {
+    "overlap": 0,
+    "late": false
+   },
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  },
+  {
+   "name": "late0",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "since": {
+    "overlap": 0,
+    "late": true
+   },
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  },
+  {
+   "name": "late5",
+   "tree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-devent-since",
+   "since": {
+    "overlap": 5,
+    "late": true
+   },
+   "head": "978aa282fde3a439c958c4b31ae66df8560b1896"
+  }
+ ],
+ "rows": [
+  {
+   "arm": "pre",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "pre",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 5
+  },
+  {
+   "arm": "post",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "post",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 5
+  },
+  {
+   "arm": "since",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "since",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since0",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since0",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since0",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since0",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "since0",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 5
+  },
+  {
+   "arm": "since0",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "since0",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "since0",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "late0",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "late0",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "late0",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "late0",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "late0",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 25,
+   "extra": 5
+  },
+  {
+   "arm": "late0",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 25,
+   "extra": 0
+  },
+  {
+   "arm": "late0",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "late0",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "late5",
+   "case": "plain-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "late5",
+   "case": "plain-delete",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "late5",
+   "case": "moves-out-of-filter",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "late5",
+   "case": "matched-unmodified",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  },
+  {
+   "arm": "late5",
+   "case": "insert-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 5
+  },
+  {
+   "arm": "late5",
+   "case": "delete-after-update",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "late5",
+   "case": "insert-before-delete",
+   "calls": 5,
+   "exact": 0,
+   "inexact": 5,
+   "flagged": 5,
+   "inexactUnflagged": 0,
+   "missed": 5,
+   "extra": 0
+  },
+  {
+   "arm": "late5",
+   "case": "validated-reject-update",
+   "calls": 5,
+   "exact": 5,
+   "inexact": 0,
+   "flagged": 0,
+   "inexactUnflagged": 0,
+   "missed": 0,
+   "extra": 0
+  }
+ ]
+}

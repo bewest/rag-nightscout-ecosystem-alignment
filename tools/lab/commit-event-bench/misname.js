@@ -37,32 +37,37 @@ const BREAK = opt('--break', null);
 const OUT = path.resolve(opt('--out', path.join(__dirname, 'results', 'round2', 'misname.json')));
 const KIND = { inserted: 'created', upserted: 'created', modified: 'modified', deleted: 'deleted' };
 const CS = { insert: 'created', update: 'modified', replace: 'modified', delete: 'deleted' };
+// Round 3: every write here is stamped with the arm tree's srv-dates, as the
+// server's write paths stamp (S is set per arm), and the since-watermark tree's
+// knobs come from CEB_SINCE_<arm>.
+let S = null;
+const st = fields => S.modified(fields);
 const tt = (tag, extra) => Object.assign({ eventType: 'Temporary Target', units: 'mg/dl', targetBottom: 100, targetTop: 120, duration: 30, created_at: new Date().toISOString(), bench: tag }, extra || {});
 
 // Each case: seed(raw, tag) -> docs; wrap(raw, tag, exclude) -> collection the step writes to; call(col, tag, docs)
 const CASES = {
-  'plain-update': { call: (c, tag) => c.updateMany({ bench: tag }, { $set: { noise: 1 } }) },
+  'plain-update': { call: (c, tag) => c.updateMany({ bench: tag }, { $set: st({ noise: 1 }) }) },
   'plain-delete': { call: (c, tag) => c.deleteMany({ bench: tag }) },
-  'moves-out-of-filter': { call: (c, tag) => c.updateMany({ bench: tag }, { $set: { bench: tag + '-moved' } }) },
+  'moves-out-of-filter': { call: (c, tag) => c.updateMany({ bench: tag }, { $set: st({ bench: tag + '-moved' }) }) },
   'matched-unmodified': {
     seedExtra: (i) => i < 2 ? { noise: 1 } : {},
-    call: (c, tag) => c.updateMany({ bench: tag }, { $set: { noise: 1 } })
+    call: (c, tag) => c.updateMany({ bench: tag }, { $set: st({ noise: 1 }) })
   },
   'insert-after-update': {
-    wrap: (raw, tag, exclude) => proxy(raw, 'updateMany', null, async () => { const r = await raw.insertOne({ bench: tag, injected: true }); exclude.push('created ' + r.insertedId); }),
-    call: (c, tag) => c.updateMany({ bench: tag }, { $set: { noise: 1 } })
+    wrap: (raw, tag, exclude) => proxy(raw, 'updateMany', null, async () => { const r = await raw.insertOne(S.created({ bench: tag, injected: true })); exclude.push('created ' + r.insertedId); }),
+    call: (c, tag) => c.updateMany({ bench: tag }, { $set: st({ noise: 1 }) })
   },
   'delete-after-update': {
     wrap: (raw, tag, exclude) => proxy(raw, 'updateMany', null, async () => { const d = await raw.findOne({ bench: tag }); await raw.deleteOne({ _id: d._id }); exclude.push('deleted ' + d._id); }),
-    call: (c, tag) => c.updateMany({ bench: tag }, { $set: { noise: 1 } })
+    call: (c, tag) => c.updateMany({ bench: tag }, { $set: st({ noise: 1 }) })
   },
   'insert-before-delete': {
-    wrap: (raw, tag, exclude) => proxy(raw, 'deleteMany', async () => { const r = await raw.insertOne({ bench: tag, injected: true }); exclude.push('created ' + r.insertedId); }, null),
+    wrap: (raw, tag, exclude) => proxy(raw, 'deleteMany', async () => { const r = await raw.insertOne(S.created({ bench: tag, injected: true })); exclude.push('created ' + r.insertedId); }, null),
     call: (c, tag) => c.deleteMany({ bench: tag })
   },
   'validated-reject-update': {
     treatments: true, single: true,
-    call: (c, tag, docs) => c.updateOne({ _id: docs[0]._id }, { $set: { targetTop: 130 } })
+    call: (c, tag, docs) => c.updateOne({ _id: docs[0]._id }, { $set: st({ targetTop: 130 }) })
   }
 };
 
@@ -81,13 +86,16 @@ function proxy (raw, method, before, after) {
     const cli = await MongoClient.connect(MONGO + '/' + L.QS);
     const db = cli.db('devent_mn_' + a.name + '_' + run);
     const step = require(path.join(a.tree, 'lib/storage/write-step'));
+    S = L.stamper(a.tree);
+    a.since = L.applySince(step, a.name);
+    for (const c of ['entries', 'treatments']) await db.collection(c).createIndex({ srvModified: 1 });
     for (const [name, k] of Object.entries(CASES)) {
       const agg = { arm: a.name, case: name, calls: 0, exact: 0, inexact: 0, flagged: 0, inexactUnflagged: 0, missed: 0, extra: 0 };
       for (let rep = 0; rep < REPS; rep++) {
         const tag = 'mn-' + run + '-' + name + '-' + rep;
         const raw = db.collection(k.treatments ? 'treatments' : 'entries');
         const seeds = Array.from({ length: k.single ? 1 : 5 }, (_, i) => k.treatments ? tt(tag) : L.entry(tag, L.nextB(1), Object.assign({ identifier: tag + '-' + i }, k.seedExtra ? k.seedExtra(i) : {})));
-        await raw.insertMany(seeds);
+        await raw.insertMany(seeds.map(S.created));
         const docs = await raw.find({ bench: tag }).toArray();
         const exclude = [];
         const bus = new EventEmitter(); const events = [];
