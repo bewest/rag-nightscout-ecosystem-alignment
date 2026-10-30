@@ -18121,10 +18121,10 @@ items:
     title: "BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev@e1f7ac41
-    state: not-started
-    pr: []
+    branch: bf/16.0.0-split-identity
+    base: official/dev@cf3d4b8f
+    state: in-flight-upstream
+    pr: [8878]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/treatmenttime.js splitRecord and its callers in

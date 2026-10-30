@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 193 | 40 | 9 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 193 | 39 | 10 |
 | **Modernization** | `release-train` | 50 | 8 | 2 |
 | **Multitenant** | `tenancy`, `platform` | 87 | 28 | 7 |
-| | **total** | **332** | **76** | **18** |
+| | **total** | **332** | **75** | **19** |
 
 <!-- END GENERATED: horizons -->
 
@@ -186,7 +186,7 @@ cover more than one `BF-`:
 | `BFQ-209` | `merged-upstream` | BF-209 - two identical treatments sent over the socket within 2 s are stored as one, even  |
 | `BFQ-210` | `closed` | BF-210 - a socket treatment without an amount is matched to a stored one that has one (clo |
 | `BFQ-211` | `merged-upstream` | BF-211 - a delete by query in one collection empties all three in-memory caches |
-| `BFQ-212` | `not-started` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can  |
+| `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can  |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -223,7 +223,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 8 |  | 1 |  | 1 |  | 18 | 15 | 2 | 1 |  |  | 4 | **50** |
-| `register-open` | 30 | 3 | 1 | 1 | 3 | 2 | 44 | 58 | 5 |  |  | 5 |  | **152** |
+| `register-open` | 29 | 3 | 1 | 1 | 3 | 3 | 44 | 58 | 5 |  |  | 5 |  | **152** |
 | `tenancy` | 20 | 2 |  | 1 | 12 | 1 | 3 |  | 1 | 4 | 1 |  | 6 | **51** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
