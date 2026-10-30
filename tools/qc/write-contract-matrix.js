@@ -78,6 +78,50 @@
 // them n/a). As before, `cache` is racy; it is more so on cells seeded straight
 // to MongoDB, which the cache learns of only at its next reload. Compare with
 // `cache` set aside before calling a difference there a finding.
+//
+// Forms added 2026-10-29 (QC-MATRIX-IDF), the re-send cells ID-FIRST-MATCH
+// pins. They run last, after the QC-MATRIX-V2 cells, so every earlier cell
+// keeps its order, its timestamps and its result; their ids all start "idf-"
+// (and the settings cells start "settings "), so no earlier id is reused.
+// Every seed carries a seed-only field `wck: 1` that the re-send leaves out,
+// and the re-send carries `wcv: 2`; each new cell adds a `shape` field, one
+// label per stored record of the cell:
+//   merge        the re-send was written and the seed's `wck` is still there
+//   replace      the re-send was written into the seeded record and `wck` is gone
+//   not-written  the seeded record has none of the re-send's fields
+//   new          a record the measured step created
+// `shape` exists on the new cells only, so an earlier cell is unchanged.
+//   idf-<field>-<variant>   seed with one client identity field, then re-send
+//                      with the same value. <field> is identifier, syncIdentifier,
+//                      id, uuid, NSCLIENT_ID, or uuidid (a UUID as the _id, as
+//                      Loop sends overrides). <variant>: same (the same record),
+//                      amt (the same time, another amount), time (the same
+//                      amount, five minutes later). Every path, and across
+//                      paths: "<coll> x <A> x <B> idf-<field>-<variant>" seeds
+//                      through A and re-sends through B, as the cross cells do.
+//   idf-softdel-<plain|identifier>  seed, the path's own soft delete, re-send
+//   idf-harddel-<plain|identifier>  seed, the path's own hard delete, re-send
+//   idf-v3del-<plain|identifier>    seed through the path, API v3 DELETE (soft),
+//                      re-send through the path (v1 entries and devicestatus
+//                      have no soft delete of their own)
+//   idf-split-first / idf-split-second  two records stored straight to MongoDB
+//                      with one identifier (the chart-drag split): A, then B two
+//                      minutes later with another amount; re-send A or B
+//   idf-split-written  A then B written through the path, then A re-sent
+// Settings (API v3 only, its one write path) gets the earlier forms create,
+// resend-identity, update, update-put, softdelete and harddelete plus the
+// idf- forms above, as "settings v3 <form>"; no other path has settings.
+// --uuid-off boots the build with UUID_HANDLING=false (recorded in the result
+// as uuid_handling); run it with --idf-only, which runs only the new cells, and
+// write a separate result file. --no-idf leaves the new cells out.
+// --compare --keys-of-a a.json b.json compares only the cells a.json has, so
+// a run with the new cells compares against an earlier pin.
+// The pin with these forms is results/write-contract-matrix/dev-e1f7ac41-idfirst.json
+// (1929 cells: the 456 of the earlier forms, the 360 of dev-db3b9e4e.json among
+// them unchanged, and 1473 new); dev-e1f7ac41-idfirst-uuidoff.json holds the
+// new cells on entries and treatments with UUID_HANDLING=false (504 cells, ids
+// as in the default run). `cache` stays racy on the new cells too, chiefly on
+// entries cells that cross API v3.
 
 const fs = require('fs');
 const path = require('path');
@@ -89,13 +133,13 @@ const opt = (name, dflt) => { const i = argv.indexOf(name); return i === -1 ? df
 const flag = name => argv.includes(name);
 
 if (flag('--compare')) {
-  const [a, b] = argv.slice(argv.indexOf('--compare') + 1).map(f => JSON.parse(fs.readFileSync(f, 'utf8')));
+  const [a, b] = argv.slice(argv.indexOf('--compare') + 1).filter(f => !f.startsWith('--')).map(f => JSON.parse(fs.readFileSync(f, 'utf8')));
   let n = 0;
-  for (const k of Object.keys(Object.assign({}, a.cells, b.cells))) {
+  for (const k of Object.keys(flag('--keys-of-a') ? a.cells : Object.assign({}, a.cells, b.cells))) {
     const x = JSON.stringify(a.cells[k]); const y = JSON.stringify(b.cells[k]);
     if (x !== y) { n++; console.log(k + '\n  A ' + x + '\n  B ' + y); }
   }
-  console.log('differing cells: ' + n + ' (A ' + a.head + ', B ' + b.head + ')');
+  console.log('differing cells: ' + n + (flag('--keys-of-a') ? ' of ' + Object.keys(a.cells).length + ' in A' : '') + ' (A ' + a.head + ', B ' + b.head + ')');
   process.exit(n === 0 ? 0 : 1);
 }
 
@@ -213,6 +257,7 @@ process.env.AUTH_DEFAULT_ROLES = 'denied';
 process.env.ENABLE = 'careportal api';
 process.env.INSECURE_USE_HTTP = 'true';
 process.env.DISPLAY_UNITS = 'mg/dl';
+if (flag('--uuid-off')) process.env.UUID_HANDLING = 'false'; // QC-MATRIX-IDF run mode (see the header)
 const OUT = opt('--out', null) ? path.resolve(opt('--out', null)) : null; // before the chdir below
 process.chdir(WT);
 
@@ -225,9 +270,19 @@ const dirty = execFileSync('git', ['-C', WT, 'status', '--porcelain', '--', 'lib
 
 const COLLS = (opt('--only', 'entries,treatments,devicestatus,profile,food,activity')).split(',');
 const PATHS = (opt('--paths', 'v1,v3,ws,inproc')).split(',');
-const FORMS = (opt('--forms', 'create,resend-hex,resend-upper,resend-oid,resend-identity,resend-near,legacy-lower,legacy-upper,update,update-put,softdelete,harddelete,update-twin,idread-fail,harddelete-custom,harddelete-num')).split(',');
+// QC-MATRIX-IDF forms: run after the QC-MATRIX-V2 cells (see the header).
+const IDF_FIELDS = ['identifier', 'syncIdentifier', 'id', 'uuid', 'NSCLIENT_ID', 'uuidid'];
+const IDF_VARIANTS = ['same', 'amt', 'time'];
+const IDF_FORMS = [].concat(
+  ...IDF_FIELDS.map(fl => IDF_VARIANTS.map(v => 'idf-' + fl + '-' + v))
+  , ['softdel', 'harddel', 'v3del'].map(d => ['idf-' + d + '-plain', 'idf-' + d + '-identifier']).flat()
+  , ['idf-split-first', 'idf-split-second', 'idf-split-written']);
+const FORMS = (opt('--forms', 'create,resend-hex,resend-upper,resend-oid,resend-identity,resend-near,legacy-lower,legacy-upper,update,update-put,softdelete,harddelete,update-twin,idread-fail,harddelete-custom,harddelete-num'
+  + (flag('--no-idf') ? '' : ',' + IDF_FORMS.join(','))))
+  .split(',');
 // QC-MATRIX-V2 forms: run after the Temporary Target cells (see the header).
 const V2_FORMS = ['update-twin', 'idread-fail', 'harddelete-custom', 'harddelete-num'];
+const IDF_ONLY = flag('--idf-only');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const hex = () => crypto.randomBytes(12).toString('hex');
 const iso = t => new Date(t).toISOString();
@@ -246,6 +301,8 @@ function body (coll, t, cell, extra) {
         , target_high: [{ time: '00:00', value: 120 }], timezone: 'UTC', units: 'mg/dl' } } }
     , food: { type: 'food', category: 'wc', subcategory: 'lab', name: 'wc food', carbs: 10, created_at: iso(t) }
     , activity: { created_at: iso(t), steps: 100 }
+    // QC-MATRIX-IDF: API v3 only
+    , settings: { device: 'wc-lab', settings: { units: 'mg/dl', alarmHigh: 180, alarmLow: 70 } }
   }[coll];
   return Object.assign(base, b, extra || {});
 }
@@ -327,7 +384,7 @@ function body (coll, t, cell, extra) {
   // ---- the paths. Each returns a short reply descriptor.
   const ARRAY_POST = { entries: true, treatments: true, devicestatus: true };
   const V1_PUT = { treatments: true, profile: true, food: true, activity: true };
-  const V3 = { entries: true, treatments: true, devicestatus: true, profile: true, food: true };
+  const V3 = { entries: true, treatments: true, devicestatus: true, profile: true, food: true, settings: true };
   const IN_SAVE = { treatments: true, profile: true, food: true, activity: true };
 
   function replyDesc (r, sentId) {
@@ -425,6 +482,7 @@ function body (coll, t, cell, extra) {
       + (held.some(d => d.isValid === false) ? ' invalid' : '');
   }
   async function v1readOf (c, cell) {
+    if (c === 'settings') return 'n/a'; // QC-MATRIX-IDF: no API v1 settings
     const r = await req('GET', '/api/v1/' + c + '.json?find[wc]=' + encodeURIComponent(cell) + '&count=50');
     const arr = Array.isArray(r.j) ? r.j : null;
     if (!arr) return 'ERR ' + r.s;
@@ -550,18 +608,18 @@ function body (coll, t, cell, extra) {
   }
 
   const TT_ONLY = flag('--tt-only');
-  if (!TT_ONLY) for (const c of COLLS) {
+  if (!TT_ONLY && !IDF_ONLY) for (const c of COLLS) {
     for (const p of PATHS) {
       for (const f of FORMS) {
         if (f === 'update-put' && p !== 'v3') continue;
-        if (V2_FORMS.includes(f)) continue;
+        if (V2_FORMS.includes(f) || IDF_FORMS.includes(f)) continue;
         await cell(c, p, f);
       }
     }
   }
 
   // ---- cross-path: create through A, re-send the same body (no _id) through B
-  if (!flag('--no-cross') && !TT_ONLY) {
+  if (!flag('--no-cross') && !TT_ONLY && !IDF_ONLY) {
     for (const c of COLLS) {
       for (const a of PATHS) for (const b of PATHS) {
         if (a === b) continue;
@@ -581,7 +639,7 @@ function body (coll, t, cell, extra) {
   // ---- Temporary Target cells (see the header). The body is a valid target;
   // `change` is what the measured step sends or applies.
   const TT_FORMS = [];
-  if (COLLS.includes('treatments') && !flag('--no-tt')) {
+  if (COLLS.includes('treatments') && !flag('--no-tt') && !IDF_ONLY) {
     const c = 'treatments';
     const ttBody = (t, cell, extra) => Object.assign({ date: t, utcOffset: 0, app: 'wc-lab', wc: cell, wcv: 1
       , eventType: 'Temporary Target', reason: 'wc-lab', targetBottom: 100, targetTop: 120, units: 'mg/dl', duration: 60
@@ -655,15 +713,165 @@ function body (coll, t, cell, extra) {
   }
 
   // ---- QC-MATRIX-V2 forms (see the header), after every earlier cell
-  if (!TT_ONLY) for (const c of COLLS) for (const p of PATHS) for (const f of FORMS) {
+  if (!TT_ONLY && !IDF_ONLY) for (const c of COLLS) for (const p of PATHS) for (const f of FORMS) {
     if (V2_FORMS.includes(f)) await cell(c, p, f);
+  }
+
+  // ---- QC-MATRIX-IDF forms (see the header), after every earlier cell.
+  // One client identity field and its value. Each value is new per cell, so no
+  // cell can match another cell's record on it.
+  const idfIdent = (field, t) => field === 'uuidid' ? { _id: crypto.randomUUID().toUpperCase() } // Loop override
+    : { [field]: {
+      identifier: crypto.randomUUID() // API v3 clients (AndroidAPS)
+      , syncIdentifier: crypto.randomBytes(16).toString('hex') // Loop
+      , id: crypto.randomUUID().toUpperCase() // Trio
+      , uuid: crypto.randomUUID() // xDrip+
+      , NSCLIENT_ID: String(t) // AndroidAPS NSClient (v1), a millisecond time as a string
+    }[field] };
+  // The re-send's other amount, per collection (variant amt, and record B of a split).
+  function idfAmount (c, t) {
+    if (c === 'entries') return { sgv: 100 + (t % 50) + 7 };
+    if (c === 'treatments') return { carbs: 20 };
+    if (c === 'devicestatus') return { uploaderBattery: 70 };
+    if (c === 'profile') { const s = body(c, t).store; s.Default.dia = 4; return { store: s }; }
+    if (c === 'food') return { carbs: 15 };
+    if (c === 'activity') return { steps: 150 };
+    return { settings: { units: 'mg/dl', alarmHigh: 200, alarmLow: 70 } };
+  }
+  // One label per stored record (see the header). `before` is the cell's records
+  // just before the measured step.
+  function shapeDesc (before, after) {
+    if (!after.length) return 'none';
+    return after.map(d => {
+      const seeded = before.some(b => String(b._id) === String(d._id) && typeof b._id === typeof d._id);
+      const sent = d.wcv === 2;
+      if (d.wck === 1) return sent ? 'merge' : 'not-written';
+      if (seeded) return sent ? 'replace' : 'other';
+      return sent ? 'new' : 'other';
+    }).join(',');
+  }
+  // The measured step and every observation an earlier cell records, plus shape.
+  async function idfMeasure (key, c, cellId, out, measured) {
+    const before = await docsOf(c, cellId);
+    const cursor = await cursorOf(c);
+    events = []; wire = [];
+    const st = await measured();
+    if (st === null) { cells[key] = { st: 'n/a' }; return; }
+    await sleep(250);
+    const evs = events.slice(); events = [];
+    const wired = wire.slice(); wire = [];
+    // Seeded records first, in their order, then the records the step created:
+    // an _id made by mongod (an upsert's insert) and one made by the driver in
+    // the same second sort by each process's random bytes, so _id order is racy.
+    const was = d => before.findIndex(b => String(b._id) === String(d._id) && typeof b._id === typeof d._id);
+    const after = (await docsOf(c, cellId)).map((d, i) => [was(d), i, d])
+      .sort((x, y) => (x[0] === -1 ? 1e9 : x[0]) - (y[0] === -1 ? 1e9 : y[0]) || x[1] - y[1]).map(x => x[2]);
+    out.st = st;
+    out.store = storeDesc(after);
+    out.shape = shapeDesc(before, after);
+    out.srv = srvDesc(before, after);
+    out.hist = await histOf(c, cellId, cursor);
+    out.ev = evDesc(evs);
+    out.wire = wired.length ? wired.join(',') : 'none';
+    out.cache = cacheOf(c, cellId);
+    out.v1read = await v1readOf(c, cellId);
+    if (!(await alive())) { cells[key] = { st: 'INVALID liveness after' }; return; }
+    cells[key] = out;
+  }
+  const idfTarget = async (c, cellId) => {
+    const d = (await docsOf(c, cellId)).slice(-1)[0];
+    if (!d) return null;
+    const plain = Object.assign({}, d, { _id: d._id instanceof ObjectId ? d._id.toHexString() : d._id });
+    return { doc: plain, ident: d.identifier || plain._id };
+  };
+  // Seed through path a, re-send through path b (a === b for a same-path cell).
+  async function idfCell (c, a, b, f) {
+    const key = a === b ? c + ' ' + a + ' ' + f : c + ' x ' + a + ' x ' + b + ' ' + f;
+    const cellId = 'wc-idf' + seq + '-' + crypto.randomBytes(3).toString('hex');
+    const t = nextT();
+    const out = {};
+    if (!(await alive())) { cells[key] = { st: 'INVALID liveness before' }; return; }
+    const m = /^idf-(.+)-(same|amt|time|plain|identifier|first|second|written)$/.exec(f);
+    const kind = m[1]; const v = m[2];
+    let measured;
+    if (IDF_FIELDS.includes(kind)) {
+      // one identity field, seeded with wck, re-sent with wcv 2
+      const fixed = idfIdent(kind, t);
+      const mk = extra => body(c, v === 'time' && extra.wcv ? t + 300000 : t, cellId
+        , Object.assign({}, fixed, extra, v === 'amt' && extra.wcv ? idfAmount(c, t) : {}));
+      out.seed = await P[a].create(c, mk({ wck: 1 })); await sleep(80);
+      if (out.seed === null) { cells[key] = { st: 'n/a' }; return; }
+      measured = () => P[b].create(c, mk({ wcv: 2 }));
+    } else if (kind === 'softdel' || kind === 'harddel' || kind === 'v3del') {
+      const fixed = v === 'identifier' ? idfIdent('identifier', t) : {};
+      const mk = extra => body(c, t, cellId, Object.assign({}, fixed, extra));
+      out.seed = await P[a].create(c, mk({ wck: 1 })); await sleep(80);
+      if (out.seed === null) { cells[key] = { st: 'n/a' }; return; }
+      const tg = await idfTarget(c, cellId);
+      if (!tg) { cells[key] = { st: 'n/a (seed not stored: ' + out.seed + ')' }; return; }
+      const del = kind === 'v3del' ? (V3[c] ? P.v3.softdelete : null) : P[a][kind === 'softdel' ? 'softdelete' : 'harddelete'];
+      const dr = del ? await del(c, tg.doc, tg.ident) : null;
+      if (dr === null) { cells[key] = { st: 'n/a' }; return; }
+      out.del = dr; await sleep(80);
+      measured = () => P[b].create(c, mk({ wcv: 2 }));
+    } else if (kind === 'split') {
+      // A at t, B two minutes later with another amount, one identifier
+      const fixed = idfIdent('identifier', t);
+      const tB = t + 120000;
+      const mkA = extra => body(c, t, cellId, Object.assign({}, fixed, extra));
+      const mkB = extra => body(c, tB, cellId, Object.assign({}, fixed, idfAmount(c, t), extra));
+      if (v === 'written') {
+        const ra = await P[a].create(c, mkA({ wck: 1 })); await sleep(80);
+        if (ra === null) { cells[key] = { st: 'n/a' }; return; }
+        const rb = await P[a].create(c, mkB({ wck: 1 })); await sleep(80);
+        out.seed = ra + '; ' + rb;
+      } else {
+        if (P[a].create === undefined || (a === 'v3' && !V3[c])) { cells[key] = { st: 'n/a' }; return; }
+        // server dates from the clock, as a write now would stamp them: the
+        // record's own time can be in the future late in a run, and a future
+        // srvModified would put every later history cursor past every write
+        const stored = (tt, d) => { const now = Date.now(); return Object.assign(d, { _id: new ObjectId(), srvCreated: now, srvModified: now }
+          , c === 'entries' ? { sysTime: iso(tt) } : {}); };
+        await col(c).insertOne(stored(t, mkA({ wck: 1 })));
+        await col(c).insertOne(stored(tB, mkB({ wck: 1 })));
+        out.seed = 'mongo OID,OID';
+      }
+      measured = () => P[b].create(c, v === 'second' ? mkB({ wcv: 2 }) : mkA({ wcv: 2 }));
+    }
+    await idfMeasure(key, c, cellId, out, measured);
+  }
+
+  const IDF_COLLS = opt('--only', null) ? COLLS : COLLS.concat(['settings']);
+  if (!TT_ONLY && !flag('--no-idf')) {
+    for (const c of IDF_COLLS) {
+      const paths = c === 'settings' ? PATHS.filter(p => p === 'v3') : PATHS;
+      // settings: the earlier forms, through the generic cell
+      if (c === 'settings') for (const f of ['create', 'resend-identity', 'update', 'update-put', 'softdelete', 'harddelete']) {
+        if (paths.includes('v3') && FORMS.includes(f)) await cell(c, 'v3', f);
+      }
+      for (const p of paths) for (const f of FORMS) if (IDF_FORMS.includes(f)) await idfCell(c, p, p, f);
+    }
+    // across paths: the identity forms only
+    if (!flag('--no-cross')) for (const c of IDF_COLLS) {
+      if (c === 'settings') continue;
+      for (const a of PATHS) for (const b of PATHS) {
+        if (a === b) continue;
+        if ((a === 'v3' || b === 'v3') && !V3[c]) continue;
+        for (const f of FORMS) {
+          if (!IDF_FORMS.includes(f) || !IDF_FIELDS.includes(f.split('-')[1]) || f.endsWith('-amt')) continue;
+          await idfCell(c, a, b, f);
+        }
+      }
+    }
   }
 
   const result = {
     head, dirty_lib: dirty || '', node: process.version, mongod: serverVersion, db: DBNAME
     , write_validation: env.writeValidation === undefined ? '(not read by this build)' : env.writeValidation
     , date: new Date().toISOString(), collections: COLLS, paths: PATHS
-    , forms: TT_ONLY ? TT_FORMS : FORMS.filter(f => !V2_FORMS.includes(f)).concat(TT_FORMS, FORMS.filter(f => V2_FORMS.includes(f))), cells
+    , forms: TT_ONLY ? TT_FORMS : IDF_ONLY ? FORMS.filter(f => IDF_FORMS.includes(f))
+      : FORMS.filter(f => !V2_FORMS.includes(f) && !IDF_FORMS.includes(f)).concat(TT_FORMS, FORMS.filter(f => V2_FORMS.includes(f)), FORMS.filter(f => IDF_FORMS.includes(f)))
+    , idf_collections: IDF_COLLS, uuid_handling: env.uuidHandling, cells
   };
   if (OUT) fs.writeFileSync(OUT, JSON.stringify(result, null, 1));
   else console.log(JSON.stringify(result, null, 1));
