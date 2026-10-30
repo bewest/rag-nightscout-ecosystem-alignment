@@ -58,7 +58,7 @@ through the entry bar before the tag, directly after `write(intent)`; ID-FIRST-M
 | 2a | **merged 2026-10-30 (`d51c7a60`)**: #8878, BF-212 first part: the chart split stops copying identity fields | low; changes only what the moved half of a chart drag carries | the unit test (red on dev) and the reproduction probe; the re-upload double count remains |
 | 3 | BF-211, per-collection cache flush (joins #8877) | low; changes only which caches a delete by query empties | the red/green control from `tools/lab/cache-value`; v1 deletes by query and API v3 auto-prune |
 | 3a | #8855, Crowdin | low | none beyond the usual |
-| 3b | BF-213, BF-214, BF-217 (`bf/16.0.0-alarm-display` `0e5c25be`): a missed URGENT pump alarm, a pump-plugin crash that hides every pump alarm, a device-status cache gap; BF-213 alarms at Loop's severity (maintainer, 2026-10-30) | Loop users with pump alerts get new pump alarms | each fix red then green; the release-notes line |
+| 3b | **merged 2026-10-30 (`305a6533`, #8880)**: BF-213, BF-214, BF-217: a missed URGENT pump alarm, a pump-plugin crash that hides every pump alarm, a device-status cache gap; BF-213 alarms at Loop's severity (maintainer, 2026-10-30) | Loop users with pump alerts get new pump alarms | each fix red then green; the release-notes line |
 | 4 | BF-72 and BF-161 fork branches | security fixes held outside the public PR list until release ([register](../remedial/nightscout-backfix-register.md)) | brought up to `dev` and merged before the tag |
 | 5 | #8824, dev to master | blocked by master protection, which requires `Run Tests (22, 6)`, `(22, 4.4)` and `(24, 6)` plus one approving review | fix the required check, then merge and tag |
 
