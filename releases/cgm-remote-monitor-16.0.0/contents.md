@@ -8,6 +8,12 @@ Measured 2026-10-26 (to 19:10Z) against `official/dev` `47723cda` (the merge of 
 `gh api` for PR, CI and branch-protection state. Updated at 22:13Z for `dev` `7ad3a67f` (#8854 `c08cbe03`,
 then #8084), and on 2026-10-27 for `dev` `8dbb60c2` (#8860): the Identity rows for `dev`, the merge list,
 #8854, #8860, the in-flight rows and the CI on `8dbb60c2`; the other figures are still those of `47723cda`.
+Updated on 2026-10-28 for `dev` `e1f7ac41` (#8873), and on 2026-10-30 for `dev` `991b0654` (#8865, 02:04:14Z):
+the Identity rows for `dev`, the merge list (#8877, #8878, #8865), the in-flight rows for the 16.0.0 scope
+the maintainer set on 2026-10-30, Known defects (BF-209, BF-211, BF-212) and the open items; read with
+`gh pr view`, `gh run list --commit` and `gh api` at about 02:30Z, and counted in
+`externals/cgm-remote-monitor-official` after `git fetch official`. The Version section and the other
+figures are still those of `47723cda`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*; this file
 > records what the release is made of so far, how each figure was measured, and what is unsettled.
@@ -26,10 +32,11 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Tag to be cut | `v16.0.0` and `16.0.0`, both forms, as for `15.0.7` to `15.0.9` |
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `c6a0d8ed` = `v15.0.9` (released 2026-10-21) |
-| `dev` head | `eed31dca` (merge of #8856, 2026-10-27 20:09:35Z, by bewest), tree `584623cf`; the merges before it that day: #8868 `88676086` (20:01:50Z), #8859 `94899828` (19:52:21Z), #8866 `b84871d7` (19:42:55Z), #8864 `2dc0c1bc` (16:55:01Z, AndyLow91) and #8860 `8dbb60c2` (00:07:13Z, AndyLow91) |
-| Commits on `dev` | 921 — `git rev-list --count official/master..official/dev` (529 without merges, `--no-merges`); 890 at `8dbb60c2`, 882 at `7ad3a67f` |
-| First-parent commits on `dev` | 43 — `git rev-list --first-parent --count official/master..official/dev`: 42 PR merges and the cycle's version bump `04d435eb` |
-| Diff on `dev` | 871 files, +131070/−15204 — `git diff --shortstat official/master official/dev`; 855 files, +127983/−15090 at `8dbb60c2` |
+| `dev` head | `991b0654` (merge of #8865, 2026-10-30 02:04:14Z, by bewest), tree `a9ae9536`; the merges before it: #8878 `d51c7a60` (2026-10-30 01:48:51Z), #8877 `cf3d4b8f` (2026-10-30 00:50:49Z), #8873 `e1f7ac41` (2026-10-28 05:20:32Z), and on 2026-10-27 after #8856: #8872 `db3b9e4e`, #8871 `dcf20bfb`, #8858 `ca1652d6`, #8869 `b8baf24d`, #8870 `7abe1cf6`, #8863 `9668b179`, #8861 `84fac457` (`git log --first-parent eed31dca..official/dev`) |
+| `dev` head on 2026-10-27 | `eed31dca` (merge of #8856, 2026-10-27 20:09:35Z, by bewest), tree `584623cf`; the merges before it that day: #8868 `88676086` (20:01:50Z), #8859 `94899828` (19:52:21Z), #8866 `b84871d7` (19:42:55Z), #8864 `2dc0c1bc` (16:55:01Z, AndyLow91) and #8860 `8dbb60c2` (00:07:13Z, AndyLow91) |
+| Commits on `dev` | 999 at `991b0654` — `git rev-list --count official/master..official/dev` (576 without merges, `--no-merges`); 921 at `eed31dca` (529 without merges), 890 at `8dbb60c2`, 882 at `7ad3a67f` |
+| First-parent commits on `dev` | 54 at `991b0654` — `git rev-list --first-parent --count official/master..official/dev`: 53 PR merges and the cycle's version bump `04d435eb`; 43 at `eed31dca` |
+| Diff on `dev` | 947 files, +144414/−18833 at `991b0654` — `git diff --shortstat official/master official/dev`; 871 files, +131070/−15204 at `eed31dca`; 855 files, +127983/−15090 at `8dbb60c2`. Since `e1f7ac41`: 62 files, +3815/−213 |
 | Merged on 2026-10-26 | 17 PRs, from `b29f1bf7` to `7ad3a67f`: 611 files, +86276/−3996 — `git diff --shortstat b29f1bf7 official/dev`; the thirteen after `207a8352`: `git rev-list --first-parent --count 207a8352..official/dev` = 13 |
 | `package.json` version | `16.0.0` — `git show official/dev:package.json \| grep '"version"'` |
 | `engines.node` | `^22.23.4 \|\| ^24.22.1 \|\| >=26.12.1` (AndyLow91's `6a146a4c`, "require Node Brotli security patches"; supersedes the decided `^22.12 \|\| >=24`) |
@@ -37,7 +44,9 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Connector pin | `nightscout-connect` exactly `0.1.0`, as in 15.0.9 (`git show official/dev:package.json`) |
 | MongoDB | driver `mongodb` `^7.6.0` (cut 3); the README states 5.0 through 8.0 as supported and 4.4 and earlier as unsupported (`README.md:157-158` on `dev`); driver 7 starts on 4.4 and refuses 3.6, 4.0 and 4.2, which get the boot error page (BF-182; decisions). Docker Compose starts `mongo:6.0.27` (`docker-compose.yml:12`; 15.0.9: `mongo:5.0.32`) |
 | Web framework | `express` `^5.2.1`, `helmet` `^8.3.0` (cut 5; `package.json` on `dev`); 15.0.9 locks `express` 4.22.2 |
-| Staging PR | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `eed31dca` (`MERGEABLE`, `BLOCKED`, `REVIEW_REQUIRED`, read 2026-10-27 20:25Z); `master`'s required checks are still `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)`, and `dev`'s CI no longer runs `Run Tests (22, 4.4)`, so the maintainer's settings change is still owed |
+| Staging PR, 2026-10-30 | #8824: open, head `991b0654` (`MERGEABLE`, `BLOCKED`, `REVIEW_REQUIRED`, read 2026-10-30 about 02:30Z). `master`'s protection is unchanged: required checks `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` and one approving review (`gh api repos/nightscout/cgm-remote-monitor/branches/master/protection`), so #8824 still cannot meet it; the decided change to require only *Tests pass* is still owed ([Open items](#open-items-a-releaser-must-settle)) |
+| CI on the 2026-10-28 to 2026-10-30 merges | `e1f7ac41`, `cf3d4b8f`, `d51c7a60` and `991b0654`: the `push` and `pull_request` runs of *CI test and publish Docker image* and CodeQL passed on each (`991b0654`: push 40989520549, `pull_request` 40989526434; `d51c7a60`: 40988048798, 40988055182; `cf3d4b8f`: 40982235609, 40982243569; `e1f7ac41`: 40637431538, 40637440405) — `gh run list --commit <sha>`; job lists and image tags not read |
+| Staging PR, 2026-10-27 | #8824 (`dev` → `master`, "new dev branch post 15.0.9 release"): open, head `eed31dca` (`MERGEABLE`, `BLOCKED`, `REVIEW_REQUIRED`, read 2026-10-27 20:25Z); `master`'s required checks are still `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)`, and `dev`'s CI no longer runs `Run Tests (22, 4.4)`, so the maintainer's settings change is still owed |
 | CI on the 2026-10-27 merges | `eed31dca`, `88676086` and `94899828`: `push` passed and published `dev_<sha>` and `latest_dev` with no per-architecture tags (#8866's by-digest publishing; Docker Hub 20:20Z, 20:14Z, 20:02Z); `88676086`'s `pull_request` run was cancelled by the next push. `b84871d7` (#8866): `push` run 40571593504 failed *Browser tests (26, webkit)* on the cached-bundle startup test again, so it published nothing (`RT-CI-WEBKIT-REPORTS`); its `pull_request` run passed. The MongoDB 8.0 jobs run on `ubuntu-22.04` since `f6884342` (BF-202) |
 | CI on `8dbb60c2` | **red.** `push` run 40424319822: *Browser tests (26, webkit)* (658 passing, 1 failing: "Complete page template startup boots every page from cached bundles and retires the old cache on upgrade", `Uncaught browser errors`, fifteen report-page `entries.json`/`treatments.json` requests "due to access control checks") and *Run Tests (26, 5.0)* (`tests/concurrent-writes.test.js` "all documents have unique _id after concurrent inserts", expected 10, got 9) failed, so *Tests pass* failed and no image was published; `pull_request` run 40424329138: the same WebKit test failed, every other job passed (*Validate Docker image* amd64 and arm64 passed); CodeQL passed on both events (40424319787, 40424329177). #8860's own run 40422840113 on `ad593fce`, the identical tree, passed every job at 23:55Z, before UTC midnight; the merge runs started after 00:07Z. See [Known defects](#known-defects-on-dev-now) — `gh run view <id> --json jobs`, `--log-failed` |
 | CI on `7ad3a67f` | `push` run 40410737772 passed every job and published (*Validate Docker image* skipped by design); `pull_request` run 40410745675 and CodeQL (40410737784, 40410745580) passed; on `c08cbe03`, push 40403541566 and `pull_request` 40403553936 passed — `gh run list --commit`, `gh run view <id> --json jobs` |
@@ -57,7 +66,8 @@ bodies (see the integration record). No live site, vendor account or Docker imag
 Merge SHAs: `git log --first-parent --format='%h %ad %an %s' --date=iso official/master..official/dev`;
 merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges below were made on
 2026-10-25 (#8834, #8835 and #8838 by bewest, the others by AndyLow91), seventeen on 2026-10-26
-(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and on 2026-10-27 #8860 and #8864 by AndyLow91, then #8866, #8859, #8868, #8856, #8861, #8863, #8870, #8869 and #8858 by bewest. Register ids refer to the
+(#8843, #8848 and #8850 by bewest, the others by AndyLow91) and on 2026-10-27 #8860 and #8864 by AndyLow91, then #8866, #8859, #8868, #8856, #8861, #8863, #8870, #8869 and #8858 by bewest; later #8871, #8872, #8873 (2026-10-28) and, on
+2026-10-30, #8877, #8878 and #8865, all by bewest. Register ids refer to the
 [backfix register](../../docs/30-design/remedial/nightscout-backfix-register.md).
 
 | PR | merged (UTC) | merge | head | author | register | queue | what |
@@ -112,6 +122,9 @@ merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges belo
 | #8871 | 10-27 22:51:12 | `dcf20bfb` | `57f1d37c` | bewest | BF-203 | `BFQ-203` | tooling: a `jsconfig.json` scoped by `exclude`, so an editor stops watching sibling worktrees (1 file, +8) |
 | #8872 | 10-27 23:45:05 | `db3b9e4e` | `355b4f14` | bewest | BF-194 | `BFQ-194` | a Temporary Target is stored in mg/dL labelled `mg/dl` on API v1, API v3 and the socket (11 files, +742/−43); owes a release-note line |
 | #8873 | 10-28 05:20:32 | `e1f7ac41` | `1c50c29a` | bewest | BF-204, BF-205, BF-206, BF-207 | `BFQ-204`..`BFQ-207` | the data-snapshot route answers a past time from its own query; same-time records ordered by `_id`; an undated device IOB takes its status's time (the AAPS IOB pill golden regenerated); sensor age keeps the newest start within an hour (built by session -65) |
+| #8877 | 10-30 00:50:49 | `cf3d4b8f` | `ac5d77fb` | bewest | BF-209, BF-211 | `BFQ-209`, `BFQ-211` | the socket's ±2 s similar treatment match follows client identity: when the write carries `identifier`, the same one is one record and a different one a second record; the exact match is unchanged (BF-209). A delete by query flushes only the cache of the collection it deleted from (BF-211). BF-210 was withdrawn from it before merge as not a defect (maintainer, 2026-10-29) (8 files, +1219/−20) |
+| #8878 | 10-30 01:48:51 | `d51c7a60` | `57f333b4` | bewest | BF-212 (first part) | `BFQ-212` | the chart's "Move insulin" and "Move carbs" split no longer copies `syncIdentifier`, `id`, `uuid` or `identifier` onto the moved half (2 files, +21/−4); the rest of BF-212 is open ([Known defects](#known-defects-on-dev-now)) |
+| #8865 | 10-30 02:04:14 | `991b0654` | `1b2801f7` | bewest | — | `PLAT-SERVE`, `PLAT-ENTRY` | one executable `nightscout`: the image's `CMD ["nightscout", "single"]`, SIGTERM and SIGINT shutdown on every start path, the healthcheck command, boot profiles, API v3 without API v1's modules, the socket and the cache (ST-V3-DECOUPLE), and `serve` reserved for a multitenant Nightscout (53 files, +2575/−189); supersedes #8862 |
 
 Before merging, AndyLow91 merged `dev` into most branches and added commits of his own (read with
 `git log` and `git show`):
@@ -275,6 +288,27 @@ advisable. It adds the Nightscout Reporter licence notices (`docs/third-party/`)
 `docs/test-specs/glucose-pentagon.md`. The PR's CI on `ad593fce` passed every job; the merge's did not
 ([Identity](#identity), CI on `8dbb60c2`).
 
+**The 2026-10-30 merges** (read from the [register](../../docs/30-design/remedial/nightscout-backfix-register.md)
+and the [next-gen plan](../../docs/30-design/platform/next-gen-platform-plan.md) §1a; the runs are the
+preparing sessions'):
+
+- **#8877**: BF-209's scope was decided 2026-10-29: in the similar match only, `identifier` decides when
+  present, because applying the legacy client-id rule as it is would make an `identifier`-only re-send a
+  duplicate; recognising `identifier` at any time waits for ID-FIRST-MATCH. `567f0612` restores the amount
+  rule with pins (a carbs-only re-send next to a stored carbs-and-insulin record stays one record) and
+  `ac5d77fb` is BF-211. `npm test` 4858 passing, 0 failing, 3 pending; the write-contract matrix against `dev`
+  moves `treatments × v3 × ws` as intended, and session -4f's dedupe gate (58 tests, ablations red) measured
+  it. Changes which socket treatment uploads are stored as separate records; the plan asks an AndroidAPS
+  3.4.2.x v1 cohort to check carbs and boluses.
+- **#8878**: `splitRecord` (`lib/client/treatmenttime.js`) drops the four client identity fields beside `_id`
+  and `NSCLIENT_ID`; a unit test that is red on `dev` before it; `npm test` 4858 → 4859 passing, 0 failing,
+  3 pending; the reproduction probe finds one record per identity. A 16.0.0 backfix by the maintainer's
+  ID-Q5 decision (2026-10-29).
+- **#8865**: the start forms were measured on images in `tools/lab/image-start-forms` (B8 in the
+  [release allocation](../../docs/30-design/platform/release-allocation-2026-10-27.md)): every `docker run`
+  form that started a server on `dev` starts the same one; `docker stop` takes 0.13 s and exits 0 instead
+  of 10.1 s and 137. `serve` refuses every role until one is multitenant.
+
 None of these merged trees was re-run locally by this programme, except the client replay on `7ad3a67f`
 (R16). The merged trees' CI is in
 [Identity](#identity) and the integration record (R13, R14).
@@ -292,6 +326,11 @@ None of these merged trees was re-run locally by this programme, except the clie
 - **#8823 merged twice, without duplicated code** (reproduced on `eb72a1d3`): one
   `bridgeServerToConnect`, in `lib/server/bridge-connect-compat.js`; the duplicated test block was
   removed by #8838 (`879ab51e`).
+- **The 2026-10-30 heads are on `dev`, not on `master`** (reproduced 2026-10-30 with
+  `git merge-base --is-ancestor`: exit 0 against `official/dev`, 1 against `official/master`): #8877
+  `ac5d77fb`, #8878 `57f333b4`, #8865 `1b2801f7`. #8874's head `4f9fc4cd` is 0 commits behind `dev`
+  `991b0654` (`gh api repos/nightscout/cgm-remote-monitor/compare/dev...4f9fc4cd`: `behind_by` 0,
+  `ahead_by` 20).
 
 ## Version: 16.0.0, major
 
@@ -349,7 +388,37 @@ runtime Docker image.
 
 ## In flight for this release
 
-Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161, the CI test fixes, #8864 and the next-gen drafts on 2026-10-27. Every cut is merged
+**The 16.0.0 scope, decided by the maintainer on 2026-10-30** ([decisions](decisions.md); next-gen plan §1):
+16.0.0 targets every single-tenant item of the [next-gen plan](../../docs/30-design/platform/next-gen-platform-plan.md),
+through the entry bar and in priority order. An item joins the merge list when its matrix result is as stated
+(0 cells, or named cells), its red controls and ablations pass, a revert has been rehearsed, and it has had time
+on `dev` with its cohort check (entry bar, 2026-10-29). An item that misses the bar at the tag rolls to 16.1.0,
+or to 17.0.0 if it changes a default. The identity work is the core: it is the substance of the agreement with
+the Loop maintainers. Multitenant items may ship dormant, labelled alpha behind `serve`, or not ship. The tag
+is gated by the bar and the pre-tag items, not by a date.
+
+In flight on 2026-10-30 (read about 02:30Z with `gh pr view` and `gh api .../compare`; work not yet in a PR
+is read from the plan, the [ID-FIRST-MATCH design note](../../docs/30-design/platform/id-first-match-design-note-2026-10-29.md)
+and the queue):
+
+| work | branch or PR | head | state | queue |
+|---|---|---|---|---|
+| `write(intent)` release 1: every v1, API v3 and socket write path through one write step, no behaviour change except BF-165's `_id` in the fallback-key re-send reply | `feat/write-intent`, **draft #8874** (base `dev`, opened by the maintainer 2026-10-28) | `4f9fc4cd` (2026-10-30 02:06Z, a merge of `dev` `991b0654`): 20 commits, 27 files, +7187/−1531 against `dev`; 0 behind `dev` | slices 1–6 built; slices 4 (API v3) and 6 (socket treatments, devicestatus, profile) released by the maintainer 2026-10-29, slice 6 with its extra dedupe gate. On the push-ready head `e8224807` (17 commits on `dev` `e1f7ac41`, 2026-10-29): the write-contract matrix differs from `dev` in 0 cells, the revert was rehearsed, `npm test` 5106/0/3 against `dev`'s 4759/0/3 (read from the queue). CI on `4f9fc4cd`: `pull_request` run 40990198561 and CodeQL passed. First in the entry-bar order; not yet through the bar (time on `dev` and its cohort check) | `WC-STEP-PATCH` |
+| ID-FIRST-MATCH: identifier-first on every collection and path, as slices in the order 1 (no outcome change, with the two additive items), 2 (identifier format), 5 (shared identifiers, BF-212's pick), 3 (stays deleted), 4 (merge on match), 6 (identifier first where it is new), 6a (activity) | not started; design note 2026-10-29 | — | the rules are decided (D-LOOP-ID rules 1–3, ID-Q1..ID-Q11, 2026-10-29); each slice goes to the bar on its own. Slice 1 moves 0 of 1,929 matrix cells; slices 3 to 6a change outcomes (40, 232, 112 and 33 cells, read from the design note's predictions) | `ID-FIRST-MATCH`, `ID-VALIDATE` |
+| the `WRITE_*` settings: `WRITE_RESEND=merge\|acknowledge\|refuse`, `WRITE_IDENTIFIER=lenient\|strict`, `WRITE_DELETED_EDIT=ignore\|refuse`, `WRITE_IDENTIFIER_INDEX=try\|require\|off`; default first in each | not started | — | names confirmed by the maintainer 2026-10-29 (the first three) and 2026-10-30 (the index). With `WRITE_VALIDATION`, parsed by one module and read once; an unknown value refuses to start. Per-client D20 quirks may select a `WRITE_RESEND` mode for one registered client | `ID-RESEND-SWITCH`, `ID-VALIDATE`, `ID-FIRST-MATCH`, `ID-UNIQUE-INDEX` |
+| ID-UNIQUE-INDEX: a partial unique index on `identifier` per collection, with the try, require and off modes, and an operator-run report and clean tool (P4 pick) | not started | — | in 16.0.0 scope through the bar (maintainer, 2026-10-30); moved from 17.0.0. Under `try` (the default) boot builds the index online; on existing duplicates it logs the counts per collection (never the values), shows them on the status page and runs without it, while the ID-Q5 write rule still refuses a second record with a stored identifier. `require` refuses to start without the index; `off` skips it | `ID-UNIQUE-INDEX` |
+| ID-BATCH: per-item results in v1 batch replies | not started | — | eligible through the bar (2026-10-29), after `write(intent)` | `ID-BATCH-RESULTS` |
+| the re-send switch (D-LOOP-ID rule 3): a site setting plus per-client D20 quirks that opt a client into keep-first or refuse | not started | — | eligible through the bar (2026-10-29); off by default, merge on match stays the default | `ID-RESEND-SWITCH` |
+| SPEC-ID-AMEND: the identity specification and conformance cases (mandatory identifier on registered instances; API v3's refusal of a client `_id`) | alignment repository | — | spec and conformance only; no site behaviour (plan item) | — |
+| controller registration S0, S1, S2, S5, off by default | **draft #8857** | `f7a43fed` (last updated 2026-10-27): 109 commits behind `dev`, 12 ahead (`gh api .../compare/dev...f7a43fed`); `mergeable` reads `UNKNOWN` | needs a rebase onto `dev`, with conflicts reported in the plan; D-REG-FLAG (where the catalogue lives) is open | `HUB-REG-CRM` |
+| ST-HARNESS: a backend-selectable test harness | not started | — | plan item, after `write(intent)` | — |
+| ST-EVENT and ST-VIEWS, if they clear the bar | ST-VIEWS: **draft #8875** (`a0470a72`, not wired in) | — | ST-EVENT: D-EVENT deferred 2026-10-27, research continuing. ST-VIEWS: wiring is the maintainer's call, with alarm cohort checks; the alarms are safety-relevant | — |
+| multitenant items (tenant configuration, resolution, tenant-scoped credentials, PostgreSQL) | — | — | optional for 16.0.0: they may ship dormant, labelled alpha behind `serve` (which refuses every role today), or not ship | — |
+| BF-72 and BF-161 through their advisory forks | the rows below | `a9da33ff`, `1dce7722` (pushed 2026-10-27) | both contain `dev` `7abe1cf6`; `dev` has moved eight PR merges past it (#8869 to #8865), so a merge of `dev` and a re-run inside each fork is owed before the tag | `BFQ-72`, `BFQ-161` |
+| Crowdin translations | `crowdin_incoming`, **#8855** (sulkaharo) | `6a2e84ab` (updated 2026-10-29 20:31Z): 33 files, +1448/−491 | open; `mergeable` reads `UNKNOWN`; not examined; §1a row 3a, low risk | — |
+| `master` protection and the staging PR #8824 | repository settings | #8824 at `991b0654` | `master` still requires `Run Tests (22, 4.4)`, which no workflow on `dev` emits; the decided change (only *Tests pass* and one approval) is owed, then #8824 merges and the tag is cut | `RT-16-RELEASE` |
+
+*Rows as recorded to 2026-10-28* (read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161, the CI test fixes, #8864 and the next-gen drafts on 2026-10-27). Every cut is merged
 ([Merge state](#merge-state)); #8854 is merged ([What is merged so far](#what-is-merged-so-far)).
 
 | work | branch | head | state | queue |
@@ -364,7 +433,7 @@ Read 2026-10-26, 19:10Z; #8854, #8856 and #8859 updated at 22:13Z; BF-72, BF-161
 | the re-send and merge contract: `ID-SIMPLE-MATCH`, Q1b (a `null` in an update removes the field), BF-195 (a stale profile pushed over the socket after a re-send) and the devicestatus `identifier` rule, one PR | `bf/16.0.0-null-removes`, **draft #8859** (the maintainer, base `dev`) | `5c6ceabb`: five commits on `dev` `47723cda` and a merge of `dev` `7ad3a67f`: `ID-SIMPLE-MATCH` `8d0f9a22`, Q1b `913d0895`, BF-195 `1bdce62c`, merge `cf2a2a67`, the devicestatus `identifier` rule `fc170a4c` (read from `git log`) | **merged 2026-10-27 19:52:21Z by bewest as `dev` `94899828`** (head `87f1aeb8`, `dev` merged in; `gh pr view 8859`) | `ID-SIMPLE-MATCH`, `WRITE-CONTRACT`, `BFQ-195` |
 | the IOB pill switching to the treatment-based value during a reconnect | AndyLow91's branch, **#8864** (base `dev`) | `4ed92673`: `lib/data/ddata.js` and a new `tests/data.reconnect-snapshot.test.js` | **merged 2026-10-27 16:55Z by AndyLow91 as `dev` `2dc0c1bc`** (`gh pr view 8864`); opened 13:02Z; read from the PR body, not run here: the socket's reconnect payload is read from the live `ddata` the loader is rebuilding, so a reconnect during a refresh can carry no device statuses and the pill falls back for that moment; the fix reads from the completed snapshot. The PR reports three new tests failing on the unmodified base, and 4 sensor-age failures under `TZ=Europe/London` that it reproduces on the base too. Display of a dosing-relevant value (cycle priority 2) | — |
 | next-gen drafts: storage slices, one executable, `serve api`, registration | *Current 2026-10-28 01:15Z:* #8861 **merged** (`84fac457`) and #8863 **merged** (`9668b179`), both 2026-10-27; #8862 **closed** 2026-10-28 01:12Z as superseded by #8865; #8865 open, base `dev`, head `53ba192a`, on the 16.0.0 merge list (its own row below); #8857 open, draft, `f7a43fed`. *As first recorded:* #8861 (`5310a447`, draft), #8863 (`42128f3b`, on #8861, ready for review, pushed 2026-10-27), #8862 (`b63d9b7f`), #8865 (`1dafe2a5`, on #8863), #8857 (`f7a43fed`) | — | Decided 2026-10-27 (Q12): #8861 and #8863 go into 16.0.0 if they meet the [release allocation](../../docs/30-design/platform/release-allocation-2026-10-27.md) B6 entry bar; items 1, 3, 4 and 5 met on local candidates the same day (`cand/with` `d6ba8e18`: matrix, replay and v1 HTTP differential equal, no measurable latency change, one-commit revert restores `cand/without`'s tree), item 2 (BF-72 and BF-161 re-merged in their private forks) met locally the same day; #8859 and #8856 merged (`dev` `eed31dca`); the final heads re-measured on it: #8863 `npm test` 4700/0/3, `test:all` 5028/0/3, 360-cell matrix equal to `dev`; #8861 `npm test` 4685/0/3 (session -2e). Hosted CI has not run on #8863 (its base is not `dev`) and runs once #8861 merges; merge order #8861, #8863 (with the count commit `079f20ae`); #8856 resolved against the slices on `prep/writes-plus-8856` `699a70c4`. #8861 merged as `84fac457`, #8863 as `9668b179` and #8870 (`ST-COUNT-ONEPATH`) as `7abe1cf6` (dev, 2026-10-27, by the maintainer). It was planned before the tag (maintainer, 2026-10-27): one commit removing API v1 count's fallback paths in `lib/server/aggregate.js` (the constructor pipeline hook and the no-store driver path), unreachable over HTTP, so no client-visible change. #8862 if it merges with time on `dev` before the tag | `ST-FILTER-READS`, `ST-WRITES`, `PLAT-ENTRY`, `PLAT-SERVE`, `HUB-REG-CRM` |
-| one executable, the image's start and stop, the boot split for a multitenant Nightscout (PLAT-SERVE, PLAT-ENTRY, ST-V3-DECOUPLE) | `feat/nightscout-serve`, **#8865** (base `dev`; supersedes #8862) | `b01b77c3`: #8862's four commits, the image `CMD nightscout single`, SIGTERM/SIGINT shutdown, the healthcheck certificate fix (`f01d67e6`, CodeQL alert 138 fixed), boot profiles, the API v3 role harness, and `serve` reserved for a multitenant Nightscout with the single-tenant api code as `scripts/headless-test-server.js` | **in the 16.0.0 merge list (maintainer, 2026-10-27)**; open, no human review yet. API v3 suites 751/0 under single, 643/0/108 pending under headless; image start forms: every `docker run` form that started a server on `dev` starts the same one, `docker stop` 10.1 s/137 becomes 0.13 s/0 (`tools/lab/image-start-forms`) | `PLAT-SERVE` |
+| one executable, the image's start and stop, the boot split for a multitenant Nightscout (PLAT-SERVE, PLAT-ENTRY, ST-V3-DECOUPLE) | `feat/nightscout-serve`, **#8865** (base `dev`; supersedes #8862) | `b01b77c3`: #8862's four commits, the image `CMD nightscout single`, SIGTERM/SIGINT shutdown, the healthcheck certificate fix (`f01d67e6`, CodeQL alert 138 fixed), boot profiles, the API v3 role harness, and `serve` reserved for a multitenant Nightscout with the single-tenant api code as `scripts/headless-test-server.js` | **merged 2026-10-30 02:04:14Z by bewest as `dev` `991b0654`** (head `1b2801f7`). Earlier: **in the 16.0.0 merge list (maintainer, 2026-10-27)**; open, no human review yet. API v3 suites 751/0 under single, 643/0/108 pending under headless; image start forms: every `docker run` form that started a server on `dev` starts the same one, `docker stop` 10.1 s/137 becomes 0.13 s/0 (`tools/lab/image-start-forms`) | `PLAT-SERVE` |
 | BF-200: the data-snapshot route's unusable time | `bf/16.0.0-ddata-at-crash`, **#8868** (opened by the maintainer 2026-10-27 19:50:31Z, base `dev`) | `2ca7dfc8`: `434c0157` and `2564e5dc` with `dev` `94899828` merged in; 6 files, +176/−12 against `dev` | **merged 2026-10-27 20:01:50Z by bewest as `dev` `88676086`** (`gh pr view 8868`); ready to push 2026-10-27, not pushed. Red controls re-run by session -ee: the new data test on `dev` 1 passing, 5 failing; the new callback-tasks case with the first commit's helper 8 passing, 1 failing; both on the branch 14 passing. `npm test` 4489 passing, 0 failing, 3 pending and `test:all` 4817 passing, 0 failing, 3 pending (session -2e, Node 22.23.4, MongoDB 7.0) | `BFQ-200` |
 | BF-201: nodemon's file watches | **#8866** (added to #8867 at the maintainer's request, 2026-10-27; #8867 merged into #8866 as `7a96b912`) | `5d9f84b5` (prepared as `426d2835` on `dev` `2dc0c1bc`): `package.json` nodemonConfig, the watch test and probe, the M24 addendum | merged with #8866 (`b84871d7`, 2026-10-27 19:42:55Z). nodemon watches `lib`, `views`, `translations`, `webpack` and `package.json`; Linux file watches 1,502 → 385 at `dev` `2dc0c1bc`; the watch test fails at `docs/unlisted.js` with the old configuration; `npm test` 4483 passing, 0 failing, 3 pending (Node 22.23.4, MongoDB 8.0.34); developer tooling only | `BFQ-201` |
 | BF-203: an editor's file watches | `tooling/jsconfig-watch-scope`, **#8871** (opened by the maintainer 2026-10-27 22:21:20Z, base `dev`; the start of the next tooling PR) | `f28d40bb`: the maintainer's draft `e737d310` (`jsconfig.json`, 8 lines) with `dev` `7abe1cf6` merged in | **merged 2026-10-27 22:51:12Z by bewest as `dev` `dcf20bfb`** (head `57f1d37c`, `dev` merged in). Earlier: open, CI running: an editor opening `lib/server/app.js` from a checkout inside a larger workspace watches 450,689 → 2,007 files, 1.4 GB → 358 MB (tsserver 5.9.3, started as an editor starts it); `npm test` 4700 passing, 0 failing, 3 pending; developer tooling only | `BFQ-203` |
@@ -489,6 +558,9 @@ which this programme cannot do without real credentials; #8843 (CI diagonal) and
 
 | defect | what | exposure | queue |
 |---|---|---|---|
+| BF-212, the rest: shared client identity after a chart split | **first part fixed on `dev` 2026-10-30** by #8878 (`d51c7a60`): a new chart split no longer copies the client identity fields. Still open: records split before the fix keep two stored treatments with one identity, and a v1 or in-process re-send of either lands on the older record, so a re-send of the newer one overwrites the older one's amount (API v3 picks the newer record and refuses a re-send of the older one with 400; measured by the extended write-contract matrix). A full re-upload of the original by the client that still holds it writes the moved insulin back, so it is stored and counted twice, with or without identity on the copy. The follow-ups are ID-FIRST-MATCH slice 5 (the P4 pick) and the maintainer's direction that a lossy edit of a controller-claimed record needs a manual confirmation | dosing-relevant data and display, narrow: a chart drag of a record that holds both insulin and carbs; on 15.0.9 and `dev` | `BFQ-212` |
+| BF-209: two identical socket treatments within 2 s from different clients stored as one | **fixed on `dev` 2026-10-30** by #8877 (`cf3d4b8f`), for writes that carry `identifier` (scope decided 2026-10-29: in the similar match, `identifier` decides when present); writes without it keep the earlier rule, and recognising `identifier` at any time waits for ID-FIRST-MATCH. Present on 15.0.9. BF-210 (an upload with no amount absorbed by a stored one) was withdrawn 2026-10-29 as intended behaviour | socket writers: AndroidAPS's v1 NSClient (3.4.2.x) and the chart-drag split | `BFQ-209` |
+| BF-211: a delete by query empties all three in-memory caches | **fixed on `dev` 2026-10-30** by #8877 (`cf3d4b8f`); present since 14.0.4 and on 15.0.9. Cost, not correctness: the next load re-reads days of data (890 documents and 716,202 bytes after a 3-record delete; 32 documents and 10,289 bytes with the fix, cache-value lab) | sites on transfer-capped MongoDB tiers | `BFQ-211` |
 | BF-200: an unusable time on API v2's data-snapshot route stops the server | **fixed on `dev` 2026-10-27** by #8868 (`88676086`); until then: one authenticated read of `/api/v2/ddata/at/:at` with a time the server cannot use makes the data loader throw where nothing catches it, since `26d0908a` replaced `async` with `lib/utils/callback-tasks`; the process exits. v15.0.9 answers 500 and keeps running (checked by session -2e), so this is a regression on `dev` only | every site running `dev` (`2dc0c1bc`) or a `dev` image; not 15.0.9 | `BFQ-200` |
 | BF-202: CI's MongoDB 8.0 jobs on Linux 6.19 runners | MongoDB 8.0 refuses to start on Linux 6.19 to 7.0.13 (SERVER-121912); `ubuntu-24.04` image 20261026.354 moved to `7.0.0-1017-azure`, where both 8.0 jobs refused to start on run 40569101512, 8.0.29 included. Mitigated by `f6884342`, merged with #8866 (`b84871d7`): the 8.0 jobs run on `ubuntu-22.04` (Linux 6.8), both passing on run 40569981396 | CI: mitigated on `dev`. Operators running MongoDB 8.0 on such a kernel meet the same MongoDB defect (release-notes line) | `BFQ-202` |
 | Firefox legacy-reports wait | `tests/browser/legacy-reports.test.js` "should produce some html" timed out at its fixed 30 s wait (`12154df9`) in one or two Firefox cells of the CI runs on `93f152bd` (`pull_request`) and `a20469dc` (both events), so the push run on `a20469dc` skipped the Docker publish; and once more on #8836's head `df2f37ab` (run 40228187718 attempt 1, *Browser tests (26, firefox)*, 463 passing, 1 failing; attempt 2 passed). Since cut 2 merged (`eb44a9c2`), `dev`'s test uses the progress-aware wait (fails after 15 s with no completed request, 60 s ceiling; `tests/browser/legacy-reports.test.js:136-144`), and *Browser tests (26, firefox)* passed in every push and `pull_request` run on `5de8505d`, `fd3792e5`, `eb44a9c2`, `78524be4` and `b29f1bf7` (one run each, so not yet evidence that the flake is gone) | test only; no register entry filed | `RT-2` (merged) |
@@ -526,8 +598,10 @@ No verification record is captured yet: `verification-record.{json,md}` is gener
 `tools/queue/verification-record.py` once, at release time, from the state being cut
 ([VERIFICATION-RECORDS.md](../VERIFICATION-RECORDS.md)), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-[verification-selection.txt](verification-selection.txt) (65 queue ids: every item this file or
-[decisions.md](decisions.md) names, and the release items), with the capture command.
+[verification-selection.txt](verification-selection.txt) (90 queue ids on 2026-10-30; 65 at the
+2026-10-27 dry run: every item this file or [decisions.md](decisions.md) names, and the release items), with
+the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
+the 2026-10-27 and 2026-10-28 merges.
 
 **Dry run, 2026-10-27, `dev` `8dbb60c2`** (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default `static` and
@@ -551,7 +625,8 @@ requirements in the advisory forks.
 
 ## Open items a releaser must settle
 
-As of `dev` `47723cda` (2026-10-26), with item 11 from `7ad3a67f`. The decisions already made are in [decisions.md](decisions.md).
+As of `dev` `47723cda` (2026-10-26), with item 11 from `7ad3a67f`, and items 1 and 12–15, the entry bar and the
+repository settings brought to `dev` `991b0654` on 2026-10-30. The decisions already made are in [decisions.md](decisions.md).
 Whether cuts 3–5 ship in 16.0.0 is answered: all three are merged into `dev`, so they ship in 16.0.0
 unless reverted.
 
@@ -560,12 +635,23 @@ Pushover and APNs delivery check (`RT-16-LIVE-ALARMS`); (b) a real-rig soak on `
 (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (`BFQ-72`, `BFQ-161`). None is met.
 BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated payload logging through
 `DEBUG_LOGGING`, [decisions](decisions.md)) and merged 2026-10-27 as #8856 (`dev` `eed31dca`).
+The maintainer's definition of done before the tag (2026-10-27, `RT-16-RELEASE`) adds (d) a short quiet period
+on `dev` with the final candidate, days not weeks, and states (b) as cohort confirmations from `dev` users
+(AndroidAPS, Loop, Trio, xDrip+, a follower app, an mmol/L site).
+
+**The entry bar** (maintainer, 2026-10-29; scope widened 2026-10-30): every single-tenant item of the next-gen
+plan may join the 16.0.0 merge list, in priority order, once its matrix result is as stated, its red controls
+and ablations pass, a revert has been rehearsed, and it has had time on `dev` with its cohort check. A miss at
+the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. On 2026-10-30 no item in
+[In flight](#in-flight-for-this-release) has cleared it; #8874 is first in the order.
 
 **Decisions open, with their owner:**
 
 1. **The scope of BF-161's draft advisory** (maintainer): publish it now for BF-151 (released in 15.0.9)
    with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
    carries the fix. Packet: [bfq-161](../../reports/reviewer-packets/bfq-161-adv-phrf-1600-dev.md).
+   *Decided 2026-10-27 (maintainer; queue `BFQ-161`): extend the draft advisory to cover BF-161 as well as
+   BF-151, and publish it once, with 16.0.0.*
 2. **BF-72's test inputs** (the original author of the regex-limit commits): the tests' hostile inputs
    are to be rebuilt in code before anything is published. Packet:
    [bfq-72](../../reports/reviewer-packets/bfq-72-adv-r3gv-1600-dev.md).
@@ -603,6 +689,21 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
     read, not measured). API v1 has no equivalent. List it in the 16.0.0 client notes as it is, or agree it
     alongside `refused` (and whether API v1 should match). Queue `ARCH-8854-FAILED`. *Decided 2026-10-27 (maintainer): ship it as it is, described in the client notes as experimental under `reject`; the per-item reply for every path is settled in ID-BATCH.*
 
+12. **Which items clear the entry bar before the tag** (maintainer; 2026-10-30): in order, `write(intent)`
+    release 1 (#8874, `WC-STEP-PATCH`), ID-FIRST-MATCH slices 1, 2, 5, 3, 4, 6 and 6a, ID-BATCH
+    (`ID-BATCH-RESULTS`), the re-send switch (`ID-RESEND-SWITCH`), ID-UNIQUE-INDEX with
+    `WRITE_IDENTIFIER_INDEX`, SPEC-ID-AMEND, #8857, ST-HARNESS, and ST-EVENT or ST-VIEWS if they clear it.
+    Each one that changes a default (merge on match on new paths, stays deleted, the index built at boot under
+    `try`) needs its own release-notes line and its cohort check.
+13. **#8857's flag and rebase** (maintainer and the author): D-REG-FLAG (where the catalogue lives, and the
+    flag's form); the branch is 109 commits behind `dev` with conflicts. Off by default either way.
+14. **ST-VIEWS' wiring** (maintainer): #8875 computes the page, socket, plugin and alarm views from bounded
+    queries; it is not wired in, and the alarms are safety-relevant (execution plan §7b).
+15. **Multitenant items as alpha** (maintainer): whether anything ships dormant behind `serve` in 16.0.0, and
+    the release notes' alpha wording (Q12a in the release allocation: the alpha label belongs to the
+    multitenant bindings only). `serve` refuses every role on `dev` `991b0654`: no role in
+    `lib/server/serve/roles.js` is marked `multitenant` (read-derived).
+
 **Found by R15 (reproduced; no register entry):**
 
 - `npm test` and `test-ci` glob `./tests/*.test.js` (310 files) while `tests/tiers.json` maps all 377;
@@ -619,7 +720,8 @@ BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated paylo
 repos/nightscout/cgm-remote-monitor/branches/<branch>/protection`: `dev` requires `Run Tests (24, 6)`;
 `master` requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` and one approving
 review; `enforce_admins` is off on both). No workflow on `dev` emits `Run Tests (22, 4.4)`, so the
-staging PR #8824 cannot meet `master`'s protection as it stands.
+staging PR #8824 cannot meet `master`'s protection as it stands. Read again 2026-10-30 at `dev` `991b0654`:
+unchanged.
 
 **Decided, settings change owed** (maintainer, 2026-10-26, relayed via session -66; applied by the
 maintainer): `master` requires only the *Tests pass* check (job `tests-pass`, `.github/workflows/main.yml:317`
@@ -631,12 +733,18 @@ approving review. The decision as relayed names `master`; `dev`'s required check
 theme's code only when it is chosen; owner Andy Low or the maintainer; not started). `RT-BOOT-INDEX-AWAIT`
 merged with #8849.
 
-**Next merges** (a suggestion for the maintainers, not a decision):
+**Merge order before the tag** (next-gen plan §1a, 2026-10-29; rows 1, 2 and 2a merged 2026-10-30): #8855
+(Crowdin), the BF-72 and BF-161 fork branches brought up to `dev` and merged, then the `master` protection fix
+and #8824. The entry-bar items (open item 12) join in their own order as each clears the bar.
+
+**Next merges** (a suggestion for the maintainers, not a decision; written 2026-10-26 and 2026-10-27):
 
 1. The follow-ups, each in a themed PR: `RT-JSDOM-REST` (scope B), `ID-SIMPLE-MATCH` with BF-169's
    remaining client work, `RT-BUNDLE-THEME-SPLIT`.
 2. BF-72 and BF-161 through their advisory forks, published with the release that carries them; each has
    a merge of `dev` `8dbb60c2` prepared locally (`f64f78c4`, `8dcf1537`; R17), ready to push to its fork.
+   *2026-10-30:* the fork heads are `a9da33ff` and `1dce7722` (pushed 2026-10-27, containing `dev`
+   `7abe1cf6`); a merge of `dev` `991b0654` and a re-run in each is owed.
 
 **Before the tag:** the three requirements above (the live delivery check, the real-rig soak, BF-72 and BF-161), the other live acceptance checks #8605 leaves to the maintainer (Pushover emergency
 delivery, acknowledgement and cancellation; alarm de-duplication over its real window; APNs delivery
