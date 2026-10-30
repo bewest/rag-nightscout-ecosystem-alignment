@@ -7771,7 +7771,7 @@
 </tbody>
 </table>
 <p>Total fresh entries past 2026-04-19 (untouched window): <strong>37,406</strong> across 11 patients.</p>
-<p>ns-* and odc-* patients have no env files in <code>externals/ns-data/patients/</code> and were not refreshed; verification-2 is therefore Loop-only.</p>
+<p>ns-<em> and odc-</em> patients have no env files in <code>externals/ns-data/patients/</code> and were not refreshed; verification-2 is therefore Loop-only.</p>
 <h3 id="verification-2-partition">Verification-2 partition<a class="headerlink" href="#verification-2-partition" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">v2</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">grid</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="s1">'2026-04-19'</span><span class="p">]</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">v2</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="s1">'externals/ns-parquet/verification2/grid.parquet'</span><span class="p">)</span>
@@ -7905,7 +7905,7 @@ Phenotype: <code>exp-3019_phenotype_imputed.parquet</code> (with EXP-3027-FIX sa
 <p>The +0.0185 verification-2 lift is roughly half of the verification-1 +0.0348 lift — consistent with sample shrinkage (203 used events vs ~1640) and Loop-only sample (vs the cross-controller verification-1 mix).</p>
 <h3 id="caveats--limitations">Caveats / limitations<a class="headerlink" href="#caveats--limitations" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Loop-only</strong>: Trio + AAPS contribution missing (no resync path for ns-* / odc-* patients). Cross-controller robustness rests on EXP-3025-LOPO (verification-1 stripe) and EXP-3030-LOPO.</li>
+<li><strong>Loop-only</strong>: Trio + AAPS contribution missing (no resync path for ns-<em> / odc-</em> patients). Cross-controller robustness rests on EXP-3025-LOPO (verification-1 stripe) and EXP-3030-LOPO.</li>
 <li><strong>Small n</strong>: 203 used events; per-stratum safety estimates are noisy at n=61 mid.</li>
 <li><strong>Safety flags</strong>: <code>safety_ok=False</code> is structural (baseline failure carries through), not candidate-induced. Recommend interpreting <code>Δstratified_hypo</code> rather than absolute <code>passes</code> flag at small-n.</li>
 </ol>
@@ -7919,7 +7919,7 @@ Phenotype: <code>exp-3019_phenotype_imputed.parquet</code> (with EXP-3027-FIX sa
 <p>All gitignored under <code>externals/</code>.</p>
 <h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Optional EXP-3032</strong>: pursue ns-* / odc-* refresh path if available (e.g., t1pal-mobile-workspace export), to extend verification-2 cross-controller.</li>
+<li><strong>Optional EXP-3032</strong>: pursue ns-<em> / odc-</em> refresh path if available (e.g., t1pal-mobile-workspace export), to extend verification-2 cross-controller.</li>
 <li><strong>Operational</strong>: re-run verification-2 on a rolling 7-day cadence (cheap; just append to ns-resync, re-extract, re-score).</li>
 <li><strong>Plan.md</strong>: mark fresh-holdout step ✅ done; verification stripe count is now 6 (verification-1) + 1 (verification-2 fresh).</li>
 </ol>

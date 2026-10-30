@@ -4240,7 +4240,7 @@
 
 
 <h1 id="bug-impact-assessment-experiment-scripts">Bug Impact Assessment: Experiment Scripts<a class="headerlink" href="#bug-impact-assessment-experiment-scripts" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-04-08 at <code>bad734a4</code>.</em></p>
+<p><em>Living document, last changed 2026-04-08 at <code>bad734a40</code>.</em></p>
 <h2 id="bug-1-iob-forward-fill--fillna0-creates-artificial-iob-drops">Bug 1: IOB Forward-Fill → <code>fillna(0)</code> Creates Artificial IOB Drops<a class="headerlink" href="#bug-1-iob-forward-fill--fillna0-creates-artificial-iob-drops" title="Permanent link">&para;</a></h2>
 <p><strong>File</strong>: <code>tools/aid-autoresearch/eval_autotune_uam.py:256</code></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">grid</span><span class="p">[</span><span class="s1">'iob'</span><span class="p">]</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="s1">'iob'</span><span class="p">]</span><span class="o">.</span><span class="n">ffill</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>

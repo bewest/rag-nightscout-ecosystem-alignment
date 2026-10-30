@@ -7528,12 +7528,12 @@
 <p>Record as of 2026-04-26. A point-in-time document; it is not kept up to date.</p>
 </div>
 <p><strong>Date:</strong> 2026-04-26
-<strong>Hypothesis:</strong> Pre-applying the EXP-3016 phenotype clamp (force M*=1.0 when
+<strong>Hypothesis:</strong> Pre-applying the EXP-3016 phenotype clamp (force M<em>=1.0 when
 braking_ratio ≥ 0.10) directly to the EXP-3012 per-patient parquet should
 make the runtime <code>--braking-mode m_unity</code> gate a no-op consistency check —
 i.e. <code>m_unity</code> and <code>none</code> should produce identical scores when consuming the
 clamped parquet.
-<strong>Verdict:</strong> Confirmed. Clamped+m_unity == Clamped+none == 0.7051 exactly.</p>
+</em><em>Verdict:</em>* Confirmed. Clamped+m_unity == Clamped+none == 0.7051 exactly.</p>
 <h2 id="method">Method<a class="headerlink" href="#method" title="Permanent link">&para;</a></h2>
 <p><code>tools/cgmencode/autoresearch_cf/exp_3017_phenotype_clamp.py</code> reads
 <code>exp-3012_per_patient.parquet</code>, joins phenotype's <code>braking_ratio</code>, and

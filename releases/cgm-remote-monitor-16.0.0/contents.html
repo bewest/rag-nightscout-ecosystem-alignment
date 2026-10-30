@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>37fabba3</code>.</em></p>
+<p><em>Living document, last changed 2026-10-29 at <code>37fabba3a</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3608,7 +3608,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4095db8f2b592edb7e2beef156503578695c29c/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -3685,7 +3685,7 @@ the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. On 2026-10-30 no 
 <li><strong>BF-194</strong> (maintainer): API v1 removes <code>units</code> from a treatment with no glucose value before
     <code>WRITE_VALIDATION</code> runs, so a v1 temp target sent in mmol/L is stored with mmol/L numbers and no
     units and reads as mg/dL, in every mode, on 15.0.9 and <code>dev</code> (reproduced, integration record R15):
-    keep the units, convert, or refuse. Queue <code>BFQ-194</code>. <em>2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.</em> <em>Decided 2026-10-27 (maintainer): convert and always label. Fixed on local <code>bf/16.0.0-tt-units</code> <code>7b74110c</code>, <strong>merged</strong> to <code>dev</code> 2026-10-27 as <code>db3b9e4e</code> (#8872): every write path stores a Temporary Target in mg/dL labelled <code>mg/dl</code>; gate PASS, npm test and test:all pass. Owes a release-note line.</em></li>
+    keep the units, convert, or refuse. Queue <code>BFQ-194</code>. <em>2026-10-27 (maintainer): survey the clients first, then likely enforce mg/dL at write (convert a target labelled mmol and relabel it); survey running.</em> <em>Decided 2026-10-27 (maintainer): convert and always label. Fixed on local <code>bf/16.0.0-tt-units</code> <code>7b74110c</code>, </em><em>merged</em><em> to <code>dev</code> 2026-10-27 as <code>db3b9e4e</code> (#8872): every write path stores a Temporary Target in mg/dL labelled <code>mg/dl</code>; gate PASS, npm test and test:all pass. Owes a release-note line.</em></li>
 <li>
 <p><strong>#8854's <code>failed</code> slot</strong> (maintainer): under <code>reject</code>, a socket treatment array answers an item whose
     write cannot be confirmed (a lookup, similar-record match or insert error, such as a duplicate key) with a

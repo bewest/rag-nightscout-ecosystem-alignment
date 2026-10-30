@@ -7777,7 +7777,7 @@
 </ol>
 <h2 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>n=3 recommender patients</strong> with verification-2 coverage. ns-* (Trio) and odc-* (AAPS) patients have no Nightscout refresh path and are absent from the held-out stripe.</li>
+<li><strong>n=3 recommender patients</strong> with verification-2 coverage. ns-<em> (Trio) and odc-</em> (AAPS) patients have no Nightscout refresh path and are absent from the held-out stripe.</li>
 <li><strong>ISF → M mapping is a best-case linear approximation</strong> valid only under the cf-replay kernel. Real-world ISF changes also affect <em>correction</em> dosing (which is subsumed into <code>smb_during</code> here), basal scheduling, and may interact with the controller's own ISF-aware logic.</li>
 <li><strong>Verification-2 is short</strong> (8 days), and ascent events are sparse (n=30–45 per recommender patient). Transport magnitude estimates have wide CIs that we did not bootstrap here.</li>
 <li><strong>Patient <code>i</code>'s baseline hypo rate (26.7% on this stripe) is itself an outlier</strong>; the +13.3 pp lift may partly reflect regression-to-mean rather than pure recommendation transport. A multi-stripe replay (rolling 7-day cadence per the EXP-3031 next-step list) would help disentangle.</li>

@@ -2605,7 +2605,7 @@
 <!-- DRAFT: not yet opened as a pull request. Branch fix/trace-axios-path, commit 894b132, based on dev 1946beb. -->
 
 <h1 id="draft-load-the-capture-tracer-from-lib-in-the-nightscout-and-dexcom-share-sources">DRAFT: Load the capture tracer from lib/ in the Nightscout and Dexcom Share sources<a class="headerlink" href="#draft-load-the-capture-tracer-from-lib-in-the-nightscout-and-dexcom-share-sources" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-22 at <code>8afb1fb8</code>.</em></p>
+<p><em>Living document, last changed 2026-09-22 at <code>8afb1fb81</code>.</em></p>
 <h2 id="who-this-affects">Who this affects<a class="headerlink" href="#who-this-affects" title="Permanent link">&para;</a></h2>
 <p>Only people who run the connector's <strong>capture</strong> command by hand. Capture is a troubleshooting tool that records the connector's web requests to files. For example: <code>nightscout-connect capture ./har --source nightscout</code> or <code>--source dexcomshare</code>.</p>
 <p>With either of those two sources, capture crashed as soon as it started, with <code>Error: Cannot find module '../../trace-axios'</code>. It crashed before sending any request, so no recording was made.</p>

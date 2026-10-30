@@ -2643,7 +2643,7 @@
 
 
 <h1 id="the-nightscout-ecosystem-a-case-study-in-conways-law">The Nightscout ecosystem: a case study in Conway's Law<a class="headerlink" href="#the-nightscout-ecosystem-a-case-study-in-conways-law" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-19 at <code>35ec9da5</code>.</em></p>
+<p><em>Living document, last changed 2026-10-19 at <code>35ec9da5a</code>.</em></p>
 <p><em>What this is: a case study (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>): how the ecosystem's teams explain the shape of its software and data contract, and where that points to ways to unify and move forward. For the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="PROCESS-MODELS.html">process models</a>; leads to part 3, starting with the <a href="../ECOSYSTEM-PROGRAMME.html">ecosystem programme</a>. Living page,
 written 2026-10-18 against this repository at <code>0b0d150f</code>. Every fact is taken from a page linked
 beside it, which gives its own date and source; the Conway readings are interpretation and are
@@ -2727,7 +2727,7 @@ Shared code did not carry a shared contract once the teams were separate.</p>
 <td>pump state</td>
 <td>flat (<code>pump.bolusing</code>) or nested (<code>pump.status.bolusing</code>)</td>
 <td>read flat first, fall back to nested; a document may carry both</td>
-<td><code>QUIRK-DEVICESTATUS-001</code> in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4095db8f2b592edb7e2beef156503578695c29c/specs/quirks/devicestatus.yaml"><code>specs/quirks/devicestatus.yaml</code></a></td>
+<td><code>QUIRK-DEVICESTATUS-001</code> in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/specs/quirks/devicestatus.yaml"><code>specs/quirks/devicestatus.yaml</code></a></td>
 </tr>
 <tr>
 <td>a treatment's own id</td>
@@ -2745,7 +2745,7 @@ Shared code did not carry a shared contract once the teams were separate.</p>
 <td>profile</td>
 <td>Loop writes its own settings as a <code>loopSettings</code> subtree of 26 paths; glucose units have four spellings</td>
 <td>tolerate the subtree</td>
-<td><code>QUIRK-PROFILE-003</code>, <code>-004</code> in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a4095db8f2b592edb7e2beef156503578695c29c/specs/quirks/profile.yaml"><code>specs/quirks/profile.yaml</code></a></td>
+<td><code>QUIRK-PROFILE-003</code>, <code>-004</code> in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3d9b0fd0e71549ea92c07c8ee488753138bd7c0b/specs/quirks/profile.yaml"><code>specs/quirks/profile.yaml</code></a></td>
 </tr>
 </tbody>
 </table>
