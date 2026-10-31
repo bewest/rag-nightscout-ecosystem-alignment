@@ -173,6 +173,48 @@
 // Break-it: --wire-inject-foreign emits one frame for another cell's record at
 // the start of every measured step; with attribution every cell is unchanged,
 // without it every cell whose collection is subscribed gains a `create`.
+//
+// Forms added 2026-10-31 (QC-MATRIX-BATCH), the batch cells ID-BATCH pins
+// (ID-BATCH design note §4). No earlier cell sends more than one item. They
+// run last, after the QC-MATRIX-IDFMT cells, so every earlier cell keeps its
+// order and its result; their ids all start "batch-". Paths: API v1 POST of
+// an array (every collection), the socket's dbAdd with an array and the
+// storage's create in-process (for comparison); API v3 takes one document.
+// Each v1 cell runs twice: as a client sends it today, and with the opt-in
+// header `Nightscout-Write-Results: items` (key suffix " +results"); a build
+// without the opt-in answers both alike. Every item carries `wcb: <index>`.
+//   batch-mixed-tt      valid, invalid, valid Temporary Targets (treatments;
+//                       run with WRITE_VALIDATION=reject to refuse the middle)
+//   batch-mixed-oid     the middle item has a non-hex _id
+//   batch-mixed-ident   the middle item has a non-string identifier (a number)
+//   batch-repeat-identifier  one new identifier twice in a batch (items 0, 2)
+//   batch-repeat-stored the middle item re-sends a stored record's identifier
+//   batch-deleted       the middle item re-sends a soft-deleted record's identifier
+//   batch-placeholder-identifier  "undefined" and a 257-character identifier
+//                       in the middle (items 1, 2) of four
+//   batch-dupkey-mid    another upload's record with item 1's identifier is
+//                       stored straight to MongoDB at the batch's first write
+//                       call, after its identifier lookups (the race of
+//                       ID-UNIQUE-INDEX; `index` says whether it is built)
+//   batch-storage-fail-mid  the write operation carrying item 1 fails (an
+//                       injected error); the operations before it are written
+//   batch-profile-permission  profile: a token with only api:profile:create
+//                       sends a new profile, a changed re-send of a stored one
+//                       (by _id), and a new one; in-process with canUpdate false
+//   batch-prebolus      treatments: the middle item has preBolus (a derived record)
+//   batch-taken-id      the middle item's _id is another record's, at another time
+//   batch-taken-all     both items' _ids are other records', at other times
+// Fields: `st` status, `len` reply length, `slots` one descriptor per reply
+// slot in order (the item it echoes by `wcb`, id/noid, `i` for a string
+// identifier, ref<status> for a `refused` member), `items` (an opt-in object
+// reply's per-item outcomes), `warn` the Warning header, `storeb` the stored
+// records by item (seed for a seeded one), `writes` the executed write
+// operations per item (counted by wrapping the driver's write methods while
+// the step runs; `?` is an operation that names no item), `inj` how often the
+// injection fired. --batch-only runs only these; --no-batch leaves them out;
+// --batch-forms a,b selects forms. Run once as is, once with
+// WRITE_VALIDATION=reject and once with WRITE_IDENTIFIER=strict (the result
+// records write_validation, write_identifier and identifier_index).
 
 const fs = require('fs');
 const path = require('path');
@@ -336,7 +378,9 @@ const V2_FORMS = ['update-twin', 'idread-fail', 'harddelete-custom', 'harddelete
 const IDF_ONLY = flag('--idf-only');
 // QC-MATRIX-IDFMT forms: run after the QC-MATRIX-IDF cells (see the header).
 const IDFMT_ONLY = flag('--idfmt-only');
-const EARLIER = !IDFMT_ONLY; // the cells before QC-MATRIX-IDFMT
+// QC-MATRIX-BATCH forms: run after the QC-MATRIX-IDFMT cells (see the header).
+const BATCH_ONLY = flag('--batch-only');
+const EARLIER = !IDFMT_ONLY && !BATCH_ONLY; // the cells before QC-MATRIX-IDFMT
 const IDFMT_PH = ['undefined', 'null', 'invalid', 'nan', 'unknown', 'empty', 'blank', 'jsonnull'];
 const IDFMT_CLASSES = IDFMT_PH.concat(['number', 'len256', 'len257', 'urlsafe', 'colon', 'slash', 'nonascii', 'idundef']);
 const IDFMT_FORMS = [].concat(...IDFMT_CLASSES.map(k => ['time', 'single']
@@ -1047,7 +1091,7 @@ function body (coll, t, cell, extra) {
     await idfMeasure(key, c, cellId, out, measured, (o, after) => { o.ident = identDesc(after, val); });
   }
 
-  if (!TT_ONLY && !IDF_ONLY && !flag('--no-idfmt')) {
+  if (!TT_ONLY && !IDF_ONLY && !BATCH_ONLY && !flag('--no-idfmt')) {
     for (const c of IDF_COLLS) {
       const paths = c === 'settings' ? PATHS.filter(p => p === 'v3') : PATHS;
       for (const p of paths) for (const f of IDFMT_FORMS) await idfmtCell(c, p, p, f);
@@ -1062,13 +1106,282 @@ function body (coll, t, cell, extra) {
     }
   }
 
+  // ---- QC-MATRIX-BATCH forms (see the header), after every earlier cell.
+  // Each item of a batch carries `wcb: <its index>`, so a reply slot, a
+  // stored record and a write operation name the item they belong to.
+  const BATCH_HEADER = 'Nightscout-Write-Results';
+  const { Collection } = R('node_modules/mongodb');
+  const WRITE_METHODS = ['insertOne', 'insertMany', 'bulkWrite', 'updateOne', 'updateMany', 'replaceOne'
+    , 'findOneAndUpdate', 'findOneAndReplace'];
+  // The documents one call of a write method carries, one per operation.
+  function opDocs (method, args) {
+    const upd = u => u && typeof u === 'object' && !Array.isArray(u)
+      ? Object.assign({}, u.$setOnInsert || {}, u.$set || {}, Object.keys(u).some(k => k[0] === '$') ? {} : u) : {};
+    if (method === 'insertOne') return [args[0]];
+    if (method === 'insertMany') return args[0] || [];
+    if (method === 'bulkWrite') return (args[0] || []).map(op => op.insertOne ? op.insertOne.document
+      : op.replaceOne ? op.replaceOne.replacement : op.updateOne ? upd(op.updateOne.update)
+        : op.updateMany ? upd(op.updateMany.update) : {});
+    if (method === 'replaceOne' || method === 'findOneAndReplace') return [args[1]];
+    return [upd(args[1])];
+  }
+  // While armed for a cell: every executed write operation on the cell's
+  // collection is counted by the `wcb` of its document (`?` when it carries
+  // none: a $set of changed fields only). An ordered bulk write that fails
+  // at op k executed ops 0..k-1; an unordered one, every op but its write
+  // errors. `before` runs once, at the first write call (the dupkey-mid
+  // injection); `fail` decides which operations of a call fail (storage-fail-mid).
+  const wtap = { armed: false, coll: null, cellId: null, counts: {}, before: null, fail: null, fired: 0, self: false };
+  const realWrite = {};
+  WRITE_METHODS.forEach(m => {
+    realWrite[m] = Collection.prototype[m];
+    Collection.prototype[m] = async function tapped () {
+      const args = Array.from(arguments);
+      if (!wtap.armed || wtap.self || this.collectionName !== wtap.coll) return realWrite[m].apply(this, args);
+      if (wtap.before) {
+        const b = wtap.before; wtap.before = null;
+        wtap.self = true;
+        try { await b(); } finally { wtap.self = false; }
+      }
+      const docs = opDocs(m, args);
+      const tally = list => list.forEach(d => {
+        const k = d && d.wc === wtap.cellId && d.wcb !== undefined ? String(d.wcb) : '?';
+        wtap.counts[k] = (wtap.counts[k] || 0) + 1;
+      });
+      if (wtap.fail) {
+        const at = wtap.fail(docs);
+        if (at >= 0) {
+          wtap.fired++;
+          wtap.fail = null;
+          const injected = Object.assign(new Error('wc-lab injected write failure'), { code: 'WC_LAB_INJECTED' });
+          if (at === 0 || (m !== 'bulkWrite' && m !== 'insertMany')) throw injected;
+          // the operations before the failing one are written, as an ordered bulk write does
+          const head = args.slice(); head[0] = args[0].slice(0, at);
+          await realWrite[m].apply(this, head);
+          tally(docs.slice(0, at));
+          throw injected;
+        }
+      }
+      try {
+        const r = await realWrite[m].apply(this, args);
+        tally(docs);
+        return r;
+      } catch (err) {
+        const we = Array.isArray(err.writeErrors) ? err.writeErrors : [];
+        const failed = new Set(we.map(e => e.index !== undefined ? e.index : e.err && e.err.index));
+        const ordered = !(args[1] && args[1].ordered === false);
+        if (m === 'bulkWrite' || m === 'insertMany') {
+          const first = Math.min.apply(null, Array.from(failed).concat([docs.length]));
+          tally(docs.filter((d, i) => ordered ? i < first : !failed.has(i)));
+        }
+        throw err;
+      }
+    };
+  });
+  const writesDesc = counts => {
+    const ks = Object.keys(counts).sort();
+    return ks.length ? ks.map(k => k + ':' + counts[k]).join(',') : 'none';
+  };
+
+  // The reply, slot by slot in order (QC-MATRIX-BATCH): for each slot the
+  // item it echoes (`wcb`), whether it has an _id (`id`/`noid`), a string
+  // identifier (`i`), and a refusal (`ref<status>`). An opt-in object reply
+  // ({ items, documents }) adds `items`: index:outcome(reason).
+  function slotDesc (d) {
+    if (!d || typeof d !== 'object') return String(d);
+    let s = (d.wcb !== undefined ? String(d.wcb) : '?') + ':' + (d._id !== undefined && d._id !== null ? 'id' : 'noid');
+    if (typeof d.identifier === 'string') s += ':i';
+    if (d.refused) s += ':ref' + (d.refused.status || '?');
+    if (d.failed) s += ':fail' + (d.failed.status || '?');
+    return s;
+  }
+  function batchDesc (status, j, text, headers) {
+    const out = { st: String(status) };
+    const arr = Array.isArray(j) ? j : j && Array.isArray(j.documents) ? j.documents : null;
+    if (arr) {
+      out.len = arr.length;
+      out.slots = arr.map(slotDesc).join(',');
+    } else if (j && typeof j === 'object') {
+      out.body = '{' + Object.keys(j).join(',') + '}' + (j.message ? ' ' + String(j.message).slice(0, 60) : '');
+    } else {
+      out.body = String(text || '').slice(0, 60);
+    }
+    if (j && !Array.isArray(j) && Array.isArray(j.items)) {
+      out.items = j.items.map(it => it.index + ':' + it.outcome + (it.reason ? '(' + it.reason + ')' : '')
+        + (it.status ? '#' + it.status : '')).join(',');
+    }
+    out.warn = headers && headers.get('warning') ? headers.get('warning') : 'none';
+    return out;
+  }
+  // The batch through one path: v1 POST (optIn: with the opt-in header), the
+  // socket's dbAdd with an array, or the storage's create in-process.
+  async function batchSend (c, p, docs, opts) {
+    const o = opts || {};
+    if (p === 'v1') {
+      const headers = Object.assign({}, o.token ? { 'content-type': 'application/json' } : H, o.optIn ? { [BATCH_HEADER]: 'items' } : {});
+      const r = await fetch(BASE + '/api/v1/' + c + '/' + (o.token ? '?token=' + o.token : ''), { method: 'POST', headers, body: JSON.stringify(docs) });
+      const t = await r.text(); let j; try { j = JSON.parse(t); } catch (e) { /* not JSON */ }
+      return batchDesc(r.status, j, t, r.headers);
+    }
+    if (p === 'ws') {
+      if (o.token) return null;
+      const a = await emit('dbAdd', { collection: c, data: docs });
+      if (Array.isArray(a)) return { st: 'ack', len: a.length, slots: a.map(slotDesc).join(','), warn: 'n/a' };
+      return { st: a === 'NO-ACK' ? 'NO-ACK' : 'ack ' + JSON.stringify(a).slice(0, 60), warn: 'n/a' };
+    }
+    if (p === 'inproc') {
+      const r = await cb(fn => c === 'profile' ? ctx.profile.create(docs, fn, o.token ? { canUpdate: false } : undefined) : ctx[c].create(docs, fn));
+      if (r.err) return { st: 'err ' + r.err, warn: 'n/a' };
+      const arr = Array.isArray(r.res) ? r.res : r.res ? [r.res] : [];
+      return { st: 'cb', len: arr.length, slots: arr.map(slotDesc).join(','), warn: 'n/a' };
+    }
+    return null;
+  }
+  // The cell's stored records in item order: wcb, then :v2 (the re-send's
+  // fields), :inv (deleted), :noident (no identifier).
+  // Records in item order (a seed sorts as "seed"), then by `date`: a seed's
+  // _id is random hex, so _id order is not stable between runs.
+  const bkey = d => d.wcb === undefined ? 'seed' : String(d.wcb);
+  const border = docs => docs.slice().sort((x, y) => bkey(x).localeCompare(bkey(y)) || (Number(x.date) || 0) - (Number(y.date) || 0)
+    || String(x._id).localeCompare(String(y._id)));
+  function storebDesc (docs) {
+    if (!docs.length) return 'none';
+    return border(docs)
+      .map(d => bkey(d) + (d.wcv === 2 ? ':v2' : '') + (d.isValid === false ? ':inv' : '')
+        + (typeof d.identifier === 'string' ? '' : ':noident')).join(',');
+  }
+  const ident = () => crypto.randomUUID();
+  const long257 = () => ('wc-' + crypto.randomBytes(140).toString('hex')).slice(0, 257);
+  // A token whose role has only api:<coll>:create and :read (the profile
+  // permission form), made once.
+  let createOnlyToken = null;
+  async function createOnly () {
+    if (createOnlyToken) return createOnlyToken;
+    await req('POST', '/api/v2/authorization/roles', { name: 'wc-profile-create', permissions: ['api:profile:create', 'api:profile:read'] });
+    await req('POST', '/api/v2/authorization/subjects', { name: 'wc-profile-create', roles: ['wc-profile-create'] });
+    const s = ((await req('GET', '/api/v2/authorization/subjects')).j || []).find(x => x.name === 'wc-profile-create');
+    createOnlyToken = s.accessToken;
+    return createOnlyToken;
+  }
+
+  const BATCH_FORMS = ['batch-mixed-tt', 'batch-mixed-oid', 'batch-mixed-ident', 'batch-repeat-identifier'
+    , 'batch-repeat-stored', 'batch-deleted', 'batch-placeholder-identifier', 'batch-dupkey-mid'
+    , 'batch-storage-fail-mid', 'batch-profile-permission', 'batch-prebolus', 'batch-taken-id', 'batch-taken-all'];
+  const BATCH_PATHS = ['v1', 'ws', 'inproc'].filter(p => PATHS.includes(p));
+  const BATCH_RUN = flag('--no-batch') ? [] : BATCH_FORMS.filter(f => !opt('--batch-forms', null) || opt('--batch-forms', '').split(',').includes(f));
+
+  async function batchCell (c, p, f, optIn) {
+    const key = c + ' ' + p + ' ' + f + (optIn ? ' +results' : '');
+    const cellId = 'wc-b' + seq + '-' + crypto.randomBytes(3).toString('hex');
+    const t = nextT();
+    const out = {};
+    if (!(await alive())) { cells[key] = { st: 'INVALID liveness before' }; return; }
+    const it = (i, extra) => body(c, t + i * 60000, cellId, Object.assign({ wcb: i }, extra || {}));
+    const na = () => { cells[key] = { st: 'n/a' }; };
+    let docs; let sendOpts = { optIn };
+    // what runs between arming the write tap and the send (injections)
+    let arm = () => {};
+    const seedVia = async d => { out.seed = (await batchSend(c, p === 'ws' || p === 'inproc' ? p : 'v1', [d])).st; await sleep(80); };
+    if (f === 'batch-mixed-tt') {
+      if (c !== 'treatments') return na();
+      const tt = (i, extra) => it(i, Object.assign({ eventType: 'Temporary Target', reason: 'wc-lab', targetBottom: 100, targetTop: 120
+        , units: 'mg/dl', duration: 60, identifier: ident() }, extra || {}));
+      docs = [tt(0), tt(1, { targetBottom: 150, targetTop: 120 }), tt(2)];
+    } else if (f === 'batch-mixed-oid') {
+      docs = [it(0, { identifier: ident() }), it(1, { _id: 'wc-not-hex', identifier: ident() }), it(2, { identifier: ident() })];
+    } else if (f === 'batch-mixed-ident') {
+      docs = [it(0, { identifier: ident() }), it(1, { identifier: t + 1 }), it(2, { identifier: ident() })];
+    } else if (f === 'batch-repeat-identifier') {
+      const x = ident();
+      docs = [it(0, { identifier: x }), it(1, { identifier: ident() }), Object.assign(it(2, { identifier: x }), idfAmount(c, t), { wcv: 2 })];
+    } else if (f === 'batch-repeat-stored' || f === 'batch-deleted') {
+      const x = ident();
+      await seedVia(body(c, t + 60000, cellId, { identifier: x, wck: 1 }));
+      if (f === 'batch-deleted') {
+        await col(c).updateMany({ wc: cellId, identifier: x }, { $set: { isValid: false, srvModified: Date.now() } });
+        out.del = 'mongo isValid:false';
+      }
+      docs = [it(0, { identifier: ident() }), it(1, { identifier: x, wcv: 2 }), it(2, { identifier: ident() })];
+    } else if (f === 'batch-placeholder-identifier') {
+      await col(c).deleteMany({ identifier: 'undefined' });
+      docs = [it(0, { identifier: ident() }), it(1, { identifier: 'undefined' }), it(2, { identifier: long257() }), it(3, { identifier: ident() })];
+    } else if (f === 'batch-dupkey-mid') {
+      docs = [it(0, { identifier: ident() }), it(1, { identifier: ident() }), it(2, { identifier: ident() })];
+      // Another upload's record with item 1's identifier, stored straight to
+      // MongoDB after the batch's identifier lookups and before its write.
+      const rival = Object.assign(body(c, t + 60000, cellId, { identifier: docs[1].identifier, wck: 1 }), { _id: new ObjectId() }
+        , c === 'entries' ? { sysTime: iso(t + 60000) } : {});
+      arm = () => { wtap.before = async () => { wtap.fired++; await col(c).insertOne(rival); }; };
+      out.index = ctx.identifierIndex && ctx.identifierIndex.collections && ctx.identifierIndex.collections[c]
+        ? ctx.identifierIndex.collections[c].state : 'unknown';
+    } else if (f === 'batch-storage-fail-mid') {
+      docs = [it(0, { identifier: ident() }), it(1, { identifier: ident() }), it(2, { identifier: ident() })];
+      arm = () => { wtap.fail = list => list.findIndex(d => d && d.wc === cellId && d.wcb === 1); };
+    } else if (f === 'batch-profile-permission') {
+      if (c !== 'profile' || p === 'ws') return na();
+      const h = hex();
+      await seedVia(body(c, t + 60000, cellId, { _id: h, wck: 1 }));
+      const changed = Object.assign(it(1, { _id: h, wcv: 2 }), idfAmount(c, t));
+      docs = [it(0), changed, it(2)];
+      sendOpts = { optIn, token: await createOnly() };
+    } else if (f === 'batch-prebolus') {
+      if (c !== 'treatments') return na();
+      docs = [it(0, { identifier: ident() }), it(1, { identifier: ident(), preBolus: 10, carbs: 30 }), it(2, { identifier: ident() })];
+    } else if (f === 'batch-taken-id' || f === 'batch-taken-all') {
+      const h1 = hex(); const h2 = hex();
+      await col(c).insertOne(Object.assign(body(c, t + 3600000, cellId, { _id: new ObjectId(h1), wck: 1 }), c === 'entries' ? { sysTime: iso(t + 3600000) } : {}));
+      await col(c).insertOne(Object.assign(body(c, t + 7200000, cellId, { _id: new ObjectId(h2), wck: 1 }), c === 'entries' ? { sysTime: iso(t + 7200000) } : {}));
+      out.seed = 'mongo OID,OID';
+      docs = f === 'batch-taken-id' ? [it(0), it(1, { _id: h1, wcv: 2 }), it(2)] : [it(0, { _id: h1, wcv: 2 }), it(1, { _id: h2, wcv: 2 })];
+    }
+    if (p === 'v1' && !V1_BATCH[c]) return na();
+
+    await wireStart(c);
+    const before = border(await docsOf(c, cellId));
+    const cursor = await cursorOf(c);
+    events = [];
+    Object.assign(wtap, { armed: true, coll: col(c).collectionName, cellId, counts: {}, before: null, fail: null, fired: 0 });
+    arm();
+    let st;
+    try { st = await batchSend(c, p, docs, sendOpts); } finally { wtap.armed = false; }
+    if (st === null) return na();
+    await sleep(250);
+    const evs = events.slice(); events = [];
+    const after = border(await docsOf(c, cellId));
+    const wired = await wireOf(cellId, before.concat(after));
+    Object.assign(out, st);
+    out.store = storeDesc(after);
+    out.storeb = storebDesc(after);
+    out.writes = writesDesc(wtap.counts);
+    out.srv = srvDesc(before, after);
+    out.hist = await histOf(c, cellId, cursor);
+    out.ev = evDesc(evs);
+    out.wire = wired;
+    out.v1read = await v1readOf(c, cellId);
+    if (f === 'batch-dupkey-mid' || f === 'batch-storage-fail-mid') out.inj = 'fired: ' + wtap.fired;
+    if (!(await alive())) { cells[key] = { st: 'INVALID liveness after' }; return; }
+    cells[key] = out;
+  }
+  // API v1 POST takes an array on every collection here.
+  const V1_BATCH = { entries: true, treatments: true, devicestatus: true, profile: true, food: true, activity: true };
+
+  if (BATCH_RUN.length && !TT_ONLY && !IDF_ONLY && !IDFMT_ONLY) {
+    for (const c of COLLS) for (const p of BATCH_PATHS) for (const f of BATCH_RUN) {
+      await batchCell(c, p, f, false);
+      if (p === 'v1') await batchCell(c, p, f, true);
+    }
+  }
+
   const result = {
     head, dirty_lib: dirty || '', node: process.version, mongod: serverVersion, db: DBNAME
     , write_validation: env.writeValidation === undefined ? '(not read by this build)' : env.writeValidation
     , date: new Date().toISOString(), collections: COLLS, paths: PATHS
     , forms: TT_ONLY ? TT_FORMS : IDF_ONLY ? FORMS.filter(f => IDF_FORMS.includes(f)) : IDFMT_ONLY ? IDFMT_FORMS
+      : BATCH_ONLY ? BATCH_RUN
       : FORMS.filter(f => !V2_FORMS.includes(f) && !IDF_FORMS.includes(f)).concat(TT_FORMS, FORMS.filter(f => V2_FORMS.includes(f)), FORMS.filter(f => IDF_FORMS.includes(f))
-        , flag('--no-idfmt') ? [] : IDFMT_FORMS)
+        , flag('--no-idfmt') ? [] : IDFMT_FORMS, BATCH_RUN)
+    , write_identifier: process.env.WRITE_IDENTIFIER || '(unset)'
+    , identifier_index: ctx.identifierIndex ? Object.keys(ctx.identifierIndex.collections || {}).map(k => k + ':' + ctx.identifierIndex.collections[k].state).join(',') : '(not read by this build)'
     , idf_collections: IDF_COLLS, uuid_handling: env.uuidHandling
     , wire_settle: { quiet_ms: WIRE_QUIET, max_ms: WIRE_SETTLE_MAX, emitted: wireStat.emitted, received: wireStat.received
       , bound_hits: wireStat.timeouts, frames_not_attributed: wireStat.rejected, injected_foreign: wireStat.injected }
