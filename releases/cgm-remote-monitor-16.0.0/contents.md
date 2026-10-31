@@ -437,6 +437,8 @@ opens when slices 3 and 4 are on `dev`.
 | #8810 AndroidAPS iOS push | `37146a1f` | `dev` | 84 behind, 5 ahead | 16 passed, 3 skipped | review items open |
 | #8824 `dev` to `master` | `604de1cb` | `master` | — | — | blocked by `master` protection |
 
+**15.0.9 → #8879 compatibility, measured** (session -4e, at the maintainer's request): write-contract matrix on `v15.0.9` `c6a0d8ed`, `dev` `37b2280f` and #8879 `6960bfb7` (MongoDB 7.0.43, since 15.0.9's driver 5.9.2 predates 8.0; Node 22.23.4; defaults; two runs per tree, 0 flaky): 4,916 cells per tree, 2,947 differ from 15.0.9, 0 unexplained; 376 differ only on `dev`, 2,230 only with #8879, 341 in both; 1,924 of them are identifier-format cases (ID-Q6). The only defect found is BF-225 (3 cells). Results are with the maintainer (private page); the data stays out of this repository. Anchor drift noted: `lib/client/renderer.js:354` in the slice 4 decision row is the line at `dev` `ca1652d6` (`:240` on 15.0.9); Trio was read at `e41c9db3`; tconnectsync and AndroidAPS anchors have moved a few lines.
+
 **BF-225** (filed by session -4e): a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier, on `dev` since #8877 (`cf3d4b8f`), not on 15.0.9; a 16.0.0 blocker candidate for the maintainer to decide. Release-notes line owed (measured by -4e): on 15.0.9 a socket `dbAdd` array of three distinct treatments stored only one; #8877 fixed that.
 
 Local, not pushed: the unique index (moving onto 6a; its retry becomes item-level first), ID-BATCH (session -81, on the index), the one-person profile prototype (`908351d4`). Being reproduced, not filed: an API v3 autoPrune cache lead.
