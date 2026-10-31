@@ -157,9 +157,21 @@
 // --idfmt-only runs only these cells; --no-idfmt leaves them out (as do
 // --idf-only and --tt-only).
 // The pin with these forms is results/write-contract-matrix/dev-991b0654-idformat.json
-// (2675 cells, the new ones only, from an --idfmt-only run). `wire` is racy on
-// cells whose seed or delete went through API v3: that write's storage-socket
-// event can arrive inside the measured step (seen on earlier cells too).
+// (2675 cells, the new ones only, from an --idfmt-only run).
+//
+// `wire` attribution (QC-MATRIX-WIRE-ATTRIBUTION, 2026-10-31). Before it, a
+// cell's `wire` was every storage-socket frame received in its measured
+// window, so a late frame from the previous cell, or the cell's own seed frame
+// (a v3 seed or v3 delete before the measured step), could be counted. Now a
+// cell counts only frames for its own records (by `wc`, or for a delete by the
+// identifier of one of its records), and it settles before and after the
+// measured step: it waits until every storage-socket emission on the bus has
+// reached the subscriber and the socket has been quiet for 50 ms, bounded at
+// 3 s. Cell ids and fields are unchanged. The result's `wire_settle` (outside
+// `cells`) counts frames emitted, received and not attributed, and bound hits.
+// Break-it: --wire-inject-foreign emits one frame for another cell's record at
+// the start of every measured step; with attribution every cell is unchanged,
+// without it every cell whose collection is subscribed gains a `create`.
 
 const fs = require('fs');
 const path = require('path');
@@ -409,15 +421,75 @@ function body (coll, t, cell, extra) {
   // A real API v3 storage-socket client (the /storage namespace AndroidAPS
   // NSClientV3 listens on in websocket mode), subscribed to every collection:
   // what it receives is what such a client learns of each write.
-  let wire = [];
+  let subscribed = [];
   const storage = await new Promise((resolve, reject) => {
     const s = io(BASE + '/storage', { transports: ['websocket'], forceNew: true });
-    s.on('connect', () => s.emit('subscribe', { accessToken: subj.accessToken }, a =>
-      a && a.success ? resolve(s) : reject(new Error('storage subscribe refused ' + JSON.stringify(a)))));
+    s.on('connect', () => s.emit('subscribe', { accessToken: subj.accessToken }, a => {
+      if (!(a && a.success)) return reject(new Error('storage subscribe refused ' + JSON.stringify(a)));
+      subscribed = a.collections; resolve(s);
+    }));
     s.on('connect_error', reject);
     setTimeout(() => reject(new Error('storage socket timeout')), 8000);
   });
-  ['create', 'update', 'delete'].forEach(n => storage.on(n, () => wire.push(n)));
+  // Frame attribution and settling (QC-MATRIX-WIRE-ATTRIBUTION). A frame can
+  // arrive after the write that caused it has replied, so the previous cell's
+  // late frame, or this cell's seed frame, could land in the measured step.
+  // Every frame is kept with what it carries (the record's `wc`, or the
+  // identifier of a delete), and a cell's `wire` counts only frames for its
+  // own records (wireOf). Settling: each storage-socket emission on the bus
+  // (in this process, synchronous with the write) is counted against the
+  // frames received; settle() waits until every emitted frame has arrived and
+  // none has arrived for WIRE_QUIET ms, at most WIRE_SETTLE_MAX ms. A cell
+  // settles after its seed (before its measured step) and after its measured
+  // step (before `wire` is read). Bound hits are counted in the result's
+  // `wire_settle`, outside `cells`, so they never change a cell.
+  // --wire-inject-foreign (break-it control): at the start of each measured
+  // step, emit one storage-socket-create for a record of another cell; a
+  // harness without attribution then records it in `wire`.
+  const WIRE_QUIET = 50;
+  const WIRE_SETTLE_MAX = 3000;
+  let frames = [];
+  const wireStat = { emitted: 0, received: 0, timeouts: 0, rejected: 0, injected: 0 };
+  let lastFrameAt = 0;
+  ['storage-socket-create', 'storage-socket-update', 'storage-socket-delete'].forEach(n =>
+    ctx.bus.on(n, e => { if (e && subscribed.includes(e.colName)) wireStat.emitted++; }));
+  ['create', 'update', 'delete'].forEach(n => storage.on(n, e => {
+    wireStat.received++; lastFrameAt = Date.now();
+    frames.push({ n, wc: e && e.doc ? e.doc.wc : undefined, id: e && e.doc ? e.doc.identifier : e && e.identifier });
+  }));
+  async function settle () {
+    const start = Date.now();
+    for (;;) {
+      const now = Date.now();
+      if (wireStat.received >= wireStat.emitted && now - lastFrameAt >= WIRE_QUIET) return;
+      if (now - start >= WIRE_SETTLE_MAX) { wireStat.timeouts++; return; }
+      await sleep(10);
+    }
+  }
+  // The measured step starts: settle what came before, then record afresh.
+  async function wireStart (c) {
+    await settle();
+    frames = [];
+    if (flag('--wire-inject-foreign') && subscribed.includes(c)) {
+      wireStat.injected++;
+      ctx.bus.emit('storage-socket-create', { colName: c, doc: { wc: 'wc-foreign', identifier: 'wc-foreign' } });
+    }
+  }
+  // The frames of this cell's records: a create or update carries the record
+  // (its `wc`); a delete carries only the identifier the request named, the
+  // record's identifier or _id, so it is matched against the cell's records.
+  async function wireOf (cellId, docs) {
+    await settle();
+    const ids = new Set();
+    docs.forEach(d => {
+      if (d.identifier !== undefined && d.identifier !== null) ids.add(String(d.identifier));
+      ids.add(d._id instanceof ObjectId ? d._id.toHexString() : String(d._id));
+    });
+    const mine = frames.filter(f => f.wc !== undefined ? f.wc === cellId : f.id !== undefined && f.id !== null && ids.has(String(f.id)));
+    wireStat.rejected += frames.length - mine.length;
+    frames = [];
+    return mine.length ? mine.map(f => f.n).join(',') : 'none';
+  }
   const emit = (ev, d) => new Promise(resolve => {
     const t = setTimeout(() => resolve('NO-ACK'), 5000);
     sock.emit(ev, d, a => { clearTimeout(t); resolve(a); });
@@ -630,21 +702,22 @@ function body (coll, t, cell, extra) {
     }
     if (seedReply !== null) out.seed = seedReply;
 
+    await wireStart(c);
     const before = await docsOf(c, cellId);
     const cursor = await cursorOf(c);
-    events = []; wire = [];
+    events = [];
     const st = await measured();
     if (st === null) { cells[key] = { st: 'n/a' }; return; }
     await sleep(250);
     const evs = events.slice(); events = [];
-    const wired = wire.slice(); wire = [];
     const after = await docsOf(c, cellId);
+    const wired = await wireOf(cellId, before.concat(after));
     out.st = st;
     out.store = storeDesc(after);
     out.srv = srvDesc(before, after);
     out.hist = await histOf(c, cellId, cursor);
     out.ev = evDesc(evs);
-    out.wire = wired.length ? wired.join(',') : 'none';
+    out.wire = wired;
     out.cache = cacheOf(c, cellId);
     out.v1read = await v1readOf(c, cellId);
     if (f === 'idread-fail') out.inj = 'reads failed: ' + inject.fired;
@@ -735,20 +808,21 @@ function body (coll, t, cell, extra) {
           measured = kind === 'update' ? () => update[p](doc, arg, ident)
             : kind === 'put' ? () => put(doc, arg, ident) : () => unset(doc, arg);
         }
+        await wireStart(c);
         const before = await docsOf(c, cellId);
         const cursor = await cursorOf(c);
-        events = []; wire = [];
+        events = [];
         out.st = await measured();
         await sleep(250);
         const evs = events.slice(); events = [];
-        const wired = wire.slice(); wire = [];
         const after = await docsOf(c, cellId);
+        const wired = await wireOf(cellId, before.concat(after));
         out.store = storeDesc(after);
         out.tt = ttDesc(after);
         out.srv = srvDesc(before, after);
         out.hist = await histOf(c, cellId, cursor);
         out.ev = evDesc(evs);
-        out.wire = wired.length ? wired.join(',') : 'none';
+        out.wire = wired;
         out.cache = cacheOf(c, cellId);
         out.v1read = await v1readOf(c, cellId);
         if (!(await alive())) { cells[key] = { st: 'INVALID liveness after' }; continue; }
@@ -798,27 +872,28 @@ function body (coll, t, cell, extra) {
   // The measured step and every observation an earlier cell records, plus shape.
   // `extra` (QC-MATRIX-IDFMT only) adds fields from the ordered records.
   async function idfMeasure (key, c, cellId, out, measured, extra) {
+    await wireStart(c);
     const before = await docsOf(c, cellId);
     const cursor = await cursorOf(c);
-    events = []; wire = [];
+    events = [];
     const st = await measured();
     if (st === null) { cells[key] = { st: 'n/a' }; return; }
     await sleep(250);
     const evs = events.slice(); events = [];
-    const wired = wire.slice(); wire = [];
     // Seeded records first, in their order, then the records the step created:
     // an _id made by mongod (an upsert's insert) and one made by the driver in
     // the same second sort by each process's random bytes, so _id order is racy.
     const was = d => before.findIndex(b => String(b._id) === String(d._id) && typeof b._id === typeof d._id);
     const after = (await docsOf(c, cellId)).map((d, i) => [was(d), i, d])
       .sort((x, y) => (x[0] === -1 ? 1e9 : x[0]) - (y[0] === -1 ? 1e9 : y[0]) || x[1] - y[1]).map(x => x[2]);
+    const wired = await wireOf(cellId, before.concat(after));
     out.st = st;
     out.store = storeDesc(after);
     out.shape = shapeDesc(before, after);
     out.srv = srvDesc(before, after);
     out.hist = await histOf(c, cellId, cursor);
     out.ev = evDesc(evs);
-    out.wire = wired.length ? wired.join(',') : 'none';
+    out.wire = wired;
     out.cache = cacheOf(c, cellId);
     out.v1read = await v1readOf(c, cellId);
     if (extra) extra(out, after);
@@ -993,11 +1068,16 @@ function body (coll, t, cell, extra) {
     , forms: TT_ONLY ? TT_FORMS : IDF_ONLY ? FORMS.filter(f => IDF_FORMS.includes(f)) : IDFMT_ONLY ? IDFMT_FORMS
       : FORMS.filter(f => !V2_FORMS.includes(f) && !IDF_FORMS.includes(f)).concat(TT_FORMS, FORMS.filter(f => V2_FORMS.includes(f)), FORMS.filter(f => IDF_FORMS.includes(f))
         , flag('--no-idfmt') ? [] : IDFMT_FORMS)
-    , idf_collections: IDF_COLLS, uuid_handling: env.uuidHandling, cells
+    , idf_collections: IDF_COLLS, uuid_handling: env.uuidHandling
+    , wire_settle: { quiet_ms: WIRE_QUIET, max_ms: WIRE_SETTLE_MAX, emitted: wireStat.emitted, received: wireStat.received
+      , bound_hits: wireStat.timeouts, frames_not_attributed: wireStat.rejected, injected_foreign: wireStat.injected }
+    , cells
   };
   if (OUT) fs.writeFileSync(OUT, JSON.stringify(result, null, 1));
   else console.log(JSON.stringify(result, null, 1));
-  console.error('cells: ' + Object.keys(cells).length + ', invalid: ' + Object.values(cells).filter(x => /INVALID/.test(x.st)).length);
+  console.error('cells: ' + Object.keys(cells).length + ', invalid: ' + Object.values(cells).filter(x => /INVALID/.test(x.st)).length
+    + '; wire frames emitted ' + wireStat.emitted + ', received ' + wireStat.received + ', not attributed ' + wireStat.rejected
+    + ', settle bound hits ' + wireStat.timeouts + (wireStat.injected ? ', injected foreign ' + wireStat.injected : ''));
 
   sock.close();
   storage.close();
