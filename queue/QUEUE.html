@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-31 at <code>e2e76d65b</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>b516c10ec</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -18277,7 +18277,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-31 correction (session -4e): the treatments x v3 x ws cell was a documented, intended change in #8877 (PR body line 29, its matrix run line 72); the idf-uuidid-same cells are undocumented. The smallest revert breaks BF-209's guard test, so the fix scope (duplicated vs possibly lost treatment) is pending the maintainer's choice. 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.</p>
+<p><strong>Notes.</strong> 2026-10-31 later: the maintainer chose B and C (2026-10-31, via session -4e): B, on dev (branch bf/16.0.0-bf225-socket-duplicate): the socket similar match also accepts a stored treatment whose identifier equals the one API v3 computes for the incoming body (device + date + eventType), fixing treatments x v3 x ws, while BF-209's case (an upload without identity 1 s after an AndroidAPS v3 record) still keeps both; C, on #8879 (a small rule commit): a UUID _id on a socket dbAdd treatment counts as its identifier, as v1's UUID handling does, so the two idf-uuidid-same cells become one record, replaced under decision B. Rejected: A (full 15.0.9 revert; brings back BF-209's lost treatment) and D (keep #8877's choice). Being built by -4e with full gates. 2026-10-31 correction (session -4e): the treatments x v3 x ws cell was a documented, intended change in #8877 (PR body line 29, its matrix run line 72); the idf-uuidid-same cells are undocumented. The smallest revert breaks BF-209's guard test, so the fix scope (duplicated vs possibly lost treatment) is pending the maintainer's choice. 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.</p>
 <h3 id="bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent"><code>BFQ-219</code> &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent<a class="headerlink" href="#bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
