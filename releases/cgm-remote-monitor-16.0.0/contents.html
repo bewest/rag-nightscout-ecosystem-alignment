@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>1e52e7090</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>95e27a4ad</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3618,10 +3618,20 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fab3f77cddbad0d6d655662171170bb99bc15d99/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/95e27a4adff0e177e43acc5ffb4a8f3f0e95c737/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
+<p><strong>Journey lab, 2026-10-30/31, #8874 <code>7463e76d</code> against <code>dev</code> <code>305a6533</code></strong> (maintainer in the browser, two tabs per
+site, with session -7d checking the database and socket timing; journey lab <code>tools/review/journey-lab</code>, MongoDB 7,
+Node 22.23.4, development mode; sites loop, aaps (API v3, mmol/L), aaps-v1 (socket) and rep-trio on each head):
+careportal carb correction (REST POST); Loop carbs POST, PUT edit and DELETE by <code>_id</code>; the web page's edit-mode drag
+(socket <code>dbUpdate</code>); AndroidAPS temp target start and cancel over v3 and the socket, carbs, and carb delete; the modern
+theme on rep-trio. Every step stored once with the same fields on both heads and showed live in both tabs; deletes
+reached the page in 13–30 ms on both heads (3/3). Verdict: no difference between #8874 and <code>dev</code> in anything seen or
+stored. Found along the way, none caused by #8874: BF-221 (a v1 treatment PUT reaches pages up to a minute late),
+DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE and UI-STALE-SECRET-HASH (queue). The lab's AAPS temp-target cancel was
+corrected (<code>2e484bd33</code>).</p>
 <p><strong>Dry run, 2026-10-27, <code>dev</code> <code>8dbb60c2</code></strong> (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default <code>static</code> and
 <code>unit</code> gate kinds: 65 items, 49 PASS, 4 FAIL, 12 UNMEASURED; 157 gates run or marked, 72 passed, 5 failed,
