@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 344 |
+| items | 345 |
 | runnable gates | 401 |
-| explicit `no-gate:` markers | 359 |
+| explicit `no-gate:` markers | 360 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 359 of the 760 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 761 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 76 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, BFQ-224, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
 | `in-progress` | 10 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, BFQ-223, OID-LAB, HUB-REG-CRM, UI-STALE-SECRET-HASH |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -151,6 +151,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-214** BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat
 - **BFQ-217** BF-217 - an override with no reservoir value throws in the pump plugin
 - **BFQ-223** BF-223 - a saved API secret the site refuses blocks a valid ?token= link
+- **BFQ-224** BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500
 - **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 - **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
 - **BFQ-221** BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
@@ -2787,7 +2788,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 160 items
+`parcel: register-open` &mdash; 161 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2929,6 +2930,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-214` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `in-progress` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
+| `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7339,6 +7341,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET- HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).
+
+### `BFQ-224` &mdash; BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@37b2280f` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-224` |
+
+**Blast radius.** lib/server/query.js enforceDateFilter (:121-131): a plain value under the date field must not be iterated as an operator object. Every v1 route that builds its query with query.js and a created_at or startDate date field (treatments measured; devicestatus, activity, profile read).
+
+**What an operator sees.** A report or tool asking Nightscout for the treatments at one exact time (find[created_at]=<time>) gets a server error instead of an answer, and a delete written that way removes nothing. Adding [$eq] works today. On 15.0.9 and dev.
+
+**Why `patch`.** a query that failed with 500 since 2019 gets an answer; no change for any query that works today
+
+**Gates.**
+
+- **NO GATE** &mdash; not built yet; the fix's gate is an HTTP test with a plain-value find[created_at] on GET and DELETE, red (500) on dev and green after
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400.
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 

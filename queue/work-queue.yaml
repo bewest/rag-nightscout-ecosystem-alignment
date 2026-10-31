@@ -18313,6 +18313,41 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
       2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET-HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).
+  - id: BFQ-224
+    title: "BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@37b2280f
+    state: not-started
+    pr: []
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/query.js enforceDateFilter (:121-131): a plain value under the
+      date field must not be iterated as an operator object. Every v1 route
+      that builds its query with query.js and a created_at or startDate date
+      field (treatments measured; devicestatus, activity, profile read).
+    review: maintainer
+    operator_visible: >
+      A report or tool asking Nightscout for the treatments at one exact time
+      (find[created_at]=<time>) gets a server error instead of an answer, and a
+      delete written that way removes nothing. Adding [$eq] works today. On
+      15.0.9 and dev.
+    semver: patch
+    semver_reason: a query that failed with 500 since 2019 gets an answer; no change for any query that works today
+    register: [BF-224]
+    gates:
+      - no-gate: >
+          not built yet; the fix's gate is an HTTP test with a plain-value
+          find[created_at] on GET and DELETE, red (500) on dev and green after
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and
+      f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix
+      needs a choice: treat a plain value as equality (MongoDB's meaning of a
+      plain value) or refuse it with 400.
   - id: BFQ-219
     title: "BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent"
     parcel: register-open
