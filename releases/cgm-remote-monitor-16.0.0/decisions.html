@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>bd866d8e7</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>06ff67701</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2682,7 +2682,7 @@ public.</em></p>
 <td><strong>Slice 3, API v3's computed identifier after a delete, per collection</strong>: for entries, profile, food and settings the server-computed <code>identifier</code> (device + date + eventType) counts as an identity key, so a v3 re-create of a deleted record is acknowledged and stays deleted; for treatments, v3 keeps today's revive in 16.0.0. Socket profile revive stays with Q-R. Slice 3 otherwise follows ID-Q4 (identity-key match on a deleted record: acknowledged; time-key match: a new record)</td>
 <td>maintainer, 2026-10-30, via session -49, on session -4f's AAPS reading (7e1d537d, read, not run): AAPS never sends an identifier; treatments carry no device, so the key is <code>undefined_&lt;date&gt;_&lt;eventType&gt;</code>; a same-minute re-entry after delete is realistic; staying deleted would hide the re-entered treatment and, on a later PATCH answered 410, stall that collection's AAPS uploads without limit (only 404 is retry-bounded)</td>
 <td><code>ID-FIRST-MATCH</code> (slice 3)</td>
-<td>being built for #8879; an AAPS upstream ask (bound or handle 410 on PATCH) is being drafted, then treatments are revisited. Reviewer to verify: the real rate of same-minute re-entries, SQLite row order in <code>getByNSId</code>, and whether a bolus and a carb entry share a timestamp</td>
+<td>built as <code>c9b74404</code> for #8879 (32 cells, exactly as predicted); device status over v3 is also acknowledged, confirmed by the maintainer 2026-10-30 (AAPS never deletes device status, so no 410 stall); an AAPS upstream ask (bound or handle 410 on PATCH) is being drafted, then treatments are revisited. Reviewer to verify: the real rate of same-minute re-entries, SQLite row order in <code>getByNSId</code>, and whether a bolus and a carb entry share a timestamp</td>
 </tr>
 <tr>
 <td><strong>#8875's properties view also reads the resident windows (60 h of treatments, the loader's 48 h of readings)</strong>, so the main-page pills match today's exactly, at 1.1 to 2.5 times the bytes per minute of the 3-DIA bound</td>
