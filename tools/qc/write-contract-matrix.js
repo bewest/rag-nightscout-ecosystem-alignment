@@ -159,15 +159,16 @@
 // The pin with these forms is results/write-contract-matrix/dev-991b0654-idformat.json
 // (2675 cells, the new ones only, from an --idfmt-only run).
 //
-// `wire` attribution (QC-MATRIX-WIRE-ATTRIBUTION, 2026-10-31). Before it, a
-// cell's `wire` was every storage-socket frame received in its measured
-// window, so a late frame from the previous cell, or the cell's own seed frame
-// (a v3 seed or v3 delete before the measured step), could be counted. Now a
-// cell counts only frames for its own records (by `wc`, or for a delete by the
-// identifier of one of its records), and it settles before and after the
-// measured step: it waits until every storage-socket emission on the bus has
-// reached the subscriber and the socket has been quiet for 50 ms, bounded at
-// 3 s. Cell ids and fields are unchanged. The result's `wire_settle` (outside
+// `wire` settling and attribution (QC-MATRIX-WIRE-ATTRIBUTION, 2026-10-31).
+// Before it, a cell's `wire` was every storage-socket frame received in its
+// measured window. Under load the cell's own seed frame (a v3 seed, or a v3
+// delete before the measured step) arrived after the fixed 80 ms wait and was
+// counted, and a measured frame could arrive after the 250 ms wait and be
+// missed; no frame from another cell was seen. Now a cell settles before and
+// after the measured step: it waits until every storage-socket emission on
+// the bus has reached the subscriber and the socket has been quiet for 50 ms,
+// bounded at 3 s. As a guard, a cell also counts only frames for its own
+// records (by `wc`, or for a delete by the identifier of one of its records). Cell ids and fields are unchanged. The result's `wire_settle` (outside
 // `cells`) counts frames emitted, received and not attributed, and bound hits.
 // Break-it: --wire-inject-foreign emits one frame for another cell's record at
 // the start of every measured step; with attribution every cell is unchanged,
