@@ -425,6 +425,11 @@ opens when slices 3 and 4 are on `dev`.
 | `master` protection, #8824 | — | protection still requires `Run Tests (22, 4.4)` | the decided settings change (only *Tests pass* and one approval), then #8824; maintainer |
 | Release 2 | `proto/v3-unify` `3b7f054a` (local) | Q-A adopted 2026-10-30; Q-U decided; Q9 recorded | write step resolves filter writes to ids; one write shape for v3; session -7d's labs |
 
+**Update, 2026-10-31, evening** (session -d1; `dev` still `37b2280f`):
+
+- **ST-VIEWS** (maintainer, [decisions](decisions.md)): #8875 ships in 16.0.0 unwired; the one-person profile with nothing resident is prototyped on a branch (session -81); the tenancy × execution framing goes into the next-gen plan as a design question. The views branch with `dev` `37b2280f` merged is local `feat/views-serve` `7b4b724c` (replay 0 differing minutes on 126,092, `npm test` 5355/0/3); #8875 on GitHub is still `24647c0a`.
+- **ID-UNIQUE-INDEX** on slice 4: local `d0f2f70a`, 342 of 342 predicted cells on MongoDB 5.0 and 8.0, approved by session -4e; being moved onto `5a251213` with a mixed-batch test.
+
 **Update, 2026-10-31, about 17:50Z** (session -d1; `dev` still `37b2280f`):
 
 - **#8879's `dev` merge is ready to push** (session -4e): local `feat/id-first-s4r` `5a251213` = merge `5bf94c8b` (`f5bd2642` + `dev` `37b2280f`) plus a test for the batch-index mapping (`tests/api.entries.batch-deleted-and-taken.test.js`); fast-forwards the PR head; 0 behind `dev`, 13 ahead. The four expected conflicts kept both sides; the matrix (4,604 cells, MongoDB 8.0) moved 0 cells outside `cache` and `wire`; every tier green on Node 22.23.4 and 24.22.1; the merge revert gives `f5bd2642`'s tree. The maintainer has the push commands. The matrix has no cells for BF-219..222 (coverage gap, no BF id).
