@@ -80,27 +80,31 @@ maintainer, plus a second human - re-send behaviour clients see changes
 
 ## Notes carried on the item
 
-2026-10-31 evening (session -4e): #8879 dev merge pushed by the maintainer
-(official/feat/id-first-match = 5a251213). Slices 6, 6a and the 2026-10-31
-socket decisions (B: socket treatments replace; C: the profile startDate rule
-on the socket) gated on local feat/id-first-s4r 71738792 (c27bbaa5 tests,
-4d1a0fa0 tiers, 15e4f2c0 slice 6, d63ba67d 6a, 2088cfe6 B+C, 71738792 title),
-push commands with the maintainer. Matrix against hashed predictions, exact on
-f5bd2642 and 5a251213: slice 6 230/230, 6a 78/78, B+C 52/52; red controls
-exactly each slice's cells; per-path ablations red by assertion; each revert
-gives the previous pin. Suite 5,604/0/3 on Node 24.22.1 and 22.23.4; lint 0
-errors. Design-note reconciliation: 6a 33/33 by id; slice 6+B+C 102 against
-the note's 117 (96 shared; the 21 note-only and 6 new explained cell by cell).
-Changed expectations marked in-file (the v1-collections profile snapshot;
-api.crud-by-id.matrix cross-path re-send to the socket). For maintainer
-review: a deleted profile at another startDate on v1/in-process and the socket
-(decision row line 90 reading). Safety choice: a v1/in-process food or
-activity document routed by identifier to another record no longer removes the
-string twins of its carried _id. Not covered here: two new documents sharing a
-new identifier in one v1 batch both insert (ID-BATCH plus the index).
-2026-10-31 16:20Z (GitHub): #8879 at f5bd2642 (lint fix: no-useless-assignment
-in writeStatuses), 0 behind dev 368e6c23, 11 ahead, CI green on every job;
-still draft. Slices 6 and 6a not yet pushed (local prep/id-first-s6 47377fa3).
+2026-10-31 later (GitHub): the maintainer pushed 71738792 (#8879 head, draft,
+0 behind dev 37b2280f, 19 ahead; CI running at the push). -4e's 6960bfb7
+(comments only: the line-90 notes now read confirmed by the maintainer) awaits
+push; lib tree identical. 2026-10-31 evening (session -4e): #8879 dev merge
+pushed by the maintainer (official/feat/id-first-match = 5a251213). Slices 6,
+6a and the 2026-10-31 socket decisions (B: socket treatments replace; C: the
+profile startDate rule on the socket) gated on local feat/id-first-s4r
+71738792 (c27bbaa5 tests, 4d1a0fa0 tiers, 15e4f2c0 slice 6, d63ba67d 6a,
+2088cfe6 B+C, 71738792 title), push commands with the maintainer. Matrix
+against hashed predictions, exact on f5bd2642 and 5a251213: slice 6 230/230,
+6a 78/78, B+C 52/52; red controls exactly each slice's cells; per-path
+ablations red by assertion; each revert gives the previous pin. Suite
+5,604/0/3 on Node 24.22.1 and 22.23.4; lint 0 errors. Design-note
+reconciliation: 6a 33/33 by id; slice 6+B+C 102 against the note's 117 (96
+shared; the 21 note-only and 6 new explained cell by cell). Changed
+expectations marked in-file (the v1-collections profile snapshot; api.crud-by-
+id.matrix cross-path re-send to the socket). For maintainer review: a deleted
+profile at another startDate on v1/in-process and the socket (decision row
+line 90 reading). Safety choice: a v1/in-process food or activity document
+routed by identifier to another record no longer removes the string twins of
+its carried _id. Not covered here: two new documents sharing a new identifier
+in one v1 batch both insert (ID-BATCH plus the index). 2026-10-31 16:20Z
+(GitHub): #8879 at f5bd2642 (lint fix: no-useless-assignment in
+writeStatuses), 0 behind dev 368e6c23, 11 ahead, CI green on every job; still
+draft. Slices 6 and 6a not yet pushed (local prep/id-first-s6 47377fa3).
 2026-10-31 later (GitHub, about 05:45Z): #8879 at 931e5e60, 0 behind dev
 368e6c23: slice 4 (merge on match, treatments replaced on every path) pushed;
 CI fails lint (no-useless-assignment, lib/storage/write-intent.js:1450).
