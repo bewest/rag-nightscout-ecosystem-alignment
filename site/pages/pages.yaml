@@ -34,6 +34,11 @@ pages:
     sources: [releases/cgm-remote-monitor-15.0.9/colophon.md, releases/cgm-remote-monitor-15.0.9/colophon-data.json]
     source_commit: 59b35119
     render: tools/site/render_colophon.py
+  cgm-remote-monitor-16.0.0-write-compatibility.html:
+    kind: living
+    sources: [releases/cgm-remote-monitor-16.0.0/compat/headline.json, releases/cgm-remote-monitor-16.0.0/compat/groups.json, releases/cgm-remote-monitor-16.0.0/compat/heat.json, releases/cgm-remote-monitor-16.0.0/compat/families.json, releases/cgm-remote-monitor-16.0.0/compat/triage.json, releases/cgm-remote-monitor-16.0.0/compat/clients.json, releases/cgm-remote-monitor-16.0.0/compat/cells.json, releases/cgm-remote-monitor-16.0.0/compat/groups.yaml, releases/cgm-remote-monitor-16.0.0/compat/page.yaml, releases/cgm-remote-monitor-16.0.0/compat/reconsider.json]
+    source_commit: bdfe0f7aa
+    render: tools/site/render_compat.py
   clinical-decision-support-synthetic-demo-2026-10-16.html:
     kind: snapshot
     as_of: 2026-10-16
