@@ -506,7 +506,7 @@ const AAPS = {
     Object.assign(o, createdId(r)); st.open.tt = o; save(); say('stored as', JSON.stringify(createdId(r)));
   }],
   'tt-cancel': ['cancel it in AAPS (v3: PATCH the running record; v1: dbUpdate by _id)', async () => {
-    const o = lastOpen('tt'); await send(C.aaps.tempTargetCancel({ variant: VARIANT, identifier: o.identifier, nsId: o.nsId, startedAt: o.startedAt, endedAt: now() })); st.open.lastTt = o; delete st.open.tt; save();
+    const o = lastOpen('tt'); await send(C.aaps.tempTargetCancel({ variant: VARIANT, identifier: o.identifier, nsId: o.nsId, startedAt: o.startedAt, endedAt: now(), low: o.low, high: o.high, reason: o.reason })); st.open.lastTt = o; delete st.open.tt; save();
   }],
   carbs: ['<grams=30>', async a => { const r = await send(C.aaps.carbs({ variant: VARIANT, now: now(), grams: num(a[0], 30) })); st.ids.lastCarb = Object.assign(createdId(r), { record: { eventType: 'Carb Correction', carbs: num(a[0], 30), date: now() } }); save(); say('stored as', JSON.stringify(st.ids.lastCarb)); }],
   'carb-delete': ['invalidate the last carb entry in AAPS (v3: DELETE, the server soft-deletes; v1: dbUpdate isValid:false)', async () => send(C.aaps.remove(Object.assign({ variant: VARIANT, collection: 'treatments' }, st.ids.lastCarb)))],
