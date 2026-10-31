@@ -30,15 +30,17 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 16 items
+### Maintainer &mdash; 19 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
+| `BFQ-223` | `in-flight-upstream` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | #8885 |
 | `ID-FIRST-MATCH` | `in-flight-upstream` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules ( | #8879 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
+| `UI-STALE-SECRET-HASH` | `in-flight-upstream` | A stale API secret hash stored in the browser blocks a valid ?token= link, and t | #8885 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -47,6 +49,7 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
+| `BFQ-224` | `ready-to-push` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=< | #8885 |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -78,6 +81,8 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8878** | `BFQ-212` | `bf/16.0.0-split-identity` | BF-212 - a chart-drag split leaves two treatments with one c | Maintainer |
 | **#8879** | `ID-FIRST-MATCH` | `feat/id-first-match` | Identifier-first matching on every collection and path, with | Maintainer |
+| **#8885** | `BFQ-223` | `bf/16.0.0-stale-secret-hash` | BF-223 - a saved API secret the site refuses blocks a valid  | Maintainer |
+| **#8885** | `UI-STALE-SECRET-HASH` | `bf/16.0.0-stale-secret-hash` | A stale API secret hash stored in the browser blocks a valid | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

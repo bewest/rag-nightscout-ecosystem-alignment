@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 202 | 40 | 10 |
-| **Modernization** | `release-train` | 53 | 8 | 2 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 202 | 39 | 12 |
+| **Modernization** | `release-train` | 53 | 8 | 3 |
 | **Multitenant** | `tenancy`, `platform` | 88 | 28 | 6 |
-| | **total** | **345** | **76** | **18** |
+| | **total** | **345** | **75** | **21** |
 
 <!-- END GENERATED: horizons -->
 
@@ -194,8 +194,8 @@ cover more than one `BF-`:
 | `BFQ-220` | `merged-upstream` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are store |
 | `BFQ-221` | `merged-upstream` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late |
 | `BFQ-222` | `merged-upstream` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache |
-| `BFQ-223` | `in-progress` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link |
-| `BFQ-224` | `not-started` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answ |
+| `BFQ-223` | `in-flight-upstream` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link |
+| `BFQ-224` | `ready-to-push` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answ |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -231,8 +231,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 8 | 1 | 1 |  | 1 |  | 20 | 15 | 2 | 1 |  |  | 4 | **53** |
-| `register-open` | 30 | 4 | 1 | 1 | 3 | 3 | 51 | 58 | 5 |  |  | 5 |  | **161** |
+| `release-train` | 8 |  | 1 |  | 1 | 1 | 20 | 15 | 2 | 1 |  |  | 4 | **53** |
+| `register-open` | 29 | 3 | 1 | 2 | 3 | 4 | 51 | 58 | 5 |  |  | 5 |  | **161** |
 | `tenancy` | 20 | 4 |  | 1 | 9 | 1 | 4 |  | 1 | 4 | 1 |  | 6 | **51** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |

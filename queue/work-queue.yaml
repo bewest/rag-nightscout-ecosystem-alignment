@@ -18284,8 +18284,8 @@ items:
     branch: bf/16.0.0-stale-secret-hash
     base: official/dev@37b2280f
     worktree: externals/work/crm-stale-secret
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8885]
     ships_to_operators_today: true
     blast_radius: >
       lib/client/index.js client.init and lib/client/hashauth.js (main page);
@@ -18303,8 +18303,8 @@ items:
     semver_reason: client sign-in behaviour only; no API change
     register: [BF-223]
     gates:
-      - run: git -C externals/work/crm-stale-secret merge-base --is-ancestor 9be6a2bc HEAD
-        kind: static
+      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8885/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9be6a2bc FETCH_HEAD
+        kind: network
         describe: >
           the local fix branch carries BF-223's main-page fix 9be6a2bc; replace with the
           PR head gate once pushed, then official/dev ancestry once merged
@@ -18312,15 +18312,16 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast-forward.
       2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET-HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).
   - id: BFQ-224
     title: "BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/16.0.0-small-backfixes
     base: official/dev@37b2280f
-    state: not-started
-    pr: []
+    state: ready-to-push
+    pr: [8885]
     ships_to_operators_today: true
     blast_radius: >
       lib/server/query.js enforceDateFilter (:121-131): a plain value under the
@@ -18337,13 +18338,17 @@ items:
     semver_reason: a query that failed with 500 since 2019 gets an answer; no change for any query that works today
     register: [BF-224]
     gates:
-      - no-gate: >
-          not built yet; the fix's gate is an HTTP test with a plain-value
-          find[created_at] on GET and DELETE, red (500) on dev and green after
+      - run: git -C externals/work/crm-small-backfixes merge-base --is-ancestor f59d7872 HEAD
+        kind: static
+        describe: >
+          the local branch carries the BF-224 fix f59d7872 (16 new tests red on
+          dev with the TypeError, green with it); replace with the #8885 head
+          gate once pushed
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31 later: built by an agent of session -d1 as f59d7872 on bf/16.0.0-small-backfixes (on the #8885 head ecbc9c06): a non-empty plain string under the date field becomes {$eq: value} before the date rewrite (6 lines in lib/server/query.js); plain numbers unchanged; every operator form and the BF-108 $in handling build byte-identical queries. Red on dev: 16 (9 unit, 7 HTTP incl. devicestatus); green 63/0; test:unit 1896, integration subset 287, test:browser 684, eslint 0 errors; break-it (dev query.js) red on exactly the 16. A plain value counts as a date filter like $eq, so the default window does not apply (2020-dated records returned and deleted). Measured: treatments, devicestatus (GET and DELETE), activity and profile also 500 on dev. Ready to push to #8885.
       2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and
       f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix
       needs a choice: treat a plain value as equality (MongoDB's meaning of a
@@ -24080,8 +24085,8 @@ items:
     branch: bf/16.0.0-stale-secret-hash
     base: official/dev
     worktree: externals/work/crm-stale-secret
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8885]
     blast_radius: >
       The browser's stored `apisecrethash` (localStorage) is sent with requests
       and takes precedence over a `?token=` in the page URL; the client
@@ -24093,8 +24098,8 @@ items:
     semver: patch
     semver_reason: client sign-in behaviour, no API change
     gates:
-      - run: git -C externals/work/crm-stale-secret merge-base --is-ancestor 9be6a2bc HEAD
-        kind: static
+      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8885/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9be6a2bc FETCH_HEAD
+        kind: network
         describe: >
           the local fix branch carries BF-223's main-page fix 9be6a2bc (whose
           browser test is red on dev and green with it); replace with the PR head
@@ -24103,6 +24108,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast-forward.
       2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token-link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle-budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push.
       2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status-bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit.
       2026-10-30, journey-lab session (maintainer with session -7d):

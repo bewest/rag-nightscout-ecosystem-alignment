@@ -26,6 +26,9 @@ repository.
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`BFQ-212`](bfq-212-bf-16-0-0-split-identity.md) | #8878 | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice |
 | [`ID-FIRST-MATCH`](id-first-match-feat-id-first-match.md) | #8879 | `in-flight-upstream` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar) |
+| [`BFQ-223`](bfq-223-bf-16-0-0-stale-secret-hash.md) | #8885 | `in-flight-upstream` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link |
+| [`BFQ-224`](bfq-224-bf-16-0-0-small-backfixes.md) | #8885 | `ready-to-push` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 |
+| [`UI-STALE-SECRET-HASH`](ui-stale-secret-hash-bf-16-0-0-stale-secret-hash.md) | #8885 | `in-flight-upstream` | A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret" |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |

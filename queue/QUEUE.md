@@ -32,21 +32,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 345 |
-| runnable gates | 401 |
-| explicit `no-gate:` markers | 360 |
+| runnable gates | 402 |
+| explicit `no-gate:` markers | 359 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 761 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 359 of the 761 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 76 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, BFQ-224, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 10 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, BFQ-223, OID-LAB, HUB-REG-CRM, UI-STALE-SECRET-HASH |
+| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `in-progress` | 8 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
+| `ready-to-push` | 4 | P0-C-REMEDIATE, T30-AUTH, BFQ-224, WS-LAB |
 | `blocked` | 13 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 6 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
+| `in-flight-upstream` | 8 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, BFQ-223, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, UI-STALE-SECRET-HASH |
 | `merged-upstream` | 76 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -1095,7 +1095,7 @@ that costs.
 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `DEV-LINT-OVERLAY-REGEX` | Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive) | `merged-upstream` | `hygiene/dev-lint-overlay` | patch | 1 run |
 | `UI-DRAWER-RESIZE` | A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer) | `merged-upstream` | `hygiene/dev-lint-overlay` | patch | 1 run |
-| `UI-STALE-SECRET-HASH` | A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret" | `in-progress` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
+| `UI-STALE-SECRET-HASH` | A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret" | `in-flight-upstream` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
 
@@ -2759,7 +2759,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-stale-secret-hash` |
 | base | `official/dev` |
@@ -2775,14 +2775,14 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9be6a2bc HEAD`
+- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8885/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9be6a2bc FETCH_HEAD`
   - the local fix branch carries BF-223's main-page fix 9be6a2bc (whose browser test is red on dev and green with it); replace with the PR head gate once pushed
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token-link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle- budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push. 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status- bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.
+**Notes.** 2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast- forward. 2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token- link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle-budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push. 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status- bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.
 
 ---
 
@@ -2929,8 +2929,8 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-213` | BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-214` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
-| `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `in-progress` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
-| `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `in-flight-upstream` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
+| `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `ready-to-push` | `bf/16.0.0-small-backfixes` | patch | 1 run |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7315,7 +7315,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-stale-secret-hash` |
 | base | `official/dev@37b2280f` |
@@ -7333,22 +7333,22 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9be6a2bc HEAD`
+- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8885/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9be6a2bc FETCH_HEAD`
   - the local fix branch carries BF-223's main-page fix 9be6a2bc; replace with the PR head gate once pushed, then official/dev ancestry once merged
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET- HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).
+**Notes.** 2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast- forward. 2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE- SECRET-HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).
 
 ### `BFQ-224` &mdash; BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/16.0.0-small-backfixes` |
 | base | `official/dev@37b2280f` |
 | worktree | `-` |
 | semver | `patch` |
@@ -7364,13 +7364,14 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- **NO GATE** &mdash; not built yet; the fix's gate is an HTTP test with a plain-value find[created_at] on GET and DELETE, red (500) on dev and green after
+- `[static]` `git -C externals/work/crm-small-backfixes merge-base --is-ancestor f59d7872 HEAD`
+  - the local branch carries the BF-224 fix f59d7872 (16 new tests red on dev with the TypeError, green with it); replace with the #8885 head gate once pushed
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400. 2026-10-31 (maintainer): equality, bundled with BF-223 in one '16.0.0 small backfixes' PR; being built by an agent of session -d1 on bf/16.0.0-small-backfixes (from BF-223's ecbc9c06).
+**Notes.** 2026-10-31 later: built by an agent of session -d1 as f59d7872 on bf/16.0.0-small-backfixes (on the #8885 head ecbc9c06): a non-empty plain string under the date field becomes {$eq: value} before the date rewrite (6 lines in lib/server/query.js); plain numbers unchanged; every operator form and the BF-108 $in handling build byte-identical queries. Red on dev: 16 (9 unit, 7 HTTP incl. devicestatus); green 63/0; test:unit 1896, integration subset 287, test:browser 684, eslint 0 errors; break-it (dev query.js) red on exactly the 16. A plain value counts as a date filter like $eq, so the default window does not apply (2020-dated records returned and deleted). Measured: treatments, devicestatus (GET and DELETE), activity and profile also 500 on dev. Ready to push to #8885. 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro- dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400. 2026-10-31 (maintainer): equality, bundled with BF-223 in one '16.0.0 small backfixes' PR; being built by an agent of session -d1 on bf/16.0.0-small-backfixes (from BF-223's ecbc9c06).
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 
