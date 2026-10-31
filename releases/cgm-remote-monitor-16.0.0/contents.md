@@ -399,6 +399,30 @@ or to 17.0.0 if it changes a default. The identity work is the core: it is the s
 the Loop maintainers. Multitenant items may ship dormant, labelled alpha behind `serve`, or not ship. The tag
 is gated by the bar and the pre-tag items, not by a date.
 
+**Handoff, 2026-10-31 (read with `git ls-remote` and `gh pr list` at about 03:00Z; plan owner session -49).**
+`dev` is `368e6c23` (#8874 merged 2026-10-31 02:02Z). Merge order on `dev` from here: #8883, then #8879 once
+slice 4 is rebuilt on it, then the unique-index PR. The cohort window (one window over #8874 and the identity work)
+opens when slices 3 and 4 are on `dev`.
+
+| PR / branch | head | state | next step, owner |
+|---|---|---|---|
+| #8883 v1 treatment writes (BF-219, BF-220, BF-221) | `8ae46b72` | open, base `dev`; write-step port reviewed by session -4f | merge **before** #8879's next `dev` merge (they conflict in four files); BF-222's fix from session -7d may be added first; maintainer |
+| #8879 identity (ID-FIRST-MATCH) | `5cdd9577` (slices 1, 2, 5, 5b, 3 + `dev` `368e6c23`) | draft, base `dev` | slice 4 rebuilt with treatments `replaced` on every path (decided 2026-10-30), then 6 and 6a (prepared: `prep/id-first-s6` `47377fa3`, tests red as expected, prediction script); session -4f |
+| `feat/id-unique-index` (local) | `b4a4092c` on slice 3 | built and gated (342 predicted cells, MongoDB 5.0 and 8.0) | rebase onto 6a, re-run, open as a draft on #8879; held until then |
+| `proto/id-batch-replies` (local) | `7d81e1c1` | prototype + client lab; (ii)–(vi) decided 2026-10-30 | build ID-BATCH on the identity branch after the index, with strict on v1 (ID-STRICT-V1) |
+| #8881 ST-HARNESS | `ffa5e6b4` | draft, base `dev` | review; unblocks ST-PG and TEN-RESOLVE |
+| #8882 hygiene (DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE) | `cd42dfce` | open, base `dev` | review and merge (one `dev` merge behind) |
+| #8875 ST-VIEWS | `24647c0a` | draft; both views equal to the resident path on 126,092 replayed minutes each | wiring under the multitenant `serve` roles (alpha); one `dev` merge behind |
+| #8857 registration | `10fe6725` | draft; product-as-address built | D-REG-FLAG and the upload-role question are the maintainer's |
+| BF-72, BF-161 advisory forks | local `0fdf0fd6`, `0873f314` | `dev` `305a6533` merged and re-tested; **not pushed** (forks still `a9da33ff`, `1dce7722`) | push, then merge `dev` `368e6c23` once more before the tag; maintainer |
+| #8855 Crowdin | `6a2e84ab` | behind `dev` | update branch, merge; maintainer |
+| `master` protection, #8824 | — | protection still requires `Run Tests (22, 4.4)` | the decided settings change (only *Tests pass* and one approval), then #8824; maintainer |
+| Release 2 | `proto/v3-unify` `3b7f054a` (local) | Q-A adopted 2026-10-30; Q-U decided; Q9 recorded | write step resolves filter writes to ids; one write shape for v3; session -7d's labs |
+
+Queued, unowned: BF-222's fix (session -7d building it), QC-MATRIX-WIRE-ATTRIBUTION, UI-STALE-SECRET-HASH.
+Upstream drafts, unsent: AndroidAPS 410 handling, tconnectsync profile copy
+(`docs/30-design/platform/upstream-asks-controller-authors/`).
+
 In flight on 2026-10-30 (read about 02:30Z with `gh pr view` and `gh api .../compare`, and again later on 2026-10-30 for the rows marked *later*; work not yet in a PR
 is read from the plan, the [ID-FIRST-MATCH design note](../../docs/30-design/platform/id-first-match-design-note-2026-10-29.md)
 and the queue):

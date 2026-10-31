@@ -6977,7 +6977,7 @@ items:
     branch: feat/write-intent
     base: official/dev@db3b9e4e
     worktree: externals/work/crm-wc-step
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8874]
     blast_radius: >
       As WRITE-CONTRACT: lib/storage gains the write step (spec section 2.3,
@@ -7028,6 +7028,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-31: #8874 merged to dev as 368e6c23 (head 83f3d54a) by the maintainer; in 16.0.0, not released. Journey lab 2026-10-30/31: no difference from dev.
       2026-10-30: #8874 pushed at 4f9fc4cd (slices 1-6, dev 991b0654 merged), PR CI green;
       in 16.0.0 scope through the entry bar (maintainer, 2026-10-30). Earlier notes saying
       "not for 16.0.0" are superseded.
@@ -7386,11 +7387,11 @@ items:
     title: "Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar)"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ""
+    branch: feat/id-first-match
     base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: blocked
-    pr: []
+    state: in-flight-upstream
+    pr: [8879]
     blast_radius: >
       The write step's match rule, applied on: lib/server/entries.js
       upsertQueryFor (today sysTime+type unless identifier is present after
@@ -7427,6 +7428,7 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
+      2026-10-31: draft #8879 at 5cdd9577 (base dev): slices 1, 2, 5 (+5b) and 3 built and pushed, dev 368e6c23 merged; slice 4 being rebuilt with treatments replaced on every path (maintainer 2026-10-30); 6 and 6a prepared on prep/id-first-s6 47377fa3. Owner session -4f.
       2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): the rules
       this item builds are decided, and it is eligible for 16.0.0 through the
       entry bar (plan §1a), with ID-BATCH-RESULTS and ID-RESEND-SWITCH.
@@ -7471,7 +7473,7 @@ items:
     branch: ""
     base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: blocked
+    state: in-progress
     pr: []
     blast_radius: >
       The v1 POST handlers for entries, treatments and devicestatus
@@ -7502,6 +7504,7 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md
     notes: >
+      2026-10-30: questions (ii)-(vi) decided (16.0.0 decisions.md); prototype proto/id-batch-replies 7d81e1c1 and lab tools/lab/id-batch-replies; BF-219/BF-220 fixed ahead in #8883; strict on v1 comes with it.
       2026-10-29 (maintainer): eligible for 16.0.0 through the entry bar
       (next-gen plan §1a and §4.2, where it is named ID-BATCH), with
       ID-FIRST-MATCH and ID-RESEND-SWITCH. The per-item reply shape (stored,
@@ -8043,10 +8046,10 @@ items:
     title: "Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ""
+    branch: feat/id-unique-index
     base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: blocked
+    state: in-progress
     pr: []
     blast_radius: >
       lib/storage/mongo-storage.js ensureIndexes (211-219 at dev fade2299)
@@ -8079,6 +8082,7 @@ items:
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31: built and gated on slice 3 as local feat/id-unique-index b4a4092c (342 predicted cells move under try, 0 under off; MongoDB 5.0 and 8.0 5,515/0/3); held for slice 6a, then a draft PR on #8879.
       2026-10-30 (maintainer): in 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off
       (default try: on existing duplicates, log counts, show them on the status page, run without
       the index; the write rule still blocks new duplicates), plus an operator-run report and clean
@@ -23627,11 +23631,11 @@ items:
     title: "Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive)"
     parcel: release-train
     repo: cgm-remote-monitor
-    branch: ""
+    branch: hygiene/dev-lint-overlay
     base: official/dev
     worktree: ""
-    state: not-started
-    pr: []
+    state: in-flight-upstream
+    pr: [8882]
     blast_radius: >
       lib/profilefunctions.js:251 (`/^(?:GMT|UTC)([+-])(\d{1,2})(?::(\d{2}))?$/i`,
       from 79e0155d, 2026-04-25, sub-hour offsets). Under NODE_ENV=development,
@@ -23649,6 +23653,7 @@ items:
     blocks_on: []
     evidence: []
     notes: >
+      2026-10-30: fixed in #8882 (04e1bbbc): inline disable with the reason; eslint lib 21 to 20 warnings, the development build compiles with none.
       2026-10-30: requested by the maintainer while walking the journey lab on
       #8874 against dev (relayed by session -7d). Present on dev 305a6533 and
       #8874 7463e76d. Assessment (read): a false positive; the pattern is
@@ -23696,8 +23701,8 @@ items:
     branch: hygiene/dev-lint-overlay
     base: official/dev
     worktree: externals/work/crm-dev-lint
-    state: in-progress
-    pr: []
+    state: in-flight-upstream
+    pr: [8882]
     blast_radius: >
       lib/client/browser-utils.js openDrawer (about lines 126-160) sets inline
       width and height in pixels from the window size when a drawer opens, and
@@ -23715,6 +23720,7 @@ items:
     blocks_on: []
     evidence: []
     notes: >
+      2026-10-30: fixed in #8882 (cd42dfce) for height changes; a width change closes the drawer by design since 2016 (chart.js:349-351), kept (maintainer). Browser test red on dev, suite 679 passing in chromium and firefox.
       2026-10-30: seen by the maintainer in the journey-lab session on the
       modern theme (relayed by session -7d); identical on dev 305a6533 and
       #8874 7463e76d, so not an #8874 regression; the modern theme makes it
