@@ -192,10 +192,11 @@
 //   batch-deleted       the middle item re-sends a soft-deleted record's identifier
 //   batch-placeholder-identifier  "undefined" and a 257-character identifier
 //                       in the middle (items 1, 2) of four
-//   batch-dupkey-mid    another upload's record with item 1's identifier is
-//                       stored straight to MongoDB at the batch's first write
-//                       call, after its identifier lookups (the race of
-//                       ID-UNIQUE-INDEX; `index` says whether it is built)
+//   batch-dupkey-mid    another upload's record with item 1's identifier, one
+//                       second off its time, is stored straight to MongoDB at
+//                       the batch's first write call, after its identifier
+//                       lookups (the race of ID-UNIQUE-INDEX; `index` says
+//                       whether it is built)
 //   batch-storage-fail-mid  the write operation carrying item 1 fails (an
 //                       injected error); the operations before it are written
 //   batch-profile-permission  profile: a token with only api:profile:create
@@ -1276,7 +1277,9 @@ function body (coll, t, cell, extra) {
     const t = nextT();
     const out = {};
     if (!(await alive())) { cells[key] = { st: 'INVALID liveness before' }; return; }
-    const it = (i, extra) => body(c, t + i * 60000, cellId, Object.assign({ wcb: i }, extra || {}));
+    // Items 10 s apart, so a cell's records stay inside its own 61 s slot
+    // (the socket matches a treatment or status within 2 s of another).
+    const it = (i, extra) => body(c, t + i * 10000, cellId, Object.assign({ wcb: i }, extra || {}));
     const na = () => { cells[key] = { st: 'n/a' }; };
     let docs; let sendOpts = { optIn };
     // what runs between arming the write tap and the send (injections)
@@ -1296,7 +1299,7 @@ function body (coll, t, cell, extra) {
       docs = [it(0, { identifier: x }), it(1, { identifier: ident() }), Object.assign(it(2, { identifier: x }), idfAmount(c, t), { wcv: 2 })];
     } else if (f === 'batch-repeat-stored' || f === 'batch-deleted') {
       const x = ident();
-      await seedVia(body(c, t + 60000, cellId, { identifier: x, wck: 1 }));
+      await seedVia(body(c, t + 10000, cellId, { identifier: x, wck: 1 }));
       if (f === 'batch-deleted') {
         await col(c).updateMany({ wc: cellId, identifier: x }, { $set: { isValid: false, srvModified: Date.now() } });
         out.del = 'mongo isValid:false';
@@ -1308,9 +1311,12 @@ function body (coll, t, cell, extra) {
     } else if (f === 'batch-dupkey-mid') {
       docs = [it(0, { identifier: ident() }), it(1, { identifier: ident() }), it(2, { identifier: ident() })];
       // Another upload's record with item 1's identifier, stored straight to
-      // MongoDB after the batch's identifier lookups and before its write.
-      const rival = Object.assign(body(c, t + 60000, cellId, { identifier: docs[1].identifier, wck: 1 }), { _id: new ObjectId() }
-        , c === 'entries' ? { sysTime: iso(t + 60000) } : {});
+      // MongoDB after the batch's identifier lookups and before its write. Its
+      // time is one second off item 1's, so item 1's upsert by time (entries
+      // sysTime+type, treatments created_at+eventType) cannot reach it and
+      // only the unique index stops a second record.
+      const rival = Object.assign(body(c, t + 11000, cellId, { identifier: docs[1].identifier, wck: 1 }), { _id: new ObjectId() }
+        , c === 'entries' ? { sysTime: iso(t + 11000) } : {});
       arm = () => { wtap.before = async () => { wtap.fired++; await col(c).insertOne(rival); }; };
       out.index = ctx.identifierIndex && ctx.identifierIndex.collections && ctx.identifierIndex.collections[c]
         ? ctx.identifierIndex.collections[c].state : 'unknown';
@@ -1320,17 +1326,19 @@ function body (coll, t, cell, extra) {
     } else if (f === 'batch-profile-permission') {
       if (c !== 'profile' || p === 'ws') return na();
       const h = hex();
-      await seedVia(body(c, t + 60000, cellId, { _id: h, wck: 1 }));
+      await seedVia(body(c, t + 10000, cellId, { _id: h, wck: 1 }));
       const changed = Object.assign(it(1, { _id: h, wcv: 2 }), idfAmount(c, t));
       docs = [it(0), changed, it(2)];
       sendOpts = { optIn, token: await createOnly() };
     } else if (f === 'batch-prebolus') {
       if (c !== 'treatments') return na();
-      docs = [it(0, { identifier: ident() }), it(1, { identifier: ident(), preBolus: 10, carbs: 30 }), it(2, { identifier: ident() })];
+      docs = [it(0, { identifier: ident() }), it(1, { identifier: ident(), preBolus: 7, carbs: 30 }), it(2, { identifier: ident() })];
     } else if (f === 'batch-taken-id' || f === 'batch-taken-all') {
       const h1 = hex(); const h2 = hex();
-      await col(c).insertOne(Object.assign(body(c, t + 3600000, cellId, { _id: new ObjectId(h1), wck: 1 }), c === 'entries' ? { sysTime: iso(t + 3600000) } : {}));
-      await col(c).insertOne(Object.assign(body(c, t + 7200000, cellId, { _id: new ObjectId(h2), wck: 1 }), c === 'entries' ? { sysTime: iso(t + 7200000) } : {}));
+      // a week before the run's cells, so no other cell's records are near them
+      const tw = t - 7 * 86400000;
+      await col(c).insertOne(Object.assign(body(c, tw, cellId, { _id: new ObjectId(h1), wck: 1 }), c === 'entries' ? { sysTime: iso(tw) } : {}));
+      await col(c).insertOne(Object.assign(body(c, tw + 3600000, cellId, { _id: new ObjectId(h2), wck: 1 }), c === 'entries' ? { sysTime: iso(tw + 3600000) } : {}));
       out.seed = 'mongo OID,OID';
       docs = f === 'batch-taken-id' ? [it(0), it(1, { _id: h1, wcv: 2 }), it(2)] : [it(0, { _id: h1, wcv: 2 }), it(1, { _id: h2, wcv: 2 })];
     }

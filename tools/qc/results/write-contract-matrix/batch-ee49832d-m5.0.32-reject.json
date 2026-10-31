@@ -3,9 +3,9 @@
  "dirty_lib": "",
  "node": "v22.23.4",
  "mongod": "5.0.32",
- "db": "wcm_0110cd4d",
+ "db": "wcm_fda5127a",
  "write_validation": "reject",
- "date": "2026-10-31T19:55:14.591Z",
+ "date": "2026-10-31T21:21:25.280Z",
  "collections": [
   "entries",
   "treatments",
@@ -36,7 +36,7 @@
   "batch-taken-all"
  ],
  "write_identifier": "(unset)",
- "identifier_index": "devicestatus:built,entries:built,profile:built,settings:built,treatments:built,activity:built,food:built",
+ "identifier_index": "profile:built,food:built,settings:built,treatments:built,devicestatus:built,entries:built,activity:built",
  "idf_collections": [
   "entries",
   "treatments",
@@ -245,7 +245,7 @@
    "warn": "none",
    "store": "n=3 OID,OID,OID",
    "storeb": "0,1,2",
-   "writes": "0:1,1:1,2:1",
+   "writes": "0:2,1:1,2:1",
    "srv": "CM,noCM,CM",
    "hist": "valid,valid,valid",
    "ev": "du:update[3,mills]",
@@ -261,7 +261,7 @@
    "warn": "none",
    "store": "n=3 OID,OID,OID",
    "storeb": "0,1,2",
-   "writes": "0:1,1:1,2:1",
+   "writes": "0:2,1:1,2:1",
    "srv": "CM,noCM,CM",
    "hist": "valid,valid,valid",
    "ev": "du:update[3,mills]",
@@ -322,7 +322,7 @@
    "hist": "valid,valid",
    "ev": "du:update[2,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "entries v1 batch-taken-id +results": {
    "seed": "mongo OID,OID",
@@ -337,7 +337,7 @@
    "hist": "valid,valid",
    "ev": "du:update[2,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "entries v1 batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -352,7 +352,7 @@
    "hist": "absent",
    "ev": "du:update[0]",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "entries v1 batch-taken-all +results": {
    "seed": "mongo OID,OID",
@@ -367,7 +367,7 @@
    "hist": "absent",
    "ev": "du:update[0]",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "entries ws batch-mixed-tt": {
    "st": "n/a"
@@ -509,7 +509,7 @@
    "hist": "valid,valid",
    "ev": "du:update[1,mills] du:update[1,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "entries ws batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -524,7 +524,7 @@
    "hist": "absent",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "entries inproc batch-mixed-tt": {
    "st": "n/a"
@@ -624,7 +624,7 @@
    "warn": "n/a",
    "store": "n=3 OID,OID,OID",
    "storeb": "0,1,2",
-   "writes": "0:1,1:1,2:1",
+   "writes": "0:2,1:1,2:1",
    "srv": "CM,noCM,CM",
    "hist": "valid,valid,valid",
    "ev": "du:update[3,mills]",
@@ -664,7 +664,7 @@
    "hist": "valid,valid",
    "ev": "du:update[2,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "entries inproc batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -679,7 +679,7 @@
    "hist": "absent",
    "ev": "du:update[0]",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "treatments v1 batch-mixed-tt": {
    "st": "200",
@@ -990,7 +990,7 @@
    "hist": "valid,valid,valid",
    "ev": "du:update[3,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=3"
   },
   "treatments v1 batch-taken-id +results": {
    "seed": "mongo OID,OID",
@@ -1005,7 +1005,7 @@
    "hist": "valid,valid,valid",
    "ev": "du:update[3,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=3"
   },
   "treatments v1 batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -1199,22 +1199,22 @@
    "hist": "valid,valid",
    "ev": "du:update[1,mills] du:update[1,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "treatments ws batch-taken-all": {
    "seed": "mongo OID,OID",
    "st": "ack",
    "len": 2,
-   "slots": "0:noid:fail500,2:id",
+   "slots": "0:noid:fail500,1:noid:fail500",
    "warn": "n/a",
    "store": "n=2 OID,OID",
    "storeb": "seed:noident,seed:noident",
-   "writes": "?:1",
+   "writes": "none",
    "srv": "noCnoM,noCnoM",
    "hist": "absent",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "treatments inproc batch-mixed-tt": {
    "st": "cb",
@@ -1376,7 +1376,7 @@
    "hist": "valid,valid,valid",
    "ev": "du:update[3,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=3"
   },
   "treatments inproc batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -1656,7 +1656,7 @@
    "hist": "valid,valid",
    "ev": "du:update[2,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "devicestatus v1 batch-taken-id +results": {
    "seed": "mongo OID,OID",
@@ -1671,7 +1671,7 @@
    "hist": "valid,valid",
    "ev": "du:update[2,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "devicestatus v1 batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -1686,7 +1686,7 @@
    "hist": "absent",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "devicestatus v1 batch-taken-all +results": {
    "seed": "mongo OID,OID",
@@ -1701,7 +1701,7 @@
    "hist": "absent",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "devicestatus ws batch-mixed-tt": {
    "st": "n/a"
@@ -1796,8 +1796,8 @@
   "devicestatus ws batch-dupkey-mid": {
    "index": "built",
    "st": "ack",
-   "len": 3,
-   "slots": "0:id:i,?:id:i,2:id:i",
+   "len": 2,
+   "slots": "0:id:i,2:id:i",
    "warn": "n/a",
    "store": "n=3 OID,OID,OID",
    "storeb": "0,2,seed",
@@ -1843,7 +1843,7 @@
    "hist": "valid,valid",
    "ev": "du:update[1,mills] du:update[1,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "devicestatus ws batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -1858,7 +1858,7 @@
    "hist": "absent",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "devicestatus inproc batch-mixed-tt": {
    "st": "n/a"
@@ -1998,7 +1998,7 @@
    "hist": "valid,valid",
    "ev": "du:update[2,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "devicestatus inproc batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -2013,7 +2013,7 @@
    "hist": "absent",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "profile v1 batch-mixed-tt": {
    "st": "n/a"
@@ -2432,15 +2432,15 @@
   "profile ws batch-dupkey-mid": {
    "index": "built",
    "st": "ack",
-   "len": 3,
-   "slots": "0:id:i,1:id:i,2:id:i",
+   "len": 2,
+   "slots": "0:id:i,2:id:i",
    "warn": "n/a",
    "store": "n=3 OID,OID,OID",
-   "storeb": "0,1,2",
-   "writes": "0:1,1:1,2:1",
-   "srv": "CM,noCM,CM",
-   "hist": "valid,valid,valid",
-   "ev": "du:update[1,mills] du:update[1,mills] du:update[1,mills]",
+   "storeb": "0,2,seed",
+   "writes": "0:1,2:1",
+   "srv": "CM,CM,noCnoM",
+   "hist": "valid,valid",
+   "ev": "du:update[1,mills] du:update[1,mills]",
    "wire": "none",
    "v1read": "n=3",
    "inj": "fired: 1"
@@ -2479,7 +2479,7 @@
    "hist": "valid,valid",
    "ev": "du:update[1,mills] du:update[1,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "profile ws batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -2494,7 +2494,7 @@
    "hist": "absent",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "profile inproc batch-mixed-tt": {
    "st": "n/a"
@@ -2636,7 +2636,7 @@
    "hist": "valid,valid,valid",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=3"
   },
   "profile inproc batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -3514,7 +3514,7 @@
    "hist": "n/a",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=3"
   },
   "activity v1 batch-taken-id +results": {
    "seed": "mongo OID,OID",
@@ -3529,7 +3529,7 @@
    "hist": "n/a",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=3"
   },
   "activity v1 batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -3701,7 +3701,7 @@
    "hist": "n/a",
    "ev": "du:update[1,mills] du:update[1,mills]",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=2"
   },
   "activity ws batch-taken-all": {
    "seed": "mongo OID,OID",
@@ -3716,7 +3716,7 @@
    "hist": "n/a",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=2"
+   "v1read": "n=0"
   },
   "activity inproc batch-mixed-tt": {
    "st": "n/a"
@@ -3848,7 +3848,7 @@
    "hist": "n/a",
    "ev": "none",
    "wire": "none",
-   "v1read": "n=4"
+   "v1read": "n=3"
   },
   "activity inproc batch-taken-all": {
    "seed": "mongo OID,OID",
