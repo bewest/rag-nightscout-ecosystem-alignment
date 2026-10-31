@@ -23622,3 +23622,69 @@ items:
       2026-10-26 (D21). Open: whether a composed `serve` of every role is
       part of the multi target or only a small-hoster convenience. TEN-RESOLVE
       (platform admin on its own interface) depends on this item.
+
+  - id: DEV-LINT-OVERLAY-REGEX
+    title: "Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive)"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev
+    worktree: ""
+    state: not-started
+    pr: []
+    blast_radius: >
+      lib/profilefunctions.js:251 (`/^(?:GMT|UTC)([+-])(\d{1,2})(?::(\d{2}))?$/i`,
+      from 79e0155d, 2026-04-25, sub-hour offsets). Under NODE_ENV=development,
+      webpack/lint-plugin.js reports it as a compilation warning and the HMR
+      overlay (webpack/webpack.config.js:123) pops it up on every page load;
+      production builds are not affected.
+    review: maintainer
+    operator_visible: none (development builds only)
+    semver: patch
+    semver_reason: lint annotation only, no runtime change
+    gates:
+      - no-gate: >
+          not built yet; the fix's gate will be the development build's lint
+          step reporting no warning for lib/profilefunctions.js
+    blocks_on: []
+    evidence: []
+    notes: >
+      2026-10-30: requested by the maintainer while walking the journey lab on
+      #8874 against dev (relayed by session -7d). Present on dev 305a6533 and
+      #8874 7463e76d. Assessment (read): a false positive; the pattern is
+      anchored at both ends and its repeats are capped at two digits.
+      Proposed fix (a): an inline `// eslint-disable-next-line
+      security/detect-unsafe-regex` with the reason, keeping the overlay
+      useful for new warnings; alternative (b): overlay warnings off. Small;
+      can ride in a themed hygiene PR.
+
+  - id: QC-MATRIX-WIRE-ATTRIBUTION
+    title: "Write-contract matrix: attribute storage-socket frames to their cell and settle after the seed, so `wire` stops picking up a previous cell's late frame"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: ""
+    base: main
+    worktree: ""
+    state: not-started
+    pr: []
+    blast_radius: >
+      tools/qc/write-contract-matrix.js (the `wire` column records frame names
+      only); the pins under tools/qc/results/write-contract-matrix/.
+    review: plan owner
+    operator_visible: none
+    semver: n/a
+    semver_reason: test tooling
+    gates:
+      - no-gate: >
+          not built yet; the fix's gate will be two consecutive full matrix
+          runs on one head with 0 cells differing in `wire`
+    blocks_on: []
+    evidence: []
+    notes: >
+      2026-10-30, session -7d: re-ran the 25 cells that differed between #8874
+      7463e76d and dev 305a6533, 10 repetitions per head, with the original
+      harness and with a 250 ms settle after the seed; all 40 runs were
+      identical in every field for the 91 cells run, so the differences were
+      harness noise, not product. Proposed fix: tag each cell's documents
+      (cellId) and attribute frames by it, and settle after the seed. Until
+      then `cache` and `wire` stay excluded from cell comparisons.

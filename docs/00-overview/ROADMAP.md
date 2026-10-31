@@ -128,6 +128,7 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 
 | wave | id | what | claimed state | waits on |
 |---:|---|---|---|---|
+| 1 | `DEV-LINT-OVERLAY-REGEX` | Development builds show a lint-warning popup on every page: lib/profilefunctions | `not-started` | &mdash; |
 | 1 | `MOD-UNITS-CANONICAL` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | `needs-decision` | &mdash; |
 | 1 | `MOD-WRITE-VALIDATION-READ` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | `needs-decision` | &mdash; |
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
