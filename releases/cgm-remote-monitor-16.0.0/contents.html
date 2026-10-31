@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>dc17a8268</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>a602510bd</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3206,6 +3206,7 @@ opens when slices 3 and 4 are on <code>dev</code>.</p>
 <p><strong>Update, 2026-10-31, evening</strong> (session -d1; <code>dev</code> still <code>37b2280f</code>):</p>
 <ul>
 <li><strong>ST-VIEWS</strong> (maintainer, <a href="decisions.html">decisions</a>): #8875 ships in 16.0.0 unwired; the one-person profile with nothing resident is prototyped on a branch (session -81); the tenancy × execution framing goes into the next-gen plan as a design question. The views branch with <code>dev</code> <code>37b2280f</code> merged is local <code>feat/views-serve</code> <code>7b4b724c</code> (replay 0 differing minutes on 126,092, <code>npm test</code> 5355/0/3); #8875 on GitHub is still <code>24647c0a</code>.</li>
+<li><strong>ST-VIEWS-PROFILE prototype</strong> (session -81, not for 16.0.0 unless it clears the bar): local <code>proto/views-nonresident</code> <code>80e1ee30</code> on <code>7b4b724c</code>, an opt-in <code>views</code> profile (<code>NIGHTSCOUT_EXECUTION=nonresident</code>) with no data loader or cache, triggered by the counts-only write event and the heartbeat; <code>single</code> with the opt-in set stays resident (tested). Alarms: 24 of 24 replay runs, 126,092 minutes, 0 differing; every replayed upload fired a write event. Properties: 20 of 24 runs, 0 differing except one synthetic two-uploader timeline (5 of 2,881 minutes, <code>sensorState.notification</code> only: the xdripjs plugin's last-state notification is consumed by the alarm pass first; a design question with the maintainer). §7b alarm checks 15 of 15; controls red for the right reason; revert clean; cost not yet measured.</li>
 <li><strong>ID-UNIQUE-INDEX</strong> on slice 4: local <code>d0f2f70a</code>, 342 of 342 predicted cells on MongoDB 5.0 and 8.0, approved by session -4e; being moved onto <code>5a251213</code> with a mixed-batch test.</li>
 </ul>
 <p><strong>Update, 2026-10-31, about 17:50Z</strong> (session -d1; <code>dev</code> still <code>37b2280f</code>):</p>
@@ -3874,7 +3875,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c73f2d822f54a44c8f321ee452c95af4ca7ef51b/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a602510bd4f1d818c8ccdfdeebb346fc509fa2ad/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
