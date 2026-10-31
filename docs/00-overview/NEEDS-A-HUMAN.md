@@ -30,21 +30,15 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 22 items
+### Maintainer &mdash; 16 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
-| `BFQ-219` | `in-flight-upstream` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were | #8883 |
-| `BFQ-220` | `in-flight-upstream` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it | #8883 |
-| `BFQ-221` | `in-flight-upstream` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | #8883 |
-| `BFQ-222` | `in-flight-upstream` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache | #8883 |
-| `DEV-LINT-OVERLAY-REGEX` | `in-flight-upstream` | Development builds show a lint-warning popup on every page: lib/profilefunctions | #8882 |
 | `ID-FIRST-MATCH` | `in-flight-upstream` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules ( | #8879 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
-| `UI-DRAWER-RESIZE` | `in-flight-upstream` | A drawer opened in a narrow window keeps its narrow size when the window grows ( | #8882 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
 | `BFQ-95` | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm | &mdash; |
@@ -84,12 +78,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8878** | `BFQ-212` | `bf/16.0.0-split-identity` | BF-212 - a chart-drag split leaves two treatments with one c | Maintainer |
 | **#8879** | `ID-FIRST-MATCH` | `feat/id-first-match` | Identifier-first matching on every collection and path, with | Maintainer |
-| **#8882** | `DEV-LINT-OVERLAY-REGEX` | `hygiene/dev-lint-overlay` | Development builds show a lint-warning popup on every page:  | Maintainer |
-| **#8882** | `UI-DRAWER-RESIZE` | `hygiene/dev-lint-overlay` | A drawer opened in a narrow window keeps its narrow size whe | Maintainer |
-| **#8883** | `BFQ-219` | `bf/16.0.0-batch-replies` | BF-219 - a v1 treatments batch with a preBolus answers with  | Maintainer |
-| **#8883** | `BFQ-220` | `bf/16.0.0-batch-replies` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after | Maintainer |
-| **#8883** | `BFQ-221` | `bf/16.0.0-batch-replies` | BF-221 - a v1 treatment PUT reaches open pages up to about a | Maintainer |
-| **#8883** | `BFQ-222` | `bf/16.0.0-batch-replies` | BF-222 - API v3 autoPrune can leave pruned records in the se | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

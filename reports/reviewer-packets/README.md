@@ -26,12 +26,6 @@ repository.
 | [`PLAT-ENTRY`](plat-entry-feat-nightscout-entrypoint.md) | #8862 | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes |
 | [`BFQ-212`](bfq-212-bf-16-0-0-split-identity.md) | #8878 | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice |
 | [`ID-FIRST-MATCH`](id-first-match-feat-id-first-match.md) | #8879 | `in-flight-upstream` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar) |
-| [`DEV-LINT-OVERLAY-REGEX`](dev-lint-overlay-regex-hygiene-dev-lint-overlay.md) | #8882 | `in-flight-upstream` | Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive) |
-| [`UI-DRAWER-RESIZE`](ui-drawer-resize-hygiene-dev-lint-overlay.md) | #8882 | `in-flight-upstream` | A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer) |
-| [`BFQ-219`](bfq-219-bf-16-0-0-batch-replies.md) | #8883 | `in-flight-upstream` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent |
-| [`BFQ-220`](bfq-220-bf-16-0-0-batch-replies.md) | #8883 | `in-flight-upstream` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored |
-| [`BFQ-221`](bfq-221-bf-16-0-0-batch-replies.md) | #8883 | `in-flight-upstream` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late |
-| [`BFQ-222`](bfq-222-bf-16-0-0-batch-replies.md) | #8883 | `in-flight-upstream` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |

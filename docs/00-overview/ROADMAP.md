@@ -128,7 +128,6 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 
 | wave | id | what | claimed state | waits on |
 |---:|---|---|---|---|
-| 1 | `DEV-LINT-OVERLAY-REGEX` | Development builds show a lint-warning popup on every page: lib/profilefunctions | `in-flight-upstream` | &mdash; |
 | 1 | `MOD-UNITS-CANONICAL` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | `needs-decision` | &mdash; |
 | 1 | `MOD-WRITE-VALIDATION-READ` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | `needs-decision` | &mdash; |
 | 1 | `OID-STORAGE-HELPER` | One storage-level rule for writes by _id instead of six hand-written copies | `not-started` | &mdash; |
@@ -139,7 +138,6 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 | 1 | `RT-BOOTERROR` | BF-63 - the page that reports a boot error crashes on cut 4's boot errors | `gate-not-met` | &mdash; |
 | 1 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget o | `not-started` | &mdash; |
 | 1 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | &mdash; |
-| 1 | `UI-DRAWER-RESIZE` | A drawer opened in a narrow window keeps its narrow size when the window grows ( | `in-flight-upstream` | &mdash; |
 | 1 | `UI-STALE-SECRET-HASH` | A stale API secret hash stored in the browser blocks a valid ?token= link, and t | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
 | 2 | `RT-16-RELEASE` | Release 16.0.0 | `blocked` | `RT-16-LIVE-ALARMS`, `RT-16-RIG-SOAK`, `BFQ-72`, `BFQ-161` |

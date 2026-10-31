@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 343 |
-| runnable gates | 396 |
-| explicit `no-gate:` markers | 363 |
+| runnable gates | 398 |
+| explicit `no-gate:` markers | 361 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 363 of the 759 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 361 of the 759 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,8 +46,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 13 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 12 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, BFQ-219, BFQ-220, BFQ-221, BFQ-222, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE |
-| `merged-upstream` | 70 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE |
+| `in-flight-upstream` | 6 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
+| `merged-upstream` | 76 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 41 | P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
@@ -1091,8 +1091,8 @@ that costs.
 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak | `done` | `main` | n/a | 1 run + 2 no-gate |
 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them | `not-started` | `-` | patch | 0 run + 1 no-gate |
-| `DEV-LINT-OVERLAY-REGEX` | Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive) | `in-flight-upstream` | `hygiene/dev-lint-overlay` | patch | 0 run + 1 no-gate |
-| `UI-DRAWER-RESIZE` | A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer) | `in-flight-upstream` | `hygiene/dev-lint-overlay` | patch | 0 run + 1 no-gate |
+| `DEV-LINT-OVERLAY-REGEX` | Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive) | `merged-upstream` | `hygiene/dev-lint-overlay` | patch | 1 run |
+| `UI-DRAWER-RESIZE` | A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer) | `merged-upstream` | `hygiene/dev-lint-overlay` | patch | 1 run |
 | `UI-STALE-SECRET-HASH` | A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret" | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
@@ -2707,7 +2707,7 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `hygiene/dev-lint-overlay` |
 | base | `official/dev` |
@@ -2723,15 +2723,16 @@ that costs.
 
 **Gates.**
 
-- **NO GATE** &mdash; not built yet; the fix's gate will be the development build's lint step reporting no warning for lib/profilefunctions.js
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 04e1bbbc official/dev`
+  - official/dev contains the fix 04e1bbbc (merged 2026-10-31 as 37b2280f, #8882); red if dev is rewritten or the merge is reverted
 
-**Notes.** 2026-10-30: fixed in #8882 (04e1bbbc): inline disable with the reason; eslint lib 21 to 20 warnings, the development build compiles with none. 2026-10-30: requested by the maintainer while walking the journey lab on #8874 against dev (relayed by session -7d). Present on dev 305a6533 and #8874 7463e76d. Assessment (read): a false positive; the pattern is anchored at both ends and its repeats are capped at two digits. Proposed fix (a): an inline `// eslint- disable-next-line security/detect-unsafe-regex` with the reason, keeping the overlay useful for new warnings; alternative (b): overlay warnings off. Small; can ride in a themed hygiene PR.
+**Notes.** 2026-10-31 16:33Z: #8882 merged to dev as 37b2280f (head 32cd90e6) by the maintainer; not released. 2026-10-30: fixed in #8882 (04e1bbbc): inline disable with the reason; eslint lib 21 to 20 warnings, the development build compiles with none. 2026-10-30: requested by the maintainer while walking the journey lab on #8874 against dev (relayed by session -7d). Present on dev 305a6533 and #8874 7463e76d. Assessment (read): a false positive; the pattern is anchored at both ends and its repeats are capped at two digits. Proposed fix (a): an inline `// eslint-disable-next-line security/detect-unsafe-regex` with the reason, keeping the overlay useful for new warnings; alternative (b): overlay warnings off. Small; can ride in a themed hygiene PR.
 
 ### `UI-DRAWER-RESIZE` &mdash; A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer)
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `hygiene/dev-lint-overlay` |
 | base | `official/dev` |
@@ -2747,9 +2748,10 @@ that costs.
 
 **Gates.**
 
-- **NO GATE** &mdash; not built yet; the fix's gate is a browser test that opens a drawer at 390 px, resizes to 1440 px and asserts the drawer's size, red on dev
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2737756d official/dev`
+  - official/dev contains the fix 2737756d (merged 2026-10-31 as 37b2280f, #8882); red if dev is rewritten or the merge is reverted
 
-**Notes.** 2026-10-31 16:20Z (GitHub): #8882 at 7a6b0283: the resize handler registers at the first open (2737756d), so loading browser-utils without a window no longer throws; dev 368e6c23 merged in (0 behind, 4 ahead); CI green on every job. Ready for review. 2026-10-30: fixed in #8882 (cd42dfce) for height changes; a width change closes the drawer by design since 2016 (chart.js:349-351), kept (maintainer). Browser test red on dev, suite 679 passing in chromium and firefox. 2026-10-30: seen by the maintainer in the journey-lab session on the modern theme (relayed by session -7d); identical on dev 305a6533 and #8874 7463e76d, so not an #8874 regression; the modern theme makes it more visible. Fix options: size open drawers with CSS (e.g. width: min(350px, 100vw), a dvh- based height) instead of inline pixels, or re-apply the sizing on resize while a drawer is open. Being built as a second commit on the hygiene branch with DEV-LINT-OVERLAY-REGEX.
+**Notes.** 2026-10-31 16:33Z: #8882 merged to dev as 37b2280f (head 32cd90e6) by the maintainer; not released. 2026-10-31 16:20Z (GitHub): #8882 at 7a6b0283: the resize handler registers at the first open (2737756d), so loading browser- utils without a window no longer throws; dev 368e6c23 merged in (0 behind, 4 ahead); CI green on every job. Ready for review. 2026-10-30: fixed in #8882 (cd42dfce) for height changes; a width change closes the drawer by design since 2016 (chart.js:349-351), kept (maintainer). Browser test red on dev, suite 679 passing in chromium and firefox. 2026-10-30: seen by the maintainer in the journey-lab session on the modern theme (relayed by session -7d); identical on dev 305a6533 and #8874 7463e76d, so not an #8874 regression; the modern theme makes it more visible. Fix options: size open drawers with CSS (e.g. width: min(350px, 100vw), a dvh-based height) instead of inline pixels, or re-apply the sizing on resize while a drawer is open. Being built as a second commit on the hygiene branch with DEV-LINT-OVERLAY-REGEX.
 
 ### `UI-STALE-SECRET-HASH` &mdash; A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret"
 
@@ -2920,10 +2922,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-213` | BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-214` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
-| `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
-| `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
-| `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
-| `BFQ-222` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
+| `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
+| `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
+| `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
+| `BFQ-222` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `merged-upstream` | `bf/16.0.0-tt-units` | minor | 2 run |
@@ -7304,7 +7306,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-batch-replies` |
 | base | `official/dev@368e6c23` |
@@ -7322,21 +7324,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD`
-  - #8883's head on GitHub contains BF-219's fix 8ae46b72; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 official/dev`
+  - official/dev contains BF-219's fix 8ae46b72 (merged 2026-10-31 as 2f50d944, #8883); red if dev is rewritten or the merge is reverted
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+**Notes.** 2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released. 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
 
 ### `BFQ-220` &mdash; BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-batch-replies` |
 | base | `official/dev@368e6c23` |
@@ -7354,21 +7356,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD`
-  - #8883's head on GitHub contains BF-220's fix 8ae46b72; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 official/dev`
+  - official/dev contains BF-220's fix 8ae46b72 (merged 2026-10-31 as 2f50d944, #8883); red if dev is rewritten or the merge is reverted
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+**Notes.** 2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released. 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
 
 ### `BFQ-221` &mdash; BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-batch-replies` |
 | base | `official/dev@368e6c23` |
@@ -7386,21 +7388,21 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD`
-  - #8883's head on GitHub contains BF-221's fix 8ae46b72; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 official/dev`
+  - official/dev contains BF-221's fix 8ae46b72 (merged 2026-10-31 as 2f50d944, #8883); red if dev is rewritten or the merge is reverted
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+**Notes.** 2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released. 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
 
 ### `BFQ-222` &mdash; BF-222 - API v3 autoPrune can leave pruned records in the server's cache
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-batch-replies` |
 | base | `official/dev@368e6c23` |
@@ -7418,15 +7420,15 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 789d5d9d FETCH_HEAD`
-  - #8883's head on GitHub contains BF-222's fix 789d5d9d; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 789d5d9d official/dev`
+  - official/dev contains BF-222's fix 789d5d9d (merged 2026-10-31 as 2f50d944, #8883); red if dev is rewritten or the merge is reverted
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+**Notes.** 2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released. 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
 
 ### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 

@@ -18281,7 +18281,7 @@ items:
     branch: bf/16.0.0-batch-replies
     base: official/dev@368e6c23
     worktree: externals/work/crm-bf-batch
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8883]
     ships_to_operators_today: true
     blast_radius: >
@@ -18298,17 +18298,17 @@ items:
     semver_reason: the reply's slot count matches the request; what is stored does not change
     register: [BF-219]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 official/dev
+        kind: static
         describe: >
-          #8883's head on GitHub contains BF-219's fix 8ae46b72; red if the PR
-          drops it. Once #8883 merges, replace with the official/dev
-          ancestor gate and set merged-upstream
+          official/dev contains BF-219's fix 8ae46b72 (merged 2026-10-31 as 2f50d944, #8883);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released.
       2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
       368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
       Merges before #8879's next dev merge (they conflict in four files).
@@ -18321,7 +18321,7 @@ items:
     branch: bf/16.0.0-batch-replies
     base: official/dev@368e6c23
     worktree: externals/work/crm-bf-batch
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8883]
     ships_to_operators_today: true
     blast_radius: >
@@ -18340,17 +18340,17 @@ items:
     semver_reason: a 5xx becomes per-slot results with the valid items stored
     register: [BF-220]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 official/dev
+        kind: static
         describe: >
-          #8883's head on GitHub contains BF-220's fix 8ae46b72; red if the PR
-          drops it. Once #8883 merges, replace with the official/dev
-          ancestor gate and set merged-upstream
+          official/dev contains BF-220's fix 8ae46b72 (merged 2026-10-31 as 2f50d944, #8883);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released.
       2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
       368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
       Merges before #8879's next dev merge (they conflict in four files).
@@ -18363,7 +18363,7 @@ items:
     branch: bf/16.0.0-batch-replies
     base: official/dev@368e6c23
     worktree: externals/work/crm-bf-batch
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8883]
     ships_to_operators_today: true
     blast_radius: >
@@ -18380,17 +18380,17 @@ items:
     semver_reason: display timing only
     register: [BF-221]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 official/dev
+        kind: static
         describe: >
-          #8883's head on GitHub contains BF-221's fix 8ae46b72; red if the PR
-          drops it. Once #8883 merges, replace with the official/dev
-          ancestor gate and set merged-upstream
+          official/dev contains BF-221's fix 8ae46b72 (merged 2026-10-31 as 2f50d944, #8883);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released.
       2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
       368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
       Merges before #8879's next dev merge (they conflict in four files).
@@ -18403,7 +18403,7 @@ items:
     branch: bf/16.0.0-batch-replies
     base: official/dev@368e6c23
     worktree: externals/work/crm-bf-batch
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8883]
     ships_to_operators_today: true
     blast_radius: >
@@ -18422,17 +18422,17 @@ items:
     semver_reason: the cache matches the database after a prune; nothing stored changes
     register: [BF-222]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 789d5d9d FETCH_HEAD
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 789d5d9d official/dev
+        kind: static
         describe: >
-          #8883's head on GitHub contains BF-222's fix 789d5d9d; red if the PR
-          drops it. Once #8883 merges, replace with the official/dev
-          ancestor gate and set merged-upstream
+          official/dev contains BF-222's fix 789d5d9d (merged 2026-10-31 as 2f50d944, #8883);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      2026-10-31 16:30Z: #8883 merged to dev as 2f50d944 (head 789d5d9d) by the maintainer; not released.
       2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
       368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
       Merges before #8879's next dev merge (they conflict in four files).
@@ -23890,7 +23890,7 @@ items:
     branch: hygiene/dev-lint-overlay
     base: official/dev
     worktree: ""
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8882]
     blast_radius: >
       lib/profilefunctions.js:251 (`/^(?:GMT|UTC)([+-])(\d{1,2})(?::(\d{2}))?$/i`,
@@ -23903,12 +23903,15 @@ items:
     semver: patch
     semver_reason: lint annotation only, no runtime change
     gates:
-      - no-gate: >
-          not built yet; the fix's gate will be the development build's lint
-          step reporting no warning for lib/profilefunctions.js
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 04e1bbbc official/dev
+        kind: static
+        describe: >
+          official/dev contains the fix 04e1bbbc (merged 2026-10-31 as 37b2280f, #8882);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence: []
     notes: >
+      2026-10-31 16:33Z: #8882 merged to dev as 37b2280f (head 32cd90e6) by the maintainer; not released.
       2026-10-30: fixed in #8882 (04e1bbbc): inline disable with the reason; eslint lib 21 to 20 warnings, the development build compiles with none.
       2026-10-30: requested by the maintainer while walking the journey lab on
       #8874 against dev (relayed by session -7d). Present on dev 305a6533 and
@@ -23957,7 +23960,7 @@ items:
     branch: hygiene/dev-lint-overlay
     base: official/dev
     worktree: externals/work/crm-dev-lint
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8882]
     blast_radius: >
       lib/client/browser-utils.js openDrawer (about lines 126-160) sets inline
@@ -23970,12 +23973,15 @@ items:
     semver: patch
     semver_reason: display fix, no data or API change
     gates:
-      - no-gate: >
-          not built yet; the fix's gate is a browser test that opens a drawer
-          at 390 px, resizes to 1440 px and asserts the drawer's size, red on dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2737756d official/dev
+        kind: static
+        describe: >
+          official/dev contains the fix 2737756d (merged 2026-10-31 as 37b2280f, #8882);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence: []
     notes: >
+      2026-10-31 16:33Z: #8882 merged to dev as 37b2280f (head 32cd90e6) by the maintainer; not released.
       2026-10-31 16:20Z (GitHub): #8882 at 7a6b0283: the resize handler registers at the first open (2737756d), so loading browser-utils without a window no longer throws; dev 368e6c23 merged in (0 behind, 4 ahead); CI green on every job. Ready for review.
       2026-10-30: fixed in #8882 (cd42dfce) for height changes; a width change closes the drawer by design since 2016 (chart.js:349-351), kept (maintainer). Browser test red on dev, suite 679 passing in chromium and firefox.
       2026-10-30: seen by the maintainer in the journey-lab session on the

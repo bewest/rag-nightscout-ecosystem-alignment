@@ -1,6 +1,6 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Living plan, current at cgm-remote-monitor dev `368e6c23` (2026-10-31), with open PR heads and CI re-read from GitHub at about 16:20Z that day. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md).*
+*Contributor-facing. Living plan, current at cgm-remote-monitor dev `37b2280f` (2026-10-31, #8883 and #8882 merged), with open PR heads and CI re-read from GitHub at about 16:40Z that day. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in [release allocation](release-allocation-2026-10-27.md).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -15,7 +15,7 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-| | on dev `368e6c23` (ships in 16.0.0) | in review (draft PRs) | not started |
+| | on dev `37b2280f` (ships in 16.0.0) | in review (draft PRs) | not started |
 |---|---|---|---|
 | Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1). ST-V3-DECOUPLE (with #8865, 2026-10-30). `write(intent)` release 1, every write path through one step (#8874, `368e6c23`, 2026-10-31) | ST-HARNESS, draft #8881 (`ffa5e6b4`); ST-VIEWS, draft #8875 (`24647c0a`) | `write(intent)` release 2 (filter writes resolved to ids, one write shape for API v3), ST-EVENT (decision deferred, research continuing), PostgreSQL |
 | Identity | `identifier` is the client's, `_id` the server's; API v3 refuses a client `_id` (#8845); v1 entries and devicestatus match on `identifier`, and an explicit null removes a field (#8859) | merged 2026-10-30: #8877 (`cf3d4b8f`; BF-209, BF-211; BF-210 withdrawn) and #8878 (`d51c7a60`; BF-212 first part). ID-FIRST-MATCH, draft #8879 (`f5bd2642`, CI green): slices 1, 2, 5, 3 and 4. SPEC-ID-AMEND done in this repository (2026-10-30) | slices 6 and 6a (prepared), the unique index (built locally), ID-BATCH (prototype) |
@@ -58,8 +58,8 @@ through the entry bar before the tag, directly after `write(intent)`; ID-FIRST-M
 | 2a | **merged 2026-10-30 (`d51c7a60`)**: #8878, BF-212 first part: the chart split stops copying identity fields | low; changes only what the moved half of a chart drag carries | the unit test (red on dev) and the reproduction probe; the re-upload double count remains |
 | 3 | **merged 2026-10-30 with #8877 (`cf3d4b8f`)**: BF-211, per-collection cache flush | low; changes only which caches a delete by query empties | the red/green control from `tools/lab/cache-value`; v1 deletes by query and API v3 auto-prune |
 | 3a | #8855, Crowdin | low | none beyond the usual |
-| 3c | #8883 (`789d5d9d`, 0 behind `dev`, CI green): BF-219, BF-220, BF-221 (v1 treatment and entry writes) and BF-222 (API v3 autoPrune names what it deletes to the cache); merge before #8879's next `dev` merge, as they conflict in four files | dosing-relevant reply and announcement fixes | HTTP-level tests red on `dev`; the write-step port reviewed |
-| 3d | #8882 (`7a6b0283`, 0 behind `dev`, CI green): hygiene, the development lint popup and drawer resize. The resize handler now registers at the first open (`2737756d`), so loading `browser-utils` without a window no longer throws | display only | browser test red on `dev` |
+| 3c | **merged 2026-10-31 (`2f50d944`)**: #8883 (head `789d5d9d`): BF-219, BF-220, BF-221 (v1 treatment and entry writes) and BF-222 (API v3 autoPrune names what it deletes to the cache); #8879 takes it in its `dev` merge (four-file conflict, session -4e) | dosing-relevant reply and announcement fixes | HTTP-level tests red on `dev`; the write-step port reviewed |
+| 3d | **merged 2026-10-31 (`37b2280f`)**: #8882 (head `32cd90e6`): hygiene, the development lint popup and drawer resize. The resize handler now registers at the first open (`2737756d`), so loading `browser-utils` without a window no longer throws | display only | browser test red on `dev` |
 | 3b | **merged 2026-10-30 (`305a6533`, #8880)**: BF-213, BF-214, BF-217: a missed URGENT pump alarm, a pump-plugin crash that hides every pump alarm, a device-status cache gap; BF-213 alarms at Loop's severity (maintainer, 2026-10-30) | Loop users with pump alerts get new pump alarms | each fix red then green; the release-notes line |
 | 4 | BF-72 and BF-161 fork branches | security fixes held outside the public PR list until release ([register](../remedial/nightscout-backfix-register.md)) | brought up to `dev` and merged before the tag |
 | 5 | #8824, dev to master | blocked by master protection, which requires `Run Tests (22, 6)`, `(22, 4.4)` and `(24, 6)` plus one approving review | fix the required check, then merge and tag |
@@ -211,7 +211,7 @@ Select **Show on the map** on a card to see which items it holds up. Release que
 
 ## 7. Sources
 
-- cgm-remote-monitor dev `368e6c23`; open PR heads, CI and `dev` distance read with `gh pr list`, `gh pr checks` and `gh api .../compare` on 2026-10-31 (re-read about 16:20Z).
+- cgm-remote-monitor dev `37b2280f`; open PR heads, CI and `dev` distance read with `gh pr list`, `gh pr checks` and `gh api .../compare` on 2026-10-31 (re-read about 16:40Z).
 - [Storage seam interface](../tenancy/nightscout-storage-seam-interface-2026-09-14.md), [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md), [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md), [#8854 alignment brief](../modernization/pr-8854-alignment-2026-10-26.md).
 - [Registration specification](spec/registration.md), [identity specification](spec/identity.md), [records specification](spec/records.md).
 - Nocturne `970031f6`, re-checked at `36d5ef4a2`. Tenant scope is an `ITenantScoped` marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves `identifier` equal to `_id` (issue #1932).
