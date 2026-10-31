@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 343 |
-| runnable gates | 398 |
-| explicit `no-gate:` markers | 361 |
+| items | 344 |
+| runnable gates | 400 |
+| explicit `no-gate:` markers | 360 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 361 of the 759 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 760 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 77 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, QC-MATRIX-WIRE-ATTRIBUTION, UI-STALE-SECRET-HASH |
-| `in-progress` | 8 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `not-started` | 76 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, QC-MATRIX-WIRE-ATTRIBUTION |
+| `in-progress` | 10 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, BFQ-223, OID-LAB, HUB-REG-CRM, UI-STALE-SECRET-HASH |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 13 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
@@ -150,6 +150,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-213** BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override
 - **BFQ-214** BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat
 - **BFQ-217** BF-217 - an override with no reservoir value throws in the pump plugin
+- **BFQ-223** BF-223 - a saved API secret the site refuses blocks a valid ?token= link
 - **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 - **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
 - **BFQ-221** BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
@@ -1093,7 +1094,7 @@ that costs.
 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `DEV-LINT-OVERLAY-REGEX` | Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive) | `merged-upstream` | `hygiene/dev-lint-overlay` | patch | 1 run |
 | `UI-DRAWER-RESIZE` | A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer) | `merged-upstream` | `hygiene/dev-lint-overlay` | patch | 1 run |
-| `UI-STALE-SECRET-HASH` | A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret" | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `UI-STALE-SECRET-HASH` | A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret" | `in-progress` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
 
@@ -2757,11 +2758,11 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/16.0.0-stale-secret-hash` |
 | base | `official/dev` |
-| worktree | `-` |
+| worktree | `externals/work/crm-stale-secret` |
 | semver | `patch` |
 | review | maintainer |
 
@@ -2773,15 +2774,20 @@ that costs.
 
 **Gates.**
 
-- **NO GATE** &mdash; not built yet; the fix's gate is a browser test that stores a wrong hash, opens a valid ?token= link and is signed in (red on dev)
+- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9b31818e HEAD`
+  - the local fix branch carries BF-223's fix 9b31818e (whose browser test is red on dev and green with it); replace with the PR head gate once pushed
 
-**Notes.** 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret- hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status-bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre- existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.
 
 ---
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 159 items
+`parcel: register-open` &mdash; 160 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2922,6 +2928,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-213` | BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-214` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
+| `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `in-progress` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7301,6 +7308,37 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-31: filed by session -d1 to cover a merged register entry (the coverage gate checks only open entries). #8880 merged to dev 2026-10-30 16:24Z as 305a6533 (head 0e5c25be); not released. Safety-relevant (missed pump alarms while it lasts).
+
+### `BFQ-223` &mdash; BF-223 - a saved API secret the site refuses blocks a valid ?token= link
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-stale-secret-hash` |
+| base | `official/dev@37b2280f` |
+| worktree | `externals/work/crm-stale-secret` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-223` |
+
+**Blast radius.** lib/client/index.js client.init and lib/client/hashauth.js (main page); views/clockviews/clock.html and lib/client/clock-client.js (clock views, second commit in progress). Only a secret the server has refused is removed; an accepted secret still wins over a token.
+
+**What an operator sees.** A follower or caregiver who opens a valid token link on a browser that once saved a different API secret is shown the sign-in dialog (or "Not authorized" on a clock) instead of the site. With the fix the saved secret is removed, the link's token is used, and the dialog says so if that also fails. On 15.0.9 and dev.
+
+**Why `patch`.** client sign-in behaviour only; no API change
+
+**Gates.**
+
+- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9b31818e HEAD`
+  - the local fix branch carries BF-223's fix 9b31818e; replace with the PR head gate once pushed, then official/dev ancestry once merged
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET- HASH.
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 
