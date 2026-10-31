@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>9666ca285</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>9140beeda</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3109,6 +3109,97 @@ on <code>dev</code> with its cohort check (entry bar, 2026-10-29). An item that 
 or to 17.0.0 if it changes a default. The identity work is the core: it is the substance of the agreement with
 the Loop maintainers. Multitenant items may ship dormant, labelled alpha behind <code>serve</code>, or not ship. The tag
 is gated by the bar and the pre-tag items, not by a date.</p>
+<p><strong>Handoff, 2026-10-31 (read with <code>git ls-remote</code> and <code>gh pr list</code> at about 03:00Z; plan owner session -49).</strong>
+<code>dev</code> is <code>368e6c23</code> (#8874 merged 2026-10-31 02:02Z). Merge order on <code>dev</code> from here: #8883, then #8879 once
+slice 4 is rebuilt on it, then the unique-index PR. The cohort window (one window over #8874 and the identity work)
+opens when slices 3 and 4 are on <code>dev</code>.</p>
+<table>
+<thead>
+<tr>
+<th>PR / branch</th>
+<th>head</th>
+<th>state</th>
+<th>next step, owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8883 v1 treatment writes (BF-219, BF-220, BF-221)</td>
+<td><code>8ae46b72</code></td>
+<td>open, base <code>dev</code>; write-step port reviewed by session -4f</td>
+<td>merge <strong>before</strong> #8879's next <code>dev</code> merge (they conflict in four files); BF-222's fix from session -7d may be added first; maintainer</td>
+</tr>
+<tr>
+<td>#8879 identity (ID-FIRST-MATCH)</td>
+<td><code>5cdd9577</code> (slices 1, 2, 5, 5b, 3 + <code>dev</code> <code>368e6c23</code>)</td>
+<td>draft, base <code>dev</code></td>
+<td>slice 4 rebuilt with treatments <code>replaced</code> on every path (decided 2026-10-30), then 6 and 6a (prepared: <code>prep/id-first-s6</code> <code>47377fa3</code>, tests red as expected, prediction script); session -4f</td>
+</tr>
+<tr>
+<td><code>feat/id-unique-index</code> (local)</td>
+<td><code>b4a4092c</code> on slice 3</td>
+<td>built and gated (342 predicted cells, MongoDB 5.0 and 8.0)</td>
+<td>rebase onto 6a, re-run, open as a draft on #8879; held until then</td>
+</tr>
+<tr>
+<td><code>proto/id-batch-replies</code> (local)</td>
+<td><code>7d81e1c1</code></td>
+<td>prototype + client lab; (ii)–(vi) decided 2026-10-30</td>
+<td>build ID-BATCH on the identity branch after the index, with strict on v1 (ID-STRICT-V1)</td>
+</tr>
+<tr>
+<td>#8881 ST-HARNESS</td>
+<td><code>ffa5e6b4</code></td>
+<td>draft, base <code>dev</code></td>
+<td>review; unblocks ST-PG and TEN-RESOLVE</td>
+</tr>
+<tr>
+<td>#8882 hygiene (DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE)</td>
+<td><code>cd42dfce</code></td>
+<td>open, base <code>dev</code></td>
+<td>review and merge (one <code>dev</code> merge behind)</td>
+</tr>
+<tr>
+<td>#8875 ST-VIEWS</td>
+<td><code>24647c0a</code></td>
+<td>draft; both views equal to the resident path on 126,092 replayed minutes each</td>
+<td>wiring under the multitenant <code>serve</code> roles (alpha); one <code>dev</code> merge behind</td>
+</tr>
+<tr>
+<td>#8857 registration</td>
+<td><code>10fe6725</code></td>
+<td>draft; product-as-address built</td>
+<td>D-REG-FLAG and the upload-role question are the maintainer's</td>
+</tr>
+<tr>
+<td>BF-72, BF-161 advisory forks</td>
+<td>local <code>0fdf0fd6</code>, <code>0873f314</code></td>
+<td><code>dev</code> <code>305a6533</code> merged and re-tested; <strong>not pushed</strong> (forks still <code>a9da33ff</code>, <code>1dce7722</code>)</td>
+<td>push, then merge <code>dev</code> <code>368e6c23</code> once more before the tag; maintainer</td>
+</tr>
+<tr>
+<td>#8855 Crowdin</td>
+<td><code>6a2e84ab</code></td>
+<td>behind <code>dev</code></td>
+<td>update branch, merge; maintainer</td>
+</tr>
+<tr>
+<td><code>master</code> protection, #8824</td>
+<td>—</td>
+<td>protection still requires <code>Run Tests (22, 4.4)</code></td>
+<td>the decided settings change (only <em>Tests pass</em> and one approval), then #8824; maintainer</td>
+</tr>
+<tr>
+<td>Release 2</td>
+<td><code>proto/v3-unify</code> <code>3b7f054a</code> (local)</td>
+<td>Q-A adopted 2026-10-30; Q-U decided; Q9 recorded</td>
+<td>write step resolves filter writes to ids; one write shape for v3; session -7d's labs</td>
+</tr>
+</tbody>
+</table>
+<p>Queued, unowned: BF-222's fix (session -7d building it), QC-MATRIX-WIRE-ATTRIBUTION, UI-STALE-SECRET-HASH.
+Upstream drafts, unsent: AndroidAPS 410 handling, tconnectsync profile copy
+(<code>docs/30-design/platform/upstream-asks-controller-authors/</code>).</p>
 <p>In flight on 2026-10-30 (read about 02:30Z with <code>gh pr view</code> and <code>gh api .../compare</code>, and again later on 2026-10-30 for the rows marked <em>later</em>; work not yet in a PR
 is read from the plan, the <a href="../../docs/30-design/platform/id-first-match-design-note-2026-10-29.html">ID-FIRST-MATCH design note</a>
 and the queue):</p>
@@ -3628,7 +3719,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/642153c8ffd084773a25148cb4716152c6c385f3/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fdbb26a8b7e996947e229db825a60b66d4a8aa08/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>

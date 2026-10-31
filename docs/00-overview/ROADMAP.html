@@ -2390,7 +2390,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>95e27a4ad</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>9140beeda</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2607,7 +2607,7 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 <td style="text-align: right;">1</td>
 <td><code>DEV-LINT-OVERLAY-REGEX</code></td>
 <td>Development builds show a lint-warning popup on every page: lib/profilefunctions</td>
-<td><code>not-started</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2684,7 +2684,7 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 <td style="text-align: right;">1</td>
 <td><code>UI-DRAWER-RESIZE</code></td>
 <td>A drawer opened in a narrow window keeps its narrow size when the window grows (</td>
-<td><code>in-progress</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2766,9 +2766,44 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>ID-BATCH-RESULTS</code></td>
+<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
+<td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>ID-CONVENTIONS</code></td>
 <td>Identifier conventions: one URL-form identifier template per record kind and sou</td>
 <td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>ID-NATURAL-KEY</code></td>
+<td>Natural keys for re-sends that carry no identifier: device status and profile, w</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>ID-RESEND-SWITCH</code></td>
+<td>A site setting plus per-client D20 quirks that opt a client into keep-first or r</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>ID-V1-LOOKUP</code></td>
+<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
+<td><code>blocked</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>ID-VALIDATE</code></td>
+<td>Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch</td>
+<td><code>blocked</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2822,45 +2857,59 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>WC-STEP-PATCH</code></td>
-<td>Release 1 (patch): one write step for every v1, v3 and socket path, today's beha</td>
-<td><code>in-flight-upstream</code></td>
+<td><code>WC-R2-QA</code></td>
+<td>Release 2: Re-express API v3 writes as filter writes under the step, or keep two</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>WC-R2-QB</code></td>
+<td>Release 2: One timing for removing a stored string-form _id twin on every path</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>WC-R2-QC</code></td>
+<td>Release 2: Separate source labels for API v1 and in-process callers</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>WC-R2-QD</code></td>
+<td>Release 2: One rule for a non-hex _id on in-process create and save</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>WC-R2-QE</code></td>
+<td>Release 2: Answer an identical re-send as unchanged (nothing written, no srvModi</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>WC-R2-QF</code></td>
+<td>Release 2: Move the lower half of write validation into the step, or decide it s</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>WC-R2-QH</code></td>
+<td>Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-m</td>
+<td><code>not-started</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>ID-BATCH-RESULTS</code></td>
-<td>Release 2 (minor): per-item results in v1 batch replies; one bad item no longer</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>ID-NATURAL-KEY</code></td>
-<td>Natural keys for re-sends that carry no identifier: device status and profile, w</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>ID-RESEND-SWITCH</code></td>
-<td>A site setting plus per-client D20 quirks that opt a client into keep-first or r</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>ID-V1-LOOKUP</code></td>
-<td>Release 2 (minor): v1 GET and DELETE by any identifier, without the default time</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>Identifier-first matching on every collection and path, with D-LOOP-ID's rules (</td>
+<td><code>in-flight-upstream</code></td>
 <td><code>ID-VALIDATE</code></td>
-<td>Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
@@ -2868,55 +2917,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
 <td><code>in-progress</code></td>
 <td><code>T30-RESEARCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-R2-QA</code></td>
-<td>Release 2: Re-express API v3 writes as filter writes under the step, or keep two</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-R2-QB</code></td>
-<td>Release 2: One timing for removing a stored string-form _id twin on every path</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-R2-QC</code></td>
-<td>Release 2: Separate source labels for API v1 and in-process callers</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-R2-QD</code></td>
-<td>Release 2: One rule for a non-hex _id on in-process create and save</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-R2-QE</code></td>
-<td>Release 2: Answer an identical re-send as unchanged (nothing written, no srvModi</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-R2-QF</code></td>
-<td>Release 2: Move the lower half of write validation into the step, or decide it s</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">2</td>
-<td><code>WC-R2-QH</code></td>
-<td>Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-m</td>
-<td><code>not-started</code></td>
-<td><code>WC-STEP-PATCH</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
@@ -2934,10 +2934,10 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>ID-FIRST-MATCH</code></td>
-<td>Identifier-first matching on every collection and path, with D-LOOP-ID's rules (</td>
-<td><code>blocked</code></td>
-<td><code>WC-STEP-PATCH</code>, <code>ID-VALIDATE</code></td>
+<td><code>ID-UNIQUE-INDEX</code></td>
+<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
+<td><code>in-progress</code></td>
+<td><code>ID-FIRST-MATCH</code>, <code>ID-VALIDATE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2952,13 +2952,6 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T3.2 remainder - platform.sql carries no config, secret or signing key</td>
 <td><code>blocked</code></td>
 <td><code>T30-SCHEMA-CONFIG</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>ID-UNIQUE-INDEX</code></td>
-<td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
-<td><code>blocked</code></td>
-<td><code>ID-FIRST-MATCH</code>, <code>ID-VALIDATE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
