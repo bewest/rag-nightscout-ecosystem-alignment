@@ -21,14 +21,14 @@
       "f"
     ],
     "decision": "ID-Q6, slice 2: a placeholder, blank, numeric or over-long identifier is treated as absent on every path, API v3 included (WRITE_IDENTIFIER=lenient by default)",
-    "alternative": "API v3 keeps refusing a malformed identifier with 400, as 15.0.9 did (strict on API v3 only); API v1, socket and in-process stay lenient.",
-    "cells_restored": 349,
-    "restores": "Up to 349 identifier-format cells where 15.0.9 answered 400 (304 of them re-sent over API v3); the rest of the format cells are unchanged by this.",
+    "alternative": "API v3 refuses a blank (whitespace-only) or numeric identifier with 400 by default, exactly as v15.0.9 did. Every other malformed identifier (placeholders such as \"undefined\", empty, over-long) stays accepted on API v3 with the identifier treated as absent; API v1, socket and in-process are unchanged.",
+    "cells_restored": 118,
+    "restores": "The 118 identifier-format cells where v15.0.9 refused a blank (78) or numeric (40) identifier. Corrected 2026-10-31: the card first counted 349, but 231 of those were placeholders v15.0.9 stored and only refused on a later re-send as an identity change; refusing them would be a new refusal, not a restoration.",
     "cost_to_objectives": "near zero",
-    "cost": "The refusal already exists as WRITE_IDENTIFIER=strict; this changes its default on one path. No API v3 client can depend on a malformed identifier being accepted, because 15.0.9 refused it. Keeps API v3 the strict API.",
+    "cost": "None to compatibility: no client can depend on acceptance that v15.0.9 refused. Refusing every malformed identifier on API v3 was measured against a strict run and would move at least 72 cells further from v15.0.9 (empty, JSON null and placeholders that v15.0.9 accepted), and a 400 can stall an uploader that only bounds retries on 404 (AndroidAPS, read). WRITE_IDENTIFIER=strict stays the opt-in broader refusal on API v3 and the socket.",
     "recommendation": "Strong candidate. Pure compatibility gain; check that no surveyed API v3 client sends such an identifier (none was found).",
     "status": "adopted",
-    "status_note": "Adopted: API v3 refuses a malformed identifier with 400 by default; v1, socket and in-process stay lenient. Queued for 16.0.0.",
+    "status_note": "Adopted as option (i): refuse only blank and numeric on API v3 by default; no refusal v15.0.9 did not make. Queued for 16.0.0.",
     "decided": "maintainer, 2026-10-31"
   },
   {
