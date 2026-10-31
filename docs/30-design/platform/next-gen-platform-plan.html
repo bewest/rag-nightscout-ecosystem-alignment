@@ -5688,8 +5688,8 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>9140beeda</code>.</em></p>
-<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>e1f7ac41</code> (2026-10-29), with §1, §1a and §6 brought to dev <code>991b0654</code> (2026-10-30). Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>a1da7e44a</code>.</em></p>
+<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>368e6c23</code> (2026-10-31), with open PR heads read from GitHub that day. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5704,7 +5704,7 @@
 <thead>
 <tr>
 <th></th>
-<th>on dev <code>e1f7ac41</code> (ships in 16.0.0)</th>
+<th>on dev <code>368e6c23</code> (ships in 16.0.0)</th>
 <th>in review (draft PRs)</th>
 <th>not started</th>
 </tr>
@@ -5712,20 +5712,20 @@
 <tbody>
 <tr>
 <td>Storage</td>
-<td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1)</td>
-<td>ST-V3-DECOUPLE merged with #8865 (2026-10-30); WC-STEP-PATCH, #8874 (out of draft at <code>9919f8ef</code>); ST-VIEWS, draft #8875 (<code>a0470a72</code>)</td>
-<td><code>write(intent)</code> (in progress), ST-EVENT (decision deferred, research continuing), computed views, backend-selectable harness, PostgreSQL</td>
+<td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1). ST-V3-DECOUPLE (with #8865, 2026-10-30). <code>write(intent)</code> release 1, every write path through one step (#8874, <code>368e6c23</code>, 2026-10-31)</td>
+<td>ST-HARNESS, draft #8881 (<code>ffa5e6b4</code>); ST-VIEWS, draft #8875 (<code>24647c0a</code>)</td>
+<td><code>write(intent)</code> release 2 (filter writes resolved to ids, one write shape for API v3), ST-EVENT (decision deferred, research continuing), PostgreSQL</td>
 </tr>
 <tr>
 <td>Identity</td>
 <td><code>identifier</code> is the client's, <code>_id</code> the server's; API v3 refuses a client <code>_id</code> (#8845); v1 entries and devicestatus match on <code>identifier</code>, and an explicit null removes a field (#8859)</td>
-<td>merged 2026-10-30: #8877 (<code>cf3d4b8f</code>; BF-209, BF-211; BF-210 withdrawn) and #8878 (<code>d51c7a60</code>; BF-212 first part). In progress: ID-FIRST-MATCH slice 1 (local)</td>
-<td>SPEC-ID-AMEND (next), identifier-first on every path, unique index</td>
+<td>merged 2026-10-30: #8877 (<code>cf3d4b8f</code>; BF-209, BF-211; BF-210 withdrawn) and #8878 (<code>d51c7a60</code>; BF-212 first part). ID-FIRST-MATCH, draft #8879 (<code>931e5e60</code>): slices 1, 2, 5, 3 and 4. SPEC-ID-AMEND done in this repository (2026-10-30)</td>
+<td>slices 6 and 6a (prepared), the unique index (built locally), ID-BATCH (prototype)</td>
 </tr>
 <tr>
 <td>Registration</td>
 <td>specifications only; dev also carries an older proposal schema, <code>docs/proposals/schemas/controller-instance-registration.schema.json</code></td>
-<td>#8857: S0, S1, S2, S5, off by default (<code>f7a43fed</code>, 78 behind dev, conflicts)</td>
+<td>#8857: S0, S1, S2, S5, off by default (<code>10fe6725</code>, 25 behind dev)</td>
 <td>typed writes (S3), projected views (S4)</td>
 </tr>
 <tr>
@@ -5789,7 +5789,7 @@ through the entry bar before the tag, directly after <code>write(intent)</code>;
 </tr>
 <tr>
 <td>3</td>
-<td>BF-211, per-collection cache flush (joins #8877)</td>
+<td><strong>merged 2026-10-30 with #8877 (<code>cf3d4b8f</code>)</strong>: BF-211, per-collection cache flush</td>
 <td>low; changes only which caches a delete by query empties</td>
 <td>the red/green control from <code>tools/lab/cache-value</code>; v1 deletes by query and API v3 auto-prune</td>
 </tr>
@@ -5801,13 +5801,13 @@ through the entry bar before the tag, directly after <code>write(intent)</code>;
 </tr>
 <tr>
 <td>3c</td>
-<td>#8883 (<code>8ae46b72</code>): BF-219, BF-220, BF-221, v1 treatment and entry writes; merge before #8879's next <code>dev</code> merge</td>
+<td>#8883 (<code>789d5d9d</code>, 0 behind <code>dev</code>): BF-219, BF-220, BF-221 (v1 treatment and entry writes) and BF-222 (API v3 autoPrune names what it deletes to the cache); merge before #8879's next <code>dev</code> merge, as they conflict in four files</td>
 <td>dosing-relevant reply and announcement fixes</td>
 <td>HTTP-level tests red on <code>dev</code>; the write-step port reviewed</td>
 </tr>
 <tr>
 <td>3d</td>
-<td>#8882 (<code>cd42dfce</code>): hygiene, the development lint popup and drawer resize</td>
+<td>#8882 (<code>cd42dfce</code>, 25 behind <code>dev</code>): hygiene, the development lint popup and drawer resize. CI fails at this head: the drawer-resize listener runs when <code>browser-utils</code> loads, and the test without a browser stops with <code>window is not defined</code> (<code>lib/client/browser-utils.js:138</code>)</td>
 <td>display only</td>
 <td>browser test red on <code>dev</code></td>
 </tr>
@@ -5850,7 +5850,7 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 <tbody>
 <tr>
 <td>6</td>
-<td>SPEC-ID-AMEND (spec and conformance only; in progress 2026-10-30)</td>
+<td><strong>done 2026-10-30</strong> (this repository, <code>b982fbdd8</code>): SPEC-ID-AMEND, spec and conformance only</td>
 <td>16.0.0 through the bar</td>
 <td>none for sites</td>
 <td>case-by-case conformance report</td>
@@ -5859,26 +5859,26 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 <td>7</td>
 <td>#8857, registration S0-S2, S5</td>
 <td>16.0.0 through the bar</td>
-<td>off by default; 109 commits behind dev with conflicts (2026-10-30), <code>dev</code> being merged in</td>
+<td>off by default; at <code>10fe6725</code> with <code>dev</code> <code>305a6533</code> merged in, 25 commits behind <code>dev</code></td>
 <td>the flag stays off; D-REG-FLAG (where the catalogue lives)</td>
 </tr>
 <tr>
 <td>8</td>
-<td><strong>merged 2026-10-31 (<code>368e6c23</code>)</strong>: #8874 plus slices 4 and 6, <code>write(intent)</code> release 1 (push-ready at <code>e8224807</code>, 2026-10-29: matrix 0 cells, revert rehearsed)</td>
-<td>16.0.0 through the bar (#8874 out of draft at <code>9919f8ef</code>, 2026-10-30: at <code>4f9fc4cd</code> against dev <code>991b0654</code>, 0 of 1,929 cells outside <code>cache</code>, merge revert rehearsed; needs review and merge, then a week's cohort check)</td>
+<td><strong>merged 2026-10-31 (<code>368e6c23</code>)</strong>: #8874 plus slices 4 and 6, <code>write(intent)</code> release 1</td>
+<td>16.0.0 (at <code>4f9fc4cd</code> against dev <code>991b0654</code>: 0 of 1,929 cells outside <code>cache</code>, merge revert rehearsed). Its cohort check is one window with the identity work, opening when slices 3 and 4 are on <code>dev</code></td>
 <td>every write moves, behaviour-neutral by the matrix</td>
 <td>G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit</td>
 </tr>
 <tr>
 <td>9</td>
 <td>ID-FIRST-MATCH as three landings, A (slices 1, 2, 5), B (3, 4) and C (6, 6a, then ID-UNIQUE-INDEX), in hours to days with one cohort window over the set, as two PRs: one identity PR for A, B and C1, then the index (maintainer, 2026-10-30): slices 1, 2, 5, 3, 4, 6, 6a, then ID-UNIQUE-INDEX (<code>WRITE_IDENTIFIER_INDEX</code>, with the duplicate-key retry inside the write step), then ID-BATCH (<a href="id-batch-design-note-2026-10-30.html">design note</a>)</td>
-<td>16.0.0 through the bar, in that order (index before ID-BATCH: maintainer, 2026-10-30). Draft <strong>#8879</strong> (base <code>dev</code> since 2026-10-31, head <code>5cdd9577</code>): slices 1, 2, 5 (with 5b's 409 rule) and 3 built and pushed, <code>dev</code> <code>368e6c23</code> merged; slice 4 being rebuilt with treatments <code>replaced</code> on every path (2026-10-30); 6 and 6a prepared; the unique index built on slice 3 and held for 6a; ID-BATCH's questions decided. <code>WRITE_IDENTIFIER=strict</code> covers v3 and the socket; v1 gets it with ID-BATCH (ID-STRICT-V1)</td>
+<td>16.0.0 through the bar, in that order (index before ID-BATCH: maintainer, 2026-10-30). Draft <strong>#8879</strong> (base <code>dev</code>, head <code>931e5e60</code>, 0 behind <code>dev</code> <code>368e6c23</code>): slices 1, 2, 5 (with 5b's 409 rule), 3 and 4 (merge on match, treatments <code>replaced</code> on every path) pushed; CI fails lint at this head (<code>no-useless-assignment</code>, <code>lib/storage/write-intent.js:1450</code>); 6 and 6a prepared; the unique index built on slice 3 and held for 6a; ID-BATCH's questions decided. <code>WRITE_IDENTIFIER=strict</code> covers v3 and the socket; v1 gets it with ID-BATCH (ID-STRICT-V1)</td>
 <td>re-send matching on every path</td>
 <td>the re-send table in the <a href="../../10-domain/record-identity-reference.html">identity reference §2.7</a>; D-LOOP-ID's per-client switch</td>
 </tr>
 <tr>
 <td>10</td>
-<td>#8875 ST-VIEWS (maintainer, 2026-10-30): in 16.0.0 in steps. The replay lab found identical alarms on 120,766 minutes; the alarm-text differences are fixed by reading the newest treatment within 60 h, and the view reads the full resident windows (60 h treatments, 24 h device status) so COB text matches exactly (being built). Then wired under the multitenant <code>serve</code> roles as alpha; <code>single</code> keeps the resident path</td>
+<td>#8875 ST-VIEWS (maintainer, 2026-10-30): in 16.0.0 in steps. Draft at <code>24647c0a</code> (25 behind <code>dev</code>): with the newest treatment read within 60 h and the full resident windows (60 h treatments, 24 h device status), both views equal the resident path on 126,092 replayed minutes each. Then wired under the multitenant <code>serve</code> roles as alpha; <code>single</code> keeps the resident path</td>
 <td>16.0.0</td>
 <td>alarms are safety-relevant</td>
 <td>the replay lab's per-dataset table at 0 differing minutes, its break-it controls and noise floor; alarm cohort checks (execution plan §7b)</td>
@@ -5892,9 +5892,9 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 </tr>
 </tbody>
 </table>
-<p>Research that informs the order, without being in it: the cache-value lab (BF-211), the
-since-watermark arm of the D-EVENT bench, and the extended write-contract matrix (QC-MATRIX-IDF), which
-found BF-212. The maintainer's direction on BF-212: a lossy edit of a controller-claimed record needs a
+<p>Research that informs the order, without being in it: the cache-value lab (BF-211), the cache
+catch-up lab (rounds 1–3: release 2 resolves filter writes to ids, and API v3 takes the same write
+shape; it found BF-222), and the extended write-contract matrix (QC-MATRIX-IDF), which found BF-212. The maintainer's direction on BF-212: a lossy edit of a controller-claimed record needs a
 manual confirmation. Two records already sharing an identifier is a question for the ID-FIRST-MATCH design.</p>
 <h2 id="2-why-the-tracks-meet-at-the-write-step">2. Why the tracks meet at the write step<a class="headerlink" href="#2-why-the-tracks-meet-at-the-write-step" title="Permanent link">&para;</a></h2>
 <p>Every track changes what happens when a record is written:</p>
@@ -5951,13 +5951,13 @@ manual confirmation. Two records already sharing an identifier is a question for
 </tr>
 </tbody>
 </table>
-<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT deferred until WC-STEP-PATCH and a first subscriber exist). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name.</p>
+<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT deferred, with its reopen conditions on its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name.</p>
 <h2 id="3-the-map">3. The map<a class="headerlink" href="#3-the-map" title="Permanent link">&para;</a></h2>
 <!-- chart: map -->
 
 <h2 id="4-the-tracks-in-detail">4. The tracks in detail<a class="headerlink" href="#4-the-tracks-in-detail" title="Permanent link">&para;</a></h2>
 <h3 id="41-storage">4.1 Storage<a class="headerlink" href="#41-storage" title="Permanent link">&para;</a></h3>
-<p>Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRITES, ST-COUNT-ONEPATH.</p>
+<p>Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRITES, ST-COUNT-ONEPATH, ST-V3-DECOUPLE, WC-STEP-PATCH (release 1).</p>
 <table>
 <thead>
 <tr>
@@ -5970,13 +5970,13 @@ manual confirmation. Two records already sharing an identifier is a question for
 <tbody>
 <tr>
 <td>WC-STEP-PATCH</td>
-<td>draft #8874 (release 1, no behaviour change): <code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method</td>
+<td>release 1 merged as #8874 (<code>368e6c23</code>, no behaviour change); release 2 resolves filter writes to ids and gives API v3 the same write shape (Q9, Q-U, Q-A): <code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method</td>
 <td>ST-WRITES</td>
 <td><a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a> G1</td>
 </tr>
 <tr>
 <td>ST-V3-DECOUPLE</td>
-<td>in review in #8865: API v3 without API v1's modules, the socket and the cache, so <code>serve api</code> serves it alone (M3)</td>
+<td>merged with #8865 (<code>991b0654</code>): API v3 without API v1's modules, the socket and the cache, so <code>serve api</code> serves it alone (M3)</td>
 <td>ST-WRITES, PLAT-SERVE</td>
 <td><code>serve api</code> passes the API v3 suites (634 pass, 0 fail, 108 single-only pending, as reported at <code>9f7f84f8</code>); <code>single</code> unchanged</td>
 </tr>
@@ -5988,13 +5988,13 @@ manual confirmation. Two records already sharing an identifier is a question for
 </tr>
 <tr>
 <td>ST-HARNESS</td>
-<td>backend-selectable harness, backend selection, tenant scope</td>
+<td>draft #8881 (<code>ffa5e6b4</code>): backend-selectable harness, backend selection, tenant scope</td>
 <td>WC-STEP-PATCH</td>
 <td><code>NS_TEST_BACKEND</code> controls</td>
 </tr>
 <tr>
 <td>ST-VIEWS</td>
-<td>draft #8875 at <code>a0470a72</code>, not wired in; device-status bound fixed by fixture (harness 198/0), in review: computed views from bounded queries, without a resident <code>ddata</code>: page, socket <code>dataUpdate</code>, plugins, alarms (M4)</td>
+<td>draft #8875 at <code>24647c0a</code>, not wired in; equal to the resident path on 126,092 replayed minutes per view, in review: computed views from bounded queries, without a resident <code>ddata</code>: page, socket <code>dataUpdate</code>, plugins, alarms (M4)</td>
 <td>ST-READS</td>
 <td>each view equal to today's on the corpus fixtures; alarms per the execution plan §7b</td>
 </tr>
@@ -6008,7 +6008,7 @@ manual confirmation. Two records already sharing an identifier is a question for
 </table>
 <p>The September seam chain is kept as reference for ST-HARNESS, ST-PG and TEN-RESOLVE (commits named on each item); it is not merged as it stands.</p>
 <h3 id="42-identity">4.2 Identity<a class="headerlink" href="#42-identity" title="Permanent link">&para;</a></h3>
-<p>Done, in 16.0.0: DEV-8845, ID-SIMPLE-MATCH.</p>
+<p>Done, in 16.0.0: DEV-8845, ID-SIMPLE-MATCH. Done in this repository: SPEC-ID-AMEND (2026-10-30).</p>
 <table>
 <thead>
 <tr>
@@ -6189,7 +6189,7 @@ manual confirmation. Two records already sharing an identifier is a question for
 </ul>
 <h2 id="7-sources">7. Sources<a class="headerlink" href="#7-sources" title="Permanent link">&para;</a></h2>
 <ul>
-<li>cgm-remote-monitor dev <code>e1f7ac41</code>; open PR heads read with <code>gh pr list</code> on 2026-10-29.</li>
+<li>cgm-remote-monitor dev <code>368e6c23</code>; open PR heads, CI and <code>dev</code> distance read with <code>gh pr list</code>, <code>gh pr checks</code> and <code>gh api .../compare</code> on 2026-10-31.</li>
 <li><a href="../tenancy/nightscout-storage-seam-interface-2026-09-14.html">Storage seam interface</a>, <a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a>, <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>, <a href="../modernization/pr-8854-alignment-2026-10-26.html">#8854 alignment brief</a>.</li>
 <li><a href="spec/registration.html">Registration specification</a>, <a href="spec/identity.html">identity specification</a>, <a href="spec/records.html">records specification</a>.</li>
 <li>Nocturne <code>970031f6</code>, re-checked at <code>36d5ef4a2</code>. Tenant scope is an <code>ITenantScoped</code> marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves <code>identifier</code> equal to <code>_id</code> (issue #1932).</li>
