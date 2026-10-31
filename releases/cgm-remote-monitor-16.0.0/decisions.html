@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>ef6520b1d</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>e2e76d65b</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2769,7 +2769,7 @@ public.</em></p>
 <td>being built on top of BF-223's branch</td>
 </tr>
 <tr>
-<td><strong>BF-225 is fixed in 16.0.0</strong> ("the current release candidate"): a socket re-send of a treatment without an <code>identifier</code> must not store a second copy when the stored one has an <code>identifier</code>, restoring 15.0.9's single record</td>
+<td><strong>BF-225 is in 16.0.0</strong> ("the current release candidate"): the socket re-send cases that #8877 changed from one record to two (v3-then-socket documented as intended by #8877; the UUID <code>_id</code> cases undocumented). Fix scope pending the maintainer's choice, since the smallest revert breaks BF-209's guard against dropping a distinct treatment</td>
 <td>maintainer, 2026-10-31, via session -4e</td>
 <td><code>BFQ-225</code></td>
 <td>being fixed by session -4e on <code>bf/16.0.0-bf225-socket-duplicate</code> off <code>dev</code>, with a trial merge into #8879</td>
