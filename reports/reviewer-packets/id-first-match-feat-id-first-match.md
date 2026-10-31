@@ -80,6 +80,9 @@ maintainer, plus a second human - re-send behaviour clients see changes
 
 ## Notes carried on the item
 
+2026-10-31 16:20Z (GitHub): #8879 at f5bd2642 (lint fix: no-useless-assignment
+in writeStatuses), 0 behind dev 368e6c23, 11 ahead, CI green on every job;
+still draft. Slices 6 and 6a not yet pushed (local prep/id-first-s6 47377fa3).
 2026-10-31 later (GitHub, about 05:45Z): #8879 at 931e5e60, 0 behind dev
 368e6c23: slice 4 (merge on match, treatments replaced on every path) pushed;
 CI fails lint (no-useless-assignment, lib/storage/write-intent.js:1450).

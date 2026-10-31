@@ -425,6 +425,21 @@ opens when slices 3 and 4 are on `dev`.
 | `master` protection, #8824 | — | protection still requires `Run Tests (22, 4.4)` | the decided settings change (only *Tests pass* and one approval), then #8824; maintainer |
 | Release 2 | `proto/v3-unify` `3b7f054a` (local) | Q-A adopted 2026-10-30; Q-U decided; Q9 recorded | write step resolves filter writes to ids; one write shape for v3; session -7d's labs |
 
+**Update, 2026-10-31, about 16:20Z** (read from GitHub with `gh pr list`, `gh pr checks` and
+`gh api .../compare/dev...<head>` by session -d1). `dev` is still `368e6c23`; nothing merged since #8874. Every open
+16.0.0 PR is green on every CI job:
+
+| PR | head now | against `dev` `368e6c23` | CI | changed since the 05:45Z table |
+|---|---|---|---|---|
+| #8883 | `789d5d9d` | 0 behind, 7 ahead | green | none; ready for the maintainer's review, merge first |
+| #8879 | `f5bd2642` (draft) | 0 behind, 11 ahead | green | the lint failure is fixed (`f5bd2642`); slices 6 and 6a not yet pushed (local `prep/id-first-s6` `47377fa3`) |
+| #8882 | `7a6b0283` | 0 behind, 4 ahead | green | the drawer-resize handler registers at the first open (`2737756d`), so the browser-less test passes; `dev` merged in. Ready for review |
+| #8881 | `ffa5e6b4` (draft) | 0 behind, 7 ahead | green | — |
+| #8875, #8857 | `24647c0a`, `10fe6725` (drafts) | 25 behind each | green | — |
+| #8855 | `6a2e84ab` | — | — | — |
+
+Still owed before the tag, unchanged: BF-72 and BF-161 fork branches carry `dev` `305a6533` (local `0fdf0fd6`, `0873f314`) and need `dev` `368e6c23` merged and re-run; `master` protection; the cohort window (opens when slices 3 and 4 are on `dev`).
+
 **Update, 2026-10-31, about 05:45Z** (read from GitHub with `gh pr list`, `gh pr checks` and
 `gh api .../compare/dev...<head>` by session -7d; every local branch matches its PR head, and every worktree is clean):
 

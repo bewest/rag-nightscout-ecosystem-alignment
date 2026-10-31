@@ -60,13 +60,16 @@ _None cited in the manifest._
 
 ## Notes carried on the item
 
-2026-10-30: fixed in #8882 (cd42dfce) for height changes; a width change
-closes the drawer by design since 2016 (chart.js:349-351), kept (maintainer).
-Browser test red on dev, suite 679 passing in chromium and firefox.
-2026-10-30: seen by the maintainer in the journey-lab session on the modern
-theme (relayed by session -7d); identical on dev 305a6533 and #8874 7463e76d,
-so not an #8874 regression; the modern theme makes it more visible. Fix
-options: size open drawers with CSS (e.g. width: min(350px, 100vw), a dvh-
+2026-10-31 16:20Z (GitHub): #8882 at 7a6b0283: the resize handler registers at
+the first open (2737756d), so loading browser-utils without a window no longer
+throws; dev 368e6c23 merged in (0 behind, 4 ahead); CI green on every job.
+Ready for review. 2026-10-30: fixed in #8882 (cd42dfce) for height changes; a
+width change closes the drawer by design since 2016 (chart.js:349-351), kept
+(maintainer). Browser test red on dev, suite 679 passing in chromium and
+firefox. 2026-10-30: seen by the maintainer in the journey-lab session on the
+modern theme (relayed by session -7d); identical on dev 305a6533 and #8874
+7463e76d, so not an #8874 regression; the modern theme makes it more visible.
+Fix options: size open drawers with CSS (e.g. width: min(350px, 100vw), a dvh-
 based height) instead of inline pixels, or re-apply the sizing on resize while
 a drawer is open. Being built as a second commit on the hygiene branch with
 DEV-LINT-OVERLAY-REGEX.

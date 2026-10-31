@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-31 against cgm-remote-monitor dev 368e6c23 (#8874 merged); #8883 at 789d5d9d, #8879 at 931e5e60, #8881 at ffa5e6b4, #8882 at cd42dfce, #8875 at 24647c0a, #8857 at 10fe6725",
+ "measured": "2026-10-31 against cgm-remote-monitor dev 368e6c23 (#8874 merged); #8883 at 789d5d9d, #8879 at f5bd2642, #8881 at ffa5e6b4, #8882 at 7a6b0283; every open PR green in CI (re-read 16:20Z), #8875 at 24647c0a, #8857 at 10fe6725",
  "tracks": [
   {
    "id": "storage",
@@ -368,7 +368,7 @@
     "ID-SIMPLE-MATCH",
     "WC-STEP-PATCH"
    ],
-   "ref": "Draft #8879 at 931e5e60 (base dev, 0 behind 368e6c23): slices 1, 2, 5 (with 5b's 409 rule), 3 and 4 (merge on match; treatments replaced on every path). Slices 6 and 6a prepared on local prep/id-first-s6 47377fa3. CI at 931e5e60 fails lint (no-useless-assignment, lib/storage/write-intent.js:1450). Merges after #8883 (they conflict in four files).",
+   "ref": "Draft #8879 at f5bd2642 (base dev, 0 behind 368e6c23, CI green): slices 1, 2, 5 (with 5b's 409 rule), 3 and 4 (merge on match; treatments replaced on every path). Slices 6 and 6a prepared on local prep/id-first-s6 47377fa3. Merges after #8883 (they conflict in four files).",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8879"
   },
   {

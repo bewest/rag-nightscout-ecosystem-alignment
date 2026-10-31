@@ -7428,6 +7428,7 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
+      2026-10-31 16:20Z (GitHub): #8879 at f5bd2642 (lint fix: no-useless-assignment in writeStatuses), 0 behind dev 368e6c23, 11 ahead, CI green on every job; still draft. Slices 6 and 6a not yet pushed (local prep/id-first-s6 47377fa3).
       2026-10-31 later (GitHub, about 05:45Z): #8879 at 931e5e60, 0 behind dev 368e6c23: slice 4 (merge on match, treatments replaced on every path) pushed; CI fails lint (no-useless-assignment, lib/storage/write-intent.js:1450). Carries BF-215 and BF-216 (slice 2).
       2026-10-31: draft #8879 at 5cdd9577 (base dev): slices 1, 2, 5 (+5b) and 3 built and pushed, dev 368e6c23 merged; slice 4 being rebuilt with treatments replaced on every path (maintainer 2026-10-30); 6 and 6a prepared on prep/id-first-s6 47377fa3. Owner session -4f.
       2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): the rules
@@ -23885,6 +23886,7 @@ items:
     blocks_on: []
     evidence: []
     notes: >
+      2026-10-31 16:20Z (GitHub): #8882 at 7a6b0283: the resize handler registers at the first open (2737756d), so loading browser-utils without a window no longer throws; dev 368e6c23 merged in (0 behind, 4 ahead); CI green on every job. Ready for review.
       2026-10-30: fixed in #8882 (cd42dfce) for height changes; a width change closes the drawer by design since 2016 (chart.js:349-351), kept (maintainer). Browser test red on dev, suite 679 passing in chromium and firefox.
       2026-10-30: seen by the maintainer in the journey-lab session on the
       modern theme (relayed by session -7d); identical on dev 305a6533 and
