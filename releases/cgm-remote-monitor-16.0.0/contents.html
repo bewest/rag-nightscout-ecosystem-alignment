@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>9140beeda</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>f0d5b4c6c</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3124,10 +3124,10 @@ opens when slices 3 and 4 are on <code>dev</code>.</p>
 </thead>
 <tbody>
 <tr>
-<td>#8883 v1 treatment writes (BF-219, BF-220, BF-221)</td>
-<td><code>8ae46b72</code></td>
+<td>#8883 v1 treatment writes (BF-219, BF-220, BF-221, BF-222)</td>
+<td><code>8ae46b72</code> on GitHub; <code>789d5d9d</code> local adds BF-222 (session -7d's fix, cherry-picked; the bundle's new test files 18 passing)</td>
 <td>open, base <code>dev</code>; write-step port reviewed by session -4f</td>
-<td>merge <strong>before</strong> #8879's next <code>dev</code> merge (they conflict in four files); BF-222's fix from session -7d may be added first; maintainer</td>
+<td>push <code>789d5d9d</code> and update the title and body, then merge <strong>before</strong> #8879's next <code>dev</code> merge (they conflict in four files); maintainer</td>
 </tr>
 <tr>
 <td>#8879 identity (ID-FIRST-MATCH)</td>
@@ -3719,7 +3719,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fdbb26a8b7e996947e229db825a60b66d4a8aa08/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f0d5b4c6cc7a9e06846a2e60c1af7ca9f861409c/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
