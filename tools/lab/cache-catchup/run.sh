@@ -6,12 +6,15 @@
 #   tools/lab/cache-catchup/run.sh all     results/realistic.{log,json}, results/heavy.{log,json}
 #   tools/lab/cache-catchup/run.sh round2  results/round2/{realistic,heavy}.{log,json}: the resolve arm
 #                                          (write scoped to the ids read) against dev, flush and ids
+#   tools/lab/cache-catchup/run.sh round3  results/round3/{realistic,heavy}.{log,json}: API v3 writes of the
+#                                          write-contract Q-A sketch (lab-v3.js, server-v3.js) against #8874
 #   tools/lab/cache-catchup/run.sh down
 #
 # Trees (each needs its own `npm ci`):
 #   CC_DEV    dev 991b0654, unmodified (control)
 #   CC_PROTO  proto/cache-catchup (CACHE_CATCHUP=flush|ids|watermark; flush is dev's behaviour);
 #             round 2: dev 305a6533 and proto/cache-resolve (adds CACHE_CATCHUP=resolve)
+#   round 3: CC_PR #8874 7463e76d; CC_UNIFY proto/v3-unify (the break-it arm drops a name in its announce())
 # The API secret is generated per run in lab.js and never written. Logs start and end with docker state.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -45,5 +48,17 @@ case "${1:-}" in
     for size in realistic heavy; do
       { state; node "$HERE/lab.js" --mongo "$MONGO" --reps 10 --size $size --out "$OUT/round2/$size.json" $ARMS2 2>&1; echo "exit=$?"; state; } > "$OUT/round2/$size.log" || true
     done ;;
-  *) sed -n 2,15p "$0"; exit 2 ;;
+  round3)
+    PR=${CC_PR:-$W/crm-v3-pr}; UNIFY=${CC_UNIFY:-$W/crm-v3-unify}
+    ARMS3="--arm pr=$PR --arm unify=$UNIFY --arm unifybreak=$UNIFY:V3LAB_BREAK=drop-last"
+    mkdir -p "$OUT/round3"
+    node --version; docker exec "$NAME" mongosh --quiet --eval 'db.version()'
+    for size in realistic heavy; do
+      # no pipe (the servers inherit stderr, so an orphan would hold a pipe open); the
+      # servers' per-request plugin notices are filtered out afterwards
+      { state; node "$HERE/lab-v3.js" --mongo "$MONGO" --reps 10 --size $size --out "$OUT/round3/$size.json" $ARMS3 2>&1; echo "exit=$?"; state; } > "$OUT/round3/$size.raw" || true
+      grep -v -e 'For the Basal plugin' -e '^SECURITY: failed-authentication' "$OUT/round3/$size.raw" > "$OUT/round3/$size.log" || true
+      rm -f "$OUT/round3/$size.raw"
+    done ;;
+  *) sed -n 2,18p "$0"; exit 2 ;;
 esac

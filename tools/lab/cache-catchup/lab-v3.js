@@ -55,10 +55,13 @@ const v1doc = (bench, t) => ({ eventType: 'Carb Correction', carbs: 12, created_
 const v3doc = (bench, t, identifier) => ({ identifier, date: t, utcOffset: 0, app: 'cache-lab', device: 'lab', eventType: 'Carb Correction', carbs: 12, bench });
 
 // ---- arms
+// every server started, so a failed run can stop them (a forked child outlives its parent)
+const children = [];
 async function startArm (a, run) {
   const db = 'cc3_' + a.name + '_' + run;
   const env = Object.assign({}, process.env, { BENCH_SECRET: SECRET, NODE_OPTIONS: '--require ' + path.join(__dirname, 'readtap.js') }, a.env);
   const child = fork(path.join(__dirname, 'server-v3.js'), [a.tree, MONGO + '/' + db + QS], { stdio: ['ignore', 'ignore', 'inherit', 'ipc'], env });
+  children.push(child);
   const ready = await new Promise((resolve, reject) => {
     const t = setTimeout(() => reject(new Error(a.name + ' boot timeout')), 120000);
     child.on('message', m => { if (m.cmd === 'ready') { clearTimeout(t); resolve(m); } });
@@ -67,7 +70,9 @@ async function startArm (a, run) {
   if (!ready.prune) throw new Error(a.name + ': no API v3 treatments collection found');
   let seq = 0; const pending = new Map();
   child.on('message', m => { if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } });
-  const ipc = msg => new Promise(resolve => { const id = ++seq; pending.set(id, resolve); child.send(Object.assign({ id }, msg)); });
+  // every call answers: a server that does not within 20 s answers with an error
+  const ipc = msg => new Promise(resolve => { const id = ++seq; pending.set(id, resolve); child.send(Object.assign({ id }, msg));
+    setTimeout(() => { if (pending.has(id)) { pending.delete(id); resolve({ error: 'ipc timeout ' + msg.cmd, cache: { treatments: [] }, tally: { queries: 0, docs: 0, bytes: 0 } }); } }, 20000); });
   const base = 'http://127.0.0.1:' + ready.port;
   const call = async (method, p, body, headers) => {
     try {
@@ -92,8 +97,8 @@ async function startArm (a, run) {
 async function compare (cli, a, run) {
   const c = (await a.ipc({ cmd: 'cache' })).cache;
   const out = { missing: 0, ghost: 0, stale: 0, detail: [] };
-  const truth = new Map((await cli.db(a.db).collection('treatments').find({ bench: { $regex: '^' + run }, isValid: { $ne: false } }, { projection: { srvModified: 1 } }).toArray()).map(d => [String(d._id), d.srvModified]));
-  const held = new Map(c.treatments.filter(x => String(x[2]).startsWith(run)).map(x => [x[0], x[1]]));
+  const truth = new Map((await cli.db(a.db).collection('treatments').find({ bench: { $regex: '^' + run }, isValid: { $ne: false } }, { projection: { srvModified: 1 } }).toArray()).map(d => [String(d._id), d.srvModified ?? null]));
+  const held = new Map(c.treatments.filter(x => String(x[2]).startsWith(run)).map(x => [x[0], x[1] ?? null]));
   for (const [id, s] of truth) {
     if (!held.has(id)) { out.missing++; out.detail.push(['missing', id]); }
     else if (held.get(id) !== s) { out.stale++; out.detail.push(['stale', id, held.get(id), s]); }
@@ -203,6 +208,7 @@ function shuffle (x) { for (let i = x.length - 1; i > 0; i--) { const j = Math.f
       const s = SCEN[name];
       for (const a of shuffle(live.slice())) {
         const tag = run + '-' + name + '-' + rep;
+        console.error('.. ' + name + ' ' + a.name + ' rep ' + rep + ' (' + Math.round((Date.now() - t0) / 1000) + ' s)');
         const g = res[name][a.name];
         await s.seed(a, tag);
         if ((await settle(cli, a, run)).consistentMs == null) { g.seedResync++; await a.ipc({ cmd: 'resync' }); await settle(cli, a, run, 30000); }
@@ -243,4 +249,4 @@ function shuffle (x) { for (let i = x.length - 1; i > 0; i--) { const j = Math.f
   }
   await cli.close();
   process.exit(0);
-})().catch(e => { console.error(e); process.exit(2); });
+})().catch(e => { console.error(e); for (const c of children) { try { c.kill(); } catch (x) { /* gone */ } } process.exit(2); });
