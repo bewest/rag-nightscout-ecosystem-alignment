@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>eb22a5be1</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>c73f2d822</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2749,6 +2749,12 @@ public.</em></p>
 <td>maintainer, 2026-10-31, via session -81; preferred by session -4e (owner of <code>write-intent.js</code>) because BF-219/220's v1 batch replies, #8879's <code>written[]</code> mapping, ID-BATCH and Loop's slot count rely on one slot per input</td>
 <td><code>WC-STEP-PATCH</code> (release 2)</td>
 <td>-4e's conditions: socket identifier-first deletes in slice 6a announce through <code>removed</code>; #8883's autoPrune test is routed through the step with BF-222's assertion kept word for word (called out in the file and the commit), stop if BF-222's behaviour cannot hold</td>
+</tr>
+<tr>
+<td><strong>BF-224: a plain value under the API v1 date field means equality</strong> (MongoDB's meaning; the same answer as the <code>$eq</code> form that works today, with the same date conversion), so <code>find[created_at]=&lt;time&gt;</code> answers on GET and a DELETE written that way removes the matching records; it answered 500 and did nothing since 2019. BF-224 ships in one "16.0.0 small backfixes" PR with BF-223</td>
+<td>maintainer, 2026-10-31, via session -d1</td>
+<td><code>BFQ-224</code>, <code>BFQ-223</code></td>
+<td>being built on top of BF-223's branch</td>
 </tr>
 <tr>
 <td><strong>Q9 / Q-A / Q-U (release 2): the cache gets the records a filter write touched from the write step's id resolution, not from D-EVENT and not from a srvModified watermark</strong> (replacing the watermark proposal); D-EVENT keeps its other reopen conditions. Q-A, taken up by the maintainer directly: leaning towards one write shape for v3 too, decided only after a v3 prototype shows backward compatibility, quality and the lab's exactness. Q-U decided: autoPrune through the write step with id resolution. The 1,000 cap is a fixed constant. Details in the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> Q9 row</td>
