@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 345 |
+| items | 346 |
 | runnable gates | 402 |
-| explicit `no-gate:` markers | 359 |
+| explicit `no-gate:` markers | 360 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 359 of the 761 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 762 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 6 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 79 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 9 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-225, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 42 | P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 5 | BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
@@ -2788,7 +2788,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 161 items
+`parcel: register-open` &mdash; 162 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2931,6 +2931,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `merged-upstream` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 | `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `merged-upstream` | `bf/16.0.0-small-backfixes` | patch | 1 run |
+| `BFQ-225` | BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier | `needs-decision` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7372,6 +7373,36 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released. 2026-10-31 later: built by an agent of session -d1 as f59d7872 on bf/16.0.0-small-backfixes (on the #8885 head ecbc9c06): a non-empty plain string under the date field becomes {$eq: value} before the date rewrite (6 lines in lib/server/query.js); plain numbers unchanged; every operator form and the BF-108 $in handling build byte- identical queries. Red on dev: 16 (9 unit, 7 HTTP incl. devicestatus); green 63/0; test:unit 1896, integration subset 287, test:browser 684, eslint 0 errors; break-it (dev query.js) red on exactly the 16. A plain value counts as a date filter like $eq, so the default window does not apply (2020-dated records returned and deleted). Measured: treatments, devicestatus (GET and DELETE), activity and profile also 500 on dev. Ready to push to #8885. 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400. 2026-10-31 (maintainer): equality, bundled with BF-223 in one '16.0.0 small backfixes' PR; being built by an agent of session -d1 on bf/16.0.0-small-backfixes (from BF-223's ecbc9c06).
+
+### `BFQ-225` &mdash; BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@604de1cb` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | no (pre-release) |
+| register | `BF-225` |
+
+**Blast radius.** lib/server/websocket.js processSingleDbAdd, the socket similar match changed by #8877 (cf3d4b8f): a stored treatment's identifier now keeps a re-send without one from matching it.
+
+**What an operator sees.** An app that re-sends a treatment over the live connection without an identifier could create a duplicate insulin or carb entry on the site, so caregivers would see doubled IOB or COB. Not in any released version (15.0.9 stores one record); on dev since #8877.
+
+**Why `patch`.** restores 15.0.9's single record for an identifier-less socket re-send
+
+**Gates.**
+
+- **NO GATE** &mdash; not built; the fix's gate is the two matrix cells (treatments x v3 x ws; treatments x {v1,inproc} x ws idf-uuidid-same) back to 1 record, red on dev, with no other cell moved
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 

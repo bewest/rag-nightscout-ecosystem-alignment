@@ -437,6 +437,8 @@ opens when slices 3 and 4 are on `dev`.
 | #8810 AndroidAPS iOS push | `37146a1f` | `dev` | 84 behind, 5 ahead | 16 passed, 3 skipped | review items open |
 | #8824 `dev` to `master` | `604de1cb` | `master` | — | — | blocked by `master` protection |
 
+**BF-225** (filed by session -4e): a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier, on `dev` since #8877 (`cf3d4b8f`), not on 15.0.9; a 16.0.0 blocker candidate for the maintainer to decide. Release-notes line owed (measured by -4e): on 15.0.9 a socket `dbAdd` array of three distinct treatments stored only one; #8877 fixed that.
+
 Local, not pushed: the unique index (moving onto 6a; its retry becomes item-level first), ID-BATCH (session -81, on the index), the one-person profile prototype (`908351d4`). Being reproduced, not filed: an API v3 autoPrune cache lead.
 
 **Update, 2026-10-31, about 20:05Z** (session -d1, from GitHub): the maintainer merged **#8885** ("16.0.0 small backfixes": BF-223, a saved API secret the site refuses blocks a valid `?token=` link; BF-224, a plain-value v1 date filter answered 500) at 19:57Z as `604de1cb`; `dev` is `604de1cb`. **#8879** is out of draft at `2d79d30b` (slices 1–6a with the 2026-10-31 socket decisions; `dev` `604de1cb` merged; 0 behind, 21 ahead; CI 16 passed, 3 skipped) and is next for review; when it merges, slices 3 and 4 are on `dev` and the cohort window opens. The unique index moves onto it next (session -d1), then ID-BATCH (session -81). Write-step release 2 is rebased onto slice 6a (local `c80c16eb`, gates green). A cache lead from the release 2 lab (autoPrune leaving the cache short on `dev`) is being reproduced, not filed.

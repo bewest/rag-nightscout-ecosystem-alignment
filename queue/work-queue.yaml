@@ -18362,6 +18362,40 @@ items:
       needs a choice: treat a plain value as equality (MongoDB's meaning of a
       plain value) or refuse it with 400.
       2026-10-31 (maintainer): equality, bundled with BF-223 in one '16.0.0 small backfixes' PR; being built by an agent of session -d1 on bf/16.0.0-small-backfixes (from BF-223's ecbc9c06).
+  - id: BFQ-225
+    title: "BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@604de1cb
+    state: needs-decision
+    pr: []
+    ships_to_operators_today: false
+    blast_radius: >
+      lib/server/websocket.js processSingleDbAdd, the socket similar match
+      changed by #8877 (cf3d4b8f): a stored treatment's identifier now keeps a
+      re-send without one from matching it.
+    review: maintainer
+    operator_visible: >
+      An app that re-sends a treatment over the live connection without an
+      identifier could create a duplicate insulin or carb entry on the site,
+      so caregivers would see doubled IOB or COB. Not in any released version
+      (15.0.9 stores one record); on dev since #8877.
+    semver: patch
+    semver_reason: restores 15.0.9's single record for an identifier-less socket re-send
+    register: [BF-225]
+    gates:
+      - no-gate: >
+          not built; the fix's gate is the two matrix cells
+          (treatments x v3 x ws; treatments x {v1,inproc} x ws idf-uuidid-same)
+          back to 1 record, red on dev, with no other cell moved
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix
+      pins). 16.0.0 blocker candidate; the maintainer decides whether it
+      blocks the tag. Data: session -4e's compat measurement.
   - id: BFQ-219
     title: "BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent"
     parcel: register-open

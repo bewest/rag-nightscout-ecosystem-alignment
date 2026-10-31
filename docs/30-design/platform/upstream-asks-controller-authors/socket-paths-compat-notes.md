@@ -31,6 +31,7 @@ Nightscout 16.0.0 matches a re-sent record to the stored one by its `identifier`
    stored profile is updated (its `store` replaced whole). This keeps profile history as it is today.
    - **What to check:** when you add a profile by copying the current one, delete `identifier` as well as `_id`,
      so the new profile is new by design and no warning is logged.
+   - **Known to copy the identifier today (read from source):** tconnectsync (`tconnectsync/sync/update_profiles.py:208-215`) and oref0 (`bin/oref0-upload-profile.js:110-111` and `:246-271`). Both keep working; each added profile is stored as a new profile, with a warning on the server.
 
 3. **Every other collection merges on match** (device status, entries, food, activity), as decided on 2026-10-29.
    A `null` in a merge removes that field.
