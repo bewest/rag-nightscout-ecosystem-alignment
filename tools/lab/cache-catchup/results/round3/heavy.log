@@ -1,0 +1,598 @@
+/cache-lab-27622 running started=2026-10-31T02:11:27.872538785Z restarts=0 oom=false
+seeded pr {"count":375,"consistentMs":10}
+seeded unify {"count":375,"consistentMs":6}
+seeded unifybreak {"count":375,"consistentMs":6}
+.. v3-delete-own-identifier-permanent unifybreak rep 0 (0 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae55f50e6d2803bdd681630"]]
+.. v3-delete-own-identifier-permanent pr rep 0 (12 s)
+.. v3-delete-own-identifier-permanent unify rep 0 (14 s)
+.. v3-delete-twin unify rep 0 (17 s)
+.. v3-delete-twin unifybreak rep 0 (19 s)
+v3-delete-twin unifybreak [["ghost","6ae55f63e6d2803bdd681636"]]
+.. v3-delete-twin pr rep 0 (30 s)
+.. v3-patch-twin unify rep 0 (32 s)
+.. v3-patch-twin pr rep 0 (35 s)
+.. v3-patch-twin unifybreak rep 0 (37 s)
+v3-patch-twin unifybreak [["stale","6ae55f75e6d2803bdd68163a",null,1793417079003]]
+.. prune-race unifybreak rep 0 (48 s)
+prune-race unifybreak [["ghost","6ae55f80a4ecb56ea8135cde"]]
+.. prune-race pr rep 0 (59 s)
+prune-race pr [["ghost","6ae55f8ba4ecb56ea8135ced"],["ghost","6ae55f8ba4ecb56ea8135cec"],["ghost","6ae55f8ba4ecb56ea8135ceb"],["ghost","6ae55f8ba4ecb56ea8135cea"],["ghost","6ae55f8ba4ecb56ea8135ce9"],["ghost","6ae55f8ba4ecb56ea8135ce8"],["ghost","6ae55f8ba4ecb56ea8135ce7"],["ghost","6ae55f8ba4ecb56ea8135ce6"],["ghost","6ae55f8ba4ecb56ea8135ce5"],["ghost","6ae55f8ba4ecb56ea8135ce4"]]
+.. prune-race unify rep 0 (70 s)
+.. v3-mixed-burst unify rep 0 (72 s)
+.. v3-mixed-burst pr rep 0 (75 s)
+.. v3-mixed-burst unifybreak rep 0 (77 s)
+v3-mixed-burst unifybreak [["stale","6ae55f9da40611c1b37152ab",1793417117840,1793417127122],["stale","6ae55f9da40611c1b37152ac",1793417117845,1793417127127],["missing","6ae55fa7a40611c1b37152ad"],["ghost","6ae55f9da40611c1b37152aa"]]
+.. v3-delete-twin-permanent unify rep 0 (96 s)
+.. v3-delete-twin-permanent pr rep 0 (99 s)
+.. v3-delete-twin-permanent unifybreak rep 0 (101 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae55fb5e6d2803bdd68163d"]]
+.. v3-put unifybreak rep 0 (112 s)
+v3-put unifybreak [["stale","6ae55fc0a40611c1b37152ae",1793417152148,1793417161446]]
+.. v3-put unify rep 0 (130 s)
+.. v3-put pr rep 0 (133 s)
+.. v3-delete pr rep 0 (135 s)
+.. v3-delete unify rep 0 (138 s)
+.. v3-delete unifybreak rep 0 (140 s)
+v3-delete unifybreak [["ghost","6ae55fdca40611c1b37152af"]]
+.. prune unify rep 0 (159 s)
+.. prune unifybreak rep 0 (161 s)
+prune unifybreak [["ghost","6ae55ff1a4ecb56ea8135d15"]]
+.. prune pr rep 0 (172 s)
+prune pr [["ghost","6ae55ffca4ecb56ea8135d1f"],["ghost","6ae55ffca4ecb56ea8135d1e"],["ghost","6ae55ffca4ecb56ea8135d1d"],["ghost","6ae55ffca4ecb56ea8135d1c"],["ghost","6ae55ffca4ecb56ea8135d1b"],["ghost","6ae55ffca4ecb56ea8135d1a"],["ghost","6ae55ffca4ecb56ea8135d19"],["ghost","6ae55ffca4ecb56ea8135d18"],["ghost","6ae55ffca4ecb56ea8135d17"],["ghost","6ae55ffca4ecb56ea8135d16"],["ghost","6ae55f8da4ecb56ea8135cf2"],["ghost","6ae55f8da4ecb56ea8135cf1"]]
+.. v3-delete-permanent unifybreak rep 0 (187 s)
+v3-delete-permanent unifybreak [["ghost","6ae5600ba40611c1b37152b0"]]
+.. v3-delete-permanent unify rep 0 (206 s)
+.. v3-delete-permanent pr rep 0 (208 s)
+.. v3-delete-own-identifier unify rep 0 (211 s)
+.. v3-delete-own-identifier pr rep 0 (213 s)
+.. v3-delete-own-identifier unifybreak rep 0 (216 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae56028e6d2803bdd681643"]]
+.. v3-patch unifybreak rep 0 (227 s)
+v3-patch unifybreak [["stale","6ae56032a40611c1b37152b1",1793417266916,1793417276237]]
+.. v3-patch unify rep 0 (245 s)
+.. v3-patch pr rep 0 (248 s)
+.. v3-patch-burst pr rep 0 (250 s)
+.. v3-patch-burst unify rep 0 (253 s)
+.. v3-patch-burst unifybreak rep 0 (255 s)
+v3-patch-burst unifybreak [["stale","6ae5604fa40611c1b37152b2",1793417295409,1793417304752]]
+rep 0 (274 s)
+.. v3-put unifybreak rep 1 (274 s)
+v3-put unifybreak [["stale","6ae56062a40611c1b37152b3",1793417314066,1793417323383]]
+.. v3-put pr rep 1 (292 s)
+.. v3-put unify rep 1 (295 s)
+.. v3-delete-twin unifybreak rep 1 (297 s)
+v3-delete-twin unifybreak [["ghost","6ae56079e6d2803bdd681644"]]
+.. v3-delete-twin unify rep 1 (308 s)
+.. v3-delete-twin pr rep 1 (310 s)
+.. v3-patch-burst unify rep 1 (313 s)
+.. v3-patch-burst pr rep 1 (315 s)
+.. v3-patch-burst unifybreak rep 1 (318 s)
+v3-patch-burst unifybreak [["stale","6ae5608ea40611c1b37152b4",1793417358117,1793417367435]]
+.. v3-patch unifybreak rep 1 (336 s)
+v3-patch unifybreak [["stale","6ae560a0a40611c1b37152b5",1793417376766,1793417386074]]
+.. v3-patch pr rep 1 (355 s)
+.. v3-patch unify rep 1 (357 s)
+.. v3-delete-own-identifier-permanent unify rep 1 (360 s)
+.. v3-delete-own-identifier-permanent pr rep 1 (362 s)
+.. v3-delete-own-identifier-permanent unifybreak rep 1 (365 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae560bde6d2803bdd68164c"]]
+.. v3-delete-permanent unifybreak rep 1 (375 s)
+v3-delete-permanent unifybreak [["ghost","6ae560c7a40611c1b37152b6"]]
+.. v3-delete-permanent unify rep 1 (394 s)
+.. v3-delete-permanent pr rep 1 (396 s)
+.. v3-delete unifybreak rep 1 (399 s)
+v3-delete unifybreak [["ghost","6ae560dfa40611c1b37152b7"]]
+.. v3-delete unify rep 1 (418 s)
+.. v3-delete pr rep 1 (420 s)
+.. prune-race pr rep 1 (422 s)
+prune-race pr [["ghost","6ae560f6a4ecb56ea8135d29"],["ghost","6ae560f6a4ecb56ea8135d28"],["ghost","6ae560f6a4ecb56ea8135d27"],["ghost","6ae560f6a4ecb56ea8135d26"],["ghost","6ae560f6a4ecb56ea8135d25"],["ghost","6ae560f6a4ecb56ea8135d24"],["ghost","6ae560f6a4ecb56ea8135d23"],["ghost","6ae560f6a4ecb56ea8135d22"],["ghost","6ae560f6a4ecb56ea8135d21"],["ghost","6ae560f6a4ecb56ea8135d20"]]
+.. prune-race unify rep 1 (433 s)
+.. prune-race unifybreak rep 1 (436 s)
+prune-race unifybreak [["ghost","6ae56103a4ecb56ea8135d47"]]
+.. v3-delete-own-identifier unifybreak rep 1 (446 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae5610ee6d2803bdd68164e"]]
+.. v3-delete-own-identifier unify rep 1 (458 s)
+.. v3-delete-own-identifier pr rep 1 (460 s)
+.. v3-mixed-burst unifybreak rep 1 (463 s)
+v3-mixed-burst unifybreak [["stale","6ae5611fa40611c1b37152b9",1793417503020,1793417512311],["stale","6ae5611fa40611c1b37152ba",1793417503024,1793417512314],["missing","6ae56128a40611c1b37152bb"],["ghost","6ae5611ea40611c1b37152b8"]]
+.. v3-mixed-burst unify rep 1 (481 s)
+.. v3-mixed-burst pr rep 1 (484 s)
+.. v3-delete-twin-permanent unify rep 1 (486 s)
+.. v3-delete-twin-permanent unifybreak rep 1 (489 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae56139e6d2803bdd681654"]]
+.. v3-delete-twin-permanent pr rep 1 (499 s)
+.. prune pr rep 1 (502 s)
+prune pr [["ghost","6ae56146a4ecb56ea8135d56"],["ghost","6ae56146a4ecb56ea8135d55"],["ghost","6ae56146a4ecb56ea8135d54"],["ghost","6ae56146a4ecb56ea8135d53"],["ghost","6ae56146a4ecb56ea8135d52"],["ghost","6ae56146a4ecb56ea8135d51"],["ghost","6ae56146a4ecb56ea8135d50"],["ghost","6ae56146a4ecb56ea8135d4f"],["ghost","6ae56146a4ecb56ea8135d4e"],["ghost","6ae56146a4ecb56ea8135d4d"],["ghost","6ae560f8a4ecb56ea8135d2e"],["ghost","6ae560f8a4ecb56ea8135d2d"]]
+.. prune unify rep 1 (517 s)
+.. prune unifybreak rep 1 (520 s)
+prune unifybreak [["ghost","6ae56158a4ecb56ea8135d6a"]]
+.. v3-patch-twin unifybreak rep 1 (530 s)
+v3-patch-twin unifybreak [["stale","6ae56162e6d2803bdd681656",null,1793417573013]]
+.. v3-patch-twin pr rep 1 (542 s)
+.. v3-patch-twin unify rep 1 (544 s)
+rep 1 (547 s)
+.. v3-delete-permanent unify rep 2 (547 s)
+.. v3-delete-permanent unifybreak rep 2 (549 s)
+v3-delete-permanent unifybreak [["ghost","6ae56175a40611c1b37152bc"]]
+.. v3-delete-permanent pr rep 2 (568 s)
+.. v3-delete-own-identifier unifybreak rep 2 (570 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae5618ae6d2803bdd68165a"]]
+.. v3-delete-own-identifier pr rep 2 (581 s)
+.. v3-delete-own-identifier unify rep 2 (583 s)
+.. v3-patch-burst unifybreak rep 2 (586 s)
+v3-patch-burst unifybreak [["stale","6ae5619aa40611c1b37152bd",1793417626353,1793417635668]]
+.. v3-patch-burst unify rep 2 (605 s)
+.. v3-patch-burst pr rep 2 (607 s)
+.. v3-patch-twin unifybreak rep 2 (609 s)
+v3-patch-twin unifybreak [["stale","6ae561b1e6d2803bdd68165f",null,1793417651160]]
+.. v3-patch-twin pr rep 2 (620 s)
+.. v3-patch-twin unify rep 2 (623 s)
+.. v3-put unifybreak rep 2 (625 s)
+v3-put unifybreak [["stale","6ae561c1a40611c1b37152be",1793417665472,1793417674788]]
+.. v3-put pr rep 2 (644 s)
+.. v3-put unify rep 2 (646 s)
+.. v3-delete-twin-permanent unify rep 2 (649 s)
+.. v3-delete-twin-permanent pr rep 2 (651 s)
+.. v3-delete-twin-permanent unifybreak rep 2 (654 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae561dee6d2803bdd681664"]]
+.. v3-delete-twin pr rep 2 (664 s)
+.. v3-delete-twin unifybreak rep 2 (667 s)
+v3-delete-twin unifybreak [["ghost","6ae561ebe6d2803bdd681666"]]
+.. v3-delete-twin unify rep 2 (677 s)
+.. v3-mixed-burst pr rep 2 (680 s)
+.. v3-mixed-burst unifybreak rep 2 (682 s)
+v3-mixed-burst unifybreak [["stale","6ae561faa40611c1b37152c0",1793417722787,1793417732127],["stale","6ae561faa40611c1b37152c1",1793417722790,1793417732128],["missing","6ae56204a40611c1b37152c2"],["ghost","6ae561faa40611c1b37152bf"]]
+.. v3-mixed-burst unify rep 2 (701 s)
+.. v3-delete-own-identifier-permanent unify rep 2 (704 s)
+.. v3-delete-own-identifier-permanent unifybreak rep 2 (706 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae56212e6d2803bdd68166b"]]
+.. v3-delete-own-identifier-permanent pr rep 2 (717 s)
+.. prune unifybreak rep 2 (720 s)
+prune unifybreak [["ghost","6ae56220a4ecb56ea8135d74"]]
+.. prune unify rep 2 (731 s)
+.. prune pr rep 2 (733 s)
+prune pr [["ghost","6ae5622da4ecb56ea8135d88"],["ghost","6ae5622da4ecb56ea8135d87"],["ghost","6ae5622da4ecb56ea8135d86"],["ghost","6ae5622da4ecb56ea8135d85"],["ghost","6ae5622da4ecb56ea8135d84"],["ghost","6ae5622da4ecb56ea8135d83"],["ghost","6ae5622da4ecb56ea8135d82"],["ghost","6ae5622da4ecb56ea8135d81"],["ghost","6ae5622da4ecb56ea8135d80"],["ghost","6ae5622da4ecb56ea8135d7f"]]
+.. v3-delete unify rep 2 (749 s)
+.. v3-delete unifybreak rep 2 (751 s)
+v3-delete unifybreak [["ghost","6ae5623fa40611c1b37152c3"]]
+.. v3-delete pr rep 2 (770 s)
+.. prune-race unify rep 2 (772 s)
+.. prune-race unifybreak rep 2 (775 s)
+prune-race unifybreak [["ghost","6ae56257a4ecb56ea8135da1"]]
+.. prune-race pr rep 2 (785 s)
+prune-race pr [["ghost","6ae56261a4ecb56ea8135db0"],["ghost","6ae56261a4ecb56ea8135daf"],["ghost","6ae56261a4ecb56ea8135dae"],["ghost","6ae56261a4ecb56ea8135dad"],["ghost","6ae56261a4ecb56ea8135dac"],["ghost","6ae56261a4ecb56ea8135dab"],["ghost","6ae56261a4ecb56ea8135daa"],["ghost","6ae56261a4ecb56ea8135da9"],["ghost","6ae56261a4ecb56ea8135da8"],["ghost","6ae56261a4ecb56ea8135da7"]]
+.. v3-patch pr rep 2 (796 s)
+.. v3-patch unify rep 2 (798 s)
+.. v3-patch unifybreak rep 2 (801 s)
+v3-patch unifybreak [["stale","6ae56271a40611c1b37152c4",1793417841001,1793417850297]]
+rep 2 (819 s)
+.. v3-patch-twin unifybreak rep 3 (819 s)
+v3-patch-twin unifybreak [["stale","6ae56283e6d2803bdd68166e",null,1793417861889]]
+.. v3-patch-twin unify rep 3 (831 s)
+.. v3-patch-twin pr rep 3 (833 s)
+.. v3-delete unifybreak rep 3 (836 s)
+v3-delete unifybreak [["ghost","6ae56294a40611c1b37152c5"]]
+.. v3-delete pr rep 3 (854 s)
+.. v3-delete unify rep 3 (857 s)
+.. v3-delete-own-identifier unify rep 3 (859 s)
+.. v3-delete-own-identifier pr rep 3 (862 s)
+.. v3-delete-own-identifier unifybreak rep 3 (864 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae562b0e6d2803bdd681676"]]
+.. v3-delete-twin-permanent unify rep 3 (875 s)
+.. v3-delete-twin-permanent pr rep 3 (877 s)
+.. v3-delete-twin-permanent unifybreak rep 3 (880 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae562c0e6d2803bdd681679"]]
+.. v3-patch unify rep 3 (890 s)
+.. v3-patch pr rep 3 (893 s)
+.. v3-patch unifybreak rep 3 (895 s)
+v3-patch unifybreak [["stale","6ae562cfa40611c1b37152c6",1793417935673,1793417944957]]
+.. v3-delete-own-identifier-permanent unifybreak rep 3 (914 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae562e2e6d2803bdd68167b"]]
+.. v3-delete-own-identifier-permanent unify rep 3 (925 s)
+.. v3-delete-own-identifier-permanent pr rep 3 (928 s)
+.. v3-put unify rep 3 (930 s)
+.. v3-put unifybreak rep 3 (933 s)
+v3-put unifybreak [["stale","6ae562f5a40611c1b37152c7",1793417973234,1793417982514]]
+.. v3-put pr rep 3 (951 s)
+.. v3-delete-twin unifybreak rep 3 (954 s)
+v3-delete-twin unifybreak [["ghost","6ae5630ae6d2803bdd681680"]]
+.. v3-delete-twin pr rep 3 (964 s)
+.. v3-delete-twin unify rep 3 (967 s)
+.. prune-race pr rep 3 (969 s)
+prune-race pr [["ghost","6ae56319a4ecb56ea8135dbf"],["ghost","6ae56319a4ecb56ea8135dbe"],["ghost","6ae56319a4ecb56ea8135dbd"],["ghost","6ae56319a4ecb56ea8135dbc"],["ghost","6ae56319a4ecb56ea8135dbb"],["ghost","6ae56319a4ecb56ea8135dba"],["ghost","6ae56319a4ecb56ea8135db9"],["ghost","6ae56319a4ecb56ea8135db8"],["ghost","6ae56319a4ecb56ea8135db7"],["ghost","6ae56319a4ecb56ea8135db6"],["ghost","6ae56262a4ecb56ea8135db3"],["ghost","6ae56262a4ecb56ea8135db5"]]
+.. prune-race unify rep 3 (980 s)
+.. prune-race unifybreak rep 3 (982 s)
+prune-race unifybreak [["ghost","6ae56326a4ecb56ea8135ddd"]]
+.. prune unify rep 3 (993 s)
+.. prune pr rep 3 (996 s)
+prune pr [["ghost","6ae56333a4ecb56ea8135df6"],["ghost","6ae56333a4ecb56ea8135df5"],["ghost","6ae56333a4ecb56ea8135df4"],["ghost","6ae56333a4ecb56ea8135df3"],["ghost","6ae56333a4ecb56ea8135df2"],["ghost","6ae56333a4ecb56ea8135df1"],["ghost","6ae56333a4ecb56ea8135df0"],["ghost","6ae56333a4ecb56ea8135def"],["ghost","6ae56333a4ecb56ea8135dee"],["ghost","6ae56333a4ecb56ea8135ded"],["ghost","6ae5631ba4ecb56ea8135dc4"],["ghost","6ae5631ba4ecb56ea8135dc3"]]
+.. prune unifybreak rep 3 (1011 s)
+prune unifybreak [["ghost","6ae56343a4ecb56ea8135e00"]]
+.. v3-patch-burst unify rep 3 (1022 s)
+.. v3-patch-burst unifybreak rep 3 (1024 s)
+v3-patch-burst unifybreak [["stale","6ae56350a40611c1b37152c8",1793418064458,1793418073753]]
+.. v3-patch-burst pr rep 3 (1043 s)
+.. v3-delete-permanent unify rep 3 (1045 s)
+.. v3-delete-permanent pr rep 3 (1048 s)
+.. v3-delete-permanent unifybreak rep 3 (1050 s)
+v3-delete-permanent unifybreak [["ghost","6ae5636aa40611c1b37152c9"]]
+.. v3-mixed-burst unify rep 3 (1069 s)
+.. v3-mixed-burst pr rep 3 (1071 s)
+.. v3-mixed-burst unifybreak rep 3 (1074 s)
+v3-mixed-burst unifybreak [["stale","6ae56382a40611c1b37152cb",1793418114072,1793418123409],["stale","6ae56382a40611c1b37152cc",1793418114075,1793418123412],["missing","6ae5638ba40611c1b37152cd"],["ghost","6ae56382a40611c1b37152ca"]]
+rep 3 (1092 s)
+.. prune unify rep 4 (1092 s)
+.. prune unifybreak rep 4 (1095 s)
+prune unifybreak [["ghost","6ae56397a4ecb56ea8135e14"]]
+.. prune pr rep 4 (1105 s)
+prune pr [["ghost","6ae563a1a4ecb56ea8135e1e"],["ghost","6ae563a1a4ecb56ea8135e1d"],["ghost","6ae563a1a4ecb56ea8135e1c"],["ghost","6ae563a1a4ecb56ea8135e1b"],["ghost","6ae563a1a4ecb56ea8135e1a"],["ghost","6ae563a1a4ecb56ea8135e19"],["ghost","6ae563a1a4ecb56ea8135e18"],["ghost","6ae563a1a4ecb56ea8135e17"],["ghost","6ae563a1a4ecb56ea8135e16"],["ghost","6ae563a1a4ecb56ea8135e15"]]
+.. v3-patch unify rep 4 (1121 s)
+.. v3-patch unifybreak rep 4 (1123 s)
+v3-patch unifybreak [["stale","6ae563b3a40611c1b37152ce",1793418163733,1793418173035]]
+.. v3-patch pr rep 4 (1142 s)
+.. v3-delete-own-identifier pr rep 4 (1144 s)
+.. v3-delete-own-identifier unifybreak rep 4 (1147 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae563cbe6d2803bdd681686"]]
+.. v3-delete-own-identifier unify rep 4 (1158 s)
+.. v3-delete unify rep 4 (1160 s)
+.. v3-delete pr rep 4 (1162 s)
+.. v3-delete unifybreak rep 4 (1165 s)
+v3-delete unifybreak [["ghost","6ae563dda40611c1b37152cf"]]
+.. v3-delete-permanent unifybreak rep 4 (1184 s)
+v3-delete-permanent unifybreak [["ghost","6ae563efa40611c1b37152d0"]]
+.. v3-delete-permanent unify rep 4 (1202 s)
+.. v3-delete-permanent pr rep 4 (1205 s)
+.. v3-delete-twin-permanent pr rep 4 (1207 s)
+.. v3-delete-twin-permanent unify rep 4 (1210 s)
+.. v3-delete-twin-permanent unifybreak rep 4 (1212 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae5640ce6d2803bdd68168b"]]
+.. v3-delete-twin unify rep 4 (1223 s)
+.. v3-delete-twin unifybreak rep 4 (1225 s)
+v3-delete-twin unifybreak [["ghost","6ae56419e6d2803bdd68168d"]]
+.. v3-delete-twin pr rep 4 (1236 s)
+.. v3-patch-twin unifybreak rep 4 (1238 s)
+v3-patch-twin unifybreak [["stale","6ae56426e6d2803bdd68168f",null,1793418279885]]
+.. v3-patch-twin unify rep 4 (1249 s)
+.. v3-patch-twin pr rep 4 (1251 s)
+.. v3-delete-own-identifier-permanent pr rep 4 (1254 s)
+.. v3-delete-own-identifier-permanent unify rep 4 (1256 s)
+.. v3-delete-own-identifier-permanent unifybreak rep 4 (1259 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae5643be6d2803bdd681697"]]
+.. v3-patch-burst pr rep 4 (1270 s)
+.. v3-patch-burst unifybreak rep 4 (1273 s)
+v3-patch-burst unifybreak [["stale","6ae56449a40611c1b37152d1",1793418313256,1793418322553]]
+.. v3-patch-burst unify rep 4 (1291 s)
+.. prune-race pr rep 4 (1294 s)
+prune-race pr [["ghost","6ae5645ea4ecb56ea8135e28"],["ghost","6ae5645ea4ecb56ea8135e27"],["ghost","6ae5645ea4ecb56ea8135e26"],["ghost","6ae5645ea4ecb56ea8135e25"],["ghost","6ae5645ea4ecb56ea8135e24"],["ghost","6ae5645ea4ecb56ea8135e23"],["ghost","6ae5645ea4ecb56ea8135e22"],["ghost","6ae5645ea4ecb56ea8135e21"],["ghost","6ae5645ea4ecb56ea8135e20"],["ghost","6ae5645ea4ecb56ea8135e1f"]]
+.. prune-race unifybreak rep 4 (1305 s)
+prune-race unifybreak [["ghost","6ae56468a4ecb56ea8135e37"]]
+.. prune-race unify rep 4 (1315 s)
+.. v3-mixed-burst unify rep 4 (1318 s)
+.. v3-mixed-burst unifybreak rep 4 (1320 s)
+v3-mixed-burst unifybreak [["stale","6ae56478a40611c1b37152d3",1793418360447,1793418369785],["stale","6ae56478a40611c1b37152d4",1793418360450,1793418369786],["missing","6ae56481a40611c1b37152d5"],["ghost","6ae56478a40611c1b37152d2"]]
+.. v3-mixed-burst pr rep 4 (1339 s)
+.. v3-put unifybreak rep 4 (1341 s)
+v3-put unifybreak [["stale","6ae5648da40611c1b37152d6",1793418381608,1793418390929]]
+.. v3-put pr rep 4 (1360 s)
+.. v3-put unify rep 4 (1362 s)
+rep 4 (1365 s)
+.. v3-delete-own-identifier unify rep 5 (1365 s)
+.. v3-delete-own-identifier pr rep 5 (1367 s)
+.. v3-delete-own-identifier unifybreak rep 5 (1370 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae564aae6d2803bdd68169d"]]
+.. v3-delete-own-identifier-permanent unifybreak rep 5 (1380 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae564b4e6d2803bdd68169f"]]
+.. v3-delete-own-identifier-permanent pr rep 5 (1392 s)
+.. v3-delete-own-identifier-permanent unify rep 5 (1394 s)
+.. v3-delete pr rep 5 (1397 s)
+.. v3-delete unifybreak rep 5 (1399 s)
+v3-delete unifybreak [["ghost","6ae564c7a40611c1b37152d7"]]
+.. v3-delete unify rep 5 (1418 s)
+.. prune unifybreak rep 5 (1420 s)
+prune unifybreak [["ghost","6ae564dca4ecb56ea8135e55"]]
+.. prune pr rep 5 (1431 s)
+prune pr [["ghost","6ae564e7a4ecb56ea8135e5f"],["ghost","6ae564e7a4ecb56ea8135e5e"],["ghost","6ae564e7a4ecb56ea8135e5d"],["ghost","6ae564e7a4ecb56ea8135e5c"],["ghost","6ae564e7a4ecb56ea8135e5b"],["ghost","6ae564e7a4ecb56ea8135e5a"],["ghost","6ae564e7a4ecb56ea8135e59"],["ghost","6ae564e7a4ecb56ea8135e58"],["ghost","6ae564e7a4ecb56ea8135e57"],["ghost","6ae564e7a4ecb56ea8135e56"],["ghost","6ae5645fa4ecb56ea8135e2d"],["ghost","6ae5645fa4ecb56ea8135e2c"]]
+.. prune unify rep 5 (1446 s)
+.. v3-put pr rep 5 (1449 s)
+.. v3-put unify rep 5 (1451 s)
+.. v3-put unifybreak rep 5 (1454 s)
+v3-put unifybreak [["stale","6ae564fea40611c1b37152d8",1793418494134,1793418503450]]
+.. v3-patch unifybreak rep 5 (1472 s)
+v3-patch unifybreak [["stale","6ae56510a40611c1b37152d9",1793418512772,1793418522061]]
+.. v3-patch unify rep 5 (1491 s)
+.. v3-patch pr rep 5 (1493 s)
+.. v3-patch-twin unifybreak rep 5 (1496 s)
+v3-patch-twin unifybreak [["stale","6ae56528e6d2803bdd6816a4",null,1793418537510]]
+.. v3-patch-twin unify rep 5 (1506 s)
+.. v3-patch-twin pr rep 5 (1509 s)
+.. prune-race pr rep 5 (1511 s)
+prune-race pr [["ghost","6ae56537a4ecb56ea8135e73"],["ghost","6ae56537a4ecb56ea8135e72"],["ghost","6ae56537a4ecb56ea8135e71"],["ghost","6ae56537a4ecb56ea8135e70"],["ghost","6ae56537a4ecb56ea8135e6f"],["ghost","6ae56537a4ecb56ea8135e6e"],["ghost","6ae56537a4ecb56ea8135e6d"],["ghost","6ae56537a4ecb56ea8135e6c"],["ghost","6ae56537a4ecb56ea8135e6b"],["ghost","6ae56537a4ecb56ea8135e6a"]]
+.. prune-race unify rep 5 (1522 s)
+.. prune-race unifybreak rep 5 (1524 s)
+prune-race unifybreak [["ghost","6ae56544a4ecb56ea8135e91"]]
+.. v3-delete-twin unifybreak rep 5 (1535 s)
+v3-delete-twin unifybreak [["ghost","6ae5654fe6d2803bdd6816a7"]]
+.. v3-delete-twin pr rep 5 (1546 s)
+.. v3-delete-twin unify rep 5 (1549 s)
+.. v3-delete-permanent pr rep 5 (1551 s)
+.. v3-delete-permanent unifybreak rep 5 (1554 s)
+v3-delete-permanent unifybreak [["ghost","6ae56562a40611c1b37152da"]]
+.. v3-delete-permanent unify rep 5 (1573 s)
+.. v3-delete-twin-permanent unifybreak rep 5 (1575 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae56577e6d2803bdd6816aa"]]
+.. v3-delete-twin-permanent unify rep 5 (1586 s)
+.. v3-delete-twin-permanent pr rep 5 (1588 s)
+.. v3-mixed-burst unifybreak rep 5 (1591 s)
+v3-mixed-burst unifybreak [["stale","6ae56586a40611c1b37152dc",1793418630978,1793418640281],["stale","6ae56586a40611c1b37152dd",1793418630981,1793418640284],["missing","6ae56590a40611c1b37152de"],["ghost","6ae56586a40611c1b37152db"]]
+.. v3-mixed-burst unify rep 5 (1609 s)
+.. v3-mixed-burst pr rep 5 (1612 s)
+.. v3-patch-burst unify rep 5 (1614 s)
+.. v3-patch-burst unifybreak rep 5 (1617 s)
+v3-patch-burst unifybreak [["stale","6ae565a1a40611c1b37152df",1793418657020,1793418666322]]
+.. v3-patch-burst pr rep 5 (1635 s)
+rep 5 (1638 s)
+.. prune-race pr rep 6 (1638 s)
+prune-race pr [["ghost","6ae565b6a4ecb56ea8135ea0"],["ghost","6ae565b6a4ecb56ea8135e9f"],["ghost","6ae565b6a4ecb56ea8135e9e"],["ghost","6ae565b6a4ecb56ea8135e9d"],["ghost","6ae565b6a4ecb56ea8135e9c"],["ghost","6ae565b6a4ecb56ea8135e9b"],["ghost","6ae565b6a4ecb56ea8135e9a"],["ghost","6ae565b6a4ecb56ea8135e99"],["ghost","6ae565b6a4ecb56ea8135e98"],["ghost","6ae565b6a4ecb56ea8135e97"],["ghost","6ae56539a4ecb56ea8135e78"],["ghost","6ae56539a4ecb56ea8135e77"]]
+.. prune-race unify rep 6 (1648 s)
+.. prune-race unifybreak rep 6 (1651 s)
+prune-race unifybreak [["ghost","6ae565c3a4ecb56ea8135ebe"]]
+.. prune unify rep 6 (1661 s)
+.. prune unifybreak rep 6 (1664 s)
+prune unifybreak [["ghost","6ae565d0a4ecb56ea8135ed7"]]
+.. prune pr rep 6 (1674 s)
+prune pr [["ghost","6ae565daa4ecb56ea8135ee1"],["ghost","6ae565daa4ecb56ea8135ee0"],["ghost","6ae565daa4ecb56ea8135edf"],["ghost","6ae565daa4ecb56ea8135ede"],["ghost","6ae565daa4ecb56ea8135edd"],["ghost","6ae565daa4ecb56ea8135edc"],["ghost","6ae565daa4ecb56ea8135edb"],["ghost","6ae565daa4ecb56ea8135eda"],["ghost","6ae565daa4ecb56ea8135ed9"],["ghost","6ae565daa4ecb56ea8135ed8"],["ghost","6ae565b7a4ecb56ea8135ea5"],["ghost","6ae565b7a4ecb56ea8135ea4"]]
+.. v3-mixed-burst unifybreak rep 6 (1690 s)
+v3-mixed-burst unifybreak [["stale","6ae565eaa40611c1b37152e1",1793418730328,1793418739624],["stale","6ae565eaa40611c1b37152e2",1793418730331,1793418739627],["missing","6ae565f3a40611c1b37152e3"],["ghost","6ae565eaa40611c1b37152e0"]]
+.. v3-mixed-burst unify rep 6 (1709 s)
+.. v3-mixed-burst pr rep 6 (1711 s)
+.. v3-patch pr rep 6 (1714 s)
+.. v3-patch unify rep 6 (1716 s)
+.. v3-patch unifybreak rep 6 (1718 s)
+v3-patch unifybreak [["stale","6ae56606a40611c1b37152e4",1793418758832,1793418768160]]
+.. v3-delete-own-identifier-permanent unifybreak rep 6 (1737 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae56619e6d2803bdd6816ae"]]
+.. v3-delete-own-identifier-permanent unify rep 6 (1749 s)
+.. v3-delete-own-identifier-permanent pr rep 6 (1751 s)
+.. v3-delete-own-identifier unify rep 6 (1754 s)
+.. v3-delete-own-identifier pr rep 6 (1756 s)
+.. v3-delete-own-identifier unifybreak rep 6 (1759 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae5662ee6d2803bdd6816b8"]]
+.. v3-patch-burst unifybreak rep 6 (1769 s)
+v3-patch-burst unifybreak [["stale","6ae56639a40611c1b37152e5",1793418809569,1793418818845]]
+.. v3-patch-burst unify rep 6 (1788 s)
+.. v3-patch-burst pr rep 6 (1790 s)
+.. v3-delete-twin-permanent pr rep 6 (1793 s)
+.. v3-delete-twin-permanent unify rep 6 (1795 s)
+.. v3-delete-twin-permanent unifybreak rep 6 (1798 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae56656e6d2803bdd6816bb"]]
+.. v3-put unifybreak rep 6 (1808 s)
+v3-put unifybreak [["stale","6ae56660a40611c1b37152e6",1793418848714,1793418858039]]
+.. v3-put unify rep 6 (1827 s)
+.. v3-put pr rep 6 (1829 s)
+.. v3-patch-twin unify rep 6 (1832 s)
+.. v3-patch-twin unifybreak rep 6 (1834 s)
+v3-patch-twin unifybreak [["stale","6ae5667ae6d2803bdd6816bd",null,1793418876021]]
+.. v3-patch-twin pr rep 6 (1845 s)
+.. v3-delete-permanent unifybreak rep 6 (1847 s)
+v3-delete-permanent unifybreak [["ghost","6ae56687a40611c1b37152e7"]]
+.. v3-delete-permanent pr rep 6 (1866 s)
+.. v3-delete-permanent unify rep 6 (1868 s)
+.. v3-delete-twin pr rep 6 (1871 s)
+.. v3-delete-twin unifybreak rep 6 (1874 s)
+v3-delete-twin unifybreak [["ghost","6ae566a1e6d2803bdd6816c0"]]
+.. v3-delete-twin unify rep 6 (1884 s)
+.. v3-delete unify rep 6 (1887 s)
+.. v3-delete pr rep 6 (1889 s)
+.. v3-delete unifybreak rep 6 (1891 s)
+v3-delete unifybreak [["ghost","6ae566b3a40611c1b37152e8"]]
+rep 6 (1910 s)
+.. v3-patch-burst pr rep 7 (1910 s)
+.. v3-patch-burst unifybreak rep 7 (1913 s)
+v3-patch-burst unifybreak [["stale","6ae566c9a40611c1b37152e9",1793418953019,1793418962323]]
+.. v3-patch-burst unify rep 7 (1931 s)
+.. v3-delete-permanent unify rep 7 (1934 s)
+.. v3-delete-permanent pr rep 7 (1936 s)
+.. v3-delete-permanent unifybreak rep 7 (1939 s)
+v3-delete-permanent unifybreak [["ghost","6ae566e3a40611c1b37152ea"]]
+.. v3-delete-own-identifier-permanent unify rep 7 (1957 s)
+.. v3-delete-own-identifier-permanent unifybreak rep 7 (1960 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae566f8e6d2803bdd6816c5"]]
+.. v3-delete-own-identifier-permanent pr rep 7 (1970 s)
+.. prune-race pr rep 7 (1973 s)
+prune-race pr [["ghost","6ae56705a4ecb56ea8135eeb"],["ghost","6ae56705a4ecb56ea8135eea"],["ghost","6ae56705a4ecb56ea8135ee9"],["ghost","6ae56705a4ecb56ea8135ee8"],["ghost","6ae56705a4ecb56ea8135ee7"],["ghost","6ae56705a4ecb56ea8135ee6"],["ghost","6ae56705a4ecb56ea8135ee5"],["ghost","6ae56705a4ecb56ea8135ee4"],["ghost","6ae56705a4ecb56ea8135ee3"],["ghost","6ae56705a4ecb56ea8135ee2"]]
+.. prune-race unifybreak rep 7 (1983 s)
+prune-race unifybreak [["ghost","6ae5670fa4ecb56ea8135efa"]]
+.. prune-race unify rep 7 (1994 s)
+.. v3-delete-twin-permanent unify rep 7 (1996 s)
+.. v3-delete-twin-permanent unifybreak rep 7 (1999 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae5671fe6d2803bdd6816c9"]]
+.. v3-delete-twin-permanent pr rep 7 (2009 s)
+.. v3-delete unify rep 7 (2012 s)
+.. v3-delete pr rep 7 (2014 s)
+.. v3-delete unifybreak rep 7 (2017 s)
+v3-delete unifybreak [["ghost","6ae56731a40611c1b37152eb"]]
+.. v3-mixed-burst unifybreak rep 7 (2036 s)
+v3-mixed-burst unifybreak [["stale","6ae56743a40611c1b37152ed",1793419075935,1793419085266],["stale","6ae56743a40611c1b37152ee",1793419075939,1793419085273],["missing","6ae5674da40611c1b37152ef"],["ghost","6ae56743a40611c1b37152ec"]]
+.. v3-mixed-burst unify rep 7 (2054 s)
+.. v3-mixed-burst pr rep 7 (2057 s)
+.. v3-delete-own-identifier pr rep 7 (2059 s)
+.. v3-delete-own-identifier unify rep 7 (2062 s)
+.. v3-delete-own-identifier unifybreak rep 7 (2064 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae56760e6d2803bdd6816d0"]]
+.. v3-put unifybreak rep 7 (2075 s)
+v3-put unifybreak [["stale","6ae5676ba40611c1b37152f0",1793419115221,1793419124558]]
+.. v3-put pr rep 7 (2093 s)
+.. v3-put unify rep 7 (2096 s)
+.. v3-patch unifybreak rep 7 (2098 s)
+v3-patch unifybreak [["stale","6ae56782a40611c1b37152f1",1793419138780,1793419148102]]
+.. v3-patch unify rep 7 (2117 s)
+.. v3-patch pr rep 7 (2119 s)
+.. v3-delete-twin pr rep 7 (2122 s)
+.. v3-delete-twin unifybreak rep 7 (2124 s)
+v3-delete-twin unifybreak [["ghost","6ae5679ce6d2803bdd6816d2"]]
+.. v3-delete-twin unify rep 7 (2135 s)
+.. v3-patch-twin unify rep 7 (2138 s)
+.. v3-patch-twin pr rep 7 (2140 s)
+.. v3-patch-twin unifybreak rep 7 (2143 s)
+v3-patch-twin unifybreak [["stale","6ae567aee6d2803bdd6816d6",null,1793419184238]]
+.. prune unify rep 7 (2153 s)
+.. prune unifybreak rep 7 (2156 s)
+prune unifybreak [["ghost","6ae567bca4ecb56ea8135f22"]]
+.. prune pr rep 7 (2166 s)
+prune pr [["ghost","6ae567c6a4ecb56ea8135f2c"],["ghost","6ae567c6a4ecb56ea8135f2b"],["ghost","6ae567c6a4ecb56ea8135f2a"],["ghost","6ae567c6a4ecb56ea8135f29"],["ghost","6ae567c6a4ecb56ea8135f28"],["ghost","6ae567c6a4ecb56ea8135f27"],["ghost","6ae567c6a4ecb56ea8135f26"],["ghost","6ae567c6a4ecb56ea8135f25"],["ghost","6ae567c6a4ecb56ea8135f24"],["ghost","6ae567c6a4ecb56ea8135f23"],["ghost","6ae56706a4ecb56ea8135ef0"],["ghost","6ae56706a4ecb56ea8135eef"]]
+rep 7 (2182 s)
+.. v3-put pr rep 8 (2182 s)
+.. v3-put unify rep 8 (2184 s)
+.. v3-put unifybreak rep 8 (2187 s)
+v3-put unifybreak [["stale","6ae567daa40611c1b37152f2",1793419226970,1793419236268]]
+.. v3-delete-permanent unify rep 8 (2205 s)
+.. v3-delete-permanent unifybreak rep 8 (2208 s)
+v3-delete-permanent unifybreak [["ghost","6ae567f0a40611c1b37152f3"]]
+.. v3-delete-permanent pr rep 8 (2226 s)
+.. prune pr rep 8 (2229 s)
+prune pr [["ghost","6ae56805a4ecb56ea8135f36"],["ghost","6ae56805a4ecb56ea8135f35"],["ghost","6ae56805a4ecb56ea8135f34"],["ghost","6ae56805a4ecb56ea8135f33"],["ghost","6ae56805a4ecb56ea8135f32"],["ghost","6ae56805a4ecb56ea8135f31"],["ghost","6ae56805a4ecb56ea8135f30"],["ghost","6ae56805a4ecb56ea8135f2f"],["ghost","6ae56805a4ecb56ea8135f2e"],["ghost","6ae56805a4ecb56ea8135f2d"]]
+.. prune unify rep 8 (2244 s)
+.. prune unifybreak rep 8 (2247 s)
+prune unifybreak [["ghost","6ae56817a4ecb56ea8135f4a"]]
+.. v3-delete-own-identifier-permanent unifybreak rep 8 (2257 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae56821e6d2803bdd6816d8"]]
+.. v3-delete-own-identifier-permanent pr rep 8 (2269 s)
+.. v3-delete-own-identifier-permanent unify rep 8 (2271 s)
+.. v3-patch-twin unify rep 8 (2274 s)
+.. v3-patch-twin pr rep 8 (2276 s)
+.. v3-patch-twin unifybreak rep 8 (2280 s)
+v3-patch-twin unifybreak [["stale","6ae56838e6d2803bdd6816df",null,1793419321319]]
+.. v3-delete-own-identifier pr rep 8 (2290 s)
+.. v3-delete-own-identifier unify rep 8 (2293 s)
+.. v3-delete-own-identifier unifybreak rep 8 (2295 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae56847e6d2803bdd6816e5"]]
+.. v3-mixed-burst pr rep 8 (2306 s)
+.. v3-mixed-burst unify rep 8 (2308 s)
+.. v3-mixed-burst unifybreak rep 8 (2311 s)
+v3-mixed-burst unifybreak [["stale","6ae56857a40611c1b37152f5",1793419351168,1793419360462],["stale","6ae56857a40611c1b37152f6",1793419351171,1793419360466],["missing","6ae56860a40611c1b37152f7"],["ghost","6ae56857a40611c1b37152f4"]]
+.. v3-delete-twin-permanent unify rep 8 (2329 s)
+.. v3-delete-twin-permanent pr rep 8 (2332 s)
+.. v3-delete-twin-permanent unifybreak rep 8 (2334 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae5686ee6d2803bdd6816e8"]]
+.. v3-patch pr rep 8 (2345 s)
+.. v3-patch unify rep 8 (2347 s)
+.. v3-patch unifybreak rep 8 (2350 s)
+v3-patch unifybreak [["stale","6ae5687ea40611c1b37152f8",1793419390370,1793419399666]]
+.. v3-delete unify rep 8 (2369 s)
+.. v3-delete pr rep 8 (2371 s)
+.. v3-delete unifybreak rep 8 (2373 s)
+v3-delete unifybreak [["ghost","6ae56895a40611c1b37152f9"]]
+.. v3-delete-twin unify rep 8 (2392 s)
+.. v3-delete-twin unifybreak rep 8 (2395 s)
+v3-delete-twin unifybreak [["ghost","6ae568abe6d2803bdd6816ea"]]
+.. v3-delete-twin pr rep 8 (2405 s)
+.. prune-race unify rep 8 (2408 s)
+.. prune-race pr rep 8 (2410 s)
+prune-race pr [["ghost","6ae568baa4ecb56ea8135f63"],["ghost","6ae568baa4ecb56ea8135f62"],["ghost","6ae568baa4ecb56ea8135f61"],["ghost","6ae568baa4ecb56ea8135f60"],["ghost","6ae568baa4ecb56ea8135f5f"],["ghost","6ae568baa4ecb56ea8135f5e"],["ghost","6ae568baa4ecb56ea8135f5d"],["ghost","6ae568baa4ecb56ea8135f5c"],["ghost","6ae568baa4ecb56ea8135f5b"],["ghost","6ae568baa4ecb56ea8135f5a"]]
+.. prune-race unifybreak rep 8 (2421 s)
+prune-race unifybreak [["ghost","6ae568c5a4ecb56ea8135f72"]]
+.. v3-patch-burst unify rep 8 (2431 s)
+.. v3-patch-burst pr rep 8 (2434 s)
+.. v3-patch-burst unifybreak rep 8 (2436 s)
+v3-patch-burst unifybreak [["stale","6ae568d4a40611c1b37152fa",1793419476560,1793419485867]]
+rep 8 (2455 s)
+.. v3-patch unifybreak rep 9 (2455 s)
+v3-patch unifybreak [["stale","6ae568e7a40611c1b37152fb",1793419495169,1793419504469]]
+.. v3-patch pr rep 9 (2473 s)
+.. v3-patch unify rep 9 (2476 s)
+.. prune-race pr rep 9 (2478 s)
+prune-race pr [["ghost","6ae568fea4ecb56ea8135f81"],["ghost","6ae568fea4ecb56ea8135f80"],["ghost","6ae568fea4ecb56ea8135f7f"],["ghost","6ae568fea4ecb56ea8135f7e"],["ghost","6ae568fea4ecb56ea8135f7d"],["ghost","6ae568fea4ecb56ea8135f7c"],["ghost","6ae568fea4ecb56ea8135f7b"],["ghost","6ae568fea4ecb56ea8135f7a"],["ghost","6ae568fea4ecb56ea8135f79"],["ghost","6ae568fea4ecb56ea8135f78"],["ghost","6ae568bba4ecb56ea8135f67"],["ghost","6ae568bba4ecb56ea8135f68"]]
+.. prune-race unifybreak rep 9 (2489 s)
+prune-race unifybreak [["ghost","6ae56909a4ecb56ea8135f90"]]
+.. prune-race unify rep 9 (2499 s)
+.. v3-delete-own-identifier unify rep 9 (2502 s)
+.. v3-delete-own-identifier pr rep 9 (2504 s)
+.. v3-delete-own-identifier unifybreak rep 9 (2507 s)
+v3-delete-own-identifier unifybreak [["ghost","6ae5691be6d2803bdd6816f1"]]
+.. v3-delete unifybreak rep 9 (2518 s)
+v3-delete unifybreak [["ghost","6ae56925a40611c1b37152fc"]]
+.. v3-delete unify rep 9 (2536 s)
+.. v3-delete pr rep 9 (2539 s)
+.. prune pr rep 9 (2541 s)
+prune pr [["ghost","6ae5693da4ecb56ea8135fae"],["ghost","6ae5693da4ecb56ea8135fad"],["ghost","6ae5693da4ecb56ea8135fac"],["ghost","6ae5693da4ecb56ea8135fab"],["ghost","6ae5693da4ecb56ea8135faa"],["ghost","6ae5693da4ecb56ea8135fa9"],["ghost","6ae5693da4ecb56ea8135fa8"],["ghost","6ae5693da4ecb56ea8135fa7"],["ghost","6ae5693da4ecb56ea8135fa6"],["ghost","6ae5693da4ecb56ea8135fa5"],["ghost","6ae568ffa4ecb56ea8135f86"],["ghost","6ae568ffa4ecb56ea8135f84"]]
+.. prune unify rep 9 (2557 s)
+.. prune unifybreak rep 9 (2559 s)
+prune unifybreak [["ghost","6ae5694fa4ecb56ea8135fc2"]]
+.. v3-patch-burst pr rep 9 (2569 s)
+.. v3-patch-burst unify rep 9 (2572 s)
+.. v3-patch-burst unifybreak rep 9 (2574 s)
+v3-patch-burst unifybreak [["stale","6ae5695ea40611c1b37152fd",1793419614854,1793419624163]]
+.. v3-delete-own-identifier-permanent unify rep 9 (2593 s)
+.. v3-delete-own-identifier-permanent pr rep 9 (2596 s)
+.. v3-delete-own-identifier-permanent unifybreak rep 9 (2598 s)
+v3-delete-own-identifier-permanent unifybreak [["ghost","6ae56976e6d2803bdd6816f7"]]
+.. v3-delete-twin-permanent unifybreak rep 9 (2609 s)
+v3-delete-twin-permanent unifybreak [["ghost","6ae56981e6d2803bdd6816f8"]]
+.. v3-delete-twin-permanent pr rep 9 (2620 s)
+.. v3-delete-twin-permanent unify rep 9 (2623 s)
+.. v3-delete-twin unify rep 9 (2625 s)
+.. v3-delete-twin pr rep 9 (2628 s)
+.. v3-delete-twin unifybreak rep 9 (2630 s)
+v3-delete-twin unifybreak [["ghost","6ae56996e6d2803bdd6816fd"]]
+.. v3-delete-permanent unifybreak rep 9 (2641 s)
+v3-delete-permanent unifybreak [["ghost","6ae569a1a40611c1b37152fe"]]
+.. v3-delete-permanent pr rep 9 (2660 s)
+.. v3-delete-permanent unify rep 9 (2662 s)
+.. v3-mixed-burst unify rep 9 (2664 s)
+.. v3-mixed-burst pr rep 9 (2667 s)
+.. v3-mixed-burst unifybreak rep 9 (2669 s)
+v3-mixed-burst unifybreak [["stale","6ae569bda40611c1b3715300",1793419709821,1793419719109],["stale","6ae569bda40611c1b3715301",1793419709824,1793419719113],["missing","6ae569c7a40611c1b3715302"],["ghost","6ae569bda40611c1b37152ff"]]
+.. v3-patch-twin unify rep 9 (2688 s)
+.. v3-patch-twin pr rep 9 (2691 s)
+.. v3-patch-twin unifybreak rep 9 (2693 s)
+v3-patch-twin unifybreak [["stale","6ae569d5e6d2803bdd681700",null,1793419734718]]
+.. v3-put unify rep 9 (2704 s)
+.. v3-put pr rep 9 (2706 s)
+.. v3-put unifybreak rep 9 (2708 s)
+v3-put unifybreak [["stale","6ae569e4a40611c1b3715303",1793419748906,1793419758177]]
+rep 9 (2727 s)
+size heavy (375 treatments), reps 10, run c37412cd5a
+| scenario | arm | errors | latency med ms | consistent after med / p95 ms (never) | missing | ghost | stale | left in db | reads med: queries / docs / KB |
+|---|---|---|---|---|---|---|---|---|---|
+| v3-delete | pr | 0 | 10.6 | 11 / 12 (0) | 0 | 0 | 0 | 0 | 15 / 2 / 0.6 |
+| v3-delete | unify | 0 | 10.5 | 11 / 12 (0) | 0 | 0 | 0 | 0 | 15 / 2 / 0.3 |
+| v3-delete | unifybreak | 0 | 11.9 | - (10) | 0 | 10 | 0 | 0 | 15 / 2 / 0.3 |
+| v3-delete-twin | pr | 0 | 11.6 | 64 / 69 (0) | 0 | 0 | 0 | 0 | 15 / 439 / 93.8 |
+| v3-delete-twin | unify | 0 | 11.7 | 11 / 12 (0) | 0 | 0 | 0 | 0 | 15 / 3 / 0.2 |
+| v3-delete-twin | unifybreak | 0 | 10.4 | - (10) | 0 | 10 | 0 | 0 | 15 / 3 / 0.2 |
+| v3-delete-own-identifier | pr | 0 | 12.2 | 11 / 13 (0) | 0 | 0 | 0 | 10 | 15 / 2 / 0.5 |
+| v3-delete-own-identifier | unify | 0 | 12.0 | 11 / 14 (0) | 0 | 0 | 0 | 10 | 15 / 2 / 0.3 |
+| v3-delete-own-identifier | unifybreak | 0 | 11.4 | - (10) | 0 | 10 | 0 | 10 | 15 / 2 / 0.3 |
+| v3-delete-permanent | pr | 0 | 10.5 | 11 / 13 (0) | 0 | 0 | 0 | 0 | 15 / 2 / 0.3 |
+| v3-delete-permanent | unify | 0 | 10.6 | 12 / 15 (0) | 0 | 0 | 0 | 0 | 15 / 2 / 0.3 |
+| v3-delete-permanent | unifybreak | 0 | 11.2 | - (10) | 0 | 10 | 0 | 0 | 15 / 2 / 0.3 |
+| v3-delete-twin-permanent | pr | 0 | 13.2 | 68 / 74 (0) | 0 | 0 | 0 | 0 | 15 / 439 / 93.4 |
+| v3-delete-twin-permanent | unify | 0 | 12.2 | 11 / 13 (0) | 0 | 0 | 0 | 0 | 15 / 3 / 0.3 |
+| v3-delete-twin-permanent | unifybreak | 0 | 12.5 | - (10) | 0 | 10 | 0 | 0 | 15 / 3 / 0.3 |
+| v3-delete-own-identifier-permanent | pr | 0 | 12.0 | 10 / 12 (0) | 0 | 0 | 0 | 10 | 15 / 2 / 0.3 |
+| v3-delete-own-identifier-permanent | unify | 0 | 11.0 | 10 / 18 (0) | 0 | 0 | 0 | 10 | 15 / 2 / 0.3 |
+| v3-delete-own-identifier-permanent | unifybreak | 0 | 12.8 | - (10) | 0 | 10 | 0 | 10 | 15 / 2 / 0.3 |
+| v3-put | pr | 0 | 13.2 | 10 / 14 (0) | 0 | 0 | 0 | 10 | 16 / 2 / 0.6 |
+| v3-put | unify | 0 | 13.3 | 10 / 12 (0) | 0 | 0 | 0 | 10 | 16 / 2 / 0.6 |
+| v3-put | unifybreak | 0 | 13.7 | - (10) | 0 | 0 | 10 | 10 | 16 / 2 / 0.6 |
+| v3-patch | pr | 0 | 13.4 | 10 / 12 (0) | 0 | 0 | 0 | 10 | 16 / 2 / 0.6 |
+| v3-patch | unify | 0 | 11.6 | 9 / 12 (0) | 0 | 0 | 0 | 10 | 16 / 2 / 0.6 |
+| v3-patch | unifybreak | 0 | 13.9 | - (10) | 0 | 0 | 10 | 10 | 16 / 2 / 0.6 |
+| v3-patch-twin | pr | 0 | 14.5 | 11 / 16 (0) | 0 | 0 | 0 | 20 | 16 / 2 / 0.4 |
+| v3-patch-twin | unify | 0 | 14.8 | 10 / 13 (0) | 0 | 0 | 0 | 20 | 16 / 2 / 0.4 |
+| v3-patch-twin | unifybreak | 0 | 14.7 | - (10) | 0 | 0 | 10 | 20 | 16 / 2 / 0.4 |
+| v3-patch-burst | pr | 0 | 34.0 | 3 / 4 (0) | 0 | 0 | 0 | 10 | 41 / 10 / 3.4 |
+| v3-patch-burst | unify | 0 | 36.2 | 3 / 3 (0) | 0 | 0 | 0 | 10 | 41 / 10 / 3.4 |
+| v3-patch-burst | unifybreak | 0 | 35.5 | - (10) | 0 | 0 | 10 | 10 | 41 / 10 / 3.4 |
+| v3-mixed-burst | pr | 0 | 34.2 | 3 / 7 (0) | 0 | 0 | 0 | 30 | 35 / 6 / 2.0 |
+| v3-mixed-burst | unify | 0 | 34.6 | 3 / 7 (0) | 0 | 0 | 0 | 30 | 35 / 6 / 1.7 |
+| v3-mixed-burst | unifybreak | 0 | 32.5 | - (10) | 10 | 10 | 20 | 30 | 35 / 6 / 1.7 |
+| prune | pr | 0 | 5000.6 | - (10) | 0 | 135 | 0 | 0 | 1 / 0 / 0.0 |
+| prune | unify | 0 | 8.5 | 7 / 10 (0) | 0 | 0 | 0 | 0 | 1 / 15 / 0.3 |
+| prune | unifybreak | 0 | 8.7 | - (10) | 0 | 10 | 0 | 0 | 1 / 15 / 0.3 |
+| prune-race | pr | 0 | 22.8 | - (10) | 0 | 115 | 0 | 50 | 32 / 0 / 0.0 |
+| prune-race | unify | 0 | 25.2 | 5 / 10 (0) | 0 | 0 | 0 | 50 | 33 / 10 / 0.2 |
+| prune-race | unifybreak | 0 | 24.5 | - (10) | 0 | 10 | 0 | 50 | 33 / 10 / 0.2 |
+exit=0
+/cache-lab-27622 running started=2026-10-31T02:11:27.872538785Z restarts=0 oom=false

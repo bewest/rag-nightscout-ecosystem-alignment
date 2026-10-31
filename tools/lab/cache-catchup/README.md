@@ -218,6 +218,57 @@ Findings:
 - **BF-214 is fixed on dev `305a6533`.** dev's devicestatus delete by query is now consistent in 122 ms (realistic)
   and 679 ms (heavy). On `991b0654` it stayed empty until the next heartbeat.
 
+## Round 3 (2026-10-30): API v3 with one write shape
+
+Q-A (maintainer, 2026-10-30) asks whether API v3's writes by identifier can become the same filter write resolved
+to ids. The identifying read supplies the `_id`, the step writes `{identifier AND _id}` and names what it wrote,
+and autoPrune goes through the step too (Q-U). One of the conditions is that this lab confirms the resolved
+write is exact for v3. Round 3 drives API v3 over HTTP, and autoPrune over IPC, against three arms:
+
+| arm | tree |
+|---|---|
+| `pr` | #8874 `7463e76d`: v3 writes go through the cached wrapper's identifier methods; autoPrune calls `deleteManyOr` directly |
+| `unify` | `proto/v3-unify` `3b7f054a` (the Q-A sketch with #8874 merged in; local, not pushed) |
+| `unifybreak` | `unify` with `V3LAB_BREAK=drop-last`: the treatments collection's `announce()` leaves out the last id it removed and the last it updated |
+
+Node 22.23.4, MongoDB 8.0.29 standalone (container `cache-lab-27622`), 10 reps per scenario and arm, interleaved,
+treatments at both cache sizes. Records are dated 1–20 h back. Prune targets are created now with a `date`
+50–55 h back: inside the 60 h treatments cache, past `API3_AUTOPRUNE_TREATMENTS=2`. Full tables are in
+`results/round3/{realistic,heavy}.log`; `lab-v3.js` and `server-v3.js` are the driver and server.
+
+| scenario (10 reps) | size | `pr` consistent after | `unify` consistent after | `unify` missing / ghost / stale | `pr` reads | `unify` reads |
+|---|---|---|---|---|---|---|
+| v3 delete | realistic / heavy | 8 / 11 ms | 8 / 11 ms | 0 / 0 / 0 | 0.6 KB | 0.3 KB |
+| v3 delete of a record with twins (every stored form) | realistic | 64 ms | 8 ms | 0 / 0 / 0 | 142 docs, 34.2 KB | 3 docs, 0.2 KB |
+| v3 delete of a record with twins | heavy | 64 ms | 11 ms | 0 / 0 / 0 | 439 docs, 93.8 KB | 3 docs, 0.2 KB |
+| v3 PUT, PATCH, PATCH of a twin | both | 7–11 ms | 7–10 ms | 0 / 0 / 0 | 2 docs | 2 docs |
+| PATCH burst, mixed burst | both | 2–3 ms | 3 ms | 0 / 0 / 0 | same | same |
+| autoPrune | realistic / heavy | never (10 of 10) | 5 / 7 ms | 0 / 0 / 0 | 0 docs | 15 docs, 0.3 KB |
+| autoPrune racing 5 creates | realistic / heavy | never (10 of 10) | 4 / 5 ms | 0 / 0 / 0 | 0 docs | 10 docs, 0.2 KB |
+
+The permanent-delete and own-identifier variants match their plain rows. Findings:
+
+- **`unify` is exact in all 15 scenarios at both sizes.** Every rep became consistent, with 0 missing, ghost or
+  stale records. Its "left in db" counts equal `pr`'s in every scenario: the records a delete leaves under their
+  own identifier, the twins a PATCH doesn't touch, and the creates that race a prune.
+- **Non-vacuity.** `unifybreak` was flagged in 10 of 10 reps in every scenario at both sizes. A removed record
+  left unnamed shows as a ghost, and an updated one as stale.
+- **A delete that reaches a record's twins** (other stored forms of one record, Q-S) makes `pr` reload the
+  treatments cache. `pr` names the ids only when exactly one document goes, so this delete reads 142 or 439
+  documents. `unify` names the 2–3 ids and reads 3 documents.
+- **autoPrune on `pr` leaves pruned records in the cache.** The cached wrapper's `deleteManyOr` reads the ids
+  it is about to delete with `findMany({filter, …})`, which ANDs the three conditions (`srvCreated`,
+  `created_at`, `date`). The delete ORs them. A record that is past the cutoff by `date` but was created
+  recently is deleted without being named. Then nothing is announced, and the record stays in the cache until
+  the cache's own age window drops it. In this lab the cache never matched the database after a prune, in 10 of 10 reps at both sizes.
+  `pr`'s 5,000 ms prune "latency" is the IPC's wait for an announcement that never came. The read dates from
+  2021 (#6688, `6b28a148`) and is the same in `v15.0.9`. It only shows where the prune setting's days are
+  shorter than the cache's retention for that collection (treatments 60 h, entries 2 days, devicestatus 1 or 2
+  days). Otherwise the pruned record is already out of the cache. `unify` sends the prune through the step,
+  which resolves the ids with the same OR, so it names every one.
+- **Cost.** The write's own latency is the same within noise, except in the PATCH burst. There `unify` takes a
+  median 25.3 ms against 20.9 ms (realistic) and 36.2 ms against 34.0 ms (heavy) per call.
+
 ## Prototype
 
 `proto/cache-catchup` in `cgm-remote-monitor`, local and not pushed. The results above ran on
@@ -232,6 +283,7 @@ MongoDB 8.0.29). Round 2 ran on `proto/cache-resolve` `cd7a5b6c` (local, not pus
 tools/lab/cache-catchup/run.sh up     # mongo:8.0.29 standalone on 127.0.0.1:27621
 tools/lab/cache-catchup/run.sh all    # results/{realistic,heavy}.{log,json}, ~50 min each
 tools/lab/cache-catchup/run.sh round2 # results/round2/{realistic,heavy}.{log,json}, ~45 min each
+CC_PORT=27622 tools/lab/cache-catchup/run.sh round3 # results/round3/…, ~1 h each; CC_PR, CC_UNIFY
 tools/lab/cache-catchup/run.sh down
 ```
 
@@ -250,5 +302,7 @@ container's state.
 |---|---|
 | `lab.js` | driver: starts each arm, seeds, runs scenarios interleaved, compares cache to database |
 | `server.js` | one arm: a tree booted as `lib/server/server.js` boots it, with IPC for cache dumps and writes by filter |
+| `lab-v3.js` | round 3 driver: API v3 writes over HTTP and autoPrune over IPC, treatments only |
+| `server-v3.js` | round 3 arm: keeps the v3 treatments collection for autoPrune; `V3LAB_BREAK=drop-last` |
 | `readtap.js` | counts every driver `find` (queries, docs, BSON bytes), loaded with `--require` |
 | `run.sh` | container up/down and the full run |
