@@ -17,9 +17,10 @@ same `identifier` (2 records, then 3); the source record is unchanged.
 ## What Nightscout 16.0.0 does
 
 Nightscout 16.0.0 matches re-sent records on `identifier`, and adds a unique index on it. So that profile history is
-kept, a v1 profile create that matches a stored profile by `identifier` but carries a different `startDate` is
+kept, a profile create that matches a stored profile by `identifier` but carries a different `startDate` is
 stored as a new profile without the copied identifier, with a server-side warning (maintainer decision,
-2026-10-30). tconnectsync keeps working unchanged.
+2026-10-30, for API v1 and in-process; extended to the websocket 2026-10-31; see the
+[compatibility notes](socket-paths-compat-notes.md)). tconnectsync keeps working unchanged.
 
 ## What we ask
 

@@ -425,6 +425,12 @@ opens when slices 3 and 4 are on `dev`.
 | `master` protection, #8824 | — | protection still requires `Run Tests (22, 4.4)` | the decided settings change (only *Tests pass* and one approval), then #8824; maintainer |
 | Release 2 | `proto/v3-unify` `3b7f054a` (local) | Q-A adopted 2026-10-30; Q-U decided; Q9 recorded | write step resolves filter writes to ids; one write shape for v3; session -7d's labs |
 
+**Update, 2026-10-31, about 17:50Z** (session -d1; `dev` still `37b2280f`):
+
+- **#8879's `dev` merge is ready to push** (session -4e): local `feat/id-first-s4r` `5a251213` = merge `5bf94c8b` (`f5bd2642` + `dev` `37b2280f`) plus a test for the batch-index mapping (`tests/api.entries.batch-deleted-and-taken.test.js`); fast-forwards the PR head; 0 behind `dev`, 13 ahead. The four expected conflicts kept both sides; the matrix (4,604 cells, MongoDB 8.0) moved 0 cells outside `cache` and `wire`; every tier green on Node 22.23.4 and 24.22.1; the merge revert gives `f5bd2642`'s tree. The maintainer has the push commands. The matrix has no cells for BF-219..222 (coverage gap, no BF id).
+- **Slice 6 decisions** (maintainer, 2026-10-31; [decisions](decisions.md)): socket treatments replace on an identifier match, as every other path does; the profile rule (a different `startDate` is a new profile without the copied identifier) extends to the socket. Both go in the [compatibility notes for affiliated projects](../../docs/30-design/platform/upstream-asks-controller-authors/socket-paths-compat-notes.md) (draft, unsent). Slice 6 and 6a are being built on `5a251213`.
+- **BF-223** (a saved API secret the site refuses blocks a valid `?token=` link; also on `v15.0.9`): ready to push on local `bf/16.0.0-stale-secret-hash` `ecbc9c06` (main page and clock views); the clock bundle allowance moves by 43 gzip bytes, for the maintainer to accept.
+
 **Update, 2026-10-31, about 16:40Z** (GitHub, session -d1): the maintainer merged **#8883** at 16:30Z as `2f50d944`
 (head `789d5d9d`: BF-219, BF-220, BF-221, BF-222) and **#8882** at 16:33Z as `37b2280f` (head `32cd90e6`:
 DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE). `dev` is `37b2280f`. Not released. Next on the merge order: #8879, which

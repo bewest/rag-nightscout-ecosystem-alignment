@@ -2774,14 +2774,14 @@ that costs.
 
 **Gates.**
 
-- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9b31818e HEAD`
-  - the local fix branch carries BF-223's fix 9b31818e (whose browser test is red on dev and green with it); replace with the PR head gate once pushed
+- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9be6a2bc HEAD`
+  - the local fix branch carries BF-223's main-page fix 9be6a2bc (whose browser test is red on dev and green with it); replace with the PR head gate once pushed
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret- hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status-bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre- existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.
+**Notes.** 2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token-link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle- budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push. 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status- bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.
 
 ---
 
@@ -7331,14 +7331,14 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Gates.**
 
-- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9b31818e HEAD`
-  - the local fix branch carries BF-223's fix 9b31818e; replace with the PR head gate once pushed, then official/dev ancestry once merged
+- `[static]` `git -C externals/work/crm-stale-secret merge-base --is-ancestor 9be6a2bc HEAD`
+  - the local fix branch carries BF-223's main-page fix 9be6a2bc; replace with the PR head gate once pushed, then official/dev ancestry once merged
 
 **Evidence.**
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET- HASH.
+**Notes.** 2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET- HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 
