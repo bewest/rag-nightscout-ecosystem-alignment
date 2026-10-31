@@ -196,6 +196,10 @@ def load():
     return data, page, rec, head
 
 
+# A maintainer decision on a card replaces its Candidate/Keep tag (reconsider.json `status`).
+TAG = {"adopted": ("cand", "Adopted"), "kept": ("keep", "Kept"), "as-decided": ("keep", "Not taken up")}
+
+
 def letters(n):
     return [chr(ord("A") + i) for i in range(n)]
 
@@ -214,7 +218,8 @@ def reconsider_cards(rec):
             f'<article class="rc-card{" keep" if keep else ""}" id="reconsider-{esc(r["id"])}" '
             f'data-groups="{esc(" ".join(r["groups"]))}" data-letter="{letter}" data-head="{esc(head)}">'
             f'<div class="rc-top"><span class="rc-letter">{letter}</span>'
-            f'<span class="rc-tag {"keep" if keep else "cand"}">{"Keep" if keep else "Candidate"}</span>'
+            f'<span class="rc-tag {TAG.get(r.get("status"), ("keep" if keep else "cand", ""))[0]}">'
+            f'{TAG.get(r.get("status"), (None, "Keep" if keep else "Candidate"))[1]}</span>'
             f'<span class="muted">cost to the objectives: {esc(r["cost_to_objectives"])}</span></div>'
             f'<h3>{esc(r["decision"])}</h3>'
             f'<div class="rc-bar" aria-label="{r["cells_restored"]:,} cells restored">'
@@ -224,7 +229,8 @@ def reconsider_cards(rec):
             f'<dt>What it restores</dt><dd>{esc(r["restores"])}</dd>'
             f'<dt>Cost</dt><dd>{esc(r["cost"])}</dd>'
             f'<dt>Recommendation</dt><dd>{esc(r["recommendation"])}</dd>'
-            f'<dt>Kinds of change</dt><dd>{esc(", ".join(r["groups"]))}</dd></dl></article>')
+            + (f'<dt>Maintainer decision</dt><dd>{esc(r["status_note"])} ({esc(r.get("decided", ""))})</dd>' if r.get("status_note") else "")
+            + f'<dt>Kinds of change</dt><dd>{esc(", ".join(r["groups"]))}</dd></dl></article>')
     return f'<div class="rc-cards">{"".join(out)}</div>', top
 
 
