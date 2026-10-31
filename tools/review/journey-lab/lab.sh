@@ -142,7 +142,7 @@ urls() {
 }
 
 live() {
-  if [ "$1" = stop ]; then local p; p=$(cat "$W2_STATE/pid-live-$2" 2>/dev/null || true); [ -n "$p" ] && { pkill -P "$p" 2>/dev/null; kill "$p" 2>/dev/null; }; rm -f "$W2_STATE/pid-live-$2"; echo "live $2 stopped"; return; fi
+  if [ "$1" = stop ]; then local p; p=$(cat "$W2_STATE/pid-live-$2" 2>/dev/null || true); [ -n "$p" ] && { pkill -P "$p" 2>/dev/null || true; kill "$p" 2>/dev/null || true; }; rm -f "$W2_STATE/pid-live-$2"; echo "live $2 stopped"; return; fi
   local n=$1 step=tick what="a phone cycle"; parse "$n"
   [ "${2:-}" = cgm ] && { step=cgm-tick; what="a reading (CGM uploader only, no device status)"; }
   [ -f "$W2_STATE/pid-live-$n" ] && kill -0 "$(cat "$W2_STATE/pid-live-$n")" 2>/dev/null && { echo "live $n already running"; return; }
@@ -154,7 +154,7 @@ share() { [ -f "$W2_STATE/share.jsonl" ] && tail -n "${1:-20}" "$W2_STATE/share.
 apns() { [ -f "$W2_STATE/apns.jsonl" ] && tail -n "${1:-20}" "$W2_STATE/apns.jsonl" || echo "no pushes yet"; }
 
 down() {
-  for f in "$W2_STATE"/pid-live-*; do [ -f "$f" ] && { pkill -P "$(cat "$f")" 2>/dev/null; kill "$(cat "$f")" 2>/dev/null; rm -f "$f"; }; done
+  for f in "$W2_STATE"/pid-live-*; do [ -f "$f" ] && { pkill -P "$(cat "$f")" 2>/dev/null || true; kill "$(cat "$f")" 2>/dev/null || true; rm -f "$f"; }; done
   for n in "${ORDER[@]}"; do $H stop "$n" >/dev/null; $H stop "$n-1508" >/dev/null; done
   local p; for f in pid-apns pid-share; do p=$(cat "$W2_STATE/$f" 2>/dev/null || true); [ -n "$p" ] && kill "$p" 2>/dev/null || true; done
   docker rm -f "$W2_MONGO_CONTAINER" >/dev/null 2>&1 || true; echo down
