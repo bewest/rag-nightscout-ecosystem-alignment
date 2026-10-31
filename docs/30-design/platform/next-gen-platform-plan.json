@@ -279,7 +279,7 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "Draft #8875 at 24647c0a (25 behind dev 368e6c23): both views equal to the resident path on 126,092 replayed minutes each. In 16.0.0 in steps: wired under the multitenant serve roles as alpha; single keeps the resident path.",
+   "ref": "Draft #8875 at 24647c0a (25 behind dev 368e6c23): both views equal to the resident path on 126,092 replayed minutes each. Dev 37b2280f merges cleanly (local 7b4b724c: npm test 5355 passing, replay 0 differing minutes). Maintainer, 2026-10-31: ships in 16.0.0 unwired; serve has no role that runs alarms yet (only api starts), so the wiring moves to the one-tenant computed profile prototype (ST-VIEWS-PROFILE) and later the multitenant roles; single keeps the resident path.",
    "spec": [
     {
      "label": "views census",
@@ -287,6 +287,20 @@
     }
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8875"
+  },
+  {
+   "id": "ST-VIEWS-PROFILE",
+   "track": "storage",
+   "phase": "intent",
+   "state": "progress",
+   "short": "one-tenant computed profile",
+   "title": "A single-tenant start profile with no resident ddata: the api profile plus an in-process bus, plugins and notifications. After each write and on a timer at single's cadence it computes the alarms view, and it serves the properties view on request. single is unchanged (D-EXEC-PROFILE)",
+   "where": "lib/server/bootevent.js profiles, lib/data/views/, notifications",
+   "check": "replay lab through the profile's trigger at 0 differing minutes per dataset, differences classified as defect or timing; the execution plan §7b cases; break-it controls (no timer tick, a 10-newest device-status window); resident against computed cost measurements and their break-even",
+   "depends": [
+    "ST-VIEWS"
+   ],
+   "ref": "Prototype started 2026-10-31 (session -81), local branch proto/views-nonresident from 7b4b724c (#8875 with dev 37b2280f merged). Research only, not in 16.0.0."
   },
   {
    "id": "ST-PG",
@@ -707,6 +721,33 @@
      "label": "Read records after the write",
      "gains": "free on fresh backfills",
      "risks": "a full re-send costs about what the pre-read does; misses updates that move records out of their filter (0 of 5 exact); inexact 2-4 times as often under the pruner race; no surveyed system does this"
+    }
+   ]
+  },
+  {
+   "id": "D-EXEC-PROFILE",
+   "short": "Tenancy × execution: three profiles",
+   "owner": "maintainer; framed 2026-10-31, evidence from the profile prototype",
+   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata, and serve is multitenant with no resident ddata. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. single keeps its resident path either way. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan §7b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two.",
+   "holds": [
+    "ST-VIEWS-PROFILE"
+   ],
+   "options": [
+    {
+     "label": "Prototype and measure, then choose per profile",
+     "recommended": true,
+     "gains": "the execution mode is picked from measured cost and equality; the same views serve single-tenant and multitenant hosting",
+     "risks": "a third start profile to document and test"
+    },
+    {
+     "label": "Keep the coupling: single resident, serve computed",
+     "gains": "no new profile",
+     "risks": "a single-tenant site that would be cheaper without a resident ddata cannot have it"
+    },
+    {
+     "label": "Make computed the only execution mode",
+     "gains": "one execution path",
+     "risks": "loses the resident cache where it is the cheaper one (a site that is viewed constantly); single's behaviour changes"
     }
    ]
   },
