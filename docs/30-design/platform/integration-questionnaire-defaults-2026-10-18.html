@@ -6369,7 +6369,7 @@ and from the corpus where it applies. This page is that fill.</p>
 <p>Heads: <code>gh api repos/&lt;owner&gt;/&lt;repo&gt;/commits/&lt;branch&gt; --jq .sha</code>; staleness:
 <code>gh api repos/&lt;owner&gt;/&lt;repo&gt;/compare/&lt;clone&gt;...&lt;head&gt;</code>. File paths in cells are basenames; the
 <a href="#appendix-b-path-index">path index</a> gives the full path of each. The registrations under
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/29af3807e7308472f2cb7a35bb120c034943af5d/specs/sync/registrations"><code>specs/sync/registrations/</code></a> were read at older commits
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/b4486598f159f2eecbb086eca6750a21012b1785/specs/sync/registrations"><code>specs/sync/registrations/</code></a> were read at older commits
 (Loop <code>c2fddb76</code>, Trio <code>e41c9db37</code>, AndroidAPS <code>7e1d537d49</code>); where a cell here and a registration
 differ, this page is at the newer commit.</p>
 <p><strong>AndroidAPS 4.0.0 prereleases.</strong> Items the <a href="nightscout-intent-workflow-landscape-2026-10-09.html">intent
@@ -6685,7 +6685,7 @@ The earlier draft's <code>conflict-resolution.md</code> composes inside the hub;
 </tr>
 </tbody>
 </table>
-<p><em>Note on safety limits.</em> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29af3807e7308472f2cb7a35bb120c034943af5d/specs/nsschema/dosing-input-sources.yaml"><code>dosing-input-sources.yaml</code></a>
+<p><em>Note on safety limits.</em> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b4486598f159f2eecbb086eca6750a21012b1785/specs/nsschema/dosing-input-sources.yaml"><code>dosing-input-sources.yaml</code></a>
 records <code>profile.maxIob</code> as absent for every oref0 derivative, which is what the corpus shows.
 oref0's own rig uploads its <code>preferences</code> file, which holds <code>max_iob</code>, with each devicestatus
 (R above); the corpus has no oref0 rig to measure it on. A digital twin that read Nightscout would
@@ -6868,7 +6868,7 @@ locally, Trio has none, OpenAPS holds a file.</p>
 <tr>
 <td><strong>Ordering method</strong></td>
 <td>Timestamp plus <code>syncIdentifier</code> on doses and carbs (a dedup key, not a sequence) — R <code>NSS Extensions/DoseEntry.swift:31,47,62</code>; M <code>syncIdentifier</code> 306,741 reads (83%), 10 sites</td>
-<td>Timestamp; treatments carry a UUID as <code>id</code>, which Nightscout does not read — R <code>T NightscoutTreatment.swift:24,62</code>; M <code>id</code> 55,939 reads, 1 site (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29af3807e7308472f2cb7a35bb120c034943af5d/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-007</a>)</td>
+<td>Timestamp; treatments carry a UUID as <code>id</code>, which Nightscout does not read — R <code>T NightscoutTreatment.swift:24,62</code>; M <code>id</code> 55,939 reads, 1 site (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b4486598f159f2eecbb086eca6750a21012b1785/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-007</a>)</td>
 <td>Upload in local <code>id</code> order; v3 <code>identifier</code> per record — R <code>A TemporaryTargetDao.kt:45-46</code>, <code>A DataSyncSelectorV3.kt:340-389</code></td>
 <td>Pump-history time; treatments newer than the latest uploaded <code>created_at</code> — R <code>O nightscout.sh:344-349</code></td>
 </tr>
