@@ -425,6 +425,20 @@ opens when slices 3 and 4 are on `dev`.
 | `master` protection, #8824 | — | protection still requires `Run Tests (22, 4.4)` | the decided settings change (only *Tests pass* and one approval), then #8824; maintainer |
 | Release 2 | `proto/v3-unify` `3b7f054a` (local) | Q-A adopted 2026-10-30; Q-U decided; Q9 recorded | write step resolves filter writes to ids; one write shape for v3; session -7d's labs |
 
+**Update, 2026-10-31, about 22:00Z** (read from GitHub with `gh pr list`, `gh pr checks` and `gh api .../compare/dev...<head>` by session -d1; `dev` `604de1cb`):
+
+| PR | head | base | against `dev` `604de1cb` | CI | state |
+|---|---|---|---|---|---|
+| #8879 identity, slices 1–6a | `2d79d30b` | `dev` | 0 behind, 21 ahead | 16 passed, 3 skipped | ready for review; merging it opens the cohort window |
+| #8886 `write(intent)` release 2 + D-EVENT event | `6b00eb9d` | `feat/id-first-match` (#8879) | 0 behind, 38 ahead | 1 check (PR workflows run for base `dev`) | draft; lab, controls and revert to re-run on this head; retarget to `dev` after #8879 |
+| #8875 ST-VIEWS (ships unwired) | `7b4b724c` | `dev` | 5 behind, 18 ahead | 16 passed, 3 skipped | draft |
+| #8857 registration S0–S2, S5 | `10fe6725` | `dev` | 44 behind, 15 ahead | 16 passed, 3 skipped | draft |
+| #8881 ST-HARNESS | `ffa5e6b4` | `dev` | 19 behind, 7 ahead | 16 passed, 3 skipped | draft |
+| #8810 AndroidAPS iOS push | `37146a1f` | `dev` | 84 behind, 5 ahead | 16 passed, 3 skipped | review items open |
+| #8824 `dev` to `master` | `604de1cb` | `master` | — | — | blocked by `master` protection |
+
+Local, not pushed: the unique index (moving onto 6a; its retry becomes item-level first), ID-BATCH (session -81, on the index), the one-person profile prototype (`908351d4`). Being reproduced, not filed: an API v3 autoPrune cache lead.
+
 **Update, 2026-10-31, about 20:05Z** (session -d1, from GitHub): the maintainer merged **#8885** ("16.0.0 small backfixes": BF-223, a saved API secret the site refuses blocks a valid `?token=` link; BF-224, a plain-value v1 date filter answered 500) at 19:57Z as `604de1cb`; `dev` is `604de1cb`. **#8879** is out of draft at `2d79d30b` (slices 1–6a with the 2026-10-31 socket decisions; `dev` `604de1cb` merged; 0 behind, 21 ahead; CI 16 passed, 3 skipped) and is next for review; when it merges, slices 3 and 4 are on `dev` and the cohort window opens. The unique index moves onto it next (session -d1), then ID-BATCH (session -81). Write-step release 2 is rebased onto slice 6a (local `c80c16eb`, gates green). A cache lead from the release 2 lab (autoPrune leaving the cache short on `dev`) is being reproduced, not filed.
 
 **Update, 2026-10-31, evening** (session -d1; `dev` still `37b2280f`):
