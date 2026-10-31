@@ -18366,9 +18366,9 @@ items:
     title: "BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier"
     parcel: register-open
     repo: cgm-remote-monitor
-    branch: ""
+    branch: bf/16.0.0-bf225-socket-duplicate
     base: official/dev@604de1cb
-    state: needs-decision
+    state: in-progress
     pr: []
     ships_to_operators_today: true
     blast_radius: >
@@ -18393,6 +18393,7 @@ items:
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b).
       2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix
       pins). 16.0.0 blocker candidate; the maintainer decides whether it
       blocks the tag. Data: session -4e's compat measurement.

@@ -42,14 +42,14 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | state | n | ids |
 |---|---|---|
 | `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 8 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `in-progress` | 9 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, BFQ-225, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 13 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
 | `in-flight-upstream` | 6 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 79 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 9 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-225, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 42 | P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 5 | BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
@@ -2932,7 +2932,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `merged-upstream` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 | `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `merged-upstream` | `bf/16.0.0-small-backfixes` | patch | 1 run |
-| `BFQ-225` | BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier | `needs-decision` | `-` | patch | 0 run + 1 no-gate |
+| `BFQ-225` | BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier | `in-progress` | `bf/16.0.0-bf225-socket-duplicate` | patch | 0 run + 1 no-gate |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7379,9 +7379,9 @@ distinction is the only thing that makes the register mean anything - widening
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `bf/16.0.0-bf225-socket-duplicate` |
 | base | `official/dev@604de1cb` |
 | worktree | `-` |
 | semver | `patch` |
@@ -7403,7 +7403,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
+**Notes.** 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 
