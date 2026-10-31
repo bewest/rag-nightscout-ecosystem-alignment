@@ -23688,3 +23688,37 @@ items:
       harness noise, not product. Proposed fix: tag each cell's documents
       (cellId) and attribute frames by it, and settle after the seed. Until
       then `cache` and `wire` stay excluded from cell comparisons.
+
+  - id: UI-DRAWER-RESIZE
+    title: "A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer)"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: hygiene/dev-lint-overlay
+    base: official/dev
+    worktree: externals/work/crm-dev-lint
+    state: in-progress
+    pr: []
+    blast_radius: >
+      lib/client/browser-utils.js openDrawer (about lines 126-160) sets inline
+      width and height in pixels from the window size when a drawer opens, and
+      no resize handler recomputes them. Shared by every drawer (settings,
+      careportal, bolus calculator, admin notifications) in both themes; from
+      9aab137b (2016-02-17).
+    review: maintainer
+    operator_visible: none (browser display only)
+    semver: patch
+    semver_reason: display fix, no data or API change
+    gates:
+      - no-gate: >
+          not built yet; the fix's gate is a browser test that opens a drawer
+          at 390 px, resizes to 1440 px and asserts the drawer's size, red on dev
+    blocks_on: []
+    evidence: []
+    notes: >
+      2026-10-30: seen by the maintainer in the journey-lab session on the
+      modern theme (relayed by session -7d); identical on dev 305a6533 and
+      #8874 7463e76d, so not an #8874 regression; the modern theme makes it
+      more visible. Fix options: size open drawers with CSS
+      (e.g. width: min(350px, 100vw), a dvh-based height) instead of inline
+      pixels, or re-apply the sizing on resize while a drawer is open. Being
+      built as a second commit on the hygiene branch with DEV-LINT-OVERLAY-REGEX.
