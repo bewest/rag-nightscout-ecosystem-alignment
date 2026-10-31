@@ -4190,11 +4190,11 @@ must never be pointed at a real site.</p>
 <li><strong>Server:</strong> the cgm-remote-monitor prototype branch <code>proto/id-batch-replies</code> (the reply variants sit
   behind an opt-in; see <code>lib/api/shared/batch-reply.js</code> there), booted three times: <code>WRITE_VALIDATION</code>
   off, <code>WRITE_VALIDATION=reject</code>, and <code>WRITE_IDENTIFIER=strict</code>.</li>
-<li><strong>Clients:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c55619771402c60c3c6f3f2d5a50061a6fc462/tools/lab/id-batch-replies/clients.js">clients.js</a> reproduces each client's handling of the reply, rule by rule,
+<li><strong>Clients:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8eb083c033249a4d5ca599824fdcac324d5fef0d/tools/lab/id-batch-replies/clients.js">clients.js</a> reproduces each client's handling of the reply, rule by rule,
   with the client's <code>file:line</code> at the pins it lists: Loop (NightscoutKit, NightscoutService, Loop's
   RemoteDataServicesManager), Trio, xDrip+, xDrip4iOS. AndroidAPS sends no v1 batch (API v3, one document
   per request) and is listed as not applicable. nightscout-connect is <strong>run</strong>, not modelled:
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c55619771402c60c3c6f3f2d5a50061a6fc462/tools/lab/id-batch-replies/connect-run.js">connect-run.js</a> loads its real Nightscout output module and calls it cycle by cycle.</li>
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8eb083c033249a4d5ca599824fdcac324d5fef0d/tools/lab/id-batch-replies/connect-run.js">connect-run.js</a> loads its real Nightscout output module and calls it cycle by cycle.</li>
 <li><strong>Per scenario x reply variant x client:</strong> the client's batch goes to the real server with the variant's
   opt-in header (the harness plays a server whose default reply is that variant; the client logic never
   sees the header). The harness hands the reply to the client's rules and re-sends what the client would
