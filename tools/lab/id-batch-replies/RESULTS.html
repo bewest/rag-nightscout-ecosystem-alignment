@@ -4623,7 +4623,7 @@
 <p><em>Living document, last changed 2026-10-30 at <code>7aab61504</code>.</em></p>
 <p><em>Contributor-facing. Synthetic data only. Evidence for the open questions (ii)-(vii) of the
 <a href="../../../docs/30-design/platform/id-batch-design-note-2026-10-30.html">ID-BATCH design note</a>; the
-maintainer decides them.</em> Run file: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/334c661ffb34c4e6a6058e38bda2b4c17b018200/tools/lab/id-batch-replies/results/run-2026-10-30.json">results/run-2026-10-30.json</a>; how to
+maintainer decides them.</em> Run file: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29af3807e7308472f2cb7a35bb120c034943af5d/tools/lab/id-batch-replies/results/run-2026-10-30.json">results/run-2026-10-30.json</a>; how to
 run it: <a href="index.html">README.md</a>.</p>
 <ul>
 <li><strong>Server:</strong> cgm-remote-monitor <code>proto/id-batch-replies</code> at <code>7d81e1c1</code> (base <code>feat/id-first-s5</code>
@@ -4634,8 +4634,8 @@ run it: <a href="index.html">README.md</a>.</p>
   xDrip+ <code>1ed760048a</code>; xDrip4iOS <code>c268542e64</code>; AndroidAPS <code>7e1d537d49</code>; nightscout-connect <code>04102f9d26</code>.</li>
 <li><strong>Method.</strong> Every reply below came from the real server. Loop, Trio, xDrip+ and xDrip4iOS are harnesses
   that reproduce each client's reply handling rule by rule, each rule cited <code>file:line</code> in
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/334c661ffb34c4e6a6058e38bda2b4c17b018200/tools/lab/id-batch-replies/clients.js">clients.js</a>; the client binaries were not run. <strong>nightscout-connect was run</strong>: its own
-  Nightscout output module, cycle by cycle (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/334c661ffb34c4e6a6058e38bda2b4c17b018200/tools/lab/id-batch-replies/connect-run.js">connect-run.js</a>). Each client re-sends what
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29af3807e7308472f2cb7a35bb120c034943af5d/tools/lab/id-batch-replies/clients.js">clients.js</a>; the client binaries were not run. <strong>nightscout-connect was run</strong>: its own
+  Nightscout output module, cycle by cycle (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/29af3807e7308472f2cb7a35bb120c034943af5d/tools/lab/id-batch-replies/connect-run.js">connect-run.js</a>). Each client re-sends what
   its code re-sends, for up to 3 cycles; then MongoDB is read for how many records each item left. Two
   full runs gave identical tables.</li>
 <li><strong>"Forever"</strong> means: the reply to the re-send is the same every time, and the client's code has no
