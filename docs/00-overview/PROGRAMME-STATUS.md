@@ -196,6 +196,7 @@ cover more than one `BF-`:
 | `BFQ-222` | `merged-upstream` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache |
 | `BFQ-223` | `merged-upstream` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link |
 | `BFQ-224` | `merged-upstream` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answ |
+| `BFQ-225` | `needs-decision` | BF-225 - a socket re-send of a treatment without an identifier stores a second copy when t |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |

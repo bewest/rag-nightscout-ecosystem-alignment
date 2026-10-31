@@ -152,6 +152,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-217** BF-217 - an override with no reservoir value throws in the pump plugin
 - **BFQ-223** BF-223 - a saved API secret the site refuses blocks a valid ?token= link
 - **BFQ-224** BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500
+- **BFQ-225** BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier
 - **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 - **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
 - **BFQ-221** BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
@@ -7385,7 +7386,7 @@ distinction is the only thing that makes the register mean anything - widening
 | worktree | `-` |
 | semver | `patch` |
 | review | maintainer |
-| ships to operators today | no (pre-release) |
+| ships to operators today | **yes** |
 | register | `BF-225` |
 
 **Blast radius.** lib/server/websocket.js processSingleDbAdd, the socket similar match changed by #8877 (cf3d4b8f): a stored treatment's identifier now keeps a re-send without one from matching it.

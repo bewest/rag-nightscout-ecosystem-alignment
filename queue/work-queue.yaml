@@ -18370,7 +18370,7 @@ items:
     base: official/dev@604de1cb
     state: needs-decision
     pr: []
-    ships_to_operators_today: false
+    ships_to_operators_today: true
     blast_radius: >
       lib/server/websocket.js processSingleDbAdd, the socket similar match
       changed by #8877 (cf3d4b8f): a stored treatment's identifier now keeps a
