@@ -406,7 +406,7 @@ opens when slices 3 and 4 are on `dev`.
 
 | PR / branch | head | state | next step, owner |
 |---|---|---|---|
-| #8883 v1 treatment writes (BF-219, BF-220, BF-221) | `8ae46b72` | open, base `dev`; write-step port reviewed by session -4f | merge **before** #8879's next `dev` merge (they conflict in four files); BF-222's fix from session -7d may be added first; maintainer |
+| #8883 v1 treatment writes (BF-219, BF-220, BF-221, BF-222) | `8ae46b72` on GitHub; `789d5d9d` local adds BF-222 (session -7d's fix, cherry-picked; the bundle's new test files 18 passing) | open, base `dev`; write-step port reviewed by session -4f | push `789d5d9d` and update the title and body, then merge **before** #8879's next `dev` merge (they conflict in four files); maintainer |
 | #8879 identity (ID-FIRST-MATCH) | `5cdd9577` (slices 1, 2, 5, 5b, 3 + `dev` `368e6c23`) | draft, base `dev` | slice 4 rebuilt with treatments `replaced` on every path (decided 2026-10-30), then 6 and 6a (prepared: `prep/id-first-s6` `47377fa3`, tests red as expected, prediction script); session -4f |
 | `feat/id-unique-index` (local) | `b4a4092c` on slice 3 | built and gated (342 predicted cells, MongoDB 5.0 and 8.0) | rebase onto 6a, re-run, open as a draft on #8879; held until then |
 | `proto/id-batch-replies` (local) | `7d81e1c1` | prototype + client lab; (ii)–(vi) decided 2026-10-30 | build ID-BATCH on the identity branch after the index, with strict on v1 (ID-STRICT-V1) |
