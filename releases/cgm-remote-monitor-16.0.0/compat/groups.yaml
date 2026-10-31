@@ -87,7 +87,7 @@ groups:
     meaning: A socket re-send with no identifier of a treatment stored with one is stored a second time.
     consequence: 'A duplicated insulin or carb record on the site: IOB/COB shown doubled.'
     verdict: Defect
-    basis: 'BF-225, from #8877 (on dev); scope being decided'
+    basis: 'BF-225, from #8877 (on dev); fix scope decided 2026-10-31'
     severity: 10
     guard: revert-only
   p:

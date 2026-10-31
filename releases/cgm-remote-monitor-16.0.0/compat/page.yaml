@@ -34,8 +34,10 @@ defect:
     carried a UUID. 15.0.9 kept one record; dev and #8879 keep two. It first appears in #8877 (on dev).
     #8877 documented the API v3 → socket case as intended (a record written through API v3 and re-sent
     over the socket without its identifier is stored again, as API v1 and in-process already did). The
-    two UUID _id cases are not mentioned there. The maintainer put BF-225 in 16.0.0; which cases change
-    is being decided. A duplicated insulin
+    two UUID _id cases are not mentioned there. The maintainer put BF-225 in 16.0.0 and chose the fix
+    scope on 2026-10-31: on dev, the socket match also accepts the identifier API v3 computes for the
+    body; on #8879, a socket UUID _id counts as an identifier. A full revert of #8877 was rejected
+    because it brings back BF-209's lost treatment. This measurement predates the fix. A duplicated insulin
     or carb record makes the site show IOB and COB doubled to caregivers; the phone's own dosing data is
     not affected. Clients: AndroidAPS's older socket client sends treatments without an identifier (read
     from its code); whether it re-sends one first created over API v3 is not traced.
