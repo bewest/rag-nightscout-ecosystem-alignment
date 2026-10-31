@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>95e27a4ad</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>9666ca285</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2188,7 +2188,7 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td><code>dev</code> head</td>
-<td><code>305a6533</code> (merge of #8880, 2026-10-30 16:24:38Z, by bewest); before it <code>991b0654</code> (merge of #8865, 2026-10-30 02:04:14Z, by bewest), tree <code>a9ae9536</code>; the merges before that: #8878 <code>d51c7a60</code> (2026-10-30 01:48:51Z), #8877 <code>cf3d4b8f</code> (2026-10-30 00:50:49Z), #8873 <code>e1f7ac41</code> (2026-10-28 05:20:32Z), and on 2026-10-27 after #8856: #8872 <code>db3b9e4e</code>, #8871 <code>dcf20bfb</code>, #8858 <code>ca1652d6</code>, #8869 <code>b8baf24d</code>, #8870 <code>7abe1cf6</code>, #8863 <code>9668b179</code>, #8861 <code>84fac457</code> (<code>git log --first-parent eed31dca..official/dev</code>)</td>
+<td><code>368e6c23</code> (merge of #8874, 2026-10-31 02:02:52Z, by bewest); before it <code>305a6533</code> (merge of #8880, 2026-10-30 16:24:38Z, by bewest); before that <code>991b0654</code> (merge of #8865, 2026-10-30 02:04:14Z, by bewest), tree <code>a9ae9536</code>; the merges before that: #8878 <code>d51c7a60</code> (2026-10-30 01:48:51Z), #8877 <code>cf3d4b8f</code> (2026-10-30 00:50:49Z), #8873 <code>e1f7ac41</code> (2026-10-28 05:20:32Z), and on 2026-10-27 after #8856: #8872 <code>db3b9e4e</code>, #8871 <code>dcf20bfb</code>, #8858 <code>ca1652d6</code>, #8869 <code>b8baf24d</code>, #8870 <code>7abe1cf6</code>, #8863 <code>9668b179</code>, #8861 <code>84fac457</code> (<code>git log --first-parent eed31dca..official/dev</code>)</td>
 </tr>
 <tr>
 <td><code>dev</code> head on 2026-10-27</td>
@@ -2834,6 +2834,16 @@ merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nin
 <td>BF-213, BF-214, BF-217</td>
 <td>—</td>
 <td>the pump alarm follows the severity Loop sends in <code>reservoir_level_override</code>, with Loop's text; an override with no reservoir value no longer throws in the pump plugin; a v1 device-status delete by query asks for a reload (5 files, +327)</td>
+</tr>
+<tr>
+<td>#8874</td>
+<td>10-31 02:02:52</td>
+<td><code>368e6c23</code></td>
+<td><code>83f3d54a</code></td>
+<td>bewest</td>
+<td>BF-218 (test)</td>
+<td><code>WC-STEP-PATCH</code></td>
+<td><code>write(intent)</code> release 1: every v1, API v3 and socket write path through one write step, no behaviour change by the write-contract matrix (0 of 1,929 cells outside <code>cache</code>), merge revert rehearsed; journey lab (2026-10-30/31) found no difference from <code>dev</code></td>
 </tr>
 </tbody>
 </table>
@@ -3618,7 +3628,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e16b1003cfe0ef6340a9f591a8d188a1e629c41b/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f91ddf789d6404a95df326e860a3592e6d8c3eb6/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (90 queue ids on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
