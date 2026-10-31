@@ -67,3 +67,28 @@ the one data-update once.
 
 Under the fix, the word the coordinator relayed for already-written slots is `created`. The step's word
 is `inserted` (`OUTCOMES` in write-intent.js), and ID-BATCH passes the step's word through.
+
+## Slot outcomes after the replace-on-match change (maintainer, 2026-10-31; not built)
+
+A matched re-send will **replace** on every collection; merge stays only for v3 PATCH and socket
+dbUpdate. ID-BATCH passes the step's outcome word through and treats no word specially except
+`refused` and not-written (`acknowledged`, decision (vi)), so the only expected change is in the opt-in
+`items` column. No test asserts `merged`. Measured on feat/id-batch 76fd7bfb (MongoDB 5.0.32, no
+settings); none of these cells' slots, status, Warning or `storeb` should move from this change alone.
+`storeb` may move where the re-send's fields replace the stored record's (`:v2`).
+
+| `+results` cell | today | after replace-on-match (predicted) |
+|---|---|---|
+| entries v1 batch-repeat-identifier | `0:inserted,1:inserted,2:merged` | `2:replaced` |
+| entries v1 batch-repeat-stored | `1:merged` | `1:replaced` |
+| devicestatus v1 batch-repeat-stored | `1:merged` | `1:replaced` |
+| profile, food, activity v1 batch-taken-id | `1:merged` | `1:replaced` |
+| profile, food, activity v1 batch-taken-all | `0:merged,1:merged` | `0:replaced,1:replaced` |
+| treatments (every re-send) | `replaced` | unchanged |
+| entries v1 batch-dupkey-mid | `0:merged,1:merged,2:inserted` | `0:replaced,1:replaced` at ee49832d; at -4e's item-level fix `0:inserted,1:replaced,2:inserted` |
+| devicestatus v1 batch-dupkey-mid | `0:merged,1:merged,2:merged` | at the item-level fix `0:inserted,1:replaced,2:inserted` |
+
+PENDING-4E, seen in the opt-in today: after the whole-batch retry, the step's items come from the
+second run, so entries item 0 and devicestatus items 0 and 2 (inserted by the first run) report
+`merged`. The fixed-head column above (`inserted` for the slots written before the race) is what
+the item-level fix should give. `merged` becomes `replaced` once replace-on-match lands too.
