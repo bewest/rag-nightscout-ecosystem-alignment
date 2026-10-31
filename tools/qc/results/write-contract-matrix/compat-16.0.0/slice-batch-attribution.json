@@ -1,0 +1,261 @@
+{
+ "entries v1 batch-deleted": {
+  "steps": [
+   "slice 3"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "entries v1 batch-deleted +results": {
+  "steps": [
+   "slice 3"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "entries v1 batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": false
+ },
+ "entries v1 batch-placeholder-identifier +results": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "entries ws batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "entries inproc batch-deleted": {
+  "steps": [
+   "slice 3"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "entries inproc batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments v1 batch-mixed-ident": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments v1 batch-mixed-ident +results": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments v1 batch-deleted": {
+  "steps": [
+   "slice 3"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments v1 batch-deleted +results": {
+  "steps": [
+   "slice 3"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments v1 batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": false
+ },
+ "treatments v1 batch-placeholder-identifier +results": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments ws batch-deleted": {
+  "steps": [
+   "slice 3"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments ws batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments inproc batch-mixed-ident": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments inproc batch-deleted": {
+  "steps": [
+   "slice 3"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "treatments inproc batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "devicestatus v1 batch-repeat-stored": {
+  "steps": [
+   "slice 4"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "devicestatus v1 batch-repeat-stored +results": {
+  "steps": [
+   "slice 4"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "devicestatus v1 batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "devicestatus v1 batch-placeholder-identifier +results": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "devicestatus ws batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "devicestatus inproc batch-repeat-stored": {
+  "steps": [
+   "slice 4"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "devicestatus inproc batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "profile v1 batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "profile v1 batch-placeholder-identifier +results": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "profile ws batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "profile inproc batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "food v1 batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "food v1 batch-placeholder-identifier +results": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "food ws batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "food inproc batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "activity v1 batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "activity v1 batch-placeholder-identifier +results": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "activity ws batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ },
+ "activity inproc batch-placeholder-identifier": {
+  "steps": [
+   "slice 2"
+  ],
+  "end_equals_5bf94c8b": true,
+  "start_equals_dev": true
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "about": "Inputs of the 15.0.9 to #8879 write-compatibility comparison (tools/qc/compat/build.py). Paths are relative to this file. Measured 2026-10-31.",
+ "trees": {
+  "v1509": {"name": "v15.0.9", "label": "v15.0.9 c6a0d8ed", "run1": "../v15.0.9-c6a0d8ed.json"},
+  "dev": {"name": "dev", "label": "dev 37b2280f", "run1": "../dev-37b2280f.json"},
+  "8879": {"name": "#8879", "label": "#8879 6960bfb7", "run1": "../pr8879-6960bfb7.json"}
+ },
+ "settings": "defaults: WRITE_VALIDATION unset (off), WRITE_IDENTIFIER unset (lenient), WRITE_DELETED_EDIT unset (ignore), UUID_HANDLING default (true)",
+ "chain": [
+  ["v1509", "v15.0.9 c6a0d8ed", null],
+  ["ecf32222", "dev ecf32222", "#8797 (BF-09 socket duplicate check keeps zero-value records); also #8819/#8823/#8825/#8826/#8827/#8831 (display, bridge)"],
+  ["900abf7a", "dev 900abf7a", "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others"],
+  ["c08cbe03", "dev c08cbe03", "#8854 persistence boundary; also #8852 v1 profile POST validation, cut 4 #8847, cut 5 #8605, #8849 (BF-46/48/49/156)"],
+  ["94899828", "dev 94899828", "#8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge)"],
+  ["9668b179", "dev 9668b179", "#8863 storage writes / #8861 storage filter (also #8856 BF-193, #8868 BF-200)"],
+  ["db3b9e4e", "dev db3b9e4e", "#8872 BF-194 Temporary Target stored in mg/dL (also #8870, #8858)"],
+  ["cf3d4b8f", "dev cf3d4b8f", "#8877 BF-209/BF-211 socket similar match follows identifier (also #8873 BF-204..207)"],
+  ["991b0654", "dev 991b0654", "#8878 BF-212 split no longer copies identity (also #8865 serve/single)"],
+  ["368e6c23", "dev 368e6c23", "#8874 write(intent) release 1 (also #8880 BF-213/214/217)"],
+  ["dev", "dev 37b2280f", "#8883 BF-219/BF-220/BF-221/BF-222 batch replies (also #8882 lint)"],
+  ["5bf94c8b", "#8879 5bf94c8b (slices 1, 2, 5, 3, 4 on dev 37b2280f)", "SLICES-1-4"],
+  ["15e4f2c0", "#8879 15e4f2c0 (+ slice 6)", "slice 6"],
+  ["d63ba67d", "#8879 d63ba67d (+ slice 6a)", "slice 6a"],
+  ["8879", "#8879 6960bfb7 (+ decisions B and C; lib = 2088cfe6 = 71738792)", "B+C"]
+ ],
+ "predictions": [
+  ["slice 2", "predictions/slice-2.txt"],
+  ["slice 5", "predictions/slice-5.txt"],
+  ["slice 3", "predictions/slice-3.txt"],
+  ["slice 4", "predictions/slice-4.txt"],
+  ["slice 6", "predictions/slice-6.txt"],
+  ["slice 6a", "predictions/slice-6a.txt"],
+  ["B+C", "predictions/decisions-b-c.txt"]
+ ],
+ "slice_order": ["slice 1", "slice 2", "slice 5", "slice 3", "slice 4"],
+ "slice_batch_attribution": "slice-batch-attribution.json",
+ "slice2_head_measured": ["treatments inproc idfmt-number-time", "treatments inproc idfmt-number-single"],
+ "client_shapes": "client-shapes.json",
+ "set_aside_on_v1509": {
+  "cells": ["entries ws idread-fail", "treatments ws idread-fail", "devicestatus ws idread-fail", "profile ws idread-fail", "food ws idread-fail", "activity ws idread-fail"],
+  "reason": "idread-fail injects a failure into lib/server/storage-reads.findOne, which v15.0.9 does not have (added by #8863); on v15.0.9 the injection fired 0 times, so these 6 cells are not comparable and are left out of every v15.0.9 diff (they move at 9668b179 only because the injection starts firing)"
+ }
+}

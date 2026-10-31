@@ -1,0 +1,267 @@
+# slice 4 rebuild prediction (2026-10-30, Ben: treatments re-send REPLACES on v1, in-process and v3), from idf-merge/head-merge.json (head 5cdd9577f428602322fbda0c34f82dfc123f21d2), written before the code
+# derived from idf-s4/prediction.txt (sha256 9d1fe408b698bde9): every treatments line of rule T or V, and every outcome-only (O) treatments line, is dropped; nothing else changes
+# was: # slice 4 prediction from base-c9b74404.json (head c9b74404455012964dbd543bd7933853fb032a4e), written before the code
+# was: # value-changing cells (move in the matrix): rule	cell	fields	base -> predicted
+# was: # value-changing: 374 {"D1":64,"D3":17,"F":18,"P":39,"T":118,"V":118}
+# was: # by rule and collection: {"D1 devicestatus":64,"D3 devicestatus":17,"F activity":9,"F food":9,"P profile":39,"T treatments":118,"V entries":28,"V food":20,"V profile":28,"V settings":12,"V treatments":30}
+# was: # outcome-only (group a: replaced -> merged, no recorded value changes; not expected to move):
+# was: # outcome-only: 49 {"F":14,"P":8,"T":12,"V":15}
+D1	devicestatus inproc idf-identifier-amt	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idf-split-first	shape,store,srv,hist,ev	shape: not-written,not-written -> merge,not-written | store: n=2 OID,OID -> n=2 OID:v2,OID | srv: C=M=,C=M= -> C=M+,C=M= | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idf-split-second	shape,store,srv,hist,ev	shape: not-written,not-written -> not-written,merge | store: n=2 OID,OID -> n=2 OID,OID:v2 | srv: C=M=,C=M= -> C=M=,C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idf-split-written	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus inproc idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idf-identifier-amt	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idf-split-first	shape,store,srv,hist,ev	shape: not-written,not-written -> merge,not-written | store: n=2 OID,OID -> n=2 OID:v2,OID | srv: C=M=,C=M= -> C=M+,C=M= | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idf-split-second	shape,store,srv,hist,ev	shape: not-written,not-written -> not-written,merge | store: n=2 OID,OID -> n=2 OID,OID:v2 | srv: C=M=,C=M= -> C=M=,C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idf-split-written	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus v1 idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x inproc x v1 idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x inproc x v1 idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x inproc x v1 idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x inproc x v1 idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x inproc x v1 idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x inproc x v1 idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x inproc x v1 idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v1 x inproc idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v1 x inproc idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v1 x inproc idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v1 x inproc idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v1 x inproc idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v1 x inproc idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v1 x inproc idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x inproc idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x inproc idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x inproc idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x inproc idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x inproc idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x inproc idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x inproc idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x v1 idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x v1 idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x v1 idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x v1 idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x v1 idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x v1 idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x v3 x v1 idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x inproc idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x inproc idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x inproc idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x inproc idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x inproc idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x inproc idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x inproc idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x v1 idf-identifier-same	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x v1 idf-identifier-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x v1 idfmt-colon-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x v1 idfmt-len256-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x v1 idfmt-nonascii-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x v1 idfmt-slash-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D1	devicestatus x ws x v1 idfmt-urlsafe-time	shape,store,srv,hist,ev	shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills]
+D3	devicestatus v3 idf-NSCLIENT_ID-amt	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-NSCLIENT_ID-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-id-amt	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-id-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-identifier-amt	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-identifier-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-split-first	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written,not-written -> merge,not-written | store: n=2 OID,OID -> n=2 OID:v2,OID | srv: C=M=,C=M= -> C=M+,C=M= | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-split-second	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written,not-written -> not-written,merge | store: n=2 OID,OID -> n=2 OID,OID:v2 | srv: C=M=,C=M= -> C=M=,C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-split-written	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-syncIdentifier-amt	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-syncIdentifier-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-uuid-amt	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 idf-uuid-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus v3 resend-identity	st,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus x inproc x v3 idf-identifier-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus x v1 x v3 idf-identifier-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+D3	devicestatus x ws x v3 idf-identifier-same	st,shape,store,srv,hist,ev,wire	st: 200 {identifier,isDeduplication,lastModified} -> 200 {lastModified,identifier,isDeduplication} | shape: not-written -> merge | store: n=1 OID -> n=1 OID:v2 | srv: C=M= -> C=M+ | hist: absent -> valid | ev: none -> du:update[1,mills] ss:update | wire: none -> update
+F	activity inproc idf-uuidid-amt	shape	shape: replace -> merge
+F	activity inproc idf-uuidid-same	shape	shape: replace -> merge
+F	activity inproc idf-uuidid-time	shape	shape: replace -> merge
+F	activity inproc idfmt-idundef-time	shape	shape: replace -> merge
+F	activity inproc idfmt-idundef-twoapp	shape	shape: replace -> merge
+F	activity x ws x inproc idf-uuidid-same	shape	shape: replace -> merge
+F	activity x ws x inproc idf-uuidid-time	shape	shape: replace -> merge
+F	activity x ws x inproc idfmt-idundef-time	shape	shape: replace -> merge
+F	activity x ws x inproc idfmt-idundef-twoapp	shape	shape: replace -> merge
+F	food inproc idf-uuidid-amt	shape	shape: replace -> merge
+F	food inproc idf-uuidid-same	shape	shape: replace -> merge
+F	food inproc idf-uuidid-time	shape	shape: replace -> merge
+F	food inproc idfmt-idundef-time	shape	shape: replace -> merge
+F	food inproc idfmt-idundef-twoapp	shape	shape: replace -> merge
+F	food x ws x inproc idf-uuidid-same	shape	shape: replace -> merge
+F	food x ws x inproc idf-uuidid-time	shape	shape: replace -> merge
+F	food x ws x inproc idfmt-idundef-time	shape	shape: replace -> merge
+F	food x ws x inproc idfmt-idundef-twoapp	shape	shape: replace -> merge
+P	profile ws idf-NSCLIENT_ID-amt	shape	shape: replace -> merge
+P	profile ws idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+P	profile ws idf-NSCLIENT_ID-time	shape	shape: replace -> merge
+P	profile ws idf-id-amt	shape	shape: replace -> merge
+P	profile ws idf-id-same	shape	shape: replace -> merge
+P	profile ws idf-identifier-amt	shape	shape: replace -> merge
+P	profile ws idf-identifier-same	shape	shape: replace -> merge
+P	profile ws idf-softdel-identifier	shape	shape: replace -> merge
+P	profile ws idf-softdel-plain	shape	shape: replace -> merge
+P	profile ws idf-split-first	shape	shape: replace,not-written -> merge,not-written
+P	profile ws idf-split-second	shape	shape: not-written,replace -> not-written,merge
+P	profile ws idf-split-written	shape	shape: replace,not-written -> merge,not-written
+P	profile ws idf-syncIdentifier-amt	shape	shape: replace -> merge
+P	profile ws idf-syncIdentifier-same	shape	shape: replace -> merge
+P	profile ws idf-uuid-amt	shape	shape: replace -> merge
+P	profile ws idf-uuid-same	shape	shape: replace -> merge
+P	profile ws idf-uuidid-amt	shape	shape: replace -> merge
+P	profile ws idf-uuidid-same	shape	shape: replace -> merge
+P	profile ws idf-v3del-identifier	shape	shape: replace -> merge
+P	profile ws idf-v3del-plain	shape	shape: replace -> merge
+P	profile x inproc x ws idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+P	profile x inproc x ws idf-NSCLIENT_ID-time	shape	shape: replace -> merge
+P	profile x inproc x ws idf-id-same	shape	shape: replace -> merge
+P	profile x inproc x ws idf-identifier-same	shape	shape: replace -> merge
+P	profile x inproc x ws idf-syncIdentifier-same	shape	shape: replace -> merge
+P	profile x inproc x ws idf-uuid-same	shape	shape: replace -> merge
+P	profile x inproc x ws idf-uuidid-same	shape	shape: replace -> merge
+P	profile x v1 x ws idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+P	profile x v1 x ws idf-NSCLIENT_ID-time	shape	shape: replace -> merge
+P	profile x v1 x ws idf-id-same	shape	shape: replace -> merge
+P	profile x v1 x ws idf-identifier-same	shape	shape: replace -> merge
+P	profile x v1 x ws idf-syncIdentifier-same	shape	shape: replace -> merge
+P	profile x v1 x ws idf-uuid-same	shape	shape: replace -> merge
+P	profile x v3 x ws idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+P	profile x v3 x ws idf-NSCLIENT_ID-time	shape	shape: replace -> merge
+P	profile x v3 x ws idf-id-same	shape	shape: replace -> merge
+P	profile x v3 x ws idf-identifier-same	shape	shape: replace -> merge
+P	profile x v3 x ws idf-syncIdentifier-same	shape	shape: replace -> merge
+P	profile x v3 x ws idf-uuid-same	shape	shape: replace -> merge
+V	entries v3 idf-NSCLIENT_ID-amt	shape	shape: replace -> merge
+V	entries v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	entries v3 idf-id-amt	shape	shape: replace -> merge
+V	entries v3 idf-id-same	shape	shape: replace -> merge
+V	entries v3 idf-identifier-amt	shape	shape: replace -> merge
+V	entries v3 idf-identifier-same	shape	shape: replace -> merge
+V	entries v3 idf-split-first	shape	shape: replace,not-written -> merge,not-written
+V	entries v3 idf-split-second	shape	shape: not-written,replace -> not-written,merge
+V	entries v3 idf-split-written	shape	shape: replace -> merge
+V	entries v3 idf-syncIdentifier-amt	shape	shape: replace -> merge
+V	entries v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	entries v3 idf-uuid-amt	shape	shape: replace -> merge
+V	entries v3 idf-uuid-same	shape	shape: replace -> merge
+V	entries x inproc x v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	entries x inproc x v3 idf-id-same	shape	shape: replace -> merge
+V	entries x inproc x v3 idf-identifier-same	shape	shape: replace -> merge
+V	entries x inproc x v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	entries x inproc x v3 idf-uuid-same	shape	shape: replace -> merge
+V	entries x v1 x v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	entries x v1 x v3 idf-id-same	shape	shape: replace -> merge
+V	entries x v1 x v3 idf-identifier-same	shape	shape: replace -> merge
+V	entries x v1 x v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	entries x v1 x v3 idf-uuid-same	shape	shape: replace -> merge
+V	entries x ws x v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	entries x ws x v3 idf-id-same	shape	shape: replace -> merge
+V	entries x ws x v3 idf-identifier-same	shape	shape: replace -> merge
+V	entries x ws x v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	entries x ws x v3 idf-uuid-same	shape	shape: replace -> merge
+V	food v3 idf-NSCLIENT_ID-amt	shape	shape: replace -> merge
+V	food v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	food v3 idf-id-amt	shape	shape: replace -> merge
+V	food v3 idf-id-same	shape	shape: replace -> merge
+V	food v3 idf-identifier-amt	shape	shape: replace -> merge
+V	food v3 idf-identifier-same	shape	shape: replace -> merge
+V	food v3 idf-split-first	shape	shape: replace,not-written -> merge,not-written
+V	food v3 idf-split-second	shape	shape: not-written,replace -> not-written,merge
+V	food v3 idf-split-written	shape	shape: replace -> merge
+V	food v3 idf-syncIdentifier-amt	shape	shape: replace -> merge
+V	food v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	food v3 idf-uuid-amt	shape	shape: replace -> merge
+V	food v3 idf-uuid-same	shape	shape: replace -> merge
+V	food x inproc x v3 idf-identifier-same	shape	shape: replace -> merge
+V	food x v1 x v3 idf-identifier-same	shape	shape: replace -> merge
+V	food x ws x v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	food x ws x v3 idf-id-same	shape	shape: replace -> merge
+V	food x ws x v3 idf-identifier-same	shape	shape: replace -> merge
+V	food x ws x v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	food x ws x v3 idf-uuid-same	shape	shape: replace -> merge
+V	profile v3 idf-NSCLIENT_ID-amt	shape	shape: replace -> merge
+V	profile v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	profile v3 idf-id-amt	shape	shape: replace -> merge
+V	profile v3 idf-id-same	shape	shape: replace -> merge
+V	profile v3 idf-identifier-amt	shape	shape: replace -> merge
+V	profile v3 idf-identifier-same	shape	shape: replace -> merge
+V	profile v3 idf-split-first	shape	shape: replace,not-written -> merge,not-written
+V	profile v3 idf-split-second	shape	shape: not-written,replace -> not-written,merge
+V	profile v3 idf-split-written	shape	shape: replace -> merge
+V	profile v3 idf-syncIdentifier-amt	shape	shape: replace -> merge
+V	profile v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	profile v3 idf-uuid-amt	shape	shape: replace -> merge
+V	profile v3 idf-uuid-same	shape	shape: replace -> merge
+V	profile x inproc x v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	profile x inproc x v3 idf-id-same	shape	shape: replace -> merge
+V	profile x inproc x v3 idf-identifier-same	shape	shape: replace -> merge
+V	profile x inproc x v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	profile x inproc x v3 idf-uuid-same	shape	shape: replace -> merge
+V	profile x v1 x v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	profile x v1 x v3 idf-id-same	shape	shape: replace -> merge
+V	profile x v1 x v3 idf-identifier-same	shape	shape: replace -> merge
+V	profile x v1 x v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	profile x v1 x v3 idf-uuid-same	shape	shape: replace -> merge
+V	profile x ws x v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	profile x ws x v3 idf-id-same	shape	shape: replace -> merge
+V	profile x ws x v3 idf-identifier-same	shape	shape: replace -> merge
+V	profile x ws x v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	profile x ws x v3 idf-uuid-same	shape	shape: replace -> merge
+V	settings v3 idf-NSCLIENT_ID-amt	shape	shape: replace -> merge
+V	settings v3 idf-NSCLIENT_ID-same	shape	shape: replace -> merge
+V	settings v3 idf-id-amt	shape	shape: replace -> merge
+V	settings v3 idf-id-same	shape	shape: replace -> merge
+V	settings v3 idf-identifier-amt	shape	shape: replace -> merge
+V	settings v3 idf-identifier-same	shape	shape: replace -> merge
+V	settings v3 idf-split-second	shape	shape: not-written,replace -> not-written,merge
+V	settings v3 idf-split-written	shape	shape: replace -> merge
+V	settings v3 idf-syncIdentifier-amt	shape	shape: replace -> merge
+V	settings v3 idf-syncIdentifier-same	shape	shape: replace -> merge
+V	settings v3 idf-uuid-amt	shape	shape: replace -> merge
+V	settings v3 idf-uuid-same	shape	shape: replace -> merge
+O	F	activity inproc legacy-lower
+O	F	activity inproc legacy-upper
+O	F	activity inproc resend-hex
+O	F	activity inproc resend-oid
+O	F	activity inproc resend-upper
+O	F	activity v1 legacy-lower
+O	F	activity v1 legacy-upper
+O	F	activity v1 resend-hex
+O	F	activity v1 resend-upper
+O	F	food inproc resend-hex
+O	F	food inproc resend-oid
+O	F	food inproc resend-upper
+O	F	food v1 resend-hex
+O	F	food v1 resend-upper
+O	P	profile ws legacy-lower
+O	P	profile ws legacy-upper
+O	P	profile ws resend-hex
+O	P	profile ws resend-identity
+O	P	profile ws resend-upper
+O	P	profile x inproc x ws
+O	P	profile x v1 x ws
+O	P	profile x v3 x ws
+O	V	entries v3 resend-identity
+O	V	entries x inproc x v3
+O	V	entries x v1 x v3
+O	V	entries x ws x v3
+O	V	food v3 resend-identity
+O	V	food x ws x v3
+O	V	profile v3 resend-identity
+O	V	profile x inproc x v3
+O	V	profile x v1 x v3
+O	V	profile x ws x v3
+O	V	settings v3 resend-identity

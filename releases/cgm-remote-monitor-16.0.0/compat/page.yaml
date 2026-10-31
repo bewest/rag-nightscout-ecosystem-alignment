@@ -1,0 +1,64 @@
+# Text and measurement description of the 16.0.0 write-compatibility page
+# (site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html, rendered by
+# tools/site/render_compat.py). The figures come from the JSON files beside
+# this one; this file holds the words. `code` in backticks is set in mono.
+# In `lede`, {cells}, {differ} and {defect_cells} are filled from headline.json.
+title: 16.0.0 write compatibility
+measured: 2026-10-31
+harness: tools/qc/write-contract-matrix.js
+trees:
+  - {name: v15.0.9, commit: c6a0d8ed, note: the release}
+  - {name: dev, commit: 37b2280f, note: 16.0.0 so far}
+  - {name: "#8879", commit: 6960bfb7, note: "identifier-first matching, slices 1 to 6a with decisions B and C (same code as 71738792)"}
+environment: Node 22.23.4, MongoDB 7.0.43, two runs per tree with no difference between runs
+settings: >-
+  Defaults only (WRITE_VALIDATION off, WRITE_IDENTIFIER lenient, WRITE_DELETED_EDIT ignore,
+  UUID_HANDLING on).
+lede: >-
+  The write-contract matrix, run on `v15.0.9`, on `dev` and on #8879. Of **{cells}** measured writes,
+  **{differ}** behave differently from 15.0.9. Every difference has a measured cause. **{defect_cells}**
+  of them are one defect (BF-225); the rest are changes the maintainer decided, or bug fixes.
+tiles:
+  - {metric: differ, label: writes that differ from 15.0.9}
+  - {metric: by_8879, label: "changed by #8879 only"}
+  - {metric: on_dev, label: already changed on dev}
+  - {metric: both, label: "changed on dev, then again by #8879"}
+  - {metric: format_cells, label: "identifier-format cases (placeholders, bad values)"}
+  - {metric: defect_cells, label: "defect: a second treatment stored (BF-225)", bad: true}
+  - {metric: unexplained, label: differences with no cause found}
+defect:
+  heading: "BF-225: the one open finding"
+  text: >-
+    A treatment re-sent over the socket without an identifier is stored a second time when the stored
+    copy has one. That happens when the first copy came over API v3 (which computes an identifier) or
+    carried a UUID. 15.0.9 kept one record; dev and #8879 keep two. It first appears in #8877 (on dev).
+    #8877 documented the API v3 → socket case as intended (a record written through API v3 and re-sent
+    over the socket without its identifier is stored again, as API v1 and in-process already did). The
+    two UUID _id cases are not mentioned there. The maintainer put BF-225 in 16.0.0; which cases change
+    is being decided. A duplicated insulin
+    or carb record makes the site show IOB and COB doubled to caregivers; the phone's own dosing data is
+    not affected. Clients: AndroidAPS's older socket client sends treatments without an identifier (read
+    from its code); whether it re-sends one first created over API v3 is not traced.
+why: >-
+  The matrix tries every form on every path, so one rule shows up many times. Most of the cells are
+  identifier-format cases: placeholder, blank, numeric or over-long identifiers, sent through each of 16
+  seed and re-send path pairs. No surveyed client was read as sending one.
+reconsider_intro: >-
+  Each card is a decision behind some of the differences, the alternative that would bring back 15.0.9's
+  behaviour, how many cells that would restore, and what it would cost the identity work. Alternatives
+  whose cost is near zero or low are marked as candidates; the others are marked keep.
+limits:
+  - "Which record a reply names, field-level and nested merge (including `null`), and races without the unique index."
+  - "A live and a deleted record sharing one identifier, and an edit whose `_id` and identifier name different records."
+  - "Re-sends after a delete keyed by `syncIdentifier`, `id` or `uuid`: no matrix form exists, so Loop's and Trio's dose re-sends after a site delete are not measured."
+  - "Non-default settings: WRITE_IDENTIFIER=strict, WRITE_DELETED_EDIT=refuse, WRITE_VALIDATION=reject and the unique index were not run."
+  - "Decision C's dropped identifier shows only in the identifier-format cells; the plain profile cells record no identifier column."
+  - "Client shapes are read from code at each clone's commit; only nightscout-connect was run against a server."
+verdicts:
+  - {verdict: Defect, text: behaviour nobody decided; it needs a fix before the tag.}
+  - {verdict: Decided, text: a change the maintainer decided for 16.0.0, with the decision named in the table.}
+  - {verdict: Bug fix, text: 15.0.9 failed or lost data; the new result is the intended one.}
+  - {verdict: No value change, text: "the write takes another path, nothing stored differs."}
+verdicts_note: >-
+  No built setting restores 15.0.9 for any kind of change. WRITE_RESEND and per-client quirks are
+  decided but not built; everything else is undone only by reverting the slice.

@@ -1,0 +1,16 @@
+# slice 5 P4 prediction from base-7c7532f7.json (head 7c7532f79a7396755b1aaef151ee9f9e75c97704)
+# predicted moving cells: 9; pick changes not visible in the matrix: 2
+INVISIBLE	devicestatus inproc idf-split-second
+INVISIBLE	devicestatus v1 idf-split-second
+MOVE	devicestatus v3 idf-split-first	st: "400 {message}" -> "200 {identifier,isDeduplication,lastModified}"
+MOVE	entries inproc idf-split-second	store: "n=2 OID:v2,OID" -> "n=2 OID,OID:v2"; shape: "merge,not-written" -> "not-written,merge"; srv: "C=M+,C=M=" -> "C=M=,C=M+"
+MOVE	entries v1 idf-split-second	store: "n=2 OID:v2,OID" -> "n=2 OID,OID:v2"; shape: "merge,not-written" -> "not-written,merge"; srv: "C=M+,C=M=" -> "C=M=,C=M+"
+MOVE	entries v3 idf-split-first	st: "400 {message}" -> "200 {lastModified,identifier,isDeduplication}"; store: "n=2 OID,OID" -> "n=2 OID:v2,OID"; shape: "not-written,not-written" -> "replace,not-written"; srv: "C=M=,C=M=" -> "C=M+,C=M="; hist: "absent" -> "valid"; ev: "none" -> "du:update[1,no-mills] ss:update"
+MOVE	food v3 idf-split-first	st: "400 {message}" -> "200 {lastModified,identifier,isDeduplication}"; store: "n=2 OID,OID" -> "n=2 OID:v2,OID"; shape: "not-written,not-written" -> "replace,not-written"; srv: "C=M=,C=M=" -> "C=M+,C=M="; hist: "absent" -> "valid"; ev: "none" -> "ss:update"
+MOVE	profile v3 idf-split-first	st: "400 {message}" -> "200 {lastModified,identifier,isDeduplication}"; store: "n=2 OID,OID" -> "n=2 OID:v2,OID"; shape: "not-written,not-written" -> "replace,not-written"; srv: "C=M=,C=M=" -> "C=M+,C=M="; hist: "absent" -> "valid"; ev: "none" -> "ss:update"
+MOVE	treatments inproc idf-split-second	store: "n=2 OID:v2,OID" -> "n=2 OID,OID:v2"; shape: "replace,not-written" -> "not-written,replace"; srv: "C=M+,C=M=" -> "C=M=,C=M+"
+MOVE	treatments v1 idf-split-second	store: "n=2 OID:v2,OID" -> "n=2 OID,OID:v2"; shape: "replace,not-written" -> "not-written,replace"; srv: "C=M+,C=M=" -> "C=M=,C=M+"
+MOVE	treatments v3 idf-split-first	st: "400 {message}" -> "200 {lastModified,identifier,isDeduplication}"; store: "n=2 OID,OID" -> "n=2 OID:v2,OID"; shape: "not-written,not-written" -> "replace,not-written"; srv: "C=M=,C=M=" -> "C=M+,C=M="; hist: "absent" -> "valid"; ev: "none" -> "du:update[1,mills] ss:update"
+# settings v3 idf-split-first: design note §5 says "* v3 idf-split-first changes from 400 to a merge into A";
+#   settings has no time key in ID-Q5's list, so P4 takes the newest (B), as today: predicted NOT to move.
+#   activity has no API v3 path (n/a). §5's "merge" is slice 4; here the outcome stays each path's (replace on v3).

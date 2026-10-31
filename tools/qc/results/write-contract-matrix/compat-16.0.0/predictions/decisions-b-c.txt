@@ -1,0 +1,55 @@
+# B and C prediction from base-33ad9226.json (head 33ad92266fb7ac1f282305792a4f7b85cb39602a), written before the code
+# moving cells: 52 (B 32, C 20); built but not visible: 4
+B-replace	treatments ws idf-identifier-amt	store,shape,srv,v1read	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1
+B-replace	treatments ws idf-identifier-same	store,shape,ev	store: n=1 OID -> n=1 OID:v2 | shape: not-written -> replace | ev: none -> du:update[1,mills]
+B-replace	treatments ws idf-identifier-time	store,shape,srv,v1read	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1
+B-replace	treatments ws idf-split-first	store,shape,ev	store: n=2 OID,OID -> n=2 OID:v2,OID | shape: not-written,not-written -> replace,not-written | ev: none -> du:update[1,mills]
+B-replace	treatments ws idf-split-second	store,shape,ev	store: n=2 OID,OID -> n=2 OID,OID:v2 | shape: not-written,not-written -> not-written,replace | ev: none -> du:update[1,mills]
+B-replace	treatments ws idf-split-written	store,shape,srv,v1read,ev	store: n=2 OID,OID -> n=1 OID:v2 | shape: not-written,not-written -> replace | srv: C=M+,C=M= -> C=M+ | v1read: n=2 -> n=1 | ev: none -> du:update[1,mills]
+B-replace	treatments ws idfmt-colon-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments ws idfmt-len256-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments ws idfmt-nonascii-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments ws idfmt-slash-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments ws idfmt-urlsafe-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x inproc x ws idf-identifier-same	store,shape,ev	store: n=1 OID -> n=1 OID:v2 | shape: not-written -> replace | ev: none -> du:update[1,mills]
+B-replace	treatments x inproc x ws idf-identifier-time	store,shape,srv,v1read	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1
+B-replace	treatments x inproc x ws idfmt-colon-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x inproc x ws idfmt-len256-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x inproc x ws idfmt-nonascii-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x inproc x ws idfmt-slash-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x inproc x ws idfmt-urlsafe-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v1 x ws idf-identifier-same	store,shape,ev	store: n=1 OID -> n=1 OID:v2 | shape: not-written -> replace | ev: none -> du:update[1,mills]
+B-replace	treatments x v1 x ws idf-identifier-time	store,shape,srv,v1read	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1
+B-replace	treatments x v1 x ws idfmt-colon-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v1 x ws idfmt-len256-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v1 x ws idfmt-nonascii-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v1 x ws idfmt-slash-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v1 x ws idfmt-urlsafe-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v3 x ws idf-identifier-same	store,shape,ev	store: n=1 OID -> n=1 OID:v2 | shape: not-written -> replace | ev: none -> du:update[1,mills]
+B-replace	treatments x v3 x ws idf-identifier-time	store,shape,srv,v1read	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1
+B-replace	treatments x v3 x ws idfmt-colon-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v3 x ws idfmt-len256-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v3 x ws idfmt-nonascii-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v3 x ws idfmt-slash-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+B-replace	treatments x v3 x ws idfmt-urlsafe-time	store,shape,srv,v1read,ident	store: n=2 OID,OID:v2 -> n=1 OID:v2 | shape: not-written,new -> replace | srv: C=M=,CM -> C=M+ | v1read: n=2 -> n=1 | ident: kept,kept -> kept
+C-new-profile-ident-dropped	profile ws idfmt-colon-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile ws idfmt-len256-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile ws idfmt-nonascii-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile ws idfmt-slash-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile ws idfmt-urlsafe-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x inproc x ws idfmt-colon-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x inproc x ws idfmt-len256-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x inproc x ws idfmt-nonascii-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x inproc x ws idfmt-slash-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x inproc x ws idfmt-urlsafe-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v1 x ws idfmt-colon-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v1 x ws idfmt-len256-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v1 x ws idfmt-nonascii-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v1 x ws idfmt-slash-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v1 x ws idfmt-urlsafe-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v3 x ws idfmt-colon-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v3 x ws idfmt-len256-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v3 x ws idfmt-nonascii-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v3 x ws idfmt-slash-time	ident	ident: kept,kept -> kept,absent
+C-new-profile-ident-dropped	profile x v3 x ws idfmt-urlsafe-time	ident	ident: kept,kept -> kept,absent
+# not visible: profile ws idf-identifier-time	(C: new profile, identifier dropped; idf cells record no ident); profile x v1 x ws idf-identifier-time	(C: new profile, identifier dropped; idf cells record no ident); profile x v3 x ws idf-identifier-time	(C: new profile, identifier dropped; idf cells record no ident); profile x inproc x ws idf-identifier-time	(C: new profile, identifier dropped; idf cells record no ident)

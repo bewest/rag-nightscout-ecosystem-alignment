@@ -1,0 +1,3417 @@
+{
+ "trees": {
+  "v15.0.9": "c6a0d8ed65637bc90d3090e6e7a0f752041c57fd",
+  "dev": "37b2280f35dc7ef9e2b69bb29986539e461d779b",
+  "#8879": "6960bfb739feabd163865ff3d80f35bcf4bb07b4"
+ },
+ "node": "v22.23.4",
+ "mongod": "7.0.43",
+ "settings": "defaults: WRITE_VALIDATION unset (off), WRITE_IDENTIFIER unset (lenient), WRITE_DELETED_EDIT unset (ignore), UUID_HANDLING default (true)",
+ "totals": {
+  "cells_per_tree": 4916,
+  "invalid_liveness": {
+   "v15.0.9": 0,
+   "dev": 0,
+   "#8879": 0
+  },
+  "harness_set_aside": {
+   "cells": [
+    "entries ws idread-fail",
+    "treatments ws idread-fail",
+    "devicestatus ws idread-fail",
+    "profile ws idread-fail",
+    "food ws idread-fail",
+    "activity ws idread-fail"
+   ],
+   "reason": "idread-fail injects a failure into lib/server/storage-reads.findOne, which v15.0.9 does not have (added by #8863); on v15.0.9 the injection fired 0 times, so these 6 cells are not comparable and are left out of every v15.0.9 diff (they move at 9668b179 only because the injection starts firing)"
+  },
+  "flaky_outside_cache_wire": {
+   "v15.0.9": 0,
+   "dev": 0,
+   "#8879": 0
+  },
+  "flaky_cells": {
+   "v15.0.9": [],
+   "dev": [],
+   "#8879": []
+  },
+  "cache_wire_only_between_own_runs": {
+   "v15.0.9": 107,
+   "dev": 58,
+   "#8879": 37
+  },
+  "cache_wire_only_v1509_to_8879": 8,
+  "differing_cells_v1509_to_8879": 2947,
+  "differing_v1509_to_dev": 720,
+  "differing_dev_to_8879": 2574,
+  "in_both_steps": 344,
+  "unexplained": 0
+ },
+ "split": {
+  "v1509_to_dev_only": 376,
+  "dev_to_8879_only": 2230,
+  "both": 341,
+  "neither_but_differs": 0,
+  "by_group_v1509_to_dev": {
+   "s": 92,
+   "r0": 21,
+   "r": 26,
+   "q": 41,
+   "e": 41,
+   "b": 70,
+   "n": 3,
+   "tt": 12,
+   "g": 2,
+   "d2": 2,
+   "d1": 4,
+   "f": 32,
+   "bt": 3,
+   "a": 27
+  },
+  "by_group_dev_to_8879": {
+   "d3": 6,
+   "d1": 24,
+   "c1": 136,
+   "g": 59,
+   "b": 332,
+   "d2": 19,
+   "c2": 9,
+   "f": 1892,
+   "e": 22,
+   "p": 57,
+   "s": 8,
+   "bt": 7
+  }
+ },
+ "groups": {
+  "a": "(a) write changes, no stored value changes",
+  "b": "(b) second record no longer stored",
+  "c1": "(c1) replace -> merge",
+  "c2": "(c2) kept -> merge/replace (re-send now written)",
+  "c3": "(c3) merge -> replace",
+  "c4": "(c4) written -> kept (re-send no longer written)",
+  "d1": "(d1) revived -> stays deleted",
+  "d2": "(d2) new beside deleted -> stays deleted",
+  "d3": "(d3) revived -> new record beside the deleted one",
+  "g": "(g) shared identifier pick",
+  "f": "(f) format: identifier treated as absent",
+  "n": "(n) second record now stored",
+  "p": "(p) new profile, identifier dropped",
+  "r": "(r) refused (4xx) where it was stored",
+  "r0": "(r0) refused, was an error (5xx/err) -> 4xx",
+  "e": "(e) error (5xx/err) -> answered",
+  "q": "(q) reply only",
+  "tt": "(tt) Temporary Target units stamped",
+  "bt": "(bt) batch: items stored differently",
+  "s": "(s) seed now refused (API v3 client _id), re-send lands differently",
+  "h": "(h) other"
+ },
+ "by_group": {
+  "f": 1924,
+  "b": 402,
+  "c1": 136,
+  "s": 100,
+  "e": 63,
+  "g": 61,
+  "p": 57,
+  "q": 41,
+  "d1": 28,
+  "a": 27,
+  "r": 26,
+  "r0": 21,
+  "d2": 21,
+  "tt": 12,
+  "bt": 10,
+  "c2": 9,
+  "d3": 6,
+  "n": 3
+ },
+ "by_data_effect": {
+  "field-dropped": 1448,
+  "new-record": 500,
+  "duplicate-avoided": 459,
+  "other": 148,
+  "field-kept": 136,
+  "refused": 104,
+  "reply-only": 76,
+  "stays-deleted": 49,
+  "no-visible-change": 27
+ },
+ "by_collection": {
+  "profile": 561,
+  "entries": 529,
+  "devicestatus": 509,
+  "food": 508,
+  "treatments": 501,
+  "activity": 293,
+  "settings": 46
+ },
+ "by_path": {
+  "v1": 322,
+  "inproc": 307,
+  "v3": 293,
+  "ws": 290,
+  "ws>inproc": 165,
+  "inproc>ws": 160,
+  "v1>ws": 159,
+  "ws>v1": 153,
+  "v1>inproc": 151,
+  "inproc>v1": 151,
+  "v3>ws": 150,
+  "v3>v1": 138,
+  "v3>inproc": 138,
+  "ws>v3": 126,
+  "v1>v3": 122,
+  "inproc>v3": 122
+ },
+ "by_resend_path": {
+  "v1": 764,
+  "inproc": 761,
+  "ws": 759,
+  "v3": 663
+ },
+ "by_cause": {
+  "ID-FIRST-MATCH slice 2": 1646,
+  "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others": 256,
+  "ID-FIRST-MATCH slice 6": 223,
+  "#8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge); ID-FIRST-MATCH slice 2": 212,
+  "ID-FIRST-MATCH slice 4": 142,
+  "ID-FIRST-MATCH slice 6a": 78,
+  "#8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge); ID-FIRST-MATCH slice 4": 75,
+  "#8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge)": 69,
+  "decisions B+C (slice 6, 2026-10-31)": 50,
+  "ID-FIRST-MATCH slice 3": 28,
+  "ID-FIRST-MATCH slice 2 [measured per slice, --batch-only at the slice commits; batch forms post-date the prediction]": 19,
+  "ID-FIRST-MATCH slice 6 [measured; not in that slice's prediction]": 18,
+  "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others; ID-FIRST-MATCH slice 2": 16,
+  "#8854 persistence boundary; also #8852 v1 profile POST validation, cut 4 #8847, cut 5 #8605, #8849 (BF-46/48/49/156)": 14,
+  "#8872 BF-194 Temporary Target stored in mg/dL (also #8870, #8858)": 12,
+  "ID-FIRST-MATCH slice 6a [measured; not in that slice's prediction]": 10,
+  "#8883 BF-219/BF-220/BF-221/BF-222 batch replies (also #8882 lint)": 9,
+  "#8877 BF-209/BF-211 socket similar match follows identifier (also #8873 BF-204..207)": 8,
+  "#8854 persistence boundary; also #8852 v1 profile POST validation, cut 4 #8847, cut 5 #8605, #8849 (BF-46/48/49/156); ID-FIRST-MATCH slice 6": 7,
+  "ID-FIRST-MATCH slice 3 [measured per slice, --batch-only at the slice commits; batch forms post-date the prediction]": 6,
+  "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others; #8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge)": 6,
+  "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others; ID-FIRST-MATCH slice 2 [measured per slice, --batch-only at the slice commits; batch forms post-date the prediction]": 6,
+  "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others; ID-FIRST-MATCH slice 6 [measured; not in that slice's prediction]": 6,
+  "ID-FIRST-MATCH slice 5 + ID-FIRST-MATCH slice 4": 4,
+  "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others; ID-FIRST-MATCH slice 3": 4,
+  "ID-FIRST-MATCH slice 5": 3,
+  "#8877 BF-209/BF-211 socket similar match follows identifier (also #8873 BF-204..207); decisions B+C (slice 6, 2026-10-31) [measured; not in that slice's prediction]": 3,
+  "#8845 record identity (BF-145, BF-165, BF-166, BF-167, BF-169, BF-170, BF-186); also #8841 WRITE_VALIDATION (default off), cuts 1-3 (#8828, #8837, #8844 MongoDB driver 7), #8836 and others; #8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge); ID-FIRST-MATCH slice 4 [measured per slice, --batch-only at the slice commits; batch forms post-date the prediction]": 3,
+  "#8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge); ID-FIRST-MATCH slice 5 + ID-FIRST-MATCH slice 4": 2,
+  "ID-FIRST-MATCH slice 2 [measured in slice 2's own head pin idf-s2/dev-521e7583-idf-s2.json (err -> cb); not in its prediction text]": 2,
+  "#8854 persistence boundary; also #8852 v1 profile POST validation, cut 4 #8847, cut 5 #8605, #8849 (BF-46/48/49/156); #8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge)": 2,
+  "#8854 persistence boundary; also #8852 v1 profile POST validation, cut 4 #8847, cut 5 #8605, #8849 (BF-46/48/49/156); decisions B+C (slice 6, 2026-10-31)": 2,
+  "#8854 persistence boundary; also #8852 v1 profile POST validation, cut 4 #8847, cut 5 #8605, #8849 (BF-46/48/49/156); #8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge); ID-FIRST-MATCH slice 4": 2,
+  "#8859 re-send and merge contract (ID-SIMPLE-MATCH, Q1b null removes, BF-195, devicestatus identifier acknowledge); ID-FIRST-MATCH slice 2 [measured per slice, --batch-only at the slice commits; batch forms post-date the prediction]": 1,
+  "#8877 BF-209/BF-211 socket similar match follows identifier (also #8873 BF-204..207); ID-FIRST-MATCH slice 3 [measured per slice, --batch-only at the slice commits; batch forms post-date the prediction]": 1,
+  "#8877 BF-209/BF-211 socket similar match follows identifier (also #8873 BF-204..207); ID-FIRST-MATCH slice 2 [measured per slice, --batch-only at the slice commits; batch forms post-date the prediction]": 1,
+  "decisions B+C (slice 6, 2026-10-31) [measured; not in that slice's prediction]": 1
+ },
+ "by_guard": {
+  "revert-only (WRITE_IDENTIFIER=strict refuses instead; no setting stores the placeholder as before)": 1924,
+  "revert-only": 448,
+  "decided-not-built (WRITE_RESEND, per-client D20 quirks)": 402,
+  "decided-not-built (WRITE_RESEND)": 136,
+  "revert-only (WRITE_DELETED_EDIT covers edits, not re-sends; a deliberate restore is a separate item)": 28,
+  "decided-not-built (WRITE_RESEND=acknowledge)": 9
+ },
+ "by_form_family": {
+  "idfmt": 2269,
+  "idf": 492,
+  "batch": 133,
+  "earlier": 41,
+  "tt": 12
+ },
+ "heatmap": {
+  "rows": [
+   "a",
+   "b",
+   "bt",
+   "c1",
+   "c2",
+   "d1",
+   "d2",
+   "d3",
+   "e",
+   "f",
+   "g",
+   "n",
+   "p",
+   "q",
+   "r",
+   "r0",
+   "s",
+   "tt"
+  ],
+  "cols": [
+   [
+    "activity",
+    "inproc"
+   ],
+   [
+    "activity",
+    "v1"
+   ],
+   [
+    "activity",
+    "ws"
+   ],
+   [
+    "devicestatus",
+    "inproc"
+   ],
+   [
+    "devicestatus",
+    "v1"
+   ],
+   [
+    "devicestatus",
+    "v3"
+   ],
+   [
+    "devicestatus",
+    "ws"
+   ],
+   [
+    "entries",
+    "inproc"
+   ],
+   [
+    "entries",
+    "v1"
+   ],
+   [
+    "entries",
+    "v3"
+   ],
+   [
+    "entries",
+    "ws"
+   ],
+   [
+    "food",
+    "inproc"
+   ],
+   [
+    "food",
+    "v1"
+   ],
+   [
+    "food",
+    "v3"
+   ],
+   [
+    "food",
+    "ws"
+   ],
+   [
+    "profile",
+    "inproc"
+   ],
+   [
+    "profile",
+    "v1"
+   ],
+   [
+    "profile",
+    "v3"
+   ],
+   [
+    "profile",
+    "ws"
+   ],
+   [
+    "settings",
+    "v3"
+   ],
+   [
+    "treatments",
+    "inproc"
+   ],
+   [
+    "treatments",
+    "v1"
+   ],
+   [
+    "treatments",
+    "v3"
+   ],
+   [
+    "treatments",
+    "ws"
+   ]
+  ],
+  "cells": [
+   {
+    "group": "a",
+    "collection": "devicestatus",
+    "path": "inproc",
+    "count": 5
+   },
+   {
+    "group": "a",
+    "collection": "devicestatus",
+    "path": "v1",
+    "count": 8
+   },
+   {
+    "group": "a",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 4
+   },
+   {
+    "group": "a",
+    "collection": "profile",
+    "path": "v1",
+    "count": 8
+   },
+   {
+    "group": "a",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 2
+   },
+   {
+    "group": "b",
+    "collection": "activity",
+    "path": "inproc",
+    "count": 24
+   },
+   {
+    "group": "b",
+    "collection": "activity",
+    "path": "v1",
+    "count": 26
+   },
+   {
+    "group": "b",
+    "collection": "activity",
+    "path": "ws",
+    "count": 26
+   },
+   {
+    "group": "b",
+    "collection": "devicestatus",
+    "path": "inproc",
+    "count": 31
+   },
+   {
+    "group": "b",
+    "collection": "devicestatus",
+    "path": "v1",
+    "count": 34
+   },
+   {
+    "group": "b",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 25
+   },
+   {
+    "group": "b",
+    "collection": "entries",
+    "path": "inproc",
+    "count": 31
+   },
+   {
+    "group": "b",
+    "collection": "entries",
+    "path": "v1",
+    "count": 33
+   },
+   {
+    "group": "b",
+    "collection": "entries",
+    "path": "ws",
+    "count": 32
+   },
+   {
+    "group": "b",
+    "collection": "food",
+    "path": "inproc",
+    "count": 30
+   },
+   {
+    "group": "b",
+    "collection": "food",
+    "path": "v1",
+    "count": 32
+   },
+   {
+    "group": "b",
+    "collection": "food",
+    "path": "ws",
+    "count": 32
+   },
+   {
+    "group": "b",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 9
+   },
+   {
+    "group": "b",
+    "collection": "profile",
+    "path": "v1",
+    "count": 10
+   },
+   {
+    "group": "b",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "b",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 2
+   },
+   {
+    "group": "b",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 24
+   },
+   {
+    "group": "bt",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 2
+   },
+   {
+    "group": "bt",
+    "collection": "profile",
+    "path": "ws",
+    "count": 1
+   },
+   {
+    "group": "bt",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 7
+   },
+   {
+    "group": "c1",
+    "collection": "activity",
+    "path": "inproc",
+    "count": 5
+   },
+   {
+    "group": "c1",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 13
+   },
+   {
+    "group": "c1",
+    "collection": "entries",
+    "path": "v3",
+    "count": 25
+   },
+   {
+    "group": "c1",
+    "collection": "food",
+    "path": "inproc",
+    "count": 5
+   },
+   {
+    "group": "c1",
+    "collection": "food",
+    "path": "v3",
+    "count": 17
+   },
+   {
+    "group": "c1",
+    "collection": "profile",
+    "path": "v3",
+    "count": 25
+   },
+   {
+    "group": "c1",
+    "collection": "profile",
+    "path": "ws",
+    "count": 36
+   },
+   {
+    "group": "c1",
+    "collection": "settings",
+    "path": "v3",
+    "count": 10
+   },
+   {
+    "group": "c2",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 5
+   },
+   {
+    "group": "c2",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 4
+   },
+   {
+    "group": "d1",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "d1",
+    "collection": "entries",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "d1",
+    "collection": "entries",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "d1",
+    "collection": "entries",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "d1",
+    "collection": "food",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "d1",
+    "collection": "profile",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "d1",
+    "collection": "settings",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "d1",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 2
+   },
+   {
+    "group": "d1",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 2
+   },
+   {
+    "group": "d1",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "activity",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "d2",
+    "collection": "activity",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "d2",
+    "collection": "activity",
+    "path": "ws",
+    "count": 1
+   },
+   {
+    "group": "d2",
+    "collection": "devicestatus",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "d2",
+    "collection": "devicestatus",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "d2",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "entries",
+    "path": "ws",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "food",
+    "path": "inproc",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "food",
+    "path": "v1",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "food",
+    "path": "ws",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "profile",
+    "path": "v1",
+    "count": 2
+   },
+   {
+    "group": "d2",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 2
+   },
+   {
+    "group": "d3",
+    "collection": "entries",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "d3",
+    "collection": "entries",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "d3",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 2
+   },
+   {
+    "group": "d3",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 2
+   },
+   {
+    "group": "e",
+    "collection": "devicestatus",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "devicestatus",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 2
+   },
+   {
+    "group": "e",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "entries",
+    "path": "inproc",
+    "count": 3
+   },
+   {
+    "group": "e",
+    "collection": "entries",
+    "path": "v1",
+    "count": 5
+   },
+   {
+    "group": "e",
+    "collection": "entries",
+    "path": "v3",
+    "count": 2
+   },
+   {
+    "group": "e",
+    "collection": "entries",
+    "path": "ws",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "food",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "food",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "food",
+    "path": "v3",
+    "count": 2
+   },
+   {
+    "group": "e",
+    "collection": "food",
+    "path": "ws",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 13
+   },
+   {
+    "group": "e",
+    "collection": "profile",
+    "path": "v1",
+    "count": 8
+   },
+   {
+    "group": "e",
+    "collection": "profile",
+    "path": "v3",
+    "count": 2
+   },
+   {
+    "group": "e",
+    "collection": "profile",
+    "path": "ws",
+    "count": 1
+   },
+   {
+    "group": "e",
+    "collection": "settings",
+    "path": "v3",
+    "count": 2
+   },
+   {
+    "group": "e",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 4
+   },
+   {
+    "group": "e",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 5
+   },
+   {
+    "group": "e",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "e",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "f",
+    "collection": "activity",
+    "path": "inproc",
+    "count": 69
+   },
+   {
+    "group": "f",
+    "collection": "activity",
+    "path": "v1",
+    "count": 66
+   },
+   {
+    "group": "f",
+    "collection": "activity",
+    "path": "ws",
+    "count": 65
+   },
+   {
+    "group": "f",
+    "collection": "devicestatus",
+    "path": "inproc",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "devicestatus",
+    "path": "v1",
+    "count": 84
+   },
+   {
+    "group": "f",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "entries",
+    "path": "inproc",
+    "count": 90
+   },
+   {
+    "group": "f",
+    "collection": "entries",
+    "path": "v1",
+    "count": 91
+   },
+   {
+    "group": "f",
+    "collection": "entries",
+    "path": "v3",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "entries",
+    "path": "ws",
+    "count": 87
+   },
+   {
+    "group": "f",
+    "collection": "food",
+    "path": "inproc",
+    "count": 87
+   },
+   {
+    "group": "f",
+    "collection": "food",
+    "path": "v1",
+    "count": 84
+   },
+   {
+    "group": "f",
+    "collection": "food",
+    "path": "v3",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "food",
+    "path": "ws",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 87
+   },
+   {
+    "group": "f",
+    "collection": "profile",
+    "path": "v1",
+    "count": 84
+   },
+   {
+    "group": "f",
+    "collection": "profile",
+    "path": "v3",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "profile",
+    "path": "ws",
+    "count": 83
+   },
+   {
+    "group": "f",
+    "collection": "settings",
+    "path": "v3",
+    "count": 23
+   },
+   {
+    "group": "f",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 88
+   },
+   {
+    "group": "f",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 89
+   },
+   {
+    "group": "f",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 81
+   },
+   {
+    "group": "f",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 85
+   },
+   {
+    "group": "g",
+    "collection": "activity",
+    "path": "inproc",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "activity",
+    "path": "v1",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "activity",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "devicestatus",
+    "path": "inproc",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "devicestatus",
+    "path": "v1",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "entries",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "g",
+    "collection": "entries",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "g",
+    "collection": "entries",
+    "path": "v3",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "entries",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "food",
+    "path": "inproc",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "food",
+    "path": "v1",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "food",
+    "path": "v3",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "food",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "profile",
+    "path": "v1",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "profile",
+    "path": "v3",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "profile",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "g",
+    "collection": "settings",
+    "path": "v3",
+    "count": 2
+   },
+   {
+    "group": "g",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 1
+   },
+   {
+    "group": "g",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 1
+   },
+   {
+    "group": "g",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 1
+   },
+   {
+    "group": "g",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "n",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 3
+   },
+   {
+    "group": "p",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 19
+   },
+   {
+    "group": "p",
+    "collection": "profile",
+    "path": "v1",
+    "count": 19
+   },
+   {
+    "group": "p",
+    "collection": "profile",
+    "path": "ws",
+    "count": 19
+   },
+   {
+    "group": "q",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 20
+   },
+   {
+    "group": "q",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 21
+   },
+   {
+    "group": "r",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 5
+   },
+   {
+    "group": "r",
+    "collection": "entries",
+    "path": "v3",
+    "count": 6
+   },
+   {
+    "group": "r",
+    "collection": "food",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "r",
+    "collection": "profile",
+    "path": "v3",
+    "count": 5
+   },
+   {
+    "group": "r",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 6
+   },
+   {
+    "group": "r0",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "r0",
+    "collection": "entries",
+    "path": "v3",
+    "count": 3
+   },
+   {
+    "group": "r0",
+    "collection": "food",
+    "path": "v3",
+    "count": 5
+   },
+   {
+    "group": "r0",
+    "collection": "profile",
+    "path": "v1",
+    "count": 2
+   },
+   {
+    "group": "r0",
+    "collection": "profile",
+    "path": "v3",
+    "count": 4
+   },
+   {
+    "group": "r0",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 3
+   },
+   {
+    "group": "s",
+    "collection": "devicestatus",
+    "path": "inproc",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "devicestatus",
+    "path": "v1",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "devicestatus",
+    "path": "v3",
+    "count": 7
+   },
+   {
+    "group": "s",
+    "collection": "devicestatus",
+    "path": "ws",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "entries",
+    "path": "inproc",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "entries",
+    "path": "v1",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "entries",
+    "path": "v3",
+    "count": 7
+   },
+   {
+    "group": "s",
+    "collection": "entries",
+    "path": "ws",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "food",
+    "path": "inproc",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "food",
+    "path": "v1",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "food",
+    "path": "v3",
+    "count": 7
+   },
+   {
+    "group": "s",
+    "collection": "food",
+    "path": "ws",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "profile",
+    "path": "inproc",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "profile",
+    "path": "v1",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "profile",
+    "path": "v3",
+    "count": 7
+   },
+   {
+    "group": "s",
+    "collection": "profile",
+    "path": "ws",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "settings",
+    "path": "v3",
+    "count": 5
+   },
+   {
+    "group": "s",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 4
+   },
+   {
+    "group": "s",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 7
+   },
+   {
+    "group": "s",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 4
+   },
+   {
+    "group": "tt",
+    "collection": "treatments",
+    "path": "inproc",
+    "count": 5
+   },
+   {
+    "group": "tt",
+    "collection": "treatments",
+    "path": "v1",
+    "count": 5
+   },
+   {
+    "group": "tt",
+    "collection": "treatments",
+    "path": "v3",
+    "count": 1
+   },
+   {
+    "group": "tt",
+    "collection": "treatments",
+    "path": "ws",
+    "count": 1
+   }
+  ]
+ },
+ "ranking": [
+  {
+   "group": "e",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 8,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "nightscout-connect",
+    "oref0 (OpenAPS rigs)",
+    "tconnectsync"
+   ],
+   "n_clients": 4,
+   "score": 32
+  },
+  {
+   "group": "p",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 19,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [
+    "nightscout-connect",
+    "oref0 (OpenAPS rigs)",
+    "tconnectsync"
+   ],
+   "n_clients": 3,
+   "score": 24
+  },
+  {
+   "group": "d3",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 2,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "Trio",
+    "oref0 (OpenAPS rigs)",
+    "tconnectsync"
+   ],
+   "n_clients": 3,
+   "score": 24
+  },
+  {
+   "group": "d1",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "nightscout-connect"
+   ],
+   "n_clients": 2,
+   "score": 18
+  },
+  {
+   "group": "q",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 21,
+   "worst_effect": "reply-only",
+   "effect_rank": 2,
+   "clients": [
+    "Loop (LoopWorkspace + NightscoutService + NightscoutKit)",
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "Trio",
+    "cgmsim-lib",
+    "glooko-nightscout-eu",
+    "nightguard",
+    "oref0 (OpenAPS rigs)",
+    "tconnectsync",
+    "xDrip+ (Android)"
+   ],
+   "n_clients": 9,
+   "score": 18
+  },
+  {
+   "group": "bt",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 7,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "AndroidAPS NSClient (v1 socket)",
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)"
+   ],
+   "n_clients": 2,
+   "score": 16
+  },
+  {
+   "group": "e",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 5,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "nightscout-connect"
+   ],
+   "n_clients": 2,
+   "score": 16
+  },
+  {
+   "group": "b",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 10,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "nightscout-connect",
+    "oref0 (OpenAPS rigs)",
+    "tconnectsync"
+   ],
+   "n_clients": 4,
+   "score": 16
+  },
+  {
+   "group": "tt",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 5,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "Trio"
+   ],
+   "n_clients": 2,
+   "score": 12
+  },
+  {
+   "group": "tt",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "AndroidAPS NSClientV3",
+    "nightguard"
+   ],
+   "n_clients": 2,
+   "score": 12
+  },
+  {
+   "group": "a",
+   "collection": "devicestatus",
+   "path": "v1",
+   "cells": 8,
+   "worst_effect": "no-visible-change",
+   "effect_rank": 1,
+   "clients": [
+    "Loop (LoopWorkspace + NightscoutService + NightscoutKit)",
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "Trio",
+    "cgmsim-lib",
+    "minimed-connect-to-nightscout",
+    "nightscout-connect",
+    "oref0 (OpenAPS rigs)",
+    "share2nightscout-bridge",
+    "tconnectsync",
+    "xDrip+ (Android)",
+    "xDrip4iOS (xdripswift)"
+   ],
+   "n_clients": 11,
+   "score": 11
+  },
+  {
+   "group": "d1",
+   "collection": "settings",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [
+    "AndroidAPS NSClientV3"
+   ],
+   "n_clients": 1,
+   "score": 9
+  },
+  {
+   "group": "d1",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 9
+  },
+  {
+   "group": "d1",
+   "collection": "entries",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 9
+  },
+  {
+   "group": "d1",
+   "collection": "entries",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 9
+  },
+  {
+   "group": "d2",
+   "collection": "devicestatus",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 9
+  },
+  {
+   "group": "p",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 19,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "e",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 13,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "e",
+   "collection": "entries",
+   "path": "v1",
+   "cells": 5,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "c2",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 4,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "e",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 4,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "n",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "AndroidAPS NSClient (v1 socket)"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "e",
+   "collection": "entries",
+   "path": "inproc",
+   "cells": 3,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "e",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "d3",
+   "collection": "entries",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [
+    "tconnectsync"
+   ],
+   "n_clients": 1,
+   "score": 8
+  },
+  {
+   "group": "b",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 2,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)",
+    "nightscout-connect"
+   ],
+   "n_clients": 2,
+   "score": 8
+  },
+  {
+   "group": "s",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "Loop (LoopWorkspace + NightscoutService + NightscoutKit)"
+   ],
+   "n_clients": 1,
+   "score": 6
+  },
+  {
+   "group": "g",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)"
+   ],
+   "n_clients": 1,
+   "score": 6
+  },
+  {
+   "group": "e",
+   "collection": "settings",
+   "path": "v3",
+   "cells": 2,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "AndroidAPS NSClientV3"
+   ],
+   "n_clients": 1,
+   "score": 6
+  },
+  {
+   "group": "tt",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "AndroidAPS NSClient (v1 socket)"
+   ],
+   "n_clients": 1,
+   "score": 6
+  },
+  {
+   "group": "e",
+   "collection": "devicestatus",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 6
+  },
+  {
+   "group": "e",
+   "collection": "food",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)"
+   ],
+   "n_clients": 1,
+   "score": 6
+  },
+  {
+   "group": "c1",
+   "collection": "settings",
+   "path": "v3",
+   "cells": 10,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [
+    "AndroidAPS NSClientV3"
+   ],
+   "n_clients": 1,
+   "score": 5
+  },
+  {
+   "group": "a",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 8,
+   "worst_effect": "no-visible-change",
+   "effect_rank": 1,
+   "clients": [
+    "Loop (LoopWorkspace + NightscoutService + NightscoutKit)",
+    "Trio",
+    "nightscout-connect",
+    "oref0 (OpenAPS rigs)",
+    "tconnectsync"
+   ],
+   "n_clients": 5,
+   "score": 5
+  },
+  {
+   "group": "b",
+   "collection": "entries",
+   "path": "v1",
+   "cells": 33,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 4
+  },
+  {
+   "group": "b",
+   "collection": "food",
+   "path": "v1",
+   "cells": 32,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)"
+   ],
+   "n_clients": 1,
+   "score": 4
+  },
+  {
+   "group": "b",
+   "collection": "entries",
+   "path": "inproc",
+   "cells": 31,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 4
+  },
+  {
+   "group": "b",
+   "collection": "devicestatus",
+   "path": "inproc",
+   "cells": 31,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 4
+  },
+  {
+   "group": "b",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 24,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "Nightscout web client (cgm-remote-monitor lib/client, lib/profile, lib/food, lib/report_plugins, lib/admin_plugins)"
+   ],
+   "n_clients": 1,
+   "score": 4
+  },
+  {
+   "group": "b",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 9,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 4
+  },
+  {
+   "group": "b",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 4
+  },
+  {
+   "group": "a",
+   "collection": "devicestatus",
+   "path": "inproc",
+   "cells": 5,
+   "worst_effect": "no-visible-change",
+   "effect_rank": 1,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 1
+  },
+  {
+   "group": "a",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 4,
+   "worst_effect": "no-visible-change",
+   "effect_rank": 1,
+   "clients": [
+    "nightscout-connect"
+   ],
+   "n_clients": 1,
+   "score": 1
+  },
+  {
+   "group": "d1",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d1",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d1",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d1",
+   "collection": "food",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "entries",
+   "path": "ws",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d1",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "food",
+   "path": "v1",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "food",
+   "path": "ws",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "food",
+   "path": "inproc",
+   "cells": 2,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "devicestatus",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "activity",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "activity",
+   "path": "ws",
+   "cells": 1,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d2",
+   "collection": "activity",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "stays-deleted",
+   "effect_rank": 9,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "entries",
+   "path": "v1",
+   "cells": 91,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "entries",
+   "path": "inproc",
+   "cells": 90,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 89,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 88,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "entries",
+   "path": "ws",
+   "cells": 87,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 87,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "food",
+   "path": "inproc",
+   "cells": 87,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 85,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "devicestatus",
+   "path": "v1",
+   "cells": 84,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 84,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "food",
+   "path": "v1",
+   "cells": 84,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 83,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 83,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 83,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "devicestatus",
+   "path": "inproc",
+   "cells": 83,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 83,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "profile",
+   "path": "ws",
+   "cells": 83,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "food",
+   "path": "v3",
+   "cells": 83,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "food",
+   "path": "ws",
+   "cells": 83,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 81,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "activity",
+   "path": "inproc",
+   "cells": 69,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "activity",
+   "path": "v1",
+   "cells": 66,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "activity",
+   "path": "ws",
+   "cells": 65,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "f",
+   "collection": "settings",
+   "path": "v3",
+   "cells": 23,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "p",
+   "collection": "profile",
+   "path": "ws",
+   "cells": 19,
+   "worst_effect": "field-dropped",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d3",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 2,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "d3",
+   "collection": "entries",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "new-record",
+   "effect_rank": 8,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 7,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 7,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 7,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 7,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "food",
+   "path": "v3",
+   "cells": 7,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 6,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 6,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 5,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 5,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "settings",
+   "path": "v3",
+   "cells": 5,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r",
+   "collection": "food",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "entries",
+   "path": "v1",
+   "cells": 4,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "entries",
+   "path": "inproc",
+   "cells": 4,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "devicestatus",
+   "path": "v1",
+   "cells": 4,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 4,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "food",
+   "path": "v1",
+   "cells": 4,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r0",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 2,
+   "worst_effect": "refused",
+   "effect_rank": 7,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "tt",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 5,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c2",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 5,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "entries",
+   "path": "ws",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "devicestatus",
+   "path": "inproc",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "profile",
+   "path": "ws",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "food",
+   "path": "ws",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "s",
+   "collection": "food",
+   "path": "inproc",
+   "cells": 4,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 3,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 3,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 3,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "profile",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "food",
+   "path": "v3",
+   "cells": 3,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "settings",
+   "path": "v3",
+   "cells": 2,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 2,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 2,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 2,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "food",
+   "path": "v3",
+   "cells": 2,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "bt",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 2,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "treatments",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "entries",
+   "path": "ws",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "devicestatus",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "profile",
+   "path": "ws",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "food",
+   "path": "ws",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "e",
+   "collection": "food",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "bt",
+   "collection": "profile",
+   "path": "ws",
+   "cells": 1,
+   "worst_effect": "other",
+   "effect_rank": 6,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c1",
+   "collection": "profile",
+   "path": "ws",
+   "cells": 36,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c1",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 25,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c1",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 25,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c1",
+   "collection": "food",
+   "path": "v3",
+   "cells": 17,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c1",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 13,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c1",
+   "collection": "food",
+   "path": "inproc",
+   "cells": 5,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "c1",
+   "collection": "activity",
+   "path": "inproc",
+   "cells": 5,
+   "worst_effect": "field-kept",
+   "effect_rank": 5,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "devicestatus",
+   "path": "v1",
+   "cells": 34,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "entries",
+   "path": "ws",
+   "cells": 32,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "food",
+   "path": "ws",
+   "cells": 32,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "food",
+   "path": "inproc",
+   "cells": 30,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "activity",
+   "path": "v1",
+   "cells": 26,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "activity",
+   "path": "ws",
+   "cells": 26,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "devicestatus",
+   "path": "ws",
+   "cells": 25,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "b",
+   "collection": "activity",
+   "path": "inproc",
+   "cells": 24,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "entries",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "devicestatus",
+   "path": "v1",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "devicestatus",
+   "path": "inproc",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "profile",
+   "path": "v1",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "profile",
+   "path": "inproc",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "food",
+   "path": "v1",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "food",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "food",
+   "path": "inproc",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "activity",
+   "path": "v1",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "activity",
+   "path": "ws",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "activity",
+   "path": "inproc",
+   "cells": 3,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "entries",
+   "path": "v1",
+   "cells": 1,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "g",
+   "collection": "entries",
+   "path": "inproc",
+   "cells": 1,
+   "worst_effect": "duplicate-avoided",
+   "effect_rank": 4,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "q",
+   "collection": "treatments",
+   "path": "inproc",
+   "cells": 20,
+   "worst_effect": "reply-only",
+   "effect_rank": 2,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r0",
+   "collection": "food",
+   "path": "v3",
+   "cells": 5,
+   "worst_effect": "reply-only",
+   "effect_rank": 2,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r0",
+   "collection": "devicestatus",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "reply-only",
+   "effect_rank": 2,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r0",
+   "collection": "profile",
+   "path": "v3",
+   "cells": 4,
+   "worst_effect": "reply-only",
+   "effect_rank": 2,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r0",
+   "collection": "entries",
+   "path": "v3",
+   "cells": 3,
+   "worst_effect": "reply-only",
+   "effect_rank": 2,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "r0",
+   "collection": "treatments",
+   "path": "v3",
+   "cells": 3,
+   "worst_effect": "reply-only",
+   "effect_rank": 2,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  },
+  {
+   "group": "a",
+   "collection": "treatments",
+   "path": "ws",
+   "cells": 2,
+   "worst_effect": "no-visible-change",
+   "effect_rank": 1,
+   "clients": [],
+   "n_clients": 0,
+   "score": 0
+  }
+ ],
+ "unexplained": []
+}

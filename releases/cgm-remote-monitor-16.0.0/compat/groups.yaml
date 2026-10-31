@@ -1,0 +1,158 @@
+# Group metadata for the 16.0.0 write-compatibility page
+# (site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html).
+#
+# One entry per classification group of tools/qc/compat/classify_compat.py.
+# A re-classification edits this file, not code: re-run
+# tools/qc/compat/build.py (for `guard`) and tools/qc/compat/build_page.py,
+# then tools/site/render_compat.py.
+#
+#   name, meaning, consequence   the page's text for the group
+#   verdict                      Defect | Decided | Bug fix | No value change
+#   basis                        the decision or change it comes from
+#   guard                        what restores 15.0.9's behaviour today; shown as
+#                                "Setting decided, not built" when it starts
+#                                "decided-not-built", "Revert only (strict
+#                                refuses)" when it contains "strict", else
+#                                "Revert only"
+#   severity                     optional: overrides the triage severity
+#                                (otherwise 10 minus the worst effect's rank)
+#
+# Groups with no page text (c3, c4, h) had no cells in this measurement.
+groups:
+  f:
+    name: Identifier format
+    meaning: A placeholder, blank, numeric or over-long identifier is treated as absent instead of as an identity.
+    consequence: Two apps that both sent the same placeholder no longer collapse into one record; the placeholder
+      value is not stored.
+    verdict: Decided
+    basis: ID-Q6, slice 2
+    guard: revert-only (WRITE_IDENTIFIER=strict refuses instead; no setting stores the placeholder as before)
+  b:
+    name: Duplicate avoided
+    meaning: A re-send that carries a stored identifier now finds the stored record instead of adding a second one.
+    consequence: One record where 15.0.9 stored two.
+    verdict: Decided
+    basis: 'Identifier first, slices 4/6/6a; #8859 on dev'
+    guard: decided-not-built (WRITE_RESEND, per-client D20 quirks)
+  c1:
+    name: Replace becomes merge
+    meaning: A matched re-send merges into the stored record; fields the client left out are kept. Never for treatments.
+    consequence: A field a client cleared by leaving it out stays set (profile, food, entries, settings).
+    verdict: Decided
+    basis: Slice 4, ID-Q7/Q8
+    guard: decided-not-built (WRITE_RESEND)
+  c2:
+    name: Socket re-send now written
+    meaning: A socket re-send that 15.0.9 ignored now replaces (treatments) or merges.
+    consequence: Treatments re-sent over the socket drop fields the client left out.
+    verdict: Decided
+    basis: Decision B, slice 6
+    guard: decided-not-built (WRITE_RESEND=acknowledge)
+  c3:
+    guard: decided-not-built (WRITE_RESEND)
+  c4:
+    guard: decided-not-built (WRITE_RESEND)
+  d1:
+    name: Deleted stays deleted
+    meaning: A re-send by identity of a deleted record is acknowledged and the record stays deleted.
+    consequence: A treatment deleted on the site is not brought back by an uploader re-sending it.
+    verdict: Decided
+    basis: Slice 3, ID-Q3/Q4
+    guard: revert-only (WRITE_DELETED_EDIT covers edits, not re-sends; a deliberate restore is a separate item)
+  d2:
+    name: No new record beside a deleted one
+    meaning: A re-send by identity that 15.0.9 stored as a new record next to the deleted one is acknowledged instead.
+    consequence: The re-sent record does not reappear.
+    verdict: Decided
+    basis: Slices 3/6/6a, ID-Q4
+    guard: revert-only
+  d3:
+    name: New record beside a deleted one
+    meaning: A re-send matched only by time, after a delete, is stored as a new record instead of reviving the deleted
+      one.
+    consequence: The treatment shows again either way, as a new record.
+    verdict: Decided
+    basis: Slice 3, ID-Q4
+    severity: 5
+    guard: revert-only
+  g:
+    name: Shared identifier pick
+    meaning: Several stored records share one identifier; the write lands on the P4 pick.
+    consequence: A different one of the duplicates is updated than before.
+    verdict: Decided
+    basis: ID-Q5, slices 5/6/6a
+    guard: revert-only
+  n:
+    name: Second record now stored
+    meaning: A socket re-send with no identifier of a treatment stored with one is stored a second time.
+    consequence: 'A duplicated insulin or carb record on the site: IOB/COB shown doubled.'
+    verdict: Defect
+    basis: 'BF-225, from #8877 (on dev); scope being decided'
+    severity: 10
+    guard: revert-only
+  p:
+    name: New profile, identifier dropped
+    meaning: A profile create that copies a stored identifier but has another startDate is stored as a new profile
+      without the identifier.
+    consequence: Profile history kept; the copied identifier is not stored.
+    verdict: Decided
+    basis: Line 90 and decision C, 2026-10-31
+    guard: revert-only
+  r:
+    name: Refused where stored
+    meaning: An API v3 write with a client _id that 15.0.9 stored is refused.
+    consequence: Upload refused with 4xx.
+    verdict: Decided
+    basis: '#8845, BF-170 (on dev)'
+    guard: revert-only
+  r0:
+    name: Error becomes refusal
+    meaning: A 5xx or thrown error becomes a 4xx refusal.
+    consequence: The client gets a reason instead of a crash.
+    verdict: Bug fix
+    basis: Dev
+    guard: revert-only
+  e:
+    name: Error now answered
+    meaning: A request that answered 5xx or threw now succeeds.
+    consequence: The record is now stored where 15.0.9 failed.
+    verdict: Bug fix
+    basis: Slice 2 and dev
+    guard: revert-only
+  q:
+    name: Reply only
+    meaning: The stored data is the same; only the reply differs.
+    consequence: Clients that read the reply see a different body or status.
+    verdict: Decided
+    basis: Dev
+    guard: revert-only
+  tt:
+    name: Temporary Target units
+    meaning: A Temporary Target is stored labelled mg/dl.
+    consequence: Units are explicit on the stored record.
+    verdict: Bug fix
+    basis: '#8872, BF-194 (on dev)'
+    guard: revert-only
+  bt:
+    name: Socket batches
+    meaning: Every item of a socket batch is stored and answered in its own slot.
+    consequence: 15.0.9 could store 1 of 3 distinct treatments; now all are stored.
+    verdict: Bug fix
+    basis: '#8877 (dev), slice 6, B'
+    guard: revert-only
+  s:
+    name: API v3 client _id refused
+    meaning: An API v3 create carrying its own _id is refused, so the re-send that follows lands differently.
+    consequence: Upload refused with 400; the client must drop its _id.
+    verdict: Decided
+    basis: '#8845, BF-170 (on dev)'
+    guard: revert-only
+  a:
+    name: Write path only
+    meaning: The write takes a different path; nothing stored changes.
+    consequence: None visible.
+    verdict: No value change
+    basis: Dev and slices
+    guard: revert-only
+  h:
+    guard: revert-only

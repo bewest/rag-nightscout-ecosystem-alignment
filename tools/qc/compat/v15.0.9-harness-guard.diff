@@ -1,0 +1,8 @@
+430c430,434
+<   const storageReads = R('lib/server/storage-reads');
+---
+>   // compat-run guard (not in the repo harness): v15.0.9 has no
+>   // lib/server/storage-reads, so there is nothing to inject into; the
+>   // idread-fail cells then record 'reads failed: 0' and are set aside.
+>   let storageReads;
+>   try { storageReads = R('lib/server/storage-reads'); } catch (e) { storageReads = { findOne: () => Promise.reject(new Error('no storage-reads')) }; console.error('compat guard: lib/server/storage-reads absent; idread-fail injection cannot fire'); }
