@@ -18184,6 +18184,96 @@ items:
       record measured the same day by session -4f (QC-MATRIX-IDF). Not run
       on v15.0.9; splitRecord there is the same code (read).
 
+  - id: BFQ-213
+    title: "BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-alarm-display
+    base: official/dev@991b0654
+    state: merged-upstream
+    pr: [8880]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/plugins/pump.js prepareData: the notification title is set when the level comes from reservoir_level_override; alarms at Loop's severity (maintainer, 2026-10-30).
+    review: maintainer
+    operator_visible: >
+      Sites whose uploader reports the pump reservoir through an override (Loop) got no URGENT low-reservoir alarm. With the fix the alarm is raised. Not yet in a released version.
+    semver: patch
+    semver_reason: a missed alarm is raised; release-notes line owed
+    register: [BF-213]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0e5c25be official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-213's fix 0e5c25be (merged 2026-10-30 as 305a6533, #8880);
+          red if dev is rewritten or the merge is reverted
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-31: filed by session -d1 to cover a merged register entry (the
+      coverage gate checks only open entries). #8880 merged to dev
+      2026-10-30 16:24Z as 305a6533 (head 0e5c25be); not released. Safety-relevant (a missed URGENT alarm).
+  - id: BFQ-214
+    title: "BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-alarm-display
+    base: official/dev@991b0654
+    state: merged-upstream
+    pr: [8880]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/devicestatus.js remove(): a delete asks for a reload (data-received), as the entries and treatments deletes do; BF-211's per-collection flush kept.
+    review: maintainer
+    operator_visible: >
+      After a device status was deleted by query, the loop and pump pills could be missing for up to a minute. With the fix they reload at once. Not yet in a released version.
+    semver: patch
+    semver_reason: display refresh only; what is stored does not change
+    register: [BF-214]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 43266e63 official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-214's fix 43266e63 (merged 2026-10-30 as 305a6533, #8880);
+          red if dev is rewritten or the merge is reverted
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-31: filed by session -d1 to cover a merged register entry (the
+      coverage gate checks only open entries). #8880 merged to dev
+      2026-10-30 16:24Z as 305a6533 (head 0e5c25be); not released.
+  - id: BFQ-217
+    title: "BF-217 - an override with no reservoir value throws in the pump plugin"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-alarm-display
+    base: official/dev@991b0654
+    state: merged-upstream
+    pr: [8880]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/plugins/pump.js prepareData: a non-Omnipod status with reservoir_level_override and no reservoir value no longer throws (same commit as BF-213).
+    review: maintainer
+    operator_visible: >
+      While such a status was the newest (Loop with Medtronic states such as Signal Loss), the pump pill and every pump alarm were missing. With the fix they show. Not yet in a released version.
+    semver: patch
+    semver_reason: missing pill and alarms return; no data or API change
+    register: [BF-217]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0e5c25be official/dev
+        kind: static
+        describe: >
+          official/dev contains BF-217's fix 0e5c25be (merged 2026-10-30 as 305a6533, #8880);
+          red if dev is rewritten or the merge is reverted
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-31: filed by session -d1 to cover a merged register entry (the
+      coverage gate checks only open entries). #8880 merged to dev
+      2026-10-30 16:24Z as 305a6533 (head 0e5c25be); not released. Safety-relevant (missed pump alarms while it lasts).
   - id: BFQ-219
     title: "BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent"
     parcel: register-open

@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 340 |
-| runnable gates | 393 |
+| items | 343 |
+| runnable gates | 396 |
 | explicit `no-gate:` markers | 363 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 363 of the 756 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 363 of the 759 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -47,7 +47,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 13 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
 | `in-flight-upstream` | 12 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, BFQ-219, BFQ-220, BFQ-221, BFQ-222, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE |
-| `merged-upstream` | 67 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE |
+| `merged-upstream` | 70 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 41 | P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
@@ -147,6 +147,9 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-210** BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect)
 - **BFQ-211** BF-211 - a delete by query in one collection empties all three in-memory caches
 - **BFQ-212** BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice
+- **BFQ-213** BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override
+- **BFQ-214** BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat
+- **BFQ-217** BF-217 - an override with no reservoir value throws in the pump plugin
 - **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 - **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
 - **BFQ-221** BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
@@ -2776,7 +2779,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 156 items
+`parcel: register-open` &mdash; 159 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2914,6 +2917,9 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-210` | BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect) | `closed` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-211` | BF-211 - a delete by query in one collection empties all three in-memory caches | `merged-upstream` | `bf/16.0.0-socket-similar-match` | patch | 1 run |
 | `BFQ-212` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice | `in-flight-upstream` | `bf/16.0.0-split-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-213` | BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
+| `BFQ-214` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
+| `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7200,6 +7206,99 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/platform/wc-step-design-note-2026-10-27.md`
 
 **Notes.** 2026-10-30: the first part (the split stops copying identity fields) merged to dev as d51c7a60 (#8878); the re-upload double count stays open. Filed 2026-10-29 by the records accuracy pass from the chart-drag split probe on dev e1f7ac41; the overwrite of a shared-identifier record measured the same day by session -4f (QC-MATRIX-IDF). Not run on v15.0.9; splitRecord there is the same code (read).
+
+### `BFQ-213` &mdash; BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_level_override
+
+| | |
+|---|---|
+| state (claimed) | `merged-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-alarm-display` |
+| base | `official/dev@991b0654` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-213` |
+
+**Blast radius.** lib/plugins/pump.js prepareData: the notification title is set when the level comes from reservoir_level_override; alarms at Loop's severity (maintainer, 2026-10-30).
+
+**What an operator sees.** Sites whose uploader reports the pump reservoir through an override (Loop) got no URGENT low-reservoir alarm. With the fix the alarm is raised. Not yet in a released version.
+
+**Why `patch`.** a missed alarm is raised; release-notes line owed
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0e5c25be official/dev`
+  - official/dev contains BF-213's fix 0e5c25be (merged 2026-10-30 as 305a6533, #8880); red if dev is rewritten or the merge is reverted
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: filed by session -d1 to cover a merged register entry (the coverage gate checks only open entries). #8880 merged to dev 2026-10-30 16:24Z as 305a6533 (head 0e5c25be); not released. Safety-relevant (a missed URGENT alarm).
+
+### `BFQ-214` &mdash; BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat
+
+| | |
+|---|---|
+| state (claimed) | `merged-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-alarm-display` |
+| base | `official/dev@991b0654` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-214` |
+
+**Blast radius.** lib/server/devicestatus.js remove(): a delete asks for a reload (data- received), as the entries and treatments deletes do; BF-211's per-collection flush kept.
+
+**What an operator sees.** After a device status was deleted by query, the loop and pump pills could be missing for up to a minute. With the fix they reload at once. Not yet in a released version.
+
+**Why `patch`.** display refresh only; what is stored does not change
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 43266e63 official/dev`
+  - official/dev contains BF-214's fix 43266e63 (merged 2026-10-30 as 305a6533, #8880); red if dev is rewritten or the merge is reverted
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: filed by session -d1 to cover a merged register entry (the coverage gate checks only open entries). #8880 merged to dev 2026-10-30 16:24Z as 305a6533 (head 0e5c25be); not released.
+
+### `BFQ-217` &mdash; BF-217 - an override with no reservoir value throws in the pump plugin
+
+| | |
+|---|---|
+| state (claimed) | `merged-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-alarm-display` |
+| base | `official/dev@991b0654` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-217` |
+
+**Blast radius.** lib/plugins/pump.js prepareData: a non-Omnipod status with reservoir_level_override and no reservoir value no longer throws (same commit as BF-213).
+
+**What an operator sees.** While such a status was the newest (Loop with Medtronic states such as Signal Loss), the pump pill and every pump alarm were missing. With the fix they show. Not yet in a released version.
+
+**Why `patch`.** missing pill and alarms return; no data or API change
+
+**Gates.**
+
+- `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0e5c25be official/dev`
+  - official/dev contains BF-217's fix 0e5c25be (merged 2026-10-30 as 305a6533, #8880); red if dev is rewritten or the merge is reverted
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: filed by session -d1 to cover a merged register entry (the coverage gate checks only open entries). #8880 merged to dev 2026-10-30 16:24Z as 305a6533 (head 0e5c25be); not released. Safety-relevant (missed pump alarms while it lasts).
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 

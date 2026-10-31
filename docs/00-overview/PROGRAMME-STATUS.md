@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 197 | 39 | 14 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 200 | 39 | 14 |
 | **Modernization** | `release-train` | 53 | 9 | 4 |
 | **Multitenant** | `tenancy`, `platform` | 88 | 29 | 6 |
-| | **total** | **340** | **77** | **24** |
+| | **total** | **343** | **77** | **24** |
 
 <!-- END GENERATED: horizons -->
 
@@ -187,6 +187,9 @@ cover more than one `BF-`:
 | `BFQ-210` | `closed` | BF-210 - a socket treatment without an amount is matched to a stored one that has one (clo |
 | `BFQ-211` | `merged-upstream` | BF-211 - a delete by query in one collection empties all three in-memory caches |
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can  |
+| `BFQ-213` | `merged-upstream` | BF-213 - the URGENT pump reservoir alarm is refused when the level comes from reservoir_le |
+| `BFQ-214` | `merged-upstream` | BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat |
+| `BFQ-217` | `merged-upstream` | BF-217 - an override with no reservoir value throws in the pump plugin |
 | `BFQ-219` | `in-flight-upstream` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent |
 | `BFQ-220` | `in-flight-upstream` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are store |
 | `BFQ-221` | `in-flight-upstream` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late |
@@ -227,7 +230,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
 | `release-train` | 9 |  | 1 |  | 1 | 2 | 18 | 15 | 2 | 1 |  |  | 4 | **53** |
-| `register-open` | 29 | 3 | 1 | 1 | 3 | 7 | 44 | 58 | 5 |  |  | 5 |  | **156** |
+| `register-open` | 29 | 3 | 1 | 1 | 3 | 7 | 47 | 58 | 5 |  |  | 5 |  | **159** |
 | `tenancy` | 20 | 4 |  | 1 | 9 | 1 | 4 |  | 1 | 4 | 1 |  | 6 | **51** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -267,14 +270,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 302 | 89% |
+| Maintainer | 305 | 89% |
 | SECURITY reviewer | 17 | 5% |
 | Maintainer + a second human | 8 | 2% |
 | SAFETY reviewer | 6 | 2% |
 | Unassigned | 3 | 1% |
 | Whoever edits it next | 3 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **340** | |
+| **total** | **343** | |
 
 <!-- END GENERATED: reviewer-load -->
 
