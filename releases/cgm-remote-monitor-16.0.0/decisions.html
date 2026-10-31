@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>95e27a4ad</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>e16b1003c</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2677,6 +2677,18 @@ public.</em></p>
 <td>maintainer, 2026-10-30, via session -49, on the ID-BATCH reply lab (<code>tools/lab/id-batch-replies</code>; client handling reproduced from code with file:line, nightscout-connect run for real)</td>
 <td><code>ID-BATCH-RESULTS</code>, BF-219, BF-220</td>
 <td>the prototype (<code>proto/id-batch-replies</code> <code>7d81e1c1</code>) measured each variant; (iv) and (v) fix live defects and can land ahead of the opt-in; strict on v1 (ID-STRICT-V1) arrives with it</td>
+</tr>
+<tr>
+<td><strong>A v1 entries batch in which every entry is refused for a taken <code>_id</code> answers 200 with the 409 slots</strong> (not 400), so uploaders stop re-sending a record that can never be stored; the <code>Warning: 299</code> count stays. Refusals by <code>WRITE_VALIDATION</code> under <code>reject</code> keep their behaviour</td>
+<td>maintainer, 2026-10-30, via session -49, on the BF-220 fix (<code>bf/16.0.0-batch-replies</code>) and the ID-BATCH lab (400 makes Loop and others re-send forever)</td>
+<td>BF-220, <code>ID-BATCH-RESULTS</code></td>
+<td>being built on <code>bf/16.0.0-batch-replies</code></td>
+</tr>
+<tr>
+<td><strong>Q-A (release 2): adopt one write shape for API v3 once two remaining conditions are met</strong>: a fixture pinning that the ids announced to the cache equal the ids deleted, and the cache lab re-run against the v3 sketch. Rule-copy reduction becomes its own follow-up; keeping two write shapes is the last resort</td>
+<td>maintainer, 2026-10-30, via session -49, on session -7d's figures for the three conditions (compatibility met: 0 matrix differences outside <code>cache</code>/<code>wire</code>, the commit event unchanged; quality fixtures met; rule copies 23 to 23; the resolved write exact on v1 paths)</td>
+<td><code>WC-STEP-PATCH</code> release 2</td>
+<td>session -7d is meeting the two conditions on <code>proto/v3-unify</code></td>
 </tr>
 <tr>
 <td><strong>ID-RULE1-EDIT: an edit whose <code>_id</code> names one record but whose <code>identifier</code> is held by another is refused with 409 Conflict, and nothing changes</strong>, on every edit path (v1 PUT/save of profile, food and activity; the socket's <code>dbUpdate</code> refusal slot; API v3 PUT and PATCH), whatever <code>WRITE_IDENTIFIER</code> is. An edit carrying the record's own identifier is unchanged; v1 treatments PUT keeps its ID-Q10 routing by identifier; the unique index is the backstop for races. API v3 PUT and PATCH by identifier move to the P4 pick</td>
