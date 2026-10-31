@@ -152,7 +152,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-217** BF-217 - an override with no reservoir value throws in the pump plugin
 - **BFQ-223** BF-223 - a saved API secret the site refuses blocks a valid ?token= link
 - **BFQ-224** BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500
-- **BFQ-225** BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier
+- **BFQ-225** BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not)
 - **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 - **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
 - **BFQ-221** BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
@@ -2932,7 +2932,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-217` | BF-217 - an override with no reservoir value throws in the pump plugin | `merged-upstream` | `bf/16.0.0-alarm-display` | patch | 1 run |
 | `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `merged-upstream` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 | `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `merged-upstream` | `bf/16.0.0-small-backfixes` | patch | 1 run |
-| `BFQ-225` | BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier | `in-progress` | `bf/16.0.0-bf225-socket-duplicate` | patch | 0 run + 1 no-gate |
+| `BFQ-225` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not) | `in-progress` | `bf/16.0.0-bf225-socket-duplicate` | patch | 0 run + 1 no-gate |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7375,7 +7375,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** 2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released. 2026-10-31 later: built by an agent of session -d1 as f59d7872 on bf/16.0.0-small-backfixes (on the #8885 head ecbc9c06): a non-empty plain string under the date field becomes {$eq: value} before the date rewrite (6 lines in lib/server/query.js); plain numbers unchanged; every operator form and the BF-108 $in handling build byte- identical queries. Red on dev: 16 (9 unit, 7 HTTP incl. devicestatus); green 63/0; test:unit 1896, integration subset 287, test:browser 684, eslint 0 errors; break-it (dev query.js) red on exactly the 16. A plain value counts as a date filter like $eq, so the default window does not apply (2020-dated records returned and deleted). Measured: treatments, devicestatus (GET and DELETE), activity and profile also 500 on dev. Ready to push to #8885. 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400. 2026-10-31 (maintainer): equality, bundled with BF-223 in one '16.0.0 small backfixes' PR; being built by an agent of session -d1 on bf/16.0.0-small-backfixes (from BF-223's ecbc9c06).
 
-### `BFQ-225` &mdash; BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier
+### `BFQ-225` &mdash; BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not)
 
 | | |
 |---|---|
@@ -7403,7 +7403,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
+**Notes.** 2026-10-31 correction (session -4e): the treatments x v3 x ws cell was a documented, intended change in #8877 (PR body line 29, its matrix run line 72); the idf-uuidid-same cells are undocumented. The smallest revert breaks BF-209's guard test, so the fix scope (duplicated vs possibly lost treatment) is pending the maintainer's choice. 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 
