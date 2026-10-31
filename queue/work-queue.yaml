@@ -23961,13 +23961,13 @@ items:
       can ride in a themed hygiene PR.
 
   - id: QC-MATRIX-WIRE-ATTRIBUTION
-    title: "Write-contract matrix: attribute storage-socket frames to their cell and settle after the seed, so `wire` stops picking up a previous cell's late frame"
+    title: "Write-contract matrix: settle storage-socket frames after the seed and after the measured step (attribution as a guard), so `wire` stops picking up the seed's own late frame"
     parcel: platform
     repo: rag-nightscout-ecosystem-alignment
     branch: ""
     base: main
     worktree: ""
-    state: not-started
+    state: done
     pr: []
     blast_radius: >
       tools/qc/write-contract-matrix.js (the `wire` column records frame names
@@ -23977,12 +23977,18 @@ items:
     semver: n/a
     semver_reason: test tooling
     gates:
-      - no-gate: >
-          not built yet; the fix's gate will be two consecutive full matrix
-          runs on one head with 0 cells differing in `wire`
+      - run: git merge-base --is-ancestor a8f374684 HEAD
+        kind: static
+        describe: >
+          main carries the settle and attribution fix (cfc7b8910, a8f374684);
+          its measured gate (two full runs on one tree, 0 `wire` cells
+          differing) is recorded in the notes, not re-run here (about 32
+          minutes per run, needs a crm tree and MongoDB)
     blocks_on: []
-    evidence: []
+    evidence:
+      - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-31, an agent of session -d1, on crm dev 368e6c23, MongoDB 8.0.34, Node 22.23.4, full runs of 4,604 cells: the original harness differed in 11 `wire` cells between two runs of one tree, and every leaked frame carried the recording cell's own record (0 of 951 from another cell): the seed's own frame arriving after the fixed 80 ms wait, all in API v3-seeded idfmt cells. Re-scoped to settle (count bus emissions against frames received, then 50 ms quiet, bounded 3 s; after the seed and after the measured step), with attribution kept as a guard. Green: two runs, 0 `wire` cells differ (1,304 frames emitted and received, 0 unattributed, 0 bound hits); `cache` still differs in 22 (racy, out of scope). Break-it A (settle off): 36 and 39 `wire` cells differ, each traced to a seed frame recorded in the measured window. Break-it B (attribution off, --wire-inject-foreign): 3,948 cells gain the injected create; with attribution on, all injected frames are rejected. Pins: dev-991b0654-idformat.json and dev-991b0654-idfirst.json differ from the green run in 0 `wire` cells (only `cache`), so no re-pin. Landed on main as cfc7b8910 + a8f374684 (cherry-picked from qc/matrix-wire-attribution 73d6d359, c8d62ad0). `wire` can be compared again; `cache` stays excluded.
       2026-10-30, session -7d: re-ran the 25 cells that differed between #8874
       7463e76d and dev 305a6533, 10 repetitions per head, with the original
       harness and with a 250 ms settle after the seed; all 40 runs were
