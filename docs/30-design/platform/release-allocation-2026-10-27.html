@@ -5997,7 +5997,7 @@ order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between
 <tbody>
 <tr>
 <td>ST-EVENT (D-EVENT)</td>
-<td><strong>decided 2026-10-31</strong> (D-EVENT questions 1–4, maintainer via session -81): an in-process event per <code>write(intent)</code> carrying ids, identifier, outcome and refusal problems from <code>WriteResult.items[]</code>, plus the per-driver-call instrumentation event; cross-process delivery deferred to the <code>serve</code> roles</td>
+<td><strong>decided 2026-10-31</strong> (D-EVENT questions 1–4, maintainer via session -81): an in-process event per <code>write(intent)</code> carrying ids, identifier, outcome and refusal problems from <code>WriteResult.items[]</code>, plus the per-driver-call instrumentation event; cross-process delivery deferred to the <code>serve</code> roles; built as the last commit of draft #8886 (6b00eb9d)</td>
 <td>none while nothing in <code>lib/</code> subscribes; the commit event is internal and unstable (#8854 condition)</td>
 <td>nobody</td>
 <td>16.0.0 through the entry bar, with WC-STEP-PATCH release 2 (2026-10-31); subscribers added as each clears its gates: the one-person profile's alarm check, the cache, the socket's <code>dataUpdate</code>; a miss rolls to 16.1.0</td>
@@ -6025,14 +6025,14 @@ order, and ship them in 16.1.0. This needs one rule for <code>dev</code> between
 </tr>
 <tr>
 <td>WC-STEP-PATCH, ID-BATCH (M2)</td>
-<td>planned</td>
+<td>release 1 merged (#8874); release 2 in draft #8886 (6b00eb9d, stacked on #8879, 2026-10-31); ID-BATCH in progress (session -81)</td>
 <td>minor-class (question 10: reply shape, per-item results)</td>
 <td>every uploader</td>
 <td>16.0.0 through the entry bar (2026-10-30/31: release 1 merged as #8874; release 2 and ID-BATCH aimed at 16.0.0, "nothing ruled out"); a miss rolls to 16.1.0</td>
 </tr>
 <tr>
 <td>ST-VIEWS (M4)</td>
-<td>planned</td>
+<td>draft #8875 at 7b4b724c (dev 37b2280f merged; 5 behind dev 604de1cb, 18 ahead, CI green, 2026-10-31); one-person profile prototype local (908351d4)</td>
 <td>patch-class only if every view equals today's; the alarms are safety-relevant (execution plan §7b)</td>
 <td>every page and alarm</td>
 <td>16.0.0 unwired (maintainer, 2026-10-31); wiring with the one-person profile (D-EXEC-PROFILE) when its evidence and alarm checks are in</td>
