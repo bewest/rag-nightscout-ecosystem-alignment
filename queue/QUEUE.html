@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-31 at <code>31c55ceba</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>e880b0554</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3226,7 +3226,7 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>345</td>
+<td>346</td>
 </tr>
 <tr>
 <td>runnable gates</td>
@@ -3234,11 +3234,11 @@
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>359</td>
+<td>360</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 359 of the 761 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 762 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3291,8 +3291,8 @@
 </tr>
 <tr>
 <td><code>needs-decision</code></td>
-<td>8</td>
-<td>T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL</td>
+<td>9</td>
+<td>T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, BFQ-225, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL</td>
 </tr>
 <tr>
 <td><code>done</code></td>
@@ -3412,6 +3412,7 @@
 <li><strong>BFQ-217</strong> BF-217 - an override with no reservoir value throws in the pump plugin</li>
 <li><strong>BFQ-223</strong> BF-223 - a saved API secret the site refuses blocks a valid ?token= link</li>
 <li><strong>BFQ-224</strong> BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500</li>
+<li><strong>BFQ-225</strong> BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier</li>
 <li><strong>BFQ-219</strong> BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent</li>
 <li><strong>BFQ-220</strong> BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored</li>
 <li><strong>BFQ-221</strong> BF-221 - a v1 treatment PUT reaches open pages up to about a minute late</li>
@@ -8509,7 +8510,7 @@ that costs.</p>
 <p><strong>Notes.</strong> 2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released. 2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast-forward. 2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token-link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle-budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push. 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status-bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 161 items</p>
+<p><code>parcel: register-open</code> &mdash; 162 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9604,6 +9605,14 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>bf/16.0.0-small-backfixes</code></td>
 <td>patch</td>
 <td>1 run</td>
+</tr>
+<tr>
+<td><code>BFQ-225</code></td>
+<td>BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier</td>
+<td><code>needs-decision</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-219</code></td>
@@ -18210,6 +18219,65 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released. 2026-10-31 later: built by an agent of session -d1 as f59d7872 on bf/16.0.0-small-backfixes (on the #8885 head ecbc9c06): a non-empty plain string under the date field becomes {$eq: value} before the date rewrite (6 lines in lib/server/query.js); plain numbers unchanged; every operator form and the BF-108 $in handling build byte- identical queries. Red on dev: 16 (9 unit, 7 HTTP incl. devicestatus); green 63/0; test:unit 1896, integration subset 287, test:browser 684, eslint 0 errors; break-it (dev query.js) red on exactly the 16. A plain value counts as a date filter like $eq, so the default window does not apply (2020-dated records returned and deleted). Measured: treatments, devicestatus (GET and DELETE), activity and profile also 500 on dev. Ready to push to #8885. 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400. 2026-10-31 (maintainer): equality, bundled with BF-223 in one '16.0.0 small backfixes' PR; being built by an agent of session -d1 on bf/16.0.0-small-backfixes (from BF-223's ecbc9c06).</p>
+<h3 id="bfq-225--bf-225---a-socket-re-send-of-a-treatment-without-an-identifier-stores-a-second-copy-when-the-stored-one-has-an-identifier"><code>BFQ-225</code> &mdash; BF-225 - a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier<a class="headerlink" href="#bfq-225--bf-225---a-socket-re-send-of-a-treatment-without-an-identifier-stores-a-second-copy-when-the-stored-one-has-an-identifier" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>needs-decision</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@604de1cb</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-225</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/server/websocket.js processSingleDbAdd, the socket similar match changed by #8877 (cf3d4b8f): a stored treatment's identifier now keeps a re-send without one from matching it.</p>
+<p><strong>What an operator sees.</strong> An app that re-sends a treatment over the live connection without an identifier could create a duplicate insulin or carb entry on the site, so caregivers would see doubled IOB or COB. Not in any released version (15.0.9 stores one record); on dev since #8877.</p>
+<p><strong>Why <code>patch</code>.</strong> restores 15.0.9's single record for an identifier-less socket re-send</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; not built; the fix's gate is the two matrix cells (treatments x v3 x ws; treatments x {v1,inproc} x ws idf-uuidid-same) back to 1 record, red on dev, with no other cell moved</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.</p>
 <h3 id="bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent"><code>BFQ-219</code> &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent<a class="headerlink" href="#bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>31c55ceba</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>f8369156f</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3274,6 +3274,7 @@ opens when slices 3 and 4 are on <code>dev</code>.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>BF-225</strong> (filed by session -4e): a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier, on <code>dev</code> since #8877 (<code>cf3d4b8f</code>), not on 15.0.9; a 16.0.0 blocker candidate for the maintainer to decide. Release-notes line owed (measured by -4e): on 15.0.9 a socket <code>dbAdd</code> array of three distinct treatments stored only one; #8877 fixed that.</p>
 <p>Local, not pushed: the unique index (moving onto 6a; its retry becomes item-level first), ID-BATCH (session -81, on the index), the one-person profile prototype (<code>908351d4</code>). Being reproduced, not filed: an API v3 autoPrune cache lead.</p>
 <p><strong>Update, 2026-10-31, about 20:05Z</strong> (session -d1, from GitHub): the maintainer merged <strong>#8885</strong> ("16.0.0 small backfixes": BF-223, a saved API secret the site refuses blocks a valid <code>?token=</code> link; BF-224, a plain-value v1 date filter answered 500) at 19:57Z as <code>604de1cb</code>; <code>dev</code> is <code>604de1cb</code>. <strong>#8879</strong> is out of draft at <code>2d79d30b</code> (slices 1–6a with the 2026-10-31 socket decisions; <code>dev</code> <code>604de1cb</code> merged; 0 behind, 21 ahead; CI 16 passed, 3 skipped) and is next for review; when it merges, slices 3 and 4 are on <code>dev</code> and the cohort window opens. The unique index moves onto it next (session -d1), then ID-BATCH (session -81). Write-step release 2 is rebased onto slice 6a (local <code>c80c16eb</code>, gates green). A cache lead from the release 2 lab (autoPrune leaving the cache short on <code>dev</code>) is being reproduced, not filed.</p>
 <p><strong>Update, 2026-10-31, evening</strong> (session -d1; <code>dev</code> still <code>37b2280f</code>):</p>
@@ -3948,7 +3949,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/31c55ceba0c2ac4daaac8ea7fb7ddf522f781b39/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/df3f40f20475acabff69843a617dda80408945d4/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>

@@ -5771,7 +5771,7 @@
 
 
 <h1 id="compatibility-notes-draft-re-sent-treatments-and-profiles-in-nightscout-1600-every-path">Compatibility notes (draft): re-sent treatments and profiles in Nightscout 16.0.0, every path<a class="headerlink" href="#compatibility-notes-draft-re-sent-treatments-and-profiles-in-nightscout-1600-every-path" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>334c661ff</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>f8369156f</code>.</em></p>
 <p><em>Contributor-facing outreach draft, 2026-10-31, from the maintainer's decisions of that day
 (<a href="../../../../releases/cgm-remote-monitor-16.0.0/decisions.html">decisions</a>, "Slice 6, socket treatments" and "Slice 6, socket
 profiles"). Not sent. Companion to the <a href="index.html">questions for controller and uploader authors</a> and the
@@ -5801,9 +5801,10 @@ nightscout-connect)</p>
    that <code>identifier</code>, and logs a warning (with no values). With the same <code>startDate</code>, it is a re-send, and the
    stored profile is updated (its <code>store</code> replaced whole). This keeps profile history as it is today.</p>
 </li>
+<li><strong>What to check:</strong> when you add a profile by copying the current one, delete <code>identifier</code> as well as <code>_id</code>,
+     so the new profile is new by design and no warning is logged.</li>
 <li>
-<p><strong>What to check:</strong> when you add a profile by copying the current one, delete <code>identifier</code> as well as <code>_id</code>,
-     so the new profile is new by design and no warning is logged.</p>
+<p><strong>Known to copy the identifier today (read from source):</strong> tconnectsync (<code>tconnectsync/sync/update_profiles.py:208-215</code>) and oref0 (<code>bin/oref0-upload-profile.js:110-111</code> and <code>:246-271</code>). Both keep working; each added profile is stored as a new profile, with a warning on the server.</p>
 </li>
 <li>
 <p><strong>Every other collection merges on match</strong> (device status, entries, food, activity), as decided on 2026-10-29.
