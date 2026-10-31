@@ -2333,7 +2333,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>e16b1003c</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>642153c8f</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2701,6 +2701,12 @@ public.</em></p>
 <td>maintainer, 2026-10-30, via session -49, on the slice 6 preparation's measurement at <code>c9b74404</code>: <code>/api/v1/profile/current</code> returns the v3 computed <code>identifier</code>, and tconnectsync's default add mode (update_profiles.py:208-215) copies the current profile with only <code>_id</code> removed, so each add already forms a shared-identifier group today and would merge into the old profile after slice 6</td>
 <td><code>ID-FIRST-MATCH</code> (slice 6)</td>
 <td>to be built in slice 6; an upstream note asks tconnectsync to drop <code>identifier</code> when it copies</td>
+</tr>
+<tr>
+<td><strong>Slice 4: a treatment re-send that matches a stored treatment REPLACES it (as today), on API v1, in-process and API v3; profile, food, activity, device status and entries merge on match as decided 2026-10-29.</strong> This narrows the 2026-10-29 merge-on-match default for treatments</td>
+<td>maintainer, 2026-10-30, via session -49, on session -4f's reading of Loop (NightscoutService.swift:163, NightscoutClient.swift:62/:485, NightscoutKit OverrideTreatment.swift:62-70, <code>4ec9fd1</code>): Loop, Trio, xDrip+ and AndroidAPS re-send whole treatment records and show a cleared field by leaving it out; under RFC 7386 merge an ended indefinite override kept <code>durationType: indefinite</code>, and the site's chart (<code>lib/client/renderer.js:354</code>) showed it as indefinite to caregivers. Dosing on the phone is not affected</td>
+<td><code>ID-FIRST-MATCH</code> (slice 4)</td>
+<td>slice 4 being rebuilt with treatments <code>replaced</code> on all paths, with a Loop-shaped override-end test; a careportal-added field on a client's treatment is lost when the client re-sends it, as today</td>
 </tr>
 <tr>
 <td><strong>Slice 3, API v3's computed identifier after a delete, per collection</strong>: for entries, profile, food and settings the server-computed <code>identifier</code> (device + date + eventType) counts as an identity key, so a v3 re-create of a deleted record is acknowledged and stays deleted; for treatments, v3 keeps today's revive in 16.0.0. Socket profile revive stays with Q-R. Slice 3 otherwise follows ID-Q4 (identity-key match on a deleted record: acknowledged; time-key match: a new record)</td>

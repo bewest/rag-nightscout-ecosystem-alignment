@@ -4186,6 +4186,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#round-3-2026-10-30-api-v3-with-one-write-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Round 3 (2026-10-30): API v3 with one write shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prototype" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4225,7 +4236,7 @@
 
 
 <h1 id="cache-catchup-lab">cache-catchup lab<a class="headerlink" href="#cache-catchup-lab" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>07d94d662</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>114649df8</code>.</em></p>
 <p>Some writes don't name the records they change: a v1 delete by query, or an update by filter.
 After one of these, can the server's in-memory cache (<code>lib/server/cache.js</code>) be brought back in
 line without dropping and reloading the whole cache? And what does each way of doing it cost?
@@ -4739,6 +4750,138 @@ those are the records it didn't delete: in the race, the inserts that arrived wh
 <li><strong>BF-214 is fixed on dev <code>305a6533</code>.</strong> dev's devicestatus delete by query is now consistent in 122 ms (realistic)
   and 679 ms (heavy). On <code>991b0654</code> it stayed empty until the next heartbeat.</li>
 </ul>
+<h2 id="round-3-2026-10-30-api-v3-with-one-write-shape">Round 3 (2026-10-30): API v3 with one write shape<a class="headerlink" href="#round-3-2026-10-30-api-v3-with-one-write-shape" title="Permanent link">&para;</a></h2>
+<p>Q-A (maintainer, 2026-10-30) asks whether API v3's writes by identifier can become the same filter write resolved
+to ids. The identifying read supplies the <code>_id</code>, the step writes <code>{identifier AND _id}</code> and names what it wrote,
+and autoPrune goes through the step too (Q-U). One of the conditions is that this lab confirms the resolved
+write is exact for v3. Round 3 drives API v3 over HTTP, and autoPrune over IPC, against three arms:</p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th>tree</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pr</code></td>
+<td>#8874 <code>7463e76d</code>: v3 writes go through the cached wrapper's identifier methods; autoPrune calls <code>deleteManyOr</code> directly</td>
+</tr>
+<tr>
+<td><code>unify</code></td>
+<td><code>proto/v3-unify</code> <code>3b7f054a</code> (the Q-A sketch with #8874 merged in; local, not pushed)</td>
+</tr>
+<tr>
+<td><code>unifybreak</code></td>
+<td><code>unify</code> with <code>V3LAB_BREAK=drop-last</code>: the treatments collection's <code>announce()</code> leaves out the last id it removed and the last it updated</td>
+</tr>
+</tbody>
+</table>
+<p>Node 22.23.4, MongoDB 8.0.29 standalone (container <code>cache-lab-27622</code>), 10 reps per scenario and arm, interleaved,
+treatments at both cache sizes. Records are dated 1–20 h back. Prune targets are created now with a <code>date</code>
+50–55 h back: inside the 60 h treatments cache, past <code>API3_AUTOPRUNE_TREATMENTS=2</code>. Full tables are in
+<code>results/round3/{realistic,heavy}.log</code>; <code>lab-v3.js</code> and <code>server-v3.js</code> are the driver and server.</p>
+<table>
+<thead>
+<tr>
+<th>scenario (10 reps)</th>
+<th>size</th>
+<th><code>pr</code> consistent after</th>
+<th><code>unify</code> consistent after</th>
+<th><code>unify</code> missing / ghost / stale</th>
+<th><code>pr</code> reads</th>
+<th><code>unify</code> reads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v3 delete</td>
+<td>realistic / heavy</td>
+<td>8 / 11 ms</td>
+<td>8 / 11 ms</td>
+<td>0 / 0 / 0</td>
+<td>0.6 KB</td>
+<td>0.3 KB</td>
+</tr>
+<tr>
+<td>v3 delete of a record with twins (every stored form)</td>
+<td>realistic</td>
+<td>64 ms</td>
+<td>8 ms</td>
+<td>0 / 0 / 0</td>
+<td>142 docs, 34.2 KB</td>
+<td>3 docs, 0.2 KB</td>
+</tr>
+<tr>
+<td>v3 delete of a record with twins</td>
+<td>heavy</td>
+<td>64 ms</td>
+<td>11 ms</td>
+<td>0 / 0 / 0</td>
+<td>439 docs, 93.8 KB</td>
+<td>3 docs, 0.2 KB</td>
+</tr>
+<tr>
+<td>v3 PUT, PATCH, PATCH of a twin</td>
+<td>both</td>
+<td>7–11 ms</td>
+<td>7–10 ms</td>
+<td>0 / 0 / 0</td>
+<td>2 docs</td>
+<td>2 docs</td>
+</tr>
+<tr>
+<td>PATCH burst, mixed burst</td>
+<td>both</td>
+<td>2–3 ms</td>
+<td>3 ms</td>
+<td>0 / 0 / 0</td>
+<td>same</td>
+<td>same</td>
+</tr>
+<tr>
+<td>autoPrune</td>
+<td>realistic / heavy</td>
+<td>never (10 of 10)</td>
+<td>5 / 7 ms</td>
+<td>0 / 0 / 0</td>
+<td>0 docs</td>
+<td>15 docs, 0.3 KB</td>
+</tr>
+<tr>
+<td>autoPrune racing 5 creates</td>
+<td>realistic / heavy</td>
+<td>never (10 of 10)</td>
+<td>4 / 5 ms</td>
+<td>0 / 0 / 0</td>
+<td>0 docs</td>
+<td>10 docs, 0.2 KB</td>
+</tr>
+</tbody>
+</table>
+<p>The permanent-delete and own-identifier variants match their plain rows. Findings:</p>
+<ul>
+<li><strong><code>unify</code> is exact in all 15 scenarios at both sizes.</strong> Every rep became consistent, with 0 missing, ghost or
+  stale records. Its "left in db" counts equal <code>pr</code>'s in every scenario: the records a delete leaves under their
+  own identifier, the twins a PATCH doesn't touch, and the creates that race a prune.</li>
+<li><strong>Non-vacuity.</strong> <code>unifybreak</code> was flagged in 10 of 10 reps in every scenario at both sizes. A removed record
+  left unnamed shows as a ghost, and an updated one as stale.</li>
+<li><strong>A delete that reaches a record's twins</strong> (other stored forms of one record, Q-S) makes <code>pr</code> reload the
+  treatments cache. <code>pr</code> names the ids only when exactly one document goes, so this delete reads 142 or 439
+  documents. <code>unify</code> names the 2–3 ids and reads 3 documents.</li>
+<li><strong>autoPrune on <code>pr</code> leaves pruned records in the cache.</strong> The cached wrapper's <code>deleteManyOr</code> reads the ids
+  it is about to delete with <code>findMany({filter, …})</code>, which ANDs the three conditions (<code>srvCreated</code>,
+  <code>created_at</code>, <code>date</code>). The delete ORs them. A record that is past the cutoff by <code>date</code> but was created
+  recently is deleted without being named. Then nothing is announced, and the record stays in the cache until
+  the cache's own age window drops it. In this lab the cache never matched the database after a prune, in 10 of 10 reps at both sizes.
+  <code>pr</code>'s 5,000 ms prune "latency" is the IPC's wait for an announcement that never came. The read dates from
+  2021 (#6688, <code>6b28a148</code>) and is the same in <code>v15.0.9</code>. It only shows where the prune setting's days are
+  shorter than the cache's retention for that collection (treatments 60 h, entries 2 days, devicestatus 1 or 2
+  days). Otherwise the pruned record is already out of the cache. <code>unify</code> sends the prune through the step,
+  which resolves the ids with the same OR, so it names every one.</li>
+<li><strong>Cost.</strong> The write's own latency is the same within noise, except in the PATCH burst. There <code>unify</code> takes a
+  median 25.3 ms against 20.9 ms (realistic) and 36.2 ms against 34.0 ms (heavy) per call.</li>
+</ul>
 <h2 id="prototype">Prototype<a class="headerlink" href="#prototype" title="Permanent link">&para;</a></h2>
 <p><code>proto/cache-catchup</code> in <code>cgm-remote-monitor</code>, local and not pushed. The results above ran on
 <code>5f8e95bf</code>. <code>02d974c2</code> only moves API v3's mode read into <code>cache-catchup-ids.mode()</code>, because
@@ -4749,7 +4892,8 @@ MongoDB 8.0.29). Round 2 ran on <code>proto/cache-resolve</code> <code>cd7a5b6c<
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tools/lab/cache-catchup/run.sh up     # mongo:8.0.29 standalone on 127.0.0.1:27621
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>tools/lab/cache-catchup/run.sh all    # results/{realistic,heavy}.{log,json}, ~50 min each
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>tools/lab/cache-catchup/run.sh round2 # results/round2/{realistic,heavy}.{log,json}, ~45 min each
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>tools/lab/cache-catchup/run.sh down
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>CC_PORT=27622 tools/lab/cache-catchup/run.sh round3 # results/round3/…, ~1 h each; CC_PR, CC_UNIFY
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>tools/lab/cache-catchup/run.sh down
 </code></pre></div>
 <p>Each tree needs its own <code>npm ci</code>. <code>CC_DEV</code>, <code>CC_PROTO</code>, <code>CC_PORT</code> and <code>CC_CONTAINER</code> override the
 defaults. <code>lab.js</code> also takes:</p>
@@ -4776,6 +4920,14 @@ container's state.</p>
 <tr>
 <td><code>server.js</code></td>
 <td>one arm: a tree booted as <code>lib/server/server.js</code> boots it, with IPC for cache dumps and writes by filter</td>
+</tr>
+<tr>
+<td><code>lab-v3.js</code></td>
+<td>round 3 driver: API v3 writes over HTTP and autoPrune over IPC, treatments only</td>
+</tr>
+<tr>
+<td><code>server-v3.js</code></td>
+<td>round 3 arm: keeps the v3 treatments collection for autoPrune; <code>V3LAB_BREAK=drop-last</code></td>
 </tr>
 <tr>
 <td><code>readtap.js</code></td>
