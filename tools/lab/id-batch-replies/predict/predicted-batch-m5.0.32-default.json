@@ -1,0 +1,426 @@
+{
+ "base": "ee49832d09c7388c31dfeddca69fcc88b6b1f9b8",
+ "mongod": "5.0.32",
+ "mode": "default",
+ "kind": "batch",
+ "count": 45,
+ "predicted": {
+  "entries v1 batch-mixed-oid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1,2",
+    "warn": "none"
+   }
+  },
+  "entries v1 batch-mixed-ident +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); the ignored identifier counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "warn": "299 - \"1 identifier ignored\""
+   }
+  },
+  "entries v1 batch-repeat-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "1,2:v2",
+    "warn": "none"
+   }
+  },
+  "entries v1 batch-repeat-stored +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1:v2,2",
+    "warn": "none"
+   }
+  },
+  "entries v1 batch-deleted +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); decision (vi): the deleted re-send is `acknowledged`, counted",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "warn": "299 - \"1 acknowledged, not applied\""
+   }
+  },
+  "entries v1 batch-placeholder-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); two ignored identifiers counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 4,
+    "warn": "299 - \"2 identifier ignored\""
+   }
+  },
+  "entries v1 batch-dupkey-mid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1,2",
+    "warn": "none"
+   }
+  },
+  "entries v1 batch-taken-id +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); the 409 slot counted in the opt-in wording",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id,1:noid:ref409,2:id",
+    "warn": "299 - \"1 of 3 items refused\""
+   }
+  },
+  "entries v1 batch-taken-all +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); every entry refused for a taken _id: 200 with the 409 slots (decided), opt-in wording",
+   "expect": {
+    "st": "200",
+    "len": 2,
+    "slots": "0:noid:ref409,1:noid:ref409",
+    "warn": "299 - \"2 of 2 items refused\""
+   }
+  },
+  "treatments v1 batch-mixed-tt +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1,2",
+    "warn": "none"
+   }
+  },
+  "treatments v1 batch-mixed-oid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1,2",
+    "warn": "none"
+   }
+  },
+  "treatments v1 batch-mixed-ident +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); the ignored identifier counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "warn": "299 - \"1 identifier ignored\""
+   }
+  },
+  "treatments v1 batch-repeat-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "1,2:v2",
+    "warn": "none"
+   }
+  },
+  "treatments v1 batch-repeat-stored +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1:v2,2",
+    "warn": "none"
+   }
+  },
+  "treatments v1 batch-deleted +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); decision (vi): the deleted re-send is `acknowledged`, counted",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "warn": "299 - \"1 acknowledged, not applied\""
+   }
+  },
+  "treatments v1 batch-placeholder-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); two ignored identifiers counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 4,
+    "warn": "299 - \"2 identifier ignored\""
+   }
+  },
+  "treatments v1 batch-dupkey-mid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1,2",
+    "warn": "none"
+   }
+  },
+  "treatments v1 batch-prebolus +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1,2",
+    "warn": "none"
+   }
+  },
+  "treatments v1 batch-taken-id +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id,1:id,2:id",
+    "storeb": "0:noident,1:v2:noident,2:noident,seed:noident",
+    "warn": "none"
+   }
+  },
+  "treatments v1 batch-taken-all +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 2,
+    "slots": "0:id,1:id",
+    "storeb": "0:v2:noident,1:v2:noident",
+    "warn": "none"
+   }
+  },
+  "devicestatus v1 batch-mixed-oid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); R2 under the opt-in: the non-hex _id refuses its item, not the batch (today 400 whole)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:noid:i:ref400,2:id:i",
+    "storeb": "0,2",
+    "warn": "299 - \"1 of 3 items refused\""
+   }
+  },
+  "devicestatus v1 batch-mixed-ident +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); the ignored identifier counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "warn": "299 - \"1 identifier ignored\""
+   }
+  },
+  "devicestatus v1 batch-repeat-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); decision (vi): the repeat in the batch is `acknowledged` (today refused \"repeated in the batch\")",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "warn": "299 - \"1 acknowledged, not applied\""
+   }
+  },
+  "devicestatus v1 batch-repeat-stored +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1:v2,2",
+    "warn": "none"
+   }
+  },
+  "devicestatus v1 batch-deleted +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); decision (vi): the deleted re-send is `acknowledged`, counted",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "warn": "299 - \"1 acknowledged, not applied\""
+   }
+  },
+  "devicestatus v1 batch-placeholder-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); two ignored identifiers counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 4,
+    "warn": "299 - \"2 identifier ignored\""
+   }
+  },
+  "devicestatus v1 batch-dupkey-mid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:id:i,2:id:i",
+    "storeb": "0,1,2",
+    "warn": "none"
+   }
+  },
+  "devicestatus v1 batch-taken-id +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); decision (vi): a re-send by a stored _id is `acknowledged` (today refused \"already stored\")",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id,1:id,2:id",
+    "warn": "299 - \"1 acknowledged, not applied\""
+   }
+  },
+  "devicestatus v1 batch-taken-all +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); decision (vi): a re-send by a stored _id is `acknowledged` (today refused \"already stored\")",
+   "expect": {
+    "st": "200",
+    "len": 2,
+    "slots": "0:id,1:id",
+    "warn": "299 - \"2 acknowledged, not applied\""
+   }
+  },
+  "profile v1 batch-mixed-oid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); R2 under the opt-in: the non-hex _id refuses its item, not the batch (today 400 whole)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:noid:i:ref400,2:id:i",
+    "storeb": "0,2",
+    "warn": "299 - \"1 of 3 items refused\""
+   }
+  },
+  "profile v1 batch-mixed-ident +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); the ignored identifier counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "warn": "299 - \"1 identifier ignored\""
+   }
+  },
+  "profile v1 batch-placeholder-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); two ignored identifiers counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 4,
+    "warn": "299 - \"2 identifier ignored\""
+   }
+  },
+  "profile v1 batch-profile-permission +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); decision (iii): the changing re-send refused 403 in its slot, the new profiles stored (today 401 whole)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id,1:noid:ref403,2:id",
+    "warn": "299 - \"1 of 3 items refused\""
+   }
+  },
+  "profile v1 batch-taken-id +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id,1:id,2:id",
+    "storeb": "0:noident,1:v2:noident,2:noident,seed:noident",
+    "warn": "none"
+   }
+  },
+  "profile v1 batch-taken-all +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 2,
+    "slots": "0:id,1:id",
+    "storeb": "0:v2:noident,1:v2:noident",
+    "warn": "none"
+   }
+  },
+  "food v1 batch-mixed-oid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); R2 under the opt-in: the non-hex _id refuses its item, not the batch (today 400 whole)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:noid:i:ref400,2:id:i",
+    "storeb": "0,2",
+    "warn": "299 - \"1 of 3 items refused\""
+   }
+  },
+  "food v1 batch-mixed-ident +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); the ignored identifier counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "warn": "299 - \"1 identifier ignored\""
+   }
+  },
+  "food v1 batch-placeholder-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); two ignored identifiers counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 4,
+    "warn": "299 - \"2 identifier ignored\""
+   }
+  },
+  "food v1 batch-taken-id +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id,1:id,2:id",
+    "storeb": "0:noident,1:v2:noident,2:noident,seed:noident",
+    "warn": "none"
+   }
+  },
+  "food v1 batch-taken-all +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 2,
+    "slots": "0:id,1:id",
+    "storeb": "0:v2:noident,1:v2:noident",
+    "warn": "none"
+   }
+  },
+  "activity v1 batch-mixed-oid +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); R2 under the opt-in: the non-hex _id refuses its item, not the batch (today 400 whole)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id:i,1:noid:i:ref400,2:id:i",
+    "storeb": "0,2",
+    "warn": "299 - \"1 of 3 items refused\""
+   }
+  },
+  "activity v1 batch-mixed-ident +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); the ignored identifier counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "warn": "299 - \"1 identifier ignored\""
+   }
+  },
+  "activity v1 batch-placeholder-identifier +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii)); two ignored identifiers counted (lenient)",
+   "expect": {
+    "st": "200",
+    "len": 4,
+    "warn": "299 - \"2 identifier ignored\""
+   }
+  },
+  "activity v1 batch-taken-id +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 3,
+    "slots": "0:id,1:id,2:id",
+    "storeb": "0:noident,1:v2:noident,2:noident,seed:noident",
+    "warn": "none"
+   }
+  },
+  "activity v1 batch-taken-all +results": {
+   "reason": "opt-in: { items, documents } with per-item outcomes (R6, decision (ii))",
+   "expect": {
+    "st": "200",
+    "len": 2,
+    "slots": "0:id,1:id",
+    "storeb": "0:v2:noident,1:v2:noident",
+    "warn": "none"
+   }
+  }
+ }
+}

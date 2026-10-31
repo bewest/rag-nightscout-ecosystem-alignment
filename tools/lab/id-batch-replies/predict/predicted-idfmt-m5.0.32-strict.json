@@ -1,0 +1,3129 @@
+{
+ "base": "ee49832d09c7388c31dfeddca69fcc88b6b1f9b8",
+ "mongod": "5.0.32",
+ "mode": "strict",
+ "kind": "idfmt",
+ "count": 780,
+ "predicted": {
+  "entries v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-undefined-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-null-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-invalid-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-nan-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-unknown-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-empty-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-blank-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-jsonnull-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-number-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries v1 idfmt-len257-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-undefined-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-null-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-invalid-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-nan-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-unknown-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-empty-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-blank-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-jsonnull-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-number-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments v1 idfmt-len257-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-undefined-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-null-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-invalid-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-nan-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-unknown-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-empty-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-blank-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-jsonnull-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-number-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus v1 idfmt-len257-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-undefined-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-null-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-invalid-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-nan-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-unknown-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-empty-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-blank-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-jsonnull-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-number-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile v1 idfmt-len257-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-undefined-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-null-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-invalid-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-nan-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-unknown-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-empty-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-blank-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-jsonnull-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-number-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food v1 idfmt-len257-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-undefined-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-null-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-invalid-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-nan-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-unknown-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-empty-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-blank-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-jsonnull-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-number-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity v1 idfmt-len257-single": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x v3 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x ws idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v1 x inproc idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x v3 x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x ws x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "entries x inproc x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x v3 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x ws idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v1 x inproc idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x v3 x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x ws x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "treatments x inproc x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x v3 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x ws idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v1 x inproc idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x v3 x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x ws x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "devicestatus x inproc x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x v3 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x ws idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v1 x inproc idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x v3 x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x ws x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "profile x inproc x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x v3 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x ws idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v1 x inproc idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x v3 x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x ws x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "food x inproc x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x ws idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x v1 x inproc idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x ws x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-undefined-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-undefined-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (undefined) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-null-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-null-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (null) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-invalid-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-invalid-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (invalid) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-nan-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-nan-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (nan) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-unknown-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-unknown-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (unknown) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-empty-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-empty-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (empty) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-blank-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-blank-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (blank) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-jsonnull-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-jsonnull-twoapp": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (jsonnull) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-number-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (number) is refused, not stored without it",
+   "expect": {}
+  },
+  "activity x inproc x v1 idfmt-len257-time": {
+   "reason": "ID-STRICT-V1: the v1 write of an invalid identifier (len257) is refused, not stored without it",
+   "expect": {}
+  }
+ }
+}
