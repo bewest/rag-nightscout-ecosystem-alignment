@@ -212,7 +212,9 @@
 // records by item (seed for a seeded one), `writes` the executed write
 // operations per item (counted by wrapping the driver's write methods while
 // the step runs; `?` is an operation that names no item), `inj` how often the
-// injection fired. --batch-only runs only these; --no-batch leaves them out;
+// injection fired. They are opt-in: a run without --batch, --batch-only or
+// --batch-forms has exactly the cells it had before them. --batch adds them
+// after every other cell; --batch-only runs only these;
 // --batch-forms a,b selects forms. Run once as is, once with
 // WRITE_VALIDATION=reject and once with WRITE_IDENTIFIER=strict (the result
 // records write_validation, write_identifier and identifier_index).
@@ -1269,7 +1271,8 @@ function body (coll, t, cell, extra) {
     , 'batch-repeat-stored', 'batch-deleted', 'batch-placeholder-identifier', 'batch-dupkey-mid'
     , 'batch-storage-fail-mid', 'batch-profile-permission', 'batch-prebolus', 'batch-taken-id', 'batch-taken-all'];
   const BATCH_PATHS = ['v1', 'ws', 'inproc'].filter(p => PATHS.includes(p));
-  const BATCH_RUN = flag('--no-batch') ? [] : BATCH_FORMS.filter(f => !opt('--batch-forms', null) || opt('--batch-forms', '').split(',').includes(f));
+  const BATCH_WANTED = flag('--batch') || BATCH_ONLY || opt('--batch-forms', null) !== null;
+  const BATCH_RUN = !BATCH_WANTED ? [] : BATCH_FORMS.filter(f => !opt('--batch-forms', null) || opt('--batch-forms', '').split(',').includes(f));
 
   async function batchCell (c, p, f, optIn) {
     const key = c + ' ' + p + ' ' + f + (optIn ? ' +results' : '');
