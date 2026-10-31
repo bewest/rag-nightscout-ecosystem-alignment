@@ -1,68 +1,106 @@
 [
   {
     "id": "c1-replace",
-    "groups": ["c1"],
+    "groups": [
+      "c1"
+    ],
     "decision": "Slice 4, ID-Q7/Q8: a matched re-send of profile, food, entries, settings, device status or activity merges into the stored record",
     "alternative": "A matched re-send replaces the stored record on every collection, as on 15.0.9 and as slice 4 already decided for treatments. Merge stays available through API v3 PATCH and socket dbUpdate, where a client asks for it.",
     "cells_restored": 136,
     "restores": "Every replace-becomes-merge cell: profile 61, entries 25, food 22, device status 13, settings 10, activity 5; re-sent over API v3 90, socket 36, in-process 10.",
     "cost_to_objectives": "low",
     "cost": "Slice 4's reason applies unchanged: clients re-send whole records and clear a field by leaving it out, so under merge a cleared field stays set. Identifier-first matching, the duplicate avoidance and the unique index are unaffected. What is lost is the same as on 15.0.9: a field added on the site is dropped when the client re-sends its record. Clients found: AndroidAPS NSClientV3 settings, the web profile editor's saves.",
-    "recommendation": "Strong candidate. Same rule as treatments, removes the cleared-field-stays-set risk, nothing in the identity work depends on merge."
+    "recommendation": "Strong candidate. Same rule as treatments, removes the cleared-field-stays-set risk, nothing in the identity work depends on merge.",
+    "status": "adopted",
+    "status_note": "Adopted: a matched re-send replaces on every collection, as for treatments; merge stays for API v3 PATCH and socket dbUpdate. Queued for 16.0.0.",
+    "decided": "maintainer, 2026-10-31"
   },
   {
     "id": "f-v3-refuse",
-    "groups": ["f"],
+    "groups": [
+      "f"
+    ],
     "decision": "ID-Q6, slice 2: a placeholder, blank, numeric or over-long identifier is treated as absent on every path, API v3 included (WRITE_IDENTIFIER=lenient by default)",
     "alternative": "API v3 keeps refusing a malformed identifier with 400, as 15.0.9 did (strict on API v3 only); API v1, socket and in-process stay lenient.",
     "cells_restored": 349,
     "restores": "Up to 349 identifier-format cells where 15.0.9 answered 400 (304 of them re-sent over API v3); the rest of the format cells are unchanged by this.",
     "cost_to_objectives": "near zero",
     "cost": "The refusal already exists as WRITE_IDENTIFIER=strict; this changes its default on one path. No API v3 client can depend on a malformed identifier being accepted, because 15.0.9 refused it. Keeps API v3 the strict API.",
-    "recommendation": "Strong candidate. Pure compatibility gain; check that no surveyed API v3 client sends such an identifier (none was found)."
+    "recommendation": "Strong candidate. Pure compatibility gain; check that no surveyed API v3 client sends such an identifier (none was found).",
+    "status": "adopted",
+    "status_note": "Adopted: API v3 refuses a malformed identifier with 400 by default; v1, socket and in-process stay lenient. Queued for 16.0.0.",
+    "decided": "maintainer, 2026-10-31"
   },
   {
     "id": "f-store-value",
-    "groups": ["f"],
+    "groups": [
+      "f"
+    ],
     "decision": "ID-Q6: a placeholder identifier is not stored",
     "alternative": "Store the placeholder value as sent, but never match on it.",
     "cells_restored": 1387,
     "restores": "The 1,387 cells whose only difference is that the placeholder value is no longer stored.",
     "cost_to_objectives": "high",
     "cost": "The unique index on identifier would then refuse the second record carrying the same placeholder, which is the case two apps sharing 'undefined' hit. Excluding placeholder strings from a partial index is not expressible in MongoDB's partial filter. No surveyed client sends a placeholder, so the compatibility gain is on paper only.",
-    "recommendation": "Keep the decision."
+    "recommendation": "Keep the decision.",
+    "status": "kept",
+    "status_note": "Agreed: keep the decision; the placeholder value is not stored.",
+    "decided": "maintainer, 2026-10-31"
   },
   {
     "id": "resend-switch",
-    "groups": ["d1", "d2", "c2", "b"],
+    "groups": [
+      "d1",
+      "d2",
+      "c2",
+      "b"
+    ],
     "decision": "WRITE_RESEND and per-client quirks: decided 2026-10-29, not built",
     "alternative": "Build WRITE_RESEND with a mode that gives 15.0.9's re-send behaviour per site or per registered client, plus a re-send counterpart to WRITE_DELETED_EDIT for revive after delete.",
     "cells_restored": 58,
     "restores": "Opt-in: d1 28 and d2 21 (stays deleted), c2 9 (socket re-send now written); b 402 only if a mode keeps adding a second record, which no one has asked for.",
     "cost_to_objectives": "low",
     "cost": "Defaults unchanged, so the identity work is unaffected; the cost is building and testing one more setting. It gives an operator a way back without a revert, which today does not exist for any change.",
-    "recommendation": "Worth building before the tag, or recording that 16.0.0 ships without a rollback switch."
+    "recommendation": "Worth building before the tag, or recording that 16.0.0 ships without a rollback switch.",
+    "status": "adopted",
+    "status_note": "Adopted: build WRITE_RESEND (and a re-send counterpart for deleted records) before the tag, as the opt-in way back. Queued for 16.0.0.",
+    "decided": "maintainer, 2026-10-31"
   },
   {
     "id": "c2-acknowledge",
-    "groups": ["c2"],
+    "groups": [
+      "c2"
+    ],
     "decision": "Decision B and slice 6 (2026-10-31): a socket treatment re-send matched by identifier replaces; a device status re-send merges",
     "alternative": "A socket re-send that matches is acknowledged and nothing is written, as 15.0.9 kept the stored record.",
     "cells_restored": 9,
     "restores": "Socket device status 5, socket treatments 4.",
     "cost_to_objectives": "low",
     "cost": "Edits over the socket go through dbUpdate, not a re-send, so few clients lose anything. Decided today for consistency with slice 4; both choices are defensible.",
-    "recommendation": "Low stakes either way; leave as decided unless the re-send switch is built."
+    "recommendation": "Low stakes either way; leave as decided unless the re-send switch is built.",
+    "status": "as-decided",
+    "status_note": "Not taken up: decision B (a socket treatment re-send matched by identifier replaces) stands.",
+    "decided": "maintainer, 2026-10-31"
   },
   {
     "id": "keep",
-    "groups": ["b", "p", "s", "r", "g", "d3"],
+    "groups": [
+      "b",
+      "p",
+      "s",
+      "r",
+      "g",
+      "d3"
+    ],
     "decision": "Identity first (b), new profile without the copied identifier (p), API v3 client _id refused (s, r; BF-170 on dev), the P4 pick (g), a time-key re-send after delete stored as new (d3)",
     "alternative": "Restoring any of these brings back the duplicate records, shared identifiers or collapsed records the identity work removes.",
     "cells_restored": 0,
     "restores": "Not recommended.",
     "cost_to_objectives": "high",
     "cost": "Each is the substance of the agreement with the Loop maintainers or a prerequisite of the unique index. d3 differs only in whether the re-entered treatment is the old record or a new one; it shows either way.",
-    "recommendation": "Keep."
+    "recommendation": "Keep.",
+    "status": "kept",
+    "status_note": "Agreed: keep identity first, the profile copy rule, the API v3 client _id refusal, the P4 pick and d3.",
+    "decided": "maintainer, 2026-10-31"
   }
 ]
