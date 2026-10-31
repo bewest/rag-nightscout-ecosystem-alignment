@@ -7591,7 +7591,7 @@ client in §1 being right; the drafted note asks the AndroidAPS developers to co
 <code>srvModified</code>, so API v3 history returns those records; the loss comes from the cursor rule in §1.</p>
 <p><strong>Re-measured 2026-10-27</strong> on <code>dev</code> <code>dcf20bfb</code> (after the seam slices #8861, #8863, #8870 and #8854's write
 boundary; Node v22.23.4, MongoDB 8.0.34), same lab and client model, one run
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8154828a5bb6cb6398748310b950140065731782/tools/lab/aaps-ws-delivery/results/2026-10-27-dev-dcf20bfb/results.json"><code>results/2026-10-27-dev-dcf20bfb/</code></a>).
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c2c3846098d7c09859e17b72246ef74d450883d1/tools/lab/aaps-ws-delivery/results/2026-10-27-dev-dcf20bfb/results.json"><code>results/2026-10-27-dev-dcf20bfb/</code></a>).
 <strong>[M]</strong> All 11 cells match the table above. v3 controls pushed in 0.01 s. v1, <code>dbAdd</code> and connector writes were not
 pushed in 45 s. They arrived by the catch-up history call on reconnect (47 s, the lab's wait). Each was <strong>not
 received</strong> when a v3 write in the same collection landed first, though the v1 and <code>dbAdd</code> records were in v3
