@@ -7412,7 +7412,7 @@ items:
       socket) become matches; v1 treatments change from "identifier match or
       fallback key" to the Q1 rule, so a labelled re-send no longer
       overwrites a stored record that carries a different identifier.
-    register: []
+    register: [BF-215, BF-216]
     gates:
       - no-gate: >
           Not started. Gate to write: the write-contract matrix extended with
@@ -7428,6 +7428,7 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
+      2026-10-31 later (GitHub, about 05:45Z): #8879 at 931e5e60, 0 behind dev 368e6c23: slice 4 (merge on match, treatments replaced on every path) pushed; CI fails lint (no-useless-assignment, lib/storage/write-intent.js:1450). Carries BF-215 and BF-216 (slice 2).
       2026-10-31: draft #8879 at 5cdd9577 (base dev): slices 1, 2, 5 (+5b) and 3 built and pushed, dev 368e6c23 merged; slice 4 being rebuilt with treatments replaced on every path (maintainer 2026-10-30); 6 and 6a prepared on prep/id-first-s6 47377fa3. Owner session -4f.
       2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): the rules
       this item builds are decided, and it is eligible for 16.0.0 through the
@@ -18181,6 +18182,170 @@ items:
       split probe on dev e1f7ac41; the overwrite of a shared-identifier
       record measured the same day by session -4f (QC-MATRIX-IDF). Not run
       on v15.0.9; splitRecord there is the same code (read).
+
+  - id: BFQ-219
+    title: "BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-batch-replies
+    base: official/dev@368e6c23
+    worktree: externals/work/crm-bf-batch
+    state: in-flight-upstream
+    pr: [8883]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/treatments.js and the v1 treatments POST reply: the derived
+      carb record is no longer a reply slot, so the reply has one slot per
+      sent item (6750d851, ported onto the write step in 8ae46b72).
+    review: maintainer
+    operator_visible: >
+      Loop re-sent a batch with a pre-bolus forever, and nightscout-connect
+      could skip a record it had not sent yet, because the reply had one
+      more item than was sent. With the fix the reply has one item per item
+      sent. Not yet in a released version.
+    semver: patch
+    semver_reason: the reply's slot count matches the request; what is stored does not change
+    register: [BF-219]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD
+        kind: network
+        describe: >
+          #8883's head on GitHub contains BF-219's fix 8ae46b72; red if the PR
+          drops it. Once #8883 merges, replace with the official/dev
+          ancestor gate and set merged-upstream
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
+      368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
+      Merges before #8879's next dev merge (they conflict in four files).
+      Filed by session -7d to close the register-queue coverage gap.
+
+  - id: BFQ-220
+    title: "BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-batch-replies
+    base: official/dev@368e6c23
+    worktree: externals/work/crm-bf-batch
+    state: in-flight-upstream
+    pr: [8883]
+    ships_to_operators_today: true
+    blast_radius: >
+      The v1 batch write: only the entry whose _id is taken is refused (409
+      in its slot) and the rest are stored; a batch where every entry is
+      refused answers 200 with slots (1265f5d1, c3a939f7, ported in
+      8ae46b72).
+    review: maintainer
+    operator_visible: >
+      One record with an _id that was already taken made the whole upload
+      fail after part of it was saved, so uploaders re-sent it and the
+      records after it were never saved. With the fix the other records are
+      saved and only the taken one is refused. Not yet in a released
+      version.
+    semver: patch
+    semver_reason: a 5xx becomes per-slot results with the valid items stored
+    register: [BF-220]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD
+        kind: network
+        describe: >
+          #8883's head on GitHub contains BF-220's fix 8ae46b72; red if the PR
+          drops it. Once #8883 merges, replace with the official/dev
+          ancestor gate and set merged-upstream
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
+      368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
+      Merges before #8879's next dev merge (they conflict in four files).
+      Filed by session -7d to close the register-queue coverage gap.
+
+  - id: BFQ-221
+    title: "BF-221 - a v1 treatment PUT reaches open pages up to about a minute late"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-batch-replies
+    base: official/dev@368e6c23
+    worktree: externals/work/crm-bf-batch
+    state: in-flight-upstream
+    pr: [8883]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/server/treatments.js save(): data-received is emitted after the
+      replace finishes instead of when it starts (972da1cf, ported in
+      8ae46b72).
+    review: maintainer
+    operator_visible: >
+      An edit to a treatment sent by an app over API v1 could take up to
+      about a minute to show on open Nightscout pages. With the fix it shows
+      within a fraction of a second. What is stored does not change. Not yet
+      in a released version.
+    semver: patch
+    semver_reason: display timing only
+    register: [BF-221]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD
+        kind: network
+        describe: >
+          #8883's head on GitHub contains BF-221's fix 8ae46b72; red if the PR
+          drops it. Once #8883 merges, replace with the official/dev
+          ancestor gate and set merged-upstream
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
+      368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
+      Merges before #8879's next dev merge (they conflict in four files).
+      Filed by session -7d to close the register-queue coverage gap.
+
+  - id: BFQ-222
+    title: "BF-222 - API v3 autoPrune can leave pruned records in the server's cache"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: bf/16.0.0-batch-replies
+    base: official/dev@368e6c23
+    worktree: externals/work/crm-bf-batch
+    state: in-flight-upstream
+    pr: [8883]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/storage/mongoCachedCollection/index.js deleteManyOr: the pre-
+      read of ids to announce uses the same OR as the delete
+      (logicalOperator 'or'); tests/api3.autoprune.test.js gains a red/green
+      test (9d8dbc76, cherry-picked as 789d5d9d).
+    review: maintainer
+    operator_visible: >
+      Only on sites that set API3_AUTOPRUNE_<collection> to fewer days than
+      the server keeps in memory. A record pruned by its date could keep
+      showing until the server dropped it from memory by age. With the fix
+      the server forgets every record the prune deletes. Not yet in a
+      released version.
+    semver: patch
+    semver_reason: the cache matches the database after a prune; nothing stored changes
+    register: [BF-222]
+    gates:
+      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 789d5d9d FETCH_HEAD
+        kind: network
+        describe: >
+          #8883's head on GitHub contains BF-222's fix 789d5d9d; red if the PR
+          drops it. Once #8883 merges, replace with the official/dev
+          ancestor gate and set merged-upstream
+    blocks_on: []
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+    notes: >
+      2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev
+      368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged.
+      Merges before #8879's next dev merge (they conflict in four files).
+      Filed by session -7d to close the register-queue coverage gap.
 
   - id: BFQ-192
     title: "BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)"

@@ -31,23 +31,23 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 332 |
-| runnable gates | 389 |
-| explicit `no-gate:` markers | 359 |
+| items | 340 |
+| runnable gates | 393 |
+| explicit `no-gate:` markers | 363 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 359 of the 748 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 363 of the 756 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 6 | BFQ-178, T30-SCHEMA-CONFIG, ID-CONVENTIONS, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `not-started` | 77 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, QC-MATRIX-WIRE-ATTRIBUTION, UI-STALE-SECRET-HASH |
+| `in-progress` | 8 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 16 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-FIRST-MATCH, ID-BATCH-RESULTS, ID-VALIDATE, ID-V1-LOOKUP, ID-UNIQUE-INDEX, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 6 | WC-STEP-PATCH, BFQ-72, BFQ-161, BFQ-212, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
-| `merged-upstream` | 66 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE |
+| `blocked` | 13 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
+| `in-flight-upstream` | 12 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, BFQ-219, BFQ-220, BFQ-221, BFQ-222, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE |
+| `merged-upstream` | 67 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 41 | P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS |
@@ -147,6 +147,10 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-210** BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect)
 - **BFQ-211** BF-211 - a delete by query in one collection empties all three in-memory caches
 - **BFQ-212** BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice
+- **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
+- **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
+- **BFQ-221** BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
+- **BFQ-222** BF-222 - API v3 autoPrune can leave pruned records in the server's cache
 - **BFQ-193** BF-193 - the realtime socket and other write paths log every record written through them
 - **BFQ-194** BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL
 - **BFQ-195** BF-195 - a stale profile is pushed over the socket after a profile re-send
@@ -1025,7 +1029,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 50 items
+`parcel: release-train` &mdash; 53 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1084,6 +1088,9 @@ that costs.
 | `RT-SOAK` | tools/lab/rc-soak - A/B soak of the 15.0.9 candidate against 15.0.8, and a 24-72 h real-time soak | `done` | `main` | n/a | 1 run + 2 no-gate |
 | `OID-V3-EDIT-MERGE` | API v3 PUT and PATCH of a record stored twice by _id leave both copies; make an edit merge them, as v1 PUT does | `not-started` | `-` | patch | 1 run + 1 no-gate |
 | `OID-WS-EDIT-MERGE` | Websocket dbUpdate of a record stored twice by _id edits both copies and leaves two; make it merge them | `not-started` | `-` | patch | 0 run + 1 no-gate |
+| `DEV-LINT-OVERLAY-REGEX` | Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive) | `in-flight-upstream` | `hygiene/dev-lint-overlay` | patch | 0 run + 1 no-gate |
+| `UI-DRAWER-RESIZE` | A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer) | `in-flight-upstream` | `hygiene/dev-lint-overlay` | patch | 0 run + 1 no-gate |
+| `UI-STALE-SECRET-HASH` | A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret" | `not-started` | `-` | patch | 0 run + 1 no-gate |
 
 ### `RT-D3` &mdash; Answer the D3 question before 15.0.9 ships
 
@@ -2693,11 +2700,83 @@ that costs.
 
 **Notes.** Follow-up to BF-110/BF-117, queued 2026-09-25 at the maintainer's request. Editing both copies is not wrong for what is shown (both carry the edit), but the pair never becomes one record, so reads that list treatments keep showing two. The fix shape: update the ObjectId copy (converting a string-only record to its ObjectId, as dbAdd does), then delete the string forms, as the v1 treatments PUT does; the renderer's split-drag path (dbUpdate then dbAdd) must still see the edited _id. Best done with OID-V3-EDIT-MERGE and OID-STORAGE- HELPER, which would give v1, v3 and the websocket one rule for writes by _id. Decisions: - 2026-09-26 (maintainer): after 15.0.9.
 
+### `DEV-LINT-OVERLAY-REGEX` &mdash; Development builds show a lint-warning popup on every page: lib/profilefunctions.js:251's anchored GMT/UTC offset regex trips security/detect-unsafe-regex (false positive)
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `hygiene/dev-lint-overlay` |
+| base | `official/dev` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+
+**Blast radius.** lib/profilefunctions.js:251 (`/^(?:GMT|UTC)([+-])(\d{1,2})(?::(\d{2}))?$/i`, from 79e0155d, 2026-04-25, sub-hour offsets). Under NODE_ENV=development, webpack/lint-plugin.js reports it as a compilation warning and the HMR overlay (webpack/webpack.config.js:123) pops it up on every page load; production builds are not affected.
+
+**What an operator sees.** none (development builds only)
+
+**Why `patch`.** lint annotation only, no runtime change
+
+**Gates.**
+
+- **NO GATE** &mdash; not built yet; the fix's gate will be the development build's lint step reporting no warning for lib/profilefunctions.js
+
+**Notes.** 2026-10-30: fixed in #8882 (04e1bbbc): inline disable with the reason; eslint lib 21 to 20 warnings, the development build compiles with none. 2026-10-30: requested by the maintainer while walking the journey lab on #8874 against dev (relayed by session -7d). Present on dev 305a6533 and #8874 7463e76d. Assessment (read): a false positive; the pattern is anchored at both ends and its repeats are capped at two digits. Proposed fix (a): an inline `// eslint- disable-next-line security/detect-unsafe-regex` with the reason, keeping the overlay useful for new warnings; alternative (b): overlay warnings off. Small; can ride in a themed hygiene PR.
+
+### `UI-DRAWER-RESIZE` &mdash; A drawer opened in a narrow window keeps its narrow size when the window grows (inline pixel sizes set once in openDrawer)
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `hygiene/dev-lint-overlay` |
+| base | `official/dev` |
+| worktree | `externals/work/crm-dev-lint` |
+| semver | `patch` |
+| review | maintainer |
+
+**Blast radius.** lib/client/browser-utils.js openDrawer (about lines 126-160) sets inline width and height in pixels from the window size when a drawer opens, and no resize handler recomputes them. Shared by every drawer (settings, careportal, bolus calculator, admin notifications) in both themes; from 9aab137b (2016-02-17).
+
+**What an operator sees.** none (browser display only)
+
+**Why `patch`.** display fix, no data or API change
+
+**Gates.**
+
+- **NO GATE** &mdash; not built yet; the fix's gate is a browser test that opens a drawer at 390 px, resizes to 1440 px and asserts the drawer's size, red on dev
+
+**Notes.** 2026-10-30: fixed in #8882 (cd42dfce) for height changes; a width change closes the drawer by design since 2016 (chart.js:349-351), kept (maintainer). Browser test red on dev, suite 679 passing in chromium and firefox. 2026-10-30: seen by the maintainer in the journey-lab session on the modern theme (relayed by session -7d); identical on dev 305a6533 and #8874 7463e76d, so not an #8874 regression; the modern theme makes it more visible. Fix options: size open drawers with CSS (e.g. width: min(350px, 100vw), a dvh- based height) instead of inline pixels, or re-apply the sizing on resize while a drawer is open. Being built as a second commit on the hygiene branch with DEV-LINT-OVERLAY-REGEX.
+
+### `UI-STALE-SECRET-HASH` &mdash; A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only "Wrong API secret"
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+
+**Blast radius.** The browser's stored `apisecrethash` (localStorage) is sent with requests and takes precedence over a `?token=` in the page URL; the client authorization code in lib/client (exact file to be located by the fix).
+
+**What an operator sees.** A follower or caregiver opening a valid token link on a browser that once stored a different API secret sees "Wrong API secret" with no hint.
+
+**Why `patch`.** client sign-in behaviour, no API change
+
+**Gates.**
+
+- **NO GATE** &mdash; not built yet; the fix's gate is a browser test that stores a wrong hash, opens a valid ?token= link and is signed in (red on dev)
+
+**Notes.** 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.
+
 ---
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 152 items
+`parcel: register-open` &mdash; 156 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2835,6 +2914,10 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-210` | BF-210 - a socket treatment without an amount is matched to a stored one that has one (closed: not a defect) | `closed` | `-` | n/a | 0 run + 1 no-gate |
 | `BFQ-211` | BF-211 - a delete by query in one collection empties all three in-memory caches | `merged-upstream` | `bf/16.0.0-socket-similar-match` | patch | 1 run |
 | `BFQ-212` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice | `in-flight-upstream` | `bf/16.0.0-split-identity` | patch | 0 run + 1 no-gate |
+| `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
+| `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
+| `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
+| `BFQ-222` | BF-222 - API v3 autoPrune can leave pruned records in the server's cache | `in-flight-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-192` | BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression) | `merged-upstream` | `-` | n/a | 1 run + 1 no-gate |
 | `BFQ-193` | BF-193 - the realtime socket and other write paths log every record written through them | `merged-upstream` | `official/dev` | patch | 2 run + 1 no-gate |
 | `BFQ-194` | BF-194 - API v1 drops the units of a temp target with no glucose value, so mmol/L targets read as mg/dL | `merged-upstream` | `bf/16.0.0-tt-units` | minor | 2 run |
@@ -7118,6 +7201,134 @@ distinction is the only thing that makes the register mean anything - widening
 
 **Notes.** 2026-10-30: the first part (the split stops copying identity fields) merged to dev as d51c7a60 (#8878); the re-upload double count stays open. Filed 2026-10-29 by the records accuracy pass from the chart-drag split probe on dev e1f7ac41; the overwrite of a shared-identifier record measured the same day by session -4f (QC-MATRIX-IDF). Not run on v15.0.9; splitRecord there is the same code (read).
 
+### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-batch-replies` |
+| base | `official/dev@368e6c23` |
+| worktree | `externals/work/crm-bf-batch` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-219` |
+
+**Blast radius.** lib/server/treatments.js and the v1 treatments POST reply: the derived carb record is no longer a reply slot, so the reply has one slot per sent item (6750d851, ported onto the write step in 8ae46b72).
+
+**What an operator sees.** Loop re-sent a batch with a pre-bolus forever, and nightscout-connect could skip a record it had not sent yet, because the reply had one more item than was sent. With the fix the reply has one item per item sent. Not yet in a released version.
+
+**Why `patch`.** the reply's slot count matches the request; what is stored does not change
+
+**Gates.**
+
+- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD`
+  - #8883's head on GitHub contains BF-219's fix 8ae46b72; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+
+**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+
+### `BFQ-220` &mdash; BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-batch-replies` |
+| base | `official/dev@368e6c23` |
+| worktree | `externals/work/crm-bf-batch` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-220` |
+
+**Blast radius.** The v1 batch write: only the entry whose _id is taken is refused (409 in its slot) and the rest are stored; a batch where every entry is refused answers 200 with slots (1265f5d1, c3a939f7, ported in 8ae46b72).
+
+**What an operator sees.** One record with an _id that was already taken made the whole upload fail after part of it was saved, so uploaders re-sent it and the records after it were never saved. With the fix the other records are saved and only the taken one is refused. Not yet in a released version.
+
+**Why `patch`.** a 5xx becomes per-slot results with the valid items stored
+
+**Gates.**
+
+- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD`
+  - #8883's head on GitHub contains BF-220's fix 8ae46b72; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+
+**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+
+### `BFQ-221` &mdash; BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-batch-replies` |
+| base | `official/dev@368e6c23` |
+| worktree | `externals/work/crm-bf-batch` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-221` |
+
+**Blast radius.** lib/server/treatments.js save(): data-received is emitted after the replace finishes instead of when it starts (972da1cf, ported in 8ae46b72).
+
+**What an operator sees.** An edit to a treatment sent by an app over API v1 could take up to about a minute to show on open Nightscout pages. With the fix it shows within a fraction of a second. What is stored does not change. Not yet in a released version.
+
+**Why `patch`.** display timing only
+
+**Gates.**
+
+- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 8ae46b72 FETCH_HEAD`
+  - #8883's head on GitHub contains BF-221's fix 8ae46b72; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+
+**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+
+### `BFQ-222` &mdash; BF-222 - API v3 autoPrune can leave pruned records in the server's cache
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `bf/16.0.0-batch-replies` |
+| base | `official/dev@368e6c23` |
+| worktree | `externals/work/crm-bf-batch` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-222` |
+
+**Blast radius.** lib/api3/storage/mongoCachedCollection/index.js deleteManyOr: the pre- read of ids to announce uses the same OR as the delete (logicalOperator 'or'); tests/api3.autoprune.test.js gains a red/green test (9d8dbc76, cherry-picked as 789d5d9d).
+
+**What an operator sees.** Only on sites that set API3_AUTOPRUNE_<collection> to fewer days than the server keeps in memory. A record pruned by its date could keep showing until the server dropped it from memory by age. With the fix the server forgets every record the prune deletes. Not yet in a released version.
+
+**Why `patch`.** the cache matches the database after a prune; nothing stored changes
+
+**Gates.**
+
+- `[network]` `git -C externals/cgm-remote-monitor-official fetch -q official pull/8883/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 789d5d9d FETCH_HEAD`
+  - #8883's head on GitHub contains BF-222's fix 789d5d9d; red if the PR drops it. Once #8883 merges, replace with the official/dev ancestor gate and set merged-upstream
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+
+**Notes.** 2026-10-31: in #8883 (bf/16.0.0-batch-replies, head 789d5d9d, base dev 368e6c23, 0 behind; CI 13 passed and 2 pending at 05:30Z); not merged. Merges before #8879's next dev merge (they conflict in four files). Filed by session -7d to close the register-queue coverage gap.
+
 ### `BFQ-192` &mdash; BF-192 - the populated reports browser test measured a drawn report against an empty-form heap ceiling (test-measurement blind spot, not a product regression)
 
 | | |
@@ -7857,7 +8068,7 @@ alarm-readiness items, and the seam branch refresh.
 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | `seam/t1-2-storage-interface` | n/a | 2 run + 1 no-gate |
 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-DUP-MEASURE` | Measure duplicate identifier values across the 12-site ns-data corpus | `done` | `records/loop-identifier-2026-10-17` | n/a | 1 run |
-| `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `in-flight-upstream` | `feat/write-intent` | patch | 2 run + 1 no-gate |
+| `WC-STEP-PATCH` | Release 1 (patch): one write step for every v1, v3 and socket path, today's behaviour pinned; BF-165's _id in every reply | `merged-upstream` | `feat/write-intent` | patch | 2 run + 1 no-gate |
 | `WC-R2-QA` | Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `WC-R2-QB` | Release 2: One timing for removing a stored string-form _id twin on every path | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `WC-R2-QC` | Release 2: Separate source labels for API v1 and in-process callers | `not-started` | `-` | patch | 0 run + 1 no-gate |
@@ -7867,8 +8078,8 @@ alarm-readiness items, and the seam branch refresh.
 | `WC-R2-QH` | Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-match (spec Q1) | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `WC-R1-QG` | Refresh the write-contract spec's matrix tables against the dev db3b9e4e pin | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `WC-R1-QI` | Retire websocket.js idMatch when the socket update slice moves into the step | `not-started` | `feat/write-intent` | n/a | 0 run + 1 no-gate |
-| `ID-FIRST-MATCH` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar) | `blocked` | `-` | minor | 0 run + 1 no-gate |
-| `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch | `blocked` | `-` | minor | 0 run + 1 no-gate |
+| `ID-FIRST-MATCH` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar) | `in-flight-upstream` | `feat/id-first-match` | minor | 0 run + 1 no-gate |
+| `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch | `in-progress` | `-` | minor | 0 run + 1 no-gate |
 | `ID-FORMAT-DECISION` | Decide: the client identifier's format (1 to 256 URL-safe characters; UUID recommended; placeholders refused) | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-CLIENT-OID-DECISION` | Decide: may a client set _id (an ObjectId it creates) over API v1? (API v3 decided: refused, BF-170) | `answered` | `-` | n/a | 0 run + 1 no-gate |
 | `ID-ABSENT-DECISION` | Decide: a write that carries no identifier (and no _id) - keep the time-key fallback, deprecate it, or require identifier? | `answered` | `-` | n/a | 0 run + 1 no-gate |
@@ -7878,7 +8089,7 @@ alarm-readiness items, and the seam branch refresh.
 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe characters, placeholders refused); empty and null mean absent | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time window | `blocked` | `-` | minor | 0 run + 1 no-gate |
 | `ID-V3-IMMUTABLE-DECISION` | Decide: on an identifier match, may date, device or eventType change? | `answered` | `-` | n/a | 0 run + 1 no-gate |
-| `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates | `blocked` | `-` | minor | 0 run + 1 no-gate |
+| `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up safe on existing duplicates | `in-progress` | `feat/id-unique-index` | minor | 0 run + 1 no-gate |
 | `ID-NATURAL-KEY` | Natural keys for re-sends that carry no identifier: device status and profile, with a corpus check of what would merge | `not-started` | `-` | major | 0 run + 1 no-gate |
 | `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or refuse for a re-send with changed fields | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `DISPLAY-MEAL-GROUP` | Show a bolus and its carbs as one meal in the display layer; storage de-duplication collapses only true re-sends | `not-started` | `-` | minor | 0 run + 1 no-gate |
@@ -8544,7 +8755,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-flight-upstream` |
+| state (claimed) | `merged-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `feat/write-intent` |
 | base | `official/dev@db3b9e4e` |
@@ -8574,7 +8785,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `tools/qc/write-contract-matrix.js`
 
-**Notes.** 2026-10-30: #8874 pushed at 4f9fc4cd (slices 1-6, dev 991b0654 merged), PR CI green; in 16.0.0 scope through the entry bar (maintainer, 2026-10-30). Earlier notes saying "not for 16.0.0" are superseded. 2026-10-29: draft PR #8874 (GitHub head still feat/write-intent 0671b430). Push-ready head: local feat/write-intent-release e8224807, 17 commits on dev e1f7ac41, slices 1-6. npm test 5106/0/3 against dev 4759/0/3; the write-contract matrix differs from dev in 0 cells; the revert was rehearsed. The release-2 questions are Q-A..Q-Y in docs/30-design/platform/wc-step-design-note-2026-10-27.md (the queue items WC-R2-QA..WC-R2-QH carry the first of them). 2026-10-28: draft PR #8874 to dev opened by the maintainer (head 0671b430); not for 16.0.0. Slices 4 and 6 still to come. 2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent test files (169 passing), G2 and the copies gate re-checked by -4f, and G1 re- run by -4f against the v2 pin): local feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries), 6115c755 (devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1 on the 360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin (456 cells): 2 cells differ in the racy cache field only, the same two that vary between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells, suites 608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule copies 37 (baseline 47). G2 enrols 7 entries. A new test file runs the db3b9e4e modules and the step side by side over a recording driver (calls, events, emissions, log lines, replies), the only check on preBolus, UUID_HANDLING, the profile permission and log lines. New questions Q-J..Q-P (design note). Slices left: 4 (v3) and 6 (socket treatments, devicestatus, profile adds and updates), held for the maintainer's review. 2026-10-27: G1's pin is now dev-db3b9e4e-v2.json (456 cells: the 360 of the first pin, identical, plus update-twin, idread-fail, harddelete-custom and harddelete-num; b6c19bc5a). Slices 1-3 (a0e7fcac) equal it in every cell, setting aside the racy cache field. The activity save-twin break the first pin could not see turns activity update-twin red on both v1 and in-process. Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
+**Notes.** 2026-10-31: #8874 merged to dev as 368e6c23 (head 83f3d54a) by the maintainer; in 16.0.0, not released. Journey lab 2026-10-30/31: no difference from dev. 2026-10-30: #8874 pushed at 4f9fc4cd (slices 1-6, dev 991b0654 merged), PR CI green; in 16.0.0 scope through the entry bar (maintainer, 2026-10-30). Earlier notes saying "not for 16.0.0" are superseded. 2026-10-29: draft PR #8874 (GitHub head still feat/write-intent 0671b430). Push-ready head: local feat/write-intent-release e8224807, 17 commits on dev e1f7ac41, slices 1-6. npm test 5106/0/3 against dev 4759/0/3; the write-contract matrix differs from dev in 0 cells; the revert was rehearsed. The release-2 questions are Q-A..Q-Y in docs/30-design/platform/wc-step-design-note-2026-10-27.md (the queue items WC-R2-QA..WC-R2-QH carry the first of them). 2026-10-28: draft PR #8874 to dev opened by the maintainer (head 0671b430); not for 16.0.0. Slices 4 and 6 still to come. 2026-10-28, slice 5 (session -4f's agent; heads, the two write-intent test files (169 passing), G2 and the copies gate re-checked by -4f, and G1 re- run by -4f against the v2 pin): local feat/write-intent 5d97fb59 (treatments), 869a7de1 (entries), 6115c755 (devicestatus), daaa3db9 (profile), 0671b430 (release-2 comments). G1 on the 360-cell pin: 0 cells and 0 commit events per collection; on the v2 pin (456 cells): 2 cells differ in the racy cache field only, the same two that vary between runs of untouched dev. WRITE_VALIDATION=reject: matrix 0 cells, suites 608/0 before and after. npm test 4919/0/3; test:all passes. Write-rule copies 37 (baseline 47). G2 enrols 7 entries. A new test file runs the db3b9e4e modules and the step side by side over a recording driver (calls, events, emissions, log lines, replies), the only check on preBolus, UUID_HANDLING, the profile permission and log lines. New questions Q-J..Q-P (design note). Slices left: 4 (v3) and 6 (socket treatments, devicestatus, profile adds and updates), held for the maintainer's review. 2026-10-27: G1's pin is now dev-db3b9e4e-v2.json (456 cells: the 360 of the first pin, identical, plus update-twin, idread-fail, harddelete-custom and harddelete-num; b6c19bc5a). Slices 1-3 (a0e7fcac) equal it in every cell, setting aside the racy cache field. The activity save-twin break the first pin could not see turns activity update-twin red on both v1 and in-process. Transition target (maintainer, 2026-10-27): every write path enrolled in the step before 16.2.0, measured by G2's enrolled set covering every writer and by the write-rule copies gate falling toward zero (47 at dev db3b9e4e). The mixed state (some paths through the step, some not) is the riskiest one, so it is kept short. Release-2 questions are queue items WC-R2-QA..WC-R2-QH; WC-R1-QG and WC-R1-QI stay in release 1. Contributor guide: docs/30-design/platform/guides/write-intent.md. 2026-10-27 late, slices 2 and 3 (session -4f's agent; heads, unit tests, G2, the copies gate and the G1 compare outputs re-checked by -4f): local feat/write-intent f0d51ee7 (activity, v1 and in-process) and a0e7fcac (the socket's generic dbAdd for entries, food and activity, and dbRemove for all six collections). G1 0 of 360 cells after each, commit events included; every step ablation red only in enrolled cells, one (activity save-twin) red only in the suite because no matrix form PUTs over a string twin; G2 enrols function by function in websocket.js. npm test 4821/0/3; test:all passes. Write-rule copies on the branch: five fewer than the dev baseline, none new. No dev test expectation changed. New question Q-I: the step's id-match duplicates websocket.js idMatch until the dbUpdate slice. Slices left: 4 v3 (after Q-A); 5 v1/in-process treatments, entries, devicestatus, profile; 6 socket dbAdd for treatments/devicestatus/profile plus dbUpdate/dbUpdateUnset; 7 the event, after D-EVENT. 2026-10-27, milestone 1 (session -4f's agent; heads, unit tests, G2 and the G1 compare re-checked by -4f): local feat/write-intent 2b9d3687 + 84e21a66 on dev db3b9e4e, not pushed. Slice 1: food writes from API v1 and in-process go through write(intent) (lib/storage/write-intent.js, 5 files +530/-77). G1: 0 of 360 cells differ from the pin tools/qc/results/write-contract-matrix/dev-db3b9e4e.json (two baseline runs identical; the six ablations all red, two report MISMATCH only because their expected lists predate the Temporary Target cells). npm test 4761/0/3 (baseline 4750 + 11); test:all passes. Step ablations red only in enrolled cells; unit tests and G2 (scripts/check-write-intent.js) shown to fail when broken. Design note: docs/30-design/platform/wc-step-design- note-2026-10-27.md, with slices 2-8 proposed and questions Q-A..Q-H for the maintainer. 2026-10-26, later: ARCH-8854 is merged (#8854, dev c08cbe03, head 246313e4; dev now 7ad3a67f), so this item can start on dev, building on the persistence boundary lib/storage/write-step.js; its write(intent) layer takes a separate name such as write-intent.js, as #8854's data-contracts.md (its architecture docs) says. State moves from blocked to not-started. The September chain stays reference only. 2026-10-26: blocks on ARCH-8854 instead of SEAM-REFRESH. The maintainer leans to building the seam on #8854's write boundary (next-gen plan D-SEAM), and #8854 is decided into 16.0.0 (outcome B); its condition 4 gives this item's write(intent) layer its own name, layered on the boundary. The September chain is reference for the filter AST and bulkUpsert modes. WRITE-CONTRACT has no sub-items: it is one item covering both releases of spec Q6 (a). This item is its first release, split out so the identifier items can block on it; WRITE-CONTRACT stays the umbrella and is not duplicated. BFQ-165 (BF-165) can still land on dev first as a narrow fix; if it does, this item keeps it pinned rather than re-making it. BFQ-169 (the v3 swagger text about identifier) is documentation only and independent; it is linked because the identifier items below make the corrected text a promise.
 
 ### `WC-R2-QA` &mdash; Release 2: Re-express API v3 writes as filter writes under the step, or keep two adapter-method families
 
@@ -8846,13 +9057,14 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `feat/id-first-match` |
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
 | worktree | `externals/work/crm-seam` |
 | semver | `minor` |
 | review | maintainer, plus a second human - re-send behaviour clients see changes |
+| register | `BF-215`, `BF-216` |
 | blocks on | `WC-STEP-PATCH`, `ID-SIMPLE-MATCH`, `ID-VALIDATE` |
 
 **Blast radius.** The write step's match rule, applied on: lib/server/entries.js upsertQueryFor (today sysTime+type unless identifier is present after UUID normalisation); lib/server/devicestatus.js create (insertMany becomes an upsert on identifier when one is present); lib/server/websocket.js dbAdd; lib/server/treatments.js upsertQueryFor gains the adoption rule.
@@ -8871,13 +9083,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
-**Notes.** 2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): the rules this item builds are decided, and it is eligible for 16.0.0 through the entry bar (plan §1a), with ID-BATCH-RESULTS and ID-RESEND-SWITCH. Scope is every collection and path. (1) Merge on match stays the default for a re-send with changed fields; v3 keeps refusing a changed date, device or eventType; PUT replaces (ID-V3-IMMUTABLE-DECISION). (2) Merge on match keeps fields the re-send leaves out (RFC 7386), measured per path first: the census reads replace on several paths, not yet measured, and every path that changes is listed cell by cell. (3) A re-send after delete is acknowledged and stays deleted on every path, with the cell-by-cell impact documented for revert (ID-DELETE-REUSE-DECISION). (4) Socket dbUpdate, dbUpdateUnset and dbRemove accept identifier when no _id is given, and activity creates match on identifier; both are additive and conditional on the extended matrix showing every existing form unchanged. (5) The identifier format is enforced with or before this item (ID-VALIDATE, added to blocks_on), because two clients sending the same placeholder would be merged. (6) Natural keys for re-sends without identifier are a separate item, ID-NATURAL-KEY. A default changes only in a major: 16.0.0 through the entry bar, otherwise 17.0.0. Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier. ID-DUP- MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the reply names syncIdentifier as Loop's treatment identity), matching on it alone would fold those pairs into one record. The reply draft does not raise this yet. Re-shaped 2026-10-17: the v1 entries and devicestatus identifier match ships first, on dev, as the release-train item ID-SIMPLE- MATCH (maintainer: after 15.0.9, after cut 1's rebase). This item keeps the socket dbAdd match and the Q1 adoption rule, and absorbs ID-SIMPLE-MATCH's rule into the write step once WC-STEP-PATCH exists. The rewritten Loop reply lists Q1 under "later, only if needed".
+**Notes.** 2026-10-31 later (GitHub, about 05:45Z): #8879 at 931e5e60, 0 behind dev 368e6c23: slice 4 (merge on match, treatments replaced on every path) pushed; CI fails lint (no-useless-assignment, lib/storage/write-intent.js:1450). Carries BF-215 and BF-216 (slice 2). 2026-10-31: draft #8879 at 5cdd9577 (base dev): slices 1, 2, 5 (+5b) and 3 built and pushed, dev 368e6c23 merged; slice 4 being rebuilt with treatments replaced on every path (maintainer 2026-10-30); 6 and 6a prepared on prep/id-first-s6 47377fa3. Owner session -4f. 2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): the rules this item builds are decided, and it is eligible for 16.0.0 through the entry bar (plan §1a), with ID-BATCH-RESULTS and ID-RESEND-SWITCH. Scope is every collection and path. (1) Merge on match stays the default for a re-send with changed fields; v3 keeps refusing a changed date, device or eventType; PUT replaces (ID-V3-IMMUTABLE-DECISION). (2) Merge on match keeps fields the re- send leaves out (RFC 7386), measured per path first: the census reads replace on several paths, not yet measured, and every path that changes is listed cell by cell. (3) A re-send after delete is acknowledged and stays deleted on every path, with the cell-by-cell impact documented for revert (ID-DELETE-REUSE- DECISION). (4) Socket dbUpdate, dbUpdateUnset and dbRemove accept identifier when no _id is given, and activity creates match on identifier; both are additive and conditional on the extended matrix showing every existing form unchanged. (5) The identifier format is enforced with or before this item (ID- VALIDATE, added to blocks_on), because two clients sending the same placeholder would be merged. (6) Natural keys for re-sends without identifier are a separate item, ID-NATURAL-KEY. A default changes only in a major: 16.0.0 through the entry bar, otherwise 17.0.0. Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds no identifier match may adopt a stored record with NO identifier on the natural key; never one with a different identifier. ID-DUP-MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the reply names syncIdentifier as Loop's treatment identity), matching on it alone would fold those pairs into one record. The reply draft does not raise this yet. Re-shaped 2026-10-17: the v1 entries and devicestatus identifier match ships first, on dev, as the release- train item ID-SIMPLE-MATCH (maintainer: after 15.0.9, after cut 1's rebase). This item keeps the socket dbAdd match and the Q1 adoption rule, and absorbs ID-SIMPLE-MATCH's rule into the write step once WC-STEP-PATCH exists. The rewritten Loop reply lists Q1 under "later, only if needed".
 
 ### `ID-BATCH-RESULTS` &mdash; Release 2 (minor): per-item results in v1 batch replies; one bad item no longer fails the batch
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
@@ -8901,7 +9113,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
 
-**Notes.** 2026-10-29 (maintainer): eligible for 16.0.0 through the entry bar (next-gen plan §1a and §4.2, where it is named ID-BATCH), with ID-FIRST-MATCH and ID- RESEND-SWITCH. The per-item reply shape (stored, refused, failed) for the socket, v1 batch and v3 is settled here (ARCH-8854-FAILED's 2026-10-27 decision points to it). U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).
+**Notes.** 2026-10-30: questions (ii)-(vi) decided (16.0.0 decisions.md); prototype proto/id-batch-replies 7d81e1c1 and lab tools/lab/id-batch-replies; BF-219/BF-220 fixed ahead in #8883; strict on v1 comes with it. 2026-10-29 (maintainer): eligible for 16.0.0 through the entry bar (next-gen plan §1a and §4.2, where it is named ID-BATCH), with ID-FIRST-MATCH and ID-RESEND-SWITCH. The per-item reply shape (stored, refused, failed) for the socket, v1 batch and v3 is settled here (ARCH-8854-FAILED's 2026-10-27 decision points to it). U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).
 
 ### `ID-FORMAT-DECISION` &mdash; Decide: the client identifier's format (1 to 256 URL-safe characters; UUID recommended; placeholders refused)
 
@@ -9182,14 +9394,14 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
+| branch | `feat/id-unique-index` |
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
 | worktree | `externals/work/crm-seam` |
 | semver | `minor` |
 | review | maintainer, plus a second human - it changes indexes on every site |
-| blocks on | `ID-DUP-MEASURE`, `ID-FIRST-MATCH`, `ID-BATCH-RESULTS`, `ID-V3-IMMUTABLE-DECISION`, `ID-VALIDATE` |
+| blocks on | `ID-DUP-MEASURE`, `ID-FIRST-MATCH`, `ID-V3-IMMUTABLE-DECISION`, `ID-VALIDATE` |
 
 **Blast radius.** lib/storage/mongo-storage.js ensureIndexes (211-219 at dev fade2299) and the per-collection index lists in lib/server/{entries, treatments, devicestatus}.js: today's non-unique identifier index is replaced by a partial unique index {identifier: {$type: "string", $gt: ""}} (not sparse: a sparse index still indexes null). The same key pattern conflicts with the existing index, so it is dropped and rebuilt. The write step retries an E11000 as an update. A pre-flight duplicate report (admin tool). The PostgreSQL seam needs the equivalent partial unique index (WHERE identifier IS NOT NULL AND identifier <> '').
 
@@ -9206,7 +9418,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-30 (maintainer): in 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off (default try: on existing duplicates, log counts, show them on the status page, run without the index; the write rule still blocks new duplicates), plus an operator-run report and clean tool using the P4 pick. 2026-10-29: ID-V3-IMMUTABLE-DECISION is answered (merge on match stays the default). ID-VALIDATE joins blocks_on: with placeholders refused first, two clients sending the same placeholder cannot collide on the index. Not in the 16.0.0 entry-bar list (ID-FIRST-MATCH, ID-BATCH and the re- send switch are). ID-DUP-MEASURE: the index would build on every collection at every corpus site, but the corpus has almost no identifier (505 documents) and no v3 writer; if Loop sent syncIdentifier as identifier it would not build at 2 of 12 sites. The pre-flight report is what decides on a real site.
+**Notes.** 2026-10-31: built and gated on slice 3 as local feat/id-unique-index b4a4092c (342 predicted cells move under try, 0 under off; MongoDB 5.0 and 8.0 5,515/0/3); held for slice 6a, then a draft PR on #8879. 2026-10-30 (maintainer): in 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off (default try: on existing duplicates, log counts, show them on the status page, run without the index; the write rule still blocks new duplicates), plus an operator-run report and clean tool using the P4 pick. 2026-10-29: ID-V3-IMMUTABLE-DECISION is answered (merge on match stays the default). ID- VALIDATE joins blocks_on: with placeholders refused first, two clients sending the same placeholder cannot collide on the index. Not in the 16.0.0 entry-bar list (ID-FIRST-MATCH, ID-BATCH and the re-send switch are). ID-DUP-MEASURE: the index would build on every collection at every corpus site, but the corpus has almost no identifier (505 documents) and no v3 writer; if Loop sent syncIdentifier as identifier it would not build at 2 of 12 sites. The pre- flight report is what decides on a real site. 2026-10-30 (maintainer, via session -49): the index comes before ID-BATCH-RESULTS, which leaves blocks_on. The index work carries the duplicate-key handling inside the write step (re- read by identifier, apply the item under WRITE_RESEND, retry once; a second failure is a 5xx), which needs no change to the reply format. ID-BATCH-RESULTS follows as a reply-format change (docs/30-design/platform/id-batch-design- note-2026-10-30.md).
 
 ### `ID-NATURAL-KEY` &mdash; Natural keys for re-sends that carry no identifier: device status and profile, with a corpus check of what would merge
 
@@ -10180,7 +10392,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 36 items
+`parcel: platform` &mdash; 37 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -10227,6 +10439,7 @@ reproduced ones.
 | `SCHEMA-INTENT-GAPS` | Registration grammar: the initiators other form, duration units on requested and applied carriers, typed carrier fields | `done` | `docs/platform-spec-index-2026-10-18` | n/a | 2 run |
 | `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes | `in-flight-upstream` | `feat/nightscout-entrypoint` | minor | 0 run + 1 no-gate |
 | `PLAT-SERVE` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately | `merged-upstream` | `feat/nightscout-serve` | minor | 1 run |
+| `QC-MATRIX-WIRE-ATTRIBUTION` | Write-contract matrix: attribute storage-socket frames to their cell and settle after the seed, so `wire` stops picking up a previous cell's late frame | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
 
@@ -11402,6 +11615,30 @@ reproduced ones.
 - `tools/lab/image-start-forms/README.md`
 
 **Notes.** 2026-10-30: #8865 merged to dev as 991b0654 (head 1b2801f7) by the maintainer; in 16.0.0, not released. 2026-10-27 night (maintainer): #8865 joins the 16.0.0 merge list. Only `single` is supported. Then (maintainer, same night): the subcommand selects tenancy, so TENANCY_MODE retires; `serve` is reserved for a multitenant Nightscout and every role, api included, exits 64 until it is multitenant; the single-tenant api code runs as scripts/headless-test- server.js for tests and development (not in the image); API3_TEST_TARGET serve-api is renamed headless. Head b01b77c3 (pushed by the maintainer): API v3 suites 751/0 under single with and without the change, 643/0/108 pending under headless (MongoDB 7.0.43 with nofile 64000). PR title and body rewritten to match. #8862 is superseded. Head 53ba192a (README and CLI help say "multitenant roles"); every check passing; no human review yet. 2026-10-27 night (session -00): #8865 head f01d67e6, pushed by the maintainer, a fast- forward of 9f7f84f8 (-2e's three API v3 test commits and a dev merge, folding in the harness above). f01d67e6 fixes CodeQL alert 138 (js/disabling- certificate-validation, high) in lib/cli/commands/healthcheck.js, present since #8862's commits: the probe set rejectUnauthorized: false, for its loopback target and for --url alike. Now its own target requires the certificate SSL_CERT names (the chain verifies against SSL_CERT, SSL_CA and the system roots; the peer's fingerprint replaces the hostname check), and --url is checked as any client checks it; an unreadable SSL_CERT or SSL_CA is unhealthy. Tests: green for the configured certificate on loopback; red for another certificate on the port (tests/fixtures/ healthcheck-other.*), an unreadable SSL_CERT and a self-signed --url, the three failing on 9f7f84f8's healthcheck.js (19/3) and passing with the fix (22/0). start-paths + CLI 35 passing on MongoDB 8.0; unit tier 1585/0. CodeQL then marked alert 138 fixed on the PR's merge ref (0 open alerts; the CodeQL check passes). Image start forms measured the same night (tools/lab/image-start-forms, 8dd7c563c; dev dcf20bfb against 9bb1f0b4): every form that started a server on dev starts the same server (status.json identical apart from server time, one node process, same entrypoint, user, workdir, no HEALTHCHECK); differences are stop and signals (docker stop 10.1 s/137 to 0.13 s/0; SIGINT and SIGTERM, ignored by node as PID 1 on dev, exit 0), and `nightscout single` and `nightscout healthcheck` working as commands. Not covered: restart: on-failure after an outside SIGTERM (the site used to keep running; it now exits 0 and stays down), and tooling matching PID 1's command line. #8862 is superseded: its four commits are in #8865. 2026-10-27 (maintainer, recorded by session -4f): serve api's scope is v1 + v3 + the v2 summary and authorization + tenant resolution (interface-ownership §4 item 4); v1 joins once its storage paths run without the cache. Session -2e's ST-V3-DECOUPLE harness (feat/v3-role- harness 88f37427, three test-only commits on 9bb1f0b4; single 742/0, serve-api 634/0/108 pending, npm test 4757/0/3, as reported by -2e) is to be folded into #8865, not stacked. The 15 v3 tests on v1-created records keep running under serve-api. 2026-10-27 late (from session -2e; not re-run by the recording session): #8865 head 9bb1f0b4 on official, a fast-forward of 4d243590 pushed by the maintainer; open, not draft, base dev, mergeable. Two commits. 9f4bd874: the image keeps the node base entrypoint with CMD ["nightscout","single"]; an explicit `docker run` command replaces CMD and is exec'd by docker-entrypoint.sh, so the image no longer routes explicit commands through the dispatcher (one process, as on dev; env unchanged; image 52 MB smaller). The dispatcher's passthrough itself stays: lib/cli/index.js still runs a non-subcommand first argument as a program (`nightscout node lib/server/server.js`, covered by start-paths). Only the `version` shorthand without `nightscout` is lost; `nightscout version` works. 9bb1f0b4: lib/server/server.js handles SIGTERM and SIGINT through the bus teardown and exits 0, bounded at 8 s (exit 1 past it), so every start path (Procfile, npm start, server.js, the image) gets it. Measured on the image with MongoDB 7.0: docker stop 10.2 s force-killed (137) on dev, 0.16-0.20 s exit 0 on 9bb1f0b4, in every start case, with or without a connected websocket client. npm test 4757/0/3; start-paths 13 passing; the 2 new SIGTERM tests fail on the parent (death by signal). 2026-10-26, later: draft #8865 at 1dafe2a5, stacked on #8863 (base feat/storage-writes) with #8862 merged in. Env per role: <PREFIX>_HOSTNAME / _PORT (API_, REALTIME_, TENANT_ADMIN_, ADMIN_); admin defaults to 127.0.0.1:1338 and needs ADMIN_INSECURE_BIND_ACKNOWLEDGED for a non-loopback bind. Open: per-tenant config after TEN-RESOLVE, ADMIN_BIND vs ADMIN_HOSTNAME, the admin address rule on any port, /api/v2/authorization under tenant-admin, migrate owning indexes, one context per process. 2026-10-26 (D21). Open: whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience. TEN-RESOLVE (platform admin on its own interface) depends on this item.
+
+### `QC-MATRIX-WIRE-ATTRIBUTION` &mdash; Write-contract matrix: attribute storage-socket frames to their cell and settle after the seed, so `wire` stops picking up a previous cell's late frame
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | plan owner |
+
+**Blast radius.** tools/qc/write-contract-matrix.js (the `wire` column records frame names only); the pins under tools/qc/results/write-contract-matrix/.
+
+**What an operator sees.** none
+
+**Why `n/a`.** test tooling
+
+**Gates.**
+
+- **NO GATE** &mdash; not built yet; the fix's gate will be two consecutive full matrix runs on one head with 0 cells differing in `wire`
+
+**Notes.** 2026-10-30, session -7d: re-ran the 25 cells that differed between #8874 7463e76d and dev 305a6533, 10 repetitions per head, with the original harness and with a 250 ms settle after the seed; all 40 runs were identical in every field for the 91 cells run, so the differences were harness noise, not product. Proposed fix: tag each cell's documents (cellId) and attribute frames by it, and settle after the seed. Until then `cache` and `wire` stay excluded from cell comparisons.
 
 ---
 

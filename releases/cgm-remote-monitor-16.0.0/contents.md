@@ -12,8 +12,11 @@ Updated on 2026-10-28 for `dev` `e1f7ac41` (#8873), and on 2026-10-30 for `dev` 
 the Identity rows for `dev`, the merge list (#8877, #8878, #8865), the in-flight rows for the 16.0.0 scope
 the maintainer set on 2026-10-30, Known defects (BF-209, BF-211, BF-212) and the open items; read with
 `gh pr view`, `gh run list --commit` and `gh api` at about 02:30Z, and counted in
-`externals/cgm-remote-monitor-official` after `git fetch official`. The Version section and the other
-figures are still those of `47723cda`.
+`externals/cgm-remote-monitor-official` after `git fetch official`. Updated on 2026-10-31 for `dev` `368e6c23`
+(#8874, 02:02:52Z): the merge state, the in-flight update below the handoff table, Known defects (BF-215,
+BF-216, BF-219 to BF-222) and the testing pointer to R18; read with `gh pr list`, `gh pr checks` and
+`gh api .../compare` at about 05:45Z. The Version section and the other figures are still those of
+`47723cda`.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*; this file
 > records what the release is made of so far, how each figure was measured, and what is unsettled.
@@ -333,6 +336,9 @@ None of these merged trees was re-run locally by this programme, except the clie
   `ac5d77fb`, #8878 `57f333b4`, #8865 `1b2801f7`. #8874's head `4f9fc4cd` is 0 commits behind `dev`
   `991b0654` (`gh api repos/nightscout/cgm-remote-monitor/compare/dev...4f9fc4cd`: `behind_by` 0,
   `ahead_by` 20).
+- **#8874 is on `dev`** (2026-10-31): `dev` `368e6c23` is its merge, with CI passing on the push run
+  41158171888 and the `pull_request` run 41158177377. `dev` is 1027 commits and 56 first-parent commits
+  ahead of `master` `c6a0d8ed` (968 files, +151453/−19743; the integration record's figures).
 
 ## Version: 16.0.0, major
 
@@ -419,7 +425,19 @@ opens when slices 3 and 4 are on `dev`.
 | `master` protection, #8824 | — | protection still requires `Run Tests (22, 4.4)` | the decided settings change (only *Tests pass* and one approval), then #8824; maintainer |
 | Release 2 | `proto/v3-unify` `3b7f054a` (local) | Q-A adopted 2026-10-30; Q-U decided; Q9 recorded | write step resolves filter writes to ids; one write shape for v3; session -7d's labs |
 
-Queued, unowned: BF-222's fix (session -7d building it), QC-MATRIX-WIRE-ATTRIBUTION, UI-STALE-SECRET-HASH.
+**Update, 2026-10-31, about 05:45Z** (read from GitHub with `gh pr list`, `gh pr checks` and
+`gh api .../compare/dev...<head>` by session -7d; every local branch matches its PR head, and every worktree is clean):
+
+| PR | head now | against `dev` `368e6c23` | CI | changed since the table |
+|---|---|---|---|---|
+| #8883 | `789d5d9d` (pushed; title names BF-222) | 0 behind, 7 ahead | 13 passed, 2 pending | the push is done; merge before #8879 |
+| #8879 | `931e5e60` | 0 behind, 10 ahead | lint fails: `no-useless-assignment` at `lib/storage/write-intent.js:1450` | slice 4 (merge on match, treatments `replaced` on every path) pushed |
+| #8882 | `cd42dfce` | 25 behind | 4 failing: the browser-less test of `browser-utils` stops with `window is not defined`, because the drawer-resize listener (`lib/client/browser-utils.js:138`) runs when the module loads | **not ready to merge** until that commit guards for a missing `window` |
+| #8881 | `ffa5e6b4` | 0 behind | green | — |
+| #8875, #8857 | `24647c0a`, `10fe6725` | 25 behind each | green | — |
+| #8855 | `6a2e84ab` | 299 behind | — | — |
+
+Queued, unowned: QC-MATRIX-WIRE-ATTRIBUTION, UI-STALE-SECRET-HASH. BF-222's fix is in #8883 (BFQ-222).
 Upstream drafts, unsent: AndroidAPS 410 handling, tconnectsync profile copy
 (`docs/30-design/platform/upstream-asks-controller-authors/`).
 
@@ -429,7 +447,7 @@ and the queue):
 
 | work | branch or PR | head | state | queue |
 |---|---|---|---|---|
-| `write(intent)` release 1: every v1, API v3 and socket write path through one write step, no behaviour change except BF-165's `_id` in the fallback-key re-send reply | `feat/write-intent`, **#8874** (base `dev`, opened by the maintainer 2026-10-28; *later* 2026-10-30: out of draft at `9919f8ef`) | `9919f8ef` (*later*): `4f9fc4cd` (2026-10-30 02:06Z, a merge of `dev` `991b0654`; 20 commits, 27 files, +7187/−1531 against `dev`) plus one commit adding `docs/architecture/write-intent.md` only | slices 1–6 built; slices 4 (API v3) and 6 (socket treatments, devicestatus, profile) released by the maintainer 2026-10-29, slice 6 with its extra dedupe gate. On the push-ready head `e8224807` (17 commits on `dev` `e1f7ac41`, 2026-10-29): the write-contract matrix differs from `dev` in 0 cells, the revert was rehearsed, `npm test` 5106/0/3 against `dev`'s 4759/0/3 (read from the queue). CI on `4f9fc4cd`: `pull_request` run 40990198561 and CodeQL passed. *Later*, measured by session -4f at `4f9fc4cd` against `dev` `991b0654`, run one after the other: `npm test` 5206/0/3 against `dev`'s 4917/0/3 (+289 titles, none removed or renamed); tiers 415 files ok; the write-contract matrix (1,929 cells) differs in 0 cells outside `cache` and in 1 cell in `cache` only, no earlier cell differs (pin `tools/qc/results/write-contract-matrix/dev-991b0654-idfirst.json`); the commit-event copy (360 cells) 0 differing, from an earlier overlapping pair, not re-run. The merge revert was rehearsed at `4f9fc4cd`: the reverted tree equals `dev`'s (`a9ae9536`). The PR body names the merge revert as the supported revert; a commit-by-commit revert conflicts after the `dev` merges and, forced, drops BF-209. Needs the maintainer's review and merge; the cohort check below starts at the merge. First in the entry-bar order; not yet through the bar | `WC-STEP-PATCH` |
+| `write(intent)` release 1: every v1, API v3 and socket write path through one write step, no behaviour change except BF-165's `_id` in the fallback-key re-send reply | `feat/write-intent`, **#8874** (base `dev`, opened by the maintainer 2026-10-28; *later* 2026-10-30: out of draft at `9919f8ef`) | `9919f8ef` (*later*): `4f9fc4cd` (2026-10-30 02:06Z, a merge of `dev` `991b0654`; 20 commits, 27 files, +7187/−1531 against `dev`) plus one commit adding only cgm-remote-monitor's architecture note `write-intent.md` | slices 1–6 built; slices 4 (API v3) and 6 (socket treatments, devicestatus, profile) released by the maintainer 2026-10-29, slice 6 with its extra dedupe gate. On the push-ready head `e8224807` (17 commits on `dev` `e1f7ac41`, 2026-10-29): the write-contract matrix differs from `dev` in 0 cells, the revert was rehearsed, `npm test` 5106/0/3 against `dev`'s 4759/0/3 (read from the queue). CI on `4f9fc4cd`: `pull_request` run 40990198561 and CodeQL passed. *Later*, measured by session -4f at `4f9fc4cd` against `dev` `991b0654`, run one after the other: `npm test` 5206/0/3 against `dev`'s 4917/0/3 (+289 titles, none removed or renamed); tiers 415 files ok; the write-contract matrix (1,929 cells) differs in 0 cells outside `cache` and in 1 cell in `cache` only, no earlier cell differs (pin `tools/qc/results/write-contract-matrix/dev-991b0654-idfirst.json`); the commit-event copy (360 cells) 0 differing, from an earlier overlapping pair, not re-run. The merge revert was rehearsed at `4f9fc4cd`: the reverted tree equals `dev`'s (`a9ae9536`). The PR body names the merge revert as the supported revert; a commit-by-commit revert conflicts after the `dev` merges and, forced, drops BF-209. Needs the maintainer's review and merge; the cohort check below starts at the merge. First in the entry-bar order; not yet through the bar | `WC-STEP-PATCH` |
 | ID-FIRST-MATCH: identifier-first on every collection and path, as slices in the order 1 (no outcome change, with the two additive items), 2 (identifier format), 5 (shared identifiers, BF-212's pick), 3 (stays deleted), 4 (merge on match), 6 (identifier first where it is new), 6a (activity) | **draft #8879** (*later* 2026-10-30, base `feat/write-intent`, head `feat/id-first-match` `521e7583`): slice 1 gated, 4 commits on `9919f8ef`; slices 2, 5, 3, 4, 6, 6a follow as commits; design note 2026-10-29 | — | slice 1's gate: the 456 earlier cells unchanged, and among the new cells only the two additive items' cells, predicted by id before the run (about 24 activity cells), with UUID handling on and off. The rules are decided (D-LOOP-ID rules 1–3, ID-Q1..ID-Q11, 2026-10-29); each slice goes to the bar on its own. Slice 1 moves 0 of 1,929 matrix cells; slices 3 to 6a change outcomes (40, 232, 112 and 33 cells, read from the design note's predictions) | `ID-FIRST-MATCH`, `ID-VALIDATE` |
 | the `WRITE_*` settings: `WRITE_RESEND=merge\|acknowledge\|refuse`, `WRITE_IDENTIFIER=lenient\|strict`, `WRITE_DELETED_EDIT=ignore\|refuse`, `WRITE_IDENTIFIER_INDEX=try\|require\|off`; default first in each | not started | — | names confirmed by the maintainer 2026-10-29 (the first three) and 2026-10-30 (the index). With `WRITE_VALIDATION`, parsed by one module and read once; an unknown value refuses to start. Per-client D20 quirks may select a `WRITE_RESEND` mode for one registered client | `ID-RESEND-SWITCH`, `ID-VALIDATE`, `ID-FIRST-MATCH`, `ID-UNIQUE-INDEX` |
 | ID-UNIQUE-INDEX: a partial unique index on `identifier` per collection, with the try, require and off modes, and an operator-run report and clean tool (P4 pick) | not started | — | in 16.0.0 scope through the bar (maintainer, 2026-10-30); moved from 17.0.0. Under `try` (the default) boot builds the index online; on existing duplicates it logs the counts per collection (never the values), shows them on the status page and runs without it, while the ID-Q5 write rule still refuses a second record with a stored identifier. `require` refuses to start without the index; `off` skips it. Comes before ID-BATCH, with the duplicate-key retry inside the write step (maintainer, *later* 2026-10-30; [decisions](decisions.md)) | `ID-UNIQUE-INDEX` |
@@ -606,6 +624,9 @@ which this programme cannot do without real credentials; #8843 (CI diagonal) and
 
 | defect | what | exposure | queue |
 |---|---|---|---|
+| BF-219, BF-220, BF-221: v1 treatment batch replies and PUT announcements | **on `dev` now; fixes in #8883** (`789d5d9d`, not merged). BF-219: a batch with a preBolus answers with more items than were sent, so Loop re-sends it forever. BF-220: a taken `_id` inside a batch answers 5xx after earlier items are stored. BF-221: a v1 PUT reaches open pages 1–57 s late | BF-219 and BF-220 are dosing-relevant (lost or endlessly re-sent treatments); BF-221 is display latency | `BFQ-219`, `BFQ-220`, `BFQ-221` |
+| BF-222: API v3 autoPrune leaves pruned records in the cache | **on `dev` now and on `v15.0.9` (since #6688); fix in #8883** (`789d5d9d`, not merged; R18) | only where `API3_AUTOPRUNE_<collection>` is shorter than that collection's cache retention; display only | `BFQ-222` |
+| BF-215, BF-216: identifier format | **on `dev` now; fixes in #8879** (ID-FIRST-MATCH slice 2, not merged). BF-215: a numeric `identifier`; BF-216: a placeholder `identifier` shared by two apps | BF-216 is dosing-relevant data loss, narrow | `ID-FIRST-MATCH` |
 | BF-212, the rest: shared client identity after a chart split | **first part fixed on `dev` 2026-10-30** by #8878 (`d51c7a60`): a new chart split no longer copies the client identity fields. Still open: records split before the fix keep two stored treatments with one identity, and a v1 or in-process re-send of either lands on the older record, so a re-send of the newer one overwrites the older one's amount (API v3 picks the newer record and refuses a re-send of the older one with 400; measured by the extended write-contract matrix). A full re-upload of the original by the client that still holds it writes the moved insulin back, so it is stored and counted twice, with or without identity on the copy. The follow-ups are ID-FIRST-MATCH slice 5 (the P4 pick) and the maintainer's direction that a lossy edit of a controller-claimed record needs a manual confirmation | dosing-relevant data and display, narrow: a chart drag of a record that holds both insulin and carbs; on 15.0.9 and `dev` | `BFQ-212` |
 | BF-209: two identical socket treatments within 2 s from different clients stored as one | **fixed on `dev` 2026-10-30** by #8877 (`cf3d4b8f`), for writes that carry `identifier` (scope decided 2026-10-29: in the similar match, `identifier` decides when present); writes without it keep the earlier rule, and recognising `identifier` at any time waits for ID-FIRST-MATCH. Present on 15.0.9. BF-210 (an upload with no amount absorbed by a stored one) was withdrawn 2026-10-29 as intended behaviour | socket writers: AndroidAPS's v1 NSClient (3.4.2.x) and the chart-drag split | `BFQ-209` |
 | BF-211: a delete by query empties all three in-memory caches | **fixed on `dev` 2026-10-30** by #8877 (`cf3d4b8f`); present since 14.0.4 and on 15.0.9. Cost, not correctness: the next load re-reads days of data (890 documents and 716,202 bytes after a 3-record delete; 32 documents and 10,289 bytes with the fix, cache-value lab) | sites on transfer-capped MongoDB tiers | `BFQ-211` |
@@ -646,10 +667,14 @@ No verification record is captured yet: `verification-record.{json,md}` is gener
 `tools/queue/verification-record.py` once, at release time, from the state being cut
 ([VERIFICATION-RECORDS.md](../VERIFICATION-RECORDS.md)), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-[verification-selection.txt](verification-selection.txt) (90 queue ids on 2026-10-30; 65 at the
+[verification-selection.txt](verification-selection.txt) (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or [decisions.md](decisions.md) names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.
+
+**R18, 2026-10-30/31** ([integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md)):
+#8874's write-contract matrix against the `dev` pins (0 cells outside `wire` and `cache`), the cache
+catch-up lab round 3 (BF-222) and BF-222's fix (`npm test` 5216/0/3). `dev` `368e6c23`'s CI passed.
 
 **Journey lab, 2026-10-30/31, #8874 `7463e76d` against `dev` `305a6533`** (maintainer in the browser, two tabs per
 site, with session -7d checking the database and socket timing; journey lab `tools/review/journey-lab`, MongoDB 7,
