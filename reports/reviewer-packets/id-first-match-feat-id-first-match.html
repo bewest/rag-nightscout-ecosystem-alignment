@@ -3080,7 +3080,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-31 at <code>871d09160</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>9882b84eb</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3174,8 +3174,12 @@ labelled by a different id is never overwritten.</p>
 <li><a href="../../docs/60-research/tenancy/identifier-duplicates-2026-10-17.html"><code>docs/60-research/tenancy/identifier-duplicates-2026-10-17.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-31 late (maintainer, via session -4e, compatibility cards): A, API v3
-refuses a malformed identifier with 400 by default (v1, socket, in-process
+<p>2026-10-31 night (maintainer, via -4e): compatibility A corrected to option
+(i): API v3 refuses only blank or numeric identifiers by default (what 15.0.9
+refused: 118 of card A's 349 cells); other malformed identifiers stay lenient;
+WRITE_IDENTIFIER=strict remains the broader opt-in. -4e builds B first, then
+A. 2026-10-31 late (maintainer, via session -4e, compatibility cards): A, API
+v3 refuses a malformed identifier with 400 by default (v1, socket, in-process
 stay lenient; up to 349 cells); B, a matched re-send replaces on every
 collection (merge stays for v3 PATCH and socket dbUpdate; 136 cells); both on
 feat/id-compat-restore-ab off 2d79d30b, one commit each, shipping with BF-225
