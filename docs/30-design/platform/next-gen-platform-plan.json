@@ -1,5 +1,5 @@
 {
- "measured": "2026-10-28 against cgm-remote-monitor dev e1f7ac41 (#8873 merged); #8865 at fcd305ae, #8875 at a0470a72, #8874 at 0671b430, #8857 at f7a43fed",
+ "measured": "2026-10-31 against cgm-remote-monitor dev 368e6c23 (#8874 merged); #8883 at 789d5d9d, #8879 at 931e5e60, #8881 at ffa5e6b4, #8882 at cd42dfce, #8875 at 24647c0a, #8857 at 10fe6725",
  "tracks": [
   {
    "id": "storage",
@@ -235,7 +235,7 @@
    "id": "WC-STEP-PATCH",
    "track": "storage",
    "phase": "intent",
-   "state": "review",
+   "state": "done",
    "short": "write(intent)",
    "title": "write(intent) -> WriteResult.items[] above the interface: id forms, server dates, twin removal and identifier matching move into one step; validation moves up to it, and its WriteResult.items[] is what a later commit event names records from; the compare-and-set that #8854's validated updates do with MongoDB $expr moves behind a backend-neutral adapter method (for example updateIfUnchanged) before PostgreSQL",
    "spec": [
@@ -249,21 +249,23 @@
     "ST-WRITES"
    ],
    "where": "a new intent module with its own name (#8854 condition 4); about 500 lines",
-   "ref": "Draft #8874 pushed at 4f9fc4cd (2026-10-30 02:06Z; slices 1-6 with dev 991b0654 merged; PR CI green; npm test 5206/0/3 locally). In 16.0.0 scope through the entry bar (time on dev and a cohort check remain). Earlier: Draft #8874; push-ready head feat/write-intent-release e8224807 (2026-10-29): slices 1-6 merged with dev e1f7ac41; npm test 5106/0/3 (dev 4759/0/3, +347, none removed); matrix and commit-event copy 0 cells vs dev; revert rehearsed (tree equals dev); commit-by-commit review guide in the PR body. Eligible for 16.0.0 through the entry bar (time on dev and a cohort check remain). Slice 6: socket dbAdd/dbUpdate/dbUpdateUnset through write(intent), dedupe gate unchanged (40 ablations re-targeted), idMatch retired. Release-2 questions Q-A..Q-Y in the design note; BF-209/210 stay today's behaviour until #8877 merges. Slice 4 built (local feat/write-intent-s4 3cad3508 on 0671b430, not pushed): v3 create/update/patch/delete through write(intent) on the cached wrapper's identifier methods only; G1 0/360 and the commit-event copy 0; npm test 4960/0/3 (+41); per-rule ablations red only in v3 cells; cache emissions unchanged, with a red control showing a query-based swap would flush (du:remove(reload)); rule copies 37 -> 28. Slice 6 being built on it. Release-2 questions Q-S (v3 delete reaches every stored form, PUT/PATCH one), Q-T (authenticated subject in the intent), Q-U (autoPrune is a query-based v3 delete outside the step; a watermark catch-up candidate). The since-watermark bench arm is being built by -7d. Q-A for release 2 is open, research continuing: a query-based write would replace today's full cache flush with a catch-up read of the collection since a srvModified watermark (every server write path stamps srvModified since 15.0.9, indexed on every v3 collection; hard deletes still read ids first); a since-watermark arm is to be added to the D-EVENT bench. In progress (maintainer, 2026-10-27: two lanes, WC-STEP-PATCH first, ST-V3-DECOUPLE second). Milestone 1 by session -4f: local feat/write-intent off dev db3b9e4e; pin the G1 matrix, map spec §2 onto the seam, one behaviour-neutral slice",
+   "ref": "#8874, merged to dev 2026-10-31 as 368e6c23: write(intent) release 1, slices 1-6, no behaviour change except BF-165 (write-contract matrix 0 cells outside wire and cache; merge revert rehearsed). Its cohort check is one window with the identity work, opening when ID-FIRST-MATCH slices 3 and 4 are on dev. Release 2 (decided 2026-10-30): the step resolves every write by filter to ids, writes {filter AND _id in ids} and names those ids to the cache, with a fixed cap of 1,000 (Q9, no watermark); autoPrune goes through the step (Q-U); API v3 takes the same shape (Q-A, adopted on the cache catch-up lab round 3; sketch proto/v3-unify 3b7f054a, local).",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8874"
   },
   {
    "id": "ST-HARNESS",
    "track": "storage",
    "phase": "intent",
-   "state": "planned",
+   "state": "review",
    "short": "Backend harness, tenant scope",
    "title": "Backend-selectable test harness, storage backend selection and the tenant-scope binding; no behaviour change in single mode",
    "where": "tests/support/backends.js, lib/storage/tenant-scope.js (old chain a2690bd4, 136f53e3, 8355c563, a492f2ed)",
    "check": "NS_TEST_BACKEND controls: mongodb runs, postgres pending until ST-PG, an unknown name throws",
    "depends": [
     "WC-STEP-PATCH"
-   ]
+   ],
+   "ref": "Draft #8881 at ffa5e6b4 (0 behind dev 368e6c23; CI green). Unblocks ST-PG and TEN-RESOLVE.",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8881"
   },
   {
    "id": "ST-VIEWS",
@@ -277,7 +279,7 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "Draft #8875 at a0470a72 (pushed 2026-10-28 with the device-status bound fix and dev e1f7ac41 merged in; body updated to 198/0). Not wired into the server; not for 16.0.0. Device-status bound re-closed by fixture (maintainer approved the fix, 2026-10-28), pending review: the 10 newest; the newest of each kind; the newest status passing each test the \"isn't looping\" alarms count from, within their 6 hours (Loop without failureReason, OpenAPS with suggested, OpenAPS with a received enacted); every status from the last 30 minutes (the uploader battery alarm's per-device lowest, the IOB and COB windows); every pump status within twice urgentClock. Why: on the first bound, seven fixtures in the uploaders' own shapes differed from the resident path, five missed alarms (Loop failing 150 min, AAPS loop stopped 150 min, the same with no enacted before, enacted without suggested, two phones with one low battery), one urgent reported as a warning (a battery dip) and one false urgent pump-stale alarm (a stale pump state re-posted); all seven pass now. Harness 198/0 on 17 synthetic and 7 corpus fixtures, with LOOP_ENABLE_ALERTS now on (the earlier 118/0 never covered the Loop alarm); each dropped query (loopOk, openapsSuggested, openapsEnacted, upbatWindow, pumpWindow) fails its own fixture, and VIEWS_TAMPER=alarms gives 124/1; the three patched cache/sandbox controls ran on the first bound (d6826fb0) only, not on 1109726e; npm test 4884/0/3; Node 22.23.4, MongoDB 7.0.43. Alarm view data 9.5-147 KB against 0.1-1.6 MB resident; load and evaluation times measured on the first bound only. Still open before ready: entries crowding (no difference found; bound stays at the 12 newest), a quiet option for the plugins' alarm logging, the v2 summary and \"current\" views (not started), webhook notifications excluded; wiring into the server is the maintainer's decision. Earlier: census of ddata consumers (docs/60-research/platform/st-views-census-2026-10-27.md); the §7b alarm slice re-measured (bytes identical to September); sage's Sensor Start in a same-hour burst is a recorded deliberate difference (BF-207); execution plan §7b's newest-only device-status line is superseded",
+   "ref": "Draft #8875 at 24647c0a (25 behind dev 368e6c23): both views equal to the resident path on 126,092 replayed minutes each. In 16.0.0 in steps: wired under the multitenant serve roles as alpha; single keeps the resident path.",
    "spec": [
     {
      "label": "views census",
@@ -339,7 +341,7 @@
    "id": "SPEC-ID-AMEND",
    "track": "identity",
    "phase": "now",
-   "state": "planned",
+   "state": "done",
    "short": "Identity spec after #8845",
    "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client _id (BF-170)",
    "spec": [
@@ -352,37 +354,40 @@
    "depends": [
     "DEV-8845"
    ],
-   "ref": "Next after the 16.0.0 tag (priority raised 2026-10-29); spec and conformance only."
+   "ref": "Merged to this repository's main 2026-10-30 (spec/id-amend-2026-10-30 b982fbdd8): the identity spec and conformance cases at the decided identifier rules."
   },
   {
    "id": "ID-FIRST-MATCH",
    "track": "identity",
    "phase": "intent",
-   "state": "planned",
+   "state": "review",
    "short": "Identifier-first everywhere",
    "title": "Identifier-first matching on every collection and path, inside the write step",
    "check": "write-contract matrix rows for identifier re-sends",
    "depends": [
     "ID-SIMPLE-MATCH",
     "WC-STEP-PATCH"
-   ]
+   ],
+   "ref": "Draft #8879 at 931e5e60 (base dev, 0 behind 368e6c23): slices 1, 2, 5 (with 5b's 409 rule), 3 and 4 (merge on match; treatments replaced on every path). Slices 6 and 6a prepared on local prep/id-first-s6 47377fa3. CI at 931e5e60 fails lint (no-useless-assignment, lib/storage/write-intent.js:1450). Merges after #8883 (they conflict in four files).",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8879"
   },
   {
    "id": "ID-BATCH",
    "track": "identity",
    "phase": "intent",
-   "state": "planned",
+   "state": "progress",
    "short": "Per-item batch results",
    "title": "Per-item results in v1 batch replies, so one bad item no longer refuses the batch",
    "depends": [
     "WC-STEP-PATCH"
-   ]
+   ],
+   "ref": "Prototype on local proto/id-batch-replies 7d81e1c1 with a client lab; questions (ii)-(vi) decided 2026-10-30 (design note id-batch-design-note-2026-10-30.md). Built on the identity branch after the unique index, with strict identifiers on v1 (ID-STRICT-V1)."
   },
   {
    "id": "ID-UNIQUE-INDEX",
    "track": "identity",
    "phase": "intent",
-   "state": "planned",
+   "state": "progress",
    "short": "Unique identifier index",
    "title": "Partial unique index on identifier per collection (tenant in the key under multi), retry-as-update on a duplicate key",
    "check": "ID-DUP-MEASURE found 0 duplicates in the 12-site corpus",
@@ -390,7 +395,7 @@
     "ID-FIRST-MATCH",
     "ID-BATCH"
    ],
-   "ref": "In 16.0.0 scope (maintainer, 2026-10-30) behind WRITE_IDENTIFIER_INDEX=try|require|off (default try). Try builds a partial unique index per collection (records with an identifier, soft-deleted included, built online); on existing duplicates it logs counts and shows them on the status page, runs without the index, and the write rule still refuses a second record. An operator-run tool reports and resolves duplicate groups by the P4 pick. ID-DUP-MEASURE found 0 duplicates across the 12-site corpus."
+   "ref": "Built and gated on slice 3 (local feat/id-unique-index b4a4092c; 342 predicted cells, MongoDB 5.0 and 8.0); rebased onto slice 6a next, then a draft PR. In 16.0.0 scope (maintainer, 2026-10-30) behind WRITE_IDENTIFIER_INDEX=try|require|off (default try). Try builds a partial unique index per collection (records with an identifier, soft-deleted included, built online); on existing duplicates it logs counts and shows them on the status page, runs without the index, and the write rule still refuses a second record. An operator-run tool reports and resolves duplicate groups by the P4 pick. ID-DUP-MEASURE found 0 duplicates across the 12-site corpus."
   },
   {
    "id": "REG-SPECS",
@@ -418,7 +423,7 @@
    "state": "review",
    "short": "Catalogue, read-only",
    "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind CONTROLLER_REGISTRATION, off by default; built, part of the single-tenant registration PR",
-   "ref": "#8857 (draft, f7a43fed; 78 behind dev e1f7ac41, conflicts)",
+   "ref": "#8857 (draft, 10fe6725; dev 305a6533 merged in, 25 behind dev 368e6c23)",
    "spec": [
     {
      "label": "registration §4",
@@ -448,7 +453,7 @@
    "depends": [
     "REG-S0"
    ],
-   "ref": "#8857 (draft, f7a43fed); a devicestatus-upload token may register its controller",
+   "ref": "#8857 (draft, 10fe6725); a devicestatus-upload token may register its controller",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -468,7 +473,7 @@
    "depends": [
     "REG-S1"
    ],
-   "ref": "#8857 (draft, f7a43fed): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed at 3be98536",
+   "ref": "#8857 (draft, 10fe6725): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed at 3be98536",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
@@ -489,7 +494,7 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "#8857 (draft, f7a43fed)",
+   "ref": "#8857 (draft, 10fe6725)",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
