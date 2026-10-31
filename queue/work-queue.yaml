@@ -23722,3 +23722,34 @@ items:
       (e.g. width: min(350px, 100vw), a dvh-based height) instead of inline
       pixels, or re-apply the sizing on resize while a drawer is open. Being
       built as a second commit on the hygiene branch with DEV-LINT-OVERLAY-REGEX.
+
+  - id: UI-STALE-SECRET-HASH
+    title: "A stale API secret hash stored in the browser blocks a valid ?token= link, and the dialog says only \"Wrong API secret\""
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev
+    worktree: ""
+    state: not-started
+    pr: []
+    blast_radius: >
+      The browser's stored `apisecrethash` (localStorage) is sent with requests
+      and takes precedence over a `?token=` in the page URL; the client
+      authorization code in lib/client (exact file to be located by the fix).
+    review: maintainer
+    operator_visible: >
+      A follower or caregiver opening a valid token link on a browser that
+      once stored a different API secret sees "Wrong API secret" with no hint.
+    semver: patch
+    semver_reason: client sign-in behaviour, no API change
+    gates:
+      - no-gate: >
+          not built yet; the fix's gate is a browser test that stores a wrong
+          hash, opens a valid ?token= link and is signed in (red on dev)
+    blocks_on: []
+    evidence: []
+    notes: >
+      2026-10-30, journey-lab session (maintainer with session -7d):
+      reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing.
+      Fix direction, UNVERIFIED: let an explicit ?token= win over a stored
+      hash for that page, or clear the stale hash and say why in the dialog.

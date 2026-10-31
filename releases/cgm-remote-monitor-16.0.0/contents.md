@@ -626,6 +626,17 @@ has none until then. The items it is captured over are listed in
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.
 
+**Journey lab, 2026-10-30/31, #8874 `7463e76d` against `dev` `305a6533`** (maintainer in the browser, two tabs per
+site, with session -7d checking the database and socket timing; journey lab `tools/review/journey-lab`, MongoDB 7,
+Node 22.23.4, development mode; sites loop, aaps (API v3, mmol/L), aaps-v1 (socket) and rep-trio on each head):
+careportal carb correction (REST POST); Loop carbs POST, PUT edit and DELETE by `_id`; the web page's edit-mode drag
+(socket `dbUpdate`); AndroidAPS temp target start and cancel over v3 and the socket, carbs, and carb delete; the modern
+theme on rep-trio. Every step stored once with the same fields on both heads and showed live in both tabs; deletes
+reached the page in 13–30 ms on both heads (3/3). Verdict: no difference between #8874 and `dev` in anything seen or
+stored. Found along the way, none caused by #8874: BF-221 (a v1 treatment PUT reaches pages up to a minute late),
+DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE and UI-STALE-SECRET-HASH (queue). The lab's AAPS temp-target cancel was
+corrected (`2e484bd33`).
+
 **Dry run, 2026-10-27, `dev` `8dbb60c2`** (reproduced; written to a scratch directory, not kept, because a
 record is captured once, at the tag). The generator ran on the selection with its default `static` and
 `unit` gate kinds: 65 items, 49 PASS, 4 FAIL, 12 UNMEASURED; 157 gates run or marked, 72 passed, 5 failed,
