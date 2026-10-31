@@ -3189,7 +3189,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-31 at <code>871d09160</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>0ad97e075</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3228,7 +3228,7 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>346</td>
+<td>347</td>
 </tr>
 <tr>
 <td>runnable gates</td>
@@ -3236,11 +3236,11 @@
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>360</td>
+<td>361</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 762 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 361 of the 763 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3278,8 +3278,8 @@
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
-<td>6</td>
-<td>ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY</td>
+<td>7</td>
+<td>ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, BFQ-226, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY</td>
 </tr>
 <tr>
 <td><code>merged-upstream</code></td>
@@ -3415,6 +3415,7 @@
 <li><strong>BFQ-223</strong> BF-223 - a saved API secret the site refuses blocks a valid ?token= link</li>
 <li><strong>BFQ-224</strong> BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500</li>
 <li><strong>BFQ-225</strong> BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not)</li>
+<li><strong>BFQ-226</strong> BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload</li>
 <li><strong>BFQ-219</strong> BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent</li>
 <li><strong>BFQ-220</strong> BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored</li>
 <li><strong>BFQ-221</strong> BF-221 - a v1 treatment PUT reaches open pages up to about a minute late</li>
@@ -8512,7 +8513,7 @@ that costs.</p>
 <p><strong>Notes.</strong> 2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released. 2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast-forward. 2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token-link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle-budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push. 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status-bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 162 items</p>
+<p><code>parcel: register-open</code> &mdash; 163 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9613,6 +9614,14 @@ distinction is the only thing that makes the register mean anything - widening
 <td>BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not)</td>
 <td><code>in-progress</code></td>
 <td><code>bf/16.0.0-bf225-socket-duplicate</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>BFQ-226</code></td>
+<td>BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload</td>
+<td><code>in-flight-upstream</code></td>
+<td><code>-</code></td>
 <td>patch</td>
 <td>0 run + 1 no-gate</td>
 </tr>
@@ -18280,6 +18289,69 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-31 later: the maintainer chose B and C (2026-10-31, via session -4e): B, on dev (branch bf/16.0.0-bf225-socket-duplicate): the socket similar match also accepts a stored treatment whose identifier equals the one API v3 computes for the incoming body (device + date + eventType), fixing treatments x v3 x ws, while BF-209's case (an upload without identity 1 s after an AndroidAPS v3 record) still keeps both; C, on #8879 (a small rule commit): a UUID _id on a socket dbAdd treatment counts as its identifier, as v1's UUID handling does, so the two idf-uuidid-same cells become one record, replaced under decision B. Rejected: A (full 15.0.9 revert; brings back BF-209's lost treatment) and D (keep #8877's choice). Being built by -4e with full gates. 2026-10-31 correction (session -4e): the treatments x v3 x ws cell was a documented, intended change in #8877 (PR body line 29, its matrix run line 72); the idf-uuidid-same cells are undocumented. The smallest revert breaks BF-209's guard test, so the fix scope (duplicated vs possibly lost treatment) is pending the maintainer's choice. 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.</p>
+<h3 id="bfq-226--bf-226---an-api-v3-autoprune-of-more-than-one-record-empties-the-types-cache-with-no-reload"><code>BFQ-226</code> &mdash; BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload<a class="headerlink" href="#bfq-226--bf-226---an-api-v3-autoprune-of-more-than-one-record-empties-the-types-cache-with-no-reload" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-flight-upstream</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@604de1cb</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-226</code></td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>WC-STEP-PATCH</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/api3/generic/collection.js autoPrune (background deleteManyOr, no emit) and mongoCachedCollection deleteInCache (unnamed remove when more than one record goes); fixed by write-step release 2 (#8886), which routes autoPrune through the write step with ids named (Q-U).</p>
+<p><strong>What an operator sees.</strong> On sites that set API3_AUTOPRUNE_<collection>, about once an hour the server's cache of that type is emptied after a prune and refills at the next upload or within about a minute; in between, pages keep showing the data from before the prune and some reads go to the database. No data is lost. On 15.0.9 and dev.</p>
+<p><strong>Why <code>patch</code>.</strong> cache catch-up only; stored data and replies unchanged</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; #8886 is a draft stacked on #8879 and not yet on GitHub's dev; the gate becomes the cache lab's prune-allold scenario consistent on the #8886 head (and red on dev), then official/dev ancestry once merged</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-31: filed by session -d1 from the cache catch-up lab (scratch copy with a prune-allold scenario; results in session -d1's scratchpad). Release 2's own lab arm should add prune-allold to confirm the fix.</p>
 <h3 id="bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent"><code>BFQ-219</code> &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent<a class="headerlink" href="#bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -22812,7 +22884,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/60-research/tenancy/identity-resend-survey-2026-10-29.md</code></li>
 <li><code>docs/30-design/platform/next-gen-platform-plan.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-31 (maintainer, via session -4e, compatibility card C): build before the 16.0.0 tag as the opt-in way back, with a re-send counterpart to WRITE_DELETED_EDIT for revive-after-delete; after compatibility B lands (re- send replaces on every collection). Proposed names, not yet confirmed: WRITE_RESEND=replace|merge|acknowledge|refuse (default replace), WRITE_DELETED_RESEND=stay|revive (default stay). Owner -4e. Decided 2026-10-29 (maintainer, D-LOOP-ID rule 3): merge on match stays the default, because Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by POST over v1 and rely on the update, and a refusal makes Loop and Trio retry without end (client survey). This item is the opt- in. Eligible for 16.0.0 through the entry bar (plan §1a) with ID-FIRST-MATCH and ID-BATCH-RESULTS.</p>
+<p><strong>Notes.</strong> 2026-10-31 (maintainer, via session -4e, compatibility card C): build before the 16.0.0 tag as the opt-in way back, with a re-send counterpart to WRITE_DELETED_EDIT for revive-after-delete; after compatibility B lands (re- send replaces on every collection). Names confirmed by the maintainer the same day (via -4e; supersede 2026-10-29's merge|acknowledge|refuse): WRITE_RESEND=replace|merge|acknowledge|refuse (default replace), WRITE_DELETED_RESEND=stay|revive (default stay; revive = 15.0.9's re-send revives a deleted record); one parsing module, read once, unknown value refuses to start; D20 quirks may select a WRITE_RESEND mode. Owner -4e. Decided 2026-10-29 (maintainer, D-LOOP-ID rule 3): merge on match stays the default, because Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by POST over v1 and rely on the update, and a refusal makes Loop and Trio retry without end (client survey). This item is the opt-in. Eligible for 16.0.0 through the entry bar (plan §1a) with ID- FIRST-MATCH and ID-BATCH-RESULTS.</p>
 <h3 id="display-meal-group--show-a-bolus-and-its-carbs-as-one-meal-in-the-display-layer-storage-de-duplication-collapses-only-true-re-sends"><code>DISPLAY-MEAL-GROUP</code> &mdash; Show a bolus and its carbs as one meal in the display layer; storage de-duplication collapses only true re-sends<a class="headerlink" href="#display-meal-group--show-a-bolus-and-its-carbs-as-one-meal-in-the-display-layer-storage-de-duplication-collapses-only-true-re-sends" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
