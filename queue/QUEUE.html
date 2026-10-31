@@ -3187,7 +3187,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-31 at <code>3b39b2a8e</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>5439409f4</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3226,7 +3226,7 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>344</td>
+<td>345</td>
 </tr>
 <tr>
 <td>runnable gates</td>
@@ -3234,11 +3234,11 @@
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>359</td>
+<td>360</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 359 of the 760 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 761 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3251,8 +3251,8 @@
 <tbody>
 <tr>
 <td><code>not-started</code></td>
-<td>75</td>
-<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
+<td>76</td>
+<td>RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, BFQ-224, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS</td>
 </tr>
 <tr>
 <td><code>in-progress</code></td>
@@ -3411,6 +3411,7 @@
 <li><strong>BFQ-214</strong> BF-214 - a device-status delete by query leaves its cache empty until the next heartbeat</li>
 <li><strong>BFQ-217</strong> BF-217 - an override with no reservoir value throws in the pump plugin</li>
 <li><strong>BFQ-223</strong> BF-223 - a saved API secret the site refuses blocks a valid ?token= link</li>
+<li><strong>BFQ-224</strong> BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500</li>
 <li><strong>BFQ-219</strong> BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent</li>
 <li><strong>BFQ-220</strong> BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored</li>
 <li><strong>BFQ-221</strong> BF-221 - a v1 treatment PUT reaches open pages up to about a minute late</li>
@@ -8508,7 +8509,7 @@ that costs.</p>
 <p><strong>Notes.</strong> 2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token-link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle- budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push. 2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status- bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit. 2026-10-30, journey-lab session (maintainer with session -7d): reproduced headlessly on dev 305a6533 and #8874 7463e76d; pre-existing. Fix direction, UNVERIFIED: let an explicit ?token= win over a stored hash for that page, or clear the stale hash and say why in the dialog.</p>
 <hr />
 <h2 id="open-backfix-register-entries">Open backfix-register entries<a class="headerlink" href="#open-backfix-register-entries" title="Permanent link">&para;</a></h2>
-<p><code>parcel: register-open</code> &mdash; 160 items</p>
+<p><code>parcel: register-open</code> &mdash; 161 items</p>
 <p>The §1 / §1b distinction is preserved in <code>ships_to_operators_today</code>. That
 distinction is the only thing that makes the register mean anything - widening
 §1's criterion would destroy it.</p>
@@ -9595,6 +9596,14 @@ distinction is the only thing that makes the register mean anything - widening
 <td><code>bf/16.0.0-stale-secret-hash</code></td>
 <td>patch</td>
 <td>1 run</td>
+</tr>
+<tr>
+<td><code>BFQ-224</code></td>
+<td>BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500</td>
+<td><code>not-started</code></td>
+<td><code>-</code></td>
+<td>patch</td>
+<td>0 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>BFQ-219</code></td>
@@ -18141,6 +18150,65 @@ distinction is the only thing that makes the register mean anything - widening
 <li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET- HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).</p>
+<h3 id="bfq-224--bf-224---a-v1-filter-with-a-plain-value-under-the-date-field-findcreated_at-answers-500"><code>BFQ-224</code> &mdash; BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500<a class="headerlink" href="#bfq-224--bf-224---a-v1-filter-with-a-plain-value-under-the-date-field-findcreated_at-answers-500" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>not-started</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/dev@37b2280f</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>patch</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+<tr>
+<td>ships to operators today</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-224</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> lib/server/query.js enforceDateFilter (:121-131): a plain value under the date field must not be iterated as an operator object. Every v1 route that builds its query with query.js and a created_at or startDate date field (treatments measured; devicestatus, activity, profile read).</p>
+<p><strong>What an operator sees.</strong> A report or tool asking Nightscout for the treatments at one exact time (find[created_at]=<time>) gets a server error instead of an answer, and a delete written that way removes nothing. Adding [$eq] works today. On 15.0.9 and dev.</p>
+<p><strong>Why <code>patch</code>.</strong> a query that failed with 500 since 2019 gets an answer; no change for any query that works today</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; not built yet; the fix's gate is an HTTP test with a plain-value find[created_at] on GET and DELETE, red (500) on dev and green after</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>docs/30-design/remedial/nightscout-backfix-register.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400.</p>
 <h3 id="bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent"><code>BFQ-219</code> &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent<a class="headerlink" href="#bfq-219--bf-219---a-v1-treatments-batch-with-a-prebolus-answers-with-more-items-than-were-sent" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

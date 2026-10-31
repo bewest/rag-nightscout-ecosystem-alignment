@@ -7604,11 +7604,11 @@
 <tbody>
 <tr>
 <td>Lab</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3b39b2a8e29fb54d9043ff2285922f19476a7e47/tools/lab/ory-proof"><code>tools/lab/ory-proof/</code></a>: adds <code>lib/edge.js</code> (E), <code>lib/handoff.js</code> (H2), <code>lib/browser.js</code>, <code>probes/cookie-edge.js</code>, <code>probes/cookie-handoff.js</code>, <code>run-variants.sh</code>; <code>LAB_MODE=edge\|handoff</code> in <code>lab-server.js</code></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/5439409f4a2b924fe060da54c1f2d46dbd8a70d3/tools/lab/ory-proof"><code>tools/lab/ory-proof/</code></a>: adds <code>lib/edge.js</code> (E), <code>lib/handoff.js</code> (H2), <code>lib/browser.js</code>, <code>probes/cookie-edge.js</code>, <code>probes/cookie-handoff.js</code>, <code>run-variants.sh</code>; <code>LAB_MODE=edge\|handoff</code> in <code>lab-server.js</code></td>
 </tr>
 <tr>
 <td>Results</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3b39b2a8e29fb54d9043ff2285922f19476a7e47/tools/lab/ory-proof/results/2026-10-12-v26.2.0-cookie-variants"><code>results/2026-10-12-v26.2.0-cookie-variants/</code></a>: one JSON per probe, <code>summary.txt</code>, <code>console.txt</code></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/5439409f4a2b924fe060da54c1f2d46dbd8a70d3/tools/lab/ory-proof/results/2026-10-12-v26.2.0-cookie-variants"><code>results/2026-10-12-v26.2.0-cookie-variants/</code></a>: one JSON per probe, <code>summary.txt</code>, <code>console.txt</code></td>
 </tr>
 <tr>
 <td>Question</td>
@@ -7639,7 +7639,7 @@ random passwords, created per run). Check ids refer to <code>cookie-edge.json</c
    content-domain 3/3, gate <code>proof.js</code> 23/23. That last figure is also the regression check
    on the <code>nsjwt</code> hooks added for E and H2. A run that slipped onto the compose defaults
    (Kratos v1.3.1, Hydra v2.3.0) gave the same figures. It is kept as
-   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3b39b2a8e29fb54d9043ff2285922f19476a7e47/tools/lab/ory-proof/results/2026-10-12-v1.3.1-v2.3.0-cookie-variants"><code>results/2026-10-12-v1.3.1-v2.3.0-cookie-variants/</code></a>.</li>
+   <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/5439409f4a2b924fe060da54c1f2d46dbd8a70d3/tools/lab/ory-proof/results/2026-10-12-v1.3.1-v2.3.0-cookie-variants"><code>results/2026-10-12-v1.3.1-v2.3.0-cookie-variants/</code></a>.</li>
 <li><strong>E (apex cookie behind a hardened edge).</strong> Tenant backends never receive the session.
    Both cross-origin probes are refused at the edge. Taking out either defence brings back the
    red result it guards against [M]. The session still reaches the edge on every tenant host,
@@ -7661,7 +7661,7 @@ random passwords, created per run). Check ids refer to <code>cookie-edge.json</c
 </ol>
 <hr />
 <h2 id="1-the-two-designs-as-built">1. The two designs as built<a class="headerlink" href="#1-the-two-designs-as-built" title="Permanent link">&para;</a></h2>
-<h3 id="11-e-apex-cookie-edge-hardened-libedgejs">1.1 E: apex cookie, edge-hardened (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3b39b2a8e29fb54d9043ff2285922f19476a7e47/tools/lab/ory-proof/lib/edge.js"><code>lib/edge.js</code></a>)<a class="headerlink" href="#11-e-apex-cookie-edge-hardened-libedgejs" title="Permanent link">&para;</a></h3>
+<h3 id="11-e-apex-cookie-edge-hardened-libedgejs">1.1 E: apex cookie, edge-hardened (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5439409f4a2b924fe060da54c1f2d46dbd8a70d3/tools/lab/ory-proof/lib/edge.js"><code>lib/edge.js</code></a>)<a class="headerlink" href="#11-e-apex-cookie-edge-hardened-libedgejs" title="Permanent link">&para;</a></h3>
 <p>Kratos runs with <code>variants/cookie-apex.yaml</code>, so the session and CSRF cookies are on
 <code>.apex.test</code>, <code>HttpOnly</code>, <code>SameSite=Lax</code> [M, <code>cookieJar</code>]. In the lab, the edge is a Node
 proxy on :44480 in front of every tenant host, not nginx. The tenant backend (the <code>nsjwt</code>
@@ -7683,7 +7683,7 @@ the following, in order:</p>
 </ol>
 <p>A <code>GET /</code> with no valid session is redirected to the Kratos login with <code>return_to</code> set to that
 URL. <code>EDGE_BREAK=no-strip|no-origin-check</code> removes one defence at a time.</p>
-<h3 id="12-h2-host-only-cookie-plus-our-own-hand-off-libhandoffjs">1.2 H2: host-only cookie plus our own hand-off (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3b39b2a8e29fb54d9043ff2285922f19476a7e47/tools/lab/ory-proof/lib/handoff.js"><code>lib/handoff.js</code></a>)<a class="headerlink" href="#12-h2-host-only-cookie-plus-our-own-hand-off-libhandoffjs" title="Permanent link">&para;</a></h3>
+<h3 id="12-h2-host-only-cookie-plus-our-own-hand-off-libhandoffjs">1.2 H2: host-only cookie plus our own hand-off (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5439409f4a2b924fe060da54c1f2d46dbd8a70d3/tools/lab/ory-proof/lib/handoff.js"><code>lib/handoff.js</code></a>)<a class="headerlink" href="#12-h2-host-only-cookie-plus-our-own-hand-off-libhandoffjs" title="Permanent link">&para;</a></h3>
 <p>Kratos runs with its default cookie configuration: host-only on <code>auth.apex.test</code> [M, <code>cookieJarW</code>].</p>
 <table>
 <thead>
