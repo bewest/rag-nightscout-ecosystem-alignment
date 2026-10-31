@@ -7028,6 +7028,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-10-31 later (session -81): release 2 rebased onto 71738792 (#8879 with slice 6/6a) as local c80c16eb, 13 commits, D-EVENT last. Suite 5731/6/3 against 5598/6/3 (the 6: api.devicestatus run alone, both trees); test:affected 198 files 3867/0/3; 36-row probe: replies and stored records as base, cache notices as predicted, no socket prediction changed by 6a; cache lab round 3 r2 exact 13/13 at both sizes, break arm 10/10; controls as expected; revert to 71738792 identical. Next: merge #8879 head 2d79d30b. Lead under reproduction (not filed): on 71738792 an API v3 autoPrune of more than one record may leave the cache short (missing records) because autoPrune emits no data-received.
       2026-10-31 (session -81, C2): release 2 built on local feat/write-intent-r2 dca3ca99 (base f5bd2642; commits 0e8ded31, c929beeb, d0c1fa27, 8d2e547f, 18ecb7b2, 1a18bb27, 5068d895, plus dca3ca99 = the D-EVENT per-write event storage-intent-committed as its own revertible commit); not pushed; rebases onto slice 6a's gated head, then every gate re-runs. On f5bd2642 (Node 22.23.4, MongoDB 8.0.29): suite 5625/6/3 against base 5524/6/3 (the 6 are api.devicestatus load-order failures on every tree); test:affected 191 files 3681/0/3; a 17-row write probe matches base in client replies and stored records, only cache notices change (Q-A/Q-U), BF-222's gap closed, a racing insert survives a delete by query; cache lab round 3 exact 15/15 at both sizes, break arm 10/10; controls red (candidate set instead of reached ids; v3 bypass); D-EVENT 80 tests over 73 paths plus autoPrune with controls red; revert gives f5bd2642's tree. Later 2026-10-31: head 8f7fdb05 (local, base f5bd2642): 34a3616d applies -4e's conditions (absent/[]/null kept distinct with a test each; items[0]._id only when the write's own count says one record was reached; race tests red to green) and fixes a socket dbRemove throw on null; D-EVENT 8f7fdb05 stays last; 18 affected files pass; full suite, lab and probe re-run after the rebase onto 6a. Decided 2026-10-31 (maintainer, -4e preferred): reached ids in WriteResult.removed/.updated (absent / [] / null kept distinct), items[] one slot per input; see decisions.md. Unreproduced observation (not filed): DELETE /api/treatments/?find[created_at]=<exact ISO> answered 500 from enforceDateFilter on f5bd2642.
       2026-10-31: #8874 merged to dev as 368e6c23 (head 83f3d54a) by the maintainer; in 16.0.0, not released. Journey lab 2026-10-30/31: no difference from dev.
       2026-10-30: #8874 pushed at 4f9fc4cd (slices 1-6, dev 991b0654 merged), PR CI green;
@@ -7429,6 +7430,7 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/60-research/tenancy/identifier-duplicates-2026-10-17.md
     notes: >
+      2026-10-31 ~20:00Z (GitHub): #8879 out of draft at 2d79d30b (dev 604de1cb merged in: #8885), 0 behind dev, 21 ahead; CI 16 passed, 3 skipped. Ready for the maintainer's review.
       2026-10-31 later (GitHub): the maintainer pushed 71738792 (#8879 head, draft, 0 behind dev 37b2280f, 19 ahead; CI running at the push). -4e's 6960bfb7 (comments only: the line-90 notes now read confirmed by the maintainer) awaits push; lib tree identical.
       2026-10-31 evening (session -4e): #8879 dev merge pushed by the maintainer (official/feat/id-first-match = 5a251213). Slices 6, 6a and the 2026-10-31 socket decisions (B: socket treatments replace; C: the profile startDate rule on the socket) gated on local feat/id-first-s4r 71738792 (c27bbaa5 tests, 4d1a0fa0 tiers, 15e4f2c0 slice 6, d63ba67d 6a, 2088cfe6 B+C, 71738792 title), push commands with the maintainer. Matrix against hashed predictions, exact on f5bd2642 and 5a251213: slice 6 230/230, 6a 78/78, B+C 52/52; red controls exactly each slice's cells; per-path ablations red by assertion; each revert gives the previous pin. Suite 5,604/0/3 on Node 24.22.1 and 22.23.4; lint 0 errors. Design-note reconciliation: 6a 33/33 by id; slice 6+B+C 102 against the note's 117 (96 shared; the 21 note-only and 6 new explained cell by cell). Changed expectations marked in-file (the v1-collections profile snapshot; api.crud-by-id.matrix cross-path re-send to the socket). For maintainer review: a deleted profile at another startDate on v1/in-process and the socket (decision row line 90 reading). Safety choice: a v1/in-process food or activity document routed by identifier to another record no longer removes the string twins of its carried _id. Not covered here: two new documents sharing a new identifier in one v1 batch both insert (ID-BATCH plus the index).
       2026-10-31 16:20Z (GitHub): #8879 at f5bd2642 (lint fix: no-useless-assignment in writeStatuses), 0 behind dev 368e6c23, 11 ahead, CI green on every job; still draft. Slices 6 and 6a not yet pushed (local prep/id-first-s6 47377fa3).
@@ -18287,7 +18289,7 @@ items:
     branch: bf/16.0.0-stale-secret-hash
     base: official/dev@37b2280f
     worktree: externals/work/crm-stale-secret
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8885]
     ships_to_operators_today: true
     blast_radius: >
@@ -18306,15 +18308,16 @@ items:
     semver_reason: client sign-in behaviour only; no API change
     register: [BF-223]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8885/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9be6a2bc FETCH_HEAD
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9be6a2bc official/dev
+        kind: static
         describe: >
-          the local fix branch carries BF-223's main-page fix 9be6a2bc; replace with the
-          PR head gate once pushed, then official/dev ancestry once merged
+          official/dev contains the fix 9be6a2bc (merged 2026-10-31 as 604de1cb, #8885);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released.
       2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast-forward.
       2026-10-31: filed by session -d1 with BF-223; same work as UI-STALE-SECRET-HASH. Head ecbc9c06 (main page and clock views), ready to push; the clock bundle allowance moves by 43 bytes (maintainer to accept).
   - id: BFQ-224
@@ -18323,7 +18326,7 @@ items:
     repo: cgm-remote-monitor
     branch: bf/16.0.0-small-backfixes
     base: official/dev@37b2280f
-    state: ready-to-push
+    state: merged-upstream
     pr: [8885]
     ships_to_operators_today: true
     blast_radius: >
@@ -18341,16 +18344,16 @@ items:
     semver_reason: a query that failed with 500 since 2019 gets an answer; no change for any query that works today
     register: [BF-224]
     gates:
-      - run: git -C externals/work/crm-small-backfixes merge-base --is-ancestor f59d7872 HEAD
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f59d7872 official/dev
         kind: static
         describe: >
-          the local branch carries the BF-224 fix f59d7872 (16 new tests red on
-          dev with the TypeError, green with it); replace with the #8885 head
-          gate once pushed
+          official/dev contains the fix f59d7872 (merged 2026-10-31 as 604de1cb, #8885);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released.
       2026-10-31 later: built by an agent of session -d1 as f59d7872 on bf/16.0.0-small-backfixes (on the #8885 head ecbc9c06): a non-empty plain string under the date field becomes {$eq: value} before the date rewrite (6 lines in lib/server/query.js); plain numbers unchanged; every operator form and the BF-108 $in handling build byte-identical queries. Red on dev: 16 (9 unit, 7 HTTP incl. devicestatus); green 63/0; test:unit 1896, integration subset 287, test:browser 684, eslint 0 errors; break-it (dev query.js) red on exactly the 16. A plain value counts as a date filter like $eq, so the default window does not apply (2020-dated records returned and deleted). Measured: treatments, devicestatus (GET and DELETE), activity and profile also 500 on dev. Ready to push to #8885.
       2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and
       f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix
@@ -24088,7 +24091,7 @@ items:
     branch: bf/16.0.0-stale-secret-hash
     base: official/dev
     worktree: externals/work/crm-stale-secret
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8885]
     blast_radius: >
       The browser's stored `apisecrethash` (localStorage) is sent with requests
@@ -24101,16 +24104,16 @@ items:
     semver: patch
     semver_reason: client sign-in behaviour, no API change
     gates:
-      - run: git -C externals/cgm-remote-monitor-official fetch -q official pull/8885/head && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9be6a2bc FETCH_HEAD
-        kind: network
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ecbc9c06 official/dev
+        kind: static
         describe: >
-          the local fix branch carries BF-223's main-page fix 9be6a2bc (whose
-          browser test is red on dev and green with it); replace with the PR head
-          gate once pushed
+          official/dev contains the fix ecbc9c06 (merged 2026-10-31 as 604de1cb, #8885);
+          red if dev is rewritten or the merge is reverted
     blocks_on: []
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-10-31 19:57Z: #8885 merged to dev as 604de1cb (head f59d7872: BF-223 and BF-224) by the maintainer; not released.
       2026-10-31: pushed by the maintainer as #8885 (head ecbc9c06, base dev 37b2280f), the 16.0.0 small backfixes PR; BF-224 (f59d7872) follows as a fast-forward.
       2026-10-31 later: head ecbc9c06 = 9be6a2bc (main page, the reworded 9b31818e) + dev 37b2280f merge + ecbc9c06 (clock views: clock.html status script and clock-client.js query; 5 of 7 new tests in tests/clock-token-link.test.js red on dev, 18 passing after; four break-it controls red for the right reason). The clock bundle grows 43 gzip bytes (62,968 to 63,011); tests/page-bundle-budget.test.js moves the clock allowance to 63,043, which needs the maintainer's explicit acceptance. test:unit 1883/0, test:dom 205, test:browser 684. Ready to push.
       2026-10-31: built by an agent of session -d1 on local bf/16.0.0-stale-secret-hash fbee7345 (fix 9b31818e on dev 368e6c23, dev 37b2280f merged), not pushed. Registered as BF-223 (BFQ-223). Choice: a refused saved secret is removed and the page retries with the link's token (or none) and says why; an accepted secret still wins over a token (existing contract test). Red on dev: 3 of 5 new tests in tests/browser/status-bootstrap.test.js; green with the fix; test:browser 684/0, test:unit 1883/0; break-it: reverting the two lib files fails exactly the 3. In production the retry waits about 5 s (authFailDelay, keyed on the client address). Clock views (clock.html, clock-client.js) being added as a second commit.

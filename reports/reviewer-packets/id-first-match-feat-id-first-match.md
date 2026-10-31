@@ -80,18 +80,20 @@ maintainer, plus a second human - re-send behaviour clients see changes
 
 ## Notes carried on the item
 
-2026-10-31 later (GitHub): the maintainer pushed 71738792 (#8879 head, draft,
-0 behind dev 37b2280f, 19 ahead; CI running at the push). -4e's 6960bfb7
-(comments only: the line-90 notes now read confirmed by the maintainer) awaits
-push; lib tree identical. 2026-10-31 evening (session -4e): #8879 dev merge
-pushed by the maintainer (official/feat/id-first-match = 5a251213). Slices 6,
-6a and the 2026-10-31 socket decisions (B: socket treatments replace; C: the
-profile startDate rule on the socket) gated on local feat/id-first-s4r
-71738792 (c27bbaa5 tests, 4d1a0fa0 tiers, 15e4f2c0 slice 6, d63ba67d 6a,
-2088cfe6 B+C, 71738792 title), push commands with the maintainer. Matrix
-against hashed predictions, exact on f5bd2642 and 5a251213: slice 6 230/230,
-6a 78/78, B+C 52/52; red controls exactly each slice's cells; per-path
-ablations red by assertion; each revert gives the previous pin. Suite
+2026-10-31 ~20:00Z (GitHub): #8879 out of draft at 2d79d30b (dev 604de1cb
+merged in: #8885), 0 behind dev, 21 ahead; CI 16 passed, 3 skipped. Ready for
+the maintainer's review. 2026-10-31 later (GitHub): the maintainer pushed
+71738792 (#8879 head, draft, 0 behind dev 37b2280f, 19 ahead; CI running at
+the push). -4e's 6960bfb7 (comments only: the line-90 notes now read confirmed
+by the maintainer) awaits push; lib tree identical. 2026-10-31 evening
+(session -4e): #8879 dev merge pushed by the maintainer (official/feat/id-
+first-match = 5a251213). Slices 6, 6a and the 2026-10-31 socket decisions (B:
+socket treatments replace; C: the profile startDate rule on the socket) gated
+on local feat/id-first-s4r 71738792 (c27bbaa5 tests, 4d1a0fa0 tiers, 15e4f2c0
+slice 6, d63ba67d 6a, 2088cfe6 B+C, 71738792 title), push commands with the
+maintainer. Matrix against hashed predictions, exact on f5bd2642 and 5a251213:
+slice 6 230/230, 6a 78/78, B+C 52/52; red controls exactly each slice's cells;
+per-path ablations red by assertion; each revert gives the previous pin. Suite
 5,604/0/3 on Node 24.22.1 and 22.23.4; lint 0 errors. Design-note
 reconciliation: 6a 33/33 by id; slice 6+B+C 102 against the note's 117 (96
 shared; the 21 note-only and 6 new explained cell by cell). Changed

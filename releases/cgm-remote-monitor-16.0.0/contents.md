@@ -425,6 +425,8 @@ opens when slices 3 and 4 are on `dev`.
 | `master` protection, #8824 | — | protection still requires `Run Tests (22, 4.4)` | the decided settings change (only *Tests pass* and one approval), then #8824; maintainer |
 | Release 2 | `proto/v3-unify` `3b7f054a` (local) | Q-A adopted 2026-10-30; Q-U decided; Q9 recorded | write step resolves filter writes to ids; one write shape for v3; session -7d's labs |
 
+**Update, 2026-10-31, about 20:05Z** (session -d1, from GitHub): the maintainer merged **#8885** ("16.0.0 small backfixes": BF-223, a saved API secret the site refuses blocks a valid `?token=` link; BF-224, a plain-value v1 date filter answered 500) at 19:57Z as `604de1cb`; `dev` is `604de1cb`. **#8879** is out of draft at `2d79d30b` (slices 1–6a with the 2026-10-31 socket decisions; `dev` `604de1cb` merged; 0 behind, 21 ahead; CI 16 passed, 3 skipped) and is next for review; when it merges, slices 3 and 4 are on `dev` and the cohort window opens. The unique index moves onto it next (session -d1), then ID-BATCH (session -81). Write-step release 2 is rebased onto slice 6a (local `c80c16eb`, gates green). A cache lead from the release 2 lab (autoPrune leaving the cache short on `dev`) is being reproduced, not filed.
+
 **Update, 2026-10-31, evening** (session -d1; `dev` still `37b2280f`):
 
 - **ST-VIEWS** (maintainer, [decisions](decisions.md)): #8875 ships in 16.0.0 unwired; the one-person profile with nothing resident is prototyped on a branch (session -81); the tenancy × execution framing goes into the next-gen plan as a design question. The views branch with `dev` `37b2280f` merged is local `feat/views-serve` `7b4b724c` (replay 0 differing minutes on 126,092, `npm test` 5355/0/3); #8875 on GitHub is still `24647c0a`.
