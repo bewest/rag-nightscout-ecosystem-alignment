@@ -80,8 +80,12 @@ maintainer, plus a second human - re-send behaviour clients see changes
 
 ## Notes carried on the item
 
-2026-10-31 late (maintainer, via session -4e, compatibility cards): A, API v3
-refuses a malformed identifier with 400 by default (v1, socket, in-process
+2026-10-31 night (maintainer, via -4e): compatibility A corrected to option
+(i): API v3 refuses only blank or numeric identifiers by default (what 15.0.9
+refused: 118 of card A's 349 cells); other malformed identifiers stay lenient;
+WRITE_IDENTIFIER=strict remains the broader opt-in. -4e builds B first, then
+A. 2026-10-31 late (maintainer, via session -4e, compatibility cards): A, API
+v3 refuses a malformed identifier with 400 by default (v1, socket, in-process
 stay lenient; up to 349 cells); B, a matched re-send replaces on every
 collection (merge stays for v3 PATCH and socket dbUpdate; 136 cells); both on
 feat/id-compat-restore-ab off 2d79d30b, one commit each, shipping with BF-225
