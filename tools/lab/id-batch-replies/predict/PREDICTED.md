@@ -92,3 +92,21 @@ PENDING-4E, seen in the opt-in today: after the whole-batch retry, the step's it
 second run, so entries item 0 and devicestatus items 0 and 2 (inserted by the first run) report
 `merged`. The fixed-head column above (`inserted` for the slots written before the race) is what
 the item-level fix should give. `merged` becomes `replaced` once replace-on-match lands too.
+
+## Measured at -4e's item-level fix (abadc40a, 2026-10-31)
+
+Batch pins `batch-abadc40a-m{5.0.32,8.0.29}-{default,reject,strict}.json` (312 cells each; 5.0 and
+8.0 differ in 0 cells). Against ee49832d, 30 cells move per mode on both versions, all in `writes`:
+- the 12 batch-dupkey-mid cells of the fixed-head column above, exactly as predicted: entries v1,
+  inproc and `+results` `0:2,1:1,2:1` → `0:1,1:1,2:1`; devicestatus `0:3,1:1,2:3` → `0:2,1:1,2:2`;
+  food and activity `0:2` → `0:1`, still 500; treatments, profile and socket unchanged;
+- 18 food and activity cells that were not predicted in that column but follow from the same fix:
+  batch-repeat-identifier, batch-repeat-stored and batch-deleted (v1, `+results`, inproc) are no
+  longer re-run whole after their duplicate key (`0:2[,1:2]` → `0:1[,1:1]`), still 500 / E11000.
+  (The coordinator's count of 27 is 3 fewer; the 3 entries dupkey-mid cells only race in this harness
+  since bd97a7415, where the rival is one second off.)
+
+feat/id-batch rebased onto abadc40a (head 4b48e57f): against these pins it moves exactly the
+predicted 45 / 45 / 57 cells (`predicted-batch-abadc40a-*.json`), with every predicted field correct,
+on both versions. The dupkey `+results` items are `0:inserted, 1:merged, 2:inserted` on entries and
+devicestatus, as the fixed-head column says (`replaced` after replace-on-match).
