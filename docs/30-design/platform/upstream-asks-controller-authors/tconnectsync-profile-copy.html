@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/platform/upstream-asks-controller-authors/tconnectsync-profile-copy.html">
       
       
-        <link rel="prev" href="aaps-v3-410.html">
+        <link rel="prev" href="socket-paths-compat-notes.html">
       
       
         <link rel="next" href="../../remedial/index.html">
@@ -3500,6 +3500,8 @@
       
         
       
+        
+      
     
     
     
@@ -3569,6 +3571,34 @@
     
   
     Upstream ask (draft): AndroidAPS NSClientV3, bound or handle a 410 reply
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="socket-paths-compat-notes.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compatibility notes (draft): re-sent treatments and profiles in Nightscout 16.0.0, every path
   
 
     
@@ -5741,7 +5771,7 @@
 
 
 <h1 id="upstream-note-draft-tconnectsync-drop-identifier-when-copying-a-profile">Upstream note (draft): tconnectsync, drop <code>identifier</code> when copying a profile<a class="headerlink" href="#upstream-note-draft-tconnectsync-drop-identifier-when-copying-a-profile" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>95e27a4ad</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>334c661ff</code>.</em></p>
 <p><em>Contributor-facing outreach draft, 2026-10-30, from a measurement on cgm-remote-monitor (identity work, slice 3
 <code>c9b74404</code>). Not sent. Companion to the <a href="index.html">questions for controller and uploader authors</a>.</em></p>
 <p><strong>To:</strong> tconnectsync maintainers
@@ -5754,9 +5784,10 @@ server-computed <code>identifier</code>, and the copy keeps it. Measured: each a
 same <code>identifier</code> (2 records, then 3); the source record is unchanged.</p>
 <h2 id="what-nightscout-1600-does">What Nightscout 16.0.0 does<a class="headerlink" href="#what-nightscout-1600-does" title="Permanent link">&para;</a></h2>
 <p>Nightscout 16.0.0 matches re-sent records on <code>identifier</code>, and adds a unique index on it. So that profile history is
-kept, a v1 profile create that matches a stored profile by <code>identifier</code> but carries a different <code>startDate</code> is
+kept, a profile create that matches a stored profile by <code>identifier</code> but carries a different <code>startDate</code> is
 stored as a new profile without the copied identifier, with a server-side warning (maintainer decision,
-2026-10-30). tconnectsync keeps working unchanged.</p>
+2026-10-30, for API v1 and in-process; extended to the websocket 2026-10-31; see the
+<a href="socket-paths-compat-notes.html">compatibility notes</a>). tconnectsync keeps working unchanged.</p>
 <h2 id="what-we-ask">What we ask<a class="headerlink" href="#what-we-ask" title="Permanent link">&para;</a></h2>
 <p>When copying a profile to add a new one, delete <code>identifier</code> as well as <code>_id</code>, so each added profile is a new
 record by design and no warning is logged.</p>

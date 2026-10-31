@@ -2134,7 +2134,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>b194e2842</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>334c661ff</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3203,6 +3203,12 @@ opens when slices 3 and 4 are on <code>dev</code>.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Update, 2026-10-31, about 17:50Z</strong> (session -d1; <code>dev</code> still <code>37b2280f</code>):</p>
+<ul>
+<li><strong>#8879's <code>dev</code> merge is ready to push</strong> (session -4e): local <code>feat/id-first-s4r</code> <code>5a251213</code> = merge <code>5bf94c8b</code> (<code>f5bd2642</code> + <code>dev</code> <code>37b2280f</code>) plus a test for the batch-index mapping (<code>tests/api.entries.batch-deleted-and-taken.test.js</code>); fast-forwards the PR head; 0 behind <code>dev</code>, 13 ahead. The four expected conflicts kept both sides; the matrix (4,604 cells, MongoDB 8.0) moved 0 cells outside <code>cache</code> and <code>wire</code>; every tier green on Node 22.23.4 and 24.22.1; the merge revert gives <code>f5bd2642</code>'s tree. The maintainer has the push commands. The matrix has no cells for BF-219..222 (coverage gap, no BF id).</li>
+<li><strong>Slice 6 decisions</strong> (maintainer, 2026-10-31; <a href="decisions.html">decisions</a>): socket treatments replace on an identifier match, as every other path does; the profile rule (a different <code>startDate</code> is a new profile without the copied identifier) extends to the socket. Both go in the <a href="../../docs/30-design/platform/upstream-asks-controller-authors/socket-paths-compat-notes.html">compatibility notes for affiliated projects</a> (draft, unsent). Slice 6 and 6a are being built on <code>5a251213</code>.</li>
+<li><strong>BF-223</strong> (a saved API secret the site refuses blocks a valid <code>?token=</code> link; also on <code>v15.0.9</code>): ready to push on local <code>bf/16.0.0-stale-secret-hash</code> <code>ecbc9c06</code> (main page and clock views); the clock bundle allowance moves by 43 gzip bytes, for the maintainer to accept.</li>
+</ul>
 <p><strong>Update, 2026-10-31, about 16:40Z</strong> (GitHub, session -d1): the maintainer merged <strong>#8883</strong> at 16:30Z as <code>2f50d944</code>
 (head <code>789d5d9d</code>: BF-219, BF-220, BF-221, BF-222) and <strong>#8882</strong> at 16:33Z as <code>37b2280f</code> (head <code>32cd90e6</code>:
 DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE). <code>dev</code> is <code>37b2280f</code>. Not released. Next on the merge order: #8879, which
@@ -3863,7 +3869,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8eb083c033249a4d5ca599824fdcac324d5fef0d/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/334c661ffb34c4e6a6058e38bda2b4c17b018200/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
