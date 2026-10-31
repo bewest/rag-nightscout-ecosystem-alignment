@@ -4641,7 +4641,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-27 at <code>f67b1d6a0</code>.</em></p>
+<p><em>Living document, last changed 2026-10-30 at <code>3ff97dd7e</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -4664,6 +4664,12 @@ longer emits). There is no 16.0.0 tag and no release candidate is named yet.</p>
 <code>8469654e</code>): 882 commits and 37 first-parent commits ahead of <code>master</code> <code>c6a0d8ed</code>; 847 files,
 +126813/−15088 (the same commands). #8824's head is <code>7ad3a67f</code> (<code>BLOCKED</code>, <code>REVIEW_REQUIRED</code>). R16 is the
 client replay on this tree.</p>
+<p><strong>Since then, 2026-10-31.</strong> <code>dev</code> is <code>368e6c23</code> (the merge of #8874, <code>write(intent)</code> release 1; tree
+<code>5af5e43e</code>; package version 16.0.0): 1027 commits and 56 first-parent commits ahead of <code>master</code> <code>c6a0d8ed</code>;
+968 files, +151453/−19743 (the same commands, <code>externals/cgm-remote-monitor-official</code> after <code>git fetch
+official</code>). CI on <code>368e6c23</code> passed: push run 41158171888 and <code>pull_request</code> run 41158177377, with CodeQL.</p>
+<h1 id="8824s-head-is-368e6c23-blocked-review_required-r18-covers-8874-before-its-merge-and">8824's head is <code>368e6c23</code> (<code>BLOCKED</code>, <code>REVIEW_REQUIRED</code>). R18 covers #8874 before its merge and<a class="headerlink" href="#8824s-head-is-368e6c23-blocked-review_required-r18-covers-8874-before-its-merge-and" title="Permanent link">&para;</a></h1>
+<p>BF-222; no release candidate is named yet.</p>
 <p>Each entry gives the commit, the runtime and the counts as passing / pending / failing, and says who
 ran it. <strong>Reproduced</strong> entries were run by a programme session; CI entries are read from GitHub run
 metadata.</p>
@@ -5670,6 +5676,29 @@ read options inside the fix's limit, and <code>package.json</code> takes <code>d
 adds. A first merge onto an older local tip of the BF-72 branch failed one <code>dev</code> contract test (a query
 tree with a cycle in it); the fork head already carried the fix for it, and the merged tree passes. Both
 items' static gates pass on the merged branches. Mechanism only, as for the rest of these two entries.</p>
+<h3 id="r18--8874-before-its-merge-the-cache-catch-up-lab-round-3-and-bf-222-2026-10-30-and-2026-10-31">R18 · #8874 before its merge, the cache catch-up lab round 3, and BF-222 (2026-10-30 and 2026-10-31)<a class="headerlink" href="#r18--8874-before-its-merge-the-cache-catch-up-lab-round-3-and-bf-222-2026-10-30-and-2026-10-31" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced</strong> by session -7d, each tree in its own worktree, with Node 22.23.4 and dedicated MongoDB
+containers (<code>--ulimit nofile=64000:64000</code>).</p>
+<ul>
+<li><strong>The write-contract matrix, #8874 <code>7463e76d</code> against the <code>dev</code> <code>991b0654</code> pins:</strong> 0 cells differ outside
+  <code>wire</code> and <code>cache</code>. The 25 <code>wire</code> cells were re-run alone, 10 times per head, with and without a settle
+  after the seed. All 40 runs were identical. The differences come from late storage-socket frames under load,
+  not from #8874; the harness fix is queued as <code>QC-MATRIX-WIRE-ATTRIBUTION</code>.</li>
+<li><strong>Journey lab, #8874 <code>7463e76d</code> against <code>dev</code> <code>305a6533</code>:</strong> no difference in anything seen or stored
+  (<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html#testing-so-far">contents</a>). It found BF-221. A v1
+  treatment PUT reached open pages after 1–57 s on <code>dev</code> (14 reps) and on #8874 (13 reps); with the emit moved
+  after the write, after 12–27 ms (8 of 8).</li>
+<li><strong>Cache catch-up lab, round 3</strong> (<code>tools/lab/cache-catchup</code>, results in <code>results/round3/</code>, MongoDB 8.0.29,
+  10 reps per scenario at two cache sizes). It compared API v3 writes on #8874 <code>7463e76d</code> with the Q-A sketch
+  <code>proto/v3-unify</code> <code>3b7f054a</code> (local), plus a break-it arm. The sketch was exact in all 15 scenarios, and the
+  break-it arm was flagged in 10 of 10 reps in each. It found BF-222: on #8874, as on <code>v15.0.9</code>, autoPrune
+  leaves the records it prunes in the cache.</li>
+<li><strong>BF-222's fix</strong> (crm <code>9d8dbc76</code> on <code>dev</code> <code>368e6c23</code>, cherry-picked into #8883 as <code>789d5d9d</code>). The new test
+  in <code>tests/api3.autoprune.test.js</code> fails without the fix (nothing announced) and passes with it. <code>npm test</code>:
+  5216 passing, 0 failing, 3 pending, against #8874's 5215 (MongoDB 8.0.29). In #8883 the bundle's new test
+  files pass: 18, run by session -49 on MongoDB 8.0. #8883's CI on <code>789d5d9d</code>: 13 passed and 2 pending when
+  read at 05:30Z.</li>
+</ul>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5755,7 +5784,7 @@ items' static gates pass on the merged branches. Mechanism only, as for the rest
 </tbody>
 </table>
 <hr />
-<p><em>Draft, 2026-10-26; R17 2026-10-27. Requires maintainer review before it is relied upon.</em></p>
+<p><em>Draft, 2026-10-26; R17 2026-10-27; R18 2026-10-31. Requires maintainer review before it is relied upon.</em></p>
 
 
 
