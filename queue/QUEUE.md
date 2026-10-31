@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 346 |
+| items | 347 |
 | runnable gates | 402 |
-| explicit `no-gate:` markers | 360 |
+| explicit `no-gate:` markers | 361 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 762 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 361 of the 763 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -46,7 +46,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 13 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-52, BFQ-66, BFQ-154, BFQ-164 |
-| `in-flight-upstream` | 6 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
+| `in-flight-upstream` | 7 | ID-FIRST-MATCH, BFQ-72, BFQ-161, BFQ-212, BFQ-226, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 79 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -153,6 +153,7 @@ The register's `§1` vs `§1b` distinction, carried as `ships_to_operators_today
 - **BFQ-223** BF-223 - a saved API secret the site refuses blocks a valid ?token= link
 - **BFQ-224** BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500
 - **BFQ-225** BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not)
+- **BFQ-226** BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload
 - **BFQ-219** BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 - **BFQ-220** BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored
 - **BFQ-221** BF-221 - a v1 treatment PUT reaches open pages up to about a minute late
@@ -2789,7 +2790,7 @@ that costs.
 
 ## Open backfix-register entries
 
-`parcel: register-open` &mdash; 162 items
+`parcel: register-open` &mdash; 163 items
 
 The §1 / §1b distinction is preserved in `ships_to_operators_today`. That
 distinction is the only thing that makes the register mean anything - widening
@@ -2933,6 +2934,7 @@ distinction is the only thing that makes the register mean anything - widening
 | `BFQ-223` | BF-223 - a saved API secret the site refuses blocks a valid ?token= link | `merged-upstream` | `bf/16.0.0-stale-secret-hash` | patch | 1 run |
 | `BFQ-224` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answers 500 | `merged-upstream` | `bf/16.0.0-small-backfixes` | patch | 1 run |
 | `BFQ-225` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not) | `in-progress` | `bf/16.0.0-bf225-socket-duplicate` | patch | 0 run + 1 no-gate |
+| `BFQ-226` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload | `in-flight-upstream` | `-` | patch | 0 run + 1 no-gate |
 | `BFQ-219` | BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-220` | BF-220 - a duplicate _id inside a v1 batch answers 5xx after the items before it are stored | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
 | `BFQ-221` | BF-221 - a v1 treatment PUT reaches open pages up to about a minute late | `merged-upstream` | `bf/16.0.0-batch-replies` | patch | 1 run |
@@ -7404,6 +7406,37 @@ distinction is the only thing that makes the register mean anything - widening
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
 **Notes.** 2026-10-31 later: the maintainer chose B and C (2026-10-31, via session -4e): B, on dev (branch bf/16.0.0-bf225-socket-duplicate): the socket similar match also accepts a stored treatment whose identifier equals the one API v3 computes for the incoming body (device + date + eventType), fixing treatments x v3 x ws, while BF-209's case (an upload without identity 1 s after an AndroidAPS v3 record) still keeps both; C, on #8879 (a small rule commit): a UUID _id on a socket dbAdd treatment counts as its identifier, as v1's UUID handling does, so the two idf-uuidid-same cells become one record, replaced under decision B. Rejected: A (full 15.0.9 revert; brings back BF-209's lost treatment) and D (keep #8877's choice). Being built by -4e with full gates. 2026-10-31 correction (session -4e): the treatments x v3 x ws cell was a documented, intended change in #8877 (PR body line 29, its matrix run line 72); the idf-uuidid-same cells are undocumented. The smallest revert breaks BF-209's guard test, so the fix scope (duplicated vs possibly lost treatment) is pending the maintainer's choice. 2026-10-31 (maintainer, via session -4e): fix in 16.0.0. Being fixed by -4e on bf/16.0.0-bf225-socket-duplicate off official/dev (test first, 3-cell matrix prediction, break-it, revert, tiers, lint; trial merge into #8879 2d79d30b). 2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix pins). 16.0.0 blocker candidate; the maintainer decides whether it blocks the tag. Data: session -4e's compat measurement.
+
+### `BFQ-226` &mdash; BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload
+
+| | |
+|---|---|
+| state (claimed) | `in-flight-upstream` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@604de1cb` |
+| worktree | `-` |
+| semver | `patch` |
+| review | maintainer |
+| ships to operators today | **yes** |
+| register | `BF-226` |
+| blocks on | `WC-STEP-PATCH` |
+
+**Blast radius.** lib/api3/generic/collection.js autoPrune (background deleteManyOr, no emit) and mongoCachedCollection deleteInCache (unnamed remove when more than one record goes); fixed by write-step release 2 (#8886), which routes autoPrune through the write step with ids named (Q-U).
+
+**What an operator sees.** On sites that set API3_AUTOPRUNE_<collection>, about once an hour the server's cache of that type is emptied after a prune and refills at the next upload or within about a minute; in between, pages keep showing the data from before the prune and some reads go to the database. No data is lost. On 15.0.9 and dev.
+
+**Why `patch`.** cache catch-up only; stored data and replies unchanged
+
+**Gates.**
+
+- **NO GATE** &mdash; #8886 is a draft stacked on #8879 and not yet on GitHub's dev; the gate becomes the cache lab's prune-allold scenario consistent on the #8886 head (and red on dev), then official/dev ancestry once merged
+
+**Evidence.**
+
+- `docs/30-design/remedial/nightscout-backfix-register.md`
+
+**Notes.** 2026-10-31: filed by session -d1 from the cache catch-up lab (scratch copy with a prune-allold scenario; results in session -d1's scratchpad). Release 2's own lab arm should add prune-allold to confirm the fix.
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 

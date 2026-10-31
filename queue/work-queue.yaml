@@ -18402,6 +18402,42 @@ items:
       2026-10-31: filed by session -4e (bisected to cf3d4b8f over 12 matrix
       pins). 16.0.0 blocker candidate; the maintainer decides whether it
       blocks the tag. Data: session -4e's compat measurement.
+  - id: BFQ-226
+    title: "BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload"
+    parcel: register-open
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@604de1cb
+    state: in-flight-upstream
+    pr: [8886]
+    ships_to_operators_today: true
+    blast_radius: >
+      lib/api3/generic/collection.js autoPrune (background deleteManyOr, no
+      emit) and mongoCachedCollection deleteInCache (unnamed remove when more
+      than one record goes); fixed by write-step release 2 (#8886), which
+      routes autoPrune through the write step with ids named (Q-U).
+    review: maintainer
+    operator_visible: >
+      On sites that set API3_AUTOPRUNE_<collection>, about once an hour the
+      server's cache of that type is emptied after a prune and refills at the
+      next upload or within about a minute; in between, pages keep showing the
+      data from before the prune and some reads go to the database. No data
+      is lost. On 15.0.9 and dev.
+    semver: patch
+    semver_reason: cache catch-up only; stored data and replies unchanged
+    register: [BF-226]
+    gates:
+      - no-gate: >
+          #8886 is a draft stacked on #8879 and not yet on GitHub's dev; the
+          gate becomes the cache lab's prune-allold scenario consistent on the
+          #8886 head (and red on dev), then official/dev ancestry once merged
+    blocks_on: [WC-STEP-PATCH]
+    evidence:
+      - docs/30-design/remedial/nightscout-backfix-register.md
+    notes: >
+      2026-10-31: filed by session -d1 from the cache catch-up lab (scratch
+      copy with a prune-allold scenario; results in session -d1's scratchpad).
+      Release 2's own lab arm should add prune-allold to confirm the fix.
   - id: BFQ-219
     title: "BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent"
     parcel: register-open
