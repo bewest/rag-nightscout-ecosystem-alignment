@@ -5688,8 +5688,8 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>f22ee1ea0</code>.</em></p>
-<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>368e6c23</code> (2026-10-31), with open PR heads and CI re-read from GitHub at about 16:20Z that day. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>b194e2842</code>.</em></p>
+<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>37b2280f</code> (2026-10-31, #8883 and #8882 merged), with open PR heads and CI re-read from GitHub at about 16:40Z that day. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5704,7 +5704,7 @@
 <thead>
 <tr>
 <th></th>
-<th>on dev <code>368e6c23</code> (ships in 16.0.0)</th>
+<th>on dev <code>37b2280f</code> (ships in 16.0.0)</th>
 <th>in review (draft PRs)</th>
 <th>not started</th>
 </tr>
@@ -5801,13 +5801,13 @@ through the entry bar before the tag, directly after <code>write(intent)</code>;
 </tr>
 <tr>
 <td>3c</td>
-<td>#8883 (<code>789d5d9d</code>, 0 behind <code>dev</code>, CI green): BF-219, BF-220, BF-221 (v1 treatment and entry writes) and BF-222 (API v3 autoPrune names what it deletes to the cache); merge before #8879's next <code>dev</code> merge, as they conflict in four files</td>
+<td><strong>merged 2026-10-31 (<code>2f50d944</code>)</strong>: #8883 (head <code>789d5d9d</code>): BF-219, BF-220, BF-221 (v1 treatment and entry writes) and BF-222 (API v3 autoPrune names what it deletes to the cache); #8879 takes it in its <code>dev</code> merge (four-file conflict, session -4e)</td>
 <td>dosing-relevant reply and announcement fixes</td>
 <td>HTTP-level tests red on <code>dev</code>; the write-step port reviewed</td>
 </tr>
 <tr>
 <td>3d</td>
-<td>#8882 (<code>7a6b0283</code>, 0 behind <code>dev</code>, CI green): hygiene, the development lint popup and drawer resize. The resize handler now registers at the first open (<code>2737756d</code>), so loading <code>browser-utils</code> without a window no longer throws</td>
+<td><strong>merged 2026-10-31 (<code>37b2280f</code>)</strong>: #8882 (head <code>32cd90e6</code>): hygiene, the development lint popup and drawer resize. The resize handler now registers at the first open (<code>2737756d</code>), so loading <code>browser-utils</code> without a window no longer throws</td>
 <td>display only</td>
 <td>browser test red on <code>dev</code></td>
 </tr>
@@ -6189,7 +6189,7 @@ manual confirmation. Two records already sharing an identifier is a question for
 </ul>
 <h2 id="7-sources">7. Sources<a class="headerlink" href="#7-sources" title="Permanent link">&para;</a></h2>
 <ul>
-<li>cgm-remote-monitor dev <code>368e6c23</code>; open PR heads, CI and <code>dev</code> distance read with <code>gh pr list</code>, <code>gh pr checks</code> and <code>gh api .../compare</code> on 2026-10-31 (re-read about 16:20Z).</li>
+<li>cgm-remote-monitor dev <code>37b2280f</code>; open PR heads, CI and <code>dev</code> distance read with <code>gh pr list</code>, <code>gh pr checks</code> and <code>gh api .../compare</code> on 2026-10-31 (re-read about 16:40Z).</li>
 <li><a href="../tenancy/nightscout-storage-seam-interface-2026-09-14.html">Storage seam interface</a>, <a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a>, <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>, <a href="../modernization/pr-8854-alignment-2026-10-26.html">#8854 alignment brief</a>.</li>
 <li><a href="spec/registration.html">Registration specification</a>, <a href="spec/identity.html">identity specification</a>, <a href="spec/records.html">records specification</a>.</li>
 <li>Nocturne <code>970031f6</code>, re-checked at <code>36d5ef4a2</code>. Tenant scope is an <code>ITenantScoped</code> marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves <code>identifier</code> equal to <code>_id</code> (issue #1932).</li>
