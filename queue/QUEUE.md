@@ -7370,7 +7370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400.
+**Notes.** 2026-10-31: filed by session -d1; reproduced on dev 37b2280f, v15.0.9 and f5bd2642 (probe worktrees externals/work/crm-repro-dcreated-*). The fix needs a choice: treat a plain value as equality (MongoDB's meaning of a plain value) or refuse it with 400. 2026-10-31 (maintainer): equality, bundled with BF-223 in one '16.0.0 small backfixes' PR; being built by an agent of session -d1 on bf/16.0.0-small-backfixes (from BF-223's ecbc9c06).
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 
