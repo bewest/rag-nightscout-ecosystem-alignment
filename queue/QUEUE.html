@@ -3189,7 +3189,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-31 at <code>1cf862c65</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>b1bb5a502</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -22210,7 +22210,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/tenancy/write-contract-spec-2026-10-07.md</code></li>
 <li><code>docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-30: questions (ii)-(vi) decided (16.0.0 decisions.md); prototype proto/id-batch-replies 7d81e1c1 and lab tools/lab/id-batch-replies; BF-219/BF-220 fixed ahead in #8883; strict on v1 comes with it. 2026-10-29 (maintainer): eligible for 16.0.0 through the entry bar (next-gen plan §1a and §4.2, where it is named ID-BATCH), with ID-FIRST-MATCH and ID-RESEND-SWITCH. The per-item reply shape (stored, refused, failed) for the socket, v1 batch and v3 is settled here (ARCH-8854-FAILED's 2026-10-27 decision points to it). U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).</p>
+<p><strong>Notes.</strong> 2026-10-31 night (session -81): built on local feat/id-batch 4b48e57f on the index abadc40a; not pushed; its PR waits for the index PR and compatibility A/B. On MongoDB 5.0.32 and 8.0.29: batch cells move exactly 45/45/57 (none/reject/strict) against abadc40a, nothing unpredicted; the full default matrix moves 0 outside cache; idfmt strict cells move the predicted 780 plus 1 cache-only cell (shared cache state with earlier v1 cells); suite run per file 5595/11/3 against base 5560/12/3 (the same failures on both trees in per-file isolation; the base's extra is an api.status flake, 7/7 on re-run; abadc40a's ordinary npm test is 5578/0/3); controls (a)-(d) red; revert = abadc40a. write-intent.js untouched. Batch pins and predictions on alignment main (1ca798551, e36eaef77). Five reply-shape choices beyond the decisions are with the maintainer (via -81). 2026-10-30: questions (ii)-(vi) decided (16.0.0 decisions.md); prototype proto/id-batch-replies 7d81e1c1 and lab tools/lab/id- batch-replies; BF-219/BF-220 fixed ahead in #8883; strict on v1 comes with it. 2026-10-29 (maintainer): eligible for 16.0.0 through the entry bar (next-gen plan §1a and §4.2, where it is named ID-BATCH), with ID-FIRST-MATCH and ID- RESEND-SWITCH. The per-item reply shape (stored, refused, failed) for the socket, v1 batch and v3 is settled here (ARCH-8854-FAILED's 2026-10-27 decision points to it). U6 in spec section 3. The error item's shape is not decided; it must not break NightscoutKit's same-length check (read, not run).</p>
 <h3 id="id-format-decision--decide-the-client-identifiers-format-1-to-256-url-safe-characters-uuid-recommended-placeholders-refused"><code>ID-FORMAT-DECISION</code> &mdash; Decide: the client identifier's format (1 to 256 URL-safe characters; UUID recommended; placeholders refused)<a class="headerlink" href="#id-format-decision--decide-the-client-identifiers-format-1-to-256-url-safe-characters-uuid-recommended-placeholders-refused" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
