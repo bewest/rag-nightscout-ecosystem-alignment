@@ -1,56 +1,61 @@
-# Text for the 16.0.0 write-compatibility page. The comparison data is pinned
-# to the measured trees below; present-day status is stated separately.
+# Text and labels for the fresh v15.0.9-to-merged-dev comparison.
 title: 16.0.0 write compatibility
-measured: 2026-10-31
+measured: 2026-11-01
 harness: tools/qc/write-contract-matrix.js
 trees:
   - {name: v15.0.9, commit: c6a0d8ed, note: release baseline}
-  - {name: dev, commit: 37b2280f, note: pre-identity baseline}
-  - {name: "#8879", commit: 6960bfb7, note: identity branch measurement}
-environment: Node 22.23.4, MongoDB 7.0.43, two runs per tree
+  - {name: pre-identity dev, commit: 37b2280f, note: historical attribution anchor; not a fresh run}
+  - {name: merged dev, commit: 497d08c9, note: index off for intentional duplicate-state fixtures}
+environment: Node 22.23.4, MongoDB 7.0.43; two runs per endpoint tree
 settings: >-
-  Defaults only (WRITE_VALIDATION off, WRITE_IDENTIFIER lenient, WRITE_DELETED_EDIT ignore,
-  UUID_HANDLING on)
+  All settings default except the merged-dev endpoint uses WRITE_IDENTIFIER_INDEX=off so the matrix
+  can seed intentional duplicate-identifier states. The default try index and duplicate-key races
+  are assessed separately: the completed --batch --no-idf matrix has 3,443 cells per off/try lane
+  on MongoDB 5.0.32 and 8.0.34, with the same 33 expected batch differences on both versions.
+origin_labels:
+  "8879": changed after pre-identity dev
+  dev: already changed on pre-identity dev
+  both: changed in both comparison intervals
 lede: >-
-  This comparison covers the pinned trees above, not the current release candidate. It measured
-  **{cells}** writes; **{differ}** differed from v15.0.9. The three BF-225 cells below were fixed
-  in #8888 and #8890. #8890 also shipped compatibility decisions A and B; #8892 later added the
-  resend settings and merged as 3c773ee5. Its default-mode matrix differed in 0 of 4,916 cells
-  from its base, f54941b5. That result is not a refreshed v15.0.9 comparison; the table below
-  remains limited to the pinned trees.
+  Compared **{cells}** write cells; **{differ}** differ from v15.0.9 and **{unexplained}** have no
+  classified cause. The endpoint trees were each run twice. The pre-identity dev pin is a historical
+  reference for attribution, not an additional fresh endpoint. Differences after that pin are
+  reported as one combined interval through merged dev `497d08c9`, not attributed to individual PRs.
 tiles:
-  - {metric: differ, label: writes that differ from v15.0.9 in this measurement}
-  - {metric: by_8879, label: "changed by #8879 only"}
-  - {metric: on_dev, label: already changed on dev}
-  - {metric: both, label: "changed on dev, then again by #8879"}
-  - {metric: format_cells, label: "identifier-format cases"}
-  - {metric: defect_cells, label: "BF-225 cells in this measurement (fixed)", bad: true}
-  - {metric: unexplained, label: differences with no cause found}
+  - {metric: cells, label: cells in each endpoint run}
+  - {metric: differ, label: "cells with changed output from v15.0.9"}
+  - {metric: by_8879, label: "changed after pre-identity dev"}
+  - {metric: on_dev, label: "already changed on pre-identity dev"}
+  - {metric: both, label: changed in both intervals}
+  - {metric: format_cells, label: identifier-format cases}
+  - {metric: defect_cells, label: "defect-group cells in this comparison", bad: true}
+  - {metric: unexplained, label: differences without a classified cause}
 defect:
-  heading: "BF-225: fixed before the current dev"
+  heading: Defect findings and controls
   text: >-
-    The pinned #8879 tree stored a second treatment when a socket re-send omitted an identifier
-    present on the stored record. The three affected cells are included in this measurement.
-    #8888 and #8890 fixed the defect; it is not an open finding on current dev.
+    The group and cell tables distinguish unexpected defects from deliberate compatibility decisions
+    and fixes. Check the per-cell cause and before/after record and reply; a large difference count
+    alone does not mean the same number of clients or production writes will break.
 why: >-
-  The matrix tests each write form and path. Identifier-format forms account for most measured
-  differences; these totals describe only the pinned trees.
+  Each cell is a synthetic combination of collection, write path, seed, resend shape and expected
+  stored/reply outcome. Cell counts measure coverage of those combinations, not production volume,
+  active sites, or unique client versions.
 reconsider_intro: >-
-  Each card records a measured compatibility alternative and its effect on the pinned comparison.
-  Current implementation status is shown in the card.
+  These cards document compatibility alternatives and the behavior each would restore in this
+  measured comparison. They are decision context, not automatic recommendations to revert.
 limits:
-  - "The results are not a post-#8890 or post-#8892 comparison."
-  - "Field-level and nested merge behavior, null handling, and races without the unique index were not measured."
-  - "A live and deleted record sharing one identifier, or an edit whose _id and identifier name different records, were not measured."
-  - "Re-sends after delete keyed by syncIdentifier, id or uuid were not measured."
-  - "Non-default settings and the unique index were not run."
-  - "Client shapes were read from code; only nightscout-connect was run against a server."
+  - "The 37b2280f attribution anchor is an earlier single pin, not a fresh repeated measurement; changes after it are not bisected by PR."
+  - "Six ws idread-fail cells are excluded because the injected read failure does not exist on v15.0.9."
+  - "The retained 2026-10-31 v15.0.9 pin differs from the fresh baseline in 23 batch cells outside cache/wire; only the two matching fresh baseline runs are used for repeatability."
+  - "WRITE_IDENTIFIER_INDEX=off on the merged-dev endpoint is a measurement accommodation for intentional duplicate-state fixtures, not the release default. Separate --batch --no-idf evidence covers the index setting and races; it does not include the full identifier-field matrix."
+  - "WRITE_RESEND alternatives, strict validation, and index drop/rollback behavior require separate matrices."
+  - "Client matches are predicted from documented client request shapes. No Loop, Trio, AAPS, xDrip+, or other client application ran against these trees."
+  - "The matrix measures synthetic writes and does not model every field-level, nested-merge, deployment, or live-data condition."
 verdicts:
-  - {verdict: Defect, text: unplanned behavior in the pinned comparison; fixed on current dev as noted.}
-  - {verdict: Decided, text: an intentional behavior change, with its decision named in the table.}
-  - {verdict: Bug fix, text: a defect or data-loss behavior that was fixed in a later compared tree.}
-  - {verdict: No value change, text: "the write takes another path; stored values do not change."}
+  - {verdict: Defect, text: unplanned behavior in the measured comparison that is not accepted as intended.}
+  - {verdict: Decided, text: an intentional behavior change backed by a recorded maintainer decision.}
+  - {verdict: Bug fix, text: a defect or data-loss behavior corrected in the later tree.}
+  - {verdict: No value change, text: "the write follows a different path, but the measured stored values do not change."}
 verdicts_note: >-
-  WRITE_RESEND and WRITE_DELETED_RESEND are implemented in #8892. The unique index and Q-IDX retry
-  merged in #8894; they were not measured in this pinned compatibility comparison. Per-client D20
-  overrides remain unimplemented.
+  Defaults are compared as shipped on each tree. The merged tree defaults WRITE_IDENTIFIER_INDEX
+  to try; the prior batch-only index-on/off evidence is a separate, bounded experiment.

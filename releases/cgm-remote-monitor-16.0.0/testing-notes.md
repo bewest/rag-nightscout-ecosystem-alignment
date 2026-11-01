@@ -1,6 +1,6 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Not written yet (2026-11-01, `dev` `497d08c9`, after #8894 merged).** No 16.0.0 release candidate is named, so there is no call for
+**Not written yet (2026-11-01, `dev` `61eb3733`, after #8896 merged).** No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 [15.0.9's testing notes](../cgm-remote-monitor-15.0.9/testing-notes.md): Part 1 in plain language for
 people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
@@ -66,14 +66,27 @@ the release contains is in [contents.md](contents.md).
   63 focused identity-race/settings tests, passing tier and write-intent gates, and lint with 0
   errors / 20 warnings. Its hosted checks are complete and green, including the no-database,
   maintained-MongoDB, Node, Chromium, Firefox, WebKit, Docker validation, and CodeQL checks.
+  The post-merge runs exposed separate failures: 41326509441 failed the cache-read test in
+  `tests/api.entries.test.js` because it assumed its fixture was `ctx.cache.entries[0]`, while
+  41326514941 failed D21 in `tests/start-paths.test.js` because equivalent index states appeared as
+  `built` and `present`. PR #8896 merged fixes for both as `61eb37335954ae42c91345a0823bd67331025165`.
+  Its required checks passed, including MongoDB 5.0/8.0, browser, Docker and CodeQL checks; both
+  post-merge workflows (41333677576 and 41333672054) succeeded. No separate cache-test PR is needed.
   The batch-only matrix records 33 expected index-on/off differences for duplicate-key races and
-  repeated identifiers under default, `WRITE_VALIDATION=reject`, and `WRITE_IDENTIFIER=strict`;
-  broader `--batch --no-idf` runs were stopped, not completed. See `contents.md` and the
+  repeated identifiers under default, `WRITE_VALIDATION=reject`, and `WRITE_IDENTIFIER=strict`.
+  The broader `--batch --no-idf` matrix is complete on merged `dev`: each off/try lane had 3,443
+  cells and zero invalid cells on MongoDB 5.0.32 and 8.0.34. Off-versus-try produced the same 33
+  expected batch differences (24 `batch-dupkey-mid`, 9 `batch-repeat-identifier`) on both versions;
+  other differences were cache-only (15 cells on MongoDB 5, 5 on MongoDB 8). Cross-version
+  differences were also cache-only (7 cells off, 11 try), with 929/929 wire frames captured and no
+  unattributed frames or settle-bound hits. See `contents.md` and the
   [ID-BATCH design note](../../docs/30-design/platform/id-batch-design-note-2026-10-30.md) for
   the evidence boundaries. #8889 already shipped API v1 per-item replies and strict-ID behavior;
   #8894 carries the index-dependent batch race retry. The old local `feat/id-batch` worktree is
-  not a separate release-critical PR; rebase it onto `dev` `497d08c9`, then rerun the batch matrix
-  and controls before deciding whether any remaining work needs a PR.
+  not a separate release-critical PR and should not be rebased wholesale: the merged branch has
+  per-item reply tests in `tests/api.id-batch-replies.test.js` and item-level race tests in
+  `tests/api.batch-race-item-level.test.js`. Carry forward only a specific uncovered case if
+  review identifies one.
 
   **Candidate scenarios to prepare, not issue until an RC is named.** Use an isolated test site
   with synthetic records; do not create test treatments on a production or active-care site.

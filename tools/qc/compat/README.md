@@ -30,33 +30,68 @@ batch cells by default, with `v15.0.9-harness-guard.diff` applied (v15.0.9 has n
 `lib/server/storage-reads`; the guard lets the run continue and the six `ws idread-fail` cells are set
 aside as not comparable, listed in `analysis.json`).
 
+## Fresh comparison of v15.0.9 and merged 16.0.0 dev
+
+The 2026-11-01 refresh is separate from the historical comparison above:
+`tools/qc/results/write-contract-matrix/compat-16.0.0-refresh-2026-11-01/analysis.json`.
+It repeats both endpoint trees (`v15.0.9` `c6a0d8ed` and merged `dev` `497d08c9`) on Node 22.23.4
+and MongoDB 7.0.43, including batch forms. The existing `dev` `37b2280f` matrix pin is a historical
+attribution anchor, not a third fresh or repeated endpoint. The comparison labels that boundary
+explicitly and does not attribute changes within the post-`37b2280f` interval to individual PRs.
+Six `ws idread-fail` cells remain set aside because the injected read failure did not exist on the
+15.0.9 tree. The merged-dev endpoint sets `WRITE_IDENTIFIER_INDEX=off` because some identity-field
+fixtures intentionally seed duplicate identifiers, which the unique index correctly rejects;
+index behavior is separate. The completed `--batch --no-idf` matrix has 3,443 cells per off/try
+lane on MongoDB 5.0.32 and 8.0.34: each version shows the same 33 expected batch differences, with
+other observed differences cache-only.
+
+The two fresh runs of each endpoint contain 4,916 cells each; repeat comparisons differ only in
+cache/wire (81 baseline and 19 merged-dev cells). The fresh baseline runs match outside cache/wire.
+The classified comparison has 2,803 changed cells, zero unexplained and zero `Defect`-verdict
+cells. The final change split is 347 only by the pre-identity dev anchor, 2,107 only after it, and
+349 across both intervals; 1,886 cells concern identifier format. The 2026-10-31 retained baseline
+pin differs from the fresh baseline by 23 batch cells outside cache/wire, so it is not used as a
+repeat. The release colophon visualizes the endpoint runs, origin split, behavior groups, client
+shape matches and current release gates.
+
+The retained 2026-10-31 pin also has 114 cache/wire-only differences from the fresh baseline; it is
+not used as a repeat or as an endpoint in this comparison.
+
+The refreshed page labels are in `releases/cgm-remote-monitor-16.0.0/compat/page.yaml`; the builder
+uses `origin_labels` from the analysis file so an attribution interval is not mislabeled as PR
+`#8879`. Endpoint pins and intermediate output are retained under the refresh directory; generated
+page datasets remain under `releases/cgm-remote-monitor-16.0.0/compat/`.
+
 ## Refresh steps
 
-Run from the repository root. `R=tools/qc/results/write-contract-matrix/compat-16.0.0` and
+Run from the repository root. `R=tools/qc/results/write-contract-matrix/compat-16.0.0-refresh-2026-11-01` and
 `P=releases/cgm-remote-monitor-16.0.0/compat` below.
 
-1. **Prepare the trees.** One cgm-remote-monitor worktree per tree and per bisect commit, named
-   `<prefix><commit>`, each with `npm ci` done. One MongoDB container per lane, named
-   `compat-m7-<port>`, for example
-   `docker run -d --name compat-m7-27970 -p 127.0.0.1:27970:27017 mongo:7.0.43`.
-   Copy the harness and, if any tree predates `lib/server/storage-reads`, apply the guard:
+1. **Prepare the endpoints.** Check out cgm-remote-monitor worktrees at `c6a0d8ed` and
+   `497d08c9`, each with `npm ci` complete. Reuse the retained MongoDB 7.0.43 container for one
+   run at a time. For v15.0.9, copy the current harness to the worktree and apply the compatibility
+   guard because that tree predates `lib/server/storage-reads`:
    `cp tools/qc/write-contract-matrix.js "$H" && patch "$H" tools/qc/compat/v15.0.9-harness-guard.diff`.
-   The guard applies to the current harness with an offset. Since `7b24de535` the batch
-   cells are opt-in: pass `MATRIX_ARGS=--batch` to include them, as the 2026-10-31 run did.
+   The guard applies to the current harness with an offset. The historical 37b2280f attribution
+   pin is an input to the comparison; it is not rerun.
 
-2. **Run the matrix.** For each tree, twice, and once for each bisect commit of `analysis.json`'s
-   `chain`:
-   `MATRIX_ARGS=--batch tools/qc/compat/lane.sh <port> <outdir> <prefix> "$H" <commit>...`
-   (several lanes in parallel, one container each). Copy each tree's first run to
-   `tools/qc/results/write-contract-matrix/<tree>-<commit>.json` and point `trees.<key>.run1` in
-   `analysis.json` at it. Update `chain` with the merge steps between the trees, and `predictions`
-   with any per-slice prediction files (each written before its slice's code).
-   A quick check of one pair: `python3 tools/qc/compat/wcdiff.py A.json B.json --list`.
+2. **Run each endpoint twice.** Use the guarded harness for v15.0.9 and the current harness for
+   merged dev; both runs include `--batch`, use Node 22.23.4 and MongoDB 7.0.43, and run sequentially
+   against the shared database. Leave other settings unset on v15.0.9; set
+   `WRITE_IDENTIFIER_INDEX=off` only on merged dev to permit the deliberate duplicate-state fixtures.
+   For each run, execute
+   `env WC_WORKTREE="$W" WC_MONGO=mongodb://127.0.0.1:27970 n exec 22.23.4 node "$H" --batch --out "$OUT"`
+   (with `WRITE_IDENTIFIER_INDEX=off` added to the merged-dev environment). Save first pins under
+   `R/run1/` and repeats under `R/run2/`; the config's `trees.<key>.run1` paths point to the first
+   pins. A quick check of one pair:
+   `python3 tools/qc/compat/wcdiff.py A.json B.json --list`.
 
 3. **Diff and classify.**
    ```
    python3 tools/qc/compat/build.py --config $R/analysis.json --groups $P/groups.yaml \
-       --bisect <outdir> --run2 v1509=<run2.json> --run2 dev=<run2.json> --run2 8879=<run2.json> --all
+       --bisect tools/qc/results/write-contract-matrix \
+       --run2 v1509=$R/run2/v1509-c6a0d8ed.json \
+       --run2 8879=$R/run2/dev-497d08c9.json --all
    ```
    This writes `diff-cells.json`, `clients.json` and `summary.json` into `$R`. Check that
    `summary.json`'s `totals.unexplained` is 0 and every tree's `flaky_outside_cache_wire` is 0; an

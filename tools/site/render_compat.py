@@ -241,8 +241,11 @@ def main():
     if not commit:
         sys.exit("render: the sources are not committed yet; commit them, then render")
     fmt = lambda v: f"{v:,}"
-    lede = inline(page["lede"].format(**{k: fmt(v) for k, v in head.items()}))
+    lede = inline(page["lede"].format(**{k: fmt(v) for k, v in head.items() if isinstance(v, (int, float))}))
     trees = ", ".join(f'<span class="mono">{esc(t["name"])} {esc(t["commit"])}</span> ({esc(t["note"])})' for t in page["trees"])
+    origin_labels = page.get("origin_labels", {"8879": "#8879 only", "dev": "already on dev", "both": "dev, then #8879"})
+    base_name = page["trees"][0]["name"]
+    tip_name = page["trees"][-1]["name"]
     tiles = "".join(
         f'<div class="cw-tile{" bad" if t.get("bad") else ""}"><span class="v">{fmt(head[t["metric"]])}</span>'
         f'<span class="l">{esc(t["label"])}</span></div>' for t in page["tiles"])
@@ -280,7 +283,7 @@ def main():
     <h2>Why the count is large</h2>
     <p class="muted">{inline(page["why"])}</p>
     <div class="cw-card">
-      <div class="legend"><span><i data-draw="sw0"></i>#8879 only</span><span><i data-draw="sw1"></i>already on dev</span><span><i data-draw="sw2"></i>dev, then #8879</span></div>
+      <div class="legend"><span><i data-draw="sw0"></i>{esc(origin_labels["8879"])}</span><span><i data-draw="sw1"></i>{esc(origin_labels["dev"])}</span><span><i data-draw="sw2"></i>{esc(origin_labels["both"])}</span></div>
       <div class="cw-chart" data-draw="families" data-source="families" style="min-height: 13rem"></div>
     </div>
   </section>
@@ -360,8 +363,8 @@ def main():
       <div class="cw-tablebox">
         <table data-source="cells" data-row-key="cell">
           <thead><tr>
-            <th data-field="cell">Cell</th><th data-field="origin">Where from</th><th data-field="effect">Effect</th><th data-field="store_before">Stored on 15.0.9</th><th data-field="store_after">Stored on #8879</th>
-            <th data-field="reply_before">Reply on 15.0.9</th><th data-field="reply_after">Reply on #8879</th><th data-field="cause">Cause</th>
+            <th data-field="cell">Cell</th><th data-field="origin">Where from</th><th data-field="effect">Effect</th><th data-field="store_before">Stored on {esc(base_name)}</th><th data-field="store_after">Stored on {esc(tip_name)}</th>
+            <th data-field="reply_before">Reply on {esc(base_name)}</th><th data-field="reply_after">Reply on {esc(tip_name)}</th><th data-field="cause">Cause</th>
           </tr></thead>
           <tbody data-draw="cells-body"></tbody>
         </table>

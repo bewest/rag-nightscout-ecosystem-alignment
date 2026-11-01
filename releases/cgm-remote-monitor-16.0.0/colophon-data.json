@@ -1,0 +1,94 @@
+{
+  "measured": "2026-11-01",
+  "matrix": {
+    "runs": [
+      {"tree": "v15.0.9", "run": 1, "cells": 4916},
+      {"tree": "v15.0.9", "run": 2, "cells": 4916},
+      {"tree": "merged dev, index off", "run": 1, "cells": 4916},
+      {"tree": "merged dev, index off", "run": 2, "cells": 4916}
+    ],
+    "origin_split": [
+      {"label": "Only by pre-identity dev", "cells": 347},
+      {"label": "Only after pre-identity dev", "cells": 2107},
+      {"label": "Changed in both intervals", "cells": 349}
+    ],
+    "groups": [
+      {"label": "Identifier format", "cells": 1886, "status": "Decided"},
+      {"label": "Duplicate avoided", "cells": 407, "status": "Decided"},
+      {"label": "API v3 client _id refused", "cells": 100, "status": "Decided"},
+      {"label": "Reply only", "cells": 59, "status": "Decided"},
+      {"label": "New profile, identifier dropped", "cells": 57, "status": "Decided"},
+      {"label": "Shared identifier pick", "cells": 48, "status": "Decided"},
+      {"label": "Deleted stays deleted", "cells": 28, "status": "Decided"},
+      {"label": "Refused where stored", "cells": 26, "status": "Decided"},
+      {"label": "No new record beside a deleted one", "cells": 21, "status": "Decided"},
+      {"label": "Socket re-send now written", "cells": 11, "status": "Decided"},
+      {"label": "New record beside a deleted one", "cells": 6, "status": "Decided"},
+      {"label": "Error now answered", "cells": 64, "status": "Bug fix"},
+      {"label": "Error becomes refusal", "cells": 20, "status": "Bug fix"},
+      {"label": "Temporary Target units", "cells": 12, "status": "Bug fix"},
+      {"label": "Socket batches", "cells": 9, "status": "Bug fix"},
+      {"label": "Write path only", "cells": 49, "status": "No value change"}
+    ]
+  },
+  "client_impact": {
+    "summary": {
+      "unique_clients": 15,
+      "shape_matches": 120,
+      "measured_matches": 11,
+      "read_matches": 109
+    },
+    "groups": [
+      {"label": "Identifier format", "clients": 0, "status": "Decided"},
+      {"label": "Duplicate avoided", "clients": 4, "status": "Decided"},
+      {"label": "API v3 client _id refused", "clients": 1, "status": "Decided"},
+      {"label": "Reply only", "clients": 11, "status": "Decided"},
+      {"label": "New profile, identifier dropped", "clients": 3, "status": "Decided"},
+      {"label": "Shared identifier pick", "clients": 1, "status": "Decided"},
+      {"label": "Deleted stays deleted", "clients": 3, "status": "Decided"},
+      {"label": "Refused where stored", "clients": 0, "status": "Decided"},
+      {"label": "No new record beside a deleted one", "clients": 1, "status": "Decided"},
+      {"label": "Socket re-send now written", "clients": 1, "status": "Decided"},
+      {"label": "New record beside a deleted one", "clients": 3, "status": "Decided"},
+      {"label": "Error now answered", "clients": 5, "status": "Bug fix"},
+      {"label": "Error becomes refusal", "clients": 0, "status": "Bug fix"},
+      {"label": "Temporary Target units", "clients": 5, "status": "Bug fix"},
+      {"label": "Socket batches", "clients": 1, "status": "Bug fix"},
+      {"label": "Write path only", "clients": 12, "status": "No value change"}
+    ]
+  },
+  "readiness": {
+    "gates": [
+      {
+        "status": "complete",
+        "gate": "Fresh 15.0.9-to-merged-dev write matrix",
+        "evidence": "4,916 cells per run; both endpoints repeat with 0 differences outside cache/wire; 2,803 changed cells, 0 unexplained and 0 defect-classified."
+      },
+      {
+        "status": "complete",
+        "gate": "Default identifier-index startup and batch races",
+        "evidence": "Separate --batch --no-idf matrix: 3,443 cells per off/try lane on MongoDB 5.0.32 and 8.0.34; same 33 expected differences, zero invalid cells, remaining differences cache-only; 929/929 wire frames attributed."
+      },
+      {
+        "status": "complete",
+        "gate": "Post-merge CI on nightscout/cgm-remote-monitor#8894",
+        "evidence": "PR #8896 stabilized the cache-order and startup-state tests. Required checks and both post-merge workflows (41333677576 and 41333672054) passed on current dev 61eb3733."
+      },
+      {
+        "status": "blocked",
+        "gate": "Controller-registration entry bar: nightscout/cgm-remote-monitor#8857",
+        "evidence": "The PR diverges from current dev: dev is 97 commits ahead and the PR has 16 unique commits. Rebase, resolve D-REG-FLAG, and rerun entry-bar checks; existing green checks are on the old head."
+      },
+      {
+        "status": "blocked",
+        "gate": "Staging to master: nightscout/cgm-remote-monitor#8824",
+        "evidence": "PR is open and BLOCKED; master branch-protection settings still require checks the dev workflow does not emit."
+      },
+      {
+        "status": "pending",
+        "gate": "Named RC, cohort and operational checks",
+        "evidence": "No RC is named. Cohort verification, Pushover/APNs delivery, real-rig soak, BF-72/BF-161 advisory-fork merges, and rollback rehearsal remain before tagging; operator-facing release notes are written when an RC is named."
+      }
+    ]
+  }
+}

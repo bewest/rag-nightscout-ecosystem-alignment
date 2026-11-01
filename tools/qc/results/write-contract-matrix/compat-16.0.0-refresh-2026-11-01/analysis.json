@@ -1,0 +1,46 @@
+{
+  "about": "Fresh v15.0.9-to-merged-dev comparison. Endpoint trees are repeated; the pre-identity dev pin is a historical attribution anchor.",
+  "measured": "2026-11-01",
+  "trees": {
+    "v1509": {
+      "name": "v15.0.9",
+      "label": "v15.0.9 c6a0d8ed",
+      "run1": "run1/v1509-c6a0d8ed.json"
+    },
+    "dev": {
+      "name": "pre-identity dev",
+      "label": "dev 37b2280f (historical pin)",
+      "run1": "../dev-37b2280f.json"
+    },
+    "8879": {
+      "name": "merged dev",
+      "label": "dev 497d08c9 (#8894; index off for duplicate-state fixtures)",
+      "run1": "run1/dev-497d08c9.json"
+    }
+  },
+  "settings": "All settings default except merged dev uses WRITE_IDENTIFIER_INDEX=off so cells can seed intentionally duplicated identifiers. Separate --batch --no-idf index evidence is complete: 3,443 cells per off/try lane on MongoDB 5.0.32 and 8.0.34; both versions show 33 expected batch differences, with other observed differences cache-only. Node 22.23.4, MongoDB 7.0.43.",
+  "origin_labels": {
+    "8879": "changed after pre-identity dev",
+    "dev": "already changed on pre-identity dev",
+    "both": "changed in both comparison intervals"
+  },
+  "chain": [
+    ["v1509", "v15.0.9 c6a0d8ed", null],
+    ["dev", "pre-identity dev 37b2280f (historical pin)", "changes through dev 37b2280f"],
+    ["8879", "merged dev 497d08c9 (index off for duplicate-state fixtures)", "identity-track changes after 37b2280f through #8894; combined interval, not per-PR attribution"]
+  ],
+  "predictions": [],
+  "slice_order": [],
+  "client_shapes": "../compat-16.0.0/client-shapes.json",
+  "set_aside_on_v1509": {
+    "cells": [
+      "entries ws idread-fail",
+      "treatments ws idread-fail",
+      "devicestatus ws idread-fail",
+      "profile ws idread-fail",
+      "food ws idread-fail",
+      "activity ws idread-fail"
+    ],
+    "reason": "idread-fail injects a failure into lib/server/storage-reads.findOne, which v15.0.9 does not have; on v15.0.9 the injection fires zero times, so these six cells are not comparable and are excluded from the diff."
+  }
+}

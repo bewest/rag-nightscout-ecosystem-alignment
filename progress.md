@@ -12,22 +12,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
-## cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
+## cgm-remote-monitor 16.0.0 Identity and Release Evidence Update (2026-11-01)
 
-Updated the roadmap and release records after completing Q-IDX race handling and choosing #8894 as the canonical unique-index PR.
+Updated the roadmap and release records after #8894 and CI stabilization #8896 merged; completed the broad batch and fresh backwards-compatibility matrices.
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| Unique-index PR | `nightscout/cgm-remote-monitor#8894` | Draft, stacked on #8892; local gates pass. Its feature base is excluded from hosted `pull_request` filters, so retarget to `dev` after #8892 merges to trigger CI. Earlier draft #8893 closed as superseded. |
-| Release status | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md` | 6,319 passing / 3 pending; 33 expected current matrix deltas; broader `--batch --no-idf` runs were stopped. |
-| Roadmap and site | `docs/30-design/platform/next-gen-platform-plan.{md,json}`, `site/pages/nightscout-next-gen-platform.html` | #8892 CI is green; remaining ID-BATCH is clean at `4b48e57f`, 17 ahead/91 behind `dev`, and must be rebased/retested after the index lands. |
+| Unique-index PR | `nightscout/cgm-remote-monitor#8894` | Merged to `dev` as `497d08c9`; required hosted checks passed. The post-merge cache-read and startup-state test failures were fixed by #8896, whose required and post-merge checks passed. |
+| Release status | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md` | Full `--batch --no-idf` matrix completed: 3,443 cells per off/try lane, zero invalid; the same 33 expected batch deltas on MongoDB 5.0.32 and 8.0.34, with remaining differences limited to cache fields. |
+| Compatibility evidence and colophon | `releases/cgm-remote-monitor-16.0.0/compat/`, `releases/cgm-remote-monitor-16.0.0/colophon.md`, `site/pages/cgm-remote-monitor-16.0.0-{write-compatibility,colophon}.html` | Two 4,916-cell runs per endpoint; 2,803 classified changes, 0 unexplained and no defect-verdict cells. Repeat differences are limited to cache/wire. |
+| Roadmap and site | `docs/30-design/platform/next-gen-platform-plan.{md,json}`, `site/pages/nightscout-next-gen-platform.html` | #8889, #8892, #8894 and #8896 are merged; #8894 includes the batch retry, so no separate ID-BATCH feature PR is needed absent a newly identified gap. Compatibility evidence is complete; #8857 rebase/retest, #8824 staging, cohort and rollback checks remain. |
 
 **Key Findings**:
 - The 33 current index-on/off matrix deltas are 24 `batch-dupkey-mid` plus 9 `batch-repeat-identifier`; the earlier 24-cell result was pinned at `982de025`.
 - The batch-only matrix completed all 13 forms under default on MongoDB 5.0.32 and 8.0.29; only the two relevant forms were compared under reject and strict.
 - The older `proto/id-batch-replies` branch is at `7d81e1c1`, 1 ahead/119 behind; it is not the integration branch.
+- The broader matrix has 3,443 cells in each off/try lane, zero invalid cells, complete wire capture (929/929), and no differences beyond the 33 expected batch deltas except cache-field noise.
 
-**Next**: Merge #8892 after review; then retarget #8894 to `dev` to trigger hosted CI, resolve any failures, and merge it. Afterward rebase `feat/id-batch` and rerun the batch suite, matrix, and controls before considering a PR.
+**Next**: Rebase #8857, clear the #8824 master-protection block, then complete cohort verification, operational checks and rollback review before naming an RC. Do not revive the stale `feat/id-batch` branch without a specific uncovered behavior.
 
 ## cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)
 
