@@ -4,15 +4,15 @@
     "groups": [
       "c1"
     ],
-    "decision": "Slice 4, ID-Q7/Q8: a matched re-send of profile, food, entries, settings, device status or activity merges into the stored record",
-    "alternative": "A matched re-send replaces the stored record on every collection, as on 15.0.9 and as slice 4 already decided for treatments. Merge stays available through API v3 PATCH and socket dbUpdate, where a client asks for it.",
+    "decision": "Compatibility B (#8890): a matched re-send replaces the stored record on every collection and path; explicit edits keep their route-specific merge behavior.",
+    "alternative": "Set WRITE_RESEND=merge-except-treatments to restore merge-on-re-send behavior for the collections covered by this card.",
     "cells_restored": 136,
     "restores": "Every replace-becomes-merge cell: profile 61, entries 25, food 22, device status 13, settings 10, activity 5; re-sent over API v3 90, socket 36, in-process 10.",
     "cost_to_objectives": "low",
     "cost": "Slice 4's reason applies unchanged: clients re-send whole records and clear a field by leaving it out, so under merge a cleared field stays set. Identifier-first matching, the duplicate avoidance and the unique index are unaffected. What is lost is the same as on 15.0.9: a field added on the site is dropped when the client re-sends its record. Clients found: AndroidAPS NSClientV3 settings, the web profile editor's saves.",
-    "recommendation": "Strong candidate. Same rule as treatments, removes the cleared-field-stays-set risk, nothing in the identity work depends on merge.",
+    "recommendation": "Shipped in #8890; WRITE_RESEND=merge-except-treatments is the opt-in alternative.",
     "status": "adopted",
-    "status_note": "Adopted: a matched re-send replaces on every collection, as for treatments; merge stays for API v3 PATCH and socket dbUpdate. Queued for 16.0.0.",
+    "status_note": "Default replace behavior shipped in #8890; merge-on-re-send is an opt-in site mode in #8892.",
     "decided": "maintainer, 2026-10-31"
   },
   {
@@ -20,15 +20,15 @@
     "groups": [
       "f"
     ],
-    "decision": "ID-Q6, slice 2: a placeholder, blank, numeric or over-long identifier is treated as absent on every path, API v3 included (WRITE_IDENTIFIER=lenient by default)",
-    "alternative": "API v3 refuses a blank (whitespace-only) or numeric identifier with 400 by default, exactly as v15.0.9 did. Every other malformed identifier (placeholders such as \"undefined\", empty, over-long) stays accepted on API v3 with the identifier treated as absent; API v1, socket and in-process are unchanged.",
+    "decision": "Compatibility A (#8890): API v3 refuses blank and numeric identifiers by default; other malformed identifiers remain absent/lenient.",
+    "alternative": "Restore the earlier lenient API v3 handling for blank and numeric identifiers; this would give up the 118 measured compatibility restorations.",
     "cells_restored": 118,
     "restores": "The 118 identifier-format cells where v15.0.9 refused a blank (78) or numeric (40) identifier. Corrected 2026-10-31: the card first counted 349, but 231 of those were placeholders v15.0.9 stored and only refused on a later re-send as an identity change; refusing them would be a new refusal, not a restoration.",
     "cost_to_objectives": "near zero",
     "cost": "None to compatibility: no client can depend on acceptance that v15.0.9 refused. Refusing every malformed identifier on API v3 was measured against a strict run and would move at least 72 cells further from v15.0.9 (empty, JSON null and placeholders that v15.0.9 accepted), and a 400 can stall an uploader that only bounds retries on 404 (AndroidAPS, read). WRITE_IDENTIFIER=strict stays the opt-in broader refusal on API v3 and the socket.",
-    "recommendation": "Strong candidate. Pure compatibility gain; check that no surveyed API v3 client sends such an identifier (none was found).",
+    "recommendation": "Shipped in #8890; strict mode remains the broader opt-in.",
     "status": "adopted",
-    "status_note": "Adopted as option (i): refuse only blank and numeric on API v3 by default; no refusal v15.0.9 did not make. Queued for 16.0.0.",
+    "status_note": "Shipped in #8890: API v3 refuses blank and numeric identifiers by default; WRITE_IDENTIFIER=strict remains the broader opt-in refusal.",
     "decided": "maintainer, 2026-10-31"
   },
   {
@@ -55,15 +55,15 @@
       "c2",
       "b"
     ],
-    "decision": "WRITE_RESEND and per-client quirks: decided 2026-10-29, not built",
-    "alternative": "Build WRITE_RESEND with a mode that gives 15.0.9's re-send behaviour per site or per registered client, plus a re-send counterpart to WRITE_DELETED_EDIT for revive after delete.",
+    "decision": "Site-level resend settings implemented and merged in #8892",
+    "alternative": "Use WRITE_RESEND and WRITE_DELETED_RESEND to select the measured resend behavior; per-client D20 overrides remain future work.",
     "cells_restored": 58,
     "restores": "Opt-in: d1 28 and d2 21 (stays deleted), c2 9 (socket re-send now written); b 402 only if a mode keeps adding a second record, which no one has asked for.",
     "cost_to_objectives": "low",
-    "cost": "Defaults unchanged, so the identity work is unaffected; the cost is building and testing one more setting. It gives an operator a way back without a revert, which today does not exist for any change.",
-    "recommendation": "Worth building before the tag, or recording that 16.0.0 ships without a rollback switch.",
+    "cost": "Defaults preserve the selected 16.0.0 behavior. Site-level compatibility modes are implemented; per-client overrides are not.",
+    "recommendation": "Shipped in #8892.",
     "status": "adopted",
-    "status_note": "Adopted: build WRITE_RESEND (and a re-send counterpart for deleted records) before the tag, as the opt-in way back. Queued for 16.0.0.",
+    "status_note": "Merged as #8892 at 3c773ee5. Site-level settings are implemented; per-client D20 overrides remain a future seam.",
     "decided": "maintainer, 2026-10-31"
   },
   {
@@ -77,9 +77,9 @@
     "restores": "Socket device status 5, socket treatments 4.",
     "cost_to_objectives": "low",
     "cost": "Edits over the socket go through dbUpdate, not a re-send, so few clients lose anything. Decided today for consistency with slice 4; both choices are defensible.",
-    "recommendation": "Low stakes either way; leave as decided unless the re-send switch is built.",
+    "recommendation": "Default replace behavior shipped in #8890; WRITE_RESEND=acknowledge selects this measured no-write alternative.",
     "status": "as-decided",
-    "status_note": "Not taken up: decision B (a socket treatment re-send matched by identifier replaces) stands.",
+    "status_note": "The default replace behavior shipped in #8890; WRITE_RESEND=acknowledge restores the measured no-write option.",
     "decided": "maintainer, 2026-10-31"
   },
   {

@@ -25,6 +25,8 @@ def origin(r):
     return 'both' if a and b else ('dev' if a else '8879')
 def guard(g):
     if g.startswith('decided-not-built'): return 'Setting decided, not built'
+    if g.startswith('WRITE_'): return g
+    if g == 'fixed on current dev': return 'Fixed on current dev'
     if 'strict' in g: return 'Revert only (strict refuses)'
     return 'Revert only'
 def fam(form):

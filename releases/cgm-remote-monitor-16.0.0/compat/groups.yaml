@@ -9,11 +9,8 @@
 #   name, meaning, consequence   the page's text for the group
 #   verdict                      Defect | Decided | Bug fix | No value change
 #   basis                        the decision or change it comes from
-#   guard                        what restores 15.0.9's behaviour today; shown as
-#                                "Setting decided, not built" when it starts
-#                                "decided-not-built", "Revert only (strict
-#                                refuses)" when it contains "strict", else
-#                                "Revert only"
+#   guard                        current setting or revert needed to restore the
+#                                measured 15.0.9 behaviour
 #   severity                     optional: overrides the triage severity
 #                                (otherwise 10 minus the worst effect's rank)
 #
@@ -26,30 +23,30 @@ groups:
       value is not stored.
     verdict: Decided
     basis: ID-Q6, slice 2
-    guard: revert-only (WRITE_IDENTIFIER=strict refuses instead; no setting stores the placeholder as before)
+    guard: revert-only (strict refuses instead; no setting stores placeholders)
   b:
     name: Duplicate avoided
     meaning: A re-send that carries a stored identifier now finds the stored record instead of adding a second one.
     consequence: One record where 15.0.9 stored two.
     verdict: Decided
     basis: 'Identifier first, slices 4/6/6a; #8859 on dev'
-    guard: decided-not-built (WRITE_RESEND, per-client D20 quirks)
+    guard: revert-only (no mode restores duplicate creation)
   c1:
     name: Replace becomes merge
     meaning: A matched re-send merges into the stored record; fields the client left out are kept. Never for treatments.
     consequence: A field a client cleared by leaving it out stays set (profile, food, entries, settings).
     verdict: Decided
     basis: Slice 4, ID-Q7/Q8
-    guard: decided-not-built (WRITE_RESEND)
+    guard: WRITE_RESEND=merge-except-treatments
   c2:
     name: Socket re-send now written
     meaning: A socket re-send that 15.0.9 ignored now replaces (treatments) or merges.
     consequence: Treatments re-sent over the socket drop fields the client left out.
     verdict: Decided
     basis: Decision B, slice 6
-    guard: decided-not-built (WRITE_RESEND=acknowledge)
+    guard: WRITE_RESEND=acknowledge
   c3:
-    guard: decided-not-built (WRITE_RESEND)
+    guard: WRITE_RESEND=refuse
   c4:
     guard: decided-not-built (WRITE_RESEND)
   d1:
@@ -58,14 +55,14 @@ groups:
     consequence: A treatment deleted on the site is not brought back by an uploader re-sending it.
     verdict: Decided
     basis: Slice 3, ID-Q3/Q4
-    guard: revert-only (WRITE_DELETED_EDIT covers edits, not re-sends; a deliberate restore is a separate item)
+    guard: WRITE_DELETED_RESEND=revive
   d2:
     name: No new record beside a deleted one
     meaning: A re-send by identity that 15.0.9 stored as a new record next to the deleted one is acknowledged instead.
     consequence: The re-sent record does not reappear.
     verdict: Decided
     basis: Slices 3/6/6a, ID-Q4
-    guard: revert-only
+    guard: WRITE_DELETED_RESEND=revive
   d3:
     name: New record beside a deleted one
     meaning: A re-send matched only by time, after a delete, is stored as a new record instead of reviving the deleted
@@ -86,10 +83,10 @@ groups:
     name: Second record now stored
     meaning: A socket re-send with no identifier of a treatment stored with one is stored a second time.
     consequence: 'A duplicated insulin or carb record on the site: IOB/COB shown doubled.'
-    verdict: Defect
-    basis: 'BF-225, from #8877 (on dev); fix scope decided 2026-10-31'
+    verdict: Bug fix
+    basis: 'BF-225, fixed by #8888 and #8890'
     severity: 10
-    guard: revert-only
+    guard: fixed on current dev
   p:
     name: New profile, identifier dropped
     meaning: A profile create that copies a stored identifier but has another startDate is stored as a new profile
