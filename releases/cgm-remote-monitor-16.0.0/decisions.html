@@ -2335,7 +2335,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>1cc19b084</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>eb7a9ac70</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2787,6 +2787,12 @@ public.</em></p>
 <td>maintainer, 2026-10-31, via session -4e, card c1-replace</td>
 <td><code>ID-FIRST-MATCH</code></td>
 <td>same branch and follow-up PR as A; changes the unique index's v3 race re-send for non-treatments, so the index moves after A/B with a fresh prediction; release 2 (#8886) outcome words follow</td>
+</tr>
+<tr>
+<td><strong>Compatibility B extended: every re-send matched by <code>identifier</code> replaces, on every path</strong>, including the new identifier-first matches over API v1, in-process and the socket for profile, food, activity and device status. Entries over API v1 and in-process keep merging, as on 15.0.9. API v3 <code>PATCH</code> and the socket's <code>dbUpdate</code> (edits) still merge</td>
+<td>maintainer, 2026-10-31, via session -4e</td>
+<td><code>ID-FIRST-MATCH</code></td>
+<td>a fourth commit on <code>feat/id-compat-restore-ab</code>, in progress; the index's last move waits for that head</td>
 </tr>
 <tr>
 <td><strong>Compatibility C: <code>WRITE_RESEND</code> is built before the tag as the opt-in way back, with a re-send counterpart to <code>WRITE_DELETED_EDIT</code> for revive-after-delete.</strong> Kept unchanged: E (a placeholder <code>identifier</code> value is not stored) and F (identity first, the profile copy rule, BF-170, P4, d3). <strong>Names and defaults confirmed</strong> (maintainer, 2026-10-31, via -4e; supersede the 2026-10-29 <code>WRITE_RESEND=merge|acknowledge|refuse</code> row): <code>WRITE_RESEND=replace|merge|acknowledge|refuse</code>, default <code>replace</code> (card B); new <code>WRITE_DELETED_RESEND=stay|revive</code>, default <code>stay</code> (<code>revive</code> restores 15.0.9's re-send-revives-a-deleted-record). Both defaults keep 16.0.0's behaviour; the other modes are opt-in ways back; per-client D20 quirks may select a <code>WRITE_RESEND</code> mode; parsed with the other <code>WRITE_*</code> settings in one module, read once, an unknown value refuses to start</td>
