@@ -2335,7 +2335,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>eb7a9ac70</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>dfc2d9e81</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2805,6 +2805,12 @@ public.</em></p>
 <td>maintainer, 2026-10-31, via session -d1, on the index agent's probe (MongoDB 5.0.33)</td>
 <td><code>ID-UNIQUE-INDEX</code></td>
 <td>value <code>drop</code> confirmed by session -4e; built as local <code>8e419abb</code> (gated); whether a hosting provider's database user may run <code>dropIndex</code> to be verified</td>
+</tr>
+<tr>
+<td><strong>ID-BATCH reply shape accepted as built</strong>: default API v1 replies unchanged except where already decided; per-record detail only with the opt-in. An invalid <code>_id</code> still refuses the whole batch by default; the <code>Warning</code> header counts only refusals by default; an all-refused batch keeps today's 400 message by default; an unknown opt-in value gets 400 before anything is written; food and profile <code>PUT</code> batches follow as a later slice</td>
+<td>maintainer, 2026-10-31, via session -81</td>
+<td><code>ID-BATCH-RESULTS</code></td>
+<td>built on local <code>feat/id-batch</code> <code>4b48e57f</code>; its PR waits for the index PR and compatibility A/B</td>
 </tr>
 <tr>
 <td><strong>Q9 / Q-A / Q-U (release 2): the cache gets the records a filter write touched from the write step's id resolution, not from D-EVENT and not from a srvModified watermark</strong> (replacing the watermark proposal); D-EVENT keeps its other reopen conditions. Q-A, taken up by the maintainer directly: leaning towards one write shape for v3 too, decided only after a v3 prototype shows backward compatibility, quality and the lab's exactness. Q-U decided: autoPrune through the write step with id resolution. The 1,000 cap is a fixed constant. Details in the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> Q9 row</td>
