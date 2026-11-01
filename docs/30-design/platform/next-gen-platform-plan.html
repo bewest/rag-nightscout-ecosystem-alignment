@@ -5692,8 +5692,8 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>f9a9db7ef</code>.</em></p>
-<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>5376e6a7</code> (2026-11-01 01:29Z, #8879 and #8888 merged after #8883, #8882 and #8885), with open PR heads and CI re-read from GitHub then. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>f7a19e5a3</code>.</em></p>
+<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>51d38f9f</code> (2026-11-01 02:28Z, #8886 merged after #8879, #8888, #8883, #8882 and #8885), with open PR heads and CI re-read from GitHub then. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5708,7 +5708,7 @@
 <thead>
 <tr>
 <th></th>
-<th>on dev <code>5376e6a7</code> (ships in 16.0.0)</th>
+<th>on dev <code>51d38f9f</code> (ships in 16.0.0)</th>
 <th>in review (draft PRs)</th>
 <th>not started</th>
 </tr>
@@ -5716,8 +5716,8 @@
 <tbody>
 <tr>
 <td>Storage</td>
-<td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1). ST-V3-DECOUPLE (with #8865, 2026-10-30). <code>write(intent)</code> release 1, every write path through one step (#8874, <code>368e6c23</code>, 2026-10-31)</td>
-<td>ST-HARNESS, draft #8881 (<code>ffa5e6b4</code>); ST-VIEWS, draft #8875 (<code>52d635a0</code>, dev <code>5376e6a7</code> merged in, CI green, unwired); <code>write(intent)</code> release 2 with ST-EVENT, #8886 (<code>4b8adfec</code>, base <code>dev</code>, out of draft, CI running): filter writes resolved to ids in the step, one write shape for API v3, and the per-write event (D-EVENT decided 2026-10-31)</td>
+<td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1). ST-V3-DECOUPLE (with #8865, 2026-10-30). <code>write(intent)</code> release 1, every write path through one step (#8874, <code>368e6c23</code>, 2026-10-31). <code>write(intent)</code> release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, <code>51d38f9f</code>, 2026-11-01)</td>
+<td>ST-HARNESS, draft #8881 (<code>ffa5e6b4</code>); ST-VIEWS, draft #8875 (<code>52d635a0</code>, dev <code>5376e6a7</code> merged in, CI green, unwired)</td>
 <td>PostgreSQL</td>
 </tr>
 <tr>
@@ -5888,7 +5888,7 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 </tr>
 <tr>
 <td>9a</td>
-<td><strong>#8886</strong> (base <code>dev</code> since #8879 merged, head <code>4b8adfec</code> = <code>6b00eb9d</code> with <code>dev</code> <code>5376e6a7</code> merged in, out of draft, CI running): <code>write(intent)</code> release 2 (filter writes resolved to ids in the step, API v3 in the same shape, autoPrune through the step, Q-A/Q-U; it fixes BF-226, autoPrune flushing the cache without a reload, which dates from #6688) and, as its last commit, the per-write event (D-EVENT)</td>
+<td><strong>merged 2026-11-01 (<code>51d38f9f</code>)</strong>: #8886 (head <code>4b8adfec</code>, CI green; local re-gate against <code>5376e6a7</code> showed no difference from the <code>6b00eb9d</code> gates): <code>write(intent)</code> release 2 (filter writes resolved to ids in the step, API v3 in the same shape, autoPrune through the step, Q-A/Q-U; it fixes BF-226, autoPrune flushing the cache without a reload, which dates from #6688) and, as its last commit, the per-write event (D-EVENT)</td>
 <td>16.0.0 through the bar, after #8879</td>
 <td>the cache path, which feeds what screens and alarms show; one accepted behaviour change (a record inserted while a delete by query runs survives)</td>
 <td>client replies and stored records equal to the base on all 36 probe rows; the cache catch-up lab round 3 and the red controls re-run on the pushed head before it leaves draft; GitHub runs its tests once it targets <code>dev</code></td>
@@ -5987,7 +5987,7 @@ manual confirmation. Two records already sharing an identifier is a question for
 <tbody>
 <tr>
 <td>WC-STEP-PATCH</td>
-<td>release 1 merged as #8874 (<code>368e6c23</code>, no behaviour change); release 2, draft #8886 (<code>6b00eb9d</code>, stacked on #8879), resolves filter writes to ids and gives API v3 the same write shape (Q9, Q-U, Q-A); the reached ids come back in <code>WriteResult.removed</code> and <code>.updated</code>, and <code>items[]</code> stays one slot per input (maintainer, 2026-10-31): <code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method</td>
+<td>release 1 merged as #8874 (<code>368e6c23</code>, no behaviour change); release 2 merged as #8886 (<code>51d38f9f</code>, 2026-11-01), resolves filter writes to ids and gives API v3 the same write shape (Q9, Q-U, Q-A); the reached ids come back in <code>WriteResult.removed</code> and <code>.updated</code>, and <code>items[]</code> stays one slot per input (maintainer, 2026-10-31): <code>write(intent)</code> -&gt; WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method</td>
 <td>ST-WRITES</td>
 <td><a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a> G1</td>
 </tr>
@@ -5999,7 +5999,7 @@ manual confirmation. Two records already sharing an identifier is a question for
 </tr>
 <tr>
 <td>ST-EVENT</td>
-<td>in draft #8886 as its last commit: one internal event per write, <code>storage-intent-committed</code>, carrying the write's records (<code>_id</code>, identifier, outcome, refusal problems) without document contents; the per-database-call <code>storage-write-committed</code> stays as instrumentation</td>
+<td>merged with #8886 (<code>51d38f9f</code>, 2026-11-01): one internal event per write, <code>storage-intent-committed</code>, carrying the write's records (<code>_id</code>, identifier, outcome, refusal problems) without document contents; the per-database-call <code>storage-write-committed</code> stays as instrumentation</td>
 <td>WC-STEP-PATCH, D-EVENT (decided 2026-10-31)</td>
 <td>each stored and refused record named once per write</td>
 </tr>
