@@ -80,80 +80,92 @@ maintainer, plus a second human - re-send behaviour clients see changes
 
 ## Notes carried on the item
 
-2026-10-31 night (maintainer, via -4e): compatibility A corrected to option
-(i): API v3 refuses only blank or numeric identifiers by default (what 15.0.9
-refused: 118 of card A's 349 cells); other malformed identifiers stay lenient;
-WRITE_IDENTIFIER=strict remains the broader opt-in. -4e builds B first, then
-A. 2026-10-31 late (maintainer, via session -4e, compatibility cards): A, API
-v3 refuses a malformed identifier with 400 by default (v1, socket, in-process
-stay lenient; up to 349 cells); B, a matched re-send replaces on every
-collection (merge stays for v3 PATCH and socket dbUpdate; 136 cells); both on
-feat/id-compat-restore-ab off 2d79d30b, one commit each, shipping with BF-225
-C as one follow-up PR after #8879 merges as it is. D not taken up; E and F
-kept. 2026-10-31 ~20:00Z (GitHub): #8879 out of draft at 2d79d30b (dev
-604de1cb merged in: #8885), 0 behind dev, 21 ahead; CI 16 passed, 3 skipped.
-Ready for the maintainer's review. 2026-10-31 later (GitHub): the maintainer
-pushed 71738792 (#8879 head, draft, 0 behind dev 37b2280f, 19 ahead; CI
-running at the push). -4e's 6960bfb7 (comments only: the line-90 notes now
-read confirmed by the maintainer) awaits push; lib tree identical. 2026-10-31
-evening (session -4e): #8879 dev merge pushed by the maintainer
-(official/feat/id-first-match = 5a251213). Slices 6, 6a and the 2026-10-31
-socket decisions (B: socket treatments replace; C: the profile startDate rule
-on the socket) gated on local feat/id-first-s4r 71738792 (c27bbaa5 tests,
-4d1a0fa0 tiers, 15e4f2c0 slice 6, d63ba67d 6a, 2088cfe6 B+C, 71738792 title),
-push commands with the maintainer. Matrix against hashed predictions, exact on
-f5bd2642 and 5a251213: slice 6 230/230, 6a 78/78, B+C 52/52; red controls
-exactly each slice's cells; per-path ablations red by assertion; each revert
-gives the previous pin. Suite 5,604/0/3 on Node 24.22.1 and 22.23.4; lint 0
-errors. Design-note reconciliation: 6a 33/33 by id; slice 6+B+C 102 against
-the note's 117 (96 shared; the 21 note-only and 6 new explained cell by cell).
-Changed expectations marked in-file (the v1-collections profile snapshot;
-api.crud-by-id.matrix cross-path re-send to the socket). For maintainer
-review: a deleted profile at another startDate on v1/in-process and the socket
-(decision row line 90 reading). Safety choice: a v1/in-process food or
-activity document routed by identifier to another record no longer removes the
-string twins of its carried _id. Not covered here: two new documents sharing a
-new identifier in one v1 batch both insert (ID-BATCH plus the index).
-2026-10-31 16:20Z (GitHub): #8879 at f5bd2642 (lint fix: no-useless-assignment
-in writeStatuses), 0 behind dev 368e6c23, 11 ahead, CI green on every job;
-still draft. Slices 6 and 6a not yet pushed (local prep/id-first-s6 47377fa3).
-2026-10-31 later (GitHub, about 05:45Z): #8879 at 931e5e60, 0 behind dev
-368e6c23: slice 4 (merge on match, treatments replaced on every path) pushed;
-CI fails lint (no-useless-assignment, lib/storage/write-intent.js:1450).
-Carries BF-215 and BF-216 (slice 2). 2026-10-31: draft #8879 at 5cdd9577 (base
-dev): slices 1, 2, 5 (+5b) and 3 built and pushed, dev 368e6c23 merged; slice
-4 being rebuilt with treatments replaced on every path (maintainer
-2026-10-30); 6 and 6a prepared on prep/id-first-s6 47377fa3. Owner session
--4f. 2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): the rules this
-item builds are decided, and it is eligible for 16.0.0 through the entry bar
-(plan §1a), with ID-BATCH-RESULTS and ID-RESEND-SWITCH. Scope is every
-collection and path. (1) Merge on match stays the default for a re-send with
-changed fields; v3 keeps refusing a changed date, device or eventType; PUT
-replaces (ID-V3-IMMUTABLE-DECISION). (2) Merge on match keeps fields the re-
-send leaves out (RFC 7386), measured per path first: the census reads replace
-on several paths, not yet measured, and every path that changes is listed cell
-by cell. (3) A re-send after delete is acknowledged and stays deleted on every
-path, with the cell-by-cell impact documented for revert (ID-DELETE-REUSE-
-DECISION). (4) Socket dbUpdate, dbUpdateUnset and dbRemove accept identifier
-when no _id is given, and activity creates match on identifier; both are
-additive and conditional on the extended matrix showing every existing form
-unchanged. (5) The identifier format is enforced with or before this item (ID-
-VALIDATE, added to blocks_on), because two clients sending the same
-placeholder would be merged. (6) Natural keys for re-sends without identifier
-are a separate item, ID-NATURAL-KEY. A default changes only in a major: 16.0.0
-through the entry bar, otherwise 17.0.0. Q1 rule as proposed in LOOP-ID-REPLY:
-an identified write that finds no identifier match may adopt a stored record
-with NO identifier on the natural key; never one with a different identifier.
-ID-DUP-MEASURE found Loop writing one syncIdentifier to a Suspend Pump and a
-Temp Basal at the same instant (9 pairs at one site); if Loop sends
-syncIdentifier as identifier (the reply names syncIdentifier as Loop's
-treatment identity), matching on it alone would fold those pairs into one
-record. The reply draft does not raise this yet. Re-shaped 2026-10-17: the v1
-entries and devicestatus identifier match ships first, on dev, as the release-
-train item ID-SIMPLE-MATCH (maintainer: after 15.0.9, after cut 1's rebase).
-This item keeps the socket dbAdd match and the Q1 adoption rule, and absorbs
-ID-SIMPLE-MATCH's rule into the write step once WC-STEP-PATCH exists. The
-rewritten Loop reply lists Q1 under "later, only if needed".
+2026-10-31 night (session -4e): feat/id-compat-restore-ab gated so far on
+#8879 2d79d30b: 2079501a BF-225 C (4 cells); 8888ceea compatibility B as first
+built (161 cells: the 136 c1 cells plus 25 listed before the code; none moved
+away from 15.0.9); 2f86d23b compatibility A option (i) (120 cells: 30 v3 same-
+path back to 15.0.9, 90 cross-path differ from 15.0.9 only in the dropped
+identifier except 4 where 15.0.9 answered 500, BF-215); composed 285 cells
+exact; tiers 0 failing on both Node versions; lint 0 errors. Maintainer
+extended B the same night: every identifier-matched re-send replaces on every
+path (incl. new identifier-first matches for profile, food, activity, device
+status over v1, in-process, socket); entries over v1/in-process keep merging
+as on 15.0.9; edits (v3 PATCH, socket dbUpdate) merge. Fourth commit in
+progress; the index moves after it. 2026-10-31 night (maintainer, via -4e):
+compatibility A corrected to option (i): API v3 refuses only blank or numeric
+identifiers by default (what 15.0.9 refused: 118 of card A's 349 cells); other
+malformed identifiers stay lenient; WRITE_IDENTIFIER=strict remains the
+broader opt-in. -4e builds B first, then A. 2026-10-31 late (maintainer, via
+session -4e, compatibility cards): A, API v3 refuses a malformed identifier
+with 400 by default (v1, socket, in-process stay lenient; up to 349 cells); B,
+a matched re-send replaces on every collection (merge stays for v3 PATCH and
+socket dbUpdate; 136 cells); both on feat/id-compat-restore-ab off 2d79d30b,
+one commit each, shipping with BF-225 C as one follow-up PR after #8879 merges
+as it is. D not taken up; E and F kept. 2026-10-31 ~20:00Z (GitHub): #8879 out
+of draft at 2d79d30b (dev 604de1cb merged in: #8885), 0 behind dev, 21 ahead;
+CI 16 passed, 3 skipped. Ready for the maintainer's review. 2026-10-31 later
+(GitHub): the maintainer pushed 71738792 (#8879 head, draft, 0 behind dev
+37b2280f, 19 ahead; CI running at the push). -4e's 6960bfb7 (comments only:
+the line-90 notes now read confirmed by the maintainer) awaits push; lib tree
+identical. 2026-10-31 evening (session -4e): #8879 dev merge pushed by the
+maintainer (official/feat/id-first-match = 5a251213). Slices 6, 6a and the
+2026-10-31 socket decisions (B: socket treatments replace; C: the profile
+startDate rule on the socket) gated on local feat/id-first-s4r 71738792
+(c27bbaa5 tests, 4d1a0fa0 tiers, 15e4f2c0 slice 6, d63ba67d 6a, 2088cfe6 B+C,
+71738792 title), push commands with the maintainer. Matrix against hashed
+predictions, exact on f5bd2642 and 5a251213: slice 6 230/230, 6a 78/78, B+C
+52/52; red controls exactly each slice's cells; per-path ablations red by
+assertion; each revert gives the previous pin. Suite 5,604/0/3 on Node 24.22.1
+and 22.23.4; lint 0 errors. Design-note reconciliation: 6a 33/33 by id; slice
+6+B+C 102 against the note's 117 (96 shared; the 21 note-only and 6 new
+explained cell by cell). Changed expectations marked in-file (the
+v1-collections profile snapshot; api.crud-by-id.matrix cross-path re-send to
+the socket). For maintainer review: a deleted profile at another startDate on
+v1/in-process and the socket (decision row line 90 reading). Safety choice: a
+v1/in-process food or activity document routed by identifier to another record
+no longer removes the string twins of its carried _id. Not covered here: two
+new documents sharing a new identifier in one v1 batch both insert (ID-BATCH
+plus the index). 2026-10-31 16:20Z (GitHub): #8879 at f5bd2642 (lint fix: no-
+useless-assignment in writeStatuses), 0 behind dev 368e6c23, 11 ahead, CI
+green on every job; still draft. Slices 6 and 6a not yet pushed (local
+prep/id-first-s6 47377fa3). 2026-10-31 later (GitHub, about 05:45Z): #8879 at
+931e5e60, 0 behind dev 368e6c23: slice 4 (merge on match, treatments replaced
+on every path) pushed; CI fails lint (no-useless-assignment,
+lib/storage/write-intent.js:1450). Carries BF-215 and BF-216 (slice 2).
+2026-10-31: draft #8879 at 5cdd9577 (base dev): slices 1, 2, 5 (+5b) and 3
+built and pushed, dev 368e6c23 merged; slice 4 being rebuilt with treatments
+replaced on every path (maintainer 2026-10-30); 6 and 6a prepared on prep/id-
+first-s6 47377fa3. Owner session -4f. 2026-10-29 (maintainer, D-LOOP-ID; next-
+gen plan §4.2): the rules this item builds are decided, and it is eligible for
+16.0.0 through the entry bar (plan §1a), with ID-BATCH-RESULTS and ID-RESEND-
+SWITCH. Scope is every collection and path. (1) Merge on match stays the
+default for a re-send with changed fields; v3 keeps refusing a changed date,
+device or eventType; PUT replaces (ID-V3-IMMUTABLE-DECISION). (2) Merge on
+match keeps fields the re-send leaves out (RFC 7386), measured per path first:
+the census reads replace on several paths, not yet measured, and every path
+that changes is listed cell by cell. (3) A re-send after delete is
+acknowledged and stays deleted on every path, with the cell-by-cell impact
+documented for revert (ID-DELETE-REUSE-DECISION). (4) Socket dbUpdate,
+dbUpdateUnset and dbRemove accept identifier when no _id is given, and
+activity creates match on identifier; both are additive and conditional on the
+extended matrix showing every existing form unchanged. (5) The identifier
+format is enforced with or before this item (ID-VALIDATE, added to blocks_on),
+because two clients sending the same placeholder would be merged. (6) Natural
+keys for re-sends without identifier are a separate item, ID-NATURAL-KEY. A
+default changes only in a major: 16.0.0 through the entry bar, otherwise
+17.0.0. Q1 rule as proposed in LOOP-ID-REPLY: an identified write that finds
+no identifier match may adopt a stored record with NO identifier on the
+natural key; never one with a different identifier. ID-DUP-MEASURE found Loop
+writing one syncIdentifier to a Suspend Pump and a Temp Basal at the same
+instant (9 pairs at one site); if Loop sends syncIdentifier as identifier (the
+reply names syncIdentifier as Loop's treatment identity), matching on it alone
+would fold those pairs into one record. The reply draft does not raise this
+yet. Re-shaped 2026-10-17: the v1 entries and devicestatus identifier match
+ships first, on dev, as the release-train item ID-SIMPLE-MATCH (maintainer:
+after 15.0.9, after cut 1's rebase). This item keeps the socket dbAdd match
+and the Q1 adoption rule, and absorbs ID-SIMPLE-MATCH's rule into the write
+step once WC-STEP-PATCH exists. The rewritten Loop reply lists Q1 under
+"later, only if needed".
 
 ---
 
