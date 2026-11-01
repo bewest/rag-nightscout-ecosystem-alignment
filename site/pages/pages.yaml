@@ -42,7 +42,7 @@ pages:
   cgm-remote-monitor-16.0.0-colophon.html:
     kind: living
     sources: [releases/cgm-remote-monitor-16.0.0/colophon.md, releases/cgm-remote-monitor-16.0.0/colophon-data.json]
-    source_commit: f0be48fb1
+    source_commit: b099d8e12
     render: tools/site/render_cgm1600_colophon.py
   clinical-decision-support-synthetic-demo-2026-10-16.html:
     kind: snapshot
@@ -50,7 +50,7 @@ pages:
   nightscout-next-gen-platform.html:
     kind: living
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
-    source_commit: f0be48fb1
+    source_commit: b099d8e12
     render: tools/site/render_nextgen.py
   api-aid-commands-2025.html:
     kind: living
