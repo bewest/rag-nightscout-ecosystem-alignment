@@ -2136,7 +2136,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>88a6f0d71</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>07139b462</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -3206,6 +3206,7 @@ opens when slices 3 and 4 are on <code>dev</code>.</p>
 </tbody>
 </table>
 <p><strong>Update, 2026-11-01, ID-RESEND-SWITCH in review</strong> (session -4e): the maintainer opened <strong>#8892</strong> (<code>WRITE_RESEND=replace|merge-except-treatments|acknowledge|refuse</code>, <code>WRITE_DELETED_RESEND=stay|revive</code>; head <code>a55c940d</code>, <code>dev</code> <code>f54941b5</code> merged in). Gates at <code>a55c940d</code> (in the PR body): the write-contract matrix on MongoDB 7.0.43 with <code>--batch</code>, 4,916 cells: both settings unset, 0 cells differ from a <code>f54941b5</code> pin (the <code>f54941b5</code> and <code>4196dd45</code> pins differ by 0 cells, so #8881 moves none); <code>refuse</code> moves the same 813 cells as at <code>405c6cee</code>, none of whose re-sends writes; tiers unit 2077 and integration 3519 (1 pending), 0 failing on Node 22.23.4 and 24.22.1; lint 0 errors. Break-it: 14 of 14 red at <code>405c6cee</code>, not re-run after the <code>dev</code> merge. Per-client D20 quirks are a seam only (<code>writeSettings.resendModeFor(env, client)</code> returns the site setting for every client). Session -d1 has stopped; ID-UNIQUE-INDEX passes to another session on this machine (handoff <code>externals/work/HANDOFF-d1-2026-11-01.md</code>), which stacks on <code>a55c940d</code> and wires Q-IDX through <code>resendModeFor</code>.</p>
+<p><strong>Update, 2026-11-01, after #8892 opened:</strong> latest hosted CI read at 07:18Z: 14 checks succeeded; Firefox and WebKit were still running. The local unset/refuse matrix arms completed against <code>f54941b5</code> and independently show 0 and 813 changed cells outside cache noise. The next critical path is Q-IDX in local <code>feat/id-unique-index-5a</code> (<code>44750011</code>): prior <code>npm test</code> 6035/0/3 and matrix gates predate #8892, so rebase onto the PR head after it lands, make duplicate-key race losers follow <code>writeSettings.resendModeFor</code>, add mode-specific race tests/controls, and rerun before opening the index PR. The remaining ID-BATCH work is local <code>feat/id-batch</code> (<code>4b48e57f</code>), stacked on the index and 91 commits behind current <code>dev</code>; rebase and test it after the index. The ID-STRICT-V1 and opt-in per-item reply format are already in #8889.</p>
 <p><strong>Update, 2026-11-01</strong> (session -d1, from GitHub): the maintainer merged <strong>#8881</strong> (ST-HARNESS: backend-selectable harness, backend selection, tenant scope; head <code>993275f3</code>) as <code>f54941b5</code>; <code>dev</code> is <code>f54941b5</code>. The three open 16.0.0 PRs of the day are merged in the agreed order (#8890, #8889, #8881). Remaining identity work: ID-RESEND-SWITCH (session -4e), ID-UNIQUE-INDEX (session -d1; local <code>44750011</code>, <code>npm test</code> 6035/0/3 on <code>dev</code> <code>4196dd45</code>), then the ID-BATCH remainder. Session -81 re-pins the batch-only matrix (312 cells; MongoDB 5.0.32 and 8.0.29; default, reject and strict) on <code>f54941b5</code> as the base for the index PR; the <code>abadc40a</code> pins are not landed (they predate compatibility A/B).</p>
 <p><strong>Update, 2026-11-01, about 06:05Z</strong> (session -d1, from GitHub): the maintainer merged <strong>#8889</strong> (ID-STRICT-V1, per-item API v1 batch replies behind the <code>Nightscout-Write-Results</code> opt-in, the BF-219 test fix and the CodeQL type-confusion fix; head <code>422796db</code>) at 06:01Z as <code>4196dd45</code>; <code>dev</code> is <code>4196dd45</code>. CodeQL alert 140 closed as fixed by the patch (no dismissal). Next: #8881, then ID-RESEND-SWITCH, ID-UNIQUE-INDEX and the ID-BATCH remainder.</p>
 <p><strong>Update, 2026-11-01, ST-VIEWS replay re-check on <code>dev</code> <code>1fc6d8be</code></strong> (session -81, 02:57–04:42Z; #8875 merged after #8886; the recorded procedure in <code>tests/lib/views-replay/RESULTS.md</code>: MongoDB 7.0.43 in a dedicated container, Node 22.23.4): the alarms and properties views, each as-is and with profiles at start, differ from the resident path in 0 minutes of 126,092 each; release 2's noise floor is 0 on all of them. The controls (<code>run-controls.sh</code>: tamper, shrunk treatments 4 h and 24 h, device status 0.5 h and 6 h) are red and silent on the same datasets as on the recorded final tree, with the same counts except one: shrunk treatments 4 h on corpus dataset #6, 1156 differing minutes against the recorded 1146 (+10, not traced). Control counts measure sensitivity, not equality. Not run: the properties-specific controls. Outputs kept out of the repository (they carry corpus values).</p>
@@ -3452,31 +3453,31 @@ and the queue):</p>
 <td><code>ID-FIRST-MATCH</code>, <code>ID-VALIDATE</code></td>
 </tr>
 <tr>
-<td>the <code>WRITE_*</code> settings: <code>WRITE_RESEND=replace\|merge-except-treatments\|acknowledge\|refuse</code> (renamed 2026-10-31; <a href="decisions.html">decisions</a>), <code>WRITE_DELETED_RESEND=stay\|revive</code>, <code>WRITE_IDENTIFIER=lenient\|strict</code>, <code>WRITE_DELETED_EDIT=ignore\|refuse</code>, <code>WRITE_IDENTIFIER_INDEX=try\|require\|off</code>; default first in each</td>
-<td>not started</td>
-<td>—</td>
-<td>names confirmed by the maintainer 2026-10-29 (the first three) and 2026-10-30 (the index). With <code>WRITE_VALIDATION</code>, parsed by one module and read once; an unknown value refuses to start. Per-client D20 quirks may select a <code>WRITE_RESEND</code> mode for one registered client</td>
+<td>the <code>WRITE_*</code> settings: <code>WRITE_RESEND=replace\|merge-except-treatments\|acknowledge\|refuse</code>, <code>WRITE_DELETED_RESEND=stay\|revive</code>, <code>WRITE_IDENTIFIER=lenient\|strict</code>, <code>WRITE_DELETED_EDIT=ignore\|refuse</code>, <code>WRITE_IDENTIFIER_INDEX=try\|require\|off</code>; default first in each</td>
+<td>ID-RESEND-SWITCH: <strong>#8892 open</strong>; identifier-index setting remains local</td>
+<td><code>a55c940d</code></td>
+<td>#8892's gate is recorded above; unknown values refuse to start. Per-client D20 quirks remain a seam only; per-client override is not implemented</td>
 <td><code>ID-RESEND-SWITCH</code>, <code>ID-VALIDATE</code>, <code>ID-FIRST-MATCH</code>, <code>ID-UNIQUE-INDEX</code></td>
 </tr>
 <tr>
-<td>ID-UNIQUE-INDEX: a partial unique index on <code>identifier</code> per collection, with the try, require and off modes, and an operator-run report and clean tool (P4 pick)</td>
-<td>not started</td>
-<td>—</td>
-<td>in 16.0.0 scope through the bar (maintainer, 2026-10-30); moved from 17.0.0. Under <code>try</code> (the default) boot builds the index online; on existing duplicates it logs the counts per collection (never the values), shows them on the status page and runs without it, while the ID-Q5 write rule still refuses a second record with a stored identifier. <code>require</code> refuses to start without the index; <code>off</code> skips it. Comes before ID-BATCH, with the duplicate-key retry inside the write step (maintainer, <em>later</em> 2026-10-30; <a href="decisions.html">decisions</a>)</td>
+<td>ID-UNIQUE-INDEX: partial unique index per collection, duplicate report/clean tool and item-level retry-as-resend</td>
+<td>local <code>feat/id-unique-index-5a</code></td>
+<td><code>44750011</code></td>
+<td>Pre-switch gates passed (<code>npm test</code> 6035/0/3; index-off matrix 0/4,916; index-on 24 expected batch cells), but Q-IDX mode-specific race handling is outstanding; rebase after #8892 lands, add tests/controls and rerun before a draft PR. Under <code>try</code>, duplicate groups log counts only and status page reports them; <code>require</code> refuses boot without the index; <code>off</code> skips it.</td>
 <td><code>ID-UNIQUE-INDEX</code></td>
 </tr>
 <tr>
-<td>ID-BATCH: per-item results in v1 batch replies</td>
-<td><a href="../../docs/30-design/platform/id-batch-design-note-2026-10-30.html">design note</a> (session -4f, <em>later</em> 2026-10-30); not built</td>
-<td>—</td>
-<td>eligible through the bar (2026-10-29), after the unique index (2026-10-30). The note proposes one slot per sent item, 200 if any item is not refused and 400 if all are, no 207 (it breaks Loop and three other uploaders), transient failures as a whole-request 5xx, and full <code>items[]</code> only on opt-in; five questions stay open until ID-BATCH is next</td>
+<td>ID-BATCH: remaining per-item v1 batch behavior, including the item-level duplicate-key retry after index</td>
+<td>local <code>feat/id-batch</code></td>
+<td><code>4b48e57f</code></td>
+<td>Stacked on the index; 91 commits behind current <code>dev</code>. Rebase after index, resolve integration, run suite/matrix/controls before a PR. The already-merged #8889 provides the opt-in result format and strict-v1 behavior; this row tracks the remainder only.</td>
 <td><code>ID-BATCH-RESULTS</code></td>
 </tr>
 <tr>
-<td>the re-send switch (D-LOOP-ID rule 3): a site setting plus per-client D20 quirks that opt a client into keep-first or refuse</td>
-<td>in review</td>
-<td>#8892</td>
-<td>eligible through the bar (2026-10-29); unset means <code>replace</code> (compatibility B) and <code>stay</code>, 0 matrix cells moved; per-client quirks are a seam only (every client gets the site setting)</td>
+<td>the re-send switch (D-LOOP-ID rule 3): a site setting plus future per-client D20 overrides</td>
+<td><strong>#8892 open</strong></td>
+<td><code>a55c940d</code></td>
+<td>unset preserves <code>replace</code> / <code>stay</code>; 0 matrix cells differ outside cache noise. The PR supplies site modes; per-client overrides are a future seam, not shipped behavior.</td>
 <td><code>ID-RESEND-SWITCH</code></td>
 </tr>
 <tr>
@@ -3960,7 +3961,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/88a6f0d719f6318134d084d35e6fb77807f58c37/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/68c380e8b6b756f6ac723b7067f2dd7c1785b93f/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>

@@ -2152,6 +2152,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cgm-remote-monitor-1600-identity-handoff-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cgm-remote-monitor-telemetry-emitter-branch-2026-07-16" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3388,6 +3399,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cgm-remote-monitor-1600-identity-handoff-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cgm-remote-monitor-telemetry-emitter-branch-2026-07-16" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4591,7 +4613,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-01 at <code>66c337cd9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>07139b462</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4603,6 +4625,37 @@
 - <a href="docs/archive/progress-archive-2026-01-30-batch4.html">progress-archive-2026-01-30-batch4.md</a></p>
 </blockquote>
 <hr />
+<h2 id="cgm-remote-monitor-1600-identity-handoff-2026-11-01">cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-1600-identity-handoff-2026-11-01" title="Permanent link">&para;</a></h2>
+<p>Refreshed the release and next-gen roadmap records after ID-RESEND-SWITCH opened as #8892.</p>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Location</th>
+<th>Key Insights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Release status and decisions</td>
+<td><code>releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md</code></td>
+<td>#8892 is open; Firefox/WebKit CI remained in progress at the latest read. ID-UNIQUE-INDEX and remaining ID-BATCH work are local and not publication-ready.</td>
+</tr>
+<tr>
+<td>Roadmap and dependency map</td>
+<td><code>docs/30-design/platform/next-gen-platform-plan.{md,json}</code></td>
+<td>Critical path is #8892 review/merge, then Q-IDX race handling and re-gating on the index branch, then rebase/retest remaining ID-BATCH.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Findings</strong>:
+- Local index gates predate #8892; do not treat them as sufficient evidence for publishing an index PR.
+- The batch branch is stacked on the index and 91 commits behind current <code>dev</code>.
+- No local changes were made to the cgm-remote-monitor feature branches, and no new PRs were opened.</p>
+<p><strong>Source Files Analyzed</strong>:
+- <code>externals/work/HANDOFF-d1-2026-11-01.md</code>
+- <code>docs/30-design/platform/next-gen-platform-plan.json</code>
+- <code>releases/cgm-remote-monitor-16.0.0/contents.md</code></p>
 <h2 id="cgm-remote-monitor-telemetry-emitter-branch-2026-07-16">cgm-remote-monitor Telemetry Emitter Branch (2026-07-16)<a class="headerlink" href="#cgm-remote-monitor-telemetry-emitter-branch-2026-07-16" title="Permanent link">&para;</a></h2>
 <p>Prepared a cgm-remote-monitor implementation branch for the first disabled-by-default aggregate telemetry slice.</p>
 <table>
