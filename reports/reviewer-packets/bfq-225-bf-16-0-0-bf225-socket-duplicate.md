@@ -11,7 +11,7 @@
   ============================================================================
 -->
 
-# Review packet — BFQ-225
+# Review packet — BFQ-225 (PR #8888)
 
 **BF-225 - socket re-sends that #8877 changed from one stored treatment to two
 (v3-then-socket documented; UUID _id cases not)**
@@ -21,7 +21,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `bf/16.0.0-bf225-socket-duplicate` |
 | base | `official/dev@604de1cb` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=BFQ-225` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=BFQ-225` is the measurement |
 | semver | `patch` |
 | register entries | `BF-225` |
 | operator exposure | **reaches an operator on today's release** |
@@ -49,15 +49,15 @@ maintainer
 
 ## What was measured
 
-**Nothing runnable.** Every gate on this item is an explicit `no-gate:` marker. Read the next section as the whole evidence picture, not as a caveat on it.
+**`git -C externals/cgm-remote-monitor-official fetch -q official pull/8888/head && git -C externals/cgm-remote-m`** &nbsp;·&nbsp; kind: `network`
+
+#8888's head on GitHub contains BF-225 fix B b6e3d739; fix C (2079501a) ships
+in the compatibility follow-up PR; replace with official/dev ancestry once
+merged
 
 ## What these gates do NOT prove
 
-*Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.*
-
-- not built; the fix's gate is the two matrix cells (treatments x v3 x ws;
-  treatments x {v1,inproc} x ws idf-uuidid-same) back to 1 record, red on
-  dev, with no other cell moved
+*No `no-gate:` markers on this item — every declared property has a runnable measurement. That is rare in this manifest and worth confirming rather than assuming.*
 
 ## Evidence
 
@@ -65,7 +65,9 @@ maintainer
 
 ## Notes carried on the item
 
-2026-10-31 night (session -4e): fix built, PR pending. B:
+2026-10-31 night: fix B opened by the maintainer as PR #8888 (dev <-
+bf/16.0.0-bf225-socket-duplicate, head b6e3d739); fix C on feat/id-compat-
+restore-ab. 2026-10-31 night (session -4e): fix built, PR pending. B:
 bf/16.0.0-bf225-socket-duplicate b6e3d739, one commit on dev 604de1cb (0
 behind), push commands with the maintainer: matrix exactly the 1 predicted
 cell (treatments x v3 x ws to one record, equal to v15.0.9 on stored state);

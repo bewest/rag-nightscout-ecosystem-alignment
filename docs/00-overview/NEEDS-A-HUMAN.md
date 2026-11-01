@@ -36,6 +36,7 @@ every item that was `merged-upstream` then is `released`.
 |---|---|---|---|
 | `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
+| `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | #8888 |
 | `BFQ-226` | `in-flight-upstream` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache wi | #8886 |
 | `ID-FIRST-MATCH` | `in-flight-upstream` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules ( | #8879 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
@@ -48,7 +49,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `BFQ-225` | `ready-to-push` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | &mdash; |
 | `P0-C-REMEDIATE` | `ready-to-push` | Operator remediation for tokens already stored in plaintext - text, not tooling | &mdash; |
 | `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
@@ -81,6 +81,7 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 | **#8878** | `BFQ-212` | `bf/16.0.0-split-identity` | BF-212 - a chart-drag split leaves two treatments with one c | Maintainer |
 | **#8879** | `ID-FIRST-MATCH` | `feat/id-first-match` | Identifier-first matching on every collection and path, with | Maintainer |
 | **#8886** | `BFQ-226` | `` | BF-226 - an API v3 autoPrune of more than one record empties | Maintainer |
+| **#8888** | `BFQ-225` | `bf/16.0.0-bf225-socket-duplicate` | BF-225 - socket re-sends that #8877 changed from one stored  | Maintainer |
 
 <!-- END GENERATED: open-prs -->
 

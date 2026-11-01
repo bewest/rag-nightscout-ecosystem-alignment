@@ -27,9 +27,9 @@ repository.
 | [`BFQ-212`](bfq-212-bf-16-0-0-split-identity.md) | #8878 | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re-send can overwrite one's amount, and a re-upload can show the moved insulin twice |
 | [`ID-FIRST-MATCH`](id-first-match-feat-id-first-match.md) | #8879 | `in-flight-upstream` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules (eligible for 16.0.0 through the entry bar) |
 | [`BFQ-226`](bfq-226.md) | #8886 | `in-flight-upstream` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no reload |
+| [`BFQ-225`](bfq-225-bf-16-0-0-bf225-socket-duplicate.md) | #8888 | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not) |
 | [`ADV-XSS-META`](adv-xss-meta.md) | &mdash; | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) |
 | [`BFQ-161`](bfq-161-adv-phrf-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fixed release, reachable from the entries pattern routes |
-| [`BFQ-225`](bfq-225-bf-16-0-0-bf225-socket-duplicate.md) | &mdash; | `ready-to-push` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-socket documented; UUID _id cases not) |
 | [`BFQ-72`](bfq-72-adv-r3gv-1600-dev.md) | &mdash; | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
