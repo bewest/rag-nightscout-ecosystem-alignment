@@ -94,9 +94,10 @@ Run from the repository root. `R=tools/qc/results/write-contract-matrix/compat-1
        --run2 8879=$R/run2/dev-497d08c9.json --all
    ```
    This writes `diff-cells.json`, `clients.json` and `summary.json` into `$R`. Check that
-   `summary.json`'s `totals.unexplained` is 0 and every tree's `flaky_outside_cache_wire` is 0; an
-   unexplained cell needs a cause before the page is refreshed. A cell in a group with no `name` in
-   `groups.yaml` stops step 4: add the group's text and verdict there.
+   `summary.json`'s top-level `unexplained` list is empty and `totals.flaky_outside_cache_wire` is 0
+   for both fresh endpoints; the historical attribution anchor is not repeated. An unexplained cell
+   needs a cause before the page is refreshed. A cell in a group with no `name` in `groups.yaml`
+   stops step 4: add the group's text and verdict there.
 
 4. **Build the page datasets.**
    `python3 tools/qc/compat/build_page.py --data $R --groups $P/groups.yaml --out $P`
