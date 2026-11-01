@@ -79,7 +79,9 @@ request parsing.
 
 Source locations on the new PR head:
 `externals/work/rc-pushover-20261101/lib/api/notifications-api.js:13-17`
-and `externals/work/rc-pushover-20261101/tests/notifications-api.test.js`.
+and `externals/work/rc-pushover-20261101/tests/notifications-api.test.js:90-140`.
+The existing missing-notification diagnostic is at
+`externals/work/rc-pushover-20261101/lib/server/pushnotify.js:87-88`.
 Hosted CI was still running at the initial post-publication read; CodeQL,
 npm 12 build and both Docker validation architectures had passed. No live
 provider/phone check was reproduced and no merge occurred.
