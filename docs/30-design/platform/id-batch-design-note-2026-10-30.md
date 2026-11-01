@@ -1,7 +1,8 @@
 # ID-BATCH: per-item results in API v1 batch replies
 
 *Contributor-facing design note for ID-BATCH (queue `ID-BATCH-RESULTS`, plan §4.2 row ID-BATCH), written
-2026-10-30. Design only: no `cgm-remote-monitor` code was changed or run for it.* Every claim carries a
+2026-10-30. The baseline and proposal below are historical; see the implementation status for what
+shipped afterward.* Every claim carries a
 mark: **[M]** measured, with the cell id of the write-contract matrix pin
 [`dev-e1f7ac41-idfirst.json`](../../../tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json)
 (1,929 cells) or of its [`-uuidoff`](../../../tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst-uuidoff.json)
@@ -19,18 +20,31 @@ them [R]. One route, v1 treatments under `WRITE_VALIDATION=reject`, already keep
 item with a `refused` member and a `Warning: 299` header (crm `6e842c07`, on `dev` since 2026-10-25) [R].
 ID-BATCH generalises that shape to every v1 collection and every per-item outcome. It keeps HTTP 200 and an
 array with exactly one slot per submitted item, because Loop's NightscoutKit fails any other status or
-length (§2). Full outcomes are opt-in. No matrix cell sends a batch of more than one item [M], so every
-batch behaviour below is read, and the first deliverable is the batch cells of §4.
+length (§2). Full outcomes are opt-in. The statement that no matrix cell sent a batch describes the
+pre-ID-BATCH pin only; the batch forms and results are now recorded below and in the release contents.
+
+**Implementation status (2026-11-01).** #8889 merged the opt-in v1 per-item results and strict-v1
+behavior at `4196dd45`. #8894 then merged the identifier index and Q-IDX race retry at `497d08c9`
+(PR head `cf978f4`), including batch duplicate-key races under `WRITE_RESEND`. The batch-only matrix
+recorded 33 expected index-on/off differences for `batch-dupkey-mid` and `batch-repeat-identifier`
+under default, `WRITE_VALIDATION=reject`, and `WRITE_IDENTIFIER=strict` on MongoDB 5.0.32 and 8.0.29.
+The broader `--batch --no-idf` matrix is now complete on the merged tree: 3,443 cells per off/try
+lane, zero invalid cells on MongoDB 5.0.32 and 8.0.34, and the same 33 expected batch differences
+on both versions (24 `batch-dupkey-mid`, 9 `batch-repeat-identifier`). The remaining off/try and
+cross-version differences affect only cache fields; wire capture had 929/929 frames, none
+unattributed and no settle-bound hits. PR #8894's required hosted checks all passed. See
+[`releases/cgm-remote-monitor-16.0.0/contents.md`](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
+for test counts, matrix pins, and the current release status.
 
 ---
 
 ## 0. Inputs and decisions this note builds on
 
 - Plan §4.2 row ID-BATCH: "per-item results in v1 batch replies", needs WC-STEP-PATCH, "one bad item no
-  longer refuses the batch". Plan §1a row 9 orders it last: "ID-FIRST-MATCH slices …, then ID-UNIQUE-INDEX
-  (`WRITE_IDENTIFIER_INDEX`), then ID-BATCH". ROADMAP rows `ID-BATCH-RESULTS` (:188) and `ID-UNIQUE-INDEX`
-  (:206, "retry-as-update on duplicate key", depends on `ID-BATCH-RESULTS`) state the opposite dependency;
-  open question (i).
+  longer refuses the batch". Plan §1a row 9 originally ordered the index before ID-BATCH, while ROADMAP
+  rows `ID-BATCH-RESULTS` (:188) and `ID-UNIQUE-INDEX` (:206) stated the opposite dependency. The
+  implementation resolved this: #8889 shipped the reply format first, and #8894 shipped the index
+  retry at the write-step level, including batches.
 - Release allocation :213: WC-STEP-PATCH and ID-BATCH are ladder question 10 (reply shape), minor-class.
 - Write-contract spec §2.2: `WriteResult.items: [{ index, outcome, _id, identifier, reason }]`, outcomes
   `inserted | merged | replaced | unchanged | deleted | not-found | refused`; §2.3 applies the rules per item.
@@ -167,10 +181,8 @@ default slots.
 
 ## 4. Cells and tests needed
 
-**New matrix forms** (harness first, pinned on the base before any ID-BATCH change; v1 and in-process for
-every collection, socket for comparison). Each records status, reply length, a per-slot descriptor in
-order (today's `replyDesc` collapses slots to a set, harness:389-397; it needs an ordered form), the
-`Warning` header, and the store.
+**Matrix forms** (v1 and in-process for every collection, socket for comparison). Each records status,
+reply length, a per-slot descriptor in order, the `Warning` header, and the store.
 - `batch-mixed-valid`: valid, invalid, valid. Invalid means a Temporary Target the domain rules refuse
   (run with `WRITE_VALIDATION=reject`), a non-hex `_id` (devicestatus, profile, food, activity), and a
   non-string `identifier`.
@@ -196,9 +208,9 @@ order (today's `replyDesc` collapses slots to a set, harness:389-397; it needs a
 
 ## 5. Where it lands, and what the ID-FIRST-MATCH slices must leave ready
 
-Plan §1a row 9 places ID-BATCH after ID-UNIQUE-INDEX. It needs WC-STEP-PATCH (#8874) for `items[]`, and
-the batch cells of §4 pinned first. Changes to make in the ID-FIRST-MATCH slices so ID-BATCH is only a
-reply change:
+The initial plan placed ID-BATCH after ID-UNIQUE-INDEX. It needed WC-STEP-PATCH (#8874) for `items[]`,
+and the batch cells of §4 pinned first. Changes made in the ID-FIRST-MATCH slices so the reply change
+could be isolated:
 - **Slice 1 (no outcome change):** routes read `items[]` and keep today's bytes. Treatments, entries,
   devicestatus and profile ignore it now (treatments.js:146, entries.js:157, devicestatus.js:109,
   profile.js:67).
@@ -209,10 +221,15 @@ reply change:
   a refusal. Open question (vi).
 - **Slice 4 (merge on match):** the batch forms report `inserted` or the rule's `onMatch` for every match
   (wi:1768-1770, wi:687-690); they need `unchanged` where nothing changed.
-- **ID-UNIQUE-INDEX:** the retry of R5 belongs in the step, at the `items[]` level, so it works before
-  ID-BATCH changes any reply.
+- **ID-UNIQUE-INDEX:** R5's retry belongs in the write step, at the `items[]` level; #8894 implements
+  that retry alongside the index so duplicate-key races do not escape as a batch-level failure.
 
-## 6. Open questions
+## 6. Resolved design questions
+
+The questions below record the design discussion as it stood on 2026-10-30. The maintainer's
+decisions are captured in the 16.0.0 decisions record; the implementation state is summarized above.
+In particular, question (i) was resolved by shipping v1 per-item replies in #8889 and the index-aware
+batch retry in #8894, rather than leaving a separate ID-BATCH integration branch on the critical path.
 
 Mechanism and trade-off for each. IDs are allocated by session -49.
 

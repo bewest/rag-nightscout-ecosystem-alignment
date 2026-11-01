@@ -1,8 +1,10 @@
 # L0 Identity: how records, definitions, instances and subjects are named
 
-*Contributor-facing. Living specification, current at 2026-10-30 (cgm-remote-monitor `dev`
-`47723cda`, and `e1f7ac41` or `991b0654` where named). Layer L0 of the [platform index](../README.md); terms are in the
-[glossary](glossary.md). Status: specified, not implemented; §6, today's behaviour, is evidenced.
+*Contributor-facing. Living specification, current at 2026-11-01 (`cgm-remote-monitor` `dev`
+`497d08c9`). Layer L0 of the [platform index](../README.md); terms are in the [glossary](glossary.md).
+Status: the single-tenant identity path is implemented across #8879/#8890/#8889/#8892/#8894,
+including the unique index; registration, typed identity and tenant-scoped uniqueness remain
+specification work. §6 is a historical baseline, not a description of current `dev`.
 Decisions:
 [D20](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
 the [write contract's §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)
@@ -63,7 +65,8 @@ are to a subject, never to a token. These are specified in the
 ## 3. Match order per collection
 
 The write step (write contract §2.2) resolves a re-send's target by trying keys in order; the
-first that resolves wins.
+first that resolves wins. The table names the match keys and merge behavior when merge applies;
+the current `WRITE_RESEND` default for matched re-sends is described below.
 
 | collection | keys, in order | on a match |
 |---|---|---|
@@ -83,9 +86,10 @@ first that resolves wins.
   a `null` as sent. On API v1 it runs after `prepareData`, so a field that `prepareData` removes or
   rewrites never reaches it. The socket's `dbUpdateUnset` stays as the explicit removal of named
   fields (maintainer, 2026-10-26; write contract Q1b; ships in 16.0.0).
-- *Profile `store`.* A matched profile re-send replaces `store` as a whole and merges the
-  profile's other fields, so a re-send that leaves out a named profile removes it (maintainer,
-  2026-10-29, ID-Q7). For an API v3 `PATCH` and a socket `dbUpdate`, the decision of 2026-10-26
+- *Profile `store`.* Under `WRITE_RESEND=merge-except-treatments`, a matched profile re-send
+  replaces `store` as a whole and merges the profile's other fields, so a re-send that leaves out a
+  named profile removes it (maintainer, 2026-10-29, ID-Q7). For an API v3 `PATCH` and a socket
+  `dbUpdate`, the decision of 2026-10-26
   stands: the merge is recursive, so a named profile left out of `store` is kept and removing it
   takes `store: {"<name>": null}` or a replace (`PUT`, which the profile editor uses). Whether
   ID-Q7's whole-`store` replace extends to them is open (§5).
@@ -107,13 +111,15 @@ first that resolves wins.
   API v3 keeps its 410. `WRITE_DELETED_EDIT=refuse` makes API v1 answer 410 instead; the default
   is `ignore`. A deliberate restore is a separate item (maintainer, 2026-10-29, ID-Q3 and the
   setting names).
-- *Re-send with changed fields.* Where the table says merge, merge on match is the default. API v3
-  refuses a re-send whose `date`, `device` or `eventType` differs from the stored record (HTTP
-  400), and `PUT` replaces. `WRITE_RESEND=merge|acknowledge|refuse` (default `merge`) is the site
-  setting, and per-client quirks (I9's registry) may select a mode for one registered client
-  (`ID-RESEND-SWITCH`). A default changes only in a major version (maintainer, 2026-10-29).
-- *Food and activity creates.* A matched API v1 food or activity create merges; only `PUT`
-  replaces (maintainer, 2026-10-29, ID-Q8).
+- *Re-send with changed fields.* A matched re-send follows `WRITE_RESEND`: `replace` is the
+  default; `merge-except-treatments` selects merge behavior except for treatments; `acknowledge`
+  writes nothing; and `refuse` declines the re-send. API v1 and in-process entries retain their
+  route-specific merge behavior. Explicit API edits (`PUT`/`PATCH`) retain their route-specific
+  rules. `WRITE_DELETED_RESEND=stay|revive` controls a re-send after soft delete (default `stay`).
+  Per-client D20 overrides remain a future seam (compatibility B, #8890; settings, #8892).
+- *Food and activity creates.* A matched API v1 food or activity create follows `WRITE_RESEND`;
+  the default is `replace`, and `merge-except-treatments` selects merge. An explicit `PUT`
+  replaces (compatibility B, #8890; settings, #8892).
 - *Records that already share an identifier.* Identifier-first matching picks between them by the
   time key, then the newest (P4). An edit addressed by that `identifier` lands on the record P4
   picks, and a delete addressed by it reaches every record sharing it. The chart's split stops
@@ -121,16 +127,18 @@ first that resolves wins.
 - *Uniqueness.* `identifier` is unique per collection, with the tenant in the key under multi;
   values stay globally unique by convention, the kind segment of the
   [identifier conventions](../identifier-conventions.md) keeping collections apart (maintainer,
-  2026-10-27). The hub keeps a partial unique index on `identifier` per collection, over records
-  that carry one, soft-deleted records included, under `WRITE_IDENTIFIER_INDEX` (maintainer,
-  2026-10-30): `try` (the default) builds it online, and where existing duplicates block it, logs
-  the counts per collection (never the values), shows them on the status page and runs without
-  the index, while the write rule of I6 still keeps a second record from being created;
-  `require` refuses to start without the index; `off` skips it. An operator-run tool reports
-  duplicate groups and resolves them by the P4 pick.
-- *Fields left out of a re-send* are kept on a merge on match (RFC 7386). The census reads replace on
-  several paths today, which is not yet measured; the extended write-contract matrix measures each
-  path before it changes, and every changed cell is listed.
+  2026-10-27). The single-tenant hub keeps a partial unique index on non-empty string
+  `identifier` values per collection, including soft-deleted records, under
+  `WRITE_IDENTIFIER_INDEX` (maintainer, 2026-10-30; #8894): `try` (the default) builds it online,
+  and where existing duplicates block it, logs counts per collection (never values), shows them on
+  the status page, and continues without the index; the write step still recognizes ordinary
+  re-sends, but concurrent writes are not protected from races without the index. `require`
+  refuses to start without the index; `off` skips building it but leaves an existing index
+  enforced; `drop` removes it at boot. An operator-run tool reports duplicate groups and can
+  resolve them by the P4 pick; `try` itself does not delete or rewrite records.
+- *Fields left out of a re-send* are kept when a route-specific rule or
+  `WRITE_RESEND=merge-except-treatments` merges a match (RFC 7386). Compatibility B's default
+  replace behavior and the changed match outcomes were measured in the write-contract matrix.
 - *Socket edits and removes, and activity.* The socket's `dbUpdate`, `dbUpdateUnset` and `dbRemove`
   accept an `identifier` when no `_id` is given, and an activity create matches on `identifier`.
   Both apply only where the extended matrix shows every existing form unchanged (maintainer,
@@ -163,9 +171,12 @@ refining it):
 - the check runs right after the `_id` step, so a placeholder `_id` that `UUID_HANDLING` moves
   into `identifier` (I9) is caught as well.
 
-Nothing enforces the format yet. Identifier-first matching would merge two clients' writes that
-carry the same placeholder, so `ID-VALIDATE` ships with or before `ID-FIRST-MATCH`. The
-constraints below are grounded in the
+The format checks are implemented with compatibility behavior by path. With `WRITE_IDENTIFIER`
+unset, API v3 preserves 15.0.9's refusal of whitespace-only and numeric identifiers; other invalid
+values are treated as absent. API v1, the socket and in-process writes treat invalid identifiers as
+absent. Explicit `lenient` treats invalid values as absent on every path; `strict` refuses them on
+API v3 and the socket, and API v1 reports a per-item refusal (#8889), while in-process writes still
+treat them as absent. The original constraint decisions are grounded in the
 [identifier format research §0](../../../60-research/tenancy/identifier-format-2026-10-17.md#0-answer);
 the status column says which are decided:
 
@@ -186,23 +197,26 @@ uses today's v1 by-`_id` routes needs a UUID (§6).
 
 | item | question | where the rules above stand |
 |---|---|---|
-| `ID-FORMAT-DECISION` | adopt C1–C7? | decided (maintainer, 2026-10-29, D-LOOP-ID rule 1 with ID-Q6): any string of 1 to 256 characters, no character restriction, percent-encoded in a URL path, a UUID recommended; a placeholder or an over-length value treated as absent with a warning, refused under `WRITE_IDENTIFIER=strict` (§4); opaque values, URL syntax and the source and app schemes decided 2026-10-18; C4 and the reserved path words proposed; not enforced yet (`ID-VALIDATE`) |
+| `ID-FORMAT-DECISION` | adopt C1–C7? | decided and implemented for the legacy write paths (#8879/#8889): any string of 1 to 256 characters, no character restriction, percent-encoded in a URL path, a UUID recommended; a placeholder or an over-length value treated as absent with a warning, refused under `WRITE_IDENTIFIER=strict` (§4); opaque values, URL syntax and the source and app schemes decided 2026-10-18; C4 and the reserved path words proposed |
 | `ID-CLIENT-OID-DECISION` | may a client create its own ObjectId as `_id` over API v1? | decided (maintainer, 2026-10-29): a client may still send an ObjectId `_id` over API v1 (legacy); going forward the hub sets `_id` and the client sets `identifier`. I2 refuses a client `_id` on API v3 (maintainer, 2026-10-25, BF-170). When `identifier` and `_id` match different records, `identifier` decides (maintainer, 2026-10-18), as I5 orders it |
-| `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change? | decided (maintainer, 2026-10-29, §3): merge on match stays the default; API v3 keeps refusing the change (400, reproduced by `LOOP-ID-V3-IMMUTABLE`); `PUT` replaces; `ID-RESEND-SWITCH` may opt a client into keep-first or refuse. Loop and Trio re-send changed doses, overrides and temp targets by `POST` over v1 and rely on the update ([client survey](../../../60-research/tenancy/identity-resend-survey-2026-10-29.md)) |
+| `ID-V3-IMMUTABLE-DECISION` | on an `identifier` match, may `date`, `device` or `eventType` change? | the 2026-10-29 merge-default decision was superseded by compatibility B (#8890): the current default is replace for matched re-sends, except API v1 and in-process entries; explicit edits keep route-specific rules. `WRITE_RESEND` provides the site-level alternatives. Loop and Trio re-send changed doses, overrides and temp targets by `POST` over v1 ([client survey](../../../60-research/tenancy/identity-resend-survey-2026-10-29.md)) |
 | `ID-ABSENT-DECISION` | a write with no `identifier`: keep the time-key fallback, deprecate it, or require `identifier`? | decided (maintainer, 2026-10-27): `identifier` is SHOULD for legacy writers, and the time-key fallback stays; it is MUST for registered controller instances; revisited as adoption grows. Cases: `identity/legacy-without-identifier-written`, `identity/registered-instance-identifier-written`. Open: how a hub recognises a registered instance's write on a legacy path, and what it answers one that carries no `identifier` (`ID-REGISTERED-NO-IDENTIFIER`). New natural keys are `ID-NATURAL-KEY`. Today v1 entries and treatments fall back to a time key, API v3 to its fallback fields; v1 device status has no key; two distinct doses with one `created_at` and `eventType` and no identifier are merged by §3 (UCA-SYNC-STORE-007) |
-| `ID-DELETE-REUSE-DECISION` | after a delete, does a re-send of the same `identifier` resurrect, get refused, or create new? A resurrected dose is UCA-SYNC-STORE-003 in the [control-loop analysis](control-loops.md) | decided (maintainer, 2026-10-27; every path, 2026-10-29; identity fields only, ID-Q4; edits, ID-Q3): acknowledged, and the record stays deleted; an API v1 edit of a deleted record is answered 2xx and not applied, and API v3 keeps its 410 (§3). Not built: today API v1 stores the re-send again after its hard delete and API v3 `POST` resurrects a soft-deleted record (measured 2026-10-18, [record identity reference](../../../10-domain/record-identity-reference.md)) |
-| `ID-SCOPE-DECISION` | is `identifier` unique per collection, across collections, and per tenant? | decided (maintainer, 2026-10-27): unique per collection, with the tenant in the key under multi; values stay globally unique by convention (the URL kind segment). The partial unique index per collection under `WRITE_IDENTIFIER_INDEX=try\|require\|off` is decided for 16.0.0 (maintainer, 2026-10-30; §3). Not built: no index on `identifier` is unique today (`ID-UNIQUE-INDEX`) |
+| `ID-DELETE-REUSE-DECISION` | after a delete, does a re-send of the same `identifier` resurrect, get refused, or create new? A resurrected dose is UCA-SYNC-STORE-003 in the [control-loop analysis](control-loops.md) | decided and implemented on the single-tenant write paths (#8879/#8890/#8892): the default `stay` acknowledges the identity re-send and leaves the record deleted; `WRITE_DELETED_RESEND=revive` opts into revival. The API v1 edit default remains 2xx/not-applied, with `WRITE_DELETED_EDIT=refuse` selecting 410; API v3 retains its route-specific response (§3). The 15.0.8 behavior below is the historical baseline. |
+| `ID-SCOPE-DECISION` | is `identifier` unique per collection, across collections, and per tenant? | decided (maintainer, 2026-10-27): unique per collection, with the tenant in the key under multi; values stay globally unique by convention (the URL kind segment). `WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop` (default `try`) and the per-collection partial unique index shipped in #8894 (`497d08c9`; §3). Tenant-scoped uniqueness remains part of the unimplemented multitenant specification. |
 | D20 choice 6 ([text](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids)) | is `identifier` null in the reply when the client sent none and the path assigns none? | I4 states null, pending confirmation |
 | D20 choice 7 | does a typed re-send match across instances of one product? | I7 states yes, pending confirmation |
 | `ID-REGISTERED-NO-IDENTIFIER` | what does a hub answer a registered controller instance's write that carries no `identifier` (a carrier write without `identifier`, a typed write without a record id): refuse it, with which status and reason code, or accept it as a legacy write with a warning? | `ID-ABSENT-DECISION` makes `identifier` MUST for registered instances (2026-10-27) and does not state the hub's answer; how a hub recognises a registered instance's write on a legacy path is open with it. No case states the answer (§7) |
-| `ID-PLACEHOLDER-LIST` | which values are placeholders? | **Decided (maintainer, 2026-10-30):** `undefined`, `null`, `invalid`, `NaN`, `unknown`, the empty string and any whitespace-only value, matched case-insensitively, are treated as absent with a warning (`WRITE_IDENTIFIER=strict` refuses them). Each of the non-empty values merges two apps' records on API v1 today (BF-216) |
+| `ID-PLACEHOLDER-LIST` | which values are placeholders? | **Decided (maintainer, 2026-10-30):** `undefined`, `null`, `invalid`, `NaN`, `unknown`, the empty string and any whitespace-only value, matched case-insensitively, are treated as absent with a warning (`WRITE_IDENTIFIER=strict` refuses them on supported paths). Before #8879, two apps sending the same non-empty placeholder could match one record on API v1 (BF-216) |
 | `ID-WARNING-FORM` | what does the warning on a write whose `identifier` was treated as absent look like on API v1, API v3 and the socket? | ID-Q6 says the write is answered with a warning and does not state its form |
 | `ID-V3-ID-REASON` | which reason code names API v3's refusal of a client `_id` in the conformance vocabulary? | I2 states 400 and nothing written; cgm-remote-monitor answers with its own message. The cases use the open vocabulary's `other` with the reference's term `client-id-not-accepted` until a code is listed |
 | `ID-PROFILE-PATCH-STORE` | does ID-Q7's whole-`store` replace apply to an API v3 `PATCH` and a socket `dbUpdate` of a profile? | ID-Q7 decides it for a matched re-send; the recursive merge of 2026-10-26 is the stated rule for `PATCH` and `dbUpdate` (§3) |
 
-## 6. Today, in cgm-remote-monitor
+## 6. Historical implementation snapshots
 
-Read-derived unless marked, at `official/dev` `fade2299` except where another revision is named. Measured per collection and path at 15.0.8 and `fade2299` in the [record identity reference](../../../10-domain/record-identity-reference.md) (2026-10-18).
+This section is the pre-16.0.0 baseline, read-derived unless marked, at `official/dev` `fade2299`
+except where another revision is named. “Not built” below refers to those cited snapshots, not the
+current `dev` head. Measured per collection and path at 15.0.8 and `fade2299` in the
+[record identity reference](../../../10-domain/record-identity-reference.md) (2026-10-18).
 
 - **API v1 treatments** match a re-send on `identifier`, and drop a client `_id` when `identifier`
   is present (`lib/server/treatments.js:356-362` at 15.0.8).
@@ -226,15 +240,15 @@ Read-derived unless marked, at `official/dev` `fade2299` except where another re
 - **A devicestatus re-send with a stored `identifier`** (`dev` `47723cda`): API v1 stores a second
   record (no identifier match) and API v3 replaces the stored record and moves its `srvModified`
   (reproduced, the devicestatus study of 2026-10-26). Since #8859 (`ID-SIMPLE-MATCH`), `dev`
-  answers such a re-send with the stored `_id` and writes nothing, on API v1 and v3; that is the
-  behaviour `WRITE_RESEND=acknowledge` keeps, and ID-Q2's merge default is not built.
+  answers such a re-send with the stored `_id` and writes nothing, on API v1 and v3; that was the
+  pre-switch default. #8892 now exposes it as `WRITE_RESEND=acknowledge`; the default is `replace`.
 - **A `null` in an update** (`dev` `47723cda`): a merge on match stores a field sent as `null` as
   `null` (`$set`), on every path, and `tests/api.profiles.resend.test.js:218` pins that. §3's
   removal is on `dev` since #8859, with BF-195's fix, for 16.0.0.
 - **A re-send after delete** (measured 2026-10-18 at 15.0.8 and `fade2299`): API v1 deletes hard, so
   a re-send is stored again (with the same `_id` when the client sent one); API v3 `POST` brings a
-  soft-deleted record back under the same `_id`, and `PUT` answers 410. §3's rule differs from all
-  three and is not built.
+  soft-deleted record back under the same `_id`, and `PUT` answers 410. #8879/#8890/#8892 implement
+  the §3 `stay` default and opt-in `revive` mode on the single-tenant write paths.
 - **Two records with one client identity** (`dev` `e1f7ac41`, reproduced): the chart's "Move
   insulin" and "Move carbs" store the split-off half with the original's `syncIdentifier`, `id`,
   `uuid` and `identifier`, which breaks I6 (BF-212).
