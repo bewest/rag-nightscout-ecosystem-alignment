@@ -390,15 +390,15 @@
    "id": "ID-RESEND-SWITCH",
    "track": "identity",
    "phase": "intent",
-   "state": "planned",
+   "state": "progress",
    "short": "WRITE_RESEND switch",
-   "title": "WRITE_RESEND=replace|merge|acknowledge|refuse (default replace) and WRITE_DELETED_RESEND=stay|revive (default stay): the opt-in ways back to earlier re-send behaviour, parsed with the other WRITE_* settings in one module, read once; an unknown value refuses to start; per-client D20 quirks may select a WRITE_RESEND mode (compatibility C, maintainer 2026-10-31)",
+   "title": "WRITE_RESEND=replace|merge-except-treatments|acknowledge|refuse (default replace; a bare merge refuses to start) and WRITE_DELETED_RESEND=stay|revive (default stay): the opt-in ways back to earlier re-send behaviour, parsed with the other WRITE_* settings in one module, read once; an unknown value refuses to start; per-client D20 quirks may select a WRITE_RESEND mode (compatibility C, maintainer 2026-10-31)",
    "where": "lib/storage/write-intent.js, the WRITE_* settings module",
    "check": "each mode's re-send cells in the write-contract matrix, the defaults equal to 16.0.0's behaviour; an unknown value refuses to start",
    "depends": [
     "ID-FIRST-MATCH"
    ],
-   "ref": "After compatibility B lands (follow-up PR to #8879), before the 16.0.0 tag (maintainer, 2026-10-31, via session -4e)."
+   "ref": "Before the 16.0.0 tag (maintainer, 2026-10-31, via session -4e). Phase 1 on local feat/id-resend-switch (session -4e): settings d87d0e00 (34 tests), behaviour tests ff02f5bc (159, red where the wiring is pending), the name merge-except-treatments at b445d906; phase 2 wires the rule tables on the compatibility follow-up PR's head. Mode semantics, owner calls and Q-IDX (the index's race retry reads writeSettings.resendModeFor) in the 16.0.0 decisions."
   },
   {
    "id": "ID-BATCH",

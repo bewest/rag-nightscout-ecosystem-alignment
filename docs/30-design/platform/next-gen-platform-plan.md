@@ -141,7 +141,7 @@ Done, in 16.0.0: DEV-8845, ID-SIMPLE-MATCH. Done in this repository: SPEC-ID-AME
 | SPEC-ID-AMEND | a conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client `_id` (BF-170) | #8845 | `tools/nsschema` cases |
 | ID-FIRST-MATCH | identifier-first on every collection and path | ID-SIMPLE-MATCH, WC-STEP-PATCH (D-LOOP-ID's rules decided 2026-10-29) | write-contract matrix; the re-send table, identity reference §2.7 |
 | ID-BATCH | per-item results in v1 batch replies | WC-STEP-PATCH | one bad item no longer refuses the batch |
-| ID-RESEND-SWITCH | `WRITE_RESEND` (default `replace`) and `WRITE_DELETED_RESEND` (default `stay`), the opt-in ways back (compatibility C, 2026-10-31) | ID-FIRST-MATCH and compatibility B | each mode's re-send cells; defaults equal to 16.0.0's behaviour |
+| ID-RESEND-SWITCH | `WRITE_RESEND=replace\|merge-except-treatments\|acknowledge\|refuse` (default `replace`; phase 1 on local `feat/id-resend-switch` `b445d906`) and `WRITE_DELETED_RESEND` (default `stay`), the opt-in ways back (compatibility C, 2026-10-31) | ID-FIRST-MATCH and compatibility B | each mode's re-send cells; defaults equal to 16.0.0's behaviour |
 | ID-UNIQUE-INDEX | partial unique index on `identifier`, per collection (with the tenant under multi) | the two above | 0 duplicates measured across the 12-site corpus (ID-DUP-MEASURE) |
 
 Rules in force (maintainer, 2026-10-26 and 2026-10-27; updated 2026-10-31):
