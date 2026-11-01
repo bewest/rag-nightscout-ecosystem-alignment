@@ -3,8 +3,55 @@
 This is a dated readiness record, not a release announcement. Official `dev`
 is `61eb37335954ae42c91345a0823bd67331025165`, after #8895 and #8896 merged.
 The latest published release remains 15.0.9. No named 16.0.0 RC was observed.
-Documentation is maintained in an isolated alignment worktree; the concurrently
-edited alignment `main` checkout is not modified.
+Publication is prepared from a clean origin-main integration worktree; the
+concurrently edited local alignment `main` checkout is not modified.
+
+## Current test totals and release scope
+
+The successful [dev push CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41333672054)
+and [staging PR CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41333677576)
+on `61eb3733` report the same suite totals, read from hosted logs:
+
+| Suite counted once | Passing | Pending |
+|--------------------|---------|---------|
+| Top-level `test-ci` | 6,323 | 3 |
+| Separate client-core | 319 | 0 |
+| Browser suite, one browser | 684 | 0 |
+| Installed Connect regressions | 334 | 0 |
+| Sum of non-repeated suite counts | 7,660 | 3 |
+
+This sum is not an identity-level deduplication across suites. Each hosted
+matrix reports 31,208 passing and 13 pending executions because suites repeat
+across runtime/database/browser combinations and compatibility jobs. The three
+top-level pending cases concern mixed valid/invalid batches and two Ajv
+dependency-resolution cases. The 402 private-security focused tests are a
+different selection, not the full release suite.
+
+The scheduled storage seam, write steps, harness and resident views have merged
+(nightscout/cgm-remote-monitor#8854, nightscout/cgm-remote-monitor#8861,
+nightscout/cgm-remote-monitor#8863, nightscout/cgm-remote-monitor#8870,
+nightscout/cgm-remote-monitor#8874, nightscout/cgm-remote-monitor#8875,
+nightscout/cgm-remote-monitor#8881, nightscout/cgm-remote-monitor#8886).
+Identity matching, re-send and unique-index changes are also in dev
+(nightscout/cgm-remote-monitor#8879, nightscout/cgm-remote-monitor#8888,
+nightscout/cgm-remote-monitor#8889, nightscout/cgm-remote-monitor#8890,
+nightscout/cgm-remote-monitor#8892, nightscout/cgm-remote-monitor#8894).
+ID-BATCH is included: nightscout/cgm-remote-monitor#8889 added per-item API v1
+replies and `Nightscout-Write-Results: items`
+(`externals/cgm-remote-monitor/lib/api/shared/batch-reply.js:8-43`,
+`externals/cgm-remote-monitor/tests/api.id-batch-replies.test.js:31`, at
+`61eb3733`). Earlier local `feat/id-batch` follow-up notes are historical,
+not evidence that this feature still awaits a merge.
+Modernization nightscout/cgm-remote-monitor#8605 and the opt-in modern theme
+nightscout/cgm-remote-monitor#8831, with drawer correction
+nightscout/cgm-remote-monitor#8882, are merged. These are no longer a queue of
+implementation PRs to merge before beginning release acceptance.
+
+Draft registration nightscout/cgm-remote-monitor#8857 and nonresident profiles
+nightscout/cgm-remote-monitor#8891 remain placement/decision candidates, not
+automatic pre-tag blockers. The separate frontend/platform proposal
+nightscout/cgm-remote-monitor#8541 has failed checks; it is not the already
+merged modern theme or modernization work.
 
 ## Merged callback fix: BF-227 / BFQ-227
 
@@ -83,6 +130,10 @@ The recorded `master` protection still requires `Run Tests (22, 6)`,
 The 4.4 job no longer runs. This is a repository-settings blocker; the
 maintainer's recorded decision is `Tests pass` and one approving review.
 No settings were changed or checks bypassed; green dev CI does not clear it.
+Rechecked after the publication request: master still has those three checks
+and one review; dev requires only `Run Tests (24, 6)`, with no review requirement.
+Staging nightscout/cgm-remote-monitor#8824 is `MERGEABLE` but `BLOCKED` and
+`REVIEW_REQUIRED`; the 4.4 check is absent, not failing.
 
 The following candidate metadata is the **earlier 2026-11-01 triage**, not a
 new check or a claim of complete source review after the two merges:
@@ -104,8 +155,13 @@ BF-72 and BF-161 remain pre-tag requirements. Both retained private fix
 branches now contain `61eb3733`; combined focused validation passed 402 tests,
 with lint and tier checks passing. Full-suite acceptance is **inconclusive**
 because the local MongoDB service exited/disappeared. Private PR targeting
-was rejected for an invalid base. Neither fix is merge-ready on this evidence;
-there was no security merge or advisory publication.
+was rejected for an invalid base. A subsequent REST/GraphQL check found no
+open private PR. This is a private routing/validation task, not an outstanding
+scope decision or a reason to delay starting the merge workflow. An authorized
+maintainer must use the advisory's **Compare & pull request** workflow with the
+prepared current-dev patch; private CI/protection enforcement is disabled.
+The stale private base must not be mistaken for the current public dev base.
+There was no security merge or advisory publication.
 
 Only previously public mechanism-level status is recorded here: no new
 advisory payloads, private branch identifiers or disclosure details.
@@ -120,3 +176,11 @@ real-rig dev soak; identity/client cohort and rollback evidence; release notes.
 Public integrated CI is now met on `61eb3733`, but must be rerun after further
 integration. No named RC, upstream merge, setting change or issue closure is
 performed by this documentation update.
+
+The order is: prepare/merge the private patches through the advisory workflow;
+validate the final combined tree; pin the candidate and development image;
+collect live alerts, client cohort, quiet-period and upgrade/rollback evidence;
+finish release notes and the runtime-floor policy waiver; clear staging
+protection/review and then tag/publish with coordinated advisory disclosure.
+The original live/soak gates remain, but no new backend/frontend modernization
+implementation phase is needed to start them.

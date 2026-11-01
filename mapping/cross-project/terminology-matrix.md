@@ -9,6 +9,7 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Integrated head | Official `dev` commit under test | Separate PR successes do not validate the final combined server. |
 | Release candidate | Named, pinned candidate for cohort testing | A moving `dev` branch or `latest_dev` image is not a named RC. |
 | Callback acknowledgment | HTTP response to a notification provider | Distinct from acknowledging/snoozing an active Nightscout alarm. |
+| Suite count / execution count | Tests reported once per suite / repeated CI matrix executions | Neither sum alone proves distinct test identities across suites or live client acceptance. |
 
 See the [16.0.0 RC readiness triage](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
 for the pinned head, delivery-check limitations and release gates.

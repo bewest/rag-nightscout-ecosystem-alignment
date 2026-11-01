@@ -10,6 +10,11 @@ CI is now green on `61eb3733` after #8895/#8896; obsolete staging protection,
 blocked private security integration,
 notification delivery and client-cohort acceptance. An open issue or a green
 check on an older PR head is not evidence that a current release gap is closed.
+The publication recheck confirms master still requires the absent 4.4 job;
+dev's separate gate is `Run Tests (24, 6)`. Scheduled storage/identity,
+including ID-BATCH, and frontend modernization are merged, not remaining
+implementation gaps. Private merge routing is outstanding; security scope
+does not require a new decision.
 
 ## Domain Files
 

@@ -13,6 +13,9 @@ offline notification tests do not satisfy live transport acceptance.
 Merged-head CI is met on `61eb3733`; it must be repeated after private security
 integration. `BFQ-227` tracks the callback defect fixed by #8895;
 `RT-CI-FIXTURES-8896` tracks test hygiene, not a new protocol requirement.
+Hosted suite totals are reported separately from matrix execution totals in the
+readiness record; neither replaces final security-tree, live/cohort or rollback
+acceptance. Scheduled implementation merges are not unfulfilled test requirements.
 
 ## Domain Files
 

@@ -6,6 +6,17 @@ records current CI/staging blockers, candidate PR dispositions, issue follow-up
 and isolated fix preparation. Historical measurements below keep their original
 commit labels; this follow-up does not declare a named RC.
 
+**Current acceptance roadmap (2026-11-01):** scheduled backend storage/identity
+integration, dependency modernization and the opt-in modern theme are merged;
+do not read historical in-flight tables below as the current merge queue.
+The [current scope and hosted test totals](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md#current-test-totals-and-release-scope)
+record 6,323 passing / 3 pending top-level tests, plus separate client-core,
+browser and Connect suites (7,660 passing / 3 pending when each suite is counted
+once; not a cross-suite identity census). Remaining work is private security
+integration and final-tree checks, live alerts, cohort/soak and rollback evidence,
+release notes and staging acceptance. Optional draft proposals are not
+automatically release blockers.
+
 **Status: in development. Nothing tagged or released.** 16.0.0 is the next release from `dev`
 (maintainer, 2026-10-21; queue `RT-VERSION`). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against `official/dev` `47723cda` (the merge of #8605, cut 5) and

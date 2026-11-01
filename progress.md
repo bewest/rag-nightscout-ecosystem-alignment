@@ -14,6 +14,17 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## cgm-remote-monitor RC Readiness Triage (2026-11-01)
 
+**Publication follow-up:** integrated through a clean origin-main worktree,
+preserving concurrent local edits. Re-rendered compatibility/platform rich pages
+from their committed sources to repair the existing site freshness failure;
+site checks passed with zero unresolved links and noindex on 1,668/1,668 HTML
+pages. Hosted logs report 6,323 passing / 3 pending top-level tests and 7,660
+passing / 3 pending across suites counted once, not distinct identities.
+Scheduled storage/identity and modern-theme/dependency merges are recorded as
+completed implementation; security routing and final-tree/live/cohort acceptance
+are separate remaining work. No private PR exists yet; the maintainer's advisory
+Compare & pull request workflow is required, not a new scope decision.
+
 Updated the register, queue and release records after #8895/#8896 merged,
 with official `dev` `61eb37335954ae42c91345a0823bd67331025165`. Final PR diffs
 and canonical merged source were inspected. No shared checkout was edited.
@@ -56,6 +67,12 @@ The detail-heading check has the same 29 missing headings as the base commit;
 BF-227 has both its summary row and detail. No baseline defects were repaired.
 
 ## cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
+
+**Historical handoff, superseded:** ID-BATCH landed in
+nightscout/cgm-remote-monitor#8889; the re-send switch and unique index landed
+in nightscout/cgm-remote-monitor#8892 and nightscout/cgm-remote-monitor#8894.
+The branch/retest next steps below describe the earlier handoff, not current
+release work.
 
 Updated the roadmap and release records after completing Q-IDX race handling and choosing #8894 as the canonical unique-index PR.
 
