@@ -399,7 +399,7 @@
    "depends": [
     "ID-FIRST-MATCH"
    ],
-   "ref": "Before the 16.0.0 tag (maintainer, 2026-10-31, via session -4e). Phase 1 on local feat/id-resend-switch (session -4e): settings d87d0e00 (34 tests), behaviour tests ff02f5bc (159, red where the wiring is pending), the name merge-except-treatments at b445d906; phase 2 wires the rule tables on dev since #8890 merged (5921d5fd). Mode semantics, owner calls and Q-IDX (the index's race retry reads writeSettings.resendModeFor) in the 16.0.0 decisions."
+   "ref": "Implemented on feat/id-resend-switch at a55c940d; open, non-draft PR #8892 against dev. At the latest CI read (2026-11-01), 14 checks succeeded and the Firefox/WebKit browser checks were still running. Local unit/integration tiers and lint passed; the write-contract matrix showed 0 of 4,916 unset-mode changes and 813 refuse-mode changes outside cache noise. Break-it was 14/14 red at 405c6cee, not rerun at PR head. Per-client D20 overrides remain a seam only: resendModeFor currently returns the site setting for every client. Q-IDX must use resendModeFor for duplicate-key race losers."
   },
   {
    "id": "ID-BATCH",
@@ -409,9 +409,10 @@
    "short": "Per-item batch results",
    "title": "Per-item results in v1 batch replies, so one bad item no longer refuses the batch",
    "depends": [
-    "WC-STEP-PATCH"
+    "WC-STEP-PATCH",
+    "ID-UNIQUE-INDEX"
    ],
-   "ref": "Being built on the index (local feat/id-batch from ee49832d, session -81), from the prototype proto/id-batch-replies 7d81e1c1 and the design note; questions (ii)-(vi) decided 2026-10-30, with strict identifiers on v1 (ID-STRICT-V1). The batch cells (QC-MATRIX-BATCH, 312 per run) are pinned on ee49832d for MongoDB 5.0 and 8.0 and run only with --batch. Rebased onto the index once the item-level retry lands."
+   "ref": "Remaining batch integration is local feat/id-batch at 4b48e57f, stacked on feat/id-unique-index-5a at 44750011; it is 91 commits behind current dev. #8889 already shipped ID-STRICT-V1 and the opt-in per-item v1 reply format; this item tracks the remaining integration with the index's item-level duplicate-key retry. Rebase after the index lands, then rerun the batch matrix (312 cells per run, --batch; MongoDB 5.0 and 8.0) and controls before publication."
   },
   {
    "id": "ID-UNIQUE-INDEX",
@@ -423,9 +424,9 @@
    "check": "ID-DUP-MEASURE found 0 duplicates in the 12-site corpus",
    "depends": [
     "ID-FIRST-MATCH",
-    "ID-BATCH"
+    "ID-RESEND-SWITCH"
    ],
-   "ref": "Local feat/id-unique-index-5a 44750011 on dev 4196dd45 (session -d1), gated: npm test 6035/0/3 (MongoDB 5.0); the write-contract matrix against #8890's pin on MongoDB 5.0 and 8.0: index off 0 of 4,916 cells, index on 24 batch cells (batch-dupkey-mid, batch-repeat-identifier), the same 24 in default, reject and strict against dev f54941b5's batch pins. The duplicate-key retry is item-level on every batch path (profile, food and activity since slices 6/6a) and applies the table's onMatch (replaced since compatibility B). Waits for ID-RESEND-SWITCH; then the race loser reads writeSettings.resendModeFor (Q-IDX), with race cells per mode, and a draft PR. In 16.0.0 scope (maintainer, 2026-10-30) behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
+   "ref": "Local feat/id-unique-index-5a at 44750011. Earlier gates passed before #8892: npm test 6035/0/3 (MongoDB 5.0), index-off matrix 0 of 4,916 cells and index-on 24 expected batch cells. These are stale for publication because the resend switch was not yet integrated. Rebase after #8892 lands; make duplicate-key race losers follow writeSettings.resendModeFor (Q-IDX), add race tests and break-it controls for each mode, then rerun tests and the index-on/off matrix with identical flags (--batch --no-idf). In 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off (default try); open a PR only after those gates pass."
   },
   {
    "id": "REG-SPECS",

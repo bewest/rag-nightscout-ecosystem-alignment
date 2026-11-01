@@ -47,7 +47,16 @@ the release contains is in [contents.md](contents.md).
   - under the opt-in, a profile re-send that needs `api:profile:update` is refused 403 in its slot
     rather than failing the batch.
   Nothing to test for #8875 (ST-VIEWS ships unwired) or #8881 (test harness only).
-  Still to add from the other lanes: #8879 and #8890 (re-send matching, compatibility A/B),
-  #8886 (write(intent) release 2), and whichever of the re-send switch and the identifier index
-  ship.
+  Added 2026-11-01, Part 2, from #8879/#8890/#8886/#8892 (identity matching, compatibility A/B,
+  write-step release 2 and the resend switch):
+  - a re-send matched by `identifier` replaces the stored record by default on every collection
+    and path, except v1/in-process entries; edits retain their route-specific merge/replace rules;
+  - `WRITE_RESEND` defaults to `replace` and supports `merge-except-treatments`, `acknowledge`
+    and `refuse`; `WRITE_DELETED_RESEND` defaults to `stay` and supports `revive`. Unset settings
+    preserve 16.0.0 behavior. Per-client D20 overrides are not implemented;
+  - API v3 and API v1 batch items retain their documented compatibility and opt-in reply behavior;
+    no tester-facing call is appropriate until an RC is named.
+  Still pending before final tester notes: the identifier index (including duplicate-key races
+  under each resend mode) and the remaining ID-BATCH integration. Neither local branch is ready
+  for publication until rebased and re-gated; the prior index tests/matrices predate #8892.
 -->

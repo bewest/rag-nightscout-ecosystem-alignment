@@ -12,6 +12,25 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)
+
+Refreshed the release and next-gen roadmap records after ID-RESEND-SWITCH opened as #8892.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Release status and decisions | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md` | #8892 is open; Firefox/WebKit CI remained in progress at the latest read. ID-UNIQUE-INDEX and remaining ID-BATCH work are local and not publication-ready. |
+| Roadmap and dependency map | `docs/30-design/platform/next-gen-platform-plan.{md,json}` | Critical path is #8892 review/merge, then Q-IDX race handling and re-gating on the index branch, then rebase/retest remaining ID-BATCH. |
+
+**Key Findings**:
+- Local index gates predate #8892; do not treat them as sufficient evidence for publishing an index PR.
+- The batch branch is stacked on the index and 91 commits behind current `dev`.
+- No local changes were made to the cgm-remote-monitor feature branches, and no new PRs were opened.
+
+**Source Files Analyzed**:
+- `externals/work/HANDOFF-d1-2026-11-01.md`
+- `docs/30-design/platform/next-gen-platform-plan.json`
+- `releases/cgm-remote-monitor-16.0.0/contents.md`
+
 ## cgm-remote-monitor Telemetry Emitter Branch (2026-07-16)
 
 Prepared a cgm-remote-monitor implementation branch for the first disabled-by-default aggregate telemetry slice.
