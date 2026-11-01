@@ -435,7 +435,7 @@ opens when slices 3 and 4 are on `dev`.
 |---|---|---|---|---|---|
 | #8879 identity, slices 1–6a | `2d79d30b` | `dev` | 0 behind, 21 ahead | 16 passed, 3 skipped | ready for review; merging it opens the cohort window |
 | #8886 `write(intent)` release 2 + D-EVENT event | `6b00eb9d` | `feat/id-first-match` (#8879) | 0 behind, 38 ahead | 1 check (PR workflows run for base `dev`) | draft; lab, controls and revert to re-run on this head; retarget to `dev` after #8879 |
-| #8875 ST-VIEWS (ships unwired) | `7b4b724c` | `dev` | 5 behind, 18 ahead | 16 passed, 3 skipped | draft |
+| #8875 ST-VIEWS (ships unwired) | `7b4b724c` (later `52d635a0`, a GitHub `dev` merge, CI green) | `dev` | 5 behind, 18 ahead | 16 passed, 3 skipped | draft |
 | #8857 registration S0–S2, S5 | `10fe6725` | `dev` | 44 behind, 15 ahead | 16 passed, 3 skipped | draft |
 | #8881 ST-HARNESS | `ffa5e6b4` | `dev` | 19 behind, 7 ahead | 16 passed, 3 skipped | draft |
 | #8810 AndroidAPS iOS push | `37146a1f` | `dev` | 84 behind, 5 ahead | 16 passed, 3 skipped | review items open |
