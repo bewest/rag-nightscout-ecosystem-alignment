@@ -1,6 +1,6 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Not written yet (2026-10-26, `dev` `47723cda`).** No 16.0.0 release candidate is named, so there is no call for
+**Not written yet (2026-11-01, `dev` `f54941b5`).** No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 [15.0.9's testing notes](../cgm-remote-monitor-15.0.9/testing-notes.md): Part 1 in plain language for
 people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
@@ -56,7 +56,9 @@ the release contains is in [contents.md](contents.md).
     preserve 16.0.0 behavior. Per-client D20 overrides are not implemented;
   - API v3 and API v1 batch items retain their documented compatibility and opt-in reply behavior;
     no tester-facing call is appropriate until an RC is named.
-  Still pending before final tester notes: the identifier index (including duplicate-key races
-  under each resend mode) and the remaining ID-BATCH integration. Neither local branch is ready
-  for publication until rebased and re-gated; the prior index tests/matrices predate #8892.
+  The identifier index and Q-IDX retry are implemented in draft PR #8894, stacked on #8892.
+  Local tests and focused race gates pass; hosted feature CI has not run yet (only the auto-close
+  check completed). The remaining ID-BATCH integration is still local at `4b48e57f`, 17 ahead and
+  91 behind `official/dev`; it requires rebase and full verification after the index lands.
+  No RC is named, so these are contributor notes, not a call for testers.
 -->
