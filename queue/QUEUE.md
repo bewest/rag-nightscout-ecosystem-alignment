@@ -7438,7 +7438,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 
-**Notes.** 2026-11-01 02:28Z: fixed on dev by #8886 (51d38f9f); not released. Session -81 is measuring prune-allold on 4b8adfec. 2026-10-31 night: session -81 confirmed on #8886 6b00eb9d: the base 2d79d30b prune scenario never settled (8/10 realistic, 7/10 heavy, missing records); release 2 exact in 13/13 lab scenarios. 2026-10-31: filed by session -d1 from the cache catch-up lab (scratch copy with a prune-allold scenario; results in session -d1's scratchpad). Release 2's own lab arm should add prune-allold to confirm the fix.
+**Notes.** 2026-11-01 02:28Z: fixed on dev by #8886 (51d38f9f); not released. Confirmed by session -81 (prune-allold, prediction written first, MongoDB 8.0.29, Node 22.23.4, 10 reps per size): base 5376e6a7 never consistent in 9/10 (realistic, 675 missing) and 8/10 (heavy, 3000 missing); 4b8adfec consistent 10/10 at both sizes, 0 missing/ghost/stale, settling in 3-7 ms; break arm (last pruned record unnamed) flagged 10/10 with exactly 10 ghosts; same reads per prune in every arm; nothing left in the database. 2026-10-31 night: session -81 confirmed on #8886 6b00eb9d: the base 2d79d30b prune scenario never settled (8/10 realistic, 7/10 heavy, missing records); release 2 exact in 13/13 lab scenarios. 2026-10-31: filed by session -d1 from the cache catch-up lab (scratch copy with a prune-allold scenario; results in session -d1's scratchpad). Release 2's own lab arm should add prune-allold to confirm the fix.
 
 ### `BFQ-219` &mdash; BF-219 - a v1 treatments batch with a preBolus answers with more items than were sent
 
