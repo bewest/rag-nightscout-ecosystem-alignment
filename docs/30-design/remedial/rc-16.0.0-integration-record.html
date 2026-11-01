@@ -4492,6 +4492,8 @@
       
         
       
+        
+      
     
     
     
@@ -4643,7 +4645,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>3ff97dd7e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -4675,6 +4677,32 @@ official</code>). CI on <code>368e6c23</code> passed: push run 41158171888 and <
 <p>Each entry gives the commit, the runtime and the counts as passing / pending / failing, and says who
 ran it. <strong>Reproduced</strong> entries were run by a programme session; CI entries are read from GitHub run
 metadata.</p>
+<p><strong>Current release-state check, 2026-11-01.</strong> <code>dev</code> is <code>61eb3733</code>, after #8896 merged on top of</p>
+<h1 id="8894-497d08c9-8889-and-8894-provide-the-v1-batch-replies-and-index-dependent-item-retry">8894 (<code>497d08c9</code>). #8889 and #8894 provide the v1 batch replies and index-dependent item retry;<a class="headerlink" href="#8894-497d08c9-8889-and-8894-provide-the-v1-batch-replies-and-index-dependent-item-retry" title="Permanent link">&para;</a></h1>
+<p>the old local <code>feat/id-batch</code> branch is not a separate release-critical PR. #8894 and #8896 required
+checks passed, as did post-merge workflows 41333677576 and 41333672054. The full
+<code>--batch --no-idf</code> off/try matrix is complete: 3,443 cells per lane on MongoDB 5.0.32 and 8.0.34,
+zero invalid cells, the same 33 expected batch differences (24 <code>batch-dupkey-mid</code>, 9
+<code>batch-repeat-identifier</code>), and cache-only remaining differences. Wire capture was complete
+(929/929 frames, none unattributed, no settle-bound hits).</p>
+<p>The fresh compatibility comparison at
+<code>tools/qc/results/write-contract-matrix/compat-16.0.0-refresh-2026-11-01/</code> is complete. It compares
+<code>v15.0.9</code> <code>c6a0d8ed</code> with merged <code>dev</code> <code>497d08c9</code> (the measured endpoint uses
+<code>WRITE_IDENTIFIER_INDEX=off</code> only to seed intentional duplicate states; index startup and races are
+separate evidence). Each endpoint has two 4,916-cell runs; repeats have zero differences outside
+cache/wire (81 baseline and 19 merged-dev cache/wire-only differences). The comparison has 2,803
+changed cells, zero unexplained, and no <code>Defect</code>-verdict cells: 347 changed before the historical
+pre-identity dev anchor, 2,107 after it, and 349 in both intervals; 1,886 are identifier-format
+cases. Six <code>ws idread-fail</code> cells are excluded because that injected failure does not exist on
+15.0.9. The retained 2026-10-31 baseline pin differs by 23 batch cells outside cache/wire and is
+not used for repeatability. See the <a href="../../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html">compatibility report</a>
+and <a href="../../../site/pages/cgm-remote-monitor-16.0.0-colophon.html">release colophon</a> for the
+classified results and limits.</p>
+<p>Staging PR #8824 remains open and blocked against <code>master</code> at <code>61eb3733</code>. Draft #8857 is in the
+16.0.0 entry bar and diverges from current <code>dev</code>: <code>dev</code> is 97 commits ahead, while the PR has 16
+unique commits; rebase, resolve D-REG-FLAG, and rerun its checks. No 16.0.0 release candidate is
+named. Cohort verification, Pushover/APNs delivery, real-rig soak, BF-72/BF-161 advisory-fork
+merges, rollback rehearsal, and operator-facing release notes remain before tagging.</p>
 <h2 id="runs">Runs<a class="headerlink" href="#runs" title="Permanent link">&para;</a></h2>
 <h3 id="r1--dev-baseline-on-04d435eb-2026-10-21">R1 · <code>dev</code> baseline on <code>04d435eb</code> (2026-10-21)<a class="headerlink" href="#r1--dev-baseline-on-04d435eb-2026-10-21" title="Permanent link">&para;</a></h3>
 <p><code>04d435eb</code>, the version bump on <code>c6a0d8ed</code>. <code>npm test</code>: <strong>3569 / 4 / 0</strong>, Node 24.15.0, MongoDB 7.0.43 in

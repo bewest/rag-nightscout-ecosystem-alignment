@@ -2893,6 +2893,8 @@
       
         
       
+        
+      
     
     
     
@@ -3057,6 +3059,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#fresh-comparison-of-v1509-and-merged-1600-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fresh comparison of v15.0.9 and merged 16.0.0 dev
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#refresh-steps" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3085,7 +3098,7 @@
 
 
 <h1 id="write-compatibility-between-two-cgm-remote-monitor-trees">Write compatibility between two cgm-remote-monitor trees<a class="headerlink" href="#write-compatibility-between-two-cgm-remote-monitor-trees" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>5d35a6dc4</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>44cb0a899</code>.</em></p>
 <p><em>Contributor-facing.</em></p>
 <p>These tools compare what the write-contract matrix (<code>tools/qc/write-contract-matrix.js</code>) measures
 on a release tree and on a later tree, explain every cell that differs, and turn the result into the
@@ -3129,39 +3142,70 @@ between a tree's runs. 4,916 cells per tree, 2,947 differ from 15.0.9, 0 unexpla
 batch cells by default, with <code>v15.0.9-harness-guard.diff</code> applied (v15.0.9 has no
 <code>lib/server/storage-reads</code>; the guard lets the run continue and the six <code>ws idread-fail</code> cells are set
 aside as not comparable, listed in <code>analysis.json</code>).</p>
+<h2 id="fresh-comparison-of-v1509-and-merged-1600-dev">Fresh comparison of v15.0.9 and merged 16.0.0 dev<a class="headerlink" href="#fresh-comparison-of-v1509-and-merged-1600-dev" title="Permanent link">&para;</a></h2>
+<p>The 2026-11-01 refresh is separate from the historical comparison above:
+<code>tools/qc/results/write-contract-matrix/compat-16.0.0-refresh-2026-11-01/analysis.json</code>.
+It repeats both endpoint trees (<code>v15.0.9</code> <code>c6a0d8ed</code> and merged <code>dev</code> <code>497d08c9</code>) on Node 22.23.4
+and MongoDB 7.0.43, including batch forms. The existing <code>dev</code> <code>37b2280f</code> matrix pin is a historical
+attribution anchor, not a third fresh or repeated endpoint. The comparison labels that boundary
+explicitly and does not attribute changes within the post-<code>37b2280f</code> interval to individual PRs.
+Six <code>ws idread-fail</code> cells remain set aside because the injected read failure did not exist on the
+15.0.9 tree. The merged-dev endpoint sets <code>WRITE_IDENTIFIER_INDEX=off</code> because some identity-field
+fixtures intentionally seed duplicate identifiers, which the unique index correctly rejects;
+index behavior is separate. The completed <code>--batch --no-idf</code> matrix has 3,443 cells per off/try
+lane on MongoDB 5.0.32 and 8.0.34: each version shows the same 33 expected batch differences, with
+other observed differences cache-only.</p>
+<p>The two fresh runs of each endpoint contain 4,916 cells each; repeat comparisons differ only in
+cache/wire (81 baseline and 19 merged-dev cells). The fresh baseline runs match outside cache/wire.
+The classified comparison has 2,803 changed cells, zero unexplained and zero <code>Defect</code>-verdict
+cells. The final change split is 347 only by the pre-identity dev anchor, 2,107 only after it, and
+349 across both intervals; 1,886 cells concern identifier format. The 2026-10-31 retained baseline
+pin differs from the fresh baseline by 23 batch cells outside cache/wire, so it is not used as a
+repeat. The release colophon visualizes the endpoint runs, origin split, behavior groups, client
+shape matches and current release gates.</p>
+<p>The retained 2026-10-31 pin also has 114 cache/wire-only differences from the fresh baseline; it is
+not used as a repeat or as an endpoint in this comparison.</p>
+<p>The refreshed page labels are in <code>releases/cgm-remote-monitor-16.0.0/compat/page.yaml</code>; the builder
+uses <code>origin_labels</code> from the analysis file so an attribution interval is not mislabeled as PR
+<code>#8879</code>. Endpoint pins and intermediate output are retained under the refresh directory; generated
+page datasets remain under <code>releases/cgm-remote-monitor-16.0.0/compat/</code>.</p>
 <h2 id="refresh-steps">Refresh steps<a class="headerlink" href="#refresh-steps" title="Permanent link">&para;</a></h2>
-<p>Run from the repository root. <code>R=tools/qc/results/write-contract-matrix/compat-16.0.0</code> and
+<p>Run from the repository root. <code>R=tools/qc/results/write-contract-matrix/compat-16.0.0-refresh-2026-11-01</code> and
 <code>P=releases/cgm-remote-monitor-16.0.0/compat</code> below.</p>
 <ol>
 <li>
-<p><strong>Prepare the trees.</strong> One cgm-remote-monitor worktree per tree and per bisect commit, named
-   <code>&lt;prefix&gt;&lt;commit&gt;</code>, each with <code>npm ci</code> done. One MongoDB container per lane, named
-   <code>compat-m7-&lt;port&gt;</code>, for example
-   <code>docker run -d --name compat-m7-27970 -p 127.0.0.1:27970:27017 mongo:7.0.43</code>.
-   Copy the harness and, if any tree predates <code>lib/server/storage-reads</code>, apply the guard:
+<p><strong>Prepare the endpoints.</strong> Check out cgm-remote-monitor worktrees at <code>c6a0d8ed</code> and
+   <code>497d08c9</code>, each with <code>npm ci</code> complete. Reuse the retained MongoDB 7.0.43 container for one
+   run at a time. For v15.0.9, copy the current harness to the worktree and apply the compatibility
+   guard because that tree predates <code>lib/server/storage-reads</code>:
    <code>cp tools/qc/write-contract-matrix.js "$H" &amp;&amp; patch "$H" tools/qc/compat/v15.0.9-harness-guard.diff</code>.
-   The guard applies to the current harness with an offset. Since <code>7b24de535</code> the batch
-   cells are opt-in: pass <code>MATRIX_ARGS=--batch</code> to include them, as the 2026-10-31 run did.</p>
+   The guard applies to the current harness with an offset. The historical 37b2280f attribution
+   pin is an input to the comparison; it is not rerun.</p>
 </li>
 <li>
-<p><strong>Run the matrix.</strong> For each tree, twice, and once for each bisect commit of <code>analysis.json</code>'s
-   <code>chain</code>:
-   <code>MATRIX_ARGS=--batch tools/qc/compat/lane.sh &lt;port&gt; &lt;outdir&gt; &lt;prefix&gt; "$H" &lt;commit&gt;...</code>
-   (several lanes in parallel, one container each). Copy each tree's first run to
-   <code>tools/qc/results/write-contract-matrix/&lt;tree&gt;-&lt;commit&gt;.json</code> and point <code>trees.&lt;key&gt;.run1</code> in
-   <code>analysis.json</code> at it. Update <code>chain</code> with the merge steps between the trees, and <code>predictions</code>
-   with any per-slice prediction files (each written before its slice's code).
-   A quick check of one pair: <code>python3 tools/qc/compat/wcdiff.py A.json B.json --list</code>.</p>
+<p><strong>Run each endpoint twice.</strong> Use the guarded harness for v15.0.9 and the current harness for
+   merged dev; both runs include <code>--batch</code>, use Node 22.23.4 and MongoDB 7.0.43, and run sequentially
+   against the shared database. Leave other settings unset on v15.0.9; set
+   <code>WRITE_IDENTIFIER_INDEX=off</code> only on merged dev to permit the deliberate duplicate-state fixtures.
+   For each run, execute
+   <code>env WC_WORKTREE="$W" WC_MONGO=mongodb://127.0.0.1:27970 n exec 22.23.4 node "$H" --batch --out "$OUT"</code>
+   (with <code>WRITE_IDENTIFIER_INDEX=off</code> added to the merged-dev environment). Save first pins under
+   <code>R/run1/</code> and repeats under <code>R/run2/</code>; the config's <code>trees.&lt;key&gt;.run1</code> paths point to the first
+   pins. A quick check of one pair:
+   <code>python3 tools/qc/compat/wcdiff.py A.json B.json --list</code>.</p>
 </li>
 <li>
 <p><strong>Diff and classify.</strong>
    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3 tools/qc/compat/build.py --config $R/analysis.json --groups $P/groups.yaml \
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    --bisect &lt;outdir&gt; --run2 v1509=&lt;run2.json&gt; --run2 dev=&lt;run2.json&gt; --run2 8879=&lt;run2.json&gt; --all
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    --bisect tools/qc/results/write-contract-matrix \
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    --run2 v1509=$R/run2/v1509-c6a0d8ed.json \
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    --run2 8879=$R/run2/dev-497d08c9.json --all
 </code></pre></div>
    This writes <code>diff-cells.json</code>, <code>clients.json</code> and <code>summary.json</code> into <code>$R</code>. Check that
-   <code>summary.json</code>'s <code>totals.unexplained</code> is 0 and every tree's <code>flaky_outside_cache_wire</code> is 0; an
-   unexplained cell needs a cause before the page is refreshed. A cell in a group with no <code>name</code> in
-   <code>groups.yaml</code> stops step 4: add the group's text and verdict there.</p>
+   <code>summary.json</code>'s top-level <code>unexplained</code> list is empty and <code>totals.flaky_outside_cache_wire</code> is 0
+   for both fresh endpoints; the historical attribution anchor is not repeated. An unexplained cell
+   needs a cause before the page is refreshed. A cell in a group with no <code>name</code> in <code>groups.yaml</code>
+   stops step 4: add the group's text and verdict there.</p>
 </li>
 <li>
 <p><strong>Build the page datasets.</strong>

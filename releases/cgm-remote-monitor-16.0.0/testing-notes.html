@@ -918,6 +918,8 @@
       
         
       
+        
+      
     
     
     
@@ -970,6 +972,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="colophon.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How cgm-remote-monitor 16.0.0 was evaluated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -1985,6 +2015,8 @@
       
         
       
+        
+      
     
     
     
@@ -2136,8 +2168,8 @@
 
 
 <h1 id="nightscout-1600--testing-notes-for-the-release-candidate">Nightscout 16.0.0 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1600--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>5d578f858</code>.</em></p>
-<p><strong>Not written yet (2026-11-01, <code>dev</code> <code>3c773ee5</code>, after #8892 merged).</strong> No 16.0.0 release candidate is named, so there is no call for
+<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
+<p><strong>Not written yet (2026-11-01, <code>dev</code> <code>61eb3733</code>, after #8896 merged).</strong> No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 <a href="../cgm-remote-monitor-15.0.9/testing-notes.html">15.0.9's testing notes</a>: Part 1 in plain language for
 people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
@@ -2192,15 +2224,52 @@ the release contains is in <a href="contents.html">contents.md</a>.</p>
     preserve 16.0.0 behavior. Per-client D20 overrides are not implemented;
   - API v3 and API v1 batch items retain their documented compatibility and opt-in reply behavior;
     no tester-facing call is appropriate until an RC is named.
-  - if #8894 ships, `WRITE_IDENTIFIER_INDEX` supports `try`, `require`, `off` and `drop`; verify
-    startup with and without stored duplicates, counts-only reporting, and duplicate-key races
-    under every `WRITE_RESEND` mode. Review the rollback instructions before deploying or reverting.
-  The identifier index and Q-IDX retry are in open, non-draft PR #8894 at `cf978f4`, based on
-  #8892's merge to `dev` (`3c773ee5`). Local tests and focused race gates passed on the earlier
-  tested head. All required hosted checks on #8894 passed, including Node 22.23.4, Maintained MongoDB,
-  Chromium, Firefox, and WebKit. Complete the
-  hosted suite before treating the index as verified. The remaining ID-BATCH integration is local
-  at `4b48e57f`; rebase and fully verify it after the index lands.
+  - #8894 merged to `dev` as `497d08c9`; `WRITE_IDENTIFIER_INDEX` supports `try`, `require`,
+    `off` and `drop`. Verify startup with and without stored duplicates, counts-only reporting,
+    and duplicate-key races under every `WRITE_RESEND` mode. Review rollback instructions before
+    deploying or reverting.
+  #8894 merged to `dev` on 2026-11-01 as `497d08c94c0a583f056fe487d172a4634fc4a1d4` from head
+  `cf978f4`, after #8892's merge at `3c773ee5`.
+  The PR body reports `npm test` 6,319 passing / 3 pending,
+  63 focused identity-race/settings tests, passing tier and write-intent gates, and lint with 0
+  errors / 20 warnings. Its hosted checks are complete and green, including the no-database,
+  maintained-MongoDB, Node, Chromium, Firefox, WebKit, Docker validation, and CodeQL checks.
+  The post-merge runs exposed separate failures: 41326509441 failed the cache-read test in
+  `tests/api.entries.test.js` because it assumed its fixture was `ctx.cache.entries[0]`, while
+  41326514941 failed D21 in `tests/start-paths.test.js` because equivalent index states appeared as
+  `built` and `present`. PR #8896 merged fixes for both as `61eb37335954ae42c91345a0823bd67331025165`.
+  Its required checks passed, including MongoDB 5.0/8.0, browser, Docker and CodeQL checks; both
+  post-merge workflows (41333677576 and 41333672054) succeeded. No separate cache-test PR is needed.
+  The batch-only matrix records 33 expected index-on/off differences for duplicate-key races and
+  repeated identifiers under default, `WRITE_VALIDATION=reject`, and `WRITE_IDENTIFIER=strict`.
+  The broader `--batch --no-idf` matrix is complete on merged `dev`: each off/try lane had 3,443
+  cells and zero invalid cells on MongoDB 5.0.32 and 8.0.34. Off-versus-try produced the same 33
+  expected batch differences (24 `batch-dupkey-mid`, 9 `batch-repeat-identifier`) on both versions;
+  other differences were cache-only (15 cells on MongoDB 5, 5 on MongoDB 8). Cross-version
+  differences were also cache-only (7 cells off, 11 try), with 929/929 wire frames captured and no
+  unattributed frames or settle-bound hits. See `contents.md` and the
+  [ID-BATCH design note](../../docs/30-design/platform/id-batch-design-note-2026-10-30.md) for
+  the evidence boundaries. #8889 already shipped API v1 per-item replies and strict-ID behavior;
+  #8894 carries the index-dependent batch race retry. The old local `feat/id-batch` worktree is
+  not a separate release-critical PR and should not be rebased wholesale: the merged branch has
+  per-item reply tests in `tests/api.id-batch-replies.test.js` and item-level race tests in
+  `tests/api.batch-race-item-level.test.js`. Carry forward only a specific uncovered case if
+  review identifies one.
+
+  **Candidate scenarios to prepare, not issue until an RC is named.** Use an isolated test site
+  with synthetic records; do not create test treatments on a production or active-care site.
+  - Loop / NightscoutKit: upload and re-send an existing synthetic entry or treatment with the
+    same identifier; verify HTTP 200, the legacy array shape and item count when the results opt-in
+    is absent, the stored `_id` remains stable, and no duplicate is stored.
+  - Other uploaders, such as Trio and xDrip+: verify their ordinary writes still receive success
+    and their normal queues continue to behave; do not use a partial-refusal scenario with clients
+    that mark every item uploaded on 2xx.
+  - Site operators: on a disposable database seeded with duplicate identifiers, start with
+    `WRITE_IDENTIFIER_INDEX=try`; confirm startup continues and duplicate counts are reported
+    without values or automatic cleanup. Separately exercise `drop` and the documented rollback
+    sequence on a disposable deployment.
+  - Concurrency and non-default `WRITE_RESEND` modes remain controlled synthetic race tests, not
+    a request for testers to manufacture conflicting records in live data.
   No RC is named, so these are contributor notes, not a call for testers.
 -->
 

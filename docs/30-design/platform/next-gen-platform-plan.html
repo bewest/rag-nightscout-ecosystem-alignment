@@ -5489,6 +5489,8 @@
       
         
       
+        
+      
     
     
     
@@ -5692,8 +5694,8 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>5d578f858</code>.</em></p>
-<p><em>Contributor-facing. Current at cgm-remote-monitor dev <code>3c773ee5</code> (2026-11-01), after #8892 merged. #8894 and its hosted checks were re-read on 2026-11-01. Status: proposed; the decisions in §5 are open. Release placement is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
+<p><em>Contributor-facing. Current at cgm-remote-monitor dev <code>497d08c9</code> (2026-11-01), after #8894 merged. Status: proposed; the decisions in §5 are open. Release placement is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5708,8 +5710,8 @@
 <thead>
 <tr>
 <th></th>
-<th>on dev <code>3c773ee5</code> (ships in 16.0.0)</th>
-<th>in review / local next</th>
+<th>on dev <code>497d08c9</code> (ships in 16.0.0)</th>
+<th>local next</th>
 <th>not started</th>
 </tr>
 </thead>
@@ -5722,14 +5724,14 @@
 </tr>
 <tr>
 <td>Identity</td>
-<td><code>identifier</code> is the client's, <code>_id</code> the server's; #8879 and #8890 merged identifier-first matching and compatibility decisions A/B; #8888/#8890 fixed BF-225; #8889 added strict v1 validation and opt-in per-item batch replies; #8892 merged the site resend settings as <code>3c773ee5</code>. SPEC-ID-AMEND is complete in this repository.</td>
-<td>#8894, ID-UNIQUE-INDEX, in review at <code>cf978f4</code>; local gates passed on the prior head; all required hosted checks passed. ID-BATCH remains local and depends on the index.</td>
+<td><code>identifier</code> is the client's, <code>_id</code> the server's; #8879/#8890 merged identifier-first matching and compatibility decisions A/B; #8888/#8890 fixed BF-225; #8889 added strict v1 validation and opt-in per-item batch replies; #8892 added site resend settings; #8894 added the unique index and Q-IDX retry, merged as <code>497d08c9</code>. SPEC-ID-AMEND is complete in this repository.</td>
+<td>ID-BATCH reply and duplicate-key race behavior are implemented in #8889/#8894; no separate local integration PR is currently required. Full release compatibility and cohort verification remain.</td>
 <td>PostgreSQL</td>
 </tr>
 <tr>
 <td>Registration</td>
 <td>specifications only; dev also carries an older proposal schema, <code>docs/proposals/schemas/controller-instance-registration.schema.json</code></td>
-<td>#8857: S0, S1, S2, S5, off by default (<code>10fe6725</code>, 25 behind dev)</td>
+<td>draft #8857: S0, S1, S2, S5, off by default (head <code>5f6c1275</code>, <code>BEHIND</code> latest <code>dev</code> <code>497d08c9</code>; rebase and retest before the entry bar)</td>
 <td>typed writes (S3), projected views (S4)</td>
 </tr>
 <tr>
@@ -5867,10 +5869,10 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 </tr>
 <tr>
 <td>7</td>
-<td>#8857, registration S0-S2, S5</td>
+<td>draft #8857, registration S0-S2, S5</td>
 <td>16.0.0 through the bar</td>
-<td>off by default; at <code>10fe6725</code> with <code>dev</code> <code>305a6533</code> merged in, 25 commits behind <code>dev</code></td>
-<td>the flag stays off; D-REG-FLAG (where the catalogue lives)</td>
+<td>off by default; head <code>5f6c1275</code> is behind <code>dev</code> <code>497d08c9</code></td>
+<td>rebase/resolve, settle D-REG-FLAG (where the catalogue lives), and rerun its gates on current <code>dev</code></td>
 </tr>
 <tr>
 <td>8</td>
@@ -5882,16 +5884,16 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 <tr>
 <td>9</td>
 <td><strong>#8879 merged</strong> with slices 1, 2, 5, 3, 4, 6 and 6a; <strong>#8890 merged</strong> compatibility A/B and the BF-225 fix; <strong>#8892 merged 2026-11-01</strong> as <code>3c773ee5</code>, adding <code>WRITE_RESEND=replace\|merge-except-treatments\|acknowledge\|refuse</code> and <code>WRITE_DELETED_RESEND=stay\|revive</code>. The default-mode matrix changed 0/4,916 cells relative to its base; <code>refuse</code> changed 813. All required #8892 checks passed.</td>
-<td>16.0.0 through the entry bar; ID-UNIQUE-INDEX remains ahead of ID-BATCH.</td>
+<td>16.0.0 through the entry bar; #8894 now completes the index-dependent batch retry.</td>
 <td>Identity changes affect dosing data and delete/restore behavior.</td>
-<td>Re-send matrix, red controls, cohort check, and review of rollback instructions.</td>
+<td>Full release compatibility matrix, cohort check, and rollback review.</td>
 </tr>
 <tr>
 <td>9b</td>
-<td><strong>#8894, ID-UNIQUE-INDEX, in review</strong> at <code>cf978f4</code>, based on merged #8892. Local gates passed on the prior head. All required hosted CI checks passed, including Node 22.23.4, Maintained MongoDB, Chromium, Firefox, and WebKit. The batch-only matrix has 33 expected index on/off differences (24 <code>batch-dupkey-mid</code>, 9 <code>batch-repeat-identifier</code>); broader <code>--batch --no-idf</code> runs were stopped.</td>
-<td>16.0.0 through the entry bar, before remaining ID-BATCH integration.</td>
+<td><strong>#8894, ID-UNIQUE-INDEX, merged 2026-11-01</strong> as <code>497d08c9</code> (full merge commit <code>497d08c94c0a583f056fe487d172a4634fc4a1d4</code>), from head <code>cf978f4</code> onto <code>dev</code>. All required PR hosted checks passed. The completed <code>--batch --no-idf</code> matrix has 3,443 cells per off/try lane, zero invalid cells on MongoDB 5.0.32 and 8.0.34, and the same 33 expected batch differences (24 <code>batch-dupkey-mid</code>, 9 <code>batch-repeat-identifier</code>) on both versions; other differences are cache-only. #8894 includes batch race retry, so no standalone ID-BATCH branch is currently required.</td>
+<td>16.0.0 through the entry bar; post-merge CI stabilization #8896 is merged and green; release cohort verification remains.</td>
 <td>Index creation and duplicate-key races affect every write path.</td>
-<td>Complete hosted CI, review index rollback, then verify on <code>dev</code>.</td>
+<td>Complete the release compatibility matrix and prepare cohort/rollback checks for a named RC.</td>
 </tr>
 <tr>
 <td>9a</td>
@@ -6063,9 +6065,9 @@ manual confirmation. Two records already sharing an identifier is a question for
 </tr>
 <tr>
 <td>ID-BATCH</td>
-<td>remaining batch integration with the index's per-item duplicate-key retry; opt-in reply format and strict v1 identifier behavior shipped in #8889</td>
+<td>v1 per-item reply behavior and index-dependent duplicate-key retry for batch writes</td>
 <td>WC-STEP-PATCH, ID-UNIQUE-INDEX</td>
-<td>local <code>feat/id-batch</code> remains based on the earlier index stack; rebase after #8894 lands, then rerun the batch matrix and controls before opening a PR</td>
+<td>implemented across #8889 and #8894, including tests in <code>tests/api.id-batch-replies.test.js</code> and <code>tests/api.batch-race-item-level.test.js</code>; the old local branch is not a separate release-critical PR</td>
 </tr>
 <tr>
 <td>ID-RESEND-SWITCH</td>
@@ -6077,7 +6079,7 @@ manual confirmation. Two records already sharing an identifier is a question for
 <td>ID-UNIQUE-INDEX</td>
 <td>partial unique index on <code>identifier</code>, per collection (with the tenant under multi); duplicate-key races follow the selected resend mode (Q-IDX), including batch item retry</td>
 <td>ID-FIRST-MATCH, ID-RESEND-SWITCH</td>
-<td>#8894 in review at <code>cf978f4</code> on <code>dev</code>. Local gates passed on the prior head; all required hosted checks passed. Batch-only matrix: 33 expected index-on/off differences on MongoDB 5.0/8.0; broader <code>--batch --no-idf</code> runs were stopped.</td>
+<td>merged as #8894 at <code>497d08c9</code> on <code>dev</code>; all required hosted checks passed. Full <code>--batch --no-idf</code> matrix: 3,443 cells per off/try lane, zero invalid cells, same 33 expected batch differences on MongoDB 5.0.32/8.0.34; remaining differences are cache-only.</td>
 </tr>
 </tbody>
 </table>

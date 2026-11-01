@@ -1534,6 +1534,8 @@
       
         
       
+        
+      
     
     
     
@@ -2152,10 +2154,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cgm-remote-monitor-1600-identity-handoff-update-2026-11-01" class="md-nav__link">
+  <a href="#cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
+        cgm-remote-monitor 16.0.0 Identity and Release Evidence Update (2026-11-01)
       
     </span>
   </a>
@@ -3410,10 +3412,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cgm-remote-monitor-1600-identity-handoff-update-2026-11-01" class="md-nav__link">
+  <a href="#cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01" class="md-nav__link">
     <span class="md-ellipsis">
       
-        cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
+        cgm-remote-monitor 16.0.0 Identity and Release Evidence Update (2026-11-01)
       
     </span>
   </a>
@@ -4635,7 +4637,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>de95758a6</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4647,8 +4649,8 @@
 - <a href="docs/archive/progress-archive-2026-01-30-batch4.html">progress-archive-2026-01-30-batch4.md</a></p>
 </blockquote>
 <hr />
-<h2 id="cgm-remote-monitor-1600-identity-handoff-update-2026-11-01">cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-1600-identity-handoff-update-2026-11-01" title="Permanent link">&para;</a></h2>
-<p>Updated the roadmap and release records after completing Q-IDX race handling and choosing #8894 as the canonical unique-index PR.</p>
+<h2 id="cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01">cgm-remote-monitor 16.0.0 Identity and Release Evidence Update (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01" title="Permanent link">&para;</a></h2>
+<p>Updated the roadmap and release records after #8894 and CI stabilization #8896 merged; completed the broad batch and fresh backwards-compatibility matrices.</p>
 <table>
 <thead>
 <tr>
@@ -4661,25 +4663,31 @@
 <tr>
 <td>Unique-index PR</td>
 <td><code>nightscout/cgm-remote-monitor#8894</code></td>
-<td>Draft, stacked on #8892; local gates pass. Its feature base is excluded from hosted <code>pull_request</code> filters, so retarget to <code>dev</code> after #8892 merges to trigger CI. Earlier draft #8893 closed as superseded.</td>
+<td>Merged to <code>dev</code> as <code>497d08c9</code>; required hosted checks passed. The post-merge cache-read and startup-state test failures were fixed by #8896, whose required and post-merge checks passed.</td>
 </tr>
 <tr>
 <td>Release status</td>
 <td><code>releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md</code></td>
-<td>6,319 passing / 3 pending; 33 expected current matrix deltas; broader <code>--batch --no-idf</code> runs were stopped.</td>
+<td>Full <code>--batch --no-idf</code> matrix completed: 3,443 cells per off/try lane, zero invalid; the same 33 expected batch deltas on MongoDB 5.0.32 and 8.0.34, with remaining differences limited to cache fields.</td>
+</tr>
+<tr>
+<td>Compatibility evidence and colophon</td>
+<td><code>releases/cgm-remote-monitor-16.0.0/compat/</code>, <code>releases/cgm-remote-monitor-16.0.0/colophon.md</code>, <code>site/pages/cgm-remote-monitor-16.0.0-{write-compatibility,colophon}.html</code></td>
+<td>Two 4,916-cell runs per endpoint; 2,803 classified changes, 0 unexplained and no defect-verdict cells. Repeat differences are limited to cache/wire.</td>
 </tr>
 <tr>
 <td>Roadmap and site</td>
 <td><code>docs/30-design/platform/next-gen-platform-plan.{md,json}</code>, <code>site/pages/nightscout-next-gen-platform.html</code></td>
-<td>#8892 CI is green; remaining ID-BATCH is clean at <code>4b48e57f</code>, 17 ahead/91 behind <code>dev</code>, and must be rebased/retested after the index lands.</td>
+<td>#8889, #8892, #8894 and #8896 are merged; #8894 includes the batch retry, so no separate ID-BATCH feature PR is needed absent a newly identified gap. Compatibility evidence is complete; #8857 rebase/retest, #8824 staging, cohort and rollback checks remain.</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Key Findings</strong>:
 - The 33 current index-on/off matrix deltas are 24 <code>batch-dupkey-mid</code> plus 9 <code>batch-repeat-identifier</code>; the earlier 24-cell result was pinned at <code>982de025</code>.
 - The batch-only matrix completed all 13 forms under default on MongoDB 5.0.32 and 8.0.29; only the two relevant forms were compared under reject and strict.
-- The older <code>proto/id-batch-replies</code> branch is at <code>7d81e1c1</code>, 1 ahead/119 behind; it is not the integration branch.</p>
-<p><strong>Next</strong>: Merge #8892 after review; then retarget #8894 to <code>dev</code> to trigger hosted CI, resolve any failures, and merge it. Afterward rebase <code>feat/id-batch</code> and rerun the batch suite, matrix, and controls before considering a PR.</p>
+- The older <code>proto/id-batch-replies</code> branch is at <code>7d81e1c1</code>, 1 ahead/119 behind; it is not the integration branch.
+- The broader matrix has 3,443 cells in each off/try lane, zero invalid cells, complete wire capture (929/929), and no differences beyond the 33 expected batch deltas except cache-field noise.</p>
+<p><strong>Next</strong>: Rebase #8857, clear the #8824 master-protection block, then complete cohort verification, operational checks and rollback review before naming an RC. Do not revive the stale <code>feat/id-batch</code> branch without a specific uncovered behavior.</p>
 <h2 id="cgm-remote-monitor-1600-identity-handoff-2026-11-01">cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-1600-identity-handoff-2026-11-01" title="Permanent link">&para;</a></h2>
 <p>Refreshed the release and next-gen roadmap records after ID-RESEND-SWITCH opened as #8892.</p>
 <table>

@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/releases/cgm-remote-monitor-16.0.0/contents.html">
       
       
-        <link rel="prev" href="index.html">
+        <link rel="prev" href="colophon.html">
       
       
         <link rel="next" href="decisions.html">
@@ -918,6 +918,8 @@
       
         
       
+        
+      
     
     
     
@@ -970,6 +972,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="colophon.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How cgm-remote-monitor 16.0.0 was evaluated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -1985,6 +2015,8 @@
       
         
       
+        
+      
     
     
     
@@ -2136,7 +2168,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>5d578f858</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2152,8 +2184,11 @@ the maintainer set on 2026-10-30, Known defects (BF-209, BF-211, BF-212) and the
 <code>externals/cgm-remote-monitor-official</code> after <code>git fetch official</code>. Updated on 2026-10-31 for <code>dev</code> <code>368e6c23</code>
 (#8874, 02:02:52Z): the merge state, the in-flight update below the handoff table, Known defects (BF-215,
 BF-216, BF-219 to BF-222) and the testing pointer to R18; read with <code>gh pr list</code>, <code>gh pr checks</code> and
-<code>gh api .../compare</code> at about 05:45Z. Updated 2026-11-01 for <code>dev</code> <code>3c773ee5</code> after #8892 merged; current identity and #8894 CI status are in the
-status rows below. Other release counts remain tied to their recorded historical commits.</p>
+<code>gh api .../compare</code> at about 05:45Z. Updated 2026-11-01 for <code>dev</code> <code>61eb3733</code> after #8896; current identity status is in the rows below.
+The fresh write-compatibility result and release-readiness assessment are in the
+<a href="../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html">compatibility report</a> and
+<a href="../../site/pages/cgm-remote-monitor-16.0.0-colophon.html">release colophon</a>. Other release counts
+remain tied to their recorded historical commits.</p>
 <blockquote>
 <p>Complements the generated changelog. The changelog is authoritative for <em>what merged</em>; this file
 records what the release is made of so far, how each figure was measured, and what is unsettled.</p>
@@ -2193,7 +2228,7 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td><code>dev</code> head</td>
-<td><code>3c773ee5</code> (merge of #8892, 2026-11-01 16:03:09Z); before it <code>f54941b5</code> (#8881); before it #8889 <code>4196dd45</code> (06:01:54Z), #8890 <code>5921d5fd</code> (04:29:18Z), #8886 <code>51d38f9f</code>, #8880 <code>305a6533</code>, #8874 <code>368e6c23</code>; earlier history: #8865 <code>991b0654</code> (tree <code>a9ae9536</code>), #8878 <code>d51c7a60</code>, #8877 <code>cf3d4b8f</code>, #8873 <code>e1f7ac41</code>, and the 2026-10-27 merges #8872 <code>db3b9e4e</code>, #8871 <code>dcf20bfb</code>, #8858 <code>ca1652d6</code>, #8869 <code>b8baf24d</code>, #8870 <code>7abe1cf6</code>, #8863 <code>9668b179</code>, #8861 <code>84fac457</code> (<code>git log --first-parent official/master..official/dev</code>)</td>
+<td><code>61eb3733</code> (merge of #8896, 2026-11-01); before it <code>497d08c9</code> (#8894, 16:28:25Z), <code>3c773ee5</code> (#8892), <code>f54941b5</code> (#8881), #8889 <code>4196dd45</code> (06:01:54Z), #8890 <code>5921d5fd</code> (04:29:18Z), #8886 <code>51d38f9f</code>, #8880 <code>305a6533</code>, #8874 <code>368e6c23</code>; earlier history: #8865 <code>991b0654</code> (tree <code>a9ae9536</code>), #8878 <code>d51c7a60</code>, #8877 <code>cf3d4b8f</code>, #8873 <code>e1f7ac41</code>, and the 2026-10-27 merges #8872 <code>db3b9e4e</code>, #8871 <code>dcf20bfb</code>, #8858 <code>ca1652d6</code>, #8869 <code>b8baf24d</code>, #8870 <code>7abe1cf6</code>, #8863 <code>9668b179</code>, #8861 <code>84fac457</code> (<code>git log --first-parent official/master..official/dev</code>)</td>
 </tr>
 <tr>
 <td><code>dev</code> head on 2026-10-27</td>
@@ -3208,6 +3243,8 @@ opens when slices 3 and 4 are on <code>dev</code>.</p>
 <p><strong>Update, 2026-11-01, ID-RESEND-SWITCH in review</strong> (session -4e): the maintainer opened <strong>#8892</strong> (<code>WRITE_RESEND=replace|merge-except-treatments|acknowledge|refuse</code>, <code>WRITE_DELETED_RESEND=stay|revive</code>; head <code>a55c940d</code>, <code>dev</code> <code>f54941b5</code> merged in). Gates at <code>a55c940d</code> (in the PR body): the write-contract matrix on MongoDB 7.0.43 with <code>--batch</code>, 4,916 cells: both settings unset, 0 cells differ from a <code>f54941b5</code> pin (the <code>f54941b5</code> and <code>4196dd45</code> pins differ by 0 cells, so #8881 moves none); <code>refuse</code> moves the same 813 cells as at <code>405c6cee</code>, none of whose re-sends writes; tiers unit 2077 and integration 3519 (1 pending), 0 failing on Node 22.23.4 and 24.22.1; lint 0 errors. Break-it: 14 of 14 red at <code>405c6cee</code>, not re-run after the <code>dev</code> merge. Per-client D20 quirks are a seam only (<code>writeSettings.resendModeFor(env, client)</code> returns the site setting for every client). Session -d1 has stopped; ID-UNIQUE-INDEX passes to another session on this machine (handoff <code>externals/work/HANDOFF-d1-2026-11-01.md</code>), which stacks on <code>a55c940d</code> and wires Q-IDX through <code>resendModeFor</code>.</p>
 <p><strong>Update, 2026-11-01, after #8892 opened:</strong> hosted CI re-read at 07:21Z: all required checks completed successfully, including Maintained MongoDB and Chromium/Firefox/WebKit. The local unset/refuse matrix arms completed against <code>f54941b5</code> and independently show 0 and 813 changed cells outside cache noise. The next critical path is Q-IDX in local <code>feat/id-unique-index-5a</code> (<code>44750011</code>): prior <code>npm test</code> 6035/0/3 and matrix gates predate #8892, so rebase onto the PR head after it lands, make duplicate-key race losers follow <code>writeSettings.resendModeFor</code>, add mode-specific race tests/controls, and rerun before opening the index PR. The remaining ID-BATCH work is local <code>feat/id-batch</code> (<code>4b48e57f</code>), stacked on the index and 91 commits behind current <code>dev</code>; rebase and test it after the index. The ID-STRICT-V1 and opt-in per-item reply format are already in #8889.</p>
 <p><strong>Update, 2026-11-01, after Q-IDX validation and #8893 closure:</strong> #8892 remains open and all required hosted checks pass. The canonical ID-UNIQUE-INDEX PR is draft <strong>#8894</strong>, head <code>2d7411d6</code>, stacked on #8892. Its base <code>feat/id-resend-switch</code> is outside the <code>pull_request</code> filters in <code>main.yml</code> and CodeQL, so only auto-close has run; retarget it to <code>dev</code> after #8892 merges to trigger hosted feature CI. Earlier draft #8893 was closed as superseded. Local validation on #8894's head: <code>npm test</code> 6,319 passing / 3 pending; focused identity-race/settings suite 63 passing; test-tier and write-intent gates pass; lint 0 errors and 20 warnings. Treatment mode tests reached the actual duplicate-key path in 24–30 of 30 rounds per mode. Batch-only matrix: all 13 forms (312 cells) compared index off/on under default on MongoDB 5.0.32 and 8.0.29; 33 expected differences (24 <code>batch-dupkey-mid</code>, 9 <code>batch-repeat-identifier</code>). The same 33 differences appeared for those two forms under <code>WRITE_VALIDATION=reject</code> and <code>WRITE_IDENTIFIER=strict</code>. The historical 24-cell result was pinned at <code>982de025</code>; the current 9 additional cells are from <code>batch-repeat-identifier</code>, so keep the pin results distinct. Broader <code>--batch --no-idf</code> matrix runs were stopped, not completed. The remaining <code>feat/id-batch</code> worktree is clean at <code>4b48e57f</code> (17 ahead/91 behind <code>official/dev</code>); it still needs rebasing and full verification after #8894 lands. The older <code>proto/id-batch-replies</code> worktree (<code>7d81e1c1</code>, 1 ahead/119 behind) is prototype-only, not the integration branch.</p>
+<p><strong>Current correction, 2026-11-01:</strong> #8892 merged as <code>3c773ee5</code>; #8894 then merged from head <code>cf978f4</code> to <code>dev</code> as <code>497d08c94c0a583f056fe487d172a4634fc4a1d4</code>. All required PR hosted checks passed. The two post-merge CI runs then exposed separate failures: run 41326509441 failed <code>tests/api.entries.test.js</code> because the cache-read test assumed its seeded record was <code>ctx.cache.entries[0]</code>; run 41326514941 failed D21 in <code>tests/start-paths.test.js</code> because equivalent index states were reported as <code>built</code> versus <code>present</code>. PR #8896 merged both test stabilizations as <code>61eb37335954ae42c91345a0823bd67331025165</code>: the entries test finds its fixture by <code>_id</code>, and the startup comparison normalizes those equivalent states. All required #8896 checks passed, including MongoDB 5.0/8.0, browsers, Docker and CodeQL; post-merge runs 41333677576 and 41333672054 also succeeded. The focused entries suite passes 32 tests on the pre-#8896 local tree, and the same-seed integration/stress replay passed (3,567 passing / 1 pending; stress 18 passing). No separate test-fix PR is needed. API v1 per-item results and strict-v1 behavior shipped in #8889; #8894 adds the unique index and index-dependent duplicate-key retry, including batch races. The stale local <code>feat/id-batch</code> branch should not be rebased wholesale: per-item reply contracts and item-level race behavior are already covered by <code>tests/api.id-batch-replies.test.js</code> and <code>tests/api.batch-race-item-level.test.js</code> on the merged branch. Carry forward only a specific uncovered case if further review identifies one. The broader <code>--batch --no-idf</code> matrix is complete on the merged tree: each off/try lane had 3,443 cells and zero invalid cells, with complete wire capture (929/929 frames, zero unattributed frames or settle-bound hits). Off-versus-try produced the 33 expected batch differences (24 <code>batch-dupkey-mid</code>, 9 <code>batch-repeat-identifier</code>) on both MongoDB 5.0.32 and 8.0.34; remaining differences were cache-only (15 cells on MongoDB 5, 5 on MongoDB 8). Cross-version comparisons differed only in cache fields (7 cells off, 11 try). A separate fresh v15.0.9-to-merged-dev comparison remains incomplete and unclassified. Merged dev uses <code>WRITE_IDENTIFIER_INDEX=off</code> only to allow intentional duplicate-state fixtures; default <code>try</code> index startup and races remain separate evidence.</p>
+<p><strong>Final compatibility comparison, 2026-11-01</strong> (supersedes the interim in-progress status above): the fresh comparison is complete and classified in the <a href="../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html">compatibility report</a> and <a href="../../site/pages/cgm-remote-monitor-16.0.0-colophon.html">release colophon</a>. Two runs of each endpoint recorded 4,916 cells; the repeat runs differed only in cache/wire (81 baseline and 19 merged-dev cells). Of 2,803 changed cells, 0 are unexplained and none have the <code>Defect</code> verdict. The split is 347 changed before the historical pre-identity dev anchor, 2,107 after it, and 349 in both intervals; 1,886 cells concern identifier format. Six <code>ws idread-fail</code> cases are excluded because that injected failure does not exist on 15.0.9. The 2026-10-31 baseline pin differs by 23 batch cells outside cache/wire and is not used for repeatability.</p>
 <p><strong>Update, 2026-11-01</strong> (session -d1, from GitHub): the maintainer merged <strong>#8881</strong> (ST-HARNESS: backend-selectable harness, backend selection, tenant scope; head <code>993275f3</code>) as <code>f54941b5</code>; <code>dev</code> is <code>f54941b5</code>. The three open 16.0.0 PRs of the day are merged in the agreed order (#8890, #8889, #8881). Remaining identity work: ID-RESEND-SWITCH (session -4e), ID-UNIQUE-INDEX (session -d1; local <code>44750011</code>, <code>npm test</code> 6035/0/3 on <code>dev</code> <code>4196dd45</code>), then the ID-BATCH remainder. Session -81 re-pins the batch-only matrix (312 cells; MongoDB 5.0.32 and 8.0.29; default, reject and strict) on <code>f54941b5</code> as the base for the index PR; the <code>abadc40a</code> pins are not landed (they predate compatibility A/B).</p>
 <p><strong>Update, 2026-11-01, about 06:05Z</strong> (session -d1, from GitHub): the maintainer merged <strong>#8889</strong> (ID-STRICT-V1, per-item API v1 batch replies behind the <code>Nightscout-Write-Results</code> opt-in, the BF-219 test fix and the CodeQL type-confusion fix; head <code>422796db</code>) at 06:01Z as <code>4196dd45</code>; <code>dev</code> is <code>4196dd45</code>. CodeQL alert 140 closed as fixed by the patch (no dismissal). Next: #8881, then ID-RESEND-SWITCH, ID-UNIQUE-INDEX and the ID-BATCH remainder.</p>
 <p><strong>Update, 2026-11-01, ST-VIEWS replay re-check on <code>dev</code> <code>1fc6d8be</code></strong> (session -81, 02:57–04:42Z; #8875 merged after #8886; the recorded procedure in <code>tests/lib/views-replay/RESULTS.md</code>: MongoDB 7.0.43 in a dedicated container, Node 22.23.4): the alarms and properties views, each as-is and with profiles at start, differ from the resident path in 0 minutes of 126,092 each; release 2's noise floor is 0 on all of them. The controls (<code>run-controls.sh</code>: tamper, shrunk treatments 4 h and 24 h, device status 0.5 h and 6 h) are red and silent on the same datasets as on the recorded final tree, with the same counts except one: shrunk treatments 4 h on corpus dataset #6, 1156 differing minutes against the recorded 1146 (+10, not traced). Control counts measure sensitivity, not equality. Not run: the properties-specific controls. Outputs kept out of the repository (they carry corpus values).</p>
@@ -3286,6 +3323,7 @@ opens when slices 3 and 4 are on <code>dev</code>.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Historical note:</strong> The pinned 2026-10-31 comparison below predates the merged-16.0.0 result. The fresh comparison is now complete: v15.0.9 and merged dev each have two 4,916-cell runs, with 2,803 classified changes and zero unexplained cells. The retained 2026-10-31 v15.0.9 pin differs from the fresh baseline in 23 batch cells outside cache/wire and is not used as a repeat.</p>
 <p><strong>15.0.9 → #8879 compatibility, measured</strong> (session -4e, at the maintainer's request): write-contract matrix on <code>v15.0.9</code> <code>c6a0d8ed</code>, <code>dev</code> <code>37b2280f</code> and #8879 <code>6960bfb7</code> (MongoDB 7.0.43, since 15.0.9's driver 5.9.2 predates 8.0; Node 22.23.4; defaults; two runs per tree, 0 flaky): 4,916 cells per tree, 2,947 differ from 15.0.9, 0 unexplained; 376 differ only on <code>dev</code>, 2,230 only with #8879, 341 in both; 1,924 of them are identifier-format cases (ID-Q6). The only defect found is BF-225 (3 cells). Results, data and refresh steps: the living page <a href="../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html">16.0.0 write compatibility</a>, from <code>releases/cgm-remote-monitor-16.0.0/compat/</code> and <code>tools/qc/compat/</code>. Anchor drift noted: <code>lib/client/renderer.js:354</code> in the slice 4 decision row is the line at <code>dev</code> <code>ca1652d6</code> (<code>:240</code> on 15.0.9); Trio was read at <code>e41c9db3</code>; tconnectsync and AndroidAPS anchors have moved a few lines.</p>
 <p><strong>BF-225</strong> (filed by session -4e): a socket re-send of a treatment without an identifier stores a second copy when the stored one has an identifier, on <code>dev</code> since #8877 (<code>cf3d4b8f</code>), not on 15.0.9; in 16.0.0 (maintainer, 2026-10-31, via -4e). Correction: the v3-then-socket case was documented as intended in #8877; the UUID <code>_id</code> cases were not; fix scope decided (B on <code>dev</code>, C on #8879; a full revert rejected because it brings back BF-209's lost treatment); being built by -4e. Release-notes line owed (measured by -4e): on 15.0.9 a socket <code>dbAdd</code> array of three distinct treatments stored only one; #8877 fixed that. Release-notes line owed for "What you must do" (ID-UNIQUE-INDEX): before rolling back to 15.0.9 or any build before 16.0.0, set <code>WRITE_IDENTIFIER_INDEX=drop</code> and restart once (the log lists each index removed), then roll back; if already rolled back, drop <code>identifier_unique</code> by hand. A rollback to 15.0.9 ignores the setting, so the left-behind index would refuse a duplicate with a 500 where 15.0.9 stored it.</p>
 <p>Local, not pushed: the unique index (moving onto 6a; its retry becomes item-level first), ID-BATCH (session -81, on the index), the one-person profile prototype (<code>908351d4</code>). Being reproduced, not filed: an API v3 autoPrune cache lead.</p>
@@ -3454,24 +3492,24 @@ and the queue):</p>
 <td><code>ID-FIRST-MATCH</code>, <code>ID-VALIDATE</code></td>
 </tr>
 <tr>
-<td>the <code>WRITE_*</code> settings: <code>WRITE_RESEND=replace\|merge-except-treatments\|acknowledge\|refuse</code>, <code>WRITE_DELETED_RESEND=stay\|revive</code>, <code>WRITE_IDENTIFIER=lenient\|strict</code>, <code>WRITE_DELETED_EDIT=ignore\|refuse</code>, <code>WRITE_IDENTIFIER_INDEX=try\|require\|off</code>; default first in each</td>
-<td>ID-RESEND-SWITCH: <strong>#8892 merged</strong>; ID-UNIQUE-INDEX: <strong>#8894 in review</strong></td>
-<td><code>3c773ee5</code> / <code>cf978f4</code></td>
-<td>#8892 required hosted checks passed. Unknown values refuse to start. Per-client D20 overrides remain unimplemented.</td>
+<td>the <code>WRITE_*</code> settings: <code>WRITE_RESEND=replace\|merge-except-treatments\|acknowledge\|refuse</code>, <code>WRITE_DELETED_RESEND=stay\|revive</code>, <code>WRITE_IDENTIFIER=lenient\|strict</code>, <code>WRITE_DELETED_EDIT=ignore\|refuse</code>, <code>WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop</code>; default first in each</td>
+<td>ID-RESEND-SWITCH: <strong>#8892 merged</strong>; ID-UNIQUE-INDEX: <strong>#8894 merged</strong></td>
+<td><code>3c773ee5</code> / <code>497d08c9</code></td>
+<td>#8892 and #8894 hosted checks pass. Unknown values refuse to start. Per-client D20 overrides remain unimplemented.</td>
 <td><code>ID-RESEND-SWITCH</code>, <code>ID-VALIDATE</code>, <code>ID-FIRST-MATCH</code>, <code>ID-UNIQUE-INDEX</code></td>
 </tr>
 <tr>
-<td>ID-UNIQUE-INDEX: partial unique index per collection, duplicate report/clean tool and item-level retry-as-resend</td>
-<td>#8894 in review at <code>cf978f4</code></td>
-<td><code>cf978f4</code></td>
-<td>Local gates passed on the prior tested head. All required hosted checks passed, including Node 22.23.4, Maintained MongoDB, Chromium, Firefox, and WebKit.</td>
+<td>ID-UNIQUE-INDEX: partial unique index per collection, duplicate report and item-level retry-as-resend</td>
+<td>#8894 merged as <code>497d08c9</code> from <code>cf978f4</code></td>
+<td><code>497d08c9</code></td>
+<td>Local gates and required hosted checks passed. <code>try</code> reports duplicates and continues without the index; it does not clean records. The completed 3,443-cell <code>--batch --no-idf</code> off/try lanes have zero invalid cells on MongoDB 5.0.32 and 8.0.34; each shows the same 33 expected batch differences, with only cache-field noise beyond those.</td>
 <td><code>ID-UNIQUE-INDEX</code></td>
 </tr>
 <tr>
-<td>ID-BATCH: remaining per-item v1 batch behavior, including the item-level duplicate-key retry after index</td>
-<td>local <code>feat/id-batch</code></td>
-<td><code>4b48e57f</code></td>
-<td>Stacked on the index; rebase after #8894 lands, then run suite, matrix, and controls before opening a PR. #8889 already provides opt-in result format and strict-v1 behavior.</td>
+<td>ID-BATCH: API v1 per-item replies and strict-ID behavior; index-dependent duplicate-key retry</td>
+<td>#8889 and #8894 merged</td>
+<td><code>4196dd45</code> / <code>497d08c9</code></td>
+<td>#8889 provides the opt-in result format and strict-v1 behavior; #8894 adds the race retry. The old local <code>feat/id-batch</code> worktree is not a separate release-critical PR.</td>
 <td><code>ID-BATCH-RESULTS</code></td>
 </tr>
 <tr>
@@ -3491,8 +3529,8 @@ and the queue):</p>
 <tr>
 <td>controller registration S0, S1, S2, S5, off by default</td>
 <td><strong>draft #8857</strong></td>
-<td><code>f7a43fed</code> (last updated 2026-10-27): 109 commits behind <code>dev</code>, 12 ahead (<code>gh api .../compare/dev...f7a43fed</code>); <code>mergeable</code> reads <code>UNKNOWN</code></td>
-<td>needs <code>dev</code> merged in, with conflicts reported in the plan; <em>later</em> 2026-10-30: an agent of session -49 is merging <code>dev</code> into it in <code>externals/work/crm-regcat-flat</code> (merge, not rebase), with push commands for the maintainer; D-REG-FLAG (where the catalogue lives) is open</td>
+<td>head <code>5f6c1275</code>; <code>BEHIND</code> current <code>dev</code> <code>497d08c9</code>; PR checks on this head are green</td>
+<td>rebase/resolve against current <code>dev</code>, settle D-REG-FLAG (where the catalogue lives), then rerun the entry-bar checks</td>
 <td><code>HUB-REG-CRM</code></td>
 </tr>
 <tr>
@@ -3962,7 +4000,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a8ee41768ddd2de7677c124774099c87efd10903/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/44cb0a8993dca02c753db3cfb540b72557e11407/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>

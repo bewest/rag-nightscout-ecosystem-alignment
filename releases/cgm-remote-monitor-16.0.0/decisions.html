@@ -918,6 +918,8 @@
       
         
       
+        
+      
     
     
     
@@ -970,6 +972,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="colophon.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How cgm-remote-monitor 16.0.0 was evaluated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -2099,6 +2129,8 @@
       
         
       
+        
+      
     
     
     
@@ -2335,9 +2367,9 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>5d578f858</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
-<code>dev</code> <code>7ad3a67f</code> (2026-10-26, after #8854), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
+<code>dev</code> <code>497d08c9</code> (2026-11-01, after #8894), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
 it. Item state is in <code>queue/work-queue.yaml</code>; what 16.0.0 contains and what is still open is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
@@ -2419,7 +2451,7 @@ public.</em></p>
 | <strong><code>write(intent)</code> slices 4 and 6 are released</strong> (slice 4: API v3; slice 6: socket treatments, devicestatus and profile adds and updates). Slice 6 carries an extra gate, because its rules decide whether a treatment is a duplicate: each rule (exact <code>NSCLIENT_ID</code> and fallback-key match, the 2-second similar match at its edges, each BF-09 zero case, a different <code>eventType</code> as a second record, soft-deleted records never matching, the similar match setting only <code>created_at</code> and <code>srvModified</code>, the <code>WRITE_VALIDATION</code> reply slots) has a fixture that keeps today's result and an ablation that goes red; any difference is stop-and-report | maintainer, 2026-10-29 (<a href="../../docs/30-design/platform/wc-step-design-note-2026-10-27.html">write-step design note</a>) | <code>WC-STEP-PATCH</code> | built; push-ready head <code>e8224807</code> (17 commits on <code>dev</code> <code>e1f7ac41</code>): the write-contract matrix differs from <code>dev</code> in 0 cells, the revert rehearsed; draft #8874 at <code>4f9fc4cd</code> on 2026-10-30, 0 behind <code>dev</code> <code>991b0654</code> |
 | <strong>BF-211 joins the 16.0.0 merge list</strong>, added to #8877 with BF-209; <strong>BF-210 is withdrawn as not a defect</strong>: a nearby socket upload of the same event type whose amounts match a stored record is absorbed as intended, and the fix (a carbs-only re-send next to a stored carbs-and-insulin record became a second record) would double-count carbs on board. Linking a bolus to carbs eaten later as one meal belongs in the display layer, not in storage de-duplication | maintainer, 2026-10-29 | <code>BFQ-209</code>, <code>BFQ-210</code> (closed), <code>BFQ-211</code>, <code>DISPLAY-MEAL-GROUP</code> | #8877 merged 2026-10-30 00:50:49Z as <code>cf3d4b8f</code> (head <code>ac5d77fb</code>) |
 | <strong>BF-212's split fix is a 16.0.0 backfix</strong> (ID-Q5): the chart's split stops copying identity fields onto the moved half. Direction for the rest: a lossy edit of a controller-claimed record needs a manual confirmation; two records already sharing an identifier is a question for ID-FIRST-MATCH | maintainer, 2026-10-29 | <code>BFQ-212</code> | #8878 merged 2026-10-30 01:48:51Z as <code>d51c7a60</code>; the rest of BF-212 is open (contents, Known defects) |
-| <strong>16.0.0 scope: every single-tenant item of the next-gen plan, through the entry bar and in priority order.</strong> A miss at the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. <strong>The identity work is the core</strong>: it is the substance of the agreement with the Loop maintainers (identifier-first on every path, re-sends recognised, the format rules, one record per identifier). <strong>The unique index on <code>identifier</code> is in 16.0.0</strong>, behind <code>WRITE_IDENTIFIER_INDEX=try\|require\|off</code> (default <code>try</code>) with an operator-run report and clean tool (the API v3 row below). <strong>Multitenant items may ship dormant, labelled alpha behind <code>serve</code>, or not ship.</strong> The tag is gated by the bar, not by a date | maintainer, 2026-10-30 (<a href="../../docs/30-design/platform/next-gen-platform-plan.html">next-gen plan</a> §1) | <code>ID-UNIQUE-INDEX</code>, <code>ID-FIRST-MATCH</code>, <code>WC-STEP-PATCH</code>, <code>HUB-REG-CRM</code>, <code>PLAT-SERVE</code> | supersedes the release allocation's §4.3 rows for the single-tenant items (16.1.0, 16.2.0, 17.0.0); the in-flight list is in contents, In flight |
+| <strong>16.0.0 scope: every single-tenant item of the next-gen plan, through the entry bar and in priority order.</strong> A miss at the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. <strong>The identity work is the core</strong>: it is the substance of the agreement with the Loop maintainers (identifier-first on every path, re-sends recognised, the format rules, one record per identifier). <strong>The unique index on <code>identifier</code> is in 16.0.0</strong>, behind <code>WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop</code> (default <code>try</code>); <code>try</code> reports existing duplicates without deleting records or blocking startup. <strong>Multitenant runtime may ship dormant and labelled alpha behind <code>serve</code>, or be deferred; it is not a single-tenant release gate.</strong> The tag is gated by the bar, not by a date | maintainer, 2026-10-30 (<a href="../../docs/30-design/platform/next-gen-platform-plan.html">next-gen plan</a> §1) | <code>ID-UNIQUE-INDEX</code>, <code>ID-FIRST-MATCH</code>, <code>WC-STEP-PATCH</code>, <code>HUB-REG-CRM</code>, <code>PLAT-SERVE</code> | #8892 and #8894 are merged; identity test evidence is in contents and the integration record. Cohort scenarios remain to be prepared for an eventual named RC. |
 | <strong>Required before the 16.0.0 tag</strong>: (a) a live Pushover and APNs delivery check; (b) a real-rig soak on <code>dev</code>; (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0. BF-193 (the socket's payload logging) is not a pre-tag requirement; its logging question is decided (the BF-193 row below) | maintainer, 2026-10-26 (session -66) | <code>RT-16-RELEASE</code> (blocks on <code>RT-16-LIVE-ALARMS</code>, <code>RT-16-RIG-SOAK</code>, <code>BFQ-72</code>, <code>BFQ-161</code>), <code>BFQ-193</code> | none of the three met: (a) and (b) not started; BF-72 and BF-161 are in the advisory forks with no fork PR |</p>
 <h2 id="tests-and-the-jsdom-harness">Tests and the jsdom harness<a class="headerlink" href="#tests-and-the-jsdom-harness" title="Permanent link">&para;</a></h2>
 <table>
@@ -2615,22 +2647,22 @@ public.</em></p>
 <td>merged as #8892 at <code>3c773ee5</code>; unset-mode matrix 0/4,916 outside cache noise, <code>refuse</code> changes 813 cells, and all required hosted checks passed</td>
 </tr>
 <tr>
-<td><strong>The unique index on <code>identifier</code> is in 16.0.0, behind <code>WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop</code> (default <code>try</code>)</strong>. <code>try</code>: boot builds a partial unique index per collection (records with an <code>identifier</code>, soft-deleted ones included, built online); if existing duplicates block it, the counts per collection (never the values) are logged and shown on the status page and the server runs without the index, while the ID-Q5 write rule still refuses a second record with a stored identifier. <code>require</code>: refuses to start until the index exists. <code>off</code>: skips building it but leaves any existing index enforced; <code>drop</code> removes it at boot, then runs as <code>off</code>. An operator-run tool reports duplicate groups and resolves them by the P4 pick. Supersedes ID-Q5's "a unique index comes later" and the release allocation's 17.0.0 row for it</td>
+<td><strong>The unique index on <code>identifier</code> is in 16.0.0, behind <code>WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop</code> (default <code>try</code>)</strong>. <code>try</code>: boot builds a partial unique index per collection (records with an <code>identifier</code>, soft-deleted ones included, built online); if existing duplicates block it, the counts per collection (never the values) are logged and shown on the status page and the server runs without the index. The ordinary pre-write identifier match prevents a second insert for non-racing writes, but without the index concurrent writes are not protected from duplicate-key races. <code>require</code>: refuses to start until the index exists. <code>off</code>: skips building it but leaves any existing index enforced; <code>drop</code> removes it at boot, then runs as <code>off</code>. An operator-run tool reports duplicate groups and resolves them by the P4 pick. Supersedes ID-Q5's "a unique index comes later" and the release allocation's 17.0.0 row for it</td>
 <td>maintainer, 2026-10-30</td>
 <td><code>ID-UNIQUE-INDEX</code></td>
-<td>#8894 is open, not draft, at <code>cf978f4</code> on merged #8892 (<code>3c773ee5</code>); #8893 is closed as superseded. Local gates on the earlier tested head passed: full test suite 6,319 passing/3 pending; focused race/settings suite 63 passing; tiers/write-intent gates pass; lint 0 errors/20 warnings. Batch-only matrix shows 33 expected index on/off deltas on MongoDB 5.0.32/8.0.29; broader matrix runs were stopped. All required hosted checks on #8894 passed, including Node 22.23.4, Maintained MongoDB, Chromium, Firefox, and WebKit.</td>
+<td>#8894 merged to <code>dev</code> on 2026-11-01 as <code>497d08c94c0a583f056fe487d172a4634fc4a1d4</code> (head <code>cf978f4</code>), based on #8892 (<code>3c773ee5</code>). Local gates passed on the earlier tested head: full test suite 6,319 passing/3 pending; focused race/settings suite 63 passing; tiers/write-intent gates pass; lint 0 errors/20 warnings. The completed <code>--batch --no-idf</code> matrix has 3,443 cells per off/try lane on MongoDB 5.0.32 and 8.0.34; both versions show the same 33 expected differences (24 <code>batch-dupkey-mid</code>, 9 <code>batch-repeat-identifier</code>), with remaining differences cache-only. All required PR hosted checks passed.</td>
 </tr>
 <tr>
-<td><strong>The unique index comes before the remaining ID-BATCH work, with duplicate-key handling inside the write step.</strong> With the index on, a duplicate key arises only when two uploads of the same record race (identifier matching runs before the insert). The step re-reads by <code>identifier</code>, applies the item under <code>WRITE_RESEND</code> and retries once; a second failure is a 5xx. The v1 per-item reply format and strict-ID behavior shipped in #8889; remaining batch integration follows the index.</td>
+<td><strong>The unique index comes before the remaining ID-BATCH work, with duplicate-key handling inside the write step.</strong> With the index on, a duplicate key arises only when two uploads of the same record race (identifier matching runs before the insert). The step re-reads by <code>identifier</code>, applies the item under <code>WRITE_RESEND</code> and retries once; a second failure is a 5xx. The v1 per-item reply format and strict-ID behavior shipped in #8889; the index-dependent batch retry shipped in #8894.</td>
 <td>maintainer, 2026-10-30, via session -49, on the <a href="../../docs/30-design/platform/id-batch-design-note-2026-10-30.html">ID-BATCH design note</a> open question (i)</td>
 <td><code>ID-UNIQUE-INDEX</code>, <code>ID-BATCH-RESULTS</code></td>
-<td>#8894 contains the current Q-IDX work; local <code>feat/id-batch</code> <code>4b48e57f</code> needs rebase and retest after the index lands.</td>
+<td>#8894 merged as <code>497d08c9</code>; the old local <code>feat/id-batch</code> worktree is not a separate release-critical PR.</td>
 </tr>
 <tr>
 <td><strong>The identity slices land as three grouped PRs, in hours to days, with one cohort window over the whole set before the tag</strong> instead of time on <code>dev</code> between steps: A = ID-FIRST-MATCH slices 1, 2, 5; B = slices 3, 4; C = slices 6, 6a, then ID-UNIQUE-INDEX; ID-BATCH after C or in 16.1.0, not blocking the tag. Each landing keeps its pre-merge checks (the matrix moves exactly its predicted cells, listed by id; red controls; a rehearsed merge revert) and is its own PR so it can be reverted alone. The cohort request goes out when B lands, because B changes how re-sent treatments merge</td>
 <td>maintainer, 2026-10-30, via session -49</td>
 <td><code>ID-FIRST-MATCH</code>, <code>ID-UNIQUE-INDEX</code>, <code>ID-BATCH-RESULTS</code>, <code>WC-STEP-PATCH</code></td>
-<td>recorded. <strong>PR shape, decided later the same day: three PRs.</strong> #8874 merges as it is; one identity PR carries A, B and C1 (slices 1, 2, 5, 3, 4, 6, 6a) as ordered commits stacked on #8874's branch, with per-slice predicted cells and pins in its body; ID-UNIQUE-INDEX is its own PR, because its revert must also drop the index. Session -4f confirmed the order (A before B and C: slice 6 needs 2 and 5, and the index needs 5's no-second-record rule); slice 5 shrinks to the P4 pick and the no-second-record rule, since BF-212's split fix is on <code>dev</code> (#8878). Changes the 2026-10-29 entry bar's per-item time on <code>dev</code> into one window for the set</td>
+<td>historical plan; implementation landed across #8879/#8890, #8889, #8892 and #8894. The one-cohort-window release bar remains; tester-facing scenarios are being prepared, and these merges alone do not claim cohort verification.</td>
 </tr>
 <tr>
 <td><strong>The placeholder identifiers are <code>undefined</code>, <code>null</code>, <code>invalid</code>, <code>NaN</code>, <code>unknown</code>, empty and whitespace-only, matched case-insensitively</strong> (ID-PLACEHOLDER-LIST, widening ID-Q6's list): treated as absent with a warning, refused under <code>WRITE_IDENTIFIER=strict</code>. A non-string <code>identifier</code> is treated the same way (BF-215)</td>
@@ -2678,7 +2710,7 @@ public.</em></p>
 <td><strong>ID-BATCH reply rules (open questions (ii)–(vi) decided)</strong>: (ii) the opt-in to full per-item results is the <code>Nightscout-Write-Results</code> header (a query parameter is accepted as an equal alternative; an <code>Accept</code> opt-in is not used, because it is dropped on <code>.json</code> paths); (iii) a v1 profile batch mixing a permitted create and an unpermitted update stores the permitted part and answers 403 in the refused slot <strong>only for clients that opt in</strong>; everyone else keeps today's whole-batch 401, so status-only clients still notice; (iv) the derived preBolus record is left out of the reply, one slot per sent item (fixes BF-219); (v) a duplicate <code>_id</code> inside a batch is refused in its own slot with 409 and the rest is stored (fixes BF-220); (vi) a recognised re-send that writes nothing has the outcome word <code>acknowledged</code></td>
 <td>maintainer, 2026-10-30, via session -49, on the ID-BATCH reply lab (<code>tools/lab/id-batch-replies</code>; client handling reproduced from code with file:line, nightscout-connect run for real)</td>
 <td><code>ID-BATCH-RESULTS</code>, BF-219, BF-220</td>
-<td>the prototype (<code>proto/id-batch-replies</code> <code>7d81e1c1</code>) measured each variant; (iv) and (v) fix live defects and can land ahead of the opt-in; strict on v1 (ID-STRICT-V1) arrives with it</td>
+<td>implemented across #8889 and #8894; #8889 shipped the opt-in and strict-v1 behavior, and #8894 shipped the batch duplicate-key retry.</td>
 </tr>
 <tr>
 <td><strong>A v1 entries batch in which every entry is refused for a taken <code>_id</code> answers 200 with the 409 slots</strong> (not 400), so uploaders stop re-sending a record that can never be stored; the <code>Warning: 299</code> count stays. Refusals by <code>WRITE_VALIDATION</code> under <code>reject</code> keep their behaviour</td>
@@ -2801,10 +2833,10 @@ public.</em></p>
 <td>after B lands</td>
 </tr>
 <tr>
-<td><strong><code>WRITE_RESEND</code> modes, as built.</strong> Values <code>replace\|merge-except-treatments\|acknowledge\|refuse</code>, default <code>replace</code>. A bare <code>merge</code> refuses to start. <code>merge-except-treatments</code> merges a matched re-send but keeps treatments replacing (slice 4); it logs one line at boot and is documented by name. <code>refuse</code> answers 409 per item in BF-220's shape: a v1 batch stays 200 with the refused slot, a v3 POST answers 409, and the socket gets a refused slot with 409. <code>WRITE_DELETED_RESEND=revive</code> truly revives on every path, including the 21 paths where 15.0.9 stored a second record beside the deleted one (ID-Q5 and the unique index). Owner calls (session -4e): <code>revive</code> with <code>acknowledge</code> or <code>refuse</code> revives nothing; the profile store is replaced whole under <code>merge-except-treatments</code>; <code>acknowledge</code> answers the outcome <code>unchanged</code>; the similar match is untouched by every mode; <code>acknowledge</code> and <code>refuse</code> also apply to API v3 computed-identifier matches; v1 and in-process entries keep merging under every mode. <strong>Q-IDX</strong>: duplicate-key race losers are retried under <code>writeSettings.resendModeFor(env, client)</code>; treatment batch races exercise replace, merge-except-treatments, acknowledge and refuse, with refusal preserved at item level. #8894 is open, not draft, at <code>cf978f4</code> on merged #8892 (<code>3c773ee5</code>). Local gates passed on the earlier tested head. All required hosted checks on #8894 passed, including Node 22.23.4, Maintained MongoDB, Chromium, Firefox, and WebKit.</td>
+<td><strong><code>WRITE_RESEND</code> modes, as built.</strong> Values <code>replace\|merge-except-treatments\|acknowledge\|refuse</code>, default <code>replace</code>. A bare <code>merge</code> refuses to start. <code>merge-except-treatments</code> merges a matched re-send but keeps treatments replacing (slice 4); it logs one line at boot and is documented by name. <code>refuse</code> answers 409 per item in BF-220's shape: a v1 batch stays 200 with the refused slot, a v3 POST answers 409, and the socket gets a refused slot with 409. <code>WRITE_DELETED_RESEND=revive</code> truly revives on every path, including the 21 paths where 15.0.9 stored a second record beside the deleted one (ID-Q5 and the unique index). Owner calls (session -4e): <code>revive</code> with <code>acknowledge</code> or <code>refuse</code> revives nothing; the profile store is replaced whole under <code>merge-except-treatments</code>; <code>acknowledge</code> answers the outcome <code>unchanged</code>; the similar match is untouched by every mode; <code>acknowledge</code> and <code>refuse</code> also apply to API v3 computed-identifier matches; v1 and in-process entries keep merging under every mode. <strong>Q-IDX</strong>: duplicate-key race losers are retried under <code>writeSettings.resendModeFor(env, client)</code>; treatment batch races exercise replace, merge-except-treatments, acknowledge and refuse, with refusal preserved at item level. #8894 merged to <code>dev</code> as <code>497d08c9</code>; local gates passed on the earlier tested head; all required hosted checks passed.</td>
 <td>maintainer, 2026-10-31, via session -4e (refuse, revive, merge kept for treatments; the name <code>merge-except-treatments</code> confirmed the same day); owner calls session -4e; Q-IDX sessions -4e and -d1</td>
 <td><code>ID-RESEND-SWITCH</code>, <code>ID-UNIQUE-INDEX</code></td>
-<td>#8892 merged at <code>3c773ee5</code>; #8894 is open at <code>cf978f4</code>; all required hosted checks passed.</td>
+<td>#8892 and #8894 merged at <code>3c773ee5</code> and <code>497d08c9</code>; all required hosted checks passed.</td>
 </tr>
 <tr>
 <td><strong><code>WRITE_IDENTIFIER_INDEX=off</code> never drops an existing index; it reports truthfully, and a separate explicit value drops it.</strong> Measured: <code>off</code> only skips building the index, so an index from an earlier run still enforces uniqueness (a second food record with the same identifier gets a raw 500) while the status page said <code>off</code>; a code revert behaves the same. Decided: under <code>off</code> the status page and log report the index as present and enforced when it exists; a new explicit value (proposed <code>WRITE_IDENTIFIER_INDEX=drop</code>) removes <code>identifier_unique</code> at boot on the covered collections for operators who choose it; the PR's revert note and the release notes give the per-collection <code>dropIndex</code> commands</td>
@@ -2816,7 +2848,7 @@ public.</em></p>
 <td><strong>ID-BATCH reply shape accepted as built</strong>: default API v1 replies unchanged except where already decided; per-record detail only with the opt-in. An invalid <code>_id</code> still refuses the whole batch by default; the <code>Warning</code> header counts only refusals by default; an all-refused batch keeps today's 400 message by default; an unknown opt-in value gets 400 before anything is written; food and profile <code>PUT</code> batches follow as a later slice</td>
 <td>maintainer, 2026-10-31, via session -81</td>
 <td><code>ID-BATCH-RESULTS</code></td>
-<td>#8889 already ships ID-STRICT-V1 and the opt-in result format. Remaining integration is local <code>feat/id-batch</code> <code>4b48e57f</code>, 17 ahead/91 behind <code>official/dev</code>; rebase on the index landing and rerun matrix/controls before a PR.</td>
+<td>Implemented across #8889 and #8894. The merged branch includes per-item reply tests and batch duplicate-key race tests; the stale local branch is not a separate release-critical PR.</td>
 </tr>
 <tr>
 <td><strong>Q9 / Q-A / Q-U (release 2): the cache gets the records a filter write touched from the write step's id resolution, not from D-EVENT and not from a srvModified watermark</strong> (replacing the watermark proposal); D-EVENT keeps its other reopen conditions. Q-A, taken up by the maintainer directly: leaning towards one write shape for v3 too, decided only after a v3 prototype shows backward compatibility, quality and the lab's exactness. Q-U decided: autoPrune through the write step with id resolution. The 1,000 cap is a fixed constant. Details in the <a href="../../docs/30-design/platform/release-allocation-2026-10-27.html">release allocation</a> Q9 row</td>
