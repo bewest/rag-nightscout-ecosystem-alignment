@@ -23,7 +23,8 @@ integration into isolated worktrees. No existing shared checkout was edited.
 | Dated readiness record | `docs/10-domain/nightscout-rc-readiness-2026-11-01.md` | Two failed integrated CI runs, obsolete required check, draft/rebase gates and issue dispositions; no named RC. |
 | Traceability and terminology | `traceability/{gaps,requirements}.md`, `mapping/cross-project/terminology-matrix.md` | Distinguish final combined-tree acceptance from old PR checks, and provider callback acknowledgment from active alarm acknowledgment. |
 | Release pointer | `releases/cgm-remote-monitor-16.0.0/contents.md` | Preserves historical measurements and links current readiness evidence. |
-| Callback fix | `nightscout/cgm-remote-monitor#8895` | Open at `647ee265`: 54 targeted / 59 integration tests pass; lint and tier map pass. Hosted CI initially running; no live transport claim. |
+| Callback fix | `nightscout/cgm-remote-monitor#8895` | Open at `647ee265`: 54 targeted / 59 integration tests pass; lint, tier map and hosted CI pass. No live transport claim. |
+| CI repair | `nightscout/cgm-remote-monitor#8896` | Open at `42410a4b`: fixes fixture ordering and equivalent index-start states; 37 focused tests and full hosted PR checks pass. Dev remains unchanged until merge. |
 
 **Key Findings**: nightscout/cgm-remote-monitor#8584 has reporter confirmation
 and is a closure candidate; nightscout/cgm-remote-monitor#8829 still needs

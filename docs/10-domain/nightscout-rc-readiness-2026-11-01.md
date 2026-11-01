@@ -25,6 +25,33 @@ settings blocker, not another source-code defect: the maintainer's already
 recorded decision is to require `Tests pass` and one approving review.
 No protection settings were changed and no checks were bypassed.
 
+### CI repair prepared
+
+nightscout/cgm-remote-monitor#8896 is open and mergeable at
+`42410a4b58bff3e19f5711f7f8d6259ef16e6213`, based on `497d08c9`.
+The patch fixes two test assumptions, without changing production code or
+removing gates:
+
+- The cached-read test locates its seeded record by identity rather than
+  assuming it is first in the cache or response
+  (`externals/work/rc-ci-20261101/tests/api.entries.test.js:648-685`).
+- The start-path comparison accepts the equivalent successful identifier-index
+  startup states `built` and `present`
+  (`externals/work/rc-ci-20261101/tests/start-paths.test.js:119-127`).
+
+Agent-reproduced validation: 37 focused entries integration tests passed;
+targeted lint, the 455-file / eight-tier map and whitespace checks passed.
+Local start-path reruns timed out before `/api/versions`; they are not counted
+as a local pass. Hosted PR CI subsequently passed every test lane, all three
+browsers, CodeQL, npm 12 build, both Docker validation architectures and
+`Tests pass`. Publishing jobs were skipped by design on the PR.
+The entries patch mirrors prior unpublished work; that existing worktree
+was left untouched.
+
+The PR is unmerged, so official dev remains red at the snapshot head.
+Merge the CI repair through normal review and verify post-merge CI/image
+publication rather than treating the feature PR result as an integrated pass.
+
 ## Candidate and issue dispositions
 
 These are metadata/review dispositions, not claims that every open PR was
@@ -85,6 +112,10 @@ The existing missing-notification diagnostic is at
 Hosted CI was still running at the initial post-publication read; CodeQL,
 npm 12 build and both Docker validation architectures had passed. No live
 provider/phone check was reproduced and no merge occurred.
+At the later read after the CI repair PR completed, all callback PR test and
+validation checks had also passed; only publishing jobs were skipped by design.
+It remains open and mergeable. This does not replace CI on the eventual
+combined dev/security head.
 
 ## Remaining RC acceptance
 
