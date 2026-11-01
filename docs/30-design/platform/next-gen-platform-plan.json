@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-01 02:30Z against cgm-remote-monitor dev 51d38f9f (#8886 merged after #8879, #8888, #8874, #8883, #8882 and #8885); #8881 at ffa5e6b4, #8875 at 52d635a0, #8857 at 10fe6725",
+ "measured": "2026-11-01 06:20Z against cgm-remote-monitor dev f54941b5 (#8890, #8889 and #8881 merged after #8886 and #8875); #8857 at 5f6c1275 (draft)",
  "tracks": [
   {
    "id": "storage",
@@ -398,7 +398,7 @@
    "depends": [
     "ID-FIRST-MATCH"
    ],
-   "ref": "Before the 16.0.0 tag (maintainer, 2026-10-31, via session -4e). Phase 1 on local feat/id-resend-switch (session -4e): settings d87d0e00 (34 tests), behaviour tests ff02f5bc (159, red where the wiring is pending), the name merge-except-treatments at b445d906; phase 2 wires the rule tables on the compatibility follow-up PR's head. Mode semantics, owner calls and Q-IDX (the index's race retry reads writeSettings.resendModeFor) in the 16.0.0 decisions."
+   "ref": "Before the 16.0.0 tag (maintainer, 2026-10-31, via session -4e). Phase 1 on local feat/id-resend-switch (session -4e): settings d87d0e00 (34 tests), behaviour tests ff02f5bc (159, red where the wiring is pending), the name merge-except-treatments at b445d906; phase 2 wires the rule tables on dev since #8890 merged (5921d5fd). Mode semantics, owner calls and Q-IDX (the index's race retry reads writeSettings.resendModeFor) in the 16.0.0 decisions."
   },
   {
    "id": "ID-BATCH",
@@ -424,7 +424,7 @@
     "ID-FIRST-MATCH",
     "ID-BATCH"
    ],
-   "ref": "Rebuilt on #8879 (local feat/id-unique-index-5a ee49832d on 5a251213; 342 of 342 predicted cells, MongoDB 5.0 and 8.0; npm test 5576/0/3). Its duplicate-key retry re-ran the whole batch, so already-written items were written twice; session -4e ruled that a defect, and an item-level retry (keep the ops before the failing one, re-send only the racing item, continue) is being built. Then onto #8879's 2d79d30b and a draft PR. In 16.0.0 scope (maintainer, 2026-10-30) behind WRITE_IDENTIFIER_INDEX=try|require|off (default try). Try builds a partial unique index per collection (records with an identifier, soft-deleted included, built online); on existing duplicates it logs counts and shows them on the status page, runs without the index, and the write rule still refuses a second record. An operator-run tool reports and resolves duplicate groups by the P4 pick. ID-DUP-MEASURE found 0 duplicates across the 12-site corpus."
+   "ref": "Local feat/id-unique-index-5a 44750011 on dev 4196dd45 (session -d1), gated: npm test 6035/0/3 (MongoDB 5.0); the write-contract matrix against #8890's pin on MongoDB 5.0 and 8.0: index off 0 of 4,916 cells, index on 24 batch cells (batch-dupkey-mid, batch-repeat-identifier), the same 24 in default, reject and strict against dev f54941b5's batch pins. The duplicate-key retry is item-level on every batch path (profile, food and activity since slices 6/6a) and applies the table's onMatch (replaced since compatibility B). Waits for ID-RESEND-SWITCH; then the race loser reads writeSettings.resendModeFor (Q-IDX), with race cells per mode, and a draft PR. In 16.0.0 scope (maintainer, 2026-10-30) behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
   },
   {
    "id": "REG-SPECS",
