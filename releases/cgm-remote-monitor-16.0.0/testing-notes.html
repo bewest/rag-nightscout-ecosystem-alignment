@@ -2136,7 +2136,7 @@
 
 
 <h1 id="nightscout-1600--testing-notes-for-the-release-candidate">Nightscout 16.0.0 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1600--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>f1119d4cf</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>8f7adc5f9</code>.</em></p>
 <p><strong>Not written yet (2026-10-26, <code>dev</code> <code>47723cda</code>).</strong> No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 <a href="../cgm-remote-monitor-15.0.9/testing-notes.html">15.0.9's testing notes</a>: Part 1 in plain language for
@@ -2168,6 +2168,24 @@ the release contains is in <a href="contents.html">contents.md</a>.</p>
   - AndroidAPS NSClient v1 and the standalone NSClient app: zero temps and cancels within 2 s (BF-09);
   - whatever cut 2 adds, if it ships in 16.0.0: page bundles and the boot sequence, and any
     third-party plugin that hooks into the page.
+
+  Added 2026-11-01 (session -81, dev f54941b5), Part 2, from #8889 (ID-BATCH reply format and
+  ID-STRICT-V1):
+  - API v1 batch POSTs (treatments, entries, devicestatus, profile, food, activity) sent with
+    `Nightscout-Write-Results: items` (or `?results=items`) answer one result per item sent, in
+    order; without it the reply is the array it was before. An uploader that sends a batch with
+    one bad item should see that item refused in its slot and the others stored;
+  - `WRITE_IDENTIFIER=strict` now applies to API v1 too: an item whose `identifier` is null, not a
+    string, empty, over-length or a placeholder is refused with 400 in its slot, the rest of the
+    batch is written, and a `Warning: 299` counts the refused items (every item refused: 400).
+    With `WRITE_IDENTIFIER` unset or `lenient`, API v1 still drops such an identifier and stores
+    the item;
+  - under the opt-in, a profile re-send that needs `api:profile:update` is refused 403 in its slot
+    rather than failing the batch.
+  Nothing to test for #8875 (ST-VIEWS ships unwired) or #8881 (test harness only).
+  Still to add from the other lanes: #8879 and #8890 (re-send matching, compatibility A/B),
+  #8886 (write(intent) release 2), and whichever of the re-send switch and the identifier index
+  ship.
 -->
 
 
