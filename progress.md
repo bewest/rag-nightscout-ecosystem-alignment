@@ -18,7 +18,7 @@ Updated the roadmap and release records after completing Q-IDX race handling and
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| Unique-index PR | `nightscout/cgm-remote-monitor#8894` | Draft, stacked on #8892; local gates pass, hosted feature CI pending. Earlier draft #8893 closed as superseded. |
+| Unique-index PR | `nightscout/cgm-remote-monitor#8894` | Draft, stacked on #8892; local gates pass. Its feature base is excluded from hosted `pull_request` filters, so retarget to `dev` after #8892 merges to trigger CI. Earlier draft #8893 closed as superseded. |
 | Release status | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md` | 6,319 passing / 3 pending; 33 expected current matrix deltas; broader `--batch --no-idf` runs were stopped. |
 | Roadmap and site | `docs/30-design/platform/next-gen-platform-plan.{md,json}`, `site/pages/nightscout-next-gen-platform.html` | #8892 CI is green; remaining ID-BATCH is clean at `4b48e57f`, 17 ahead/91 behind `dev`, and must be rebased/retested after the index lands. |
 
@@ -27,7 +27,7 @@ Updated the roadmap and release records after completing Q-IDX race handling and
 - The batch-only matrix completed all 13 forms under default on MongoDB 5.0.32 and 8.0.29; only the two relevant forms were compared under reject and strict.
 - The older `proto/id-batch-replies` branch is at `7d81e1c1`, 1 ahead/119 behind; it is not the integration branch.
 
-**Next**: Keep #8894 draft until substantive hosted CI passes. After its merge, rebase `feat/id-batch` and rerun the batch suite, matrix, and controls before considering a PR.
+**Next**: Merge #8892 after review; then retarget #8894 to `dev` to trigger hosted CI, resolve any failures, and merge it. Afterward rebase `feat/id-batch` and rerun the batch suite, matrix, and controls before considering a PR.
 
 ## cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)
 

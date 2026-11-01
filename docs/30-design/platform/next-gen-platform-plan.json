@@ -399,7 +399,7 @@
    "depends": [
     "ID-FIRST-MATCH"
    ],
-   "ref": "Implemented on feat/id-resend-switch at a55c940d; open, non-draft PR #8892 against dev. At the 2026-11-01 09:52Z CI read, all required hosted checks passed, including Maintained MongoDB and Chromium/Firefox/WebKit. Local unit/integration tiers and lint passed; the write-contract matrix showed 0 of 4,916 unset-mode changes and 813 refuse-mode changes outside cache noise. Break-it was 14/14 red at 405c6cee, not rerun at PR head. Per-client D20 overrides remain a seam only: resendModeFor currently returns the site setting for every client. Q-IDX must use resendModeFor for duplicate-key race losers."
+   "ref": "Implemented on feat/id-resend-switch at a55c940d; open, non-draft PR #8892 against dev. On the latest 2026-11-01 CI re-read, all required hosted checks passed, including Maintained MongoDB and Chromium/Firefox/WebKit. Local unit/integration tiers and lint passed; the write-contract matrix showed 0 of 4,916 unset-mode changes and 813 refuse-mode changes outside cache noise. Break-it was 14/14 red at 405c6cee, not rerun at PR head. Per-client D20 overrides remain a seam only: resendModeFor currently returns the site setting for every client. Q-IDX must use resendModeFor for duplicate-key race losers."
   },
   {
    "id": "ID-BATCH",
@@ -426,7 +426,7 @@
     "ID-FIRST-MATCH",
     "ID-RESEND-SWITCH"
    ],
-   "ref": "Open draft PR #8894 at 2d7411d67d03a196a9683405f2a20b30f12a85f7 (feat/id-unique-index-5a), stacked on #8892 at a55c940d. Earlier draft #8893 (`feat/id-unique-index`, f799d387) was closed as superseded. Local gates on the current head: npm test 6,319 passing/3 pending; focused race/settings suite 63 passing, with treatment races reaching the duplicate-key path in 24–30 of 30 rounds per mode; test-tier and write-intent gates pass; lint 0 errors/20 warnings. Batch-only matrix comparisons: all 13 forms (312 cells) index off/on under default on MongoDB 5.0.32 and 8.0.29; 33 expected differences (24 batch-dupkey-mid, 9 batch-repeat-identifier). The same 33 were observed on those two forms under reject and strict. Broader --batch --no-idf matrix runs were stopped, not completed. Only the auto-close workflow has completed on #8894; hosted feature CI remains pending. In 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
+   "ref": "Open draft PR #8894 at 2d7411d67d03a196a9683405f2a20b30f12a85f7 (feat/id-unique-index-5a), stacked on #8892 at a55c940d. Earlier draft #8893 (`feat/id-unique-index`, f799d387) was closed as superseded. Local gates on the current head: npm test 6,319 passing/3 pending; focused race/settings suite 63 passing, with treatment races reaching the duplicate-key path in 24–30 of 30 rounds per mode; test-tier and write-intent gates pass; lint 0 errors/20 warnings. Batch-only matrix comparisons: all 13 forms (312 cells) index off/on under default on MongoDB 5.0.32 and 8.0.29; 33 expected differences (24 batch-dupkey-mid, 9 batch-repeat-identifier). The same 33 were observed on those two forms under reject and strict. Broader --batch --no-idf matrix runs were stopped, not completed. The base feat/id-resend-switch is outside main.yml and CodeQL pull_request branch filters, so only auto-close has run; retarget to dev after #8892 merges to trigger hosted feature CI. In 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
   },
   {
    "id": "REG-SPECS",

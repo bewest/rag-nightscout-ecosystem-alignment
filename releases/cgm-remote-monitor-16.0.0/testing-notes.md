@@ -60,8 +60,9 @@ the release contains is in [contents.md](contents.md).
     startup with and without stored duplicates, counts-only reporting, and duplicate-key races
     under every `WRITE_RESEND` mode. Review the rollback instructions before deploying or reverting.
   The identifier index and Q-IDX retry are implemented in draft PR #8894, stacked on #8892.
-  Local tests and focused race gates pass; hosted feature CI has not run yet (only the auto-close
-  check completed). The remaining ID-BATCH integration is still local at `4b48e57f`, 17 ahead and
+  Local tests and focused race gates pass. Its `feat/id-resend-switch` base is outside the
+  `pull_request` filters, so only auto-close has run; retarget to `dev` after #8892 merges to trigger
+  hosted CI. The remaining ID-BATCH integration is still local at `4b48e57f`, 17 ahead and
   91 behind `official/dev`; it requires rebase and full verification after the index lands.
   No RC is named, so these are contributor notes, not a call for testers.
 -->
