@@ -56,6 +56,9 @@ the release contains is in [contents.md](contents.md).
     preserve 16.0.0 behavior. Per-client D20 overrides are not implemented;
   - API v3 and API v1 batch items retain their documented compatibility and opt-in reply behavior;
     no tester-facing call is appropriate until an RC is named.
+  - if #8894 ships, `WRITE_IDENTIFIER_INDEX` supports `try`, `require`, `off` and `drop`; verify
+    startup with and without stored duplicates, counts-only reporting, and duplicate-key races
+    under every `WRITE_RESEND` mode. Review the rollback instructions before deploying or reverting.
   The identifier index and Q-IDX retry are implemented in draft PR #8894, stacked on #8892.
   Local tests and focused race gates pass; hosted feature CI has not run yet (only the auto-close
   check completed). The remaining ID-BATCH integration is still local at `4b48e57f`, 17 ahead and
