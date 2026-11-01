@@ -7028,6 +7028,7 @@ items:
       - docs/30-design/remedial/nightscout-backfix-register.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-11-01 02:28Z: #8886 merged to dev by the maintainer as 51d38f9f (head 4b8adfec): write(intent) release 2 (filter writes resolved to ids, removed/updated, one write shape for API v3, autoPrune through the step) and the D-EVENT per-write event storage-intent-committed; not released. Both releases of the write step are now on dev.
       2026-11-01 ~01:35Z (GitHub): #8886 retargeted to dev and out of draft, head 4b8adfec, 0 behind dev 5376e6a7, 18 ahead; CI pending at the read; later green (16 passed, 3 skipped publish jobs: Run Tests on Node 22/24/26 with MongoDB 5.0, 6 and 8.0, browser tests in chromium, firefox and webkit, CodeQL). The tests listed to flip under compatibility B change when that PR lands. Session -81 re-gated 4b8adfec against dev 5376e6a7 (Node 22.23.4, MongoDB 8.0.29): no difference from the 6b00eb9d gates; suite 5768/6/3 against base 5631/6/3 (the 6 = api.devicestatus run alone, both trees); test:affected 200 files 3897/0/3; BF-225's websocket.v3-resend passes; probe socket and cache cells identical to 6b00eb9d; a new BF-225 row (v3 POST then the same body over socket dbAdd) gives the same reply, records and events on both trees, written scoped to the resolved _id on release 2; lab not re-run (no socket or cache cell differed). Ready for the maintainer's review.
       2026-10-31 night (session -81): #8886's pre-ready gates pass on the pushed head 6b00eb9d against 2d79d30b (Node 22.23.4, MongoDB 8.0.29): cache lab round 3 exact 13/13 at both sizes, break arm 10/10, rows left in the database equal to base; controls (a)/(b) red; D-EVENT C1-C3 red, C4 green; revert of the 4 commits plus the merge = 2d79d30b's tree, suite 5627/6/3 over 368 files equal file by file. The draft condition is met. The base's prune scenario reproduced BF-226 (never settled 8/10 realistic, 7/10 heavy); release 2 exact. Tests that flip when compatibility B lands: write-intent.identifier-match ~:229, write-intent.v3 ~:328, websocket.identifier-address ~:380 (title), and the probe row label.
       2026-10-31 ~22:00Z (GitHub): release 2 pushed by the maintainer as draft #8886 (base feat/id-first-match = #8879, head 6b00eb9d; 38 ahead of dev 604de1cb, 0 behind; one check reported, as the repository's PR workflows run for base dev). Includes the D-EVENT per-write event (6b00eb9d, last, revertible alone). Before it leaves draft: re-run the cache lab, controls and revert on the pushed head; retarget to dev after #8879 merges.
@@ -18422,7 +18423,7 @@ items:
     repo: cgm-remote-monitor
     branch: ""
     base: official/dev@604de1cb
-    state: in-flight-upstream
+    state: merged-upstream
     pr: [8886]
     ships_to_operators_today: true
     blast_radius: >
@@ -18441,14 +18442,18 @@ items:
     semver_reason: cache catch-up only; stored data and replies unchanged
     register: [BF-226]
     gates:
-      - no-gate: >
-          #8886 is a draft stacked on #8879 and not yet on GitHub's dev; the
-          gate becomes the cache lab's prune-allold scenario consistent on the
-          #8886 head (and red on dev), then official/dev ancestry once merged
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 4b8adfec official/dev
+        kind: static
+        describe: >
+          official/dev contains #8886's head 4b8adfec (release 2, which takes
+          autoPrune through the write step with ids named; merged 2026-11-01 as
+          51d38f9f); red if dev is rewritten or the merge is reverted. The lab's
+          prune-allold measurement on that head is recorded in the notes
     blocks_on: [WC-STEP-PATCH]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-11-01 02:28Z: fixed on dev by #8886 (51d38f9f); not released. Session -81 is measuring prune-allold on 4b8adfec.
       2026-10-31 night: session -81 confirmed on #8886 6b00eb9d: the base 2d79d30b prune scenario never settled (8/10 realistic, 7/10 heavy, missing records); release 2 exact in 13/13 lab scenarios.
       2026-10-31: filed by session -d1 from the cache catch-up lab (scratch
       copy with a prune-allold scenario; results in session -d1's scratchpad).
