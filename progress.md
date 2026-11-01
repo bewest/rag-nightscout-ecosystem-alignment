@@ -14,34 +14,46 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ## cgm-remote-monitor RC Readiness Triage (2026-11-01)
 
-Checked official `dev` `497d08c9`, staging protection, active PRs and recent
-issues; delegated CI repair, callback patch import and private security
-integration into isolated worktrees. No existing shared checkout was edited.
+Updated the register, queue and release records after #8895/#8896 merged,
+with official `dev` `61eb37335954ae42c91345a0823bd67331025165`. Final PR diffs
+and canonical merged source were inspected. No shared checkout was edited.
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| Dated readiness record | `docs/10-domain/nightscout-rc-readiness-2026-11-01.md` | Two failed integrated CI runs, obsolete required check, draft/rebase gates and issue dispositions; no named RC. |
+| Dated readiness record | `docs/10-domain/nightscout-rc-readiness-2026-11-01.md` | Integrated CI/CodeQL green, dev image published; historical failures labelled, obsolete required check and live/private gates remain; no named RC. |
 | Traceability and terminology | `traceability/{gaps,requirements}.md`, `mapping/cross-project/terminology-matrix.md` | Distinguish final combined-tree acceptance from old PR checks, and provider callback acknowledgment from active alarm acknowledgment. |
-| Release pointer | `releases/cgm-remote-monitor-16.0.0/contents.md` | Preserves historical measurements and links current readiness evidence. |
-| Callback fix | `nightscout/cgm-remote-monitor#8895` | Open at `647ee265`: 54 targeted / 59 integration tests pass; lint, tier map and hosted CI pass. No live transport claim. |
-| CI repair | `nightscout/cgm-remote-monitor#8896` | Open at `42410a4b`: fixes fixture ordering and equivalent index-start states; 37 focused tests and full hosted PR checks pass. Dev remains unchanged until merge. |
+| Register and queue | `docs/30-design/remedial/nightscout-backfix-register.md`, `queue/work-queue.yaml` | New BF-227 / BFQ-227 is merged-upstream, still exposed on 15.0.9. RT-CI-FIXTURES-8896 is test hygiene, not a duplicate defect. |
+| Release records | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md`, `docs/30-design/remedial/rc-16.0.0-integration-record.md` | Current head and merged rows; R19/R20 distinguish focused/local-timeout/hosted evidence. Historical counts preserved, no new decision. |
+| Callback fix | #8895, merge `bb85d10f` | 54 targeted / 59 integration tests pass; known acknowledgment once-only and diagnostic unchanged. No live transport claim. |
+| CI repair | #8896, merge `61eb3733` | Fixture identity and successful index-state comparison; 37 focused tests pass, local start-path timeout remains inconclusive, full hosted checks pass. |
 
 **Key Findings**: nightscout/cgm-remote-monitor#8584 has reporter confirmation
 and is a closure candidate; nightscout/cgm-remote-monitor#8829 still needs
 restricted-token/reverse-proxy cohort confirmation. No issue was closed, no
 branch protection changed and no security advisory published.
 
-**Later state**: GitHub reports #8895 and #8896 merged by 17:52:18Z; dev is
-`61eb3733`, with CodeQL green and post-merge CI still running at the read.
-Both private security branches now include that head; 402 combined focused
-tests pass. Private PR creation was rejected and full-suite MongoDB validation
-is inconclusive, so neither security fix is claimed merge-ready.
+**Integrated evidence**: both CI runs 41333672054 / 41333677576 and both CodeQL
+runs passed. Push publishing jobs/log establish the amd64/arm64 development
+image at `dev_61eb37335954ae42c91345a0823bd67331025165` and `latest_dev`,
+not a named RC. Both private fixes contain that dev head; 402 combined focused
+tests pass, but full-suite MongoDB acceptance and private PR routing remain
+blocked/inconclusive. No security merge or publication.
 
-**Final check**: both CI and both CodeQL runs on `61eb3733` passed. Security
-handoff now records exact retained worktrees, combined candidate, focused
-selection and HTTP 422 private-base blocker. Full security suite and
-advisory-linked private PR routing remain outstanding; no public workaround
-or disclosure was attempted.
+**Next**: hand off the clean documentation branch for integration after the
+concurrent dirty main work is coordinated. Preserve staging protection, live
+alerts, real-rig soak, identity cohort/rollback and final security-tree gates.
+
+**Documentation validation**: queue schema/fidelity/check/coverage, generated
+views/packets, links, exposure legend and both new read-only merge gates pass;
+both authored merge-metadata controls are non-vacuous (wrong-merge negative
+fails, recorded-merge positive passes).
+The absent pre-existing `P0-F` working directory was linked read-only solely
+for queue validation, without cloning or changing it. `make traceability`
+completed; unrelated generated reports are not committed. `make verify`
+ran but is not clean: this isolated worktree has no external source clones
+(470 references, 0 valid), and existing coverage/assertion gaps remain.
+The detail-heading check has the same 29 missing headings as the base commit;
+BF-227 has both its summary row and detail. No baseline defects were repaired.
 
 ## cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
 

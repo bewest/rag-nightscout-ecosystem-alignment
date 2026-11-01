@@ -21,8 +21,8 @@ the maintainer set on 2026-10-30, Known defects (BF-209, BF-211, BF-212) and the
 `externals/cgm-remote-monitor-official` after `git fetch official`. Updated on 2026-10-31 for `dev` `368e6c23`
 (#8874, 02:02:52Z): the merge state, the in-flight update below the handoff table, Known defects (BF-215,
 BF-216, BF-219 to BF-222) and the testing pointer to R18; read with `gh pr list`, `gh pr checks` and
-`gh api .../compare` at about 05:45Z. Updated 2026-11-01 for `dev` `497d08c9` after #8894 merged;
-current identity status is in the rows below. Other release counts remain tied to their recorded
+`gh api .../compare` at about 05:45Z. Updated 2026-11-01 for `dev` `61eb3733` after #8895/#8896 merged;
+current callback/CI and identity status is in the rows below. Other release counts remain tied to their recorded
 historical commits.
 
 > Complements the generated changelog. The changelog is authoritative for *what merged*; this file
@@ -42,7 +42,8 @@ for testers is [testing-notes.md](testing-notes.md) (not written yet).
 | Tag to be cut | `v16.0.0` and `16.0.0`, both forms, as for `15.0.7` to `15.0.9` |
 | Merged part | `official/master..official/dev` |
 | Base (shipping) | `c6a0d8ed` = `v15.0.9` (released 2026-10-21) |
-| `dev` head | `497d08c9` (merge of #8894, 2026-11-01 16:28:25Z); before it `3c773ee5` (#8892); before it `f54941b5` (#8881); before it #8889 `4196dd45` (06:01:54Z), #8890 `5921d5fd` (04:29:18Z), #8886 `51d38f9f`, #8880 `305a6533`, #8874 `368e6c23`; earlier history: #8865 `991b0654` (tree `a9ae9536`), #8878 `d51c7a60`, #8877 `cf3d4b8f`, #8873 `e1f7ac41`, and the 2026-10-27 merges #8872 `db3b9e4e`, #8871 `dcf20bfb`, #8858 `ca1652d6`, #8869 `b8baf24d`, #8870 `7abe1cf6`, #8863 `9668b179`, #8861 `84fac457` (`git log --first-parent official/master..official/dev`) |
+| `dev` head | `61eb37335954ae42c91345a0823bd67331025165` (#8896, 2026-11-01 17:52:18Z), after #8895 `bb85d10f` (17:45:01Z) and #8894 `497d08c9` (16:28:25Z). Earlier measured history remains in the dated rows below. |
+| CI on current `dev` | Both CI runs 41333672054 / 41333677576 and CodeQL runs 41333672065 / 41333677478 passed on `61eb3733`. The push run published amd64/arm64 development images to `dev_61eb37335954ae42c91345a0823bd67331025165` and `latest_dev`; release-image publication was skipped. No named RC or live acceptance is implied. |
 | `dev` head on 2026-10-27 | `eed31dca` (merge of #8856, 2026-10-27 20:09:35Z, by bewest), tree `584623cf`; the merges before it that day: #8868 `88676086` (20:01:50Z), #8859 `94899828` (19:52:21Z), #8866 `b84871d7` (19:42:55Z), #8864 `2dc0c1bc` (16:55:01Z, AndyLow91) and #8860 `8dbb60c2` (00:07:13Z, AndyLow91) |
 | Commits on `dev` | 1,145 at `f54941b5` (675 without merges) — `git rev-list --count official/master..official/dev`, `--no-merges`; 999 at `991b0654` (576 without merges), 921 at `eed31dca` |
 | First-parent commits on `dev` | 66 at `f54941b5` — `git rev-list --first-parent --count official/master..official/dev`; 54 at `991b0654`, 43 at `eed31dca` |
@@ -138,6 +139,26 @@ merge times are `gh pr view <n> --json mergedAt`. The first nineteen merges belo
 | #8880 | 10-30 16:24:38 | `305a6533` | `0e5c25be` | bewest | BF-213, BF-214, BF-217 | — | the pump alarm follows the severity Loop sends in `reservoir_level_override`, with Loop's text; an override with no reservoir value no longer throws in the pump plugin; a v1 device-status delete by query asks for a reload (5 files, +327) |
 | #8874 | 10-31 02:02:52 | `368e6c23` | `83f3d54a` | bewest | BF-218 (test) | `WC-STEP-PATCH` | `write(intent)` release 1: every v1, API v3 and socket write path through one write step, no behaviour change by the write-contract matrix (0 of 1,929 cells outside `cache`), merge revert rehearsed; journey lab (2026-10-30/31) found no difference from `dev` |
 
+### Merged additions, 2026-11-01
+
+These rows extend the historical merge table above without recomputing its
+size/count measurements. Only integrated patch evidence is recorded.
+
+| PR | Merged at (UTC) | Merge commit | Register / queue | Scope |
+|----|-----------------|--------------|------------------|-------|
+| #8895 | 11-01 17:45:01Z | `bb85d10f` | BF-227 / `BFQ-227` | Handled Pushover callbacks for late/duplicate/expired receipts answer 200; known alarm acknowledgment remains once-only and the diagnostic is unchanged. |
+| #8896 | 11-01 17:52:18Z | `61eb3733` | `RT-CI-FIXTURES-8896` (no new BF) | Test-only: find the seeded cached/served entry without first-position assumptions; compare successful index states `built`/`present` as equivalent. |
+
+R19/R20 in the integration record separate local focused evidence, the
+inconclusive local start-path rerun, and successful hosted checks. The final
+#8896 diff and canonical merged files were inspected; no additional
+production-code change is claimed. The published development-image manifest
+and remaining gates are in the
+[current readiness record](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md).
+Latest release is still 15.0.9; BF-227 is fixed on dev, not released. Private
+BF-72/BF-161 integration remains blocked, as do unperformed live/cohort gates.
+
+**Historical merge commentary follows:**
 Before merging, AndyLow91 merged `dev` into most branches and added commits of his own (read with
 `git log` and `git show`):
 
@@ -504,7 +525,10 @@ needs `dev` `37b2280f` merged in (the four-file conflict with #8883; session -4e
 | #8875, #8857 | `24647c0a`, `10fe6725` (drafts) | 25 behind each | green | — |
 | #8855 | `6a2e84ab` | — | — | — |
 
-Still owed before the tag, unchanged: BF-72 and BF-161 fork branches carry `dev` `305a6533` (local `0fdf0fd6`, `0873f314`) and need `dev` `368e6c23` merged and re-run; `master` protection; the cohort window (opens when slices 3 and 4 are on `dev`).
+**Historical pre-tag assessment at this table's read:** private branch refresh,
+`master` protection and the cohort window were outstanding. **Current correction,
+2026-11-01:** BF-72/BF-161 now contain `61eb3733`, but private targeting and
+full-suite acceptance remain blocked; protection and live/cohort gates remain.
 
 **Update, 2026-10-31, about 05:45Z** (read from GitHub with `gh pr list`, `gh pr checks` and
 `gh api .../compare/dev...<head>` by session -7d; every local branch matches its PR head, and every worktree is clean):
@@ -539,7 +563,7 @@ and the queue):
 | ST-HARNESS: a backend-selectable test harness | not started | — | plan item, after `write(intent)` | — |
 | ST-EVENT and ST-VIEWS, if they clear the bar | ST-VIEWS: **draft #8875** (`a0470a72`, not wired in) | — | ST-EVENT: D-EVENT deferred 2026-10-27, research continuing. ST-VIEWS: wiring is the maintainer's call, with alarm cohort checks; the alarms are safety-relevant. *Later* 2026-10-30: proposed to the maintainer, not decided: use the views only under `serve` (multitenant alpha) and leave `single` on the resident path, deciding a single-tenant switch from evidence. The maintainer asked for that evidence from labs: a time-stepped replay lab (minute by minute over days of the corpus and synthetic fixtures, with acks, snoozes, two uploaders and the lookback edges, a resident-vs-resident noise floor and the drop-query and tamper controls) is being built by an agent of session -49 on local `lab/views-replay` | — |
 | multitenant items (tenant configuration, resolution, tenant-scoped credentials, PostgreSQL) | — | — | optional for 16.0.0: they may ship dormant, labelled alpha behind `serve` (which refuses every role today), or not ship | — |
-| BF-72 and BF-161 through their advisory forks | the rows below | `a9da33ff`, `1dce7722` (pushed 2026-10-27) | both contain `dev` `7abe1cf6`; `dev` has moved eight PR merges past it (#8869 to #8865), so a merge of `dev` and a re-run inside each fork is owed before the tag | `BFQ-72`, `BFQ-161` |
+| BF-72 and BF-161 through their private advisory process | private, no public PR | both refreshed fixes contain public dev `61eb3733` | **Current 2026-11-01: BLOCKED.** Combined focused tests passed 402; full-suite MongoDB validation is inconclusive and private PR targeting rejected an invalid base. No merge/publication. Dated older branch evidence below is historical. | `BFQ-72`, `BFQ-161` |
 | Crowdin translations | `crowdin_incoming`, **#8855** (sulkaharo) | `6a2e84ab` (updated 2026-10-29 20:31Z): 33 files, +1448/−491 | open; `mergeable` reads `UNKNOWN`; not examined; §1a row 3a, low risk | — |
 | `master` protection and the staging PR #8824 | repository settings | #8824 at `991b0654` | `master` still requires `Run Tests (22, 4.4)`, which no workflow on `dev` emits; the decided change (only *Tests pass* and one approval) is owed, then #8824 merges and the tag is cut | `RT-16-RELEASE` |
 
@@ -812,14 +836,16 @@ the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. On 2026-10-30 no 
 
 **Decisions open, with their owner:**
 
-1. **The scope of BF-161's draft advisory** (maintainer): publish it now for BF-151 (released in 15.0.9)
-   with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
-   carries the fix. Packet: [bfq-161](../../reports/reviewer-packets/bfq-161-adv-phrf-1600-dev.md).
-   *Decided 2026-10-27 (maintainer; queue `BFQ-161`): extend the draft advisory to cover BF-161 as well as
-   BF-151, and publish it once, with 16.0.0.*
-2. **BF-72's test inputs** (the original author of the regex-limit commits): the tests' hostile inputs
-   are to be rebuilt in code before anything is published. Packet:
-   [bfq-72](../../reports/reviewer-packets/bfq-72-adv-r3gv-1600-dev.md).
+1. **BF-161 advisory scope is decided; private integration remains blocked.**
+   The recorded 2026-10-27 decision is to cover BF-161 and BF-151 together and
+   publish once with 16.0.0. Current private targeting/full-suite blockers are
+   in [security readiness](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md#security-integration-blocked-private);
+   no merge or publication is claimed. Queue `BFQ-161` is blocked, not awaiting
+   a ready-to-review packet.
+2. **BF-72 remains private and blocked.** Disclosure-safe test preparation,
+   valid private PR targeting and final full-suite integration are outstanding;
+   see [security readiness](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md#security-integration-blocked-private).
+   Queue `BFQ-72` does not authorize publication.
 3. **BF-95** (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
    status quo. Packet: [bfq-95](../../reports/reviewer-packets/bfq-95.md). 2026-10-25 (maintainer): verify
    `srvModified` first; on `dev` it is a server receipt time on every live path (caveat BF-181).

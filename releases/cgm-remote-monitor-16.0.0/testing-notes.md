@@ -1,12 +1,30 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Not written yet (2026-11-01, `dev` `497d08c9`, after #8894 merged).** No 16.0.0 release candidate is named, so there is no call for
+**Not written yet (2026-11-01, `dev` `61eb3733`, after #8895/#8896 merged).** No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 [15.0.9's testing notes](../cgm-remote-monitor-15.0.9/testing-notes.md): Part 1 in plain language for
 people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
 runs measured so far are in the
 [16.0.0 integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md), and what
 the release contains is in [contents.md](contents.md).
+
+**Contributor preparation update:** BF-227 / #8895 fixes late, duplicate or
+expired Pushover callbacks returning 500 for no-longer-held receipts. Known
+alarm acknowledgment remains once-only and the diagnostic is unchanged.
+Recorded local tests passed 54 targeted / 59 integration-tier cases.
+#8896 repairs entries fixture ordering and compares only successful index
+`built`/`present` states as equivalent; 37 focused entries tests passed.
+The local start-path rerun timed out before `/api/versions` and is not a pass.
+Full hosted PR and integrated-dev CI/CodeQL passed; the push workflow published
+the development image, not a release. See integration R19/R20 and
+[current readiness](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md).
+
+For the eventual named-RC call, retain live Pushover emergency delivery,
+acknowledgment, cancel and duplicate-window checks, and APNs delivery to a
+phone. Offline callback tests do not satisfy these. A real-rig soak, restricted
+subject token REST plus WebSocket/reconnect through a reverse proxy (#8829),
+identity cohort and rollback remain required; private BF-72/BF-161 acceptance
+is blocked. Do not issue a tester call or close #8829 from green CI alone.
 
 <!--
   CONTRIBUTOR NOTE, delete when the file is written. The sections this release will need, from
@@ -72,7 +90,7 @@ the release contains is in [contents.md](contents.md).
   [ID-BATCH design note](../../docs/30-design/platform/id-batch-design-note-2026-10-30.md) for
   the evidence boundaries. #8889 already shipped API v1 per-item replies and strict-ID behavior;
   #8894 carries the index-dependent batch race retry. The old local `feat/id-batch` worktree is
-  not a separate release-critical PR; rebase it onto `dev` `497d08c9`, then rerun the batch matrix
+  not a separate release-critical PR; rebase it onto current `dev`, then rerun the batch matrix
   and controls before deciding whether any remaining work needs a PR.
 
   **Candidate scenarios to prepare, not issue until an RC is named.** Use an isolated test site

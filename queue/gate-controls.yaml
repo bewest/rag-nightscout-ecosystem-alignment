@@ -70,6 +70,30 @@
 
 controls:
   - gate: |-
+      gh pr view 8895 --repo nightscout/cgm-remote-monitor --json state,mergeCommit --jq '.state == "MERGED" and .mergeCommit.oid == "bb85d10fba9500d9e7a8a728cb4d93d557803bc6"' | grep -qx true
+    cwd: .
+    control: |-
+      gh pr view 8895 --repo nightscout/cgm-remote-monitor --json state,mergeCommit --jq '.state == "MERGED" and .mergeCommit.oid == "61eb37335954ae42c91345a0823bd67331025165"' | grep -qx true
+    positive-control: |-
+      gh pr view 8895 --repo nightscout/cgm-remote-monitor --json state,mergeCommit --jq '.state == "MERGED" and .mergeCommit.oid == "bb85d10fba9500d9e7a8a728cb4d93d557803bc6"' | grep -qx true
+    control-kind: network
+    proves: >
+      2026-11-01: the official merged PR passes with its recorded merge and
+      fails with #8896's different merge. This checks metadata, not deployment.
+
+  - gate: |-
+      gh pr view 8896 --repo nightscout/cgm-remote-monitor --json state,mergeCommit --jq '.state == "MERGED" and .mergeCommit.oid == "61eb37335954ae42c91345a0823bd67331025165"' | grep -qx true
+    cwd: .
+    control: |-
+      gh pr view 8896 --repo nightscout/cgm-remote-monitor --json state,mergeCommit --jq '.state == "MERGED" and .mergeCommit.oid == "bb85d10fba9500d9e7a8a728cb4d93d557803bc6"' | grep -qx true
+    positive-control: |-
+      gh pr view 8896 --repo nightscout/cgm-remote-monitor --json state,mergeCommit --jq '.state == "MERGED" and .mergeCommit.oid == "61eb37335954ae42c91345a0823bd67331025165"' | grep -qx true
+    control-kind: network
+    proves: >
+      2026-11-01: the official merged PR passes with its recorded merge and
+      fails with #8895's different merge. This checks metadata, not test execution.
+
+  - gate: |-
       TEST=dependency-d3 npm run test-single
     cwd: externals/cgm-remote-monitor-official
     control-exempt: >

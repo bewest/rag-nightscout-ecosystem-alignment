@@ -30,11 +30,10 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 16 items
+### Maintainer &mdash; 15 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
-| `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory  | &mdash; |
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
 | `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | #8888 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
@@ -56,12 +55,6 @@ every item that was `merged-upstream` then is `released`.
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `A7A-7` | `unsettled` | §7a item 7 - the clock question | &mdash; |
-
-### SECURITY reviewer &mdash; 1 item
-
-| id | claimed state | what it is | PR |
-|---|---|---|---|
-| `BFQ-72` | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU | &mdash; |
 
 <!-- END GENERATED: needs-a-human -->
 

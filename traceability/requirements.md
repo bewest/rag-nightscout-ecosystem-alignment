@@ -10,6 +10,9 @@ maps the existing pre-tag requirements (`RT-16-RELEASE`, `RT-16-LIVE-ALARMS`,
 identifiers are release gates, not new protocol requirement IDs. Restricted-token
 WebSocket/reconnect testing and final integrated-head CI remain required evidence;
 offline notification tests do not satisfy live transport acceptance.
+Merged-head CI is met on `61eb3733`; it must be repeated after private security
+integration. `BFQ-227` tracks the callback defect fixed by #8895;
+`RT-CI-FIXTURES-8896` tracks test hygiene, not a new protocol requirement.
 
 ## Domain Files
 

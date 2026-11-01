@@ -5,8 +5,9 @@ This document is an index of gaps organized by domain.
 ## Release-readiness follow-up (2026-11-01)
 
 The [16.0.0 RC readiness triage](../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
-tracks operational release gaps separately from protocol-gap counts: failing
-integrated CI, obsolete staging protection, private security-fix refresh,
+tracks operational release gaps separately from protocol-gap counts: integrated
+CI is now green on `61eb3733` after #8895/#8896; obsolete staging protection,
+blocked private security integration,
 notification delivery and client-cohort acceptance. An open issue or a green
 check on an older PR head is not evidence that a current release gap is closed.
 

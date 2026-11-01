@@ -24,10 +24,10 @@ current and the prose is stale.
 
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
-| **Remedial** | `phase0`, `register-open`, `docs-truth` | 204 | 39 | 11 |
-| **Modernization** | `release-train` | 53 | 8 | 2 |
+| **Remedial** | `phase0`, `register-open`, `docs-truth` | 205 | 39 | 9 |
+| **Modernization** | `release-train` | 54 | 8 | 2 |
 | **Multitenant** | `tenancy`, `platform` | 88 | 28 | 5 |
-| | **total** | **347** | **75** | **18** |
+| | **total** | **349** | **75** | **16** |
 
 <!-- END GENERATED: horizons -->
 
@@ -154,7 +154,7 @@ cover more than one `BF-`:
 | `BFQ-157` | `merged-upstream` | BF-157 - a treatment's glucose bubble is placed as mg/dL when its units are spelled mmol/L |
 | `BFQ-159` | `merged-upstream` | BF-159 - the main page sometimes leaves for the Profile Editor while a profile exists, wit |
 | `BFQ-160` | `merged-upstream` | BF-160 - the clock designer's link target is written with curly quotes |
-| `BFQ-161` | `in-flight-upstream` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
+| `BFQ-161` | `blocked` | BF-161 - braces 3.0.3 (direct dependency) is inside a stack-exhaustion advisory with no fi |
 | `BFQ-163` | `merged-upstream` | BF-163 - compression 1.8.1 (every response) is inside a high memory-leak advisory fixed in |
 | `BFQ-164` | `blocked` | BF-164 - writes outside API v3 never reach the v3 storage socket |
 | `BFQ-165` | `merged-upstream` | BF-165 - a treatment re-send matched by its fallback key is answered without _id |
@@ -198,6 +198,7 @@ cover more than one `BF-`:
 | `BFQ-224` | `merged-upstream` | BF-224 - a v1 filter with a plain value under the date field (find[created_at]=<ISO>) answ |
 | `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3-then-sock |
 | `BFQ-226` | `merged-upstream` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache with no relo |
+| `BFQ-227` | `merged-upstream` | BF-227 - a late or repeated Pushover receipt callback answers 500 |
 | `BFQ-40` | `released` | BF-40 - $exists is not read as a boolean on dev; fixed by bf/coercion |
 | `BFQ-46` | `merged-upstream` | BF-46 - eleven API v3 variables bypass env.js, one family deletes data |
 | `BFQ-47` | `released` | BF-47 - an ordinary subject edit destroys stored fields, on today's release |
@@ -205,7 +206,7 @@ cover more than one `BF-`:
 | `BFQ-67` | `not-started` | BF-67, BF-86 - alarm thresholds quietly changed, or quietly kept when they cannot work |
 | `BFQ-69` | `released` | BF-69 - the Bolus Wizard quick-pick chooser is built once, from nothing |
 | `BFQ-71` | `closed` | BF-71 - any dateString key drops the default date window, and the window is not a control |
-| `BFQ-72` | `in-flight-upstream` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
+| `BFQ-72` | `blocked` | BF-72 - an unauthenticated $regex can spend minutes of database CPU |
 | `BFQ-87` | `released` | BF-87 - the root qs override holds the connector below its range and pins the server's que |
 | `BFQ-90` | `released` | BF-90 - an alarm at a page with no reading throws in the client |
 | `BFQ-91` | `released` | BF-91 - connector capture mode cannot find trace-axios for two sources |
@@ -233,8 +234,8 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 8 |  | 1 |  | 1 |  | 21 | 15 | 2 | 1 |  |  | 4 | **53** |
-| `register-open` | 29 | 3 | 1 | 1 | 3 | 4 | 54 | 58 | 5 |  |  | 5 |  | **163** |
+| `release-train` | 8 |  | 1 |  | 1 |  | 22 | 15 | 2 | 1 |  |  | 4 | **54** |
+| `register-open` | 29 | 3 | 1 | 1 | 5 | 2 | 55 | 58 | 5 |  |  | 5 |  | **164** |
 | `tenancy` | 20 | 4 |  | 1 | 9 |  | 5 |  | 1 | 4 | 1 |  | 6 | **51** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
 | `backfix2` |  |  |  |  |  |  |  | 2 |  |  |  |  |  | **2** |
@@ -274,14 +275,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 309 | 89% |
+| Maintainer | 311 | 89% |
 | SECURITY reviewer | 17 | 5% |
 | Maintainer + a second human | 8 | 2% |
 | SAFETY reviewer | 6 | 2% |
 | Unassigned | 3 | 1% |
 | Whoever edits it next | 3 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **347** | |
+| **total** | **349** | |
 
 <!-- END GENERATED: reviewer-load -->
 

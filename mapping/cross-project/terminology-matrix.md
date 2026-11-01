@@ -12,6 +12,9 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 
 See the [16.0.0 RC readiness triage](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
 for the pinned head, delivery-check limitations and release gates.
+At `61eb3733`, #8895 separates HTTP callback success from one-time alarm
+acknowledgment (BF-227); #8896 treats index `built` and `present` as equivalent
+ready states **in test comparisons only**. Production status is unchanged.
 
 ---
 

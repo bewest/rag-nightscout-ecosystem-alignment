@@ -1,13 +1,21 @@
 # cgm-remote-monitor 16.0.0 — decisions
 
 *Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
-`dev` `497d08c9` (2026-11-01, after #8894), with the 2026-10-29 and 2026-10-30 rows added at `dev` `991b0654`
+`dev` `61eb3733` (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at `dev` `991b0654`
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
 it. Item state is in `queue/work-queue.yaml`; what 16.0.0 contains and what is still open is in
 [contents.md](contents.md); the test evidence is in the
 [16.0.0 integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md). BF-72 and
 BF-161 appear by mechanism only: both are live on the shipping release, and this repository is
 public.*
+
+**Current implementation status, 2026-11-01:** #8895's callback fix and
+#8896's test hygiene are merged; integrated dev CI and CodeQL are green and
+the push workflow published the development image. This records implementation
+and validation, **not a new release decision**. No RC is named; BF-72/BF-161
+remain private and blocked, and live alerts, real-rig soak, identity cohort/
+rollback and the obsolete `master` required-check gate remain outstanding.
+See [the readiness record](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md).
 
 ## The cycle
 
@@ -123,7 +131,7 @@ public.*
 | decision | who, when | queue | as it stands |
 |---|---|---|---|
 | **BF-72 fix shape (c)**, chosen by the rule that every intended use keeps working (the uses in the maintainer's public gist `dbe590ab`): a length cap on every pattern and a time limit on every query whose filter holds a regular expression, generated ones included; the refusal check applies only to caller-written patterns, and only with `QUERY_REGEX_REFUSE_UNSAFE=true`. **Default off; the name may be revisited** as the release candidate matures. Shape (a) is ruled out: it refuses patterns the `/times` and `/slice` generator builds | maintainer, 2026-10-21 | `BFQ-72` | `bf/regex-limits` `1833ab00`, semver minor |
-| **BF-72 and BF-161 go through the private forks of their draft advisories**, not public PRs, and are published with the release that carries them | maintainer, 2026-10-21 | `BFQ-72`, `BFQ-161` | both branches pushed to the forks on 2026-10-21; no fork PR opened yet; both owe a merge of `dev` `eb72a1d3` |
+| **BF-72 and BF-161 go through the private forks of their draft advisories**, not public PRs, and are published with the release that carries them | maintainer, 2026-10-21 | `BFQ-72`, `BFQ-161` | Current 2026-11-01: both retained private fixes contain dev `61eb3733`; combined focused tests passed 402. Full-suite acceptance is inconclusive and private PR targeting is blocked. No merge or publication; decision unchanged. |
 | **Legacy query-string authentication is kept**: the page moves its own credentials to headers, but `token` and `secret` in a URL stay accepted for existing clients and shared links; their exposure is reduced (redacted logs, `Referrer-Policy: no-referrer`, `Cache-Control: no-store`) and documented for reverse proxies and CDNs, with no CodeQL dismissal | AndyLow91, 2026-10-25 (#8836) | — | on `dev` since `5de8505d` |
 | **The `node-forge` advisory stays open**: `@parse/node-apn` requires `node-forge` 1.4.0, which has no patched release for GHSA-86w9-cpqp-85rv; APNs is not replaced, and the PR claims no zero-advisory `npm audit` | AndyLow91, 2026-10-25 (#8836) | — | the one chain left in the PR body's `npm audit` (affected-package entries, full and `--omit=dev`: 23 and 16 before, 2 after; read-derived) |
 | **BF-161's limit**: a nesting depth of 10, answered 400 before the pattern is parsed or expanded; the deepest intended use nests 1 level | prepared 2026-10-21; the value awaits the maintainer's confirmation | `BFQ-161` | `bf/entries-pattern-limit` `d2c4df9f`, semver patch |
