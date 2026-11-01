@@ -399,7 +399,7 @@
    "depends": [
     "ID-FIRST-MATCH"
    ],
-   "ref": "Implemented on feat/id-resend-switch at a55c940d; open, non-draft PR #8892 against dev. At the latest CI read (2026-11-01), 14 checks succeeded and the Firefox/WebKit browser checks were still running. Local unit/integration tiers and lint passed; the write-contract matrix showed 0 of 4,916 unset-mode changes and 813 refuse-mode changes outside cache noise. Break-it was 14/14 red at 405c6cee, not rerun at PR head. Per-client D20 overrides remain a seam only: resendModeFor currently returns the site setting for every client. Q-IDX must use resendModeFor for duplicate-key race losers."
+   "ref": "Implemented on feat/id-resend-switch at a55c940d; open, non-draft PR #8892 against dev. At the 2026-11-01 07:21Z CI read, all required checks completed successfully, including Maintained MongoDB and Chromium/Firefox/WebKit. Local unit/integration tiers and lint passed; the write-contract matrix showed 0 of 4,916 unset-mode changes and 813 refuse-mode changes outside cache noise. Break-it was 14/14 red at 405c6cee, not rerun at PR head. Per-client D20 overrides remain a seam only: resendModeFor currently returns the site setting for every client. Q-IDX must use resendModeFor for duplicate-key race losers."
   },
   {
    "id": "ID-BATCH",

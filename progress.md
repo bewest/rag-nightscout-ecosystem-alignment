@@ -18,7 +18,7 @@ Refreshed the release and next-gen roadmap records after ID-RESEND-SWITCH opened
 
 | Deliverable | Location | Key Insights |
 |-------------|----------|--------------|
-| Release status and decisions | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md` | #8892 is open; Firefox/WebKit CI remained in progress at the latest read. ID-UNIQUE-INDEX and remaining ID-BATCH work are local and not publication-ready. |
+| Release status and decisions | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md` | #8892 is open; all required hosted checks completed successfully by 07:21Z. ID-UNIQUE-INDEX and remaining ID-BATCH work are local and not publication-ready. |
 | Roadmap and dependency map | `docs/30-design/platform/next-gen-platform-plan.{md,json}` | Critical path is #8892 review/merge, then Q-IDX race handling and re-gating on the index branch, then rebase/retest remaining ID-BATCH. |
 
 **Key Findings**:
