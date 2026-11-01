@@ -37,6 +37,12 @@ Both private security branches now include that head; 402 combined focused
 tests pass. Private PR creation was rejected and full-suite MongoDB validation
 is inconclusive, so neither security fix is claimed merge-ready.
 
+**Final check**: both CI and both CodeQL runs on `61eb3733` passed. Security
+handoff now records exact retained worktrees, combined candidate, focused
+selection and HTTP 422 private-base blocker. Full security suite and
+advisory-linked private PR routing remain outstanding; no public workaround
+or disclosure was attempted.
+
 ## cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
 
 Updated the roadmap and release records after completing Q-IDX race handling and choosing #8894 as the canonical unique-index PR.

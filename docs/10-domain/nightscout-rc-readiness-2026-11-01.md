@@ -153,3 +153,40 @@ private repositories rather than forks. Branch preparation is therefore
 persistent, but security merge/publication readiness remains blocked by private
 integration mechanics and final full-suite validation. No public security
 branch or PR was created.
+
+### Final preparation handoff
+
+The later GitHub read reports both CI workflows on `61eb3733` successful
+(41333672054 and 41333677576), together with both CodeQL runs. The current
+dev CI blocker is cleared; this does not clear staging protection or live
+acceptance gates.
+
+Security worktrees retained:
+`externals/work/crm-rc-security-regex-20261101` and
+`externals/work/crm-rc-security-slice-20261101`. Both prepared heads contain
+`61eb3733`. The local combined candidate was `b52360fd54343b72b6260d6ae4d5480e6e73ea40`,
+merging BF-161 into BF-72; `lib/api/entries/index.js` auto-merged without
+manual conflicts. The temporary combined worktree was cleaned up after testing.
+
+The 402-test Mocha selection covered regex limits, entries, treatments, query,
+Mongo storage, API v3 search/filter/find/modify utilities and entry-query
+permissions, using the repository hooks and `--fail-zero`. `npm run lint`
+and `npm run test:tiers` passed (456 files / eight tiers; lint warnings, no
+errors), as did the existing BF-72 static gate. Full-suite runs are **not a
+pass**: local Mongo test services disappeared or exited 139, and a long retry
+was stopped. No security assertion failure was established by those attempts.
+
+Private PR attempts returned HTTP 422, `PullRequest.base`, `code: invalid`,
+for snapshot bases `workspace/upstream-dev-497d08c9` and
+`rc-base-dev-497d08c9`. The existing private dev branches are stale; neither
+matches `61eb3733`. The integration agent's advisory API requests returned 404,
+while its repository metadata reported private standalone repositories.
+Those access/routing results do not prove the advisories have no association.
+No stale-base PR was opened and no existing private refs were moved.
+
+The safe next step is for an authorized maintainer to use the upstream
+Security / Advisories workflow, confirm the advisory-linked private patch
+repository and current dev target, and bring the prepared patches into that
+path. Final full-suite validation remains necessary before security merge;
+advisory publication stays coordinated with the release. Do not solve this
+private integration blocker by opening a public PR.
