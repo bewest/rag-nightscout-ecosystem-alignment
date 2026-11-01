@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-01; cgm-remote-monitor dev 3c773ee5; #8892 merged; #8894 in review at cf978f4; latest hosted checks have no failures, with Firefox and WebKit still running",
+ "measured": "2026-11-01; cgm-remote-monitor dev 3c773ee5; #8892 merged; #8894 in review at cf978f4; all required hosted checks for #8894 passed",
  "tracks": [
   {
    "id": "storage",
@@ -426,7 +426,7 @@
     "ID-FIRST-MATCH",
     "ID-RESEND-SWITCH"
    ],
-   "ref": "Open, non-draft PR #8894 at cf978f4, based on merged #8892 at 3c773ee5; earlier draft #8893 is closed as superseded. Local gates passed on the prior tested head 690de759: npm test 6,319 passing/3 pending; focused race/settings suite 63 passing; test-tier and write-intent gates passed; lint 0 errors/20 warnings. Batch-only matrix: 33 expected index-on/off differences (24 batch-dupkey-mid, 9 batch-repeat-identifier) on MongoDB 5.0.32 and 8.0.29; broader --batch --no-idf runs were stopped. Latest hosted checks have no failures; Node 22.23.4, Maintained MongoDB, and Chromium passed, while Firefox and WebKit remain in progress. In 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
+   "ref": "Open, non-draft PR #8894 at cf978f4, based on merged #8892 at 3c773ee5; earlier draft #8893 is closed as superseded. Local gates passed on the prior tested head 690de759: npm test 6,319 passing/3 pending; focused race/settings suite 63 passing; test-tier and write-intent gates passed; lint 0 errors/20 warnings. Batch-only matrix: 33 expected index-on/off differences (24 batch-dupkey-mid, 9 batch-repeat-identifier) on MongoDB 5.0.32 and 8.0.29; broader --batch --no-idf runs were stopped. All required hosted checks passed, including Node 22.23.4, Maintained MongoDB, Chromium, Firefox, and WebKit. In 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
   },
   {
    "id": "REG-SPECS",

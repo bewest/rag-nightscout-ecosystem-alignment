@@ -61,8 +61,8 @@ the release contains is in [contents.md](contents.md).
     under every `WRITE_RESEND` mode. Review the rollback instructions before deploying or reverting.
   The identifier index and Q-IDX retry are in open, non-draft PR #8894 at `cf978f4`, based on
   #8892's merge to `dev` (`3c773ee5`). Local tests and focused race gates passed on the earlier
-  tested head. The latest hosted checks have no failures; Node 22.23.4, Maintained MongoDB, and Chromium
-  passed, while Firefox and WebKit remain in progress. Complete the
+  tested head. All required hosted checks on #8894 passed, including Node 22.23.4, Maintained MongoDB,
+  Chromium, Firefox, and WebKit. Complete the
   hosted suite before treating the index as verified. The remaining ID-BATCH integration is local
   at `4b48e57f`; rebase and fully verify it after the index lands.
   No RC is named, so these are contributor notes, not a call for testers.
