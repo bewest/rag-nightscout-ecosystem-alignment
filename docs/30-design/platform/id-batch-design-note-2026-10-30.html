@@ -3280,10 +3280,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-open-questions" class="md-nav__link">
+  <a href="#6-resolved-design-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Open questions
+        6. Resolved design questions
       
     </span>
   </a>
@@ -5756,10 +5756,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-open-questions" class="md-nav__link">
+  <a href="#6-resolved-design-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Open questions
+        6. Resolved design questions
       
     </span>
   </a>
@@ -5811,10 +5811,11 @@
 <p>Record as of 2026-10-30. A point-in-time document; it is not kept up to date.</p>
 </div>
 <p><em>Contributor-facing design note for ID-BATCH (queue <code>ID-BATCH-RESULTS</code>, plan §4.2 row ID-BATCH), written
-2026-10-30. Design only: no <code>cgm-remote-monitor</code> code was changed or run for it.</em> Every claim carries a
+2026-10-30. The baseline and proposal below are historical; see the implementation status for what
+shipped afterward.</em> Every claim carries a
 mark: <strong>[M]</strong> measured, with the cell id of the write-contract matrix pin
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/70ac87a660652f35e935e36e89d7ce8fbf9553dc/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json"><code>dev-e1f7ac41-idfirst.json</code></a>
-(1,929 cells) or of its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/70ac87a660652f35e935e36e89d7ce8fbf9553dc/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst-uuidoff.json"><code>-uuidoff</code></a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/64755e5294d27777e61f43ddab9d9100c35e80db/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst.json"><code>dev-e1f7ac41-idfirst.json</code></a>
+(1,929 cells) or of its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/64755e5294d27777e61f43ddab9d9100c35e80db/tools/qc/results/write-contract-matrix/dev-e1f7ac41-idfirst-uuidoff.json"><code>-uuidoff</code></a>
 companion (504 cells); <strong>[R]</strong> read from source. Server <code>file:line</code> is at crm <code>9919f8ef</code> (the #8874 head,
 <code>write(intent)</code> release 1) unless another revision is named. Client <code>file:line</code> is at the revision named in
 §2. Read-derived claims about clients are often wrong in this project; each one is a candidate for a
@@ -5827,16 +5828,28 @@ them [R]. One route, v1 treatments under <code>WRITE_VALIDATION=reject</code>, a
 item with a <code>refused</code> member and a <code>Warning: 299</code> header (crm <code>6e842c07</code>, on <code>dev</code> since 2026-10-25) [R].
 ID-BATCH generalises that shape to every v1 collection and every per-item outcome. It keeps HTTP 200 and an
 array with exactly one slot per submitted item, because Loop's NightscoutKit fails any other status or
-length (§2). Full outcomes are opt-in. No matrix cell sends a batch of more than one item [M], so every
-batch behaviour below is read, and the first deliverable is the batch cells of §4.</p>
+length (§2). Full outcomes are opt-in. The statement that no matrix cell sent a batch describes the
+pre-ID-BATCH pin only; the batch forms and results are now recorded below and in the release contents.</p>
+<p><strong>Implementation status (2026-11-01).</strong> #8889 merged the opt-in v1 per-item results and strict-v1
+behavior at <code>4196dd45</code>. #8894 then merged the identifier index and Q-IDX race retry at <code>497d08c9</code>
+(PR head <code>cf978f4</code>), including batch duplicate-key races under <code>WRITE_RESEND</code>. The batch-only matrix
+recorded 33 expected index-on/off differences for <code>batch-dupkey-mid</code> and <code>batch-repeat-identifier</code>
+under default, <code>WRITE_VALIDATION=reject</code>, and <code>WRITE_IDENTIFIER=strict</code> on MongoDB 5.0.32 and 8.0.29.
+The broader <code>--batch --no-idf</code> matrix is now complete on the merged tree: 3,443 cells per off/try
+lane, zero invalid cells on MongoDB 5.0.32 and 8.0.34, and the same 33 expected batch differences
+on both versions (24 <code>batch-dupkey-mid</code>, 9 <code>batch-repeat-identifier</code>). The remaining off/try and
+cross-version differences affect only cache fields; wire capture had 929/929 frames, none
+unattributed and no settle-bound hits. PR #8894's required hosted checks all passed. See
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html"><code>releases/cgm-remote-monitor-16.0.0/contents.md</code></a>
+for test counts, matrix pins, and the current release status.</p>
 <hr />
 <h2 id="0-inputs-and-decisions-this-note-builds-on">0. Inputs and decisions this note builds on<a class="headerlink" href="#0-inputs-and-decisions-this-note-builds-on" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Plan §4.2 row ID-BATCH: "per-item results in v1 batch replies", needs WC-STEP-PATCH, "one bad item no
-  longer refuses the batch". Plan §1a row 9 orders it last: "ID-FIRST-MATCH slices …, then ID-UNIQUE-INDEX
-  (<code>WRITE_IDENTIFIER_INDEX</code>), then ID-BATCH". ROADMAP rows <code>ID-BATCH-RESULTS</code> (:188) and <code>ID-UNIQUE-INDEX</code>
-  (:206, "retry-as-update on duplicate key", depends on <code>ID-BATCH-RESULTS</code>) state the opposite dependency;
-  open question (i).</li>
+  longer refuses the batch". Plan §1a row 9 originally ordered the index before ID-BATCH, while ROADMAP
+  rows <code>ID-BATCH-RESULTS</code> (:188) and <code>ID-UNIQUE-INDEX</code> (:206) stated the opposite dependency. The
+  implementation resolved this: #8889 shipped the reply format first, and #8894 shipped the index
+  retry at the write-step level, including batches.</li>
 <li>Release allocation :213: WC-STEP-PATCH and ID-BATCH are ladder question 10 (reply shape), minor-class.</li>
 <li>Write-contract spec §2.2: <code>WriteResult.items: [{ index, outcome, _id, identifier, reason }]</code>, outcomes
   <code>inserted | merged | replaced | unchanged | deleted | not-found | refused</code>; §2.3 applies the rules per item.
@@ -6105,10 +6118,8 @@ Under <code>WRITE_IDENTIFIER_INDEX=try</code> with no index built, the race stor
 <p>The rule takes the existing <code>refused</code> member, the header and the opt-in object, and adds nothing else to
 default slots.</p>
 <h2 id="4-cells-and-tests-needed">4. Cells and tests needed<a class="headerlink" href="#4-cells-and-tests-needed" title="Permanent link">&para;</a></h2>
-<p><strong>New matrix forms</strong> (harness first, pinned on the base before any ID-BATCH change; v1 and in-process for
-every collection, socket for comparison). Each records status, reply length, a per-slot descriptor in
-order (today's <code>replyDesc</code> collapses slots to a set, harness:389-397; it needs an ordered form), the
-<code>Warning</code> header, and the store.
+<p><strong>Matrix forms</strong> (v1 and in-process for every collection, socket for comparison). Each records status,
+reply length, a per-slot descriptor in order, the <code>Warning</code> header, and the store.
 - <code>batch-mixed-valid</code>: valid, invalid, valid. Invalid means a Temporary Target the domain rules refuse
   (run with <code>WRITE_VALIDATION=reject</code>), a non-hex <code>_id</code> (devicestatus, profile, food, activity), and a
   non-string <code>identifier</code>.
@@ -6131,9 +6142,9 @@ order (today's <code>replyDesc</code> collapses slots to a set, harness:389-397;
   xdripswift (array, <code>created_at</code>/<code>eventType</code> echoed); nightscout-connect (<code>dateString</code>/<code>created_at</code>
   echoed). Turn <code>tests/api.partial-failures.test.js:111</code> and <code>:550</code> into assertions.</p>
 <h2 id="5-where-it-lands-and-what-the-id-first-match-slices-must-leave-ready">5. Where it lands, and what the ID-FIRST-MATCH slices must leave ready<a class="headerlink" href="#5-where-it-lands-and-what-the-id-first-match-slices-must-leave-ready" title="Permanent link">&para;</a></h2>
-<p>Plan §1a row 9 places ID-BATCH after ID-UNIQUE-INDEX. It needs WC-STEP-PATCH (#8874) for <code>items[]</code>, and
-the batch cells of §4 pinned first. Changes to make in the ID-FIRST-MATCH slices so ID-BATCH is only a
-reply change:
+<p>The initial plan placed ID-BATCH after ID-UNIQUE-INDEX. It needed WC-STEP-PATCH (#8874) for <code>items[]</code>,
+and the batch cells of §4 pinned first. Changes made in the ID-FIRST-MATCH slices so the reply change
+could be isolated:
 - <strong>Slice 1 (no outcome change):</strong> routes read <code>items[]</code> and keep today's bytes. Treatments, entries,
   devicestatus and profile ignore it now (treatments.js:146, entries.js:157, devicestatus.js:109,
   profile.js:67).
@@ -6144,9 +6155,13 @@ reply change:
   a refusal. Open question (vi).
 - <strong>Slice 4 (merge on match):</strong> the batch forms report <code>inserted</code> or the rule's <code>onMatch</code> for every match
   (wi:1768-1770, wi:687-690); they need <code>unchanged</code> where nothing changed.
-- <strong>ID-UNIQUE-INDEX:</strong> the retry of R5 belongs in the step, at the <code>items[]</code> level, so it works before
-  ID-BATCH changes any reply.</p>
-<h2 id="6-open-questions">6. Open questions<a class="headerlink" href="#6-open-questions" title="Permanent link">&para;</a></h2>
+- <strong>ID-UNIQUE-INDEX:</strong> R5's retry belongs in the write step, at the <code>items[]</code> level; #8894 implements
+  that retry alongside the index so duplicate-key races do not escape as a batch-level failure.</p>
+<h2 id="6-resolved-design-questions">6. Resolved design questions<a class="headerlink" href="#6-resolved-design-questions" title="Permanent link">&para;</a></h2>
+<p>The questions below record the design discussion as it stood on 2026-10-30. The maintainer's
+decisions are captured in the 16.0.0 decisions record; the implementation state is summarized above.
+In particular, question (i) was resolved by shipping v1 per-item replies in #8889 and the index-aware
+batch retry in #8894, rather than leaving a separate ID-BATCH integration branch on the critical path.</p>
 <p>Mechanism and trade-off for each. IDs are allocated by session -49.</p>
 <p>(i) <strong>Which lands first: the unique index or ID-BATCH.</strong> Plan row 9 puts the index first; ROADMAP :206
 makes it depend on ID-BATCH-RESULTS. Mechanism: with the index and no per-item reporting, a duplicate key
