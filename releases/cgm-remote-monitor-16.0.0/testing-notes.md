@@ -1,6 +1,6 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Not written yet (2026-11-01, `dev` `3c773ee5`, after #8892 merged).** No 16.0.0 release candidate is named, so there is no call for
+**Not written yet (2026-11-01, `dev` `497d08c9`, after #8894 merged).** No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 [15.0.9's testing notes](../cgm-remote-monitor-15.0.9/testing-notes.md): Part 1 in plain language for
 people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
@@ -56,14 +56,38 @@ the release contains is in [contents.md](contents.md).
     preserve 16.0.0 behavior. Per-client D20 overrides are not implemented;
   - API v3 and API v1 batch items retain their documented compatibility and opt-in reply behavior;
     no tester-facing call is appropriate until an RC is named.
-  - if #8894 ships, `WRITE_IDENTIFIER_INDEX` supports `try`, `require`, `off` and `drop`; verify
-    startup with and without stored duplicates, counts-only reporting, and duplicate-key races
-    under every `WRITE_RESEND` mode. Review the rollback instructions before deploying or reverting.
-  The identifier index and Q-IDX retry are in open, non-draft PR #8894 at `cf978f4`, based on
-  #8892's merge to `dev` (`3c773ee5`). Local tests and focused race gates passed on the earlier
-  tested head. All required hosted checks on #8894 passed, including Node 22.23.4, Maintained MongoDB,
-  Chromium, Firefox, and WebKit. Complete the
-  hosted suite before treating the index as verified. The remaining ID-BATCH integration is local
-  at `4b48e57f`; rebase and fully verify it after the index lands.
+  - #8894 merged to `dev` as `497d08c9`; `WRITE_IDENTIFIER_INDEX` supports `try`, `require`,
+    `off` and `drop`. Verify startup with and without stored duplicates, counts-only reporting,
+    and duplicate-key races under every `WRITE_RESEND` mode. Review rollback instructions before
+    deploying or reverting.
+  #8894 merged to `dev` on 2026-11-01 as `497d08c94c0a583f056fe487d172a4634fc4a1d4` from head
+  `cf978f4`, after #8892's merge at `3c773ee5`.
+  The PR body reports `npm test` 6,319 passing / 3 pending,
+  63 focused identity-race/settings tests, passing tier and write-intent gates, and lint with 0
+  errors / 20 warnings. Its hosted checks are complete and green, including the no-database,
+  maintained-MongoDB, Node, Chromium, Firefox, WebKit, Docker validation, and CodeQL checks.
+  The batch-only matrix records 33 expected index-on/off differences for duplicate-key races and
+  repeated identifiers under default, `WRITE_VALIDATION=reject`, and `WRITE_IDENTIFIER=strict`;
+  broader `--batch --no-idf` runs were stopped, not completed. See `contents.md` and the
+  [ID-BATCH design note](../../docs/30-design/platform/id-batch-design-note-2026-10-30.md) for
+  the evidence boundaries. #8889 already shipped API v1 per-item replies and strict-ID behavior;
+  #8894 carries the index-dependent batch race retry. The old local `feat/id-batch` worktree is
+  not a separate release-critical PR; rebase it onto `dev` `497d08c9`, then rerun the batch matrix
+  and controls before deciding whether any remaining work needs a PR.
+
+  **Candidate scenarios to prepare, not issue until an RC is named.** Use an isolated test site
+  with synthetic records; do not create test treatments on a production or active-care site.
+  - Loop / NightscoutKit: upload and re-send an existing synthetic entry or treatment with the
+    same identifier; verify HTTP 200, the legacy array shape and item count when the results opt-in
+    is absent, the stored `_id` remains stable, and no duplicate is stored.
+  - Other uploaders, such as Trio and xDrip+: verify their ordinary writes still receive success
+    and their normal queues continue to behave; do not use a partial-refusal scenario with clients
+    that mark every item uploaded on 2xx.
+  - Site operators: on a disposable database seeded with duplicate identifiers, start with
+    `WRITE_IDENTIFIER_INDEX=try`; confirm startup continues and duplicate counts are reported
+    without values or automatic cleanup. Separately exercise `drop` and the documented rollback
+    sequence on a disposable deployment.
+  - Concurrency and non-default `WRITE_RESEND` modes remain controlled synthetic race tests, not
+    a request for testers to manufacture conflicting records in live data.
   No RC is named, so these are contributor notes, not a call for testers.
 -->

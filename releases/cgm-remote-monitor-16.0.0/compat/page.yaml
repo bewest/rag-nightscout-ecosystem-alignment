@@ -51,5 +51,6 @@ verdicts:
   - {verdict: Bug fix, text: a defect or data-loss behavior that was fixed in a later compared tree.}
   - {verdict: No value change, text: "the write takes another path; stored values do not change."}
 verdicts_note: >-
-  WRITE_RESEND and WRITE_DELETED_RESEND are implemented in #8892. Per-client D20 overrides remain
-  unimplemented. The unique index is tracked separately in #8894 and was not measured here.
+  WRITE_RESEND and WRITE_DELETED_RESEND are implemented in #8892. The unique index and Q-IDX retry
+  merged in #8894; they were not measured in this pinned compatibility comparison. Per-client D20
+  overrides remain unimplemented.
