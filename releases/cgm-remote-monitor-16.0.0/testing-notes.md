@@ -32,4 +32,22 @@ the release contains is in [contents.md](contents.md).
   - AndroidAPS NSClient v1 and the standalone NSClient app: zero temps and cancels within 2 s (BF-09);
   - whatever cut 2 adds, if it ships in 16.0.0: page bundles and the boot sequence, and any
     third-party plugin that hooks into the page.
+
+  Added 2026-11-01 (session -81, dev f54941b5), Part 2, from #8889 (ID-BATCH reply format and
+  ID-STRICT-V1):
+  - API v1 batch POSTs (treatments, entries, devicestatus, profile, food, activity) sent with
+    `Nightscout-Write-Results: items` (or `?results=items`) answer one result per item sent, in
+    order; without it the reply is the array it was before. An uploader that sends a batch with
+    one bad item should see that item refused in its slot and the others stored;
+  - `WRITE_IDENTIFIER=strict` now applies to API v1 too: an item whose `identifier` is null, not a
+    string, empty, over-length or a placeholder is refused with 400 in its slot, the rest of the
+    batch is written, and a `Warning: 299` counts the refused items (every item refused: 400).
+    With `WRITE_IDENTIFIER` unset or `lenient`, API v1 still drops such an identifier and stores
+    the item;
+  - under the opt-in, a profile re-send that needs `api:profile:update` is refused 403 in its slot
+    rather than failing the batch.
+  Nothing to test for #8875 (ST-VIEWS ships unwired) or #8881 (test harness only).
+  Still to add from the other lanes: #8879 and #8890 (re-send matching, compatibility A/B),
+  #8886 (write(intent) release 2), and whichever of the re-send switch and the identifier index
+  ship.
 -->
