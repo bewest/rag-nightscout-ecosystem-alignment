@@ -49,11 +49,11 @@ maintainer
 
 ## What was measured
 
-**`git -C externals/cgm-remote-monitor-official fetch -q official pull/8888/head && git -C externals/cgm-remote-m`** &nbsp;·&nbsp; kind: `network`
+**`git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b6e3d739 official/dev`** &nbsp;·&nbsp; kind: `static`
 
-#8888's head on GitHub contains BF-225 fix B b6e3d739; fix C (2079501a) ships
-in the compatibility follow-up PR; replace with official/dev ancestry once
-merged
+official/dev contains BF-225 fix B b6e3d739 (merged 2026-11-01 as 5376e6a7,
+#8888); fix C (2079501a) ships in the compatibility follow-up PR, which gets
+its own gate when opened
 
 ## What these gates do NOT prove
 
@@ -65,28 +65,30 @@ merged
 
 ## Notes carried on the item
 
-2026-10-31 night: fix B opened by the maintainer as PR #8888 (dev <-
-bf/16.0.0-bf225-socket-duplicate, head b6e3d739); fix C on feat/id-compat-
-restore-ab. 2026-10-31 night (session -4e): fix built, PR pending. B:
-bf/16.0.0-bf225-socket-duplicate b6e3d739, one commit on dev 604de1cb (0
-behind), push commands with the maintainer: matrix exactly the 1 predicted
-cell (treatments x v3 x ws to one record, equal to v15.0.9 on stored state);
-break-it red on the new test only; revert gives the dev pin; tiers 5591/0/3 on
-Node 22.23.4 and 24.22.1; lint 0 errors; a different device or no numeric date
-still gives a second record (tests); BF-209 test unchanged and green. C:
-feat/id-first-s6c-uuid-socket 2079501a on #8879 2d79d30b: 4 predicted cells
-(idf-uuidid-same and -time, v1/in-process then socket) to one record, replaced
-under compatibility B; --uuid-off 0 cells; tiers 5966/0/3; ships in the
-compatibility follow-up PR (order C, then B, then A). B and C composed: 5
-cells as predicted, all three BF-225 cells one record. 2026-10-31 later: the
-maintainer chose B and C (2026-10-31, via session -4e): B, on dev (branch
-bf/16.0.0-bf225-socket-duplicate): the socket similar match also accepts a
-stored treatment whose identifier equals the one API v3 computes for the
-incoming body (device + date + eventType), fixing treatments x v3 x ws, while
-BF-209's case (an upload without identity 1 s after an AndroidAPS v3 record)
-still keeps both; C, on #8879 (a small rule commit): a UUID _id on a socket
-dbAdd treatment counts as its identifier, as v1's UUID handling does, so the
-two idf-uuidid-same cells become one record, replaced under decision B.
+2026-11-01 01:29Z: fix B merged to dev as 5376e6a7 (PR #8888, head 3bb6627f =
+b6e3d739 + dev merge). Fix C remains, in the compatibility follow-up PR; state
+stays open until it merges. 2026-10-31 night: fix B opened by the maintainer
+as PR #8888 (dev <- bf/16.0.0-bf225-socket-duplicate, head b6e3d739); fix C on
+feat/id-compat-restore-ab. 2026-10-31 night (session -4e): fix built, PR
+pending. B: bf/16.0.0-bf225-socket-duplicate b6e3d739, one commit on dev
+604de1cb (0 behind), push commands with the maintainer: matrix exactly the 1
+predicted cell (treatments x v3 x ws to one record, equal to v15.0.9 on stored
+state); break-it red on the new test only; revert gives the dev pin; tiers
+5591/0/3 on Node 22.23.4 and 24.22.1; lint 0 errors; a different device or no
+numeric date still gives a second record (tests); BF-209 test unchanged and
+green. C: feat/id-first-s6c-uuid-socket 2079501a on #8879 2d79d30b: 4
+predicted cells (idf-uuidid-same and -time, v1/in-process then socket) to one
+record, replaced under compatibility B; --uuid-off 0 cells; tiers 5966/0/3;
+ships in the compatibility follow-up PR (order C, then B, then A). B and C
+composed: 5 cells as predicted, all three BF-225 cells one record. 2026-10-31
+later: the maintainer chose B and C (2026-10-31, via session -4e): B, on dev
+(branch bf/16.0.0-bf225-socket-duplicate): the socket similar match also
+accepts a stored treatment whose identifier equals the one API v3 computes for
+the incoming body (device + date + eventType), fixing treatments x v3 x ws,
+while BF-209's case (an upload without identity 1 s after an AndroidAPS v3
+record) still keeps both; C, on #8879 (a small rule commit): a UUID _id on a
+socket dbAdd treatment counts as its identifier, as v1's UUID handling does,
+so the two idf-uuidid-same cells become one record, replaced under decision B.
 Rejected: A (full 15.0.9 revert; brings back BF-209's lost treatment) and D
 (keep #8877's choice). Being built by -4e with full gates. 2026-10-31
 correction (session -4e): the treatments x v3 x ws cell was a documented,

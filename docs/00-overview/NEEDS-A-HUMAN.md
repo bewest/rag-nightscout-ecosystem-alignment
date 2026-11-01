@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 18 items
+### Maintainer &mdash; 17 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -38,7 +38,6 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
 | `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | #8888 |
 | `BFQ-226` | `in-flight-upstream` | BF-226 - an API v3 autoPrune of more than one record empties the type's cache wi | #8886 |
-| `ID-FIRST-MATCH` | `in-flight-upstream` | Identifier-first matching on every collection and path, with D-LOOP-ID's rules ( | #8879 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -79,7 +78,6 @@ One bounded review packet per item awaiting review lives in `reports/reviewer-pa
 |---|---|---|---|---|
 | **#8862** | `PLAT-ENTRY` | `feat/nightscout-entrypoint` | One executable (D21): bin/nightscout.js with `single` and th | Maintainer |
 | **#8878** | `BFQ-212` | `bf/16.0.0-split-identity` | BF-212 - a chart-drag split leaves two treatments with one c | Maintainer |
-| **#8879** | `ID-FIRST-MATCH` | `feat/id-first-match` | Identifier-first matching on every collection and path, with | Maintainer |
 | **#8886** | `BFQ-226` | `` | BF-226 - an API v3 autoPrune of more than one record empties | Maintainer |
 | **#8888** | `BFQ-225` | `bf/16.0.0-bf225-socket-duplicate` | BF-225 - socket re-sends that #8877 changed from one stored  | Maintainer |
 
