@@ -2136,8 +2136,8 @@
 
 
 <h1 id="nightscout-1600--testing-notes-for-the-release-candidate">Nightscout 16.0.0 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1600--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>07139b462</code>.</em></p>
-<p><strong>Not written yet (2026-10-26, <code>dev</code> <code>47723cda</code>).</strong> No 16.0.0 release candidate is named, so there is no call for
+<p><em>Living document, last changed 2026-11-01 at <code>de95758a6</code>.</em></p>
+<p><strong>Not written yet (2026-11-01, <code>dev</code> <code>f54941b5</code>).</strong> No 16.0.0 release candidate is named, so there is no call for
 testers yet. This file is written when the maintainers name a candidate, in the form of
 <a href="../cgm-remote-monitor-15.0.9/testing-notes.html">15.0.9's testing notes</a>: Part 1 in plain language for
 people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
@@ -2192,9 +2192,15 @@ the release contains is in <a href="contents.html">contents.md</a>.</p>
     preserve 16.0.0 behavior. Per-client D20 overrides are not implemented;
   - API v3 and API v1 batch items retain their documented compatibility and opt-in reply behavior;
     no tester-facing call is appropriate until an RC is named.
-  Still pending before final tester notes: the identifier index (including duplicate-key races
-  under each resend mode) and the remaining ID-BATCH integration. Neither local branch is ready
-  for publication until rebased and re-gated; the prior index tests/matrices predate #8892.
+  - if #8894 ships, `WRITE_IDENTIFIER_INDEX` supports `try`, `require`, `off` and `drop`; verify
+    startup with and without stored duplicates, counts-only reporting, and duplicate-key races
+    under every `WRITE_RESEND` mode. Review the rollback instructions before deploying or reverting.
+  The identifier index and Q-IDX retry are implemented in draft PR #8894, stacked on #8892.
+  Local tests and focused race gates pass. Its `feat/id-resend-switch` base is outside the
+  `pull_request` filters, so only auto-close has run; retarget to `dev` after #8892 merges to trigger
+  hosted CI. The remaining ID-BATCH integration is still local at `4b48e57f`, 17 ahead and
+  91 behind `official/dev`; it requires rebase and full verification after the index lands.
+  No RC is named, so these are contributor notes, not a call for testers.
 -->
 
 

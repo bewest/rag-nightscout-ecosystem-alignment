@@ -2152,6 +2152,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cgm-remote-monitor-1600-identity-handoff-update-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cgm-remote-monitor-1600-identity-handoff-2026-11-01" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3399,6 +3410,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cgm-remote-monitor-1600-identity-handoff-update-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cgm-remote-monitor-1600-identity-handoff-2026-11-01" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4613,7 +4635,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>c0fc1f990</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>de95758a6</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4625,6 +4647,39 @@
 - <a href="docs/archive/progress-archive-2026-01-30-batch4.html">progress-archive-2026-01-30-batch4.md</a></p>
 </blockquote>
 <hr />
+<h2 id="cgm-remote-monitor-1600-identity-handoff-update-2026-11-01">cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-1600-identity-handoff-update-2026-11-01" title="Permanent link">&para;</a></h2>
+<p>Updated the roadmap and release records after completing Q-IDX race handling and choosing #8894 as the canonical unique-index PR.</p>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Location</th>
+<th>Key Insights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unique-index PR</td>
+<td><code>nightscout/cgm-remote-monitor#8894</code></td>
+<td>Draft, stacked on #8892; local gates pass. Its feature base is excluded from hosted <code>pull_request</code> filters, so retarget to <code>dev</code> after #8892 merges to trigger CI. Earlier draft #8893 closed as superseded.</td>
+</tr>
+<tr>
+<td>Release status</td>
+<td><code>releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md</code></td>
+<td>6,319 passing / 3 pending; 33 expected current matrix deltas; broader <code>--batch --no-idf</code> runs were stopped.</td>
+</tr>
+<tr>
+<td>Roadmap and site</td>
+<td><code>docs/30-design/platform/next-gen-platform-plan.{md,json}</code>, <code>site/pages/nightscout-next-gen-platform.html</code></td>
+<td>#8892 CI is green; remaining ID-BATCH is clean at <code>4b48e57f</code>, 17 ahead/91 behind <code>dev</code>, and must be rebased/retested after the index lands.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Findings</strong>:
+- The 33 current index-on/off matrix deltas are 24 <code>batch-dupkey-mid</code> plus 9 <code>batch-repeat-identifier</code>; the earlier 24-cell result was pinned at <code>982de025</code>.
+- The batch-only matrix completed all 13 forms under default on MongoDB 5.0.32 and 8.0.29; only the two relevant forms were compared under reject and strict.
+- The older <code>proto/id-batch-replies</code> branch is at <code>7d81e1c1</code>, 1 ahead/119 behind; it is not the integration branch.</p>
+<p><strong>Next</strong>: Merge #8892 after review; then retarget #8894 to <code>dev</code> to trigger hosted CI, resolve any failures, and merge it. Afterward rebase <code>feat/id-batch</code> and rerun the batch suite, matrix, and controls before considering a PR.</p>
 <h2 id="cgm-remote-monitor-1600-identity-handoff-2026-11-01">cgm-remote-monitor 16.0.0 Identity Handoff (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-1600-identity-handoff-2026-11-01" title="Permanent link">&para;</a></h2>
 <p>Refreshed the release and next-gen roadmap records after ID-RESEND-SWITCH opened as #8892.</p>
 <table>
