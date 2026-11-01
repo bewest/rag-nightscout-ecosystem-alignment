@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#review-packet--bfq-225" class="md-skip">
+        <a href="#review-packet--bfq-225-pr-8888" class="md-skip">
           Skip to content
         </a>
       
@@ -1863,50 +1863,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#what-these-gates-do-not-prove" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What these gates do NOT prove
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#evidence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Evidence
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#notes-carried-on-the-item" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Notes carried on the item
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#before-you-approve" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Before you approve
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -3027,50 +2983,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#what-these-gates-do-not-prove" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What these gates do NOT prove
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#evidence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Evidence
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#notes-carried-on-the-item" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Notes carried on the item
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#before-you-approve" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Before you approve
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -3088,7 +3000,7 @@
 
 
 
-<p><em>Living document, last changed 2026-10-31 at <code>1cf862c65</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>ce88ee010</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3102,7 +3014,7 @@
   ============================================================================
 -->
 
-<h1 id="review-packet--bfq-225">Review packet — BFQ-225<a class="headerlink" href="#review-packet--bfq-225" title="Permanent link">&para;</a></h1>
+<h1 id="review-packet--bfq-225-pr-8888">Review packet — BFQ-225 (PR #8888)<a class="headerlink" href="#review-packet--bfq-225-pr-8888" title="Permanent link">&para;</a></h1>
 <p><strong>BF-225 - socket re-sends that #8877 changed from one stored treatment to two
 (v3-then-socket documented; UUID _id cases not)</strong></p>
 <table>
@@ -3127,7 +3039,7 @@
 </tr>
 <tr>
 <td>claimed state</td>
-<td><code>ready-to-push</code> — a claim; <code>make queue-status ID=BFQ-225</code> is the measurement</td>
+<td><code>in-flight-upstream</code> — a claim; <code>make queue-status ID=BFQ-225</code> is the measurement</td>
 </tr>
 <tr>
 <td>semver</td>
@@ -3159,20 +3071,20 @@ caregivers would see doubled IOB or COB. Not in any released version
 <h2 id="who-should-review-this-and-why">Who should review this, and why<a class="headerlink" href="#who-should-review-this-and-why" title="Permanent link">&para;</a></h2>
 <p>maintainer</p>
 <h2 id="what-was-measured">What was measured<a class="headerlink" href="#what-was-measured" title="Permanent link">&para;</a></h2>
-<p><strong>Nothing runnable.</strong> Every gate on this item is an explicit <code>no-gate:</code> marker. Read the next section as the whole evidence picture, not as a caveat on it.</p>
+<p><strong><code>git -C externals/cgm-remote-monitor-official fetch -q official pull/8888/head &amp;&amp; git -C externals/cgm-remote-m</code></strong> &nbsp;·&nbsp; kind: <code>network</code></p>
+<h1 id="8888s-head-on-github-contains-bf-225-fix-b-b6e3d739-fix-c-2079501a-ships">8888's head on GitHub contains BF-225 fix B b6e3d739; fix C (2079501a) ships<a class="headerlink" href="#8888s-head-on-github-contains-bf-225-fix-b-b6e3d739-fix-c-2079501a-ships" title="Permanent link">&para;</a></h1>
+<p>in the compatibility follow-up PR; replace with official/dev ancestry once
+merged</p>
 <h2 id="what-these-gates-do-not-prove">What these gates do NOT prove<a class="headerlink" href="#what-these-gates-do-not-prove" title="Permanent link">&para;</a></h2>
-<p><em>Each of these is the author recording, at the time, a property they could not measure. This is the reviewer's worklist.</em></p>
-<ul>
-<li>not built; the fix's gate is the two matrix cells (treatments x v3 x ws;
-  treatments x {v1,inproc} x ws idf-uuidid-same) back to 1 record, red on
-  dev, with no other cell moved</li>
-</ul>
+<p><em>No <code>no-gate:</code> markers on this item — every declared property has a runnable measurement. That is rare in this manifest and worth confirming rather than assuming.</em></p>
 <h2 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../docs/30-design/remedial/nightscout-backfix-register.html"><code>docs/30-design/remedial/nightscout-backfix-register.md</code></a></li>
 </ul>
 <h2 id="notes-carried-on-the-item">Notes carried on the item<a class="headerlink" href="#notes-carried-on-the-item" title="Permanent link">&para;</a></h2>
-<p>2026-10-31 night (session -4e): fix built, PR pending. B:
+<p>2026-10-31 night: fix B opened by the maintainer as PR #8888 (dev &lt;-
+bf/16.0.0-bf225-socket-duplicate, head b6e3d739); fix C on feat/id-compat-
+restore-ab. 2026-10-31 night (session -4e): fix built, PR pending. B:
 bf/16.0.0-bf225-socket-duplicate b6e3d739, one commit on dev 604de1cb (0
 behind), push commands with the maintainer: matrix exactly the 1 predicted
 cell (treatments x v3 x ws to one record, equal to v15.0.9 on stored state);
