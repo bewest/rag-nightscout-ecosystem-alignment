@@ -2354,6 +2354,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#slot-outcomes-after-the-replace-on-match-change-maintainer-2026-10-31-not-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slot outcomes after the replace-on-match change (maintainer, 2026-10-31; not built)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measured-at--4es-item-level-fix-abadc40a-2026-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured at -4e's item-level fix (abadc40a, 2026-10-31)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4361,6 +4383,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#slot-outcomes-after-the-replace-on-match-change-maintainer-2026-10-31-not-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slot outcomes after the replace-on-match change (maintainer, 2026-10-31; not built)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measured-at--4es-item-level-fix-abadc40a-2026-10-31" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured at -4e's item-level fix (abadc40a, 2026-10-31)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4379,7 +4423,7 @@
 
 
 <h1 id="id-batch-predicted-cells-featid-batch-on-ee49832d">ID-BATCH predicted cells (feat/id-batch on ee49832d)<a class="headerlink" href="#id-batch-predicted-cells-featid-batch-on-ee49832d" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>e796906e2</code>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>e36eaef77</code>.</em></p>
 <p>Contributor-facing. Written before any route change was gated. The rules are in <code>predict.js</code>
 (committed at 0c08cd258, written before the first route edit). The explicit lists come from those
 rules applied to the base pins <code>tools/qc/results/write-contract-matrix/batch-ee49832d-*.json</code>
@@ -4503,6 +4547,83 @@ the one data-update once.</p>
 </table>
 <p>Under the fix, the word the coordinator relayed for already-written slots is <code>created</code>. The step's word
 is <code>inserted</code> (<code>OUTCOMES</code> in write-intent.js), and ID-BATCH passes the step's word through.</p>
+<h2 id="slot-outcomes-after-the-replace-on-match-change-maintainer-2026-10-31-not-built">Slot outcomes after the replace-on-match change (maintainer, 2026-10-31; not built)<a class="headerlink" href="#slot-outcomes-after-the-replace-on-match-change-maintainer-2026-10-31-not-built" title="Permanent link">&para;</a></h2>
+<p>A matched re-send will <strong>replace</strong> on every collection; merge stays only for v3 PATCH and socket
+dbUpdate. ID-BATCH passes the step's outcome word through and treats no word specially except
+<code>refused</code> and not-written (<code>acknowledged</code>, decision (vi)), so the only expected change is in the opt-in
+<code>items</code> column. No test asserts <code>merged</code>. Measured on feat/id-batch 76fd7bfb (MongoDB 5.0.32, no
+settings); none of these cells' slots, status, Warning or <code>storeb</code> should move from this change alone.
+<code>storeb</code> may move where the re-send's fields replace the stored record's (<code>:v2</code>).</p>
+<table>
+<thead>
+<tr>
+<th><code>+results</code> cell</th>
+<th>today</th>
+<th>after replace-on-match (predicted)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entries v1 batch-repeat-identifier</td>
+<td><code>0:inserted,1:inserted,2:merged</code></td>
+<td><code>2:replaced</code></td>
+</tr>
+<tr>
+<td>entries v1 batch-repeat-stored</td>
+<td><code>1:merged</code></td>
+<td><code>1:replaced</code></td>
+</tr>
+<tr>
+<td>devicestatus v1 batch-repeat-stored</td>
+<td><code>1:merged</code></td>
+<td><code>1:replaced</code></td>
+</tr>
+<tr>
+<td>profile, food, activity v1 batch-taken-id</td>
+<td><code>1:merged</code></td>
+<td><code>1:replaced</code></td>
+</tr>
+<tr>
+<td>profile, food, activity v1 batch-taken-all</td>
+<td><code>0:merged,1:merged</code></td>
+<td><code>0:replaced,1:replaced</code></td>
+</tr>
+<tr>
+<td>treatments (every re-send)</td>
+<td><code>replaced</code></td>
+<td>unchanged</td>
+</tr>
+<tr>
+<td>entries v1 batch-dupkey-mid</td>
+<td><code>0:merged,1:merged,2:inserted</code></td>
+<td><code>0:replaced,1:replaced</code> at ee49832d; at -4e's item-level fix <code>0:inserted,1:replaced,2:inserted</code></td>
+</tr>
+<tr>
+<td>devicestatus v1 batch-dupkey-mid</td>
+<td><code>0:merged,1:merged,2:merged</code></td>
+<td>at the item-level fix <code>0:inserted,1:replaced,2:inserted</code></td>
+</tr>
+</tbody>
+</table>
+<p>PENDING-4E, seen in the opt-in today: after the whole-batch retry, the step's items come from the
+second run, so entries item 0 and devicestatus items 0 and 2 (inserted by the first run) report
+<code>merged</code>. The fixed-head column above (<code>inserted</code> for the slots written before the race) is what
+the item-level fix should give. <code>merged</code> becomes <code>replaced</code> once replace-on-match lands too.</p>
+<h2 id="measured-at--4es-item-level-fix-abadc40a-2026-10-31">Measured at -4e's item-level fix (abadc40a, 2026-10-31)<a class="headerlink" href="#measured-at--4es-item-level-fix-abadc40a-2026-10-31" title="Permanent link">&para;</a></h2>
+<p>Batch pins <code>batch-abadc40a-m{5.0.32,8.0.29}-{default,reject,strict}.json</code> (312 cells each; 5.0 and
+8.0 differ in 0 cells). Against ee49832d, 30 cells move per mode on both versions, all in <code>writes</code>:
+- the 12 batch-dupkey-mid cells of the fixed-head column above, exactly as predicted: entries v1,
+  inproc and <code>+results</code> <code>0:2,1:1,2:1</code> → <code>0:1,1:1,2:1</code>; devicestatus <code>0:3,1:1,2:3</code> → <code>0:2,1:1,2:2</code>;
+  food and activity <code>0:2</code> → <code>0:1</code>, still 500; treatments, profile and socket unchanged;
+- 18 food and activity cells that were not predicted in that column but follow from the same fix:
+  batch-repeat-identifier, batch-repeat-stored and batch-deleted (v1, <code>+results</code>, inproc) are no
+  longer re-run whole after their duplicate key (<code>0:2[,1:2]</code> → <code>0:1[,1:1]</code>), still 500 / E11000.
+  (The coordinator's count of 27 is 3 fewer; the 3 entries dupkey-mid cells only race in this harness
+  since bd97a7415, where the rival is one second off.)</p>
+<p>feat/id-batch rebased onto abadc40a (head 4b48e57f): against these pins it moves exactly the
+predicted 45 / 45 / 57 cells (<code>predicted-batch-abadc40a-*.json</code>), with every predicted field correct,
+on both versions. The dupkey <code>+results</code> items are <code>0:inserted, 1:merged, 2:inserted</code> on entries and
+devicestatus, as the fixed-head column says (<code>replaced</code> after replace-on-match).</p>
 
 
 
