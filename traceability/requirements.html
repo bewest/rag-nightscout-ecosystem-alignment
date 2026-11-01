@@ -1824,6 +1824,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#release-readiness-verification-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release-readiness verification (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#domain-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2722,6 +2733,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#release-readiness-verification-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release-readiness verification (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#domain-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2888,8 +2910,21 @@
 
 
 <h1 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-07-16 at <code>2b8a1a5e1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>5bbec1ef1</code>.</em></p>
 <p>This document is an index of requirements organized by domain.</p>
+<h2 id="release-readiness-verification-2026-11-01">Release-readiness verification (2026-11-01)<a class="headerlink" href="#release-readiness-verification-2026-11-01" title="Permanent link">&para;</a></h2>
+<p>The <a href="../docs/10-domain/nightscout-rc-readiness-2026-11-01.html">16.0.0 RC readiness triage</a>
+maps the existing pre-tag requirements (<code>RT-16-RELEASE</code>, <code>RT-16-LIVE-ALARMS</code>,
+<code>RT-16-RIG-SOAK</code>, <code>BFQ-72</code>, <code>BFQ-161</code>) to current integration work. These queue
+identifiers are release gates, not new protocol requirement IDs. Restricted-token
+WebSocket/reconnect testing and final integrated-head CI remain required evidence;
+offline notification tests do not satisfy live transport acceptance.
+Merged-head CI is met on <code>61eb3733</code>; it must be repeated after private security
+integration. <code>BFQ-227</code> tracks the callback defect fixed by #8895;
+<code>RT-CI-FIXTURES-8896</code> tracks test hygiene, not a new protocol requirement.
+Hosted suite totals are reported separately from matrix execution totals in the
+readiness record; neither replaces final security-tree, live/cohort or rollback
+acceptance. Scheduled implementation merges are not unfulfilled test requirements.</p>
 <h2 id="domain-files">Domain Files<a class="headerlink" href="#domain-files" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="aid-algorithms-requirements.html">Aid Algorithms</a> - 56 requirements (+3 OREF)</li>

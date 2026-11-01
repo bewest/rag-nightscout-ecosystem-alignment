@@ -2168,7 +2168,22 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>5bbec1ef1</code>.</em></p>
+<p><strong>2026-11-01 release-preparation follow-up:</strong> the dated
+<a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html">RC readiness triage</a>
+records current CI/staging blockers, candidate PR dispositions, issue follow-up
+and isolated fix preparation. Historical measurements below keep their original
+commit labels; this follow-up does not declare a named RC.</p>
+<p><strong>Current acceptance roadmap (2026-11-01):</strong> scheduled backend storage/identity
+integration, dependency modernization and the opt-in modern theme are merged;
+do not read historical in-flight tables below as the current merge queue.
+The <a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html#current-test-totals-and-release-scope">current scope and hosted test totals</a>
+record 6,323 passing / 3 pending top-level tests, plus separate client-core,
+browser and Connect suites (7,660 passing / 3 pending when each suite is counted
+once; not a cross-suite identity census). Remaining work is private security
+integration and final-tree checks, live alerts, cohort/soak and rollback evidence,
+release notes and staging acceptance. Optional draft proposals are not
+automatically release blockers.</p>
 <p><strong>Status: in development. Nothing tagged or released.</strong> 16.0.0 is the next release from <code>dev</code>
 (maintainer, 2026-10-21; queue <code>RT-VERSION</code>). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against <code>official/dev</code> <code>47723cda</code> (the merge of #8605, cut 5) and
@@ -2184,7 +2199,8 @@ the maintainer set on 2026-10-30, Known defects (BF-209, BF-211, BF-212) and the
 <code>externals/cgm-remote-monitor-official</code> after <code>git fetch official</code>. Updated on 2026-10-31 for <code>dev</code> <code>368e6c23</code>
 (#8874, 02:02:52Z): the merge state, the in-flight update below the handoff table, Known defects (BF-215,
 BF-216, BF-219 to BF-222) and the testing pointer to R18; read with <code>gh pr list</code>, <code>gh pr checks</code> and
-<code>gh api .../compare</code> at about 05:45Z. Updated 2026-11-01 for <code>dev</code> <code>61eb3733</code> after #8896; current identity status is in the rows below.
+<code>gh api .../compare</code> at about 05:45Z. Updated 2026-11-01 for <code>dev</code> <code>61eb3733</code> after #8895/#8896 merged;
+current callback/CI and identity status is in the rows below.
 The fresh write-compatibility result and release-readiness assessment are in the
 <a href="../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html">compatibility report</a> and
 <a href="../../site/pages/cgm-remote-monitor-16.0.0-colophon.html">release colophon</a>. Other release counts
@@ -2228,7 +2244,11 @@ for testers is <a href="testing-notes.html">testing-notes.md</a> (not written ye
 </tr>
 <tr>
 <td><code>dev</code> head</td>
-<td><code>61eb3733</code> (merge of #8896, 2026-11-01); before it <code>497d08c9</code> (#8894, 16:28:25Z), <code>3c773ee5</code> (#8892), <code>f54941b5</code> (#8881), #8889 <code>4196dd45</code> (06:01:54Z), #8890 <code>5921d5fd</code> (04:29:18Z), #8886 <code>51d38f9f</code>, #8880 <code>305a6533</code>, #8874 <code>368e6c23</code>; earlier history: #8865 <code>991b0654</code> (tree <code>a9ae9536</code>), #8878 <code>d51c7a60</code>, #8877 <code>cf3d4b8f</code>, #8873 <code>e1f7ac41</code>, and the 2026-10-27 merges #8872 <code>db3b9e4e</code>, #8871 <code>dcf20bfb</code>, #8858 <code>ca1652d6</code>, #8869 <code>b8baf24d</code>, #8870 <code>7abe1cf6</code>, #8863 <code>9668b179</code>, #8861 <code>84fac457</code> (<code>git log --first-parent official/master..official/dev</code>)</td>
+<td><code>61eb37335954ae42c91345a0823bd67331025165</code> (#8896, 2026-11-01 17:52:18Z), after #8895 <code>bb85d10f</code> (17:45:01Z) and #8894 <code>497d08c9</code> (16:28:25Z). Earlier measured history remains in the dated rows below.</td>
+</tr>
+<tr>
+<td>CI on current <code>dev</code></td>
+<td>Both CI runs 41333672054 / 41333677576 and CodeQL runs 41333672065 / 41333677478 passed on <code>61eb3733</code>. The push run published amd64/arm64 development images to <code>dev_61eb37335954ae42c91345a0823bd67331025165</code> and <code>latest_dev</code>; release-image publication was skipped. No named RC or live acceptance is implied.</td>
 </tr>
 <tr>
 <td><code>dev</code> head on 2026-10-27</td>
@@ -2887,7 +2907,46 @@ merge times are <code>gh pr view &lt;n&gt; --json mergedAt</code>. The first nin
 </tr>
 </tbody>
 </table>
-<p>Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
+<h3 id="merged-additions-2026-11-01">Merged additions, 2026-11-01<a class="headerlink" href="#merged-additions-2026-11-01" title="Permanent link">&para;</a></h3>
+<p>These rows extend the historical merge table above without recomputing its
+size/count measurements. Only integrated patch evidence is recorded.</p>
+<table>
+<thead>
+<tr>
+<th>PR</th>
+<th>Merged at (UTC)</th>
+<th>Merge commit</th>
+<th>Register / queue</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#8895</td>
+<td>11-01 17:45:01Z</td>
+<td><code>bb85d10f</code></td>
+<td>BF-227 / <code>BFQ-227</code></td>
+<td>Handled Pushover callbacks for late/duplicate/expired receipts answer 200; known alarm acknowledgment remains once-only and the diagnostic is unchanged.</td>
+</tr>
+<tr>
+<td>#8896</td>
+<td>11-01 17:52:18Z</td>
+<td><code>61eb3733</code></td>
+<td><code>RT-CI-FIXTURES-8896</code> (no new BF)</td>
+<td>Test-only: find the seeded cached/served entry without first-position assumptions; compare successful index states <code>built</code>/<code>present</code> as equivalent.</td>
+</tr>
+</tbody>
+</table>
+<p>R19/R20 in the integration record separate local focused evidence, the
+inconclusive local start-path rerun, and successful hosted checks. The final</p>
+<h1 id="8896-diff-and-canonical-merged-files-were-inspected-no-additional">8896 diff and canonical merged files were inspected; no additional<a class="headerlink" href="#8896-diff-and-canonical-merged-files-were-inspected-no-additional" title="Permanent link">&para;</a></h1>
+<p>production-code change is claimed. The published development-image manifest
+and remaining gates are in the
+<a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html">current readiness record</a>.
+Latest release is still 15.0.9; BF-227 is fixed on dev, not released. Private
+BF-72/BF-161 integration remains blocked, as do unperformed live/cohort gates.</p>
+<p><strong>Historical merge commentary follows:</strong>
+Before merging, AndyLow91 merged <code>dev</code> into most branches and added commits of his own (read with
 <code>git log</code> and <code>git show</code>):</p>
 <ul>
 <li>
@@ -3402,7 +3461,10 @@ needs <code>dev</code> <code>37b2280f</code> merged in (the four-file conflict w
 </tr>
 </tbody>
 </table>
-<p>Still owed before the tag, unchanged: BF-72 and BF-161 fork branches carry <code>dev</code> <code>305a6533</code> (local <code>0fdf0fd6</code>, <code>0873f314</code>) and need <code>dev</code> <code>368e6c23</code> merged and re-run; <code>master</code> protection; the cohort window (opens when slices 3 and 4 are on <code>dev</code>).</p>
+<p><strong>Historical pre-tag assessment at this table's read:</strong> private branch refresh,
+<code>master</code> protection and the cohort window were outstanding. <strong>Current correction,
+2026-11-01:</strong> BF-72/BF-161 now contain <code>61eb3733</code>, but private targeting and
+full-suite acceptance remain blocked; protection and live/cohort gates remain.</p>
 <p><strong>Update, 2026-10-31, about 05:45Z</strong> (read from GitHub with <code>gh pr list</code>, <code>gh pr checks</code> and
 <code>gh api .../compare/dev...&lt;head&gt;</code> by session -7d; every local branch matches its PR head, and every worktree is clean):</p>
 <table>
@@ -3555,10 +3617,10 @@ and the queue):</p>
 <td>—</td>
 </tr>
 <tr>
-<td>BF-72 and BF-161 through their advisory forks</td>
-<td>the rows below</td>
-<td><code>a9da33ff</code>, <code>1dce7722</code> (pushed 2026-10-27)</td>
-<td>both contain <code>dev</code> <code>7abe1cf6</code>; <code>dev</code> has moved eight PR merges past it (#8869 to #8865), so a merge of <code>dev</code> and a re-run inside each fork is owed before the tag</td>
+<td>BF-72 and BF-161 through their private advisory process</td>
+<td>private, no public PR</td>
+<td>both refreshed fixes contain public dev <code>61eb3733</code></td>
+<td><strong>Current 2026-11-01: BLOCKED.</strong> Combined focused tests passed 402; full-suite MongoDB validation is inconclusive and private PR targeting rejected an invalid base. No merge/publication. Dated older branch evidence below is historical.</td>
 <td><code>BFQ-72</code>, <code>BFQ-161</code></td>
 </tr>
 <tr>
@@ -4000,7 +4062,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/44cb0a8993dca02c753db3cfb540b72557e11407/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/70ac87a660652f35e935e36e89d7ce8fbf9553dc/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -4056,14 +4118,16 @@ the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. On 2026-10-30 no 
 <a href="#in-flight-for-this-release">In flight</a> has cleared it; #8874 is first in the order.</p>
 <p><strong>Decisions open, with their owner:</strong></p>
 <ol>
-<li><strong>The scope of BF-161's draft advisory</strong> (maintainer): publish it now for BF-151 (released in 15.0.9)
-   with BF-161 as a follow-up, or extend it to include BF-161 and publish it with the release that
-   carries the fix. Packet: <a href="../../reports/reviewer-packets/bfq-161-adv-phrf-1600-dev.html">bfq-161</a>.
-   <em>Decided 2026-10-27 (maintainer; queue <code>BFQ-161</code>): extend the draft advisory to cover BF-161 as well as
-   BF-151, and publish it once, with 16.0.0.</em></li>
-<li><strong>BF-72's test inputs</strong> (the original author of the regex-limit commits): the tests' hostile inputs
-   are to be rebuilt in code before anything is published. Packet:
-   <a href="../../reports/reviewer-packets/bfq-72-adv-r3gv-1600-dev.html">bfq-72</a>.</li>
+<li><strong>BF-161 advisory scope is decided; private integration remains blocked.</strong>
+   The recorded 2026-10-27 decision is to cover BF-161 and BF-151 together and
+   publish once with 16.0.0. Current private targeting/full-suite blockers are
+   in <a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html#security-integration-blocked-private">security readiness</a>;
+   no merge or publication is claimed. Queue <code>BFQ-161</code> is blocked, not awaiting
+   a ready-to-review packet.</li>
+<li><strong>BF-72 remains private and blocked.</strong> Disclosure-safe test preparation,
+   valid private PR targeting and final full-suite integration are outstanding;
+   see <a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html#security-integration-blocked-private">security readiness</a>.
+   Queue <code>BFQ-72</code> does not authorize publication.</li>
 <li><strong>BF-95</strong> (maintainer): a notice for readings that arrive dated ahead of the server clock, or the
    status quo. Packet: <a href="../../reports/reviewer-packets/bfq-95.html">bfq-95</a>. 2026-10-25 (maintainer): verify
    <code>srvModified</code> first; on <code>dev</code> it is a server receipt time on every live path (caveat BF-181).</li>

@@ -2154,6 +2154,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cgm-remote-monitor-rc-readiness-triage-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cgm-remote-monitor RC Readiness Triage (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3412,6 +3423,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cgm-remote-monitor-rc-readiness-triage-2026-11-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cgm-remote-monitor RC Readiness Triage (2026-11-01)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4637,7 +4659,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-01 at <code>5bbec1ef1</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4649,6 +4671,85 @@
 - <a href="docs/archive/progress-archive-2026-01-30-batch4.html">progress-archive-2026-01-30-batch4.md</a></p>
 </blockquote>
 <hr />
+<h2 id="cgm-remote-monitor-rc-readiness-triage-2026-11-01">cgm-remote-monitor RC Readiness Triage (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-rc-readiness-triage-2026-11-01" title="Permanent link">&para;</a></h2>
+<p><strong>Publication follow-up:</strong> integrated through a clean origin-main worktree,
+preserving concurrent local edits. Re-rendered compatibility/platform rich pages
+from their committed sources to repair the existing site freshness failure;
+site checks passed with zero unresolved links and noindex on 1,668/1,668 HTML
+pages. Hosted logs report 6,323 passing / 3 pending top-level tests and 7,660
+passing / 3 pending across suites counted once, not distinct identities.
+Scheduled storage/identity and modern-theme/dependency merges are recorded as
+completed implementation; security routing and final-tree/live/cohort acceptance
+are separate remaining work. No private PR exists yet; the maintainer's advisory
+Compare &amp; pull request workflow is required, not a new scope decision.</p>
+<p>Updated the register, queue and release records after #8895/#8896 merged,
+with official <code>dev</code> <code>61eb37335954ae42c91345a0823bd67331025165</code>. Final PR diffs
+and canonical merged source were inspected. No shared checkout was edited.</p>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Location</th>
+<th>Key Insights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dated readiness record</td>
+<td><code>docs/10-domain/nightscout-rc-readiness-2026-11-01.md</code></td>
+<td>Integrated CI/CodeQL green, dev image published; historical failures labelled, obsolete required check and live/private gates remain; no named RC.</td>
+</tr>
+<tr>
+<td>Traceability and terminology</td>
+<td><code>traceability/{gaps,requirements}.md</code>, <code>mapping/cross-project/terminology-matrix.md</code></td>
+<td>Distinguish final combined-tree acceptance from old PR checks, and provider callback acknowledgment from active alarm acknowledgment.</td>
+</tr>
+<tr>
+<td>Register and queue</td>
+<td><code>docs/30-design/remedial/nightscout-backfix-register.md</code>, <code>queue/work-queue.yaml</code></td>
+<td>New BF-227 / BFQ-227 is merged-upstream, still exposed on 15.0.9. RT-CI-FIXTURES-8896 is test hygiene, not a duplicate defect.</td>
+</tr>
+<tr>
+<td>Release records</td>
+<td><code>releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes}.md</code>, <code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></td>
+<td>Current head and merged rows; R19/R20 distinguish focused/local-timeout/hosted evidence. Historical counts preserved, no new decision.</td>
+</tr>
+<tr>
+<td>Callback fix</td>
+<td>#8895, merge <code>bb85d10f</code></td>
+<td>54 targeted / 59 integration tests pass; known acknowledgment once-only and diagnostic unchanged. No live transport claim.</td>
+</tr>
+<tr>
+<td>CI repair</td>
+<td>#8896, merge <code>61eb3733</code></td>
+<td>Fixture identity and successful index-state comparison; 37 focused tests pass, local start-path timeout remains inconclusive, full hosted checks pass.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Findings</strong>: nightscout/cgm-remote-monitor#8584 has reporter confirmation
+and is a closure candidate; nightscout/cgm-remote-monitor#8829 still needs
+restricted-token/reverse-proxy cohort confirmation. No issue was closed, no
+branch protection changed and no security advisory published.</p>
+<p><strong>Integrated evidence</strong>: both CI runs 41333672054 / 41333677576 and both CodeQL
+runs passed. Push publishing jobs/log establish the amd64/arm64 development
+image at <code>dev_61eb37335954ae42c91345a0823bd67331025165</code> and <code>latest_dev</code>,
+not a named RC. Both private fixes contain that dev head; 402 combined focused
+tests pass, but full-suite MongoDB acceptance and private PR routing remain
+blocked/inconclusive. No security merge or publication.</p>
+<p><strong>Next</strong>: hand off the clean documentation branch for integration after the
+concurrent dirty main work is coordinated. Preserve staging protection, live
+alerts, real-rig soak, identity cohort/rollback and final security-tree gates.</p>
+<p><strong>Documentation validation</strong>: queue schema/fidelity/check/coverage, generated
+views/packets, links, exposure legend and both new read-only merge gates pass;
+both authored merge-metadata controls are non-vacuous (wrong-merge negative
+fails, recorded-merge positive passes).
+The absent pre-existing <code>P0-F</code> working directory was linked read-only solely
+for queue validation, without cloning or changing it. <code>make traceability</code>
+completed; unrelated generated reports are not committed. <code>make verify</code>
+ran but is not clean: this isolated worktree has no external source clones
+(470 references, 0 valid), and existing coverage/assertion gaps remain.
+The detail-heading check has the same 29 missing headings as the base commit;
+BF-227 has both its summary row and detail. No baseline defects were repaired.</p>
 <h2 id="cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01">cgm-remote-monitor 16.0.0 Identity and Release Evidence Update (2026-11-01)<a class="headerlink" href="#cgm-remote-monitor-1600-identity-and-release-evidence-update-2026-11-01" title="Permanent link">&para;</a></h2>
 <p>Updated the roadmap and release records after #8894 and CI stabilization #8896 merged; completed the broad batch and fresh backwards-compatibility matrices.</p>
 <table>

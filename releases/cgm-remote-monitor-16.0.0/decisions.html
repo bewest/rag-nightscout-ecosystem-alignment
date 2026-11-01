@@ -1046,24 +1046,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    cgm-remote-monitor 16.0.0 — decisions
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="decisions.html" class="md-nav__link md-nav__link--active">
         
   
@@ -1080,102 +1062,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#the-cycle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The cycle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tests-and-the-jsdom-harness" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tests and the jsdom harness
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#runtime" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Runtime
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-v3-and-the-write-contract" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API v3 and the write contract
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#query-layer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Query layer
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#security-fixes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security fixes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#packaging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Packaging
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -2266,91 +2152,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#the-cycle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The cycle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tests-and-the-jsdom-harness" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tests and the jsdom harness
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#runtime" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Runtime
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-v3-and-the-write-contract" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API v3 and the write contract
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#query-layer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Query layer
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#security-fixes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security fixes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#packaging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Packaging
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2369,13 +2170,20 @@
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
-<code>dev</code> <code>497d08c9</code> (2026-11-01, after #8894), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
+<code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
 it. Item state is in <code>queue/work-queue.yaml</code>; what 16.0.0 contains and what is still open is in
 <a href="contents.html">contents.md</a>; the test evidence is in the
 <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a>. BF-72 and
 BF-161 appear by mechanism only: both are live on the shipping release, and this repository is
 public.</em></p>
+<p><strong>Current implementation status, 2026-11-01:</strong> #8895's callback fix and</p>
+<h1 id="8896s-test-hygiene-are-merged-integrated-dev-ci-and-codeql-are-green-and">8896's test hygiene are merged; integrated dev CI and CodeQL are green and<a class="headerlink" href="#8896s-test-hygiene-are-merged-integrated-dev-ci-and-codeql-are-green-and" title="Permanent link">&para;</a></h1>
+<p>the push workflow published the development image. This records implementation
+and validation, <strong>not a new release decision</strong>. No RC is named; BF-72/BF-161
+remain private and blocked, and live alerts, real-rig soak, identity cohort/
+rollback and the obsolete <code>master</code> required-check gate remain outstanding.
+See <a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html">the readiness record</a>.</p>
 <h2 id="the-cycle">The cycle<a class="headerlink" href="#the-cycle" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2916,7 +2724,7 @@ public.</em></p>
 <td><strong>BF-72 and BF-161 go through the private forks of their draft advisories</strong>, not public PRs, and are published with the release that carries them</td>
 <td>maintainer, 2026-10-21</td>
 <td><code>BFQ-72</code>, <code>BFQ-161</code></td>
-<td>both branches pushed to the forks on 2026-10-21; no fork PR opened yet; both owe a merge of <code>dev</code> <code>eb72a1d3</code></td>
+<td>Current 2026-11-01: both retained private fixes contain dev <code>61eb3733</code>; combined focused tests passed 402. Full-suite acceptance is inconclusive and private PR targeting is blocked. No merge or publication; decision unchanged.</td>
 </tr>
 <tr>
 <td><strong>Legacy query-string authentication is kept</strong>: the page moves its own credentials to headers, but <code>token</code> and <code>secret</code> in a URL stay accepted for existing clients and shared links; their exposure is reduced (redacted logs, <code>Referrer-Policy: no-referrer</code>, <code>Cache-Control: no-store</code>) and documented for reverse proxies and CDNs, with no CodeQL dismissal</td>

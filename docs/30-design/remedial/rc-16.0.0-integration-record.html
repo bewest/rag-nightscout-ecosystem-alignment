@@ -1806,6 +1806,8 @@
       
         
       
+        
+      
     
     
     
@@ -4655,7 +4657,14 @@ decisions are in <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.
 BF-161 are live on the shipping release (15.0.9), so this record describes them by mechanism only.
 No verification record is captured until release time
 (<a href="../../../releases/VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>).</em></p>
-<p><strong>Where the candidate stands, 2026-10-26, 19:10Z.</strong> <code>dev</code> is <code>47723cda</code> (the merge of #8605, cut 5; tree
+<p><strong>Current state, 2026-11-01:</strong> dev is
+<code>61eb37335954ae42c91345a0823bd67331025165</code>, after #8895/#8896. Both integrated
+CI and CodeQL runs pass; the push workflow published the multi-architecture
+development image. R19/R20 below record the merged patches and evidence
+boundaries. No named RC; private security integration and live/cohort/staging
+gates remain outstanding. Earlier head/count/CI entries below are historical
+measurements, not the current state.</p>
+<p><strong>Historical state, 2026-10-26, 19:10Z.</strong> <code>dev</code> is <code>47723cda</code> (the merge of #8605, cut 5; tree
 <code>200a1c00</code>; package version 16.0.0; <code>engines.node</code> <code>^22.23.4 || ^24.22.1 || &gt;=26.12.1</code>), 857 commits and
 35 first-parent commits (34 PR merges and the version bump <code>04d435eb</code>) ahead of <code>master</code> <code>c6a0d8ed</code>
 (= <code>v15.0.9</code>); 745 files, +123438/−15023 (<code>git rev-list --count</code>, <code>--first-parent --count</code> and <code>git diff
@@ -4701,8 +4710,12 @@ classified results and limits.</p>
 <p>Staging PR #8824 remains open and blocked against <code>master</code> at <code>61eb3733</code>. Draft #8857 is in the
 16.0.0 entry bar and diverges from current <code>dev</code>: <code>dev</code> is 97 commits ahead, while the PR has 16
 unique commits; rebase, resolve D-REG-FLAG, and rerun its checks. No 16.0.0 release candidate is
-named. Cohort verification, Pushover/APNs delivery, real-rig soak, BF-72/BF-161 advisory-fork
-merges, rollback rehearsal, and operator-facing release notes remain before tagging.</p>
+named. Cohort verification, Pushover/APNs delivery, real-rig soak, BF-72/BF-161
+private integration and final-tree checks, rollback rehearsal, and operator-facing
+release notes remain before tagging. No private PR exists: the prepared fixes
+contain current dev and pass 402 combined focused tests, but the full suite is
+inconclusive. The advisory-associated private repository is confirmed; the
+maintainer's Compare &amp; pull request routing and final validation remain required.</p>
 <h2 id="runs">Runs<a class="headerlink" href="#runs" title="Permanent link">&para;</a></h2>
 <h3 id="r1--dev-baseline-on-04d435eb-2026-10-21">R1 · <code>dev</code> baseline on <code>04d435eb</code> (2026-10-21)<a class="headerlink" href="#r1--dev-baseline-on-04d435eb-2026-10-21" title="Permanent link">&para;</a></h3>
 <p><code>04d435eb</code>, the version bump on <code>c6a0d8ed</code>. <code>npm test</code>: <strong>3569 / 4 / 0</strong>, Node 24.15.0, MongoDB 7.0.43 in
@@ -5729,6 +5742,46 @@ containers (<code>--ulimit nofile=64000:64000</code>).</p>
   files pass: 18, run by session -49 on MongoDB 8.0. #8883's CI on <code>789d5d9d</code>: 13 passed and 2 pending when
   read at 05:30Z.</li>
 </ul>
+<h3 id="r19--merged-callback-repair-8895--bf-227-2026-11-01">R19 · merged callback repair #8895 / BF-227 (2026-11-01)<a class="headerlink" href="#r19--merged-callback-repair-8895--bf-227-2026-11-01" title="Permanent link">&para;</a></h3>
+<p>Merged at 17:45:01Z as <code>bb85d10f</code>; subsequently integrated into dev <code>61eb3733</code>.
+The callback route and regressions were inspected at that merged head:
+<code>externals/cgm-remote-monitor/lib/api/notifications-api.js:13-17</code> and
+<code>externals/cgm-remote-monitor/tests/notifications-api.test.js:90-140</code>.
+Unknown receipts return 200 after normal handling; a known receipt followed
+by a duplicate still acknowledges the alarm once. The diagnostic in
+<code>externals/cgm-remote-monitor/lib/server/pushnotify.js:87-88</code> is unchanged.</p>
+<p>Recorded local validation on Node 22.23.4 / MongoDB 8.0.29: 54 focused
+notification tests and 59 integration-tier tests passed; targeted lint,
+tier-map and whitespace checks passed. Malformed/null and oversized JSON
+retain parser errors; a handler exception is not converted to 200.
+No live Pushover/APNs delivery result is recorded. BFQ-227 is merged-upstream,
+not released; the route defect remains in latest release 15.0.9 by source
+inspection.</p>
+<h3 id="r20--final-8896-test-hygiene-and-integrated-dev-ci-2026-11-01">R20 · final #8896 test hygiene and integrated dev CI (2026-11-01)<a class="headerlink" href="#r20--final-8896-test-hygiene-and-integrated-dev-ci-2026-11-01" title="Permanent link">&para;</a></h3>
+<p>Merged at 17:52:18Z as <code>61eb37335954ae42c91345a0823bd67331025165</code>.
+The final PR diff/body/commits and canonical merged tests were read. Only
+<code>tests/api.entries.test.js</code> and <code>tests/start-paths.test.js</code> changed: the seed
+is found without positional assumptions and only index states <code>built</code> and
+<code>present</code> normalize to <code>ready</code> for comparison. The cache-mutation assertion
+is retained; production status behavior is not changed. No demonstrated
+follow-up regression was found in that final diff.</p>
+<p>Recorded local evidence: 37 focused entries tests passed, lint and the
+455-file / eight-tier map passed. Local start paths timed out before
+<code>/api/versions</code>: <strong>inconclusive, not passed</strong>. Full hosted PR checks passed.
+Merged-dev CI runs 41333672054 (push) / 41333677576 (pull_request), and
+CodeQL runs 41333672065 / 41333677478, all passed on <code>61eb3733</code>.</p>
+<p>The push workflow's successful amd64/arm64 build-by-digest and Docker Hub
+publication jobs, plus its 18:04Z log, establish development-image publication:
+<code>dev_61eb37335954ae42c91345a0823bd67331025165</code> and <code>latest_dev</code>, manifest
+<code>sha256:623f72a1dcd2437a8e6e1715d205c9fba174cf5ca77b8c97d9bdf320b3bc2f2d</code>.
+The PR publication jobs and the push release-image job were skipped.
+This is not a named RC, deployment check, live notification acceptance or
+validation of the eventual private-security integrated tree.</p>
+<p>Private BF-72/BF-161 remain blocked: both refreshed fixes contain this public
+head, combined focused tests passed 402, but full-suite MongoDB validation is
+inconclusive and private PR targeting was rejected for an invalid base.
+No security merge/publication or issue closure. RT-CI-FIXTURES-8896 records
+test hygiene, not a new backfix-register defect.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

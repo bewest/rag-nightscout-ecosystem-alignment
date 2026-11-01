@@ -2309,6 +2309,18 @@ represent client adoption, production traffic, or live application tests.</p>
 <h2 id="release-readiness">Release readiness<a class="headerlink" href="#release-readiness" title="Permanent link">&para;</a></h2>
 <!-- chart: release-gates -->
 
+<p><strong>Current integrated test totals, dev <code>61eb3733</code>:</strong> hosted top-level <code>test-ci</code>
+reports 6,323 passing / 3 pending. Adding the separate 319 client-core, 684
+browser and 334 Connect cases gives 7,660 passing / 3 pending across suites
+counted once, not distinct test identities. The full CI matrix has 31,208
+passing / 13 pending executions because suites repeat across environments;
+these counts are not additional compatibility-matrix cells.</p>
+<p><strong>Private security remains blocked:</strong> BF-72/BF-161's prepared fixes contain
+current dev and combined focused tests passed 402; full-suite acceptance is
+inconclusive. No private PR exists. Advisory association is confirmed, but
+the maintainer must route the prepared patches through the advisory's
+Compare &amp; pull request workflow, then complete final integrated-tree checks.
+No private branch identifiers or payloads are published here.</p>
 <p>The release is <strong>not ready to tag</strong> until every blocking gate is cleared and a release candidate is
 named. The failure or completion state of each gate and its supporting evidence are summarized above;
 the release records remain the source of detailed procedures and test boundaries.</p>
