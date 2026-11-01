@@ -37,7 +37,7 @@ pages:
   cgm-remote-monitor-16.0.0-write-compatibility.html:
     kind: living
     sources: [releases/cgm-remote-monitor-16.0.0/compat/headline.json, releases/cgm-remote-monitor-16.0.0/compat/groups.json, releases/cgm-remote-monitor-16.0.0/compat/heat.json, releases/cgm-remote-monitor-16.0.0/compat/families.json, releases/cgm-remote-monitor-16.0.0/compat/triage.json, releases/cgm-remote-monitor-16.0.0/compat/clients.json, releases/cgm-remote-monitor-16.0.0/compat/cells.json, releases/cgm-remote-monitor-16.0.0/compat/groups.yaml, releases/cgm-remote-monitor-16.0.0/compat/page.yaml, releases/cgm-remote-monitor-16.0.0/compat/reconsider.json]
-    source_commit: dfb32f3ae
+    source_commit: cdf0b9659
     render: tools/site/render_compat.py
   clinical-decision-support-synthetic-demo-2026-10-16.html:
     kind: snapshot
@@ -45,7 +45,7 @@ pages:
   nightscout-next-gen-platform.html:
     kind: living
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
-    source_commit: de95758a6
+    source_commit: 5d578f858
     render: tools/site/render_nextgen.py
   api-aid-commands-2025.html:
     kind: living
