@@ -12,6 +12,24 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## cgm-remote-monitor RC Readiness Triage (2026-11-01)
+
+Checked official `dev` `497d08c9`, staging protection, active PRs and recent
+issues; delegated CI repair, callback patch import and private security
+integration into isolated worktrees. No existing shared checkout was edited.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Dated readiness record | `docs/10-domain/nightscout-rc-readiness-2026-11-01.md` | Two failed integrated CI runs, obsolete required check, draft/rebase gates and issue dispositions; no named RC. |
+| Traceability and terminology | `traceability/{gaps,requirements}.md`, `mapping/cross-project/terminology-matrix.md` | Distinguish final combined-tree acceptance from old PR checks, and provider callback acknowledgment from active alarm acknowledgment. |
+| Release pointer | `releases/cgm-remote-monitor-16.0.0/contents.md` | Preserves historical measurements and links current readiness evidence. |
+| Callback fix | `nightscout/cgm-remote-monitor#8895` | Open at `647ee265`: 54 targeted / 59 integration tests pass; lint and tier map pass. Hosted CI initially running; no live transport claim. |
+
+**Key Findings**: nightscout/cgm-remote-monitor#8584 has reporter confirmation
+and is a closure candidate; nightscout/cgm-remote-monitor#8829 still needs
+restricted-token/reverse-proxy cohort confirmation. No issue was closed, no
+branch protection changed and no security advisory published.
+
 ## cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
 
 Updated the roadmap and release records after completing Q-IDX race handling and choosing #8894 as the canonical unique-index PR.

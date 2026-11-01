@@ -1,5 +1,11 @@
 # cgm-remote-monitor 16.0.0 — contents
 
+**2026-11-01 release-preparation follow-up:** the dated
+[RC readiness triage](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
+records current CI/staging blockers, candidate PR dispositions, issue follow-up
+and isolated fix preparation. Historical measurements below keep their original
+commit labels; this follow-up does not declare a named RC.
+
 **Status: in development. Nothing tagged or released.** 16.0.0 is the next release from `dev`
 (maintainer, 2026-10-21; queue `RT-VERSION`). Contributor-facing; full technical depth intended.
 Measured 2026-10-26 (to 19:10Z) against `official/dev` `47723cda` (the merge of #8605, cut 5) and

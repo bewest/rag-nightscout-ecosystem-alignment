@@ -2,6 +2,15 @@
 
 This document is an index of requirements organized by domain.
 
+## Release-readiness verification (2026-11-01)
+
+The [16.0.0 RC readiness triage](../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
+maps the existing pre-tag requirements (`RT-16-RELEASE`, `RT-16-LIVE-ALARMS`,
+`RT-16-RIG-SOAK`, `BFQ-72`, `BFQ-161`) to current integration work. These queue
+identifiers are release gates, not new protocol requirement IDs. Restricted-token
+WebSocket/reconnect testing and final integrated-head CI remain required evidence;
+offline notification tests do not satisfy live transport acceptance.
+
 ## Domain Files
 
 - [Aid Algorithms](aid-algorithms-requirements.md) - 56 requirements (+3 OREF)
