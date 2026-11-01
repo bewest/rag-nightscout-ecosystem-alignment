@@ -38,6 +38,9 @@ under **More**.
 - [The Nightscout ecosystem programme](site/pages/nightscout-ecosystem-programme.html):
   the pieces of work across the ecosystem, placed as five layers of one
   programme.
+- [16.0.0 write compatibility](site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html)
+  and [release colophon](site/pages/cgm-remote-monitor-16.0.0-colophon.html):
+  the measured write outcomes, client-shape analysis and release gates.
 - [How 15.0.9 was made](site/pages/cgm-remote-monitor-15.0.9-colophon.html): the
   release cycle's figures, with charts of merges, defects found and closed,
   test runs and the regressions caught before release.

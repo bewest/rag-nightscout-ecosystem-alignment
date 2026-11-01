@@ -61,8 +61,9 @@ famc=collections.Counter((fam(r['form']),origin(r)) for r in d)
 fams=[{'family':f,'origin':o,'cells':n} for (f,o),n in famc.items()]
 # cells drill-down (trimmed)
 def brief(x,k): return (x or {}).get(k,'')
+origin_labels=s.get('origin_labels',{'8879':'#8879 only','dev':'already on dev','both':'dev, then #8879'})
 cells=[{'cell':r['cell'],'group':r['group'],'collection':r['collection'],'seed':r['seed_path'],'resend':r['resend_path'],'form':r['form'],'family':fam(r['form']),
-  'origin':{'dev':'On dev','8879':'#8879','both':'Both'}[origin(r)],'effect':EFF_LABEL[r['data_effect']],
+  'origin':origin_labels[origin(r)],'effect':EFF_LABEL[r['data_effect']],
   'store_before':brief(r['before'],'store'),'store_after':brief(r['after'],'store'),'reply_before':brief(r['before'],'st'),'reply_after':brief(r['after'],'st'),
   'cause':r['cause'][:140],'guard':guard(r['guard'])} for r in d]
 # triage: group x collection x path with clients
@@ -85,7 +86,7 @@ for (g,c,p),v in tri.items():
 triage.sort(key=lambda x:(-x['score'],-x['cells']))
 clientsm=[{'client':x['client'].split(' (')[0],'group':x['group'],'name':META[x['group']][0],'collection':x['collection'],'path':x['path'],'tier':x['tier'].split(' ')[0].split(',')[0],'source':x.get('source','')[:160],'consequence':(x.get('consequence') or '')[:200]} for x in cl]
 t=s['totals']; sp=s['split']
-headline=[{'metric':'cells','value':t['cells_per_tree']},{'metric':'differ','value':len(d)},{'metric':'on_dev','value':sp['v1509_to_dev_only']},{'metric':'by_8879','value':sp['dev_to_8879_only']},{'metric':'both','value':sp['both']},{'metric':'unexplained','value':len(s['unexplained'])},{'metric':'defect_cells','value':len(by['n'])},{'metric':'format_cells','value':len(by['f'])}]
+headline=[{'metric':'cells','value':t['cells_per_tree']},{'metric':'differ','value':len(d)},{'metric':'on_dev','value':sp['v1509_to_dev_only']},{'metric':'by_8879','value':sp['dev_to_8879_only']},{'metric':'both','value':sp['both']},{'metric':'unexplained','value':len(s['unexplained'])},{'metric':'defect_cells','value':len(by['n'])},{'metric':'format_cells','value':len(by['f'])},{'metric':'origin_labels','value':s.get('origin_labels',{'8879':'#8879 only','dev':'already on dev','both':'dev, then #8879'})}]
 out={'groups':groups,'heat':heat,'families':fams,'cells':cells,'triage':triage,'clients':clientsm,'headline':headline}
 for k,v in out.items():
     json.dump(v,open(os.path.join(A.out,k+'.json'),'w'),separators=(',',':'))

@@ -298,6 +298,9 @@ def summary(R, devset, oursset, clients):
         trees={T['v1509']['name']: A1['head'], T['dev']['name']: D1['head'], T['8879']['name']: B1['head']},
         node=B1['node'], mongod=B1['mongod'],
         settings=CFG['settings'],
+        origin_labels=CFG.get('origin_labels', {
+            '8879': '#8879 only', 'dev': 'already on dev', 'both': 'dev, then #8879'
+        }),
         totals=dict(cells_per_tree=allcells, invalid_liveness=invalid,
                     harness_set_aside=dict(cells=INVALID_V1509, reason=CFG['set_aside_on_v1509']['reason']),
                     flaky_outside_cache_wire={k: (None if v is None else len(v)) for k, v in flaky.items()}, flaky_cells=flaky,

@@ -62,6 +62,9 @@
     var row = r.find(function (x) { return x.metric === metric; });
     return row ? row.value : null;
   }
+  function origins() {
+    return headline('origin_labels') || { '8879': '#8879 only', dev: 'already on dev', both: 'dev, then #8879' };
+  }
   function fillNumber(name, metric) {
     dash.draw(name, function (el) { var v = headline(metric); el.textContent = v === null ? '—' : fmt(v); });
   }
@@ -98,7 +101,7 @@
     if (!r) { el.textContent = '—'; return; }
     var fams = d3.rollups(r, function (v) { return d3.sum(v, function (d) { return d.cells; }); }, function (d) { return d.family; })
       .sort(function (a, b) { return b[1] - a[1]; }).map(function (d) { return d[0]; });
-    var origins = ['8879', 'dev', 'both'], oname = { '8879': '#8879 only', dev: 'already on dev', both: 'dev, then #8879' };
+    var labels = origins(), origins = ['8879', 'dev', 'both'];
     var W = el.clientWidth || 600, rowH = 34, H = fams.length * rowH + 28;
     var svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', '0 0 ' + W + ' ' + H);
     var probe = svg.append('text').attr('font-size', 12);
@@ -118,7 +121,7 @@
         var row = r.find(function (d) { return d.family === f && d.origin === o; }); if (!row) return;
         svg.append('rect').attr('x', x(acc)).attr('y', y(f)).attr('width', Math.max(1, x(acc + row.cells) - x(acc))).attr('height', y.bandwidth())
           .attr('fill', originColor(i)).attr('rx', 2)
-          .on('mousemove', function (ev) { tip.show(ev, [f, oname[o] + ': ' + fmt(row.cells) + ' cells']); }).on('mouseleave', tip.hide);
+          .on('mousemove', function (ev) { tip.show(ev, [f, labels[o] + ': ' + fmt(row.cells) + ' cells']); }).on('mouseleave', tip.hide);
         acc += row.cells;
       });
       svg.append('text').attr('x', 0).attr('y', y(f) + y.bandwidth() / 2).attr('dy', '0.35em').attr('font-size', 12).style('fill', 'var(--color-fg)').text(f);
@@ -163,7 +166,8 @@
       [['by_8879', 0], ['on_dev', 1], ['both', 2]].forEach(function (p) {
         var s = document.createElement('span'); s.style.width = (100 * g[p[0]] / g.cells) + '%'; s.style.background = originColor(p[1]); bar.appendChild(s);
       });
-      var bc = td(bar); bc.title = '#8879 ' + g.by_8879 + ', dev ' + g.on_dev + ', both ' + g.both; tr.appendChild(bc);
+      var labels = origins();
+      var bc = td(bar); bc.title = labels['8879'] + ': ' + g.by_8879 + ', ' + labels.dev + ': ' + g.on_dev + ', ' + labels.both + ': ' + g.both; tr.appendChild(bc);
       tr.appendChild(td(fmt(g.combos), 'num'));
       tr.appendChild(td(g.worst_effect));
       tr.appendChild(td(g.guard));

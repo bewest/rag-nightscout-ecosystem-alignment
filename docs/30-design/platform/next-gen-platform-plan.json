@@ -293,7 +293,7 @@
    "id": "ST-VIEWS-PROFILE",
    "track": "storage",
    "phase": "intent",
-   "state": "review",
+   "state": "progress",
    "short": "one-tenant computed profile",
    "title": "A single-tenant start profile with no resident ddata: the api profile plus an in-process bus, plugins and notifications. After each write and on a timer at single's cadence it computes the alarms view, and it serves the properties view on request. single is unchanged (D-EXEC-PROFILE)",
    "where": "lib/server/bootevent.js profiles, lib/data/views/, notifications",
@@ -405,14 +405,14 @@
    "id": "ID-BATCH",
    "track": "identity",
    "phase": "intent",
-   "state": "progress",
+   "state": "done",
    "short": "Per-item batch results",
    "title": "Per-item results in v1 batch replies, so one bad item no longer refuses the batch",
    "depends": [
     "WC-STEP-PATCH",
     "ID-UNIQUE-INDEX"
    ],
-   "ref": "Remaining integration is local on feat/id-batch at 4b48e57f. It adds item-level duplicate-key retry to the index path; #8889 already shipped opt-in per-item v1 replies and strict v1 identifier handling. Rebase onto dev 497d08c9, then rerun the batch matrix (312 cells per run on MongoDB 5.0 and 8.0) and controls before deciding whether a separate PR is still needed."
+   "ref": "Implemented across #8889 and #8894: opt-in v1 per-item replies, strict v1 identifier handling, and item-level duplicate-key retry under WRITE_RESEND. The merged branch includes tests/api.id-batch-replies.test.js and tests/api.batch-race-item-level.test.js. The old local feat/id-batch branch is not a separate release-critical PR; carry forward only a specific uncovered case."
   },
   {
    "id": "ID-UNIQUE-INDEX",
@@ -426,7 +426,7 @@
     "ID-FIRST-MATCH",
     "ID-RESEND-SWITCH"
    ],
-   "ref": "Merged as #8894 on 2026-11-01 at 497d08c94c0a583f056fe487d172a4634fc4a1d4 (head cf978f4), based on merged #8892 at 3c773ee5. All required hosted checks passed. Local gates passed on the prior tested head 690de759: npm test 6,319 passing/3 pending; focused race/settings suite 63 passing; test-tier and write-intent gates passed; lint 0 errors/20 warnings. Batch-only matrix: 33 expected index-on/off differences (24 batch-dupkey-mid, 9 batch-repeat-identifier) on MongoDB 5.0.32 and 8.0.29; broader --batch --no-idf runs were stopped. In 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
+   "ref": "Merged as #8894 on 2026-11-01 at 497d08c94c0a583f056fe487d172a4634fc4a1d4 (head cf978f4), based on merged #8892 at 3c773ee5. All required hosted checks passed. Local gates passed on the prior tested head 690de759: npm test 6,319 passing/3 pending; focused race/settings suite 63 passing; test-tier and write-intent gates passed; lint 0 errors/20 warnings. Batch-only matrix: 33 expected index-on/off differences (24 batch-dupkey-mid, 9 batch-repeat-identifier) on MongoDB 5.0.32 and 8.0.29. The completed --batch --no-idf matrix has 3,443 cells per off/try lane, zero invalid cells, and the same 33 expected batch differences on MongoDB 5.0.32 and 8.0.34; other observed differences are cache-only (15 cells on MongoDB 5 and 5 on MongoDB 8), with cross-version differences also cache-only (7 off, 11 try). In 16.0.0 scope behind WRITE_IDENTIFIER_INDEX=try|require|off|drop (default try)."
   },
   {
    "id": "REG-SPECS",
@@ -451,10 +451,10 @@
    "id": "REG-S0",
    "track": "registration",
    "phase": "now",
-   "state": "review",
+   "state": "progress",
    "short": "Catalogue, read-only",
    "title": "GET /.well-known/nightscout/sync and /.well-known/nightscout/controllers serving the shipped catalogue, behind CONTROLLER_REGISTRATION, off by default; built, part of the single-tenant registration PR",
-   "ref": "#8857 (draft, 10fe6725; dev 305a6533 merged in, 44 behind dev 604de1cb; CI green)",
+   "ref": "#8857 is draft at head 5f6c1275 and BEHIND dev 497d08c9. Its current-head PR checks are green, but it must be rebased and retested before the 16.0.0 entry bar.",
    "spec": [
     {
      "label": "registration §4",
@@ -471,7 +471,7 @@
    "id": "REG-S1",
    "track": "registration",
    "phase": "now",
-   "state": "review",
+   "state": "progress",
    "short": "Submit and store",
    "title": "The product resource: submit, etag, retire; MongoDB collections; single mode with API_SECRET or a subject's token",
    "spec": [
@@ -484,14 +484,14 @@
    "depends": [
     "REG-S0"
    ],
-   "ref": "#8857 (draft, 10fe6725); a devicestatus-upload token may register its controller",
+   "ref": "#8857 is draft at head 5f6c1275 and BEHIND dev 497d08c9; rebase and retest before the entry bar. A devicestatus-upload token may register its controller.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S2",
    "track": "registration",
    "phase": "now",
-   "state": "review",
+   "state": "progress",
    "short": "Instances and leases",
    "title": "Content-addressed definitions and leased instances; channels, roles and provenance. Instances on one flat root: PUT and DELETE /api/v4/instances/:instanceId with the product named in the body, GET /api/v4/instances for the owner's listing",
    "spec": [
@@ -504,14 +504,14 @@
    "depends": [
     "REG-S1"
    ],
-   "ref": "#8857 (draft, 10fe6725): one holder document per (scope, channel, role); conformance 35 passed, 88 mapped, 0 failed at 3be98536",
+   "ref": "#8857 is draft at head 5f6c1275 and BEHIND dev 497d08c9; prior conformance at 3be98536 reported 35 passed, 88 mapped, 0 failed. Rebase and rerun before the entry bar.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
    "id": "REG-S5",
    "track": "registration",
    "phase": "now",
-   "state": "review",
+   "state": "progress",
    "short": "Owner actions",
    "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer, free-namespaces, pins, transfer-role and the instance listing",
    "spec": [
@@ -525,7 +525,7 @@
     "REG-S1",
     "REG-S2"
    ],
-   "ref": "#8857 (draft, 10fe6725)",
+   "ref": "#8857 is draft at head 5f6c1275 and BEHIND dev 497d08c9; rebase and retest before the entry bar.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8857"
   },
   {
