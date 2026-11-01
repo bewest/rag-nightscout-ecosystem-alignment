@@ -5692,8 +5692,8 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-31 at <code>283df3ff3</code>.</em></p>
-<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>604de1cb</code> (2026-10-31, #8883, #8882 and #8885 merged), with open PR heads and CI re-read from GitHub at about 22:00Z that day. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
+<p><em>Living document, last changed 2026-10-31 at <code>2c339dfa4</code>.</em></p>
+<p><em>Contributor-facing. Living plan, current at cgm-remote-monitor dev <code>5376e6a7</code> (2026-11-01 01:29Z, #8879 and #8888 merged after #8883, #8882 and #8885), with open PR heads and CI re-read from GitHub then. Status: proposed; the decisions in §5 are open. Which release each item goes in is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5708,7 +5708,7 @@
 <thead>
 <tr>
 <th></th>
-<th>on dev <code>604de1cb</code> (ships in 16.0.0)</th>
+<th>on dev <code>5376e6a7</code> (ships in 16.0.0)</th>
 <th>in review (draft PRs)</th>
 <th>not started</th>
 </tr>
@@ -5717,13 +5717,13 @@
 <tr>
 <td>Storage</td>
 <td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1). ST-V3-DECOUPLE (with #8865, 2026-10-30). <code>write(intent)</code> release 1, every write path through one step (#8874, <code>368e6c23</code>, 2026-10-31)</td>
-<td>ST-HARNESS, draft #8881 (<code>ffa5e6b4</code>); ST-VIEWS, draft #8875 (<code>7b4b724c</code>, unwired); <code>write(intent)</code> release 2 with ST-EVENT, draft #8886 (<code>6b00eb9d</code>, stacked on #8879): filter writes resolved to ids in the step, one write shape for API v3, and the per-write event (D-EVENT decided 2026-10-31)</td>
+<td>ST-HARNESS, draft #8881 (<code>ffa5e6b4</code>); ST-VIEWS, draft #8875 (<code>7b4b724c</code>, unwired); <code>write(intent)</code> release 2 with ST-EVENT, #8886 (<code>4b8adfec</code>, base <code>dev</code>, out of draft, CI running): filter writes resolved to ids in the step, one write shape for API v3, and the per-write event (D-EVENT decided 2026-10-31)</td>
 <td>PostgreSQL</td>
 </tr>
 <tr>
 <td>Identity</td>
-<td><code>identifier</code> is the client's, <code>_id</code> the server's; API v3 refuses a client <code>_id</code> (#8845); v1 entries and devicestatus match on <code>identifier</code>, and an explicit null removes a field (#8859)</td>
-<td>merged 2026-10-30: #8877 (<code>cf3d4b8f</code>; BF-209, BF-211; BF-210 withdrawn) and #8878 (<code>d51c7a60</code>; BF-212 first part). ID-FIRST-MATCH, #8879 (<code>2d79d30b</code>, ready for review, CI green): slices 1, 2, 5, 3, 4, 6 and 6a. SPEC-ID-AMEND done in this repository (2026-10-30)</td>
+<td><code>identifier</code> is the client's, <code>_id</code> the server's; API v3 refuses a client <code>_id</code> (#8845); v1 entries and devicestatus match on <code>identifier</code>, and an explicit null removes a field (#8859); #8877 (<code>cf3d4b8f</code>; BF-209, BF-211; BF-210 withdrawn) and #8878 (<code>d51c7a60</code>; BF-212 first part); ID-FIRST-MATCH slices 1, 2, 5, 3, 4, 6 and 6a (#8879, <code>164e6ae8</code>, 2026-11-01); BF-225's socket fix (#8888, <code>5376e6a7</code>, 2026-11-01). SPEC-ID-AMEND done in this repository (2026-10-30)</td>
+<td>compatibility A and B (follow-up PR on <code>feat/id-compat-restore-ab</code>)</td>
 <td>the unique index (built locally on #8879, its duplicate-key retry being made item-level), ID-BATCH (being built locally on the index)</td>
 </tr>
 <tr>
@@ -5881,14 +5881,14 @@ rules that change outcomes may land there instead of 17.0.0.</p>
 </tr>
 <tr>
 <td>9</td>
-<td>ID-FIRST-MATCH as three landings, A (slices 1, 2, 5), B (3, 4) and C (6, 6a, then ID-UNIQUE-INDEX), in hours to days with one cohort window over the set, as two PRs: one identity PR for A, B and C1, then the index (maintainer, 2026-10-30): slices 1, 2, 5, 3, 4, 6, 6a, then ID-UNIQUE-INDEX (<code>WRITE_IDENTIFIER_INDEX</code>, with the duplicate-key retry inside the write step), then ID-BATCH (<a href="id-batch-design-note-2026-10-30.html">design note</a>)</td>
+<td><strong>#8879 merged 2026-11-01 (<code>164e6ae8</code>)</strong>, with BF-225's socket fix #8888 (<code>5376e6a7</code>); the cohort window is open. ID-FIRST-MATCH as three landings, A (slices 1, 2, 5), B (3, 4) and C (6, 6a, then ID-UNIQUE-INDEX), in hours to days with one cohort window over the set, as two PRs: one identity PR for A, B and C1, then the index (maintainer, 2026-10-30): slices 1, 2, 5, 3, 4, 6, 6a, then ID-UNIQUE-INDEX (<code>WRITE_IDENTIFIER_INDEX</code>, with the duplicate-key retry inside the write step), then ID-BATCH (<a href="id-batch-design-note-2026-10-30.html">design note</a>)</td>
 <td>16.0.0 through the bar, in that order (index before ID-BATCH: maintainer, 2026-10-30). <strong>#8879</strong> (base <code>dev</code>, head <code>2d79d30b</code>, 0 behind <code>dev</code> <code>604de1cb</code>, ready for review, CI green): slices 1, 2, 5 (with 5b's 409 rule), 3, 4 (merge on match, treatments <code>replaced</code> on every path), 6 and 6a pushed. <em>Maintainer, 2026-10-31 (compatibility A, B, C, via session -4e):</em> API v3 refuses a malformed identifier with 400 by default (A), and a matched re-send replaces on every collection and path, entries over v1 and in-process excepted (B, extended the same evening); both are built on <code>feat/id-compat-restore-ab</code> off <code>2d79d30b</code> and follow as a PR after #8879 merges. <code>WRITE_RESEND</code> and <code>WRITE_DELETED_RESEND</code> (C) follow after B, before the tag. BF-225's fix: its part B on <code>dev</code>, its part C as a rule commit on #8879. The index moves after A/B with a fresh prediction; the unique index rebuilt on #8879 locally, with its duplicate-key retry made item-level (session -4e ruled the whole-batch re-run a defect); ID-BATCH's questions decided. <code>WRITE_IDENTIFIER=strict</code> covers v3 and the socket; v1 gets it with ID-BATCH (ID-STRICT-V1)</td>
 <td>re-send matching on every path</td>
 <td>the re-send table in the <a href="../../10-domain/record-identity-reference.html">identity reference §2.7</a>; D-LOOP-ID's per-client switch</td>
 </tr>
 <tr>
 <td>9a</td>
-<td>Draft <strong>#8886</strong> (base <code>feat/id-first-match</code>, head <code>6b00eb9d</code>, stacked on #8879): <code>write(intent)</code> release 2 (filter writes resolved to ids in the step, API v3 in the same shape, autoPrune through the step, Q-A/Q-U) and, as its last commit, the per-write event (D-EVENT)</td>
+<td><strong>#8886</strong> (base <code>dev</code> since #8879 merged, head <code>4b8adfec</code> = <code>6b00eb9d</code> with <code>dev</code> <code>5376e6a7</code> merged in, out of draft, CI running): <code>write(intent)</code> release 2 (filter writes resolved to ids in the step, API v3 in the same shape, autoPrune through the step, Q-A/Q-U) and, as its last commit, the per-write event (D-EVENT)</td>
 <td>16.0.0 through the bar, after #8879</td>
 <td>the cache path, which feeds what screens and alarms show; one accepted behaviour change (a record inserted while a delete by query runs survives)</td>
 <td>client replies and stored records equal to the base on all 36 probe rows; the cache catch-up lab round 3 and the red controls re-run on the pushed head before it leaves draft; GitHub runs its tests once it targets <code>dev</code></td>
