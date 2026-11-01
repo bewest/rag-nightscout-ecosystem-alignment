@@ -125,3 +125,31 @@ release-time publication; live Pushover and APNs delivery/acknowledgment checks;
 a real-rig dev soak; identity/client cohort and rollback evidence; release notes.
 Focused offline callback tests cannot establish vendor delivery, and an
 individual PR's green checks cannot establish the final combined tree.
+
+## Later integration state (2026-11-01)
+
+GitHub now reports nightscout/cgm-remote-monitor#8895 merged at 17:45:01Z as
+`bb85d10fba9500d9e7a8a728cb4d93d557803bc6`, followed by
+nightscout/cgm-remote-monitor#8896 at 17:52:18Z as
+`61eb37335954ae42c91345a0823bd67331025165`. Earlier "unmerged" statements above
+describe the preparation snapshot. This session did not perform those merges.
+Official dev is now `61eb3733`; CodeQL passed on it. CI runs 41333672054 and
+41333677576 were still in progress at this read, so post-merge test/image
+publication success is not yet claimed.
+
+Both security integration branches were prepared and pushed only to their
+existing private repositories, incorporating this newer dev head:
+
+| Fix | Private topic branch | Head |
+|-----|----------------------|------|
+| BF-72 | `workspace/rc-security-regex-20261101` | `7d7416e837afe0f1b17ce030e2a927530a06bf4e` |
+| BF-161 | `workspace/rc-security-slice-20261101` | `3dbd25534e0c54a90af3fbecf51a741268e154ca` |
+
+Agent-reproduced combined focused validation passed 402 tests; lint and tier
+checks passed. Full-suite acceptance remains inconclusive because of local
+MongoDB failures. No private PR was created: GitHub rejected the proposed
+private snapshot base, and the advisory repositories report as standalone
+private repositories rather than forks. Branch preparation is therefore
+persistent, but security merge/publication readiness remains blocked by private
+integration mechanics and final full-suite validation. No public security
+branch or PR was created.

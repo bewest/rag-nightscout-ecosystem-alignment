@@ -31,6 +31,12 @@ and is a closure candidate; nightscout/cgm-remote-monitor#8829 still needs
 restricted-token/reverse-proxy cohort confirmation. No issue was closed, no
 branch protection changed and no security advisory published.
 
+**Later state**: GitHub reports #8895 and #8896 merged by 17:52:18Z; dev is
+`61eb3733`, with CodeQL green and post-merge CI still running at the read.
+Both private security branches now include that head; 402 combined focused
+tests pass. Private PR creation was rejected and full-suite MongoDB validation
+is inconclusive, so neither security fix is claimed merge-ready.
+
 ## cgm-remote-monitor 16.0.0 Identity Handoff Update (2026-11-01)
 
 Updated the roadmap and release records after completing Q-IDX race handling and choosing #8894 as the canonical unique-index PR.
