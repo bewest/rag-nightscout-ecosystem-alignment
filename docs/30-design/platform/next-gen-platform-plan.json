@@ -257,7 +257,7 @@
    "id": "ST-HARNESS",
    "track": "storage",
    "phase": "intent",
-   "state": "review",
+   "state": "done",
    "short": "Backend harness, tenant scope",
    "title": "Backend-selectable test harness, storage backend selection and the tenant-scope binding; no behaviour change in single mode",
    "where": "tests/support/backends.js, lib/storage/tenant-scope.js (old chain a2690bd4, 136f53e3, 8355c563, a492f2ed)",
@@ -265,14 +265,14 @@
    "depends": [
     "WC-STEP-PATCH"
    ],
-   "ref": "Draft #8881 at ffa5e6b4 (19 behind dev 604de1cb; CI green). Unblocks ST-PG and TEN-RESOLVE.",
+   "ref": "Merged 2026-11-01 as #8881 (dev f54941b5, head 993275f3; npm test 6028/0/3 on that head). Unblocks ST-PG and TEN-RESOLVE.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8881"
   },
   {
    "id": "ST-VIEWS",
    "track": "storage",
    "phase": "intent",
-   "state": "review",
+   "state": "done",
    "short": "views without ddata",
    "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded (milestone M4)",
    "where": "lib/data/dataloader.js and ddata.js, the socket's dataUpdate, the plugin sandbox, notifications",
@@ -280,7 +280,7 @@
    "depends": [
     "ST-READS"
    ],
-   "ref": "Draft #8875 at 52d635a0 (dev 5376e6a7 merged in on GitHub, 0 behind, CI green; the replay below was measured at 7b4b724c): both views equal to the resident path on 126,092 replayed minutes each (npm test 5355 passing at the merge). Maintainer, 2026-10-31: ships in 16.0.0 unwired; serve has no role that runs alarms yet (only api starts), so the wiring moves to the one-tenant computed profile prototype (ST-VIEWS-PROFILE) and later the multitenant roles; single keeps the resident path.",
+   "ref": "Merged 2026-11-01 as #8875 (dev 1fc6d8be, head ba69e317), unwired. Replay measured at 7b4b724c and re-checked on dev 1fc6d8be after #8886: both views 0 differing minutes on 126,092 replayed minutes each, r2 noise floor 0, break-it controls red and silent on the same datasets as recorded (shrink treatments:4 on corpus #6 1156 against 1146). Maintainer, 2026-10-31: ships in 16.0.0 unwired; serve has no role that runs alarms yet (only api starts), so the wiring moves to the one-tenant computed profile prototype (ST-VIEWS-PROFILE) and later the multitenant roles; single keeps the resident path.",
    "spec": [
     {
      "label": "views census",
