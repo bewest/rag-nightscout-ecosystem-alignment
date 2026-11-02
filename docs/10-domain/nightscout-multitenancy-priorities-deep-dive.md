@@ -75,6 +75,24 @@ The next isolated secrets objective is backup/restore and actual process-crash
 acceptance; owner-policy APIs, MongoDB migrations and runtime consumers remain
 unfinished. This is no backend promotion or production-Vault acceptance.
 
+**Upsert/intent continuation:** local `14ae16db` adds measured merge-upsert,
+replacement/batch/every-form subsets and a dormant shared v3 intent seam with
+savepoint recovery and post-commit events. **878 integrated checks pass without
+pending**; the changed 28 checks also pass against MongoDB 5.0.32 and 8.3.9.
+V3 resend POST retains replacement behavior, not v1's merge behavior.
+JSON-equal replacements owing exact modification counts refuse because JSONB
+does not preserve BSON field order. Production DDL/import, full v1/socket and
+route authorization/validation/current-grant wiring, bounds and backend suites
+remain open. See the [bounded acceptance record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
+
+**Latest recovery integration:** merge `0de90852` imports `78b915ab` without
+runtime/migration/entries-source changes. The combined command passes **879
+checks, zero pending**, including 34 secrets checks and actual PG dump/restore,
+encrypted single-node Vault snapshot recovery and before-CAS/after-commit
+worker SIGKILL/retry. Production recovery remains open. The next parallel
+slice is the minimum policy/current-authority service, not more provider
+features; see the [acceptance and handoff](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
+
 ## 1. Bottom line
 
 The next useful delivery is **an entries-first PostgreSQL RLS slice on current

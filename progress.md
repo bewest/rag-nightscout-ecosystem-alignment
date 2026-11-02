@@ -12,6 +12,53 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Multitenancy Secrets Recovery Integration (2026-11-02)
+
+Local merge **`0de90852`** joins entries `a8dd162d` and parallel recovery
+`78b915ab`. The imported change is tests/fixture/documentation only: actual
+logical PG backup/restore, encrypted non-dev single-node Vault Raft snapshot
+recovery, and owned-worker SIGKILL before CAS/after commit with process retries.
+Stored references/audit/key-version behavior and explicit missing-key/provider
+refusals are measured. No migration, entries-source or runtime changes.
+
+**Merged acceptance:** **879 passing, zero pending across 31 files**, including
+all **34** secrets checks; ESLint, 465-file tier classification and the existing
+write-boundary check pass. Production auth/TLS/HA, cluster globals, online
+backup coordination, consumer/current-grant recovery and RPO/RTO remain open.
+No upstream push or backend promotion; the earlier broad AJV failure remains.
+
+**Parallel handoff:** fast-forward to the integrated baseline, then reconcile
+MT-CONFIG-MIN and implement a dormant tenant-local subject-policy/current-
+authority slice. Prove fresh cross-worker checks, revocation/outage refusal,
+version conflicts and floors using real persistence; do not enable routes or
+claim socket/data enforcement. This session keeps entries schema/import/
+compatibility work. See the [integration and bounded handoff](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
+
+## Multitenancy Entries Upserts and Post-Commit v3 Intents (2026-11-02)
+
+Local upstream **`14ae16db`** extends merge upserts/resends, replacement/batch
+and every-form persistence, with constraint-specific duplicate mapping and
+actual savepoint recovery. A dormant v3 seam reuses shared rules and emits the
+internal intent event after its owned transaction commits. V3 POST still
+replaces; PATCH merges. Test follow-up **`a8dd162d`** covers resolved OR removal
+and shared v3 pruning. No upstream push, catalogue changes or backend enablement.
+
+**Validation:** **878 passing, no pending across 31 files**, including real
+PG/MongoDB/Vault and all shared write-intent suites. The changed entries/
+transaction checks separately pass **28/28** against MongoDB 5.0.32 and 8.3.9
+with PostgreSQL 16.15. ESLint, 465-file classification and existing write-boundary
+check pass. Three real mutations fail for broad constraint mapping, early event
+publication and missing savepoint rollback; restored implementations pass.
+
+**Remaining:** JSONB lacks BSON field order, so JSON-equal replacements that
+owe exact modification counts explicitly refuse. Reviewed schema/import,
+full v1/socket intent and route authorization/validation/current-grant wiring,
+resource bounds and backend suites remain open. M1/M2 are not promoted; the
+previous broad no-database AJV failure is not waived. Parallel secrets/
+control-plane ownership is unchanged.
+
+See the [acceptance and continuation record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
+
 ## Multitenancy Entries and Secrets Integration (2026-11-02)
 
 Local upstream merge **`6943dccb`** preserves both parents: entries `7bcfc8b0`

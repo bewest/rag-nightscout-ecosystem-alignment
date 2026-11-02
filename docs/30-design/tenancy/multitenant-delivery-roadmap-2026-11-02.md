@@ -591,3 +591,196 @@ Source:
 `externals/work/crm-multitenant-20261102/lib/secrets/postgres.js:34-153`,
 `externals/work/crm-multitenant-20261102/lib/secrets/vault-transit.js:29-123`,
 `externals/work/crm-multitenant-20261102/tests/postgres-secrets.integration.test.js:19-443`.
+
+### Continuation: entries upserts and post-commit v3 intents (2026-11-02)
+
+**Local upstream `14ae16db2ae090f668672af26b148d620b47fc7a`** extends the dormant
+entries lane without changing secrets, migration catalogues, dependencies,
+backend registration or default MongoDB behavior. It remains on the single
+integration branch; no upstream push was made.
+
+Test follow-up **`a8dd162da2efece40a78eca8783e1e0ba2d341df`** also exercises
+resolved OR deletion and pruning through the shared v3 seam; it is the current
+local integration tip.
+
+The persistence facade now measures merge upserts/resends, insert-only values,
+unsets, changing replacements, ordered/unordered duplicate-key outcomes,
+ordered removals, every-displayed-form writes and capped identity resolution.
+Stored ObjectId/string identities remain distinct, including upper-case hex
+addresses and explicit resolved-id scoping. Ambiguous multi-match upserts,
+identity-changing replacements and unsupported input/query shapes refuse.
+The bulk implementation is sequential, not a single database round trip.
+
+**Constraint/retry contract:** the typed primary key and a lab-only
+`identifier_unique` partial index are distinguished by exact table/schema and
+constraint names. The lab index covers tenant-local nonempty scalar strings;
+this is not acceptance of legacy MongoDB multikey identifiers or a reviewed
+production DDL/catalogue. Only those recognized duplicate errors are translated
+for the existing write-step handlers. Unrelated constraints propagate. Each
+recoverable operation uses an actual savepoint, so a failed insert does not
+leave the surrounding PG transaction aborted. Ordered batches expose the
+successful prefix; unordered batches continue past recognized duplicates.
+An enclosing caller transaction still rolls everything back if its error
+escapes. Concurrent/nested savepoint operations explicitly refuse.
+
+The new **dormant v3 intent seam** reuses the shared entries rule table,
+identifying reads, source labels, resend policy, timestamps, identity resolution
+and event payload/emitter. A write owns a new transaction, refuses nesting and
+emits the existing internal intent event only after COMMIT. It preserves the
+current v3 resend rule: **POST replaces; PATCH merges**. This does not apply the
+v1 entries merge rule to v3. Route authorization and immutable/domain validation
+still belong upstream of this seam, as in MongoDB; trusted tenant resolution,
+current-grant enforcement and cache/socket consumers are not wired.
+
+**Measured acceptance:**
+
+| Gate | Result |
+|---|---|
+| Integrated storage, all shared write-intent suites, migration/CLI and secrets/Vault | **878 passing, no pending, 31 files** |
+| Changed entries/transaction checks against MongoDB 5.0.32 | **28 passing, no pending** |
+| Same changed checks against MongoDB 8.3.9 | **28 passing, no pending** |
+| ESLint, tier classification, existing write-boundary check | Pass; **465 files**, existing nine boundary entry points |
+
+The lab used PostgreSQL 16.15 and Node 22.23.4. The integrated run enabled all
+three migration/Vault/secrets Docker opt-ins and both disposable entries URIs.
+The entries file contains one refusal check and 17 real differential/intent
+checks; the connection file contains ten real PG checks. Existing shared-rule
+regressions are not all PG backend tests.
+
+The concurrent-insert check observes the contender waiting on a real unique
+index lock held by another transaction. After the winner commits, the failed
+insert is rolled back to its savepoint and the existing shared v3 rule applies
+the contender as one resend. Update-permission refusal produces no event.
+Post-commit observation verifies independently visible stored data and the
+completed transaction boundary. Three actual implementation mutations fail:
+broadening duplicate classification to an unrelated constraint, publishing the
+event before commit, and removing savepoint rollback. Restored code passes.
+
+**Newly measured compatibility boundary:** repeated MongoDB replacements can
+report a modification because BSON field order matters, even when their JSON
+values are equal. JSONB alone cannot reproduce that count. `replaceFiltered`
+and replacement bulk operations therefore refuse JSON-equal replacements
+instead of fabricating `modifiedCount`. The identifier `replaceOne` contract
+returns only `matchedCount`, so that method can accept the same values.
+Exact replacement counters need a reviewed field-order/import representation
+and differential acceptance; no schema workaround is silently introduced.
+
+Reproduce the integrated gate from the integration worktree:
+
+```sh
+test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" &&
+NODE_ENV=test NS_MIGRATION_DOCKER_TEST=1 NS_VAULT_DOCKER_TEST=1 \
+NS_SECRETS_POSTGRES_DOCKER_TEST=1 node_modules/.bin/mocha \
+  --fail-zero --timeout 30000 --exit --require ./tests/hooks.js \
+  tests/postgres-entries-write.test.js tests/postgres-entries-read.test.js \
+  tests/postgres-filter.test.js tests/postgres-identity.test.js \
+  tests/postgres-connection.test.js tests/storage.filter.test.js \
+  tests/api3.storage.filter-semantics.test.js tests/storage.tenant-scope.test.js \
+  tests/storage-backend-selection.test.js tests/test-backends.test.js \
+  tests/write-intent*.test.js tests/migrations.test.js \
+  tests/postgres-migrations.integration.test.js tests/nightscout-cli.test.js \
+  tests/secrets.test.js tests/vault-secrets.integration.test.js \
+  tests/postgres-secrets.integration.test.js
+```
+
+**M1/M2 remain open.** Next storage work is the reviewed entries DDL/import/
+field-order contract, full v1/socket write-intent acceptance, remaining API and
+query forms, resource/lock/materialization bounds and actual backend suites.
+The narrow v3 seam does not complete route validation, current grants,
+per-database instrumentation, cache/socket events or serving-role wiring.
+The earlier broad no-database AJV failure remains unresolved and was not
+waived or reclassified by this targeted run.
+
+Parallel ownership is unchanged: secrets backup/restore and process-crash
+acceptance, minimum settings/subject policy and MongoDB migration fencing stay
+outside these entries files. The secrets worktree can integrate this newer
+baseline instead of the earlier merge when ready; inspect its current state
+before fast-forwarding. Celld, human identity, evaluator/events and
+next-generation execution remain separate.
+
+Source:
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:76-91`,
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:202-347`,
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-intent.js:46-97`,
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-connection.js:91-124`.
+
+### Integration: secrets recovery acceptance and next control-plane slice (2026-11-02)
+
+**Local merge `0de908522a47da6659f2fc0fc9254189a80ca815`** joins entries
+`a8dd162d` with parallel secrets recovery
+`78b915ab0e5e9e8c158d3b892f9934b0d45f06ef`. The imported delta is only the
+secrets README, PG integration test and isolated worker fixture. There are no
+new migration/catalogue/checksum, dependency, entries-source or runtime changes.
+Both original branches remain in history. No upstream push or backend
+enablement was made.
+
+The documented combined command in the preceding section was rerun on this
+merge: **879 passing, zero pending across 31 files**, including all **34**
+secrets/Vault/PG checks with the Docker opt-ins enabled. ESLint, all **465**
+test-file classifications, the existing nine-entry write-boundary check and
+diff checks pass. The earlier broad no-database AJV limitation remains.
+
+**Recovery evidence:** actual custom-format `pg_dump`/`pg_restore` restores
+ciphertext, audit and migration state into a distinct empty database. Actual
+encrypted snapshots of non-dev single-node Vault Raft restore the required
+data/signing key versions after the source Vault is removed. References and
+values survive; old snapshots explicitly refuse newer versions; absent keys
+and provider outages refuse without fallback. Restored RLS and audit/
+maintenance privileges are checked.
+
+An owned child uses the actual component and maintenance CAS. SIGKILL before
+CAS preserves original ciphertext plus the committed attempt audit; a new
+process completes the rewrap. SIGKILL after the actual CAS commit preserves the
+new ciphertext; a new process retries without changing those committed bytes.
+Both paths verify audit attempts and unchanged reference/plaintext.
+
+**Limits:** the database restore shares a disposable cluster whose roles
+already exist. The Vault fixture uses test-only loopback HTTP, one-share
+unseal and forced snapshot restoration with separately retained synthetic
+unseal credentials. This does not recover cluster globals, production auth,
+current grants, consumer configuration or external credentials, and does not
+prove HA, coordinated online snapshots, remote archive integrity/retention,
+RPO/RTO, key-retirement readiness, host failure or a kill during database commit.
+The bounded backup/restore and worker-crash gaps are measured; production
+recovery remains open.
+
+**Parallel continuation: MT-CONFIG-MIN/current-authority boundary.** Start by
+fast-forwarding the clean secrets worktree, after checking it has not advanced:
+
+```sh
+git -C externals/work/crm-secrets-20261102 merge --ff-only \
+  workspace/multitenant-20261102
+```
+
+Then continue one bounded control-plane slice in that isolated worktree:
+
+- Reconcile the minimum settings/subject-policy contract against the existing
+  reviewed catalogue, permission vocabulary and code/operator floors. Specify
+  version preconditions, effective-value provenance, attribution and explicit
+  unsupported-name/conflict/refusal cases before exposing routes.
+- Implement a dormant tenant-local subject-policy/current-authority service
+  behind the existing secrets `authorize` boundary, not a second secrets
+  provider. Define the authoritative-read linearization point. Keep any new
+  schema in a separate reviewed candidate; preserve existing secrets migration
+  bytes/checksums.
+- Use two independent workers/adapters and real persistence: a committed grant
+  removal or revocation is refused on the next authorization check; an
+  unavailable authoritative store fails closed. Cover stale-version writes,
+  concurrent policy changes, A/B identity overlap, floor weakening and positive
+  own-tenant operations. Do not equate service tests with socket/data enforcement.
+- Reuse existing test tiers, report opt-ins/pending honestly, and return a
+  clean commit plus the exact combined acceptance command. Stop for maintainer
+  input only where the reviewed sources leave a real product decision open.
+
+Do not modify entries, enable serving/owner routes or runtime consumers, push
+upstream, weaken authentication, add human identity or claim end-to-end
+revocation. MongoDB migration fencing/resume, the built-in signer option,
+production recovery and credential-consumer cutover remain separate unfinished
+work. This prioritizes the current-grant dependency for M2, not more Vault
+feature expansion or a cost/efficiency claim. This session retains entries
+schema/import/compatibility acceptance.
+
+Source:
+`externals/work/crm-multitenant-20261102/tests/postgres-secrets.integration.test.js:332-679`,
+`externals/work/crm-multitenant-20261102/tests/fixtures/secrets-rewrap-worker.js:1-49`,
+`externals/work/crm-multitenant-20261102/lib/secrets/README.md:324-408`.

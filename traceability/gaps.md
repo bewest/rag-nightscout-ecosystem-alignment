@@ -59,6 +59,25 @@ Unit/DOM/core/harness tiers pass after building local bundles, but the
 dependency tier still fails an unchanged assertion using ancestor-installed
 AJV 6.12.6. No full-suite or production/backend acceptance is inferred.
 
+Entries continuation `14ae16db` measures merge-upsert/resend, changing
+replacement/batch/every-form subsets and a shared v3 intent seam, with
+savepoints and post-commit internal events. The combined regression is 878
+passing, no pending. Exact JSON-equal replacement modification counts remain
+unsupported: BSON field order is absent from JSONB. Reviewed DDL/import,
+full v1/socket and route authorization/validation/current-grant integration,
+resource bounds and backend suites remain gaps. The
+[bounded continuation record](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02)
+does not promote M1/M2.
+
+Merge `0de90852` then incorporates secrets recovery `78b915ab`: the combined
+gate is 879 passing with no pending. Synthetic logical PG restore, encrypted
+single-node Vault snapshot restore and actual worker SIGKILL/CAS retry are now
+measured, replacing those bounded unknowns. Production roles/auth/TLS/HA,
+coordinated online recovery, current grants/consumer cutover and operational
+recovery targets remain open. The next parallel dependency is a dormant
+minimum subject-policy/current-authority service; its checks cannot establish
+unwired data/socket revocation. See the [recovery boundary and handoff](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev `61eb3733`. The storage harness and scope are merged; the PostgreSQL adapter,

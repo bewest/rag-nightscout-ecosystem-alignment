@@ -161,9 +161,10 @@ items:
           externals/work/crm-multitenant-20261102/tests/postgres-connection.test.js
         kind: integration
         describe: >
-          M0 transaction foundation only: 9 real PostgreSQL checks including
+          M0 transaction foundation only: 10 real PostgreSQL checks including
           overlapping tenant identities, denied inserts/updates/TRUNCATE,
-          rollback, released-scope refusal, pooled binding cleanup and breaks.
+          rollback, savepoint recovery, owned commit boundaries,
+          released-scope refusal, pooled binding cleanup and breaks.
       - run: node tools/lab/postgres-foundation/harness.js
         kind: integration
         describe: >
@@ -197,14 +198,18 @@ items:
           --exit --require ./tests/hooks.js tests/postgres-entries-write.test.js
         kind: integration
         describe: >
-          Dormant write subset: 1 refusal plus 8 real PG/MongoDB checks for
-          scalar inserts/patches/deletes, typed identity selection, no-op
-          counts, rollback, both-tenant writes and actual lock contention.
+          Dormant write/v3 intent subset: 1 refusal plus 17 real checks for
+          scalar writes, merge upserts, changing replacements, batch errors,
+          every-form identities, savepoints, actual lock/identifier races,
+          shared v3 rules and post-commit events. Equal replacement counters
+          explicitly refuse; no full API/backend acceptance.
       - no-gate: >
           Binding/pooler and narrow generated-DDL/typed-identity proofs are
-          measured, not full M1 acceptance. Local tip 6943dccb remains dormant.
+          measured, not full M1 acceptance. Local tip 0de90852 remains dormant.
           Current v3/history/partial-unique identifier indexes, migration/import,
-          bulk/replace/every-form writes, events/source/validation integration,
+          complete bulk/replace/every-form and v1/socket intent acceptance,
+          BSON field-order-dependent counts, route validation/current grants,
+          per-database/cache/socket events,
           remaining methods, cursor caps and full query parity remain.
           Unsupported shapes explicitly refuse. No PG availability
           flag or hosted role is enabled.
@@ -247,6 +252,18 @@ items:
       Existing unit/DOM/core/harness tiers pass after building local bundles.
       Dependency tier has 368 passing, 1 pending, 1 failure from unchanged
       har-validator resolving ancestor-installed AJV 6.12.6. No full-suite pass.
+      Continuation 14ae16db plus a8dd162d pruning acceptance: 878 passing,
+      no pending across 31 files including
+      all shared write-intent suites and real PG/MongoDB/Vault. Changed
+      entries/transaction checks pass 28/28 against MongoDB 5.0.32 and 8.3.9.
+      Measured merge upsert/batch/every-form and changing replacement subsets;
+      dormant v3 shared rules retain POST replacement and PATCH merge, with
+      events only after an owned COMMIT. Actual unique-index wait/rematch and
+      three implementation mutations pass their controls. JSON-equal
+      replacements owing exact counts refuse without BSON field-order
+      metadata. No catalogue change, upstream push or backend promotion.
+      Recovery 78b915ab integrated via 0de90852; same combined command now
+      passes 879 tests without pending, including all 34 secrets checks.
 
   - id: MT-CONFIG-MIN
     title: "Reviewed initial tenant configuration and headless owner API contract"
@@ -284,6 +301,10 @@ items:
       operation across workers; current authorization unavailable means refusal.
       JWT expiry/stale cache is not authority. Include protected socket delivery,
       subscriptions/writes/reconnect and explicit authorization race semantics.
+      After integrated recovery 0de90852, the next parallel slice reconciles
+      this contract and implements a dormant subject-policy/current-authority
+      service with real cross-worker revocation/outage/version/floor checks.
+      No owner/data/socket serving or end-to-end revocation acceptance implied.
 
   - id: MT-SECRETS-CONTRACT
     title: "Tenant-bound secrets contract and early Vault Transit integration proof"
@@ -318,15 +339,17 @@ items:
           tests/postgres-secrets.integration.test.js
         kind: integration
         describe: >
-          33 real component/Vault/PG acceptance checks: current-authority/audit
+          34 real component/Vault/PG acceptance checks: current-authority/audit
           boundaries, tenant/reference binding, JWT versions, append-only audit,
-          immutable ciphertext, restart, maintenance-only rewrap/CAS and retries.
+          immutable ciphertext, restart, maintenance-only rewrap/CAS, logical
+          backup/restore, encrypted key snapshot recovery and actual SIGKILL retry.
       - no-gate: >
-          9 feasibility checks pass on Vault 2.2.1; no production auth, persistence,
-          TLS, unseal/recovery or HA acceptance yet. Transit does not store
+          9 feasibility checks pass on Vault 2.2.1; no production auth,
+          TLS, HA or operational recovery acceptance yet. Transit does not store
           application ciphertext or enforce Nightscout tenant membership.
-          PG persistence/restart and simulated lost-reply checks are measured,
-          not backup/restore or process-SIGKILL recovery. Runtime consumers,
+          Synthetic PG dump/restore, encrypted single-node Vault snapshots
+          and before-CAS/after-commit worker SIGKILL are measured. Cluster
+          globals, online backup coordination, RPO/RTO and runtime consumers,
           current-grant policy service and minimum owner API remain unwired.
     blocks_on: []
     evidence:
@@ -351,6 +374,14 @@ items:
       Separate secrets worktree may fast-forward to the integrated baseline,
       then pursue synthetic backup/restore and actual process-crash acceptance.
       Keep catalogue history immutable and do not enable runtime consumers.
+      Recovery 78b915ab merged with entries a8dd162d at 0de90852:
+      879 passing with zero pending, including all 34 secrets checks.
+      Real PG dump/restore and non-dev single-node Vault snapshots preserve
+      references/audit/key versions; missing/newer keys and provider outages
+      refuse. Actual worker SIGKILL before CAS and after commit preserves
+      audit/value semantics across process retries. No production recovery
+      claim. Fast-forward the isolated worktree before the next bounded
+      MT-CONFIG-MIN/current-authority slice; keep entries/runtime untouched.
 
   - id: TEN-RESOLVE
     title: "Current-dev tenant resolution and private operator lifecycle"
