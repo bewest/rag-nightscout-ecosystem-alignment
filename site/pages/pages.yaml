@@ -42,7 +42,7 @@ pages:
   cgm-remote-monitor-16.0.0-colophon.html:
     kind: living
     sources: [releases/cgm-remote-monitor-16.0.0/colophon.md, releases/cgm-remote-monitor-16.0.0/colophon-data.json]
-    source_commit: b099d8e12
+    source_commit: 51c599e6f
     render: tools/site/render_cgm1600_colophon.py
   clinical-decision-support-synthetic-demo-2026-10-16.html:
     kind: snapshot
