@@ -1824,10 +1824,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#release-readiness-verification-2026-11-01" class="md-nav__link">
+  <a href="#release-readiness-verification-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Release-readiness verification (2026-11-01)
+        Release-readiness verification (2026-11-02)
       
     </span>
   </a>
@@ -2733,10 +2733,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#release-readiness-verification-2026-11-01" class="md-nav__link">
+  <a href="#release-readiness-verification-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Release-readiness verification (2026-11-01)
+        Release-readiness verification (2026-11-02)
       
     </span>
   </a>
@@ -2910,10 +2910,10 @@
 
 
 <h1 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>5bbec1ef1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>80248ecb9</code>.</em></p>
 <p>This document is an index of requirements organized by domain.</p>
-<h2 id="release-readiness-verification-2026-11-01">Release-readiness verification (2026-11-01)<a class="headerlink" href="#release-readiness-verification-2026-11-01" title="Permanent link">&para;</a></h2>
-<p>The <a href="../docs/10-domain/nightscout-rc-readiness-2026-11-01.html">16.0.0 RC readiness triage</a>
+<h2 id="release-readiness-verification-2026-11-02">Release-readiness verification (2026-11-02)<a class="headerlink" href="#release-readiness-verification-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>The <a href="../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current v16 ecosystem/acceptance record</a>
 maps the existing pre-tag requirements (<code>RT-16-RELEASE</code>, <code>RT-16-LIVE-ALARMS</code>,
 <code>RT-16-RIG-SOAK</code>, <code>BFQ-72</code>, <code>BFQ-161</code>) to current integration work. These queue
 identifiers are release gates, not new protocol requirement IDs. Restricted-token
@@ -2925,6 +2925,20 @@ integration. <code>BFQ-227</code> tracks the callback defect fixed by #8895;
 Hosted suite totals are reported separately from matrix execution totals in the
 readiness record; neither replaces final security-tree, live/cohort or rollback
 acceptance. Scheduled implementation merges are not unfulfilled test requirements.</p>
+<p>Cohort/rig testing is now in progress, not accepted from elapsed time alone.
+For each cohort capture server SHA/image, client version and role, API/transport,
+units, settings, observation interval, scenario outcome and unresolved failures;
+repeat affected checks after the final security integration. Keep credentials,
+personal identifiers and real treatment payloads out of public evidence.</p>
+<p>Compatibility verification must distinguish legacy/default behavior from
+request opt-in item results; HTTP success from per-item storage; re-send from edit;
+unset identifier validation from explicit lenient/strict; and index <code>off</code> from
+<code>drop</code>. A new AID release or optional field does not itself justify making all
+clients upgrade together. These clarify the existing release/client gates, not
+new normative protocol requirements. The reporter's #8829 result and both
+maintainers' non-reproduction must coexist in its release disposition:
+<strong>nonblocking for v16</strong>, decided by the maintainer November 2, with working
+DIY and production/service environments reported. It is not a new pre-tag gate.</p>
 <h2 id="domain-files">Domain Files<a class="headerlink" href="#domain-files" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="aid-algorithms-requirements.html">Aid Algorithms</a> - 56 requirements (+3 OREF)</li>

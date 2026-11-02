@@ -1072,7 +1072,7 @@
   <span class="md-ellipsis">
     
   
-    — release notes (DRAFT)
+    Nightscout 16.0.0 - release notes (DRAFT)
   
 
     
@@ -1102,6 +1102,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout 16.0.0 — testing notes for the release candidate
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="testing-notes.html" class="md-nav__link md-nav__link--active">
         
   
@@ -1118,6 +1136,47 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-people-using-a-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: people using a site
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-operators-and-app-authors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: operators and app authors
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2152,6 +2211,36 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-people-using-a-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: people using a site
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-operators-and-app-authors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2: operators and app authors
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2168,14 +2257,87 @@
 
 
 <h1 id="nightscout-1600--testing-notes-for-the-release-candidate">Nightscout 16.0.0 — testing notes for the release candidate<a class="headerlink" href="#nightscout-1600--testing-notes-for-the-release-candidate" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
-<p><strong>Not written yet (2026-11-01, <code>dev</code> <code>61eb3733</code>, after #8895/#8896 merged).</strong> No 16.0.0 release candidate is named, so there is no call for
-testers yet. This file is written when the maintainers name a candidate, in the form of
-<a href="../cgm-remote-monitor-15.0.9/testing-notes.html">15.0.9's testing notes</a>: Part 1 in plain language for
-people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
-runs measured so far are in the
-<a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a>, and what
-the release contains is in <a href="contents.html">contents.md</a>.</p>
+<p><em>Living document, last changed 2026-11-02 at <code>80248ecb9</code>.</em></p>
+<p><strong>Working cohort guide, 2026-11-02. Not a formal named-RC announcement.</strong>
+Informal testing has already started: the maintainer reports multiple testers
+have run the code for over 24-48 hours. No named v16 RC is published. Current
+official dev is <code>61eb37335954ae42c91345a0823bd67331025165</code>; record the exact
+commit/image each tester actually ran rather than assuming it is this one.
+The measured automated runs remain in the
+<a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html">integration record</a>;
+release scope is in <a href="contents.html">contents.md</a>.</p>
+<h2 id="part-1-people-using-a-site">Part 1: people using a site<a class="headerlink" href="#part-1-people-using-a-site" title="Permanent link">&para;</a></h2>
+<p>Use the connected apps and displays you normally use. Report missing readings,
+duplicates, unexpected displayed values, browser reconnect failures or alerts
+that did not arrive or stop as expected. Include app/server versions, display
+units, approximate observation interval and what happened, without personal
+records, credentials or screenshots containing health data.</p>
+<p>Check your usual phone and desktop views, including an optional modern theme
+only if you chose it. Keep independent device alerts enabled; do not rely on
+an experimental Nightscout build as your only alarm source. This is not dosing
+advice. Do not create test treatments on an active-care site.</p>
+<h2 id="part-2-operators-and-app-authors">Part 2: operators and app authors<a class="headerlink" href="#part-2-operators-and-app-authors" title="Permanent link">&para;</a></h2>
+<p>Collect a cohort row for AAPS (include 4.0.0 master/client roles and existing
+supported versions), Loop, Trio, xDrip+, a follower and an mmol/L site.
+Multiple roles can be covered by one setup, but label each outcome separately.</p>
+<table>
+<thead>
+<tr>
+<th>Evidence field</th>
+<th>What to record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server</td>
+<td>SHA, immutable image tag/digest, Node/MongoDB versions; do not use <code>latest_dev</code> alone</td>
+</tr>
+<tr>
+<td>Client/environment</td>
+<td>App version/build, API v1/v3/socket, role/permissions without tokens, browser/proxy where relevant</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>Units and relevant <code>WRITE_*</code>/strict-settings modes; default versus opt-in</td>
+</tr>
+<tr>
+<td>Interval</td>
+<td>Start/end and build changes; distinguish elapsed time from confirmed scenario coverage</td>
+</tr>
+<tr>
+<td>Outcome</td>
+<td>Scenario, expected/observed result, pass/fail/not exercised, sanitized issue/reference</td>
+</tr>
+<tr>
+<td>Candidate transition</td>
+<td>Previous build, new final/security-integrated build, affected checks repeated</td>
+</tr>
+</tbody>
+</table>
+<p>Capture ordinary uploads and reads, stable record identity on re-send, reconnect
+and backfill, time/unit display, deleted-record behavior, and whether queues
+retry or lose refused items. Exercise writes, conflicting identities and
+partial-refusal cases only on a disposable site with synthetic records.
+For API v1 verify the legacy array without opt-in separately from the
+<code>Nightscout-Write-Results: items</code> envelope. Test AAPS strict-settings and
+non-default rejection modes separately; do not enable them on every cohort.</p>
+<p>Operator-led live checks must record Pushover emergency delivery,
+acknowledgement, cancellation and duplicate-window behavior, and APNs delivery
+to a phone. Record service/scenario/build/outcome, not credentials or patient
+payloads. Automated callback tests are not a substitute.</p>
+<p>Rehearse backup, upgrade and rollback on a disposable deployment, including
+identifier-index startup with duplicates. <code>WRITE_IDENTIFIER_INDEX=off</code> keeps
+an existing index; verify the documented <code>drop</code>/rollback sequence explicitly.
+After security integration, pin the final tree/image and repeat affected
+acceptance checks. Earlier cohort observations remain useful as earlier-build
+evidence, not automatic acceptance of the new tree.</p>
+<p><strong>#8829 is nonblocking by maintainer decision (November 2).</strong> Its reporter
+reports persistence on dev, but neither maintainer reproduced it and many DIY
+and production/service environments work (maintainer report). Keep a sanitized
+browser/proxy/role comparison as separate follow-up; do not claim a general
+regression, root cause or a fix.</p>
+<p>The pre-tag live-alert, final-tree and cohort/rollback gates remain. No completed
+cohort row or final-candidate approval is asserted by this guide.</p>
 <p><strong>Contributor preparation update:</strong> BF-227 / #8895 fixes late, duplicate or
 expired Pushover callbacks returning 500 for no-longer-held receipts. Known
 alarm acknowledgment remains once-only and the diagnostic is unchanged.
@@ -2188,12 +2350,15 @@ the development image, not a release. See integration R19/R20 and
 <a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html">current readiness</a>.</p>
 <p>For the eventual named-RC call, retain live Pushover emergency delivery,
 acknowledgment, cancel and duplicate-window checks, and APNs delivery to a
-phone. Offline callback tests do not satisfy these. A real-rig soak, restricted
-subject token REST plus WebSocket/reconnect through a reverse proxy (#8829),
-identity cohort and rollback remain required; private BF-72/BF-161 acceptance
-is blocked. Do not issue a tester call or close #8829 from green CI alone.</p>
+phone. Offline callback tests do not satisfy these. A real-rig soak, representative
+REST plus WebSocket/reconnect, identity cohort and rollback remain required;
+private BF-72/BF-161 acceptance is pending. #8829 itself is not a release gate.
+Continue existing informal testing; a formal named-RC call should identify its
+immutable build. Do not close #8829 from green CI alone.</p>
 <!--
-  CONTRIBUTOR NOTE, delete when the file is written. The sections this release will need, from
+  HISTORICAL CONTRIBUTOR PREPARATION (before the November 2 guide above).
+  Earlier "no tester call" wording below is not a claim that informal testing has not started.
+  The sections this release will need, from
   contents.md as of dev eb72a1d3:
 
   Part 1 (people who use a site; plain language, no dosing advice, talk to the care team):

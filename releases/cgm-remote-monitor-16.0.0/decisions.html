@@ -1082,7 +1082,7 @@
   <span class="md-ellipsis">
     
   
-    — release notes (DRAFT)
+    Nightscout 16.0.0 - release notes (DRAFT)
   
 
     
@@ -2168,7 +2168,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>80248ecb9</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2177,7 +2177,19 @@ it. Item state is in <code>queue/work-queue.yaml</code>; what 16.0.0 contains an
 <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html">16.0.0 integration record</a>. BF-72 and
 BF-161 appear by mechanism only: both are live on the shipping release, and this repository is
 public.</em></p>
-<p><strong>Current implementation status, 2026-11-01:</strong> #8895's callback fix and</p>
+<p><strong>Current follow-up, 2026-11-02:</strong> the maintainer confirms informal cohort/rig
+testing has started (over 24-48 hours across testers). Acceptance outcomes still
+need exact builds and scenarios. Master's absent 4.4 requirement is removed;
+the aggregate <em>Tests pass</em> policy is not yet applied. #8829 remains
+reporter-observed on dev and not reproduced by either maintainer; obtain a
+sanitized reproducer/environment comparison before assigning cause.
+<strong>Maintainer decision, November 2: #8829 is not a release blocker</strong>; it works
+in many DIY and production/service environments and neither maintainer
+reproduced the reported failure. Keep the environment-specific report open as
+nonblocking follow-up, without claiming it is fixed.
+The <a href="../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current acceptance/workstream record</a>
+records proposed follow-ups, not decisions to admit new PRs or change defaults.</p>
+<p><strong>Historical implementation status, 2026-11-01:</strong> #8895's callback fix and</p>
 <h1 id="8896s-test-hygiene-are-merged-integrated-dev-ci-and-codeql-are-green-and">8896's test hygiene are merged; integrated dev CI and CodeQL are green and<a class="headerlink" href="#8896s-test-hygiene-are-merged-integrated-dev-ci-and-codeql-are-green-and" title="Permanent link">&para;</a></h1>
 <p>the push workflow published the development image. This records implementation
 and validation, <strong>not a new release decision</strong>. No RC is named; BF-72/BF-161
@@ -2260,7 +2272,7 @@ See <a href="../../docs/10-domain/nightscout-rc-readiness-2026-11-01.html">the r
 | <strong>BF-211 joins the 16.0.0 merge list</strong>, added to #8877 with BF-209; <strong>BF-210 is withdrawn as not a defect</strong>: a nearby socket upload of the same event type whose amounts match a stored record is absorbed as intended, and the fix (a carbs-only re-send next to a stored carbs-and-insulin record became a second record) would double-count carbs on board. Linking a bolus to carbs eaten later as one meal belongs in the display layer, not in storage de-duplication | maintainer, 2026-10-29 | <code>BFQ-209</code>, <code>BFQ-210</code> (closed), <code>BFQ-211</code>, <code>DISPLAY-MEAL-GROUP</code> | #8877 merged 2026-10-30 00:50:49Z as <code>cf3d4b8f</code> (head <code>ac5d77fb</code>) |
 | <strong>BF-212's split fix is a 16.0.0 backfix</strong> (ID-Q5): the chart's split stops copying identity fields onto the moved half. Direction for the rest: a lossy edit of a controller-claimed record needs a manual confirmation; two records already sharing an identifier is a question for ID-FIRST-MATCH | maintainer, 2026-10-29 | <code>BFQ-212</code> | #8878 merged 2026-10-30 01:48:51Z as <code>d51c7a60</code>; the rest of BF-212 is open (contents, Known defects) |
 | <strong>16.0.0 scope: every single-tenant item of the next-gen plan, through the entry bar and in priority order.</strong> A miss at the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. <strong>The identity work is the core</strong>: it is the substance of the agreement with the Loop maintainers (identifier-first on every path, re-sends recognised, the format rules, one record per identifier). <strong>The unique index on <code>identifier</code> is in 16.0.0</strong>, behind <code>WRITE_IDENTIFIER_INDEX=try\|require\|off\|drop</code> (default <code>try</code>); <code>try</code> reports existing duplicates without deleting records or blocking startup. <strong>Multitenant runtime may ship dormant and labelled alpha behind <code>serve</code>, or be deferred; it is not a single-tenant release gate.</strong> The tag is gated by the bar, not by a date | maintainer, 2026-10-30 (<a href="../../docs/30-design/platform/next-gen-platform-plan.html">next-gen plan</a> §1) | <code>ID-UNIQUE-INDEX</code>, <code>ID-FIRST-MATCH</code>, <code>WC-STEP-PATCH</code>, <code>HUB-REG-CRM</code>, <code>PLAT-SERVE</code> | #8892 and #8894 are merged; identity test evidence is in contents and the integration record. Cohort scenarios remain to be prepared for an eventual named RC. |
-| <strong>Required before the 16.0.0 tag</strong>: (a) a live Pushover and APNs delivery check; (b) a real-rig soak on <code>dev</code>; (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0. BF-193 (the socket's payload logging) is not a pre-tag requirement; its logging question is decided (the BF-193 row below) | maintainer, 2026-10-26 (session -66) | <code>RT-16-RELEASE</code> (blocks on <code>RT-16-LIVE-ALARMS</code>, <code>RT-16-RIG-SOAK</code>, <code>BFQ-72</code>, <code>BFQ-161</code>), <code>BFQ-193</code> | none of the three met: (a) and (b) not started; BF-72 and BF-161 are in the advisory forks with no fork PR |</p>
+| <strong>Required before the 16.0.0 tag</strong>: (a) a live Pushover and APNs delivery check; (b) a real-rig soak on <code>dev</code>; (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0. BF-193 (the socket's payload logging) is not a pre-tag requirement; its logging question is decided (the BF-193 row below) | maintainer, 2026-10-26 (session -66) | <code>RT-16-RELEASE</code> (blocks on <code>RT-16-LIVE-ALARMS</code>, <code>RT-16-RIG-SOAK</code>, <code>BFQ-72</code>, <code>BFQ-161</code>), <code>BFQ-193</code> | updated 2026-11-02: (b) informal cohort testing underway, acceptance not yet recorded; (a) live-delivery outcomes not recorded here; (c) private integration/final-tree validation still pending |</p>
 <h2 id="tests-and-the-jsdom-harness">Tests and the jsdom harness<a class="headerlink" href="#tests-and-the-jsdom-harness" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
