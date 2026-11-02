@@ -15,14 +15,20 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-**Current integrated head, 2026-11-01: `61eb3733`.** The `497d08c9` labels
+**Current integrated head, 2026-11-02: `61eb3733`.** The `497d08c9` labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are
 also merged. ID-BATCH is implemented across #8889/#8894; no whole-branch
 rebase or new feature PR is owed absent a specific uncovered case.
-Public CI is green, but final private-security integration, staging protection,
-live alerts, real-rig soak, identity cohort and rollback remain release gates.
-See [current readiness](../../10-domain/nightscout-rc-readiness-2026-11-01.md).
+Public CI is green. Final private-security integration, live alerts, completed
+cohort/rollback evidence and release approval remain pre-tag work.
+Informal cohort/real-rig testing is underway (maintainer reports over 24-48 hours).
+Master's absent 4.4 check has been removed; retained required lanes are green.
+The aggregate-check policy and approving review are ongoing staging work.
+#8829 is **nonblocking by maintainer decision**: neither maintainer reproduced it
+and many DIY and production/service environments work; retain reporter-specific
+follow-up without declaring a general regression.
+See [current readiness and workstreams](../../10-domain/nightscout-v16-ecosystem-deep-dive.md).
 
 | | on dev `497d08c9` (ships in 16.0.0) | local next | not started |
 |---|---|---|---|
@@ -66,13 +72,13 @@ through the entry bar before the tag, directly after `write(intent)`; ID-FIRST-M
 | 2 | **merged 2026-10-30 (`991b0654`)**: #8865, one executable and the boot split | every site starts through it, so it carries the release's widest operational change | the image's `nightscout single` start, `npm start`, Heroku/Docker/Azure forms, SIGTERM shutdown. Ask each hosting cohort to check it |
 | 2a | **merged 2026-10-30 (`d51c7a60`)**: #8878, BF-212 first part: the chart split stops copying identity fields | low; changes only what the moved half of a chart drag carries | the unit test (red on dev) and the reproduction probe; the re-upload double count remains |
 | 3 | **merged 2026-10-30 with #8877 (`cf3d4b8f`)**: BF-211, per-collection cache flush | low; changes only which caches a delete by query empties | the red/green control from `tools/lab/cache-value`; v1 deletes by query and API v3 auto-prune |
-| 3a | #8855, Crowdin | low | none beyond the usual |
+| 3a | #8855, Crowdin; head `d3edc390`, returned checks green (2026-11-02) | low | usual translation review and current-base recheck |
 | 3c | **merged 2026-10-31 (`2f50d944`)**: #8883 (head `789d5d9d`): BF-219, BF-220, BF-221 (v1 treatment and entry writes) and BF-222 (API v3 autoPrune names what it deletes to the cache); #8879 took it in its `dev` merge (four-file conflict, session -4e) | dosing-relevant reply and announcement fixes | HTTP-level tests red on `dev`; the write-step port reviewed |
 | 3d | **merged 2026-10-31 (`37b2280f`)**: #8882 (head `32cd90e6`): hygiene, the development lint popup and drawer resize. The resize handler now registers at the first open (`2737756d`), so loading `browser-utils` without a window no longer throws | display only | browser test red on `dev` |
 | 3e | **merged 2026-10-31 (`604de1cb`)**: #8885: BF-223 (a saved API secret the site refuses no longer blocks a valid `?token=` link) and BF-224 (a plain value under the date field means equality, not a 500; the defect dates from 2019); #8879 takes it in its `dev` merge (`2d79d30b`) | low; client sign-in and one query form | BF-224's equality test (`api.date-filter-equality`) |
 | 3b | **merged 2026-10-30 (`305a6533`, #8880)**: BF-213, BF-214, BF-217: a missed URGENT pump alarm, a pump-plugin crash that hides every pump alarm, a device-status cache gap; BF-213 alarms at Loop's severity (maintainer, 2026-10-30) | Loop users with pump alerts get new pump alarms | each fix red then green; the release-notes line |
 | 4 | BF-72 and BF-161 fork branches | security fixes held outside the public PR list until release ([register](../remedial/nightscout-backfix-register.md)) | brought up to `dev` and merged before the tag |
-| 5 | #8824, dev to master | blocked by master protection, which requires `Run Tests (22, 6)`, `(22, 4.4)` and `(24, 6)` plus one approving review | fix the required check, then merge and tag |
+| 5 | #8824, dev to master | `BLOCKED`; master requires `Run Tests (22, 6)` and `(24, 6)` plus one approving review, read 2026-11-02. The absent 4.4 requirement is removed and both retained lanes are green | finish review and the decided aggregate-check policy; security/final-tree/live/cohort acceptance before tag |
 
 **Eligible for 16.0.0 through an entry bar** (maintainer, 2026-10-29): rows 8 and 9 below, plus the
 re-send switch, in that order. Each joins the merge list when its matrix result is as stated, its red

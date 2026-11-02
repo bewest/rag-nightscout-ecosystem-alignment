@@ -1,12 +1,70 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Not written yet (2026-11-01, `dev` `61eb3733`, after #8895/#8896 merged).** No 16.0.0 release candidate is named, so there is no call for
-testers yet. This file is written when the maintainers name a candidate, in the form of
-[15.0.9's testing notes](../cgm-remote-monitor-15.0.9/testing-notes.md): Part 1 in plain language for
-people who use a site, Part 2 for people who run a site or write tools that use it. Until then the
-runs measured so far are in the
-[16.0.0 integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md), and what
-the release contains is in [contents.md](contents.md).
+**Working cohort guide, 2026-11-02. Not a formal named-RC announcement.**
+Informal testing has already started: the maintainer reports multiple testers
+have run the code for over 24-48 hours. No named v16 RC is published. Current
+official dev is `61eb37335954ae42c91345a0823bd67331025165`; record the exact
+commit/image each tester actually ran rather than assuming it is this one.
+The measured automated runs remain in the
+[integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md);
+release scope is in [contents.md](contents.md).
+
+## Part 1: people using a site
+
+Use the connected apps and displays you normally use. Report missing readings,
+duplicates, unexpected displayed values, browser reconnect failures or alerts
+that did not arrive or stop as expected. Include app/server versions, display
+units, approximate observation interval and what happened, without personal
+records, credentials or screenshots containing health data.
+
+Check your usual phone and desktop views, including an optional modern theme
+only if you chose it. Keep independent device alerts enabled; do not rely on
+an experimental Nightscout build as your only alarm source. This is not dosing
+advice. Do not create test treatments on an active-care site.
+
+## Part 2: operators and app authors
+
+Collect a cohort row for AAPS (include 4.0.0 master/client roles and existing
+supported versions), Loop, Trio, xDrip+, a follower and an mmol/L site.
+Multiple roles can be covered by one setup, but label each outcome separately.
+
+| Evidence field | What to record |
+|---|---|
+| Server | SHA, immutable image tag/digest, Node/MongoDB versions; do not use `latest_dev` alone |
+| Client/environment | App version/build, API v1/v3/socket, role/permissions without tokens, browser/proxy where relevant |
+| Configuration | Units and relevant `WRITE_*`/strict-settings modes; default versus opt-in |
+| Interval | Start/end and build changes; distinguish elapsed time from confirmed scenario coverage |
+| Outcome | Scenario, expected/observed result, pass/fail/not exercised, sanitized issue/reference |
+| Candidate transition | Previous build, new final/security-integrated build, affected checks repeated |
+
+Capture ordinary uploads and reads, stable record identity on re-send, reconnect
+and backfill, time/unit display, deleted-record behavior, and whether queues
+retry or lose refused items. Exercise writes, conflicting identities and
+partial-refusal cases only on a disposable site with synthetic records.
+For API v1 verify the legacy array without opt-in separately from the
+`Nightscout-Write-Results: items` envelope. Test AAPS strict-settings and
+non-default rejection modes separately; do not enable them on every cohort.
+
+Operator-led live checks must record Pushover emergency delivery,
+acknowledgement, cancellation and duplicate-window behavior, and APNs delivery
+to a phone. Record service/scenario/build/outcome, not credentials or patient
+payloads. Automated callback tests are not a substitute.
+
+Rehearse backup, upgrade and rollback on a disposable deployment, including
+identifier-index startup with duplicates. `WRITE_IDENTIFIER_INDEX=off` keeps
+an existing index; verify the documented `drop`/rollback sequence explicitly.
+After security integration, pin the final tree/image and repeat affected
+acceptance checks. Earlier cohort observations remain useful as earlier-build
+evidence, not automatic acceptance of the new tree.
+
+**#8829 is nonblocking by maintainer decision (November 2).** Its reporter
+reports persistence on dev, but neither maintainer reproduced it and many DIY
+and production/service environments work (maintainer report). Keep a sanitized
+browser/proxy/role comparison as separate follow-up; do not claim a general
+regression, root cause or a fix.
+
+The pre-tag live-alert, final-tree and cohort/rollback gates remain. No completed
+cohort row or final-candidate approval is asserted by this guide.
 
 **Contributor preparation update:** BF-227 / #8895 fixes late, duplicate or
 expired Pushover callbacks returning 500 for no-longer-held receipts. Known
@@ -21,13 +79,16 @@ the development image, not a release. See integration R19/R20 and
 
 For the eventual named-RC call, retain live Pushover emergency delivery,
 acknowledgment, cancel and duplicate-window checks, and APNs delivery to a
-phone. Offline callback tests do not satisfy these. A real-rig soak, restricted
-subject token REST plus WebSocket/reconnect through a reverse proxy (#8829),
-identity cohort and rollback remain required; private BF-72/BF-161 acceptance
-is blocked. Do not issue a tester call or close #8829 from green CI alone.
+phone. Offline callback tests do not satisfy these. A real-rig soak, representative
+REST plus WebSocket/reconnect, identity cohort and rollback remain required;
+private BF-72/BF-161 acceptance is pending. #8829 itself is not a release gate.
+Continue existing informal testing; a formal named-RC call should identify its
+immutable build. Do not close #8829 from green CI alone.
 
 <!--
-  CONTRIBUTOR NOTE, delete when the file is written. The sections this release will need, from
+  HISTORICAL CONTRIBUTOR PREPARATION (before the November 2 guide above).
+  Earlier "no tester call" wording below is not a claim that informal testing has not started.
+  The sections this release will need, from
   contents.md as of dev eb72a1d3:
 
   Part 1 (people who use a site; plain language, no dosing advice, talk to the care team):

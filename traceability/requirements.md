@@ -2,9 +2,9 @@
 
 This document is an index of requirements organized by domain.
 
-## Release-readiness verification (2026-11-01)
+## Release-readiness verification (2026-11-02)
 
-The [16.0.0 RC readiness triage](../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
+The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)
 maps the existing pre-tag requirements (`RT-16-RELEASE`, `RT-16-LIVE-ALARMS`,
 `RT-16-RIG-SOAK`, `BFQ-72`, `BFQ-161`) to current integration work. These queue
 identifiers are release gates, not new protocol requirement IDs. Restricted-token
@@ -16,6 +16,22 @@ integration. `BFQ-227` tracks the callback defect fixed by #8895;
 Hosted suite totals are reported separately from matrix execution totals in the
 readiness record; neither replaces final security-tree, live/cohort or rollback
 acceptance. Scheduled implementation merges are not unfulfilled test requirements.
+
+Cohort/rig testing is now in progress, not accepted from elapsed time alone.
+For each cohort capture server SHA/image, client version and role, API/transport,
+units, settings, observation interval, scenario outcome and unresolved failures;
+repeat affected checks after the final security integration. Keep credentials,
+personal identifiers and real treatment payloads out of public evidence.
+
+Compatibility verification must distinguish legacy/default behavior from
+request opt-in item results; HTTP success from per-item storage; re-send from edit;
+unset identifier validation from explicit lenient/strict; and index `off` from
+`drop`. A new AID release or optional field does not itself justify making all
+clients upgrade together. These clarify the existing release/client gates, not
+new normative protocol requirements. The reporter's #8829 result and both
+maintainers' non-reproduction must coexist in its release disposition:
+**nonblocking for v16**, decided by the maintainer November 2, with working
+DIY and production/service environments reported. It is not a new pre-tag gate.
 
 ## Domain Files
 

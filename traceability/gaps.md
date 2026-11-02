@@ -2,19 +2,25 @@
 
 This document is an index of gaps organized by domain.
 
-## Release-readiness follow-up (2026-11-01)
+## Release-readiness follow-up (2026-11-02)
 
-The [16.0.0 RC readiness triage](../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
-tracks operational release gaps separately from protocol-gap counts: integrated
-CI is now green on `61eb3733` after #8895/#8896; obsolete staging protection,
-blocked private security integration,
-notification delivery and client-cohort acceptance. An open issue or a green
-check on an older PR head is not evidence that a current release gap is closed.
-The publication recheck confirms master still requires the absent 4.4 job;
-dev's separate gate is `Run Tests (24, 6)`. Scheduled storage/identity,
-including ID-BATCH, and frontend modernization are merged, not remaining
-implementation gaps. Private merge routing is outstanding; security scope
-does not require a new decision.
+The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)
+supersedes the November 1 operational status without adding duplicate protocol
+GAP IDs. Public CI is green on `61eb3733`; private security integration,
+final-tree validation, live notification evidence and cohort/rollback acceptance
+remain open. Cohort testing has started (maintainer-reported over 24-48 hours);
+its version-pinned outcomes have not yet been collected here.
+
+The absent MongoDB 4.4 check has been removed from master protection. The two
+remaining required lanes are present and green; review and the decided aggregate
+check policy remain release-stewardship work. For
+nightscout/cgm-remote-monitor#8829, the reporter reports persistence on dev,
+but neither maintainer reproduced it and many DIY and production/service
+environments work (maintainer report). The maintainer explicitly dispositions it
+**nonblocking** for v16. `RT-16-TOKEN-8829` tracks the bounded environment
+comparison/reproducer, not a release prerequisite or confirmed root cause.
+Scheduled storage/identity and frontend modernization are merged, not open
+implementation gaps. No elapsed soak time or metadata survey closes a gap.
 
 ## Domain Files
 

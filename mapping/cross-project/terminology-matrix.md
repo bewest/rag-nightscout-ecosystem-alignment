@@ -2,7 +2,7 @@
 
 This matrix maps equivalent concepts across AID systems. Use this as a rosetta stone when translating between projects.
 
-## Release-readiness terminology (2026-11-01)
+## Release-readiness terminology (2026-11-02)
 
 | Alignment Term | Nightscout | Interoperability Meaning |
 |----------------|------------|--------------------------|
@@ -10,8 +10,13 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Release candidate | Named, pinned candidate for cohort testing | A moving `dev` branch or `latest_dev` image is not a named RC. |
 | Callback acknowledgment | HTTP response to a notification provider | Distinct from acknowledging/snoozing an active Nightscout alarm. |
 | Suite count / execution count | Tests reported once per suite / repeated CI matrix executions | Neither sum alone proves distinct test identities across suites or live client acceptance. |
+| Informal cohort / accepted cohort | Real setups running dev / recorded outcomes against an identified build | Testing can start before a named RC; elapsed time alone is not acceptance. |
+| Reporter-observed / maintainer-reproduced | A user's report / independently reproduced scenario | #8829 persists according to its reporter, but neither maintainer reproduced it; neither observation cancels the other. |
+| Opt-in extension / changed default | Request-selected item envelope / new server-side re-send or index behavior | Independent client deployment requires documenting both, not describing every v16 behavior as backwards-identical. |
+| Unset / lenient identifier validation | Historical API v3 refusals retained / invalid identifiers treated as absent | These are distinct modes; do not promise that unset and explicit lenient are equivalent. |
+| Index off / drop | Do not build or remove / remove the identifier index | Switching to off alone is not a rollback of an already-created unique index. |
 
-See the [16.0.0 RC readiness triage](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
+See the [current v16 ecosystem/acceptance record](../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)
 for the pinned head, delivery-check limitations and release gates.
 At `61eb3733`, #8895 separates HTTP callback success from one-time alarm
 acknowledgment (BF-227); #8896 treats index `built` and `present` as equivalent

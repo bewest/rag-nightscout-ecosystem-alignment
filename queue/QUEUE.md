@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 349 |
+| items | 350 |
 | runnable gates | 407 |
-| explicit `no-gate:` markers | 360 |
+| explicit `no-gate:` markers | 361 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 360 of the 767 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 361 of the 768 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-RIG-SOAK, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 8 | BFQ-178, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `in-progress` | 9 | BFQ-178, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 15 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -1037,7 +1037,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 ## Modernization release train
 
-`parcel: release-train` &mdash; 54 items
+`parcel: release-train` &mdash; 55 items
 
 The adopted order (maintainer, 2026-09-15): 15.0.9, then cut 1, then cut 2,
 then cuts 3+5 combined, then a deprecation release, then cut 4. The premise of
@@ -1062,7 +1062,8 @@ that costs.
 | `RT-16-LIVE-ALARMS` | 16.0.0 pre-tag check: live Pushover and APNs delivery on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-CI-WEBKIT-REPORTS` | WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks' | `merged-upstream` | `test/16.0.0-reports-ready` | n/a | 1 run + 1 no-gate |
 | `RT-CI-FLAKES-8DBB60C2` | dev 8dbb60c2's red CI: a concurrent-writes timestamp collision and the WebKit reports-page race | `merged-upstream` | `test/16.0.0-ci-flakes` | n/a | 3 run + 1 no-gate |
-| `RT-16-RIG-SOAK` | 16.0.0 pre-tag check: a real-rig soak on dev | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `RT-16-RIG-SOAK` | 16.0.0 pre-tag check: a real-rig soak on dev | `in-progress` | `-` | n/a | 0 run + 1 no-gate |
+| `RT-16-TOKEN-8829` | Nonblocking restricted-token browser report: environment comparison and reproducer | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget option B) | `not-started` | `-` | patch | 0 run + 1 no-gate |
 | `RT-BOOT-INDEX-AWAIT` | Boot awaits its collection and index creation before it reports ready | `merged-upstream` | `bf/16.0.0-boot-resilience` | patch | 2 run + 1 no-gate |
 | `RT-CONNECT-TEARDOWN` | Remove the redundant connector teardown listener in bootevent.js once cut 1 is on dev | `merged-upstream` | `chore/16.0.0-test-ci-hygiene` | patch | 1 run + 1 no-gate |
@@ -1510,7 +1511,7 @@ that costs.
 - `releases/cgm-remote-monitor-16.0.0/contents.md`
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Current 2026-11-01: dev 61eb3733 includes #8895 (BFQ-227) and #8896 (RT-CI- FIXTURES-8896). Both integrated CI and CodeQL runs pass; the push workflow published the multi-architecture dev image, not a named RC. Release remains BLOCKED on the existing pre-tag private security, live alerts and rig-soak requirements, plus staging protection, identity cohort/rollback and final integrated-head acceptance. No tag or release authorization follows from green CI. Older entries below are historical evidence. 2026-10-27 (maintainer): done before the tag means (1) live alerts checked: Pushover emergency delivery, acknowledgement and cancellation, and APNs to a phone, on a dev site; (2) cohort confirmations from dev users: AndroidAPS, Loop, Trio, xDrip+, a follower app and an mmol/L site; (3) BF-72 and BF-161 merged through their forks, ready to publish with the release; (4) a short quiet period on dev with the final candidate, days not weeks. The soak is informal: dev users run what is merged. 2026-10-27, later: the suites on 8dbb60c2 pass (R17); the red CI is two test faults, fixed on test/16.0.0-ci-flakes (RT-CI-FLAKES-8DBB60C2, #8866 opened 2026-10-27); BF-72 and BF-161 have dev 8dbb60c2 merged into their fork heads, ready to push to the forks (BFQ-72, BFQ-161). 2026-10-27: #8860 merged (dev 8dbb60c2, the glucose pentagon in the Distribution report). dev's CI on 8dbb60c2 is red: the WebKit cached-bundle startup test failed in both runs and a concurrent-write test in the push run, on a tree whose PR run had passed every job (contents.md, Identity and Known defects). The verification record's item list is releases/cgm-remote-monitor-16.0.0/verification-selection.txt; a dry run of the generator over it on 8dbb60c2 fails only BFQ-72 and BFQ-161, after the generator and register fixes it led to (VERIFICATION-RECORDS.md, Changes). blast_radius is re-measured on 8dbb60c2. 2026-10-26, later: #8854 merged (ARCH-8854, c08cbe03; dev now 7ad3a67f). The outcome-B condition, the client replay re-run on the merged tree, is done: integration record R16, 0 differences from dev 47723cda in 201 cells across WRITE_VALIDATION off, log and reject. One open decision came out of it, the socket's failed slot (ARCH-8854-FAILED). 2026-10-26, later (maintainer): BF-193's logging question is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193, draft PR #8856), still not a pre-tag requirement. Q1b is decided for 16.0.0 (WRITE- CONTRACT, BFQ-195; with ID-SIMPLE-MATCH in draft PR #8859, head fc170a4c). Branch protection: master requires only Tests pass and one approving review, decided, the settings change owed by the maintainer (contents.md, Repository settings). Filed 2026-10-26 from the maintainer's pre-tag requirements: before the tag, (a) a live Pushover and APNs delivery check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK), and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (BFQ-72, BFQ-161). BF-193 is not a pre- tag requirement; whether payload logging is needed for debugging is the maintainer's open question. Other open items a releaser must settle are in contents.md. The generated release-waits view still reads RT-0 (15.0.9), so it does not list these blockers.
+**Notes.** Current 2026-11-02: informal cohort/real-rig testing has started, with over 24-48 hours reported across testers by the maintainer. Individual builds, scenarios and acceptance outcomes are not yet collected here. The absent 4.4 protection requirement has been removed; master now requires Run Tests (22, 6), Run Tests (24, 6) and one review. Both retained lanes are green; the decided Tests pass policy remains distinct from the observed setting. Maintainer disposition: #8829 is nonblocking, neither maintainer reproduced it and it works in many DIY and production/service environments; RT-16-TOKEN-8829 tracks follow-up. Security and final-tree/live/cohort/rollback acceptance remain pre-tag work, not reasons to halt preparation. See the current ecosystem record. Previous 2026-11-01: dev 61eb3733 includes #8895 (BFQ-227) and #8896 (RT-CI-FIXTURES-8896). Both integrated CI and CodeQL runs pass; the push workflow published the multi-architecture dev image, not a named RC. Release remains BLOCKED on the existing pre-tag private security, live alerts and rig-soak requirements, plus staging protection, identity cohort/rollback and final integrated-head acceptance. No tag or release authorization follows from green CI. Older entries below are historical evidence. 2026-10-27 (maintainer): done before the tag means (1) live alerts checked: Pushover emergency delivery, acknowledgement and cancellation, and APNs to a phone, on a dev site; (2) cohort confirmations from dev users: AndroidAPS, Loop, Trio, xDrip+, a follower app and an mmol/L site; (3) BF-72 and BF-161 merged through their forks, ready to publish with the release; (4) a short quiet period on dev with the final candidate, days not weeks. The soak is informal: dev users run what is merged. 2026-10-27, later: the suites on 8dbb60c2 pass (R17); the red CI is two test faults, fixed on test/16.0.0-ci-flakes (RT-CI- FLAKES-8DBB60C2, #8866 opened 2026-10-27); BF-72 and BF-161 have dev 8dbb60c2 merged into their fork heads, ready to push to the forks (BFQ-72, BFQ-161). 2026-10-27: #8860 merged (dev 8dbb60c2, the glucose pentagon in the Distribution report). dev's CI on 8dbb60c2 is red: the WebKit cached-bundle startup test failed in both runs and a concurrent-write test in the push run, on a tree whose PR run had passed every job (contents.md, Identity and Known defects). The verification record's item list is releases/cgm-remote- monitor-16.0.0/verification-selection.txt; a dry run of the generator over it on 8dbb60c2 fails only BFQ-72 and BFQ-161, after the generator and register fixes it led to (VERIFICATION-RECORDS.md, Changes). blast_radius is re- measured on 8dbb60c2. 2026-10-26, later: #8854 merged (ARCH-8854, c08cbe03; dev now 7ad3a67f). The outcome-B condition, the client replay re-run on the merged tree, is done: integration record R16, 0 differences from dev 47723cda in 201 cells across WRITE_VALIDATION off, log and reject. One open decision came out of it, the socket's failed slot (ARCH-8854-FAILED). 2026-10-26, later (maintainer): BF-193's logging question is decided (debug-gated payload logging through DEBUG_LOGGING; BFQ-193, draft PR #8856), still not a pre-tag requirement. Q1b is decided for 16.0.0 (WRITE-CONTRACT, BFQ-195; with ID- SIMPLE-MATCH in draft PR #8859, head fc170a4c). Branch protection: master requires only Tests pass and one approving review, decided, the settings change owed by the maintainer (contents.md, Repository settings). Filed 2026-10-26 from the maintainer's pre-tag requirements: before the tag, (a) a live Pushover and APNs delivery check (RT-16-LIVE-ALARMS), (b) a real-rig soak on dev (RT-16-RIG-SOAK), and (c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (BFQ-72, BFQ-161). BF-193 is not a pre-tag requirement; whether payload logging is needed for debugging is the maintainer's open question. Other open items a releaser must settle are in contents.md. The generated release-waits view still reads RT-0 (15.0.9), so it does not list these blockers.
 
 ### `RT-16-LIVE-ALARMS` &mdash; 16.0.0 pre-tag check: live Pushover and APNs delivery on dev
 
@@ -1538,7 +1539,7 @@ that costs.
 
 - `releases/cgm-remote-monitor-16.0.0/contents.md`
 
-**Notes.** Required before the tag (maintainer, 2026-10-26, session -66).
+**Notes.** Required before the tag (maintainer, 2026-10-26, session -66). 2026-11-02: informal cohort testing has started, but separate live Pushover/APNs send/acknowledgement/cancel outcomes are not recorded here. Do not mark this gate complete from elapsed cohort time.
 
 ### `RT-CI-WEBKIT-REPORTS` &mdash; WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks'
 
@@ -1608,15 +1609,15 @@ that costs.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
-| base | `official/dev@47723cda` |
+| base | `official/dev@61eb3733` |
 | worktree | `externals/cgm-remote-monitor-official` |
 | semver | `n/a` |
 | review | maintainer |
 
-**Blast radius.** dev 47723cda (or the named candidate) run behind real uploaders and followers for a soak period: a closed-loop controller, a CGM uploader and followers, with the 2026-10-26 client replay (integration record R15) as the synthetic baseline.
+**Blast radius.** dev builds (record each exact SHA/image, currently 61eb3733) run behind real uploaders and followers for a soak period: a closed-loop controller, a CGM uploader and followers, with the 2026-10-26 client replay (integration record R15) as the synthetic baseline.
 
 **What an operator sees.** Before 16.0.0 is tagged, it runs for a while on a real setup with real apps sending and reading data, to catch problems the automated tests cannot.
 
@@ -1629,8 +1630,38 @@ that costs.
 **Evidence.**
 
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+- `docs/10-domain/nightscout-v16-ecosystem-deep-dive.md`
 
-**Notes.** Required before the tag (maintainer, 2026-10-26, session -66).
+**Notes.** Required before the tag (maintainer, 2026-10-26, session -66). 2026-11-02 maintainer report: multiple testers have been using the code for over 24-48 hours; testing is underway. No per-cohort pass, exact duration/build or final- candidate acceptance is inferred. Collect client versions/roles, units, settings, server SHA/image, observation interval, outcomes and failures. Re- run affected checks after private security integration; preserve earlier evidence as earlier-build observations rather than discarding it.
+
+### `RT-16-TOKEN-8829` &mdash; Nonblocking restricted-token browser report: environment comparison and reproducer
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `official/dev@61eb3733` |
+| worktree | `externals/cgm-remote-monitor-official` |
+| semver | `n/a` |
+| review | maintainer and reporter |
+
+**Blast radius.** Evidence collection only for issue 8829: restricted subject token, browser REST/socket authentication and reverse-proxy environment. No production change or new security finding is established.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** nonblocking investigation, not a code or default change
+
+**Gates.**
+
+- **NO GATE** &mdash; Reporter says the issue persists on dev (2026-11-02), without an exact tested SHA/image. Neither maintainer reproduced it; the maintainer reports many working DIY and production/service environments. Need a sanitized environment comparison and minimal reproducer before defining a failing regression test. Do not collect credentials, personal data or raw treatment logs publicly.
+
+**Evidence.**
+
+- `docs/10-domain/nightscout-v16-ecosystem-deep-dive.md`
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Maintainer decision 2026-11-02: this is not a v16 release blocker. The release item deliberately does not depend on this follow-up. Keep issue 8829 open without claiming a root cause or a fix. Compare exact server/client versions, role names/permissions without token values, browser and proxy configuration, and REST versus socket handshake/reconnect outcomes using synthetic data.
 
 ### `RT-BUNDLE-THEME-SPLIT` &mdash; Load the modern theme's client code only when it is chosen (page-bundle budget option B)
 

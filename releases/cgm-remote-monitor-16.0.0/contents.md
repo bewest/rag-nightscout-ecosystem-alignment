@@ -1,5 +1,18 @@
 # cgm-remote-monitor 16.0.0 — contents
 
+**Current update, 2026-11-02:** dev remains `61eb3733`; no named RC or v16
+release is published. Informal cohort/real-rig testing is **underway**, with
+over 24-48 hours reported by the maintainer, not yet a version-pinned acceptance
+record. Master protection no longer requires the absent 4.4 check; its two
+remaining required lanes are green and review/staging continues. #8829's reporter
+reports persistence on dev, but neither maintainer reproduced it and many DIY
+and production/service environments work. The maintainer dispositions #8829
+**nonblocking** for v16; diagnosis remains follow-up. #8855 now has green checks; new report proposal
+#8897 has no checks returned. BF-72/BF-161 remain private pre-tag work.
+See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md),
+[draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
+Historical status/measurement sections below retain their dates.
+
 **2026-11-01 release-preparation follow-up:** the dated
 [RC readiness triage](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
 records current CI/staging blockers, candidate PR dispositions, issue follow-up
@@ -45,7 +58,8 @@ remain tied to their recorded historical commits.
 BF-72, BF-161 and BF-191 appear by mechanism only: all three are live on 15.0.9, and this repository is public.
 The decisions that shape the release are in [decisions.md](decisions.md); the test runs are in the
 [16.0.0 integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md); the call
-for testers is [testing-notes.md](testing-notes.md) (not written yet).
+for collecting current cohort evidence is [testing-notes.md](testing-notes.md);
+a formal named-RC announcement is not yet issued.
 
 ## Identity
 
@@ -839,7 +853,10 @@ unless reverted.
 
 **Required before the tag** (maintainer, 2026-10-26, session -66; queue `RT-16-RELEASE`): (a) a live
 Pushover and APNs delivery check (`RT-16-LIVE-ALARMS`); (b) a real-rig soak on `dev` (`RT-16-RIG-SOAK`);
-(c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (`BFQ-72`, `BFQ-161`). None is met.
+(c) the BF-72 and BF-161 fork fixes merged and published with 16.0.0 (`BFQ-72`, `BFQ-161`).
+**November 2 status:** cohort testing is in progress; completion evidence for
+these gates is not yet recorded. The earlier "not started" characterization is
+superseded, not a reason to restart or discard existing tester observations.
 BF-193 is not a pre-tag requirement; its fix shape is decided (debug-gated payload logging through
 `DEBUG_LOGGING`, [decisions](decisions.md)) and merged 2026-10-27 as #8856 (`dev` `eed31dca`).
 The maintainer's definition of done before the tag (2026-10-27, `RT-16-RELEASE`) adds (d) a short quiet period
@@ -925,7 +942,13 @@ the tag rolls to 16.1.0, or to 17.0.0 if it changes a default. On 2026-10-30 no 
   `lib/api3/generic/create/operation.js` and again in `create/insert.js`).
 - API v3 refusals under `reject` write no log line; API v1 refusals do.
 
-**Repository settings, for the maintainer** (branch protection read 2026-10-26 with `gh api
+**Repository settings update, 2026-11-02:** master now requires only
+`Run Tests (22, 6)` and `Run Tests (24, 6)` plus one approving review.
+The absent 4.4 requirement has been removed; both retained lanes are green on
+#8824. The recorded target policy (*Tests pass* plus one review) is not yet the
+observed setting. Staging remains blocked; no settings were changed here.
+
+**Historical repository settings** (branch protection read 2026-10-26 with `gh api
 repos/nightscout/cgm-remote-monitor/branches/<branch>/protection`: `dev` requires `Run Tests (24, 6)`;
 `master` requires `Run Tests (22, 6)`, `Run Tests (22, 4.4)` and `Run Tests (24, 6)` and one approving
 review; `enforce_admins` is off on both). No workflow on `dev` emits `Run Tests (22, 4.4)`, so the

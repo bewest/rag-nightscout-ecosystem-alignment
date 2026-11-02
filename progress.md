@@ -12,6 +12,44 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Nightscout v16 Corpus and Acceptance Refresh (2026-11-02)
+
+Surveyed all 45 lockfile repository entries through GitHub metadata; recorded
+44 public entries and excluded one nonpublic entry. No external checkout or
+lockfile was advanced. Official dev remains `61eb3733`; v15.0.9 is still the
+latest published release. This is evidence/records work, not release approval.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Ecosystem deep dive and handoff | `docs/10-domain/nightscout-v16-ecosystem-deep-dive.md` | Full public metadata census; AAPS 4.0.0 and optional NightscoutKit fields; bounded current/other-session workstreams. |
+| Five facets | `mapping/cross-project/terminology-matrix.md`, `traceability/{gaps,requirements}.md`, this entry and the deep dive | Clarifies informal versus accepted cohorts, reporter versus maintainer reproduction, opt-in versus default, unset versus lenient, and index off versus drop; reuses existing gates rather than duplicate IDs. |
+| Release records | `releases/cgm-remote-monitor-16.0.0/{contents,decisions,testing-notes,release-notes}.md` | Replaces stale tester/release-note status with usable drafts, records testing underway without claiming acceptance. |
+| Queue | `queue/work-queue.yaml` | Rig soak in progress; bounded #8829 investigation, no invented automatic release blocker. |
+
+**Key findings:** obsolete 4.4 protection requirement removed; retained lanes
+green, staging review/policy work continues. #8855 is green; #8897 is a new,
+unreviewed report candidate. #8829's reporter reports persistence on dev,
+but neither the current maintainer nor Andy reproduced it; the maintainer reports
+working DIY and production/service environments and decides it is **nonblocking**.
+Preserve both the reporter evidence and the release disposition.
+BF-72/BF-161 remain private pre-tag work; no private disclosure or upstream
+mutation. Elapsed tester time does not close final-tree/live/cohort acceptance.
+
+**Canonical source read at upstream commits:** batch reply and write settings at
+`61eb3733`; NightscoutKit `LoopStatus.swift` at `6efa02d4`.
+Detailed file:line references and evidence limits are in the deep dive.
+
+**Validation:** queue schema/fidelity, register coverage, generated
+queue/views/packets and programme links pass. All 44 corpus-table rows match the
+queried public metadata; the soak is in progress and #8829 is not a release
+dependency. `make verify` ran but its Make target ignores failing subchecks:
+162 broken source references, coverage gaps and uncovered requirements remain;
+terminology and duplicate-GAP checks pass. No global verification pass is claimed.
+`make traceability` runs but its index-only extraction reports zero requirements
+despite the modular requirement corpus; that output is not acceptance evidence
+and is not committed over the older matrix. These tool/corpus limitations are
+separate follow-up, not repaired in this documentation-only refresh.
+
 ## cgm-remote-monitor RC Readiness Triage (2026-11-01)
 
 **Publication follow-up:** integrated through a clean origin-main worktree,

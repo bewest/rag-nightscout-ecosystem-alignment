@@ -25,9 +25,9 @@ current and the prose is stale.
 | horizon | parcels | items | claimed `not-started` | claimed waiting on a person |
 |---|---|---:|---:|---:|
 | **Remedial** | `phase0`, `register-open`, `docs-truth` | 205 | 39 | 9 |
-| **Modernization** | `release-train` | 54 | 8 | 2 |
+| **Modernization** | `release-train` | 55 | 8 | 2 |
 | **Multitenant** | `tenancy`, `platform` | 88 | 28 | 5 |
-| | **total** | **349** | **75** | **16** |
+| | **total** | **350** | **75** | **16** |
 
 <!-- END GENERATED: horizons -->
 
@@ -234,7 +234,7 @@ Claimed state by parcel. Every cell is a **claim** about what the gates will say
 | parcel | `not-started` | `in-progress` | `gate-not-met` | `ready-to-push` | `blocked` | `in-flight-upstream` | `merged-upstream` | `released` | `needs-decision` | `done` | `unsettled` | `closed` | `answered` | total |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `phase0` | 3 |  |  | 1 |  |  |  | 17 |  | 1 |  |  |  | **22** |
-| `release-train` | 8 |  | 1 |  | 1 |  | 22 | 15 | 2 | 1 |  |  | 4 | **54** |
+| `release-train` | 8 | 1 | 1 |  | 1 |  | 22 | 15 | 2 | 1 |  |  | 4 | **55** |
 | `register-open` | 29 | 3 | 1 | 1 | 5 | 2 | 55 | 58 | 5 |  |  | 5 |  | **164** |
 | `tenancy` | 20 | 4 |  | 1 | 9 |  | 5 |  | 1 | 4 | 1 |  | 6 | **51** |
 | `docs-truth` | 7 |  | 1 |  |  |  |  |  |  | 11 |  |  |  | **19** |
@@ -275,14 +275,14 @@ Where the queue says each item's review has to come from:
 
 | the item is waiting for | items | share |
 |---|---:|---:|
-| Maintainer | 311 | 89% |
+| Maintainer | 312 | 89% |
 | SECURITY reviewer | 17 | 5% |
 | Maintainer + a second human | 8 | 2% |
 | SAFETY reviewer | 6 | 2% |
 | Unassigned | 3 | 1% |
 | Whoever edits it next | 3 | 1% |
 | Upstream reviewers | 1 | 0% |
-| **total** | **349** | |
+| **total** | **350** | |
 
 <!-- END GENERATED: reviewer-load -->
 

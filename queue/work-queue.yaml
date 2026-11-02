@@ -3324,7 +3324,19 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
-      Current 2026-11-01: dev 61eb3733 includes #8895 (BFQ-227) and
+      Current 2026-11-02: informal cohort/real-rig testing has started,
+      with over 24-48 hours reported across testers by the maintainer.
+      Individual builds, scenarios and acceptance outcomes are not yet
+      collected here. The absent 4.4 protection requirement has been removed;
+      master now requires Run Tests (22, 6), Run Tests (24, 6) and one review.
+      Both retained lanes are green; the decided Tests pass policy remains
+      distinct from the observed setting. Maintainer disposition: #8829 is
+      nonblocking, neither maintainer reproduced it and it works in many DIY
+      and production/service environments; RT-16-TOKEN-8829 tracks follow-up.
+      Security and final-tree/live/cohort/rollback acceptance remain pre-tag
+      work, not reasons to halt preparation. See the current ecosystem record.
+
+      Previous 2026-11-01: dev 61eb3733 includes #8895 (BFQ-227) and
       #8896 (RT-CI-FIXTURES-8896). Both integrated CI and CodeQL runs pass;
       the push workflow published the multi-architecture dev image, not a
       named RC. Release remains BLOCKED on the existing pre-tag private
@@ -3419,6 +3431,9 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
     notes: >
       Required before the tag (maintainer, 2026-10-26, session -66).
+      2026-11-02: informal cohort testing has started, but separate live
+      Pushover/APNs send/acknowledgement/cancel outcomes are not recorded
+      here. Do not mark this gate complete from elapsed cohort time.
 
   - id: RT-CI-WEBKIT-REPORTS
     title: "WebKit's cached-bundle startup test still fails on dev after bdd569a3: report requests cancelled 'due to access control checks'"
@@ -3560,12 +3575,12 @@ items:
     parcel: release-train
     repo: cgm-remote-monitor
     branch: ""
-    base: official/dev@47723cda
+    base: official/dev@61eb3733
     worktree: externals/cgm-remote-monitor-official
-    state: not-started
+    state: in-progress
     pr: []
     blast_radius: >
-      dev 47723cda (or the named candidate) run behind real uploaders and
+      dev builds (record each exact SHA/image, currently 61eb3733) run behind real uploaders and
       followers for a soak period: a closed-loop controller, a CGM uploader
       and followers, with the 2026-10-26 client replay (integration record
       R15) as the synthetic baseline.
@@ -3586,8 +3601,54 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
+      - docs/10-domain/nightscout-v16-ecosystem-deep-dive.md
     notes: >
       Required before the tag (maintainer, 2026-10-26, session -66).
+      2026-11-02 maintainer report: multiple testers have been using the
+      code for over 24-48 hours; testing is underway. No per-cohort pass,
+      exact duration/build or final-candidate acceptance is inferred.
+      Collect client versions/roles, units, settings, server SHA/image,
+      observation interval, outcomes and failures. Re-run affected checks
+      after private security integration; preserve earlier evidence as
+      earlier-build observations rather than discarding it.
+
+  - id: RT-16-TOKEN-8829
+    title: "Nonblocking restricted-token browser report: environment comparison and reproducer"
+    parcel: release-train
+    repo: cgm-remote-monitor
+    branch: ""
+    base: official/dev@61eb3733
+    worktree: externals/cgm-remote-monitor-official
+    state: not-started
+    pr: []
+    blast_radius: >
+      Evidence collection only for issue 8829: restricted subject token,
+      browser REST/socket authentication and reverse-proxy environment.
+      No production change or new security finding is established.
+    review: maintainer and reporter
+    operator_visible: ""
+    semver: n/a
+    semver_reason: nonblocking investigation, not a code or default change
+    register: []
+    gates:
+      - no-gate: >
+          Reporter says the issue persists on dev (2026-11-02), without an
+          exact tested SHA/image. Neither maintainer reproduced it; the
+          maintainer reports many working DIY and production/service
+          environments. Need a sanitized environment comparison and minimal
+          reproducer before defining a failing regression test. Do not
+          collect credentials, personal data or raw treatment logs publicly.
+    blocks_on: []
+    evidence:
+      - docs/10-domain/nightscout-v16-ecosystem-deep-dive.md
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Maintainer decision 2026-11-02: this is not a v16 release blocker.
+      The release item deliberately does not depend on this follow-up.
+      Keep issue 8829 open without claiming a root cause or a fix.
+      Compare exact server/client versions, role names/permissions without
+      token values, browser and proxy configuration, and REST versus
+      socket handshake/reconnect outcomes using synthetic data.
 
   - id: RT-BUNDLE-THEME-SPLIT
     title: "Load the modern theme's client code only when it is chosen (page-bundle budget option B)"

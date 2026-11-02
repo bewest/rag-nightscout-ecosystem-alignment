@@ -1,5 +1,10 @@
 # Nightscout 16.0.0 release-readiness triage (2026-11-01)
 
+**Historical snapshot:** for the November 2 cohort update, removal of the 4.4
+protection requirement, new #8829 reporter evidence and both maintainers'
+non-reproduction, see the [current ecosystem/acceptance record](nightscout-v16-ecosystem-deep-dive.md).
+The dated observations below are retained, not current gate claims.
+
 This is a dated readiness record, not a release announcement. Official `dev`
 is `61eb37335954ae42c91345a0823bd67331025165`, after #8895 and #8896 merged.
 The latest published release remains 15.0.9. No named 16.0.0 RC was observed.
