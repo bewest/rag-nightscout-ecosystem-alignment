@@ -1501,6 +1501,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-cell-sqlite-experiment-terminology-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-cell SQLite experiment terminology (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#release-readiness-terminology-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8506,6 +8517,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-cell-sqlite-experiment-terminology-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-cell SQLite experiment terminology (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#release-readiness-terminology-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -13511,7 +13533,7 @@
 
 
 <h1 id="cross-project-terminology-matrix">Cross-Project Terminology Matrix<a class="headerlink" href="#cross-project-terminology-matrix" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>3d6d68bb0</code>.</em></p>
 <p>This matrix maps equivalent concepts across AID systems. Use this as a rosetta stone when translating between projects.</p>
 <h2 id="hosted-tenancy-and-actor-runtime-terminology-2026-11-02">Hosted tenancy and actor-runtime terminology (2026-11-02)<a class="headerlink" href="#hosted-tenancy-and-actor-runtime-terminology-2026-11-02" title="Permanent link">&para;</a></h2>
 <table>
@@ -13567,6 +13589,72 @@
 </table>
 <p>See the <a href="../../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.html">multitenancy priorities assessment</a>
 for current-dev evidence, independent workstreams and the limits of Celld's beta claims.</p>
+<h2 id="tenant-cell-sqlite-experiment-terminology-2026-11-02">Tenant-cell SQLite experiment terminology (2026-11-02)<a class="headerlink" href="#tenant-cell-sqlite-experiment-terminology-2026-11-02" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Alignment Term</th>
+<th>Celld / experimental NS meaning</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tenant cell</td>
+<td>Tenant-addressed Durable Object with its own SQLite database</td>
+<td>Not a dedicated VM or an authorization system.</td>
+</tr>
+<tr>
+<td>Record authority</td>
+<td>SQLite owns the tenant records in this experimental arm</td>
+<td>No PG/MongoDB mirror or cross-store commit.</td>
+</tr>
+<tr>
+<td>Operation receipt</td>
+<td>Response and request fingerprint committed with the mutation</td>
+<td>Exact lab retry, not exactly-once external notifications.</td>
+</tr>
+<tr>
+<td>Local restart persistence</td>
+<td>Same-host developer state survives SIGTERM/SIGKILL</td>
+<td>Not fleet replication, disk-loss recovery or RPO=0 evidence.</td>
+</tr>
+<tr>
+<td>Third backend candidate</td>
+<td>SQLite alongside existing MongoDB and planned PostgreSQL</td>
+<td>The lab is not an available NS storage backend.</td>
+</tr>
+<tr>
+<td>Storage layout / engine</td>
+<td>Per-tenant databases or shared collections/tables / MongoDB, PostgreSQL or SQLite</td>
+<td>WiredTiger's measured per-database overhead is not a SQLite measurement or a cost of every MongoDB layout.</td>
+</tr>
+<tr>
+<td>Tenant binding / row predicate</td>
+<td>Choose the authorized database/cell or bind a PG transaction / constrain rows</td>
+<td>Separate cell databases and PG/RLS both still require the correct trusted tenant binding.</td>
+</tr>
+<tr>
+<td>Local commit / durability proof</td>
+<td>SQLite transaction completion / runtime acknowledgment condition</td>
+<td>Same-disk restart does not validate remote bucket/follower recovery.</td>
+</tr>
+<tr>
+<td>Storage-only / whole-runtime cell</td>
+<td>Adapter reaches cell records / plugins and realtime also move into cells</td>
+<td>Different porting and operational costs; neither integration ran in the storage lab.</td>
+</tr>
+<tr>
+<td>Matched comparison</td>
+<td>Same workload, behavior, retention and failure target across actual adapters</td>
+<td>Separate historical timings are not a head-to-head speed or cost ranking.</td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="../../docs/10-domain/tenant-cell-sqlite-deep-dive.html">tenant-cell SQLite experiment</a>
+for executable controls, four visualizations, the comparative evidence ledger
+and architecture/decision gates. These terms describe a separate feasibility
+track, not a change to the hosted delivery roadmap.</p>
 <h2 id="release-readiness-terminology-2026-11-02">Release-readiness terminology (2026-11-02)<a class="headerlink" href="#release-readiness-terminology-2026-11-02" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -13652,32 +13740,32 @@ ready states <strong>in test comparisons only</strong>. Production status is unc
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-entries-2025.yaml"><code>aid-entries-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-entries-2025.yaml"><code>aid-entries-2025.yaml</code></a></td>
 <td><code>entries</code></td>
 <td>SGV, MBG, calibration records with direction mapping</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-treatments-2025.yaml"><code>aid-treatments-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-treatments-2025.yaml"><code>aid-treatments-2025.yaml</code></a></td>
 <td><code>treatments</code></td>
 <td>Bolus, carbs, temp basal, overrides with eventType catalog</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-devicestatus-2025.yaml"><code>aid-devicestatus-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-devicestatus-2025.yaml"><code>aid-devicestatus-2025.yaml</code></a></td>
 <td><code>devicestatus</code></td>
 <td>Loop vs oref0 structure variants, predictions</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-profile-2025.yaml"><code>aid-profile-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-profile-2025.yaml"><code>aid-profile-2025.yaml</code></a></td>
 <td><code>profile</code></td>
 <td>Therapy settings with time-varying schedules</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-statespan-2025.yaml"><code>aid-statespan-2025.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-statespan-2025.yaml"><code>aid-statespan-2025.yaml</code></a></td>
 <td><code>state-spans</code></td>
 <td>Time-ranged state tracking (V3 extension, reference only)</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-alignment-extensions.yaml"><code>aid-alignment-extensions.yaml</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-alignment-extensions.yaml"><code>aid-alignment-extensions.yaml</code></a></td>
 <td>All</td>
 <td>2026 extensions addressing documented gaps</td>
 </tr>
@@ -13686,7 +13774,7 @@ ready states <strong>in test comparisons only</strong>. Production status is unc
 <p><strong>Origin Schema Extractions</strong>:
 - <a href="../nightscout/v3-treatments-schema.html"><code>mapping/nightscout/v3-treatments-schema.md</code></a> - 21+ eventTypes, deduplication rules
 - <a href="../aaps/nsclient-schema.html"><code>mapping/aaps/nsclient-schema.md</code></a> - 70+ fields, 25 eventTypes</p>
-<p><strong>JSON Schema</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/jsonschema/aid-events.schema.json"><code>aid-events.schema.json</code></a> provides unified validation schema with gap annotations.</p>
+<p><strong>JSON Schema</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/jsonschema/aid-events.schema.json"><code>aid-events.schema.json</code></a> provides unified validation schema with gap annotations.</p>
 <p><strong>Key Annotations</strong>: OpenAPI specs use <code>x-aid-*</code> extensions:
 - <code>x-aid-source</code>: Source file reference
 - <code>x-aid-controllers</code>: Controller support matrix
@@ -13907,7 +13995,7 @@ ready states <strong>in test comparisons only</strong>. Production status is unc
 | AAPS | Full | Primary source, Wear OS collection |</p>
 <hr />
 <h3 id="insulin-profiles-collection-api-v1">Insulin Profiles Collection (API v1)<a class="headerlink" href="#insulin-profiles-collection-api-v1" title="Permanent link">&para;</a></h3>
-<p>Cross-project field mapping for insulin type definitions. See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-insulin-2025.yaml"><code>aid-insulin-2025.yaml</code></a>.</p>
+<p>Cross-project field mapping for insulin type definitions. See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-insulin-2025.yaml"><code>aid-insulin-2025.yaml</code></a>.</p>
 <table>
 <thead>
 <tr>
@@ -13979,10 +14067,10 @@ ready states <strong>in test comparisons only</strong>. Production status is unc
 | Loop | No | N/A | Fixed models, not configurable |
 | Trio | Yes | No | oref0 models via profile.json |
 | nightscout-reporter | Yes | Read | Reads for IOB curve display |</p>
-<p><strong>Specification</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-insulin-2025.yaml"><code>specs/openapi/aid-insulin-2025.yaml</code></a></p>
+<p><strong>Specification</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-insulin-2025.yaml"><code>specs/openapi/aid-insulin-2025.yaml</code></a></p>
 <hr />
 <h3 id="remote-commands-collection-api-v1">Remote Commands Collection (API v1)<a class="headerlink" href="#remote-commands-collection-api-v1" title="Permanent link">&para;</a></h3>
-<p>Cross-project mapping for caregiver remote actions. See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-commands-2025.yaml"><code>aid-commands-2025.yaml</code></a>.</p>
+<p>Cross-project mapping for caregiver remote actions. See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-commands-2025.yaml"><code>aid-commands-2025.yaml</code></a>.</p>
 <table>
 <thead>
 <tr>
@@ -14066,7 +14154,7 @@ ready states <strong>in test comparisons only</strong>. Production status is unc
 | Trio | Full | Push Notification | Same as Loop |
 | AAPS | None | SMS only | Uses SmsCommunicatorPlugin |
 | xDrip+ | None | Display only | No command execution |</p>
-<p><strong>Specification</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-commands-2025.yaml"><code>specs/openapi/aid-commands-2025.yaml</code></a></p>
+<p><strong>Specification</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-commands-2025.yaml"><code>specs/openapi/aid-commands-2025.yaml</code></a></p>
 <hr />
 <h3 id="authentication-concepts">Authentication Concepts<a class="headerlink" href="#authentication-concepts" title="Permanent link">&para;</a></h3>
 <p>Cross-project comparison of authentication mechanisms. See <a href="../../docs/10-domain/authentication-flows-deep-dive.html"><code>authentication-flows-deep-dive.md</code></a>.</p>
@@ -19650,7 +19738,7 @@ use the same exponential insulin curve formula (see <a href="../../docs/10-domai
 <p><strong>See Also</strong>: 
 - <a href="../../docs/10-domain/remote-commands-comparison.html">Remote Commands Cross-System Comparison</a> - Architecture and source analysis
 - <a href="../../docs/10-domain/remote-bolus-comparison.html">Remote Bolus Comparison</a> - Safety validation deep dive
-- <strong>Traceability</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/conformance/assertions/remote-command-requirements.yaml"><code>conformance/assertions/remote-command-requirements.yaml</code></a> - Assertions for REQ-REMOTE-001 through REQ-REMOTE-011</p>
+- <strong>Traceability</strong>: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/conformance/assertions/remote-command-requirements.yaml"><code>conformance/assertions/remote-command-requirements.yaml</code></a> - Assertions for REQ-REMOTE-001 through REQ-REMOTE-011</p>
 </blockquote>
 <h3 id="transport-and-authentication">Transport and Authentication<a class="headerlink" href="#transport-and-authentication" title="Permanent link">&para;</a></h3>
 <table>
@@ -22620,7 +22708,7 @@ use the same exponential insulin curve formula (see <a href="../../docs/10-domai
 <hr />
 <h2 id="loopfollow-alarm-models">LoopFollow Alarm Models<a class="headerlink" href="#loopfollow-alarm-models" title="Permanent link">&para;</a></h2>
 <blockquote>
-<p><strong>Traceability</strong>: See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/conformance/assertions/alarm-requirements.yaml"><code>conformance/assertions/alarm-requirements.yaml</code></a> for assertions testing REQ-ALARM-001 through REQ-ALARM-010.</p>
+<p><strong>Traceability</strong>: See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/conformance/assertions/alarm-requirements.yaml"><code>conformance/assertions/alarm-requirements.yaml</code></a> for assertions testing REQ-ALARM-001 through REQ-ALARM-010.</p>
 </blockquote>
 <h3 id="alarm-types">Alarm Types<a class="headerlink" href="#alarm-types" title="Permanent link">&para;</a></h3>
 <table>
@@ -27910,8 +27998,8 @@ use the same exponential insulin curve formula (see <a href="../../docs/10-domai
 </table>
 <p><strong>Related Gaps</strong>: GAP-V4-001, GAP-V4-002, GAP-STATESPAN-001</p>
 <p><strong>Specifications</strong>:
-- V3 Extension: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/aid-statespan-2025.yaml"><code>aid-statespan-2025.yaml</code></a> (reference only)
-- V4 Native: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ae4ad1827f745441dfb625da43e3fb20f67ceb29/specs/openapi/nocturne-v4-extension.yaml"><code>nocturne-v4-extension.yaml</code></a></p>
+- V3 Extension: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/aid-statespan-2025.yaml"><code>aid-statespan-2025.yaml</code></a> (reference only)
+- V4 Native: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/specs/openapi/nocturne-v4-extension.yaml"><code>nocturne-v4-extension.yaml</code></a></p>
 <p><strong>Source</strong>: <a href="../../docs/sdqctl-proposals/statespan-standardization-proposal.html">StateSpan Standardization Proposal</a></p>
 <hr />
 <h2 id="algorithm-engine-integration">Algorithm Engine Integration<a class="headerlink" href="#algorithm-engine-integration" title="Permanent link">&para;</a></h2>

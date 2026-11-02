@@ -2165,6 +2165,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-storage-architecture-and-decision-report-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant Storage Architecture and Decision Report (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tenant-cell--sqlite-local-experiments-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant Cell + SQLite Local Experiments (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#nightscout-v16-corpus-and-acceptance-refresh-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3456,6 +3478,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-storage-architecture-and-decision-report-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant Storage Architecture and Decision Report (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tenant-cell--sqlite-local-experiments-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant Cell + SQLite Local Experiments (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#nightscout-v16-corpus-and-acceptance-refresh-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4703,7 +4747,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>3d6d68bb0</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4777,6 +4821,95 @@ the existing 162 broken references and coverage/assertion gaps; terminology and
 duplicate-GAP checks pass. Traceability generation was directed outside the
 repository and still extracts zero requirements/gaps from the modular indices;
 no generated acceptance matrix was overwritten. No runtime tests were run.</p>
+<h2 id="tenant-storage-architecture-and-decision-report-2026-11-02">Tenant Storage Architecture and Decision Report (2026-11-02)<a class="headerlink" href="#tenant-storage-architecture-and-decision-report-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>Expanded the existing cell/SQLite experiment report into a decision guide;
+no workload was rerun and no backend or hosted-roadmap decision was changed.</p>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Location</th>
+<th>Key Insights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comparative report and four Mermaid visualizations</td>
+<td><code>docs/10-domain/tenant-cell-sqlite-deep-dive.md</code></td>
+<td>Candidate architecture, local-only latency chart, transaction/durability sequence and promotion decision path.</td>
+</tr>
+<tr>
+<td>Evidence ledger and decision tables</td>
+<td>Same report</td>
+<td>Distinguishes local cell evidence, September MongoDB/PG/pooler measurements and November PG foundation work; no unmatched speed/cost ranking.</td>
+</tr>
+<tr>
+<td>Five facets and documentation entry point</td>
+<td>Terminology, gaps, requirements, this entry and <code>docs/README.md</code></td>
+<td>Storage layout versus engine, correct binding versus row isolation, lifecycle and three-backend maintenance gates.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Findings:</strong> cell-owned records are feasible locally, but do not yet justify
+replacing hosted PG/RLS or existing single-site MongoDB. Storage-only adaptation
+is a bounded next integration hypothesis; moving the entire tenant runtime is
+a larger, separate experiment. A matched comparison must include durability,
+historical data, recovery headroom and operations, not just VM price or empty
+tenant density. Figures label proposed versus measured boundaries.</p>
+<p><strong>Evidence:</strong> original lab <code>018e55c34</code>; PG foundation NS <code>ce14d637</code> and recorded
+run in alignment <code>ae4ad1827</code>; pinned historical sources and exact file:line
+references in the report. No new protocol GAP/REQ IDs or release dependencies.</p>
+<p><strong>Validation:</strong> four figures parse and render with Mermaid 11.17.2; scaled text
+is at least 12 px at 688 px document width. Chart/table values, source hashes,
+historical MongoDB figures, local links and heading anchors pass targeted checks.
+<code>make verify</code> was repeated: terminology/duplicate-GAP checks pass, but 147
+corpus references and existing coverage/assertion gaps remain. <code>make traceability</code>
+completes but still extracts zero requirements from the index; generated matrix
+changes were not retained. No workload, paid fleet or production gate was rerun.</p>
+<h2 id="tenant-cell--sqlite-local-experiments-2026-11-02">Tenant Cell + SQLite Local Experiments (2026-11-02)<a class="headerlink" href="#tenant-cell--sqlite-local-experiments-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>Ran real celld v0.6.3 in an isolated <code>lab/celld-sqlite-20261102</code> worktree using
+synthetic tenant principals and records. SQLite is the sole tenant record
+authority in this arm; no external NS checkout or production backend was changed.</p>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Location</th>
+<th>Key Insights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Executable lab and measured JSON</td>
+<td><code>tools/lab/tenant-cell-sqlite/</code></td>
+<td>Twelve positive checks; shared-cell negative control exposes cross-tenant value.</td>
+</tr>
+<tr>
+<td>Deep dive</td>
+<td><code>docs/10-domain/tenant-cell-sqlite-deep-dive.md</code></td>
+<td>32 tenants / 9,216 batched CGM rows; same-disk restart persistence; cost/fleet limits.</td>
+</tr>
+<tr>
+<td>Five facets</td>
+<td>Terminology, gaps, requirements, deep dive and this entry</td>
+<td>Separates a third-backend candidate from NS harness and hosted acceptance.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key findings:</strong> overlapping IDs, tenant-local retry receipts, transaction
+rollback, JSON predicates, indexed paging, tombstones and SIGTERM/SIGKILL
+persistence pass. Loopback p50/p95 writes are 12.53/24.67 ms, reads 2.02/3.34 ms.
+This is local developer storage, not a qualified-bucket fleet or capacity/cost
+estimate. The runtime forbids <code>sqlite_version()</code>; use supported cell metrics.</p>
+<p><strong>Open gaps:</strong> actual NS adapter/harness, fleet durability, runtime/realtime,
+tenant lifecycle and a matched three-backend cost comparison. No new protocol
+GAP/REQ IDs, v16 dependency or hosted-roadmap change.
+Inspected NS <code>official/dev</code> source at <code>61eb3733</code>; explicit file:line references
+and runtime/source hashes are in the deep dive and measured JSON.</p>
+<p><strong>Validation:</strong> lab and syntax checks pass. <code>make verify</code> ran, but reports
+102 broken corpus references and existing coverage/assertion gaps; terminology
+and duplicate-GAP checks pass. <code>make traceability</code> completes but extracts zero
+requirements from the index; its generated outputs were not adopted.</p>
 <h2 id="nightscout-v16-corpus-and-acceptance-refresh-2026-11-02">Nightscout v16 Corpus and Acceptance Refresh (2026-11-02)<a class="headerlink" href="#nightscout-v16-corpus-and-acceptance-refresh-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Surveyed all 45 lockfile repository entries through GitHub metadata; recorded
 44 public entries and excluded one nonpublic entry. No external checkout or

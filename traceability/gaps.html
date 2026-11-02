@@ -1639,6 +1639,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-cell-sqlite-experiment-follow-up-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-cell SQLite experiment follow-up (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#release-readiness-follow-up-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2661,6 +2672,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-cell-sqlite-experiment-follow-up-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-cell SQLite experiment follow-up (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#release-readiness-follow-up-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2744,7 +2766,7 @@
 
 
 <h1 id="gaps">Gaps<a class="headerlink" href="#gaps" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>3d6d68bb0</code>.</em></p>
 <p>This document is an index of gaps organized by domain.</p>
 <h2 id="hosted-tenancy-integration-follow-up-2026-11-02">Hosted-tenancy integration follow-up (2026-11-02)<a class="headerlink" href="#hosted-tenancy-integration-follow-up-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The maintainer's <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
@@ -2765,6 +2787,26 @@ Full adapter/config/runtime acceptance remains open. Do not make an obsolete
 whole-seam refresh a prerequisite. Celld was evaluated, not adopted, and is now
 out of scope. Reuse the existing work identifiers; no duplicate protocol GAP IDs
 or new v16 blockers are added.</p>
+<h2 id="tenant-cell-sqlite-experiment-follow-up-2026-11-02">Tenant-cell SQLite experiment follow-up (2026-11-02)<a class="headerlink" href="#tenant-cell-sqlite-experiment-follow-up-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>The <a href="../docs/10-domain/tenant-cell-sqlite-deep-dive.html">separate SQLite feasibility track</a>
+demonstrates local tenant-owned storage on celld, not a supported third NS
+backend. Twelve local checks and a broken-routing control pass; no actual NS
+adapter, fleet/bucket experiment or matched MongoDB/PG comparison ran.
+The remaining gaps are runtime/adapter integration, full storage semantics,
+host-loss/fencing/recovery, plugin/socket isolation, schema/restore lifecycle
+and measured economics. Receipts also need bounded retention before production.</p>
+<p>These checks do not close existing ST-PG/TEN-LAB acceptance, alter a delivery
+roadmap or introduce duplicate protocol GAP IDs. An SQL diagnostic initially
+failed because the runtime forbids <code>sqlite_version()</code>; the final lab uses
+<code>sql.databaseSize</code>, without claiming the embedded SQLite version was measured.</p>
+<p>The comparative report now separates database-per-tenant MongoDB from shared
+MongoDB, shared PG/RLS and cell/SQLite. Historical PG adapter/pooler evidence and
+the November PG transaction-foundation record do not supply a current matched
+benchmark. Open decision gaps include the storage-only versus whole-runtime
+boundary, durable evaluator delivery, per-cell schema/restore tools, privileged
+fleet blast radius and the ongoing three-backend contract-test burden.
+Four diagrams explain those boundaries; they are not experiment acceptance or
+an amendment of the adopted PG delivery stream.</p>
 <h2 id="release-readiness-follow-up-2026-11-02">Release-readiness follow-up (2026-11-02)<a class="headerlink" href="#release-readiness-follow-up-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The <a href="../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current v16 ecosystem/acceptance record</a>
 supersedes the November 1 operational status without adding duplicate protocol

@@ -1835,6 +1835,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-cell-sqlite-experiment-verification-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-cell SQLite experiment verification (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#release-readiness-verification-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2755,6 +2766,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tenant-cell-sqlite-experiment-verification-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-cell SQLite experiment verification (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#release-readiness-verification-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2932,7 +2954,7 @@
 
 
 <h1 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>3d6d68bb0</code>.</em></p>
 <p>This document is an index of requirements organized by domain.</p>
 <h2 id="hosted-tenancy-experiment-verification-2026-11-02">Hosted-tenancy experiment verification (2026-11-02)<a class="headerlink" href="#hosted-tenancy-experiment-verification-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The adopted <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
@@ -2955,6 +2977,26 @@ identity or real onboarding. A Celld spike must distinguish actor routing from
 authorization, runtime wake from delivered alarm, and durable cell state from
 atomic PG-to-actor delivery; retries must expose duplicate effects. These are
 proposed experiment checks, not newly adopted architecture or v16 prerequisites.</p>
+<h2 id="tenant-cell-sqlite-experiment-verification-2026-11-02">Tenant-cell SQLite experiment verification (2026-11-02)<a class="headerlink" href="#tenant-cell-sqlite-experiment-verification-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>The <a href="../docs/10-domain/tenant-cell-sqlite-deep-dive.html">local experiment</a>
+records twelve passing checks on real celld v0.6.3 and a deliberately shared-cell
+control that fails by exposing the other tenant's value. Overlapping record
+identities and receipt IDs, refusing wrong/missing tenant principals on reads
+and mutations, atomic rollback, retry receipts, JSON predicates, paging,
+tombstones and same-disk restarts are bounded experiment checks.</p>
+<p>This adds no new protocol REQ IDs or v16 gate. Promotion to a third storage
+backend requires the actual NS harness and write/read contract, not this lab's
+bespoke protocol. Qualified-bucket fleet recovery, production tenant binding,
+evaluator/realtime behavior, migration/backup/restore and a matched cost
+comparison remain unverified. Local persistence is not fleet durability.</p>
+<p>The expanded decision guide requires the next comparison to hold workload,
+retention, API behavior and acknowledged-write failure target constant. Report
+per-admitted and per-active tenant cost separately, including recovery headroom,
+bucket/replication traffic and operational effort. A third adapter must exercise
+applicable NS contracts and expose unsupported operations without weakening
+existing standalone MongoDB behavior. Storage isolation does not authenticate
+the chosen tenant, and mutation receipts do not certify downstream notification
+delivery. These are proposed promotion checks, not newly adopted protocol IDs.</p>
 <h2 id="release-readiness-verification-2026-11-02">Release-readiness verification (2026-11-02)<a class="headerlink" href="#release-readiness-verification-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The <a href="../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current v16 ecosystem/acceptance record</a>
 maps the existing pre-tag requirements (<code>RT-16-RELEASE</code>, <code>RT-16-LIVE-ALARMS</code>,
