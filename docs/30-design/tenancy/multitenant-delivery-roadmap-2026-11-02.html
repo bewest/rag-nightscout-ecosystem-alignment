@@ -2759,6 +2759,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#continuation-explicit-postgresql-operator-migrations-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation: explicit PostgreSQL operator migrations (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuation-entries-readfilter-subset-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation: entries read/filter subset (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4999,6 +5021,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#continuation-explicit-postgresql-operator-migrations-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation: explicit PostgreSQL operator migrations (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuation-entries-readfilter-subset-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation: entries read/filter subset (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5105,6 +5149,17 @@ lifetimes, under the code/operator floors. Mandatory authentication, tenant
 isolation and operator access cannot be weakened by an owner. Exact permission
 names, lifetime limits, revocation/invalidation and API cases remain contract
 outputs, not implemented settings.</p>
+<p><strong>Revocation decision (November 2 continuation):</strong> grant removal or token
+revocation takes effect on the <strong>next protected operation across workers</strong>.
+That operation checks current authorization and refuses if it cannot establish
+current state; an unexpired JWT or cached earlier grant is not sufficient.
+Socket writes, subscription changes and protected stream delivery must obey the
+same boundary, removing/closing revoked access rather than waiting for token
+expiry. An operation already authorized/in flight is not retroactively undone.
+The implementation must define its authorization linearization point and test
+revocation races, worker-local cache invalidation, reconnect and authorization
+store outages. No bounded stale-permission window is adopted. This is a contract
+decision, not a claim that current sockets or auth code implement it.</p>
 <p>Preserve hashed <code>api-secret</code> headers, subject tokens and socket secret forms
 using <strong>each tenant's</strong> root credential. Resolve and authorize the tenant before
 credential verification; per-tenant JWT signing keys remain per-tenant. There
@@ -5272,7 +5327,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f214b7dab0596783bb26c2482e3319c2143c8d62/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bce322d317569c7d3f174b514b98a458002c864/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -5307,7 +5362,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f214b7dab0596783bb26c2482e3319c2143c8d62/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bce322d317569c7d3f174b514b98a458002c864/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
@@ -5362,6 +5417,94 @@ the minimum settings/subject-policy API and provider-neutral secrets contract.
 The recommendation is the Vault-facing adapter next, retaining the built-in
 option—not a claim that Vault is cheaper, more efficient or production-ready.
 Human identity, evaluator/events and next-generation execution remain separate.</p>
+<h3 id="continuation-explicit-postgresql-operator-migrations-2026-11-02">Continuation: explicit PostgreSQL operator migrations (2026-11-02)<a class="headerlink" href="#continuation-explicit-postgresql-operator-migrations-2026-11-02" title="Permanent link">&para;</a></h3>
+<p><strong>Local upstream commit <code>68828b8d</code></strong> adds the PostgreSQL-only MIG-RUNNER
+foundation using Umzug <strong>3.8.3</strong>. An explicit <code>nightscout migrate
+&lt;up|status|check&gt;</code> command takes a reviewed, checksummed JSON catalogue, a
+non-system namespace and an explicitly named connection environment variable.
+No production catalogue is supplied. <code>--direct</code> is the operator's assertion
+that the endpoint is not a transaction pooler; it is not automatic detection.</p>
+<p><code>externals/work/crm-multitenant-20261102/lib/migrations/postgres.js:105-164</code>
+uses one pinned direct client and a namespace-specific session advisory lock.
+Each migration's SQL and ledger row commit in the same transaction. Read-only
+status/check operations neither create schema nor acquire the migration lock;
+stale checks, unknown history, checksum drift and non-prefix history refuse.
+The catalogue validation is at
+<code>externals/work/crm-multitenant-20261102/lib/migrations/catalogue.js:19-38</code>;
+checksums detect drift, not catalogue authenticity or review.</p>
+<p><strong>39 checks pass</strong>: 5 migration unit checks, 12 disposable-PostgreSQL acceptance
+checks and 22 existing CLI checks. These include four overlapping runners,
+bounded lock wait, rollback, SIGKILL/restart, explicit connection configuration,
+read-only/restricted-role inspection, drift/history refusals and a split-commit
+control that demonstrates committed-but-unrecorded DDL. ESLint reports zero
+errors and two filesystem-path warnings. Reproduce in the upstream worktree:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">NS_MIGRATION_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>node_modules/.bin/mocha<span class="w"> </span>--timeout<span class="w"> </span><span class="m">30000</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>tests/migrations.test.js<span class="w"> </span>tests/postgres-migrations.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>tests/nightscout-cli.test.js
+</code></pre></div>
+<p><strong>MIG-RUNNER remains in progress:</strong> MongoDB's fencing-safe renewable lease and
+resumable steps, real reviewed catalogues/baselines, rollback/export policy,
+catalogue distribution/authenticity and serving-role compatibility wiring are
+not implemented. Default single-site MongoDB boot is unchanged; no hosted role
+or storage backend is enabled and no upstream push was made.</p>
+<h3 id="continuation-entries-readfilter-subset-2026-11-02">Continuation: entries read/filter subset (2026-11-02)<a class="headerlink" href="#continuation-entries-readfilter-subset-2026-11-02" title="Permanent link">&para;</a></h3>
+<p><strong>Local upstream commit <code>7d4f3872</code></strong> adds dormant <code>findFiltered</code>, <code>count</code> and
+<code>findOne</code> methods. They use the actual tenant-bound connection and typed
+identity codec, not the old adapter. The strict filter AST compiles top-level
+scalar comparisons, <code>in</code>/<code>nin</code>, existence and a bounded type subset into
+parameterized SQL. ObjectId/string <code>_id</code> comparisons retain their kinds;
+scalar fields retain MongoDB type brackets, null/missing and array-element
+matching. Text comparison uses byte ordering rather than the database locale.</p>
+<p>Source:
+<code>externals/work/crm-multitenant-20261102/lib/storage/postgres-filter.js:82-229</code>
+and
+<code>externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-read.js:49-98</code>.
+<strong>6 real PG/MongoDB differential checks</strong> compare results and counts across a
+filter matrix, seven sort specifications with skip/limit, nine <code>findOne</code>
+identifiers with normalized/raw output and empty projections, and overlapping
+tenant fixtures. A SELECT-only non-bypass role reads the typed generated
+entries table; tenant B's different values expose accidental leakage.
+An unbound read refuses. <strong>4 unit checks</strong> exercise unsupported-input refusals
+and bound field names/values. The test DDL fixture is byte-identical to
+<code>tools/lab/postgres-foundation/generated/entries.sql</code> (SHA-256
+<code>0460c76bed932b35472595745491fb61ae918cc6ff4b403b51ba0cc9cffa6a69</code>);
+it is still an experimental typed-key schema, not a production catalogue.</p>
+<p><strong>Combined integration acceptance: 145 passing, no pending</strong>, across 12 files:
+the new read/filter and migration checks, existing PG connection/identity,
+MongoDB filter semantics, tenant scope, backend selection/harness and CLI
+tests. This run used owned disposable PostgreSQL 16 and MongoDB 8.0 with
+<code>NODE_ENV=test</code>, the project hooks and both database URIs. ESLint has no errors;
+the migration slice retains its two filesystem-path warnings. All 461 test
+files are classified. Owned containers and private credentials were removed.</p>
+<p>Reproduce the read/filter portion from the upstream worktree with
+<code>NS_TEST_POSTGRES_ADMIN_URI</code> and <code>CUSTOMCONNSTR_mongo</code> pointing only to
+disposable databases (the MongoDB database name must contain <code>test</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span>node_modules/.bin/mocha<span class="w"> </span>--fail-zero<span class="w"> </span>--timeout<span class="w"> </span><span class="m">30000</span><span class="w"> </span>--exit<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--require<span class="w"> </span>./tests/hooks.js<span class="w"> </span>tests/postgres-connection.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>tests/postgres-identity.test.js<span class="w"> </span>tests/postgres-filter.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>tests/postgres-entries-read.test.js<span class="w"> </span>tests/storage.filter.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>tests/api3.storage.filter-semantics.test.js
+</code></pre></div>
+<p>Missing database URIs leave the differential checks pending; that is not
+acceptance. Keep the fixture synchronized with the opt-in emitter candidate
+until an actual reviewed migration catalogue replaces it.</p>
+<p><strong>Still not M1:</strong> regex (different dialects), dotted paths, v1, nonempty
+projections, driver read options, non-JSON scalar operands, unsupported types,
+array/object sort semantics, unsorted pagination and negative bounds explicitly
+refuse rather than approximate. Shape refusals occur before SQL; sort-value
+refusal is data-dependent after querying. Read results are materialized without
+a cursor/batch cap and equal-key tie order is unspecified. <code>findMany</code>,
+<code>findOneFilter</code>, <code>findEveryForm</code>, writes/events, identifier collision/retry,
+current indexes and backend-suite wiring remain. No PG backend registration
+or hosted role was enabled.</p>
+<p><strong>Next bounded work:</strong> entries writes/current write-intent outcomes and
+identifier constraints; reviewed entries schema/migration catalogue; MongoDB
+runner lease/fencing/resume; then trusted tenant resolution/config/auth wiring
+for the two-tenant HTTP lab. Regex/projection/array-sort parity belongs in the
+remaining compatibility inventory, not an implicit change to supported API
+behavior. The owner authorization/revocation contract can proceed independently.
+The maintainer push command above now includes both local continuation commits;
+no upstream push was made.</p>
 
 
 
