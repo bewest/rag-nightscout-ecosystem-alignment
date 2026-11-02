@@ -2154,6 +2154,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#multitenancy-dormant-entries-writes-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenancy Dormant Entries Writes (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multitenancy-entries-reads-and-operator-migrations-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3489,6 +3500,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#multitenancy-dormant-entries-writes-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenancy Dormant Entries Writes (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multitenancy-entries-reads-and-operator-migrations-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4791,7 +4813,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>9bce322d3</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>348b129d0</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4803,6 +4825,25 @@
 - <a href="docs/archive/progress-archive-2026-01-30-batch4.html">progress-archive-2026-01-30-batch4.md</a></p>
 </blockquote>
 <hr />
+<h2 id="multitenancy-dormant-entries-writes-2026-11-02">Multitenancy Dormant Entries Writes (2026-11-02)<a class="headerlink" href="#multitenancy-dormant-entries-writes-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>Local upstream <strong><code>7bcfc8b0</code></strong> adds <code>insertOne</code>, <code>updateOne</code>, <code>deleteOne</code>,
+<code>updateMany</code> and <code>deleteMany</code> over the existing tenant-bound PG connection.
+Scalar patches preserve unrelated data and stored identity kinds; no-op counts,
+rollback and both-tenant own-write/isolation behavior match the measured subset
+of MongoCollection. No registered backend, migration or default behavior changes.</p>
+<p><strong>Validation:</strong> <strong>158 passing, no pending</strong> across 11 focused files on
+PostgreSQL 16.15/MongoDB 8.0.34; includes 8 new real-database checks and 1 input
+refusal check. Actual two-backend lock contention covers disjoint patches and
+same-field restoration. Three implementation mutations fail; the corrected
+locked-version comparison passes. ESLint, 462-file tier classification and
+existing write-boundary check pass. Owned lab containers removed.</p>
+<p><strong>Remaining:</strong> complete upsert/resend/batch/every-form outcomes,
+constraint-specific retry, events/source/validation integration and full M1.
+The parallel session owns MIG-RUNNER, settings/subject policy and secrets.
+See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-dormant-entries-writes-2026-11-02">acceptance and reproduction record</a>.</p>
+<p><strong>Source references:</strong>
+<code>externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:65-155</code>,
+<code>externals/work/crm-multitenant-20261102/tests/postgres-entries-write.test.js:155-263</code>.</p>
 <h2 id="multitenancy-entries-reads-and-operator-migrations-2026-11-02">Multitenancy Entries Reads and Operator Migrations (2026-11-02)<a class="headerlink" href="#multitenancy-entries-reads-and-operator-migrations-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Two fresh-context implementation slices are persisted on the local upstream
 integration branch; <strong>no upstream push or hosted enablement</strong>.</p>

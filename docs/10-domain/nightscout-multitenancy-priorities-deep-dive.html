@@ -8209,7 +8209,7 @@
 
 
 <h1 id="nightscout-multitenancy-next-priorities-postgresql-rls-and-celld">Nightscout multitenancy: next priorities, PostgreSQL RLS and Celld<a class="headerlink" href="#nightscout-multitenancy-next-priorities-postgresql-rls-and-celld" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>9bce322d3</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>348b129d0</code>.</em></p>
 <p><strong>Assessment: 2026-11-02. Recommendations, not newly adopted decisions or
 production acceptance.</strong> Public <code>dev</code> was checked through GitHub and read from
 the local <code>official/dev</code> ref at <code>61eb37335954ae42c91345a0823bd67331025165</code>.
@@ -8253,6 +8253,18 @@ array/object sorting refuse, and results are materialized without cursor caps.
 Writes/events/current indexes and backend registration remain absent. The
 <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-readfilter-subset-2026-11-02">bounded acceptance and reproduction record</a>
 distinguishes this measured slice from full client/API compatibility.</p>
+<p><strong>Write continuation:</strong> local upstream <code>7bcfc8b0</code> adds dormant inserts, scalar
+patches and deletes through five persistence methods. Eight real PG/MongoDB
+checks plus one refusal check cover stored results/counts, typed identities,
+rollback, both tenants and actual two-connection lock contention. The combined
+regression is <strong>158 passing, no pending</strong>; existing v3 write-intent tests in
+that run remain regression evidence, not PG write-intent integration. A
+stale-snapshot no-op comparison was corrected and three actual mutations fail.
+Bulk/replace/every-form writes, constraint-specific retries and commit-event
+integration remain; no backend is enabled. See the
+<a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-dormant-entries-writes-2026-11-02">write acceptance record</a>.
+The other session owns migrations, settings/subject policy and provider-neutral
+secrets/Vault-facing work; this slice leaves those files unchanged.</p>
 <h2 id="1-bottom-line">1. Bottom line<a class="headerlink" href="#1-bottom-line" title="Permanent link">&para;</a></h2>
 <p>The next useful delivery is <strong>an entries-first PostgreSQL RLS slice on current
 dev</strong>, alongside a <strong>tenant configuration/authentication integration workstream</strong>.
@@ -8330,7 +8342,7 @@ an untested idea.</p>
 </ul>
 <h3 id="a-coordination-blocker-two-generations-of-planning">A coordination blocker: two generations of planning<a class="headerlink" href="#a-coordination-blocker-two-generations-of-planning" title="Permanent link">&para;</a></h3>
 <p>At the initial assessment, the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9bce322d317569c7d3f174b514b98a458002c864/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/348b129d0f060b8057958b6cea1f61b257da680f/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
 TEN-RESOLVE and TEN-LAB without corresponding executable-work items in
 <code>queue/work-queue.yaml</code>. The adopted roadmap has since added those queue items
 and bounded M0/Vault checks. Their complete acceptance is still open.

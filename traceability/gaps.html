@@ -2766,7 +2766,7 @@
 
 
 <h1 id="gaps">Gaps<a class="headerlink" href="#gaps" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>9bce322d3</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>348b129d0</code>.</em></p>
 <p>This document is an index of gaps organized by domain.</p>
 <h2 id="hosted-tenancy-integration-follow-up-2026-11-02">Hosted-tenancy integration follow-up (2026-11-02)<a class="headerlink" href="#hosted-tenancy-integration-follow-up-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The maintainer's <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
@@ -2801,6 +2801,14 @@ PG/MongoDB differential and 4 refusal/parameterization checks, included in a
 measured only for the supported subset. Regex/v1/projection/dotted-path and
 array-sort compatibility, bounded/cursor reads, remaining methods, writes/
 events, indexes/identifier retry and actual backend registration remain open.</p>
+<p>Local upstream <code>7bcfc8b0</code> subsequently adds a dormant five-method persistence
+write subset: scalar inserts/patches and deletes. Eight real PG/MongoDB checks
+and one refusal check pass within a 158-test regression. Actual lock contention
+exposed and now guards a stale-snapshot no-op bug; identity-kind and no-op-count
+mutations also fail. Full M1 still owes bulk/replace/every-form writes,
+constraint-specific retry/error mapping, source/validation/commit-event
+integration, reviewed DDL and bounded resource/query/backend acceptance.
+Migrations, settings/subject policy and secrets belong to the parallel session.</p>
 <p>The <a href="../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.html">multitenancy priorities assessment</a>
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev <code>61eb3733</code>. The storage harness and scope are merged; the PostgreSQL adapter,
