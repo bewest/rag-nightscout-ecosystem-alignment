@@ -1,0 +1,164 @@
+{
+  "timestamp": "2026-11-02T20:33:09.545Z",
+  "runtime": {
+    "celld": "celld 0.6.3",
+    "node": "v22.23.4",
+    "platform": "linux",
+    "arch": "x64",
+    "binarySha256": "eb0a8158421b69d68dd5d28f2298a7d411dde498295833deeb1cc5ce53b7eb75",
+    "workerSha256": "3e75527b90bbbfbd2b181568ffe3b64976f66bd88acd16e9bce0664d5fdb5981",
+    "runnerSha256": "beca5ce225b5e9530c7270570ba39649479f6671463f30f15494717703f5ccf4"
+  },
+  "nightscoutReference": {
+    "commit": "61eb37335954ae42c91345a0823bd67331025165",
+    "use": "Contract source inspection only; not executed by this lab"
+  },
+  "mode": "celld dev; local object store; no cloud bucket or fleet",
+  "checks": [
+    {
+      "name": "overlapping record IDs stay tenant-local",
+      "passed": true,
+      "elapsedMs": 82.662688
+    },
+    {
+      "name": "wrong tenant principal and unknown/unbound routes refuse reads and writes",
+      "passed": true,
+      "elapsedMs": 14.888791000000026
+    },
+    {
+      "name": "concurrent retries commit once; receipts are tenant-local; changed-content reuse conflicts",
+      "passed": true,
+      "elapsedMs": 40.06044099999997
+    },
+    {
+      "name": "batch conflict rolls back earlier rows and receipt",
+      "passed": true,
+      "elapsedMs": 18.89300800000001
+    },
+    {
+      "name": "JSON null/missing and numeric/string predicates remain distinct",
+      "passed": true,
+      "elapsedMs": 14.82794899999999
+    },
+    {
+      "name": "stable date/id pagination and indexed date query",
+      "passed": true,
+      "elapsedMs": 6.404993999999988
+    },
+    {
+      "name": "tombstone survives resend and does not affect the other tenant",
+      "passed": true,
+      "elapsedMs": 15.832006999999976
+    },
+    {
+      "name": "parallel distinct writes do not lose records",
+      "passed": true,
+      "elapsedMs": 42.28365499999995
+    },
+    {
+      "name": "one synthetic CGM day per each of 32 tenants",
+      "passed": true,
+      "elapsedMs": 1282.57759
+    },
+    {
+      "name": "warm sequential loopback write/read latency",
+      "passed": true,
+      "elapsedMs": 2042.531008
+    },
+    {
+      "name": "SIGTERM restart preserves acknowledged documents, tombstones, cell IDs and receipts",
+      "passed": true,
+      "elapsedMs": 16960.758355
+    },
+    {
+      "name": "SIGKILL restart preserves acknowledged documents, tombstones, cell IDs and receipts",
+      "passed": true,
+      "elapsedMs": 1350.0696659999994
+    }
+  ],
+  "limitations": [
+    "Not the Nightscout storage adapter or API; no MongoDB/PostgreSQL parity claim.",
+    "Local process restart is not node/disk loss, fleet replication, or RPO=0 proof.",
+    "Loopback microbenchmark; no production tenant capacity or hosting cost inference.",
+    "Synthetic fixed principals, no production identity integration or real health records."
+  ],
+  "emptyRss": {
+    "bytes": 72470528,
+    "processCount": 2,
+    "meaning": "Sum of dev process-tree RSS; shared pages may be counted twice"
+  },
+  "initialCells": {
+    "a": {
+      "cellId": "f360839b32447e08ead67e7252b7ee1a3be245050875f425e4e78f990b93d324",
+      "databaseSizeBytes": 73728,
+      "records": 1,
+      "receipts": 1,
+      "datePlan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH entries USING INDEX entries_date (deleted=? AND date>?)"
+        }
+      ]
+    },
+    "b": {
+      "cellId": "e9b7eccc4c98b287528f578e12830236c4351a24edfbfac8440af8d2e87f4e77",
+      "databaseSizeBytes": 73728,
+      "records": 1,
+      "receipts": 1,
+      "datePlan": [
+        {
+          "id": 7,
+          "parent": 0,
+          "notused": 0,
+          "detail": "SEARCH entries USING INDEX entries_date (deleted=? AND date>?)"
+        }
+      ]
+    }
+  },
+  "workload": {
+    "tenants": 32,
+    "entriesPerTenant": 288,
+    "writesBatchedPerTenant": 1,
+    "elapsedMs": 1272.8859400000001
+  },
+  "afterWorkloadRss": {
+    "bytes": 139247616,
+    "processCount": 2,
+    "meaning": "Sum of dev process-tree RSS; shared pages may be counted twice"
+  },
+  "afterWorkloadLocalStoreBytes": 10922626,
+  "loopbackLatency": {
+    "writes": {
+      "samples": 120,
+      "p50Ms": 12.52864099999988,
+      "p95Ms": 24.673534000000018
+    },
+    "reads": {
+      "samples": 120,
+      "p50Ms": 2.01630299999988,
+      "p95Ms": 3.3396550000002208
+    }
+  },
+  "finalMeta": {
+    "cellId": "f360839b32447e08ead67e7252b7ee1a3be245050875f425e4e78f990b93d324",
+    "databaseSizeBytes": 204800,
+    "records": 439,
+    "receipts": 151,
+    "datePlan": [
+      {
+        "id": 7,
+        "parent": 0,
+        "notused": 0,
+        "detail": "SEARCH entries USING INDEX entries_date (deleted=? AND date>?)"
+      }
+    ]
+  },
+  "negativeControl": {
+    "name": "shared-cell routing",
+    "rejected": true,
+    "assertion": "Expected values to be strictly equal:\n\n200 !== 100\n"
+  },
+  "passed": true
+}

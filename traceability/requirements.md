@@ -2,6 +2,21 @@
 
 This document is an index of requirements organized by domain.
 
+## Tenant-cell SQLite experiment verification (2026-11-02)
+
+The [local experiment](../docs/10-domain/tenant-cell-sqlite-deep-dive.md)
+records twelve passing checks on real celld v0.6.3 and a deliberately shared-cell
+control that fails by exposing the other tenant's value. Overlapping record
+identities and receipt IDs, refusing wrong/missing tenant principals on reads
+and mutations, atomic rollback, retry receipts, JSON predicates, paging,
+tombstones and same-disk restarts are bounded experiment checks.
+
+This adds no new protocol REQ IDs or v16 gate. Promotion to a third storage
+backend requires the actual NS harness and write/read contract, not this lab's
+bespoke protocol. Qualified-bucket fleet recovery, production tenant binding,
+evaluator/realtime behavior, migration/backup/restore and a matched cost
+comparison remain unverified. Local persistence is not fleet durability.
+
 ## Release-readiness verification (2026-11-02)
 
 The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)
