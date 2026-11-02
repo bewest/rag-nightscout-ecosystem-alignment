@@ -2,6 +2,29 @@
 
 This document is an index of gaps organized by domain.
 
+## Hosted-tenancy integration follow-up (2026-11-02)
+
+The maintainer's [delivery roadmap](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+removes Celld from scope and adopts storage-first/current-dev integration,
+headless owner API with UI deferred, operator-only provisioning, legacy
+per-tenant credentials and a reviewed settings subset. Early Vault feasibility
+supports the existing secrets decision; a cryptographic API is not the complete
+tenant secret store. Human identity and durable runtime/next-gen execution are
+separate workstreams, not prerequisites to a synthetic storage proof.
+
+The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
+maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
+dev `61eb3733`. The storage harness and scope are merged; the PostgreSQL adapter,
+hosted bootstrap and runtime bindings are not. Existing PG/pooler/config labs
+are valuable dated evidence, not current-dev integration acceptance.
+
+The initial assessment found ST-PG, TEN-RESOLVE and TEN-LAB only on the platform
+map; the adopted roadmap has now added queue items and bounded PG/Vault gates.
+Full adapter/config/runtime acceptance remains open. Do not make an obsolete
+whole-seam refresh a prerequisite. Celld was evaluated, not adopted, and is now
+out of scope. Reuse the existing work identifiers; no duplicate protocol GAP IDs
+or new v16 blockers are added.
+
 ## Release-readiness follow-up (2026-11-02)
 
 The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)

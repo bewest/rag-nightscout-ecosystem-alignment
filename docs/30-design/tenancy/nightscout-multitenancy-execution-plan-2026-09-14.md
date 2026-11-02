@@ -24,6 +24,16 @@ their date and commit.
 
 ## Where things stand
 
+**Current integration direction (2026-11-02):** the
+[delivery roadmap](multitenant-delivery-roadmap-2026-11-02.md) supersedes the
+historical release/branch snapshot below for new work. Storage first on dev
+`61eb3733`, one local integration branch, no upstream push; headless owner API
+with UI deferred, operator-only provisioning, legacy per-tenant credentials and
+a reviewed settings subset. Test Vault feasibility early under the existing
+pluggable-secrets decision. Celld is out of scope. Full T30 catalogue, human
+identity, client/runtime acceptance and next-generation execution remain
+separately gated; the September seam is reference, not a bulk-merge prerequisite.
+
 Measured 2026-09-27 against `cgm-remote-monitor` `official/dev` `295f1177` and
 `nightscout-connect` `official/main` `4dde1ec`.
 

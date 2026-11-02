@@ -2,6 +2,22 @@
 
 This matrix maps equivalent concepts across AID systems. Use this as a rosetta stone when translating between projects.
 
+## Hosted tenancy and actor-runtime terminology (2026-11-02)
+
+| Alignment Term | PostgreSQL / Nightscout | Celld / Interoperability Meaning |
+|----------------|------------------------|---------------------------------|
+| Row isolation / actor isolation | RLS limits rows under a trusted transaction's tenant binding | A cell has its own SQLite database; correct actor addressing still requires application authorization. |
+| Tenant scope / tenant resolution | The merged async scope is not the still-unbuilt Host-to-tenant/authentication integration | An object name is an address, not proof the caller may access its tenant. |
+| Storage authority / execution runtime | PostgreSQL can own records behind the storage interface | Celld may schedule or fan out work without becoming a second authoritative record store. |
+| Scheduling alarm / delivered notification | Nightscout evaluates alarm state, acknowledgment and delivery | A Durable Object alarm is a callback; it does not prove timely or exactly-once clinical notification delivery. |
+| Backend selectable / backend available | The harness recognizes PostgreSQL but currently reports its storage tests pending | Recognition is not an implemented or validated backend. |
+| Headless owner API / owner UI | Nightscout validates and authorizes tenant-owner operations | A vendor UI may call the supported contract; a first-party hosted UI is deferred, not a prerequisite. |
+| Transit cryptography / secret storage | The secrets component authorizes tenant-bound operations and references | Vault Transit encrypts/signs without storing submitted application payloads; a ciphertext/reference store is still needed. |
+| Root credential / human identity | Per-tenant legacy root and subject tokens support the initial lab | Root possession is not verified human identity, consent or delegated authority. |
+
+See the [multitenancy priorities assessment](../../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
+for current-dev evidence, independent workstreams and the limits of Celld's beta claims.
+
 ## Release-readiness terminology (2026-11-02)
 
 | Alignment Term | Nightscout | Interoperability Meaning |

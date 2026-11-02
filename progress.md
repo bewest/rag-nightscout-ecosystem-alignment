@@ -12,6 +12,59 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Multitenancy Priorities and Celld Assessment (2026-11-02)
+
+**Subsequent maintainer decisions and execution:** Celld removed from scope.
+Adopted [the multitenant delivery roadmap](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md):
+storage first, one local upstream integration branch; headless owner API,
+UI deferred; operator-only provisioning; legacy per-tenant credentials; small
+reviewed config catalogue; human identity separately planned; registration/
+intent/delegation contracts parallel. Added current-dev queue milestones without
+claiming the old full catalogue complete.
+
+Local upstream `27f085c9`, followed by explicit-URI guard `ce14d637`, adds a dormant PG transaction foundation and isolation
+tests; 43 focused checks pass (9 PG checks), plus ESLint. The actual
+session-binding mutation fails and its restoration passes. Vault Transit
+feasibility: 9/9 checks on 2.2.1; non-exportability, scoped crypto/HMAC,
+rotation/rewrap, revocation and an overbroad-policy control. Results:
+`tools/lab/vault-transit/results.json`. No upstream push, backend availability,
+owner API implementation, migration runner or hosted acceptance is claimed.
+Detailed limits and the maintainer's push command are in the roadmap.
+
+Checked public Nightscout dev at `61eb3733`, read its backend/tenant-scope/role
+boundaries, reconciled dated PG and configuration evidence, and read Celld's
+primary documentation. This is an assessment, not an executed runtime experiment.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Priorities and bounded workstreams | `docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md` | PG entries slice and tenant control plane can proceed independently of the v16 tag; Celld is a separate actor-runtime feasibility track. |
+| Five facets | `mapping/cross-project/terminology-matrix.md`, `traceability/{gaps,requirements}.md`, this entry and the deep dive | Separates scope from resolution, RLS from cell routing, scheduling from delivery, and recognized from available backends. |
+
+**Key findings:** PG remains unimplemented on dev despite merged ST-HARNESS.
+Hosted roles still refuse startup; configuration/auth wiring and evaluator/
+realtime integration remain. At the initial assessment platform-map cards ST-PG/TEN-RESOLVE/TEN-LAB had
+no corresponding executable queue items; the adopted roadmap now adds them.
+The old seam is reference, not a
+required bulk merge. Celld v0.6.2 is documented as beta, with partial Node support
+and no account service or multi-tenant scheduler; a hybrid needs an explicit
+durable commit/delivery design. No architecture decision, owner assignment,
+new release blocker or experiment pass is claimed.
+
+**Source files analyzed:** at `61eb3733`,
+`externals/cgm-remote-monitor-official/lib/server/storage-backends.js:21-27`,
+`tests/support/backends.js:58-65`, `lib/storage/tenant-scope.js:34-40`,
+`lib/server/serve/roles.js:14-41` and `lib/server/serve/api.js:36-42`
+(the latter paths relative to that external repository). Detailed evidence,
+prior lab links and vendor-documentation limits are in the deep dive.
+
+**Validation:** `make docs-links` and diff whitespace checks pass; all five
+local links/anchors in the new assessment resolve in a separate targeted check
+(the programme link gate excludes `docs/10-domain`). `make verify` still reports
+the existing 162 broken references and coverage/assertion gaps; terminology and
+duplicate-GAP checks pass. Traceability generation was directed outside the
+repository and still extracts zero requirements/gaps from the modular indices;
+no generated acceptance matrix was overwritten. No runtime tests were run.
+
 ## Nightscout v16 Corpus and Acceptance Refresh (2026-11-02)
 
 Surveyed all 45 lockfile repository entries through GitHub metadata; recorded

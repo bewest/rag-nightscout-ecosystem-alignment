@@ -2,6 +2,31 @@
 
 This document is an index of requirements organized by domain.
 
+## Hosted-tenancy experiment verification (2026-11-02)
+
+The adopted [delivery roadmap](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+adds milestone-specific checks under the existing decisions, not new protocol
+IDs. Preserve legacy per-tenant header/token/socket forms. Owner configuration
+uses the supported headless API and project floors even when a vendor supplies
+UI. Initial configuration is a reviewed subset; unsupported settings and
+inactive alarm/integration features refuse explicitly. Synthetic token/root
+principals must not be audited as verified humans. Celld is out of scope.
+
+The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
+clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new
+protocol requirement IDs. A PG pass executes applicable storage tests on the
+real adapter; pending tests are not acceptance. Use two tenants with overlapping
+identities and an unbound reader, non-bypass application roles, transaction-local
+binding, real pool reuse and paired red controls for reads and writes.
+
+Hosted acceptance additionally needs trusted tenant resolution, per-tenant
+credentials/settings, legacy-client surfaces, evaluator/realtime isolation and
+operational recovery. A synthetic experiment does not need production human
+identity or real onboarding. A Celld spike must distinguish actor routing from
+authorization, runtime wake from delivered alarm, and durable cell state from
+atomic PG-to-actor delivery; retries must expose duplicate effects. These are
+proposed experiment checks, not newly adopted architecture or v16 prerequisites.
+
 ## Release-readiness verification (2026-11-02)
 
 The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)

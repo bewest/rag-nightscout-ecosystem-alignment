@@ -184,7 +184,12 @@ Until then, the order below is the order of development, not of release.
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
 | 1 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and Mongo | `not-started` | &mdash; |
+| 1 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | &mdash; |
+| 1 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | &mdash; |
+| 1 | `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | &mdash; |
+| 1 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | &mdash; |
 | 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
+| 1 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
@@ -199,14 +204,16 @@ Until then, the order below is the order of development, not of release.
 | 1 | `WC-R2-QH` | Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-m | `not-started` | &mdash; |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `T30-RESEARCH` |
+| 2 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `MT-CONFIG-MIN`, `MIG-RUNNER` |
 | 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
 | 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
-| 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `T30-SCHEMA-CONFIG` |
+| 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `TEN-RESOLVE`, `MT-SECRETS-CONTRACT` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |
 | 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |
 | 4 | `T44` | T4.4 - ns-evaluator, the per-tenant evaluation loop | `not-started` | `T30-WIRING` |
+| 4 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `ST-PG`, `T30-WIRING`, `MIG-RUNNER` |
 | 5 | `A7A-3` | §7a item 3 - a per-tenant error boundary | `not-started` | `T44` |
 | 5 | `A7A-4` | §7a item 4 - a health signal for a silent per-tenant outage | `not-started` | `T44` |
 | 5 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T30-WIRING`, `T31-REM`, `SEAM-REFRESH` |

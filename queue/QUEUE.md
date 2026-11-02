@@ -31,21 +31,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 350 |
-| runnable gates | 407 |
-| explicit `no-gate:` markers | 361 |
+| items | 358 |
+| runnable gates | 409 |
+| explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 361 of the 768 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 778 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 9 | BFQ-178, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `not-started` | 76 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `in-progress` | 14 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
-| `blocked` | 15 | RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
+| `blocked` | 17 | TEN-RESOLVE, TEN-LAB, RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 4 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 83 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 92 | P0-A, P0-B, P0-C, P0-J, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -8380,13 +8380,20 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 51 items
+`parcel: tenancy` &mdash; 58 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
+| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 1 run + 1 no-gate |
+| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
+| `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `done` | `seam/t30-schema-cred` | n/a | 2 run + 2 no-gate |
@@ -8394,7 +8401,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `done` | `-` | n/a | 0 run + 1 no-gate |
 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
-| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -8438,6 +8445,210 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `merged-upstream` | `feat/storage-filter` | patch | 1 run + 1 no-gate |
 | `ST-WRITES` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface | `merged-upstream` | `feat/storage-writes` | patch | 1 run + 1 no-gate |
 | `ST-COUNT-ONEPATH` | API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path | `merged-upstream` | `feat/storage-count-onepath` | patch | 2 run |
+
+### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/dev@61eb3733` |
+| worktree | `externals/work/crm-multitenant-20261102` |
+| semver | `n/a` |
+| review | maintainer; isolation and write-contract review before promotion |
+
+**Blast radius.** PG connection/transaction binding, entries adapter, emitted DDL and backend- selectable tests. M0 foundation is not full M1 adapter acceptance.
+
+**What an operator sees.** Dormant integration work; single and released behavior unchanged.
+
+**Why `n/a`.** local integration, no enabled hosted role
+
+**Gates.**
+
+- `[integration]` `test -n "$NS_TEST_POSTGRES_ADMIN_URI" && NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js --fail-zero --timeout 15000 --exit externals/work/crm-multitenant-20261102/tests/postgres-connection.test.js`
+  - M0 transaction foundation only: 9 real PostgreSQL checks including overlapping tenant identities, denied inserts/updates/TRUNCATE, rollback, released-scope refusal, pooled binding cleanup and breaks.
+- **NO GATE** &mdash; M0 binding/RLS proof is local at 27f085c9 plus ce14d637. PgBouncer revalidation and generated production DDL/migration acceptance remain. M1 still needs the real entries adapter and applicable backend/read/write/identity suites executing, not pending. No PG availability flag or hosted role is enabled by a foundation proof.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+
+**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push.
+
+### `MT-CONFIG-MIN` &mdash; Reviewed initial tenant configuration and headless owner API contract
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `records/multitenant-roadmap-20261102` |
+| base | `main@28671cb4a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Reviewed catalogue for units/timezone/display/authorization policy; effective- value provenance, typed/versioned writes, invalidation, attribution and rollback contract. No first-party owner UI prerequisite.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** design and lab contract
+
+**Gates.**
+
+- **NO GATE** &mdash; Roadmap decisions adopted; detailed names, paths, preconditions, errors and executable contract cases remain. Full T30 catalogue is not claimed complete by the selected subset.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+
+**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle.
+
+### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `records/multitenant-roadmap-20261102` |
+| base | `main@28671cb4a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; provider/consumer boundary review before production |
+
+**Blast radius.** Synthetic Vault API/ACL/key-lifecycle lab; sign/verify/encrypt/decrypt contract, tenant-bound references, named consumers, rotation, outage behavior and audit redaction. Built-in signer remains an adopted option.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** feasibility experiment, not production backend acceptance
+
+**Gates.**
+
+- `[integration]` `node tools/lab/vault-transit/harness.js`
+  - Requires disposable loopback VAULT_ADDR/VAULT_TOKEN. Actual Transit encrypt/HMAC/verify, scoped/wrong-key refusals, non-exportability, rotation/rewrap, revocation and deliberately broad-policy control.
+- **NO GATE** &mdash; 9 feasibility checks pass on Vault 2.2.1; no production auth, persistence, TLS, unseal/recovery or HA acceptance yet. Transit does not store application ciphertext or enforce Nightscout tenant membership.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `tools/lab/vault-transit/README.md`
+- `tools/lab/vault-transit/results.json`
+
+**Notes.** Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex.
+
+### `TEN-RESOLVE` &mdash; Current-dev tenant resolution and private operator lifecycle
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/dev@61eb3733` |
+| worktree | `externals/work/crm-multitenant-20261102` |
+| semver | `n/a` |
+| review | maintainer; tenant isolation and listener review |
+| blocks on | `MT-CONFIG-MIN`, `MIG-RUNNER`, `PLAT-SERVE` |
+
+**Blast radius.** Host-to-tenant resolution, scoped configuration and private operator provision/suspend/export/delete. No public signup or human IdP required.
+
+**What an operator sees.** Hosted synthetic lab only; single unchanged.
+
+**Why `n/a`.** local integration
+
+**Gates.**
+
+- **NO GATE** &mdash; Implementation waits on the reviewed minimum config contract and migration runner. Required controls: unknown/suspended tenants refuse, untrusted forwarded hosts cannot select tenants, private operator routes never answer on the data/owner plane.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+
+**Notes.** M2; current-dev slice, operator-only lifecycle, single unchanged.
+
+### `TEN-LAB` &mdash; Two-tenant entries HTTP lab on PostgreSQL
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `records/multitenant-roadmap-20261102` |
+| base | `main@28671cb4a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `ST-PG`, `T30-WIRING`, `MIG-RUNNER` |
+
+**Blast radius.** Disposable synthetic two-tenant HTTP deployment with pinned server and data/configuration/credential checks. Not full hosted preview acceptance.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** experiment
+
+**Gates.**
+
+- **NO GATE** &mdash; Requires M1 entries adapter and M2 tenant control-plane integration. Real HTTP v3 writes/reads and stored outcomes, same IDs across tenants, own-tenant positives and cross-tenant negatives, stale-schema refusal. v1, sockets and evaluator are later cumulative acceptance milestones.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+
+**Notes.** M3; cumulative acceptance, not full hosted preview.
+
+### `MT-RUNTIME-PLAN` &mdash; Continuous v1/v3, realtime and evaluator integration contracts
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `records/multitenant-roadmap-20261102` |
+| base | `main@28671cb4a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Roadmap for collection coverage, legacy clients, socket writes/reconnect, computed views, tenant-local plugin state, durable event delivery, ack/snooze and operations. Reconcile D6 with D-EVENT.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** design
+
+**Gates.**
+
+- **NO GATE** &mdash; Milestones adopted in the roadmap; detailed interprocess event, checkpoint/replay, ordering/deduplication and recovery contract still needs executable controls before distributed runtime wiring.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+
+**Notes.** M4-M6; no clinical notification delivery acceptance inferred.
+
+### `MT-IDENTITY-PLAN` &mdash; Human identity, tenant access grants and delegated consent plan
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `-` |
+| base | `main@28671cb4a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; identity and authorization review |
+
+**Blast radius.** Interchangeable identity-provider assertion/session validation, provider and subject binding, access grants, tenant-bound token exchange, reauthentication, revocation and production-edge acceptance.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** design, no real human identities accepted
+
+**Gates.**
+
+- **NO GATE** &mdash; Separate milestone from synthetic root/device tokens; requires a reviewed contract and positive/negative provider, tenant, consent, session and revocation tests. No custom password/recovery system.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+
+**Notes.** Maintainer 2026-11-02: device/token/API-secret first; identity needs additional planning. Prior Ory/edge proofs remain dated evidence, not production approval. Planning can proceed without blocking ST-PG.
 
 ### `T30-RESEARCH` &mdash; T3.0 part 1 - enumerate the per-tenant configuration surface
 
@@ -8676,13 +8887,13 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `not-started` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `seam/t1-2-storage-interface@81a1f6ce` |
-| worktree | `externals/work/crm-seam` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/dev@61eb3733` |
+| worktree | `externals/work/crm-multitenant-20261102` |
 | semver | `n/a` |
 | review | SECURITY |
 | register | `BF-25` |
-| blocks on | `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG` |
+| blocks on | `TEN-RESOLVE`, `MT-SECRETS-CONTRACT` |
 
 **Blast radius.** lib/server/tenant-context.js, lib/server/tenant-middleware.js, lib/authorization/index.js.
 
@@ -8698,7 +8909,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
+**Notes.** 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS-CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current-dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant- context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
 
 ### `T30-TENANT-ADMIN` &mdash; cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)
 
@@ -10733,7 +10944,7 @@ flag rule: versioning policy section 5.7.
 
 ## Controller registration and intent observability
 
-`parcel: platform` &mdash; 37 items
+`parcel: platform` &mdash; 38 items
 
 D18 (maintainer, 2026-10-09): two-tier controller registration - well-known
 declarations for backwards compatibility, controller-owned typed registrations
@@ -10744,6 +10955,7 @@ reproduced ones.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
+| `MT-NEXTGEN-PLAN` | Parallel registration, intent/command execution and delegation roadmap | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
 | `LAB-G7-TWO-DISPLAY` | Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `LAB-TRIO-INTENT` | Simulator lab: Trio override expiry, temp-target upload repeats, downloaded temp-target echo | `not-started` | `main` | n/a | 1 run + 1 no-gate |
 | `SCHEMA-REG-EXT` | Registration grammar: must-ignore, typed extensions, open vocabularies, per-kind versions, horizons (D18 addendum rules 1-5) | `done` | `main` | n/a | 2 run |
@@ -10781,6 +10993,34 @@ reproduced ones.
 | `PLAT-ENTRY` | One executable (D21): bin/nightscout.js with `single` and the operator tools; image ENTRYPOINT and CMD single, no image HEALTHCHECK; no start path changes | `in-flight-upstream` | `feat/nightscout-entrypoint` | minor | 0 run + 1 no-gate |
 | `PLAT-SERVE` | `nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately | `merged-upstream` | `feat/nightscout-serve` | minor | 1 run |
 | `QC-MATRIX-WIRE-ATTRIBUTION` | Write-contract matrix: settle storage-socket frames after the seed and after the measured step (attribution as a guard), so `wire` stops picking up the seed's own late frame | `done` | `-` | n/a | 1 run |
+
+### `MT-NEXTGEN-PLAN` &mdash; Parallel registration, intent/command execution and delegation roadmap
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `records/multitenant-roadmap-20261102` |
+| base | `main@28671cb4a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Existing registration/instance, command/intent and delegation contracts mapped to hosted tenant storage, owner routing, audit, expiry, consent, idempotency/reconciliation and revocation gates.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** design, no command execution enabled
+
+**Gates.**
+
+- **NO GATE** &mdash; Roadmap keeps contract work parallel, not a blanket prerequisite to storage/HTTP experiments. Feature-specific runnable gates remain with existing conformance work; human identity/delegation and command execution are not claimed implemented by this plan.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+
+**Notes.** Contract work stays parallel; command execution and delegation gated.
 
 ### `LAB-G7-TWO-DISPLAY` &mdash; Lab: two displays on one real G7 sensor report the same seconds counter for each reading, live and backfill
 

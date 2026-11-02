@@ -1,0 +1,48 @@
+{
+  "experiment": "MT-SECRETS-CONTRACT / Vault Transit feasibility",
+  "vaultVersion": "2.2.1",
+  "checks": [
+    {
+      "name": "scoped encrypt/decrypt round trip",
+      "passed": true
+    },
+    {
+      "name": "other-tenant key paths refused by provider policy",
+      "passed": true
+    },
+    {
+      "name": "wrong tenant key cannot decrypt copied ciphertext",
+      "passed": true
+    },
+    {
+      "name": "non-exportable key material stays inside Transit",
+      "passed": true
+    },
+    {
+      "name": "HS256-compatible HMAC and verification without exporting key",
+      "passed": true
+    },
+    {
+      "name": "consumer cannot change key configuration or rotate",
+      "passed": true
+    },
+    {
+      "name": "rotation and ciphertext rewrap preserve stored plaintext",
+      "passed": true
+    },
+    {
+      "name": "red control: broad consumer policy permits other-tenant decrypt",
+      "passed": true
+    },
+    {
+      "name": "revoked consumer credential fails closed",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Disposable development server; no production persistence, TLS, unseal/recovery or HA acceptance",
+    "Provider ACL proof, not integrated Nightscout membership, JWT policy, ciphertext store or audit proof",
+    "Broad service credentials still reach all permitted tenants; Transit does not infer caller tenant",
+    "HMAC feasibility is not a complete legacy JWT encoding/key-version/rotation integration"
+  ]
+}

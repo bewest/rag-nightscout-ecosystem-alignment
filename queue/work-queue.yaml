@@ -35,8 +35,8 @@ meta:
   gate_kinds:
     static: cheap, local, read-only; runs by default
     unit: a local test suite that needs no database; runs by default
-    integration: needs MongoDB. Worktrees share mongod ports and other sessions
-      are live, so this runs ONLY with `--integration`.
+    integration: needs disposable database or provider services. Worktrees share
+      ports and other sessions are live, so this runs ONLY with `--integration`.
     network: contacts a remote. Runs ONLY with `--network`. Rule 0 still applies -
       a network gate may READ (ls-remote) and may never push.
   states:
@@ -136,6 +136,258 @@ parcels:
       Items here turn its read-derived claims into reproduced ones.
 
 items:
+
+  - id: ST-PG
+    title: "Current-dev PostgreSQL entries adapter and real RLS proof"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/dev@61eb3733
+    worktree: externals/work/crm-multitenant-20261102
+    state: in-progress
+    blast_radius: >
+      PG connection/transaction binding, entries adapter, emitted DDL and
+      backend-selectable tests. M0 foundation is not full M1 adapter acceptance.
+    review: "maintainer; isolation and write-contract review before promotion"
+    operator_visible: "Dormant integration work; single and released behavior unchanged."
+    semver: n/a
+    semver_reason: local integration, no enabled hosted role
+    register: []
+    gates:
+      - run: >-
+          test -n "$NS_TEST_POSTGRES_ADMIN_URI" &&
+          NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js
+          --fail-zero --timeout 15000 --exit
+          externals/work/crm-multitenant-20261102/tests/postgres-connection.test.js
+        kind: integration
+        describe: >
+          M0 transaction foundation only: 9 real PostgreSQL checks including
+          overlapping tenant identities, denied inserts/updates/TRUNCATE,
+          rollback, released-scope refusal, pooled binding cleanup and breaks.
+      - no-gate: >
+          M0 binding/RLS proof is local at 27f085c9 plus ce14d637. PgBouncer revalidation and
+          generated production DDL/migration acceptance remain. M1 still needs
+          the real entries adapter and applicable backend/read/write/identity
+          suites executing, not pending. No PG availability flag or hosted role
+          is enabled by a foundation proof.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    notes: >
+      Maintainer 2026-11-02: storage first, one integration branch, no upstream
+      push. ST-HARNESS is already merged as #8881; the September seam is
+      reference, not a bulk-merge prerequisite. Preserve default MongoDB.
+      Local 27f085c9 plus ce14d637: transaction connection foundation with
+      explicit connection URI required, not registered as a
+      backend; 43 focused checks pass across 4 files, including 9 PG checks,
+      with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing
+      the actual set_config call to session-scoped made the pooled-cleanup
+      test fail; restored transaction-local version passes. No upstream push.
+
+  - id: MT-CONFIG-MIN
+    title: "Reviewed initial tenant configuration and headless owner API contract"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/multitenant-roadmap-20261102
+    base: main@28671cb4a
+    state: in-progress
+    blast_radius: >
+      Reviewed catalogue for units/timezone/display/authorization policy;
+      effective-value provenance, typed/versioned writes, invalidation,
+      attribution and rollback contract. No first-party owner UI prerequisite.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: design and lab contract
+    register: []
+    gates:
+      - no-gate: >
+          Roadmap decisions adopted; detailed names, paths, preconditions,
+          errors and executable contract cases remain. Full T30 catalogue is
+          not claimed complete by the selected subset.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    notes: >
+      Maintainer 2026-11-02: retain D22 with a small reviewed catalogue.
+      Unsupported names explicitly refuse; alarms and integrations remain
+      unavailable until consuming runtimes pass. Operator-only lifecycle.
+
+  - id: MT-SECRETS-CONTRACT
+    title: "Tenant-bound secrets contract and early Vault Transit integration proof"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/multitenant-roadmap-20261102
+    base: main@28671cb4a
+    state: in-progress
+    blast_radius: >
+      Synthetic Vault API/ACL/key-lifecycle lab; sign/verify/encrypt/decrypt
+      contract, tenant-bound references, named consumers, rotation, outage
+      behavior and audit redaction. Built-in signer remains an adopted option.
+    review: "maintainer; provider/consumer boundary review before production"
+    operator_visible: ""
+    semver: n/a
+    semver_reason: feasibility experiment, not production backend acceptance
+    register: []
+    gates:
+      - run: node tools/lab/vault-transit/harness.js
+        kind: integration
+        describe: >
+          Requires disposable loopback VAULT_ADDR/VAULT_TOKEN. Actual Transit
+          encrypt/HMAC/verify, scoped/wrong-key refusals, non-exportability,
+          rotation/rewrap, revocation and deliberately broad-policy control.
+      - no-gate: >
+          9 feasibility checks pass on Vault 2.2.1; no production auth, persistence,
+          TLS, unseal/recovery or HA acceptance yet. Transit does not store
+          application ciphertext or enforce Nightscout tenant membership.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+      - tools/lab/vault-transit/README.md
+      - tools/lab/vault-transit/results.json
+    notes: >
+      Maintainer 2026-11-02: try Vault early if feasible; measure integration
+      before deciding whether it is more efficient than the built-in signer.
+      Never export signing keys or fall back silently on provider failure.
+      Feasibility now demonstrated, not efficiency or production acceptance:
+      next design output is the tenant/consumer-authorized Vault adapter and
+      ciphertext/JWT-version/audit contract, not building a local signer first
+      by assumption. Measured HMAC response is versioned base64, not hex.
+
+  - id: TEN-RESOLVE
+    title: "Current-dev tenant resolution and private operator lifecycle"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/dev@61eb3733
+    worktree: externals/work/crm-multitenant-20261102
+    state: blocked
+    blast_radius: >
+      Host-to-tenant resolution, scoped configuration and private operator
+      provision/suspend/export/delete. No public signup or human IdP required.
+    review: "maintainer; tenant isolation and listener review"
+    operator_visible: "Hosted synthetic lab only; single unchanged."
+    semver: n/a
+    semver_reason: local integration
+    register: []
+    gates:
+      - no-gate: >
+          Implementation waits on the reviewed minimum config contract and
+          migration runner. Required controls: unknown/suspended tenants refuse,
+          untrusted forwarded hosts cannot select tenants, private operator
+          routes never answer on the data/owner plane.
+    blocks_on: [MT-CONFIG-MIN, MIG-RUNNER, PLAT-SERVE]
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    notes: "M2; current-dev slice, operator-only lifecycle, single unchanged."
+
+  - id: TEN-LAB
+    title: "Two-tenant entries HTTP lab on PostgreSQL"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/multitenant-roadmap-20261102
+    base: main@28671cb4a
+    state: blocked
+    blast_radius: >
+      Disposable synthetic two-tenant HTTP deployment with pinned server and
+      data/configuration/credential checks. Not full hosted preview acceptance.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: experiment
+    register: []
+    gates:
+      - no-gate: >
+          Requires M1 entries adapter and M2 tenant control-plane integration.
+          Real HTTP v3 writes/reads and stored outcomes, same IDs across tenants,
+          own-tenant positives and cross-tenant negatives, stale-schema refusal.
+          v1, sockets and evaluator are later cumulative acceptance milestones.
+    blocks_on: [ST-PG, T30-WIRING, MIG-RUNNER]
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    notes: "M3; cumulative acceptance, not full hosted preview."
+
+  - id: MT-RUNTIME-PLAN
+    title: "Continuous v1/v3, realtime and evaluator integration contracts"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/multitenant-roadmap-20261102
+    base: main@28671cb4a
+    state: in-progress
+    blast_radius: >
+      Roadmap for collection coverage, legacy clients, socket writes/reconnect,
+      computed views, tenant-local plugin state, durable event delivery,
+      ack/snooze and operations. Reconcile D6 with D-EVENT.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: design
+    register: []
+    gates:
+      - no-gate: >
+          Milestones adopted in the roadmap; detailed interprocess event,
+          checkpoint/replay, ordering/deduplication and recovery contract still
+          needs executable controls before distributed runtime wiring.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    notes: "M4-M6; no clinical notification delivery acceptance inferred."
+
+  - id: MT-NEXTGEN-PLAN
+    title: "Parallel registration, intent/command execution and delegation roadmap"
+    parcel: platform
+    repo: rag-nightscout-ecosystem-alignment
+    branch: records/multitenant-roadmap-20261102
+    base: main@28671cb4a
+    state: in-progress
+    blast_radius: >
+      Existing registration/instance, command/intent and delegation contracts
+      mapped to hosted tenant storage, owner routing, audit, expiry, consent,
+      idempotency/reconciliation and revocation gates.
+    review: maintainer
+    operator_visible: ""
+    semver: n/a
+    semver_reason: design, no command execution enabled
+    register: []
+    gates:
+      - no-gate: >
+          Roadmap keeps contract work parallel, not a blanket prerequisite
+          to storage/HTTP experiments. Feature-specific runnable gates remain
+          with existing conformance work; human identity/delegation and
+          command execution are not claimed implemented by this plan.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    notes: "Contract work stays parallel; command execution and delegation gated."
+
+  - id: MT-IDENTITY-PLAN
+    title: "Human identity, tenant access grants and delegated consent plan"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: ""
+    base: main@28671cb4a
+    state: not-started
+    blast_radius: >
+      Interchangeable identity-provider assertion/session validation, provider
+      and subject binding, access grants, tenant-bound token exchange,
+      reauthentication, revocation and production-edge acceptance.
+    review: "maintainer; identity and authorization review"
+    operator_visible: ""
+    semver: n/a
+    semver_reason: design, no real human identities accepted
+    register: []
+    gates:
+      - no-gate: >
+          Separate milestone from synthetic root/device tokens; requires a
+          reviewed contract and positive/negative provider, tenant, consent,
+          session and revocation tests. No custom password/recovery system.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    notes: >
+      Maintainer 2026-11-02: device/token/API-secret first; identity needs
+      additional planning. Prior Ory/edge proofs remain dated evidence,
+      not production approval. Planning can proceed without blocking ST-PG.
 
 # ---------------------------------------------------------------------------
 # PARCEL: phase0
@@ -6209,9 +6461,9 @@ items:
     title: T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ""
-    base: seam/t1-2-storage-interface@81a1f6ce
-    worktree: externals/work/crm-seam
+    branch: workspace/multitenant-20261102
+    base: official/dev@61eb3733
+    worktree: externals/work/crm-multitenant-20261102
     state: not-started
     blast_radius: >
       lib/server/tenant-context.js, lib/server/tenant-middleware.js,
@@ -6229,10 +6481,17 @@ items:
           check - with a control where the same token against A's own host
           succeeds, so the failure is known to come from the key and not from
           everything failing.
-    blocks_on: [T30-SCHEMA-CRED, T30-SCHEMA-CONFIG]
+    blocks_on: [TEN-RESOLVE, MT-SECRETS-CONTRACT]
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed
+      minimum config and MT-SECRETS-CONTRACT, not completion of the full
+      historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting
+      signing keys; preserve per-tenant legacy root/subject/socket forms.
+      Human login/access grants are separately planned. Old seam references
+      below are historical implementation guidance, not current-dev line refs.
+
       Line references for the implementer (GT3, crm-seam): the plan's amendment
       table cites tenant-context.js:137 as T3.3's site, but L137 is a comment
       stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at
