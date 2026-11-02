@@ -409,3 +409,79 @@ remaining compatibility inventory, not an implicit change to supported API
 behavior. The owner authorization/revocation contract can proceed independently.
 The maintainer push command above now includes both local continuation commits;
 no upstream push was made.
+
+### Continuation: dormant entries writes (2026-11-02)
+
+**Local upstream commit `7bcfc8b0e42cacda67ca0bfd62a9374099a26759`** adds
+`insertOne`, `updateOne`, `deleteOne`, `updateMany` and `deleteMany` in
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:1-156`.
+This is a persistence subset, not a registered backend or integrated write-intent
+implementation. It uses the existing experimental typed-key entries fixture;
+no migration catalogue or index policy is added here.
+
+Updates/deletes lock their matching rows and write in the same SQL statement.
+By-identifier writes follow the existing storage preference (identifier first,
+then ObjectId over its string twin), unless an explicit stored `_id` chooses
+the exact typed record. Scalar sets/unsets preserve unrelated fields, including
+already-stored nested data. Replies distinguish matched from modified rows;
+repeating an unchanged patch reports zero modifications. Inserts preserve the
+stored identity kind and the requested input normalization behavior.
+
+**Measured: 1 input-refusal check and 8 real PG/MongoDB checks** compare
+supported replies and stored documents through the actual MongoCollection
+interface and the tenant-bound PostgreSQL connection. Fixtures overlap across
+tenants, test the ObjectId/string twins and include unrelated nested data.
+Tenant B is unchanged by A's writes and can independently update/delete/insert
+its own overlapping identities. Unbound writes refuse; duplicate-key and
+explicit callback failures roll back the surrounding transaction.
+
+The concurrency check uses **two distinct backend PIDs** and observes the second
+statement waiting on a real PostgreSQL lock before allowing the first commit.
+It covers both disjoint patches and restoring a field's pre-wait value.
+No-op comparison must use the locked target document: the update relation's
+earlier statement snapshot can otherwise skip that second patch. Three actual
+implementation mutations fail as intended: removing the identity-kind join,
+counting unchanged updates as modifications, and using the stale snapshot
+for no-op detection. The restored implementation passes.
+
+**Combined regression: 158 passing, no pending, across 11 files**, on
+PostgreSQL 16.15 and MongoDB 8.0.34. This includes the read/filter/identity/
+connection tests and existing MongoDB filter, tenant-scope, backend-selection
+and v3 write-intent regression tests; those existing tests are not a claim that
+the PG subset now executes complete write intents. ESLint, all 462 test-file
+classifications and the existing write-boundary check pass. The latter still
+covers the existing nine adapter entry points, not promotion of the dormant
+PG module. Only this session's two disposable containers were removed.
+
+Reproduce the write slice from the upstream worktree using disposable database
+URIs (`CUSTOMCONNSTR_mongo` must name a database containing `test`):
+
+```sh
+test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" &&
+NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000 --exit \
+  --require ./tests/hooks.js tests/postgres-entries-write.test.js
+```
+
+Missing either URI leaves the eight database checks pending, not accepted.
+The persistence slice refuses nested/array/BSON set or inserted values,
+non-finite numbers and negative zero, dotted/operator/identity update fields,
+conflicting set/unset fields, v1 and unsorted `one` filter options. Complex
+identifier sort values refuse without modifying any matching row; an explicit
+stored id needs no sort. Existing filter-compiler refusals still apply.
+
+**Still not M1:** there is no replacement/upsert/batch/every-form write API,
+identifier-index retry or duplicate-error translation, source-label/validation/
+commit-event integration, complete read/query parity, cursor cap or backend
+registration. Native PostgreSQL constraint errors propagate; no retry is
+attempted inside an aborted transaction. Matching sets are locked/materialized
+without a size cap; lock ordering/resource bounds still need acceptance.
+The typed DDL remains experimental. No serving role or default MongoDB behavior
+changes, and no upstream push was made.
+
+**Workstream boundary:** the other session owns MIG-RUNNER, minimum settings/
+subject-policy APIs and the provider-neutral secrets contract/Vault-facing
+adapter, retaining the built-in option. This slice does not modify those files
+or claim Vault cost/efficiency/production readiness. Human identity,
+evaluator/events and next-generation execution remain separate. The next
+storage slice is entries upsert/resend/batch outcomes with constraint-specific
+retry, coordinated with the reviewed schema/catalogue owner.

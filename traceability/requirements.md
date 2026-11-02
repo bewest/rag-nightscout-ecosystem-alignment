@@ -46,6 +46,15 @@ not silently weaken the query. These measured subset checks do not waive
 regex/projection/array-sort compatibility, bounded materialization, writes,
 current indexes or full backend-suite acceptance.
 
+The dormant write subset adds differential stored-result/count checks for
+scalar inserts/patches and deletes, overlapping typed identities, unchanged
+patches, rollback and own-tenant success for both tenants. Actual lock-wait
+acceptance uses distinct connections and verifies a same-field reversion as
+well as disjoint patches: compare with the locked document, not a stale
+statement snapshot. Three implementation mutations demonstrate the checks.
+This does not waive bulk/upsert/every-form outcomes, constraint-specific
+retry, source labels, validation or commit-event integration.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new
 protocol requirement IDs. A PG pass executes applicable storage tests on the

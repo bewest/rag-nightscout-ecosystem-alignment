@@ -12,6 +12,30 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Multitenancy Dormant Entries Writes (2026-11-02)
+
+Local upstream **`7bcfc8b0`** adds `insertOne`, `updateOne`, `deleteOne`,
+`updateMany` and `deleteMany` over the existing tenant-bound PG connection.
+Scalar patches preserve unrelated data and stored identity kinds; no-op counts,
+rollback and both-tenant own-write/isolation behavior match the measured subset
+of MongoCollection. No registered backend, migration or default behavior changes.
+
+**Validation:** **158 passing, no pending** across 11 focused files on
+PostgreSQL 16.15/MongoDB 8.0.34; includes 8 new real-database checks and 1 input
+refusal check. Actual two-backend lock contention covers disjoint patches and
+same-field restoration. Three implementation mutations fail; the corrected
+locked-version comparison passes. ESLint, 462-file tier classification and
+existing write-boundary check pass. Owned lab containers removed.
+
+**Remaining:** complete upsert/resend/batch/every-form outcomes,
+constraint-specific retry, events/source/validation integration and full M1.
+The parallel session owns MIG-RUNNER, settings/subject policy and secrets.
+See the [acceptance and reproduction record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-dormant-entries-writes-2026-11-02).
+
+**Source references:**
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:65-155`,
+`externals/work/crm-multitenant-20261102/tests/postgres-entries-write.test.js:155-263`.
+
 ## Multitenancy Entries Reads and Operator Migrations (2026-11-02)
 
 Two fresh-context implementation slices are persisted on the local upstream

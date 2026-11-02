@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 358 |
-| runnable gates | 413 |
+| runnable gates | 414 |
 | explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 782 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 783 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8387,7 +8387,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 4 run + 1 no-gate |
+| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 5 run + 1 no-gate |
 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
@@ -8474,7 +8474,9 @@ alarm-readiness items, and the seam branch refresh.
   - Four identity codec checks: ObjectId/string JSON round trips, exact string spellings/nonmutation and unsupported/corrupt refusals.
 - `[integration]` `cd externals/work/crm-multitenant-20261102 && test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" && NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000 --exit --require ./tests/hooks.js tests/postgres-filter.test.js tests/postgres-entries-read.test.js`
   - Dormant read subset: 4 refusal/parameterization unit checks plus 6 real PG/MongoDB differential checks for supported AST, typed ids, count, sort/paging, findOne/normalization and tenant isolation.
-- **NO GATE** &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 7d4f3872 remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, writes/events, remaining methods, cursor caps and full query parity remain. Unsupported shapes explicitly refuse. No PG availability flag or hosted role is enabled.
+- `[integration]` `cd externals/work/crm-multitenant-20261102 && test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" && NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000 --exit --require ./tests/hooks.js tests/postgres-entries-write.test.js`
+  - Dormant write subset: 1 refusal plus 8 real PG/MongoDB checks for scalar inserts/patches/deletes, typed identity selection, no-op counts, rollback, both-tenant writes and actual lock contention.
+- **NO GATE** &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 7bcfc8b0 remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, bulk/replace/every-form writes, events/source/validation integration, remaining methods, cursor caps and full query parity remain. Unsupported shapes explicitly refuse. No PG availability flag or hosted role is enabled.
 
 **Evidence.**
 
@@ -8482,7 +8484,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/postgres-foundation/README.md`
 - `tools/lab/postgres-foundation/results.json`
 
-**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim.
+**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim. Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods: 158 passing, no pending across 11 focused files, with 8 real differential write checks and 1 refusal check. Actual two-backend lock contention guards disjoint patches and same- field restoration. Identity-kind, no-op-count and stale-snapshot mutations fail; restored implementation passes. ESLint, 462-file tier classification and existing write-boundary check pass. No full write-intent/event integration or backend promotion. Parallel session owns MIG-RUNNER, settings/subject policy and secrets.
 
 ### `MT-CONFIG-MIN` &mdash; Reviewed initial tenant configuration and headless owner API contract
 

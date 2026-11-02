@@ -41,6 +41,15 @@ measured only for the supported subset. Regex/v1/projection/dotted-path and
 array-sort compatibility, bounded/cursor reads, remaining methods, writes/
 events, indexes/identifier retry and actual backend registration remain open.
 
+Local upstream `7bcfc8b0` subsequently adds a dormant five-method persistence
+write subset: scalar inserts/patches and deletes. Eight real PG/MongoDB checks
+and one refusal check pass within a 158-test regression. Actual lock contention
+exposed and now guards a stale-snapshot no-op bug; identity-kind and no-op-count
+mutations also fail. Full M1 still owes bulk/replace/every-form writes,
+constraint-specific retry/error mapping, source/validation/commit-event
+integration, reviewed DDL and bounded resource/query/backend acceptance.
+Migrations, settings/subject policy and secrets belong to the parallel session.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev `61eb3733`. The storage harness and scope are merged; the PostgreSQL adapter,

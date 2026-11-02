@@ -190,12 +190,23 @@ items:
           Dormant read subset: 4 refusal/parameterization unit checks plus
           6 real PG/MongoDB differential checks for supported AST, typed ids,
           count, sort/paging, findOne/normalization and tenant isolation.
+      - run: >-
+          cd externals/work/crm-multitenant-20261102 &&
+          test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" &&
+          NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000
+          --exit --require ./tests/hooks.js tests/postgres-entries-write.test.js
+        kind: integration
+        describe: >
+          Dormant write subset: 1 refusal plus 8 real PG/MongoDB checks for
+          scalar inserts/patches/deletes, typed identity selection, no-op
+          counts, rollback, both-tenant writes and actual lock contention.
       - no-gate: >
           Binding/pooler and narrow generated-DDL/typed-identity proofs are
-          measured, not full M1 acceptance. Local tip 7d4f3872 remains dormant.
+          measured, not full M1 acceptance. Local tip 7bcfc8b0 remains dormant.
           Current v3/history/partial-unique identifier indexes, migration/import,
-          writes/events, remaining methods, cursor caps and full query parity
-          remain. Unsupported shapes explicitly refuse. No PG availability
+          bulk/replace/every-form writes, events/source/validation integration,
+          remaining methods, cursor caps and full query parity remain.
+          Unsupported shapes explicitly refuse. No PG availability
           flag or hosted role is enabled.
     blocks_on: []
     evidence:
@@ -223,6 +234,14 @@ items:
       Regex/v1/projection/dotted paths/unsupported types/array-sort refuse;
       no cursor/batch cap. Six differential and four unit checks, ESLint/tier
       checks pass. No registration/writes/events or full M1 claim.
+      Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods:
+      158 passing, no pending across 11 focused files, with 8 real differential
+      write checks and 1 refusal check. Actual two-backend lock contention
+      guards disjoint patches and same-field restoration. Identity-kind,
+      no-op-count and stale-snapshot mutations fail; restored implementation
+      passes. ESLint, 462-file tier classification and existing write-boundary
+      check pass. No full write-intent/event integration or backend promotion.
+      Parallel session owns MIG-RUNNER, settings/subject policy and secrets.
 
   - id: MT-CONFIG-MIN
     title: "Reviewed initial tenant configuration and headless owner API contract"

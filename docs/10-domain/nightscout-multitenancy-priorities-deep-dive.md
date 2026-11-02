@@ -49,6 +49,19 @@ Writes/events/current indexes and backend registration remain absent. The
 [bounded acceptance and reproduction record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-readfilter-subset-2026-11-02)
 distinguishes this measured slice from full client/API compatibility.
 
+**Write continuation:** local upstream `7bcfc8b0` adds dormant inserts, scalar
+patches and deletes through five persistence methods. Eight real PG/MongoDB
+checks plus one refusal check cover stored results/counts, typed identities,
+rollback, both tenants and actual two-connection lock contention. The combined
+regression is **158 passing, no pending**; existing v3 write-intent tests in
+that run remain regression evidence, not PG write-intent integration. A
+stale-snapshot no-op comparison was corrected and three actual mutations fail.
+Bulk/replace/every-form writes, constraint-specific retries and commit-event
+integration remain; no backend is enabled. See the
+[write acceptance record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-dormant-entries-writes-2026-11-02).
+The other session owns migrations, settings/subject policy and provider-neutral
+secrets/Vault-facing work; this slice leaves those files unchanged.
+
 ## 1. Bottom line
 
 The next useful delivery is **an entries-first PostgreSQL RLS slice on current
