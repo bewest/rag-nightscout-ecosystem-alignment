@@ -14,6 +14,10 @@
 # The build report lists dated pages whose names suggest a living document
 # (plans, registers, proposals, ...) as candidates for this file.
 overrides:
+  - path: docs/10-domain/tenant-cell-sqlite-deep-dive.md
+    kind: record
+    as_of: "2026-11-02"
+    reason: "Dated synthetic experiment and comparative decision report, not production backend acceptance."
   # ---- Living: dated file names, but kept current (evidence 2026-09-30) ----
   - path: docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     kind: living

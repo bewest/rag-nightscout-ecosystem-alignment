@@ -25,6 +25,30 @@ whole-seam refresh a prerequisite. Celld was evaluated, not adopted, and is now
 out of scope. Reuse the existing work identifiers; no duplicate protocol GAP IDs
 or new v16 blockers are added.
 
+## Tenant-cell SQLite experiment follow-up (2026-11-02)
+
+The [separate SQLite feasibility track](../docs/10-domain/tenant-cell-sqlite-deep-dive.md)
+demonstrates local tenant-owned storage on celld, not a supported third NS
+backend. Twelve local checks and a broken-routing control pass; no actual NS
+adapter, fleet/bucket experiment or matched MongoDB/PG comparison ran.
+The remaining gaps are runtime/adapter integration, full storage semantics,
+host-loss/fencing/recovery, plugin/socket isolation, schema/restore lifecycle
+and measured economics. Receipts also need bounded retention before production.
+
+These checks do not close existing ST-PG/TEN-LAB acceptance, alter a delivery
+roadmap or introduce duplicate protocol GAP IDs. An SQL diagnostic initially
+failed because the runtime forbids `sqlite_version()`; the final lab uses
+`sql.databaseSize`, without claiming the embedded SQLite version was measured.
+
+The comparative report now separates database-per-tenant MongoDB from shared
+MongoDB, shared PG/RLS and cell/SQLite. Historical PG adapter/pooler evidence and
+the November PG transaction-foundation record do not supply a current matched
+benchmark. Open decision gaps include the storage-only versus whole-runtime
+boundary, durable evaluator delivery, per-cell schema/restore tools, privileged
+fleet blast radius and the ongoing three-backend contract-test burden.
+Four diagrams explain those boundaries; they are not experiment acceptance or
+an amendment of the adopted PG delivery stream.
+
 ## Release-readiness follow-up (2026-11-02)
 
 The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)

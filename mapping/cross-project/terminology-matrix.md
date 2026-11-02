@@ -18,6 +18,26 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 See the [multitenancy priorities assessment](../../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 for current-dev evidence, independent workstreams and the limits of Celld's beta claims.
 
+## Tenant-cell SQLite experiment terminology (2026-11-02)
+
+| Alignment Term | Celld / experimental NS meaning | Boundary |
+|----------------|--------------------------------|----------|
+| Tenant cell | Tenant-addressed Durable Object with its own SQLite database | Not a dedicated VM or an authorization system. |
+| Record authority | SQLite owns the tenant records in this experimental arm | No PG/MongoDB mirror or cross-store commit. |
+| Operation receipt | Response and request fingerprint committed with the mutation | Exact lab retry, not exactly-once external notifications. |
+| Local restart persistence | Same-host developer state survives SIGTERM/SIGKILL | Not fleet replication, disk-loss recovery or RPO=0 evidence. |
+| Third backend candidate | SQLite alongside existing MongoDB and planned PostgreSQL | The lab is not an available NS storage backend. |
+| Storage layout / engine | Per-tenant databases or shared collections/tables / MongoDB, PostgreSQL or SQLite | WiredTiger's measured per-database overhead is not a SQLite measurement or a cost of every MongoDB layout. |
+| Tenant binding / row predicate | Choose the authorized database/cell or bind a PG transaction / constrain rows | Separate cell databases and PG/RLS both still require the correct trusted tenant binding. |
+| Local commit / durability proof | SQLite transaction completion / runtime acknowledgment condition | Same-disk restart does not validate remote bucket/follower recovery. |
+| Storage-only / whole-runtime cell | Adapter reaches cell records / plugins and realtime also move into cells | Different porting and operational costs; neither integration ran in the storage lab. |
+| Matched comparison | Same workload, behavior, retention and failure target across actual adapters | Separate historical timings are not a head-to-head speed or cost ranking. |
+
+See the [tenant-cell SQLite experiment](../../docs/10-domain/tenant-cell-sqlite-deep-dive.md)
+for executable controls, four visualizations, the comparative evidence ledger
+and architecture/decision gates. These terms describe a separate feasibility
+track, not a change to the hosted delivery roadmap.
+
 ## Release-readiness terminology (2026-11-02)
 
 | Alignment Term | Nightscout | Interoperability Meaning |

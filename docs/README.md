@@ -12,6 +12,7 @@ This directory contains analysis, research, and decisions extracted from the Nig
 | asking "what is blocked on me" | [`00-overview/NEEDS-A-HUMAN.md`](00-overview/NEEDS-A-HUMAN.md) |
 | picking up one pull request | [`../reports/reviewer-packets/`](../reports/reviewer-packets/) |
 | looking for item state | [`../queue/QUEUE.md`](../queue/QUEUE.md) (generated; the source is `queue/work-queue.yaml`) |
+| comparing tenant storage architectures | [Cell/SQLite, PostgreSQL and MongoDB decision guide](10-domain/tenant-cell-sqlite-deep-dive.md) (experimental evidence, diagrams and promotion gates) |
 
 ## The programme axis, added 2026-09-16
 

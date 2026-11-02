@@ -1,0 +1,10 @@
+{
+  "name": "ns-tenant-sqlite-lab",
+  "main": "worker.mjs",
+  "no_bundle": true,
+  "compatibility_date": "2026-01-01",
+  "durable_objects": {
+    "bindings": [{ "name": "TENANTS", "class_name": "TenantCell" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TenantCell"] }]
+}

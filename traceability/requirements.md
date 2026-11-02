@@ -27,6 +27,30 @@ authorization, runtime wake from delivered alarm, and durable cell state from
 atomic PG-to-actor delivery; retries must expose duplicate effects. These are
 proposed experiment checks, not newly adopted architecture or v16 prerequisites.
 
+## Tenant-cell SQLite experiment verification (2026-11-02)
+
+The [local experiment](../docs/10-domain/tenant-cell-sqlite-deep-dive.md)
+records twelve passing checks on real celld v0.6.3 and a deliberately shared-cell
+control that fails by exposing the other tenant's value. Overlapping record
+identities and receipt IDs, refusing wrong/missing tenant principals on reads
+and mutations, atomic rollback, retry receipts, JSON predicates, paging,
+tombstones and same-disk restarts are bounded experiment checks.
+
+This adds no new protocol REQ IDs or v16 gate. Promotion to a third storage
+backend requires the actual NS harness and write/read contract, not this lab's
+bespoke protocol. Qualified-bucket fleet recovery, production tenant binding,
+evaluator/realtime behavior, migration/backup/restore and a matched cost
+comparison remain unverified. Local persistence is not fleet durability.
+
+The expanded decision guide requires the next comparison to hold workload,
+retention, API behavior and acknowledged-write failure target constant. Report
+per-admitted and per-active tenant cost separately, including recovery headroom,
+bucket/replication traffic and operational effort. A third adapter must exercise
+applicable NS contracts and expose unsupported operations without weakening
+existing standalone MongoDB behavior. Storage isolation does not authenticate
+the chosen tenant, and mutation receipts do not certify downstream notification
+delivery. These are proposed promotion checks, not newly adopted protocol IDs.
+
 ## Release-readiness verification (2026-11-02)
 
 The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)
