@@ -14,6 +14,16 @@ feasibility work. Human identity and next-generation execution have separate
 gates. The Celld section remains evidence of the evaluated alternative, not
 scheduled work.
 
+**Measured continuation:** the [roadmap's execution follow-up](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02)
+now records 9 current-connection PgBouncer/DDL checks and 4 typed-identity
+checks. The historical JSON key collapses ObjectId/string copies; the opt-in
+typed-key candidate and dormant codec preserve both. This does not certify
+the entries adapter, migration runner or hosted operation. Source identity
+rules are at
+`externals/work/crm-multitenant-20261102/lib/server/object-id-forms.js:82-106`;
+the new codec is at
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-identity.js:13-38`.
+
 ## 1. Bottom line
 
 The next useful delivery is **an entries-first PostgreSQL RLS slice on current

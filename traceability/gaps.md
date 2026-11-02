@@ -12,6 +12,15 @@ supports the existing secrets decision; a cryptographic API is not the complete
 tenant secret store. Human identity and durable runtime/next-gen execution are
 separate workstreams, not prerequisites to a synthetic storage proof.
 
+**Measured continuation:** current-connection PgBouncer/DDL isolation now has
+9 passing checks and actual RLS/binding/privileged-role controls. M1 preflight
+exposes a historical-DDL identity gap: ObjectId/string twins collapse under
+ordinary JSON encoding. Local upstream `6b1bf889` and the opt-in generated
+typed-key candidate pass 4 narrow identity checks; the complete adapter,
+current v3/partial-unique indexes, import fidelity and migration runner remain
+open. See the roadmap and `tools/lab/postgres-foundation/results.json`.
+No new protocol GAP IDs or hosted acceptance are claimed.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev `61eb3733`. The storage harness and scope are merged; the PostgreSQL adapter,

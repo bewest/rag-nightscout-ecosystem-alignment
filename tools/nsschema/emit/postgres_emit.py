@@ -281,7 +281,7 @@ def _index_expression(table, path, direction):
     return f"""({JSONB_COLUMN} #>> '{_path_literal(path)}') {direction}"""
 
 
-def emit(model, rls=True):
+def emit(model, rls=True, identity_kinds=False):
     collection = model["collection"]
     table = build(model)
     if IDENTIFIER_FIELD not in table["columns"]:
@@ -298,6 +298,8 @@ def emit(model, rls=True):
         "  tenant_id  uuid   NOT NULL,",
         f"  {JSONB_COLUMN}        jsonb  NOT NULL,",
     ]
+    if identity_kinds:
+        lines.append("  id_kind text NOT NULL CHECK (id_kind IN ('objectid', 'string')),")
     width = max([len(p) + 2 for p in table["columns"]] + [10])
     for path in table["columns"]:
         spec = table["columns"][path]
@@ -309,7 +311,11 @@ def emit(model, rls=True):
     lines.append("  -- Scoped to the tenant rather than global: two tenants restored from")
     lines.append("  -- different deployments can legitimately carry the same _id, and a")
     lines.append("  -- global unique constraint would make one of them unimportable.")
-    lines.append(f'  PRIMARY KEY (tenant_id, "{IDENTIFIER_FIELD}")')
+    if identity_kinds:
+        lines.append('  CHECK ("_id" <> \'\'),')
+        lines.append('  CHECK (id_kind <> \'objectid\' OR "_id" ~ \'^[0-9a-f]{24}$\'),')
+    key = f'id_kind, "{IDENTIFIER_FIELD}"' if identity_kinds else f'"{IDENTIFIER_FIELD}"'
+    lines.append(f"  PRIMARY KEY (tenant_id, {key})")
     lines.append(");")
     lines.append("")
 
@@ -362,6 +368,14 @@ def emit(model, rls=True):
 -- Indexed fields with no column, and why:
 {flagged}
 """
+    if identity_kinds:
+        header = header.replace(
+            "-- Regenerate with: make schema-emit",
+            "-- Regenerate with: python -m tools.nsschema.emit.postgres_emit "
+            "--identity-kinds --collection " + collection + " --out <output-directory>\n"
+            "-- Experimental identity codec required: id_kind is storage metadata, "
+            "never a client field.\n"
+            "-- No migration/import or complete adapter acceptance is implied.")
     return header + "\n" + "\n".join(lines) + "\n"
 
 
@@ -429,6 +443,8 @@ def main(argv=None):
     ap.add_argument("--collection", action="append", dest="collections")
     ap.add_argument("--no-rls", dest="rls", action="store_false",
                     help="omit the policy block (the tables alone are not isolated)")
+    ap.add_argument("--identity-kinds", action="store_true",
+                    help="experimental typed _id key preserving ObjectId/string twins; requires identity codec")
     ap.add_argument("--report", action="store_true",
                     help="reconcile the emitted index set against {M} §6.7 and list "
                          "the type divergences that are flagged rather than resolved")
@@ -448,7 +464,7 @@ def main(argv=None):
         table = build(model)
         tables[collection] = table
         dest = out_dir / f"{collection}.sql"
-        dest.write_text(emit(model, rls=args.rls))
+        dest.write_text(emit(model, rls=args.rls, identity_kinds=args.identity_kinds))
         print(f"{collection}: {len(table['columns'])} generated columns, "
               f"{len(table['indexes'])} indexes, {len(table['flagged'])} flagged "
               f"-> {dest.relative_to(root)}")
@@ -463,6 +479,7 @@ def main(argv=None):
         "tenantSetting": TENANT_SETTING,
         "collections": {
             name: {
+                **({"identityKinds": ["objectid", "string"]} if args.identity_kinds else {}),
                 "columns": sorted(t["columns"]),
                 # The JSON type each column holds, which is what toSql needs to
                 # decide whether a column may be USED for a given comparison. A

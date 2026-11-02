@@ -14,6 +14,9 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Headless owner API / owner UI | Nightscout validates and authorizes tenant-owner operations | A vendor UI may call the supported contract; a first-party hosted UI is deferred, not a prerequisite. |
 | Transit cryptography / secret storage | The secrets component authorizes tenant-bound operations and references | Vault Transit encrypts/signs without storing submitted application payloads; a ciphertext/reference store is still needed. |
 | Root credential / human identity | Per-tenant legacy root and subject tokens support the initial lab | Root possession is not verified human identity, consent or delegated authority. |
+| Client id spelling / stored id kind | ObjectId and a same-spelling string can be distinct stored records under current Nightscout matching rules | The PG candidate keeps `id_kind` outside the document; JSON serialization alone loses that distinction. |
+| Schema compatibility check / migration authority | Hosted serving roles inspect schema compatibility; an explicit operator command applies migrations | Passing a startup check does not authorize an API/evaluator role to modify schema. |
+| Owner subject policy / operator floor | Owner-managed subject grants and bounded token lifetimes are in the initial contract scope | Owners cannot weaken required authentication, tenant isolation or operator access. |
 
 See the [multitenancy priorities assessment](../../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 for current-dev evidence, independent workstreams and the limits of Celld's beta claims.

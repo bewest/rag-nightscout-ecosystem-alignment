@@ -1,0 +1,92 @@
+{
+  "experiment": "M0 current-dev connection / generated entries DDL / PgBouncer",
+  "pgVersion": "16.15",
+  "poolVersion": "PgBouncer 1.25.2\nlibevent 2.1.12-stable\nadns: evdns2\ntls: OpenSSL 3.5.6 7 Apr 2026",
+  "images": {
+    "postgres": "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "pgbouncer": "edoburu/pgbouncer@sha256:4c1ca296ef525f108f5d3552cc337c0c09587cf8dae7f0067fd93349e47dc1cd"
+  },
+  "ddlSha256": "c5c3d1bc4394e7a4f90eb7025450e6b3261323855123bad0c1f3b010229816b1",
+  "connectionSha256": "ae3ee71c6b2a557d4301cf710ed69370d14d046bec2e146bb73f6fe40cdd1a3c",
+  "typedDDLSha256": "0460c76bed932b35472595745491fb61ae918cc6ff4b403b51ba0cc9cffa6a69",
+  "identitySha256": "bbed55dc0da348f99ff1c23623493dbebfaa2ab6b1d783c05ff0d45e0621438c",
+  "poolConfiguration": {
+    "default_pool_size": "1",
+    "pool_mode": "transaction",
+    "server_reset_query_always": "0"
+  },
+  "distinctBackends": 1,
+  "checks": [
+    {
+      "name": "generated entries DDL applies; overlapping tenant identities remain independent",
+      "passed": true
+    },
+    {
+      "name": "two independent clients reuse one transaction-pooled backend without tenant leakage",
+      "passed": true
+    },
+    {
+      "name": "unbound readers fail closed and cross-tenant writes/TRUNCATE are refused",
+      "passed": true
+    },
+    {
+      "name": "rollback and caught SQL failures leave no committed write or retained binding",
+      "passed": true
+    },
+    {
+      "name": "updates and deletes affect only the bound tenant through the pooler",
+      "passed": true
+    },
+    {
+      "name": "generated columns preserve dirty documents and distinguish missing from explicit null",
+      "passed": true
+    },
+    {
+      "name": "red control: removing RLS exposes both tenants through the same pooler",
+      "passed": true
+    },
+    {
+      "name": "red control: BYPASSRLS application role is rejected through the pooler",
+      "passed": true
+    },
+    {
+      "name": "red control: actual session-binding mutation leaks to another pooled client",
+      "passed": true
+    }
+  ],
+  "adapterBlockers": [
+    {
+      "property": "ObjectId and same-spelling string _id remain distinguishable",
+      "satisfied": false,
+      "evidence": "Current idForms returns both; node-postgres JSON serialization collapses them to one key (23505); raw Extended JSON instead fails generated _id NOT NULL (23502)"
+    },
+    {
+      "property": "Current v3 history/validity and identifier-index requirements reconciled",
+      "satisfied": false,
+      "evidence": "Historical generated DDL has no srvModified/isValid indexes or tenant-scoped partial unique identifier index"
+    }
+  ],
+  "identityChecks": [
+    {
+      "name": "typed generated DDL and actual codec preserve both id forms per tenant",
+      "passed": true
+    },
+    {
+      "name": "kind-scoped delete preserves the string twin and every other tenant record",
+      "passed": true
+    },
+    {
+      "name": "typed DDL refuses absent/invalid kinds and malformed ObjectId encodings",
+      "passed": true
+    },
+    {
+      "name": "red control: flattening the actual codec kind collapses otherwise distinct keys",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Generated historical v1 entries indexes only; current v3 and identifier-index requirements still need migrations",
+    "Typed identity proof is not general BSON-value preservation or current filter/sort/write-contract acceptance",
+    "Not a migration-runner, complete entries adapter, HTTP, performance, HA or hosted acceptance proof"
+  ]
+}

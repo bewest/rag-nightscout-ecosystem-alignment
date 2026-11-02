@@ -12,6 +12,17 @@ UI. Initial configuration is a reviewed subset; unsupported settings and
 inactive alarm/integration features refuse explicitly. Synthetic token/root
 principals must not be audited as verified humans. Celld is out of scope.
 
+Continuation acceptance explicitly preserves ObjectId versus same-spelling
+string identities from the first PG adapter slice, including current
+lookup/deletion preference; JSON equality is insufficient. The opt-in typed
+key/codec proof is narrow, not general BSON/import fidelity. Owner-editable
+authorization includes tenant-local grants and bounded token lifetimes, never
+weaker authentication/isolation floors. Hosted migration execution is an
+explicit operator command; serving roles only check compatibility. The
+pooler lab verifies the actual binding through one shared transaction-pooled
+backend, including an actual session-binding mutation, not separate-server
+clients. These refine existing acceptance and add no duplicate REQ IDs.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new
 protocol requirement IDs. A PG pass executes applicable storage tests on the

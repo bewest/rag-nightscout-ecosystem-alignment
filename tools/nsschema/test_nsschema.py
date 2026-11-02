@@ -14,6 +14,18 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from nsschema import census, corpus, diff, redact, specload, tiers  # noqa: E402
+from nsschema.emit import postgres_emit  # noqa: E402
+
+
+def test_postgres_typed_identity_is_explicit_and_does_not_change_default_ddl():
+    model_path = Path(__file__).resolve().parents[2] / "specs/nsschema/entries.model.json"
+    model = json.loads(model_path.read_text())
+    historical = (model_path.parents[1] / "generated/postgres/entries.sql").read_text()
+    assert postgres_emit.emit(model) == historical
+    typed = postgres_emit.emit(model, identity_kinds=True)
+    assert "PRIMARY KEY (tenant_id, id_kind, \"_id\")" in typed
+    assert "CHECK (id_kind IN ('objectid', 'string'))" in typed
+    assert "FORCE ROW LEVEL SECURITY" in typed
 
 
 # ── redaction ───────────────────────────────────────────────────────────

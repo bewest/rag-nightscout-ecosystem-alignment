@@ -164,15 +164,32 @@ items:
           M0 transaction foundation only: 9 real PostgreSQL checks including
           overlapping tenant identities, denied inserts/updates/TRUNCATE,
           rollback, released-scope refusal, pooled binding cleanup and breaks.
+      - run: node tools/lab/postgres-foundation/harness.js
+        kind: integration
+        describe: >
+          Owned disposable Docker lab: current connection plus historical emitted
+          DDL through one transaction-pooled PgBouncer backend (9 checks), plus
+          opt-in typed-key candidate and actual codec (4 checks). Includes actual
+          binding/kind mutations; unsatisfied M1 properties stay explicit.
+      - run: >-
+          NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js
+          --fail-zero --exit
+          externals/work/crm-multitenant-20261102/tests/postgres-identity.test.js
+        kind: unit
+        describe: >
+          Four identity codec checks: ObjectId/string JSON round trips,
+          exact string spellings/nonmutation and unsupported/corrupt refusals.
       - no-gate: >
-          M0 binding/RLS proof is local at 27f085c9 plus ce14d637. PgBouncer revalidation and
-          generated production DDL/migration acceptance remain. M1 still needs
-          the real entries adapter and applicable backend/read/write/identity
-          suites executing, not pending. No PG availability flag or hosted role
-          is enabled by a foundation proof.
+          Binding/pooler and narrow generated-DDL/typed-identity proofs are
+          measured, not full M1 acceptance. Local tip 6b1bf889 remains dormant.
+          Current v3/history/partial-unique identifier indexes, migration/import,
+          actual collection methods and applicable filter/read/write/identity
+          suites remain. No PG availability flag or hosted role is enabled.
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+      - tools/lab/postgres-foundation/README.md
+      - tools/lab/postgres-foundation/results.json
     notes: >
       Maintainer 2026-11-02: storage first, one integration branch, no upstream
       push. ST-HARNESS is already merged as #8881; the September seam is
@@ -183,6 +200,11 @@ items:
       with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing
       the actual set_config call to session-scoped made the pooled-cleanup
       test fail; restored transaction-local version passes. No upstream push.
+      Continuation at 6b1bf889: preserve ObjectId/string kinds from the first
+      slice (maintainer); 65 focused upstream checks and ESLint/tier check pass.
+      Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks,
+      with a single measured backend and controls. Emitter's typed-key option
+      is experimental; default generated DDL unchanged. Complete adapter open.
 
   - id: MT-CONFIG-MIN
     title: "Reviewed initial tenant configuration and headless owner API contract"
@@ -212,6 +234,10 @@ items:
       Maintainer 2026-11-02: retain D22 with a small reviewed catalogue.
       Unsupported names explicitly refuse; alarms and integrations remain
       unavailable until consuming runtimes pass. Operator-only lifecycle.
+      Continuation decision: authorization policy is included in the initial
+      slice, covering tenant-local subject grants and bounded token lifetimes.
+      Required authentication, tenant isolation and operator access stay pinned.
+      Exact permissions, limits, concurrency and invalidation cases remain.
 
   - id: MT-SECRETS-CONTRACT
     title: "Tenant-bound secrets contract and early Vault Transit integration proof"
@@ -253,6 +279,9 @@ items:
       next design output is the tenant/consumer-authorized Vault adapter and
       ciphertext/JWT-version/audit contract, not building a local signer first
       by assumption. Measured HMAC response is versioned base64, not hex.
+      Continuation recommendation in response to maintainer: Vault-facing
+      adapter next behind the provider-neutral contract; built-in remains an
+      option. No comparative efficiency or production readiness claim.
 
   - id: TEN-RESOLVE
     title: "Current-dev tenant resolution and private operator lifecycle"
@@ -6350,7 +6379,8 @@ items:
     blast_radius: >
       A new `migrate` subcommand of bin/nightscout.js (D21), lib/storage
       migration adapters, a ledger per store; single sites migrate at boot
-      under the lock; serving roles refuse a stale schema.
+      under the lock as separately planned; hosted migrations run by explicit
+      operator command only, and serving roles only check compatibility.
     review: maintainer, plus a second human - it changes boot
     operator_visible: >
       Database changes would be applied by a recorded, locked step, either
@@ -6361,6 +6391,8 @@ items:
       - no-gate: >
           Written with the build: the lab's restart, concurrency and drift
           rows run against the shipping runner, each with its control.
+          Hosted serving roles must not execute migrations; explicit operator
+          execution and stale/incompatible-schema refusal are separate checks.
     blocks_on: [MIG-VV]
     evidence:
       - docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md
@@ -6370,6 +6402,10 @@ items:
       transaction rule (transactional: true migrations use a transaction
       where the server supports one; every MongoDB step stays safe to
       re-run). Buildable now that MIG-VV is done.
+
+      Maintainer continuation 2026-11-02: explicit operator migration command
+      for hosted deployments; serving roles check compatibility only. This
+      does not introduce or change default single-site boot behavior in v16.
 
       Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 

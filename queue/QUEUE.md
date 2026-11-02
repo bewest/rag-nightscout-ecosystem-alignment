@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 358 |
-| runnable gates | 409 |
+| runnable gates | 411 |
 | explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 778 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 780 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8387,7 +8387,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 1 run + 1 no-gate |
+| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 3 run + 1 no-gate |
 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
@@ -8468,13 +8468,19 @@ alarm-readiness items, and the seam branch refresh.
 
 - `[integration]` `test -n "$NS_TEST_POSTGRES_ADMIN_URI" && NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js --fail-zero --timeout 15000 --exit externals/work/crm-multitenant-20261102/tests/postgres-connection.test.js`
   - M0 transaction foundation only: 9 real PostgreSQL checks including overlapping tenant identities, denied inserts/updates/TRUNCATE, rollback, released-scope refusal, pooled binding cleanup and breaks.
-- **NO GATE** &mdash; M0 binding/RLS proof is local at 27f085c9 plus ce14d637. PgBouncer revalidation and generated production DDL/migration acceptance remain. M1 still needs the real entries adapter and applicable backend/read/write/identity suites executing, not pending. No PG availability flag or hosted role is enabled by a foundation proof.
+- `[integration]` `node tools/lab/postgres-foundation/harness.js`
+  - Owned disposable Docker lab: current connection plus historical emitted DDL through one transaction-pooled PgBouncer backend (9 checks), plus opt-in typed-key candidate and actual codec (4 checks). Includes actual binding/kind mutations; unsatisfied M1 properties stay explicit.
+- `[unit]` `NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js --fail-zero --exit externals/work/crm-multitenant-20261102/tests/postgres-identity.test.js`
+  - Four identity codec checks: ObjectId/string JSON round trips, exact string spellings/nonmutation and unsupported/corrupt refusals.
+- **NO GATE** &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 6b1bf889 remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, actual collection methods and applicable filter/read/write/identity suites remain. No PG availability flag or hosted role is enabled.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `tools/lab/postgres-foundation/README.md`
+- `tools/lab/postgres-foundation/results.json`
 
-**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push.
+**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open.
 
 ### `MT-CONFIG-MIN` &mdash; Reviewed initial tenant configuration and headless owner API contract
 
@@ -8502,7 +8508,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle.
+**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain.
 
 ### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
 
@@ -8534,7 +8540,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/vault-transit/README.md`
 - `tools/lab/vault-transit/results.json`
 
-**Notes.** Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex.
+**Notes.** Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex. Continuation recommendation in response to maintainer: Vault-facing adapter next behind the provider-neutral contract; built-in remains an option. No comparative efficiency or production readiness claim.
 
 ### `TEN-RESOLVE` &mdash; Current-dev tenant resolution and private operator lifecycle
 
@@ -8831,7 +8837,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer, plus a second human - it changes boot |
 | blocks on | `MIG-VV` |
 
-**Blast radius.** A new `migrate` subcommand of bin/nightscout.js (D21), lib/storage migration adapters, a ledger per store; single sites migrate at boot under the lock; serving roles refuse a stale schema.
+**Blast radius.** A new `migrate` subcommand of bin/nightscout.js (D21), lib/storage migration adapters, a ledger per store; single sites migrate at boot under the lock as separately planned; hosted migrations run by explicit operator command only, and serving roles only check compatibility.
 
 **What an operator sees.** Database changes would be applied by a recorded, locked step, either at start-up (self-hosted) or by a command the hoster runs.
 
@@ -8839,14 +8845,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Written with the build: the lab's restart, concurrency and drift rows run against the shipping runner, each with its control.
+- **NO GATE** &mdash; Written with the build: the lab's restart, concurrency and drift rows run against the shipping runner, each with its control. Hosted serving roles must not execute migrations; explicit operator execution and stale/incompatible-schema refusal are separate checks.
 
 **Evidence.**
 
 - `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
+**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 
 ### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
 

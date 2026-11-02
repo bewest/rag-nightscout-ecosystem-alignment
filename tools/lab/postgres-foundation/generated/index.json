@@ -1,0 +1,52 @@
+{
+ "collections": {
+  "entries": {
+   "columnTypes": {
+    "_id": "string",
+    "created_at": "string",
+    "date": "number",
+    "dateString": "string",
+    "identifier": "string",
+    "mbg": "number",
+    "sgv": "number",
+    "sysTime": "string",
+    "type": "string"
+   },
+   "columns": [
+    "_id",
+    "created_at",
+    "date",
+    "dateString",
+    "identifier",
+    "mbg",
+    "sgv",
+    "sysTime",
+    "type"
+   ],
+   "datelike": [
+    "created_at",
+    "dateString",
+    "sysTime"
+   ],
+   "flagged": [],
+   "identityKinds": [
+    "objectid",
+    "string"
+   ],
+   "indexes": [
+    "entries_tenant_date",
+    "entries_tenant_type",
+    "entries_tenant_sgv",
+    "entries_tenant_mbg",
+    "entries_tenant_systime",
+    "entries_tenant_datestring",
+    "entries_tenant_identifier",
+    "entries_tenant_type_date_datestring",
+    "entries_tenant_date_identifier_created_at"
+   ]
+  }
+ },
+ "generated_by": "tools/nsschema/emit/postgres_emit.py",
+ "jsonbColumn": "doc",
+ "tenantSetting": "app.current_tenant_id"
+}

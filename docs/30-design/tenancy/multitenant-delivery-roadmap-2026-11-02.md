@@ -50,6 +50,13 @@ never settings. Re-census current dev before claiming full catalogue coverage.
 Detailed names, API paths and optimistic-concurrency/error shapes are design
 outputs of MT-CONFIG-MIN, not silently chosen here.
 
+**Continuation decisions (November 2):** include owner-editable authorization
+policy in the first slice: tenant-local subject grants and bounded token
+lifetimes, under the code/operator floors. Mandatory authentication, tenant
+isolation and operator access cannot be weakened by an owner. Exact permission
+names, lifetime limits, revocation/invalidation and API cases remain contract
+outputs, not implemented settings.
+
 Preserve hashed `api-secret` headers, subject tokens and socket secret forms
 using **each tenant's** root credential. Resolve and authorize the tenant before
 credential verification; per-tenant JWT signing keys remain per-tenant. There
@@ -114,6 +121,10 @@ MIG-RUNNER can begin now; MIG-VV is already done. Build the runner against
 both stores with lock/ledger/drift/restart semantics from the measured lab.
 Hosted roles refuse stale schemas. Do not add a new default single-site boot
 migration behavior to the v16 candidate without its own placement/review.
+
+The maintainer selects **explicit operator-run hosted migrations**; serving
+roles check schema compatibility but do not migrate it. This does not revise
+the separately planned single-site boot behavior or change today's boot.
 
 Interprocess event delivery is a named design task: D-EVENT's in-process
 `storage-intent-committed` is not a durable bus. Reconcile D6's PG feed design
@@ -216,3 +227,68 @@ MT-IDENTITY-PLAN names the separate human-identity design work. The initial
 configuration slice still owes its exact setting names, paths, preconditions
 and executable API cases; documenting the journey is not claiming that API
 already exists.
+
+### Continuation: pooler proof and typed identity primitive (2026-11-02)
+
+The reproducible [pooler/DDL lab](../../../tools/lab/postgres-foundation/README.md)
+and [sanitized results](../../../tools/lab/postgres-foundation/results.json)
+exercise the actual connection module, not the September adapter. PostgreSQL
+**16.15**, PgBouncer **1.25.2**, transaction pooling with one backend and no
+per-transaction reset: **9 foundation checks pass**. Two independent clients
+execute 24 interleaved tenant transactions on a measured single server PID.
+Reads/writes, rollback, binding cleanup, unbound readers and dirty/null/missing
+generated-column values pass. Disabling RLS, granting BYPASSRLS and mutating the
+actual connection module to session-local binding demonstrate the failures.
+The historical emitted entries DDL applies unchanged.
+
+**A discovered M1 blocker, not a passing adapter test:** the current
+`externals/work/crm-multitenant-20261102/lib/server/object-id-forms.js:82-106`
+returns both an ObjectId and the same-spelling string. Ordinary JSON
+serialization collapses them, so the historical `(tenant_id, _id)` DDL rejects
+the second stored form with `23505`; raw Extended JSON instead fails its
+generated string key with `23502`. The maintainer explicitly requires preserving
+the distinction from the first adapter slice, not deferring it to import.
+
+**Local upstream commit `6b1bf889a275b52bd119d122553bceb717e06ca9`**
+adds the dormant identity codec:
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-identity.js:13-38`.
+It keeps kind metadata outside the JSON document and reconstructs the original
+ObjectId/string; unsupported/corrupt identities refuse rather than coerce.
+The existing emitter now offers **opt-in** `--identity-kinds`
+(`tools/nsschema/emit/postgres_emit.py:284-318`), producing the lab candidate
+key `(tenant_id, id_kind, _id)` and kind/encoding constraints. The normal
+generated production-shaped files are unchanged. This is a migration candidate,
+not a boot-time schema modification.
+
+**4 real-PG identity checks pass** using that generated candidate and actual
+codec: both forms in both tenants, case/custom-string preservation, kind-scoped
+deletion and constraint refusals. Flattening the actual codec's kind recreates
+the collision; the restored codec stores both. **65 focused upstream checks**
+pass across six files with disposable PG/MongoDB, plus ESLint and test-tier
+classification. Both new PG files are now in their appropriate test tiers.
+The schema pipeline has **291 passing tests**, including unchanged default DDL.
+One attempted regression run omitted the required MongoDB environment; the
+corrected isolated PG/MongoDB run is the reported green result.
+
+**Still open:** this is not the entries collection adapter, arbitrary BSON
+import fidelity, filter/sort parity, durable events or migration-runner
+acceptance. The historical DDL also lacks current v3 `srvModified`/`isValid`
+indexes and the tenant-scoped partial unique identifier index. Those unsatisfied
+properties stay visible in the report's `adapterBlockers`; the separate
+`identityChecks` prove only the typed candidate. No backend availability flag,
+hosted role or single-site behavior changes. No upstream push was made.
+
+**Next implementation, without another architecture vote:** integrate the
+typed identity into entries reads/writes and emitted migration plans. Preserve
+the current choice among identifier matches and ObjectId/string copies, not
+only their stored keys. Translate identifier-constraint collisions specifically
+and preserve retry outcomes without continuing an aborted PG transaction.
+Exercise the current filter/null/array/order/pagination, resend/delete/batch and
+source/event contracts before marking M1 accepted. Do not copy the old SQL
+compiler or registry availability flag as a shortcut.
+
+**Parallel:** build MIG-RUNNER with explicit hosted operator execution; complete
+the minimum settings/subject-policy API and provider-neutral secrets contract.
+The recommendation is the Vault-facing adapter next, retaining the built-in
+option—not a claim that Vault is cheaper, more efficient or production-ready.
+Human identity, evaluator/events and next-generation execution remain separate.

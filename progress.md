@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Multitenancy Pooler and Identity Continuation (2026-11-02)
+
+Completed the next bounded PG proofs and settled first-slice policy boundaries.
+No upstream push or hosted backend enablement.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Current-connection pooler/DDL lab | `tools/lab/postgres-foundation/{harness.js,results.json}` | 9 checks on PostgreSQL 16.15/PgBouncer 1.25.2; two clients share one backend across 24 interleaved tenant transactions; actual binding mutation leaks to an unbound client. |
+| Typed identity primitive | Local upstream `6b1bf889`; `tools/lab/postgres-foundation/generated/` | Historical JSON serialization collapses ObjectId/string copies; opt-in typed key plus actual codec pass 4 PG checks, including kind-flattening control. |
+| Decisions and remaining acceptance | `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md` | Owner grants/bounded token lifetimes included under pinned floors; explicit operator-run hosted migrations; recommend Vault-facing adapter next. |
+
+**Validation:** 65 focused upstream checks, ESLint and test-tier classification
+pass; 291 schema-pipeline tests pass. A first regression invocation omitted
+MongoDB configuration; the corrected run used owned disposable PG/MongoDB.
+Labs remove their own containers, networks and private credential files.
+
+**Remaining:** ST-PG/M1 is still in progress. Collection methods, filter/sort
+parity, source/events, current v3/identifier indexes, migration/import acceptance
+and hosted wiring are not supplied by an identity codec. The typed DDL is opt-in;
+normal generated files and single-site behavior remain unchanged.
+
+**Source references:**
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-identity.js:13-38`,
+`externals/work/crm-multitenant-20261102/tests/postgres-identity.test.js:9-50`,
+`tools/nsschema/emit/postgres_emit.py:284-318`,
+`tools/lab/postgres-foundation/harness.js:148-340`.
+
 ## Multitenancy Priorities and Celld Assessment (2026-11-02)
 
 **Subsequent maintainer decisions and execution:** Celld removed from scope.
