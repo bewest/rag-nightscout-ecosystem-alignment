@@ -2394,7 +2394,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>80248ecb9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2805,9 +2805,44 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>MT-CONFIG-MIN</code></td>
+<td>Reviewed initial tenant configuration and headless owner API contract</td>
+<td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>MT-IDENTITY-PLAN</code></td>
+<td>Human identity, tenant access grants and delegated consent plan</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>MT-RUNTIME-PLAN</code></td>
+<td>Continuous v1/v3, realtime and evaluator integration contracts</td>
+<td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>MT-SECRETS-CONTRACT</code></td>
+<td>Tenant-bound secrets contract and early Vault Transit integration proof</td>
+<td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>SEAM-REFRESH</code></td>
 <td>Refresh the seam chain once after 15.0.9, onto the base the release train leaves</td>
 <td><code>blocked</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>ST-PG</code></td>
+<td>Current-dev PostgreSQL entries adapter and real RLS proof</td>
+<td><code>in-progress</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2910,6 +2945,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>TEN-RESOLVE</code></td>
+<td>Current-dev tenant resolution and private operator lifecycle</td>
+<td><code>blocked</code></td>
+<td><code>MT-CONFIG-MIN</code>, <code>MIG-RUNNER</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>WRITE-CONTRACT</code></td>
 <td>One write step behind the storage interface: _id form, srv dates, soft delete, r</td>
 <td><code>blocked</code></td>
@@ -2927,7 +2969,7 @@ Until then, the order below is the order of development, not of release.</p>
 <td><code>T30-WIRING</code></td>
 <td>T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT</td>
 <td><code>not-started</code></td>
-<td><code>T30-SCHEMA-CONFIG</code></td>
+<td><code>TEN-RESOLVE</code>, <code>MT-SECRETS-CONTRACT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -2963,6 +3005,13 @@ Until then, the order below is the order of development, not of release.</p>
 <td>T4.4 - ns-evaluator, the per-tenant evaluation loop</td>
 <td><code>not-started</code></td>
 <td><code>T30-WIRING</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>TEN-LAB</code></td>
+<td>Two-tenant entries HTTP lab on PostgreSQL</td>
+<td><code>blocked</code></td>
+<td><code>ST-PG</code>, <code>T30-WIRING</code>, <code>MIG-RUNNER</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
