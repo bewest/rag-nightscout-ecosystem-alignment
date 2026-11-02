@@ -12,6 +12,36 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Tenant Storage Architecture and Decision Report (2026-11-02)
+
+Expanded the existing cell/SQLite experiment report into a decision guide;
+no workload was rerun and no backend or hosted-roadmap decision was changed.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Comparative report and four Mermaid visualizations | `docs/10-domain/tenant-cell-sqlite-deep-dive.md` | Candidate architecture, local-only latency chart, transaction/durability sequence and promotion decision path. |
+| Evidence ledger and decision tables | Same report | Distinguishes local cell evidence, September MongoDB/PG/pooler measurements and November PG foundation work; no unmatched speed/cost ranking. |
+| Five facets and documentation entry point | Terminology, gaps, requirements, this entry and `docs/README.md` | Storage layout versus engine, correct binding versus row isolation, lifecycle and three-backend maintenance gates. |
+
+**Findings:** cell-owned records are feasible locally, but do not yet justify
+replacing hosted PG/RLS or existing single-site MongoDB. Storage-only adaptation
+is a bounded next integration hypothesis; moving the entire tenant runtime is
+a larger, separate experiment. A matched comparison must include durability,
+historical data, recovery headroom and operations, not just VM price or empty
+tenant density. Figures label proposed versus measured boundaries.
+
+**Evidence:** original lab `018e55c34`; PG foundation NS `ce14d637` and recorded
+run in alignment `ae4ad1827`; pinned historical sources and exact file:line
+references in the report. No new protocol GAP/REQ IDs or release dependencies.
+
+**Validation:** four figures parse and render with Mermaid 11.17.2; scaled text
+is at least 12 px at 688 px document width. Chart/table values, source hashes,
+historical MongoDB figures, local links and heading anchors pass targeted checks.
+`make verify` was repeated: terminology/duplicate-GAP checks pass, but 147
+corpus references and existing coverage/assertion gaps remain. `make traceability`
+completes but still extracts zero requirements from the index; generated matrix
+changes were not retained. No workload, paid fleet or production gate was rerun.
+
 ## Tenant Cell + SQLite Local Experiments (2026-11-02)
 
 Ran real celld v0.6.3 in an isolated `lab/celld-sqlite-20261102` worktree using

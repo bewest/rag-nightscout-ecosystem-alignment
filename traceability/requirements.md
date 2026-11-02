@@ -17,6 +17,15 @@ bespoke protocol. Qualified-bucket fleet recovery, production tenant binding,
 evaluator/realtime behavior, migration/backup/restore and a matched cost
 comparison remain unverified. Local persistence is not fleet durability.
 
+The expanded decision guide requires the next comparison to hold workload,
+retention, API behavior and acknowledged-write failure target constant. Report
+per-admitted and per-active tenant cost separately, including recovery headroom,
+bucket/replication traffic and operational effort. A third adapter must exercise
+applicable NS contracts and expose unsupported operations without weakening
+existing standalone MongoDB behavior. Storage isolation does not authenticate
+the chosen tenant, and mutation receipts do not certify downstream notification
+delivery. These are proposed promotion checks, not newly adopted protocol IDs.
+
 ## Release-readiness verification (2026-11-02)
 
 The [current v16 ecosystem/acceptance record](../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)

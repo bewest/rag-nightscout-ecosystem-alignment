@@ -64,7 +64,10 @@ claims about all existing NS endpoints.
 
 ## Measured result
 
-See the [deep dive](../../../docs/10-domain/tenant-cell-sqlite-deep-dive.md)
-for the results, source references, missing production gates and three-backend
-implications. The report's restart timings include stop/start and verification;
-they are not fleet failover latency or an availability SLO.
+See the [decision guide](../../../docs/10-domain/tenant-cell-sqlite-deep-dive.md)
+for results, source references, comparison with PostgreSQL and both per-database
+and shared-collection MongoDB, architecture tradeoffs, economics and promotion
+gates. Four Mermaid figures illustrate the candidate architecture, local latency,
+write/durability boundary and decision path. The report's restart timings include
+stop/start and verification; they are not fleet failover latency or an availability
+SLO. Historical backend timings are not a matched comparison with this lab.
