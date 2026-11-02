@@ -8209,7 +8209,7 @@
 
 
 <h1 id="nightscout-multitenancy-next-priorities-postgresql-rls-and-celld">Nightscout multitenancy: next priorities, PostgreSQL RLS and Celld<a class="headerlink" href="#nightscout-multitenancy-next-priorities-postgresql-rls-and-celld" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>51006fccf</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>4b299c159</code>.</em></p>
 <p><strong>Assessment: 2026-11-02. Recommendations, not newly adopted decisions or
 production acceptance.</strong> Public <code>dev</code> was checked through GitHub and read from
 the local <code>official/dev</code> ref at <code>61eb37335954ae42c91345a0823bd67331025165</code>.
@@ -8277,6 +8277,22 @@ See the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.ht
 The next isolated secrets objective is backup/restore and actual process-crash
 acceptance; owner-policy APIs, MongoDB migrations and runtime consumers remain
 unfinished. This is no backend promotion or production-Vault acceptance.</p>
+<p><strong>Upsert/intent continuation:</strong> local <code>14ae16db</code> adds measured merge-upsert,
+replacement/batch/every-form subsets and a dormant shared v3 intent seam with
+savepoint recovery and post-commit events. <strong>878 integrated checks pass without
+pending</strong>; the changed 28 checks also pass against MongoDB 5.0.32 and 8.3.9.
+V3 resend POST retains replacement behavior, not v1's merge behavior.
+JSON-equal replacements owing exact modification counts refuse because JSONB
+does not preserve BSON field order. Production DDL/import, full v1/socket and
+route authorization/validation/current-grant wiring, bounds and backend suites
+remain open. See the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02">bounded acceptance record</a>.</p>
+<p><strong>Latest recovery integration:</strong> merge <code>0de90852</code> imports <code>78b915ab</code> without
+runtime/migration/entries-source changes. The combined command passes <strong>879
+checks, zero pending</strong>, including 34 secrets checks and actual PG dump/restore,
+encrypted single-node Vault snapshot recovery and before-CAS/after-commit
+worker SIGKILL/retry. Production recovery remains open. The next parallel
+slice is the minimum policy/current-authority service, not more provider
+features; see the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02">acceptance and handoff</a>.</p>
 <h2 id="1-bottom-line">1. Bottom line<a class="headerlink" href="#1-bottom-line" title="Permanent link">&para;</a></h2>
 <p>The next useful delivery is <strong>an entries-first PostgreSQL RLS slice on current
 dev</strong>, alongside a <strong>tenant configuration/authentication integration workstream</strong>.
@@ -8354,7 +8370,7 @@ an untested idea.</p>
 </ul>
 <h3 id="a-coordination-blocker-two-generations-of-planning">A coordination blocker: two generations of planning<a class="headerlink" href="#a-coordination-blocker-two-generations-of-planning" title="Permanent link">&para;</a></h3>
 <p>At the initial assessment, the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/51006fccf5715decf589660eff710de10fcb2e5b/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4b299c159070f97dbffbe9a5aa43dfda0c653f36/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
 TEN-RESOLVE and TEN-LAB without corresponding executable-work items in
 <code>queue/work-queue.yaml</code>. The adopted roadmap has since added those queue items
 and bounded M0/Vault checks. Their complete acceptance is still open.

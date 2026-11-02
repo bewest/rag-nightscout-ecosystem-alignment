@@ -2154,6 +2154,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#multitenancy-secrets-recovery-integration-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenancy Secrets Recovery Integration (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multitenancy-entries-upserts-and-post-commit-v3-intents-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenancy Entries Upserts and Post-Commit v3 Intents (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multitenancy-entries-and-secrets-integration-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3511,6 +3533,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#multitenancy-secrets-recovery-integration-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenancy Secrets Recovery Integration (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multitenancy-entries-upserts-and-post-commit-v3-intents-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenancy Entries Upserts and Post-Commit v3 Intents (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multitenancy-entries-and-secrets-integration-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4835,7 +4879,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>51006fccf</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>4b299c159</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4847,6 +4891,44 @@
 - <a href="docs/archive/progress-archive-2026-01-30-batch4.html">progress-archive-2026-01-30-batch4.md</a></p>
 </blockquote>
 <hr />
+<h2 id="multitenancy-secrets-recovery-integration-2026-11-02">Multitenancy Secrets Recovery Integration (2026-11-02)<a class="headerlink" href="#multitenancy-secrets-recovery-integration-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>Local merge <strong><code>0de90852</code></strong> joins entries <code>a8dd162d</code> and parallel recovery
+<code>78b915ab</code>. The imported change is tests/fixture/documentation only: actual
+logical PG backup/restore, encrypted non-dev single-node Vault Raft snapshot
+recovery, and owned-worker SIGKILL before CAS/after commit with process retries.
+Stored references/audit/key-version behavior and explicit missing-key/provider
+refusals are measured. No migration, entries-source or runtime changes.</p>
+<p><strong>Merged acceptance:</strong> <strong>879 passing, zero pending across 31 files</strong>, including
+all <strong>34</strong> secrets checks; ESLint, 465-file tier classification and the existing
+write-boundary check pass. Production auth/TLS/HA, cluster globals, online
+backup coordination, consumer/current-grant recovery and RPO/RTO remain open.
+No upstream push or backend promotion; the earlier broad AJV failure remains.</p>
+<p><strong>Parallel handoff:</strong> fast-forward to the integrated baseline, then reconcile
+MT-CONFIG-MIN and implement a dormant tenant-local subject-policy/current-
+authority slice. Prove fresh cross-worker checks, revocation/outage refusal,
+version conflicts and floors using real persistence; do not enable routes or
+claim socket/data enforcement. This session keeps entries schema/import/
+compatibility work. See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02">integration and bounded handoff</a>.</p>
+<h2 id="multitenancy-entries-upserts-and-post-commit-v3-intents-2026-11-02">Multitenancy Entries Upserts and Post-Commit v3 Intents (2026-11-02)<a class="headerlink" href="#multitenancy-entries-upserts-and-post-commit-v3-intents-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>Local upstream <strong><code>14ae16db</code></strong> extends merge upserts/resends, replacement/batch
+and every-form persistence, with constraint-specific duplicate mapping and
+actual savepoint recovery. A dormant v3 seam reuses shared rules and emits the
+internal intent event after its owned transaction commits. V3 POST still
+replaces; PATCH merges. Test follow-up <strong><code>a8dd162d</code></strong> covers resolved OR removal
+and shared v3 pruning. No upstream push, catalogue changes or backend enablement.</p>
+<p><strong>Validation:</strong> <strong>878 passing, no pending across 31 files</strong>, including real
+PG/MongoDB/Vault and all shared write-intent suites. The changed entries/
+transaction checks separately pass <strong>28/28</strong> against MongoDB 5.0.32 and 8.3.9
+with PostgreSQL 16.15. ESLint, 465-file classification and existing write-boundary
+check pass. Three real mutations fail for broad constraint mapping, early event
+publication and missing savepoint rollback; restored implementations pass.</p>
+<p><strong>Remaining:</strong> JSONB lacks BSON field order, so JSON-equal replacements that
+owe exact modification counts explicitly refuse. Reviewed schema/import,
+full v1/socket intent and route authorization/validation/current-grant wiring,
+resource bounds and backend suites remain open. M1/M2 are not promoted; the
+previous broad no-database AJV failure is not waived. Parallel secrets/
+control-plane ownership is unchanged.</p>
+<p>See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02">acceptance and continuation record</a>.</p>
 <h2 id="multitenancy-entries-and-secrets-integration-2026-11-02">Multitenancy Entries and Secrets Integration (2026-11-02)<a class="headerlink" href="#multitenancy-entries-and-secrets-integration-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Local upstream merge <strong><code>6943dccb</code></strong> preserves both parents: entries <code>7bcfc8b0</code>
 and secrets <code>fec19ba5</code> (including <code>a3888080</code>/<code>cbbe9179</code>). Dormant provider-neutral

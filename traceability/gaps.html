@@ -2766,7 +2766,7 @@
 
 
 <h1 id="gaps">Gaps<a class="headerlink" href="#gaps" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>51006fccf</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>4b299c159</code>.</em></p>
 <p>This document is an index of gaps organized by domain.</p>
 <h2 id="hosted-tenancy-integration-follow-up-2026-11-02">Hosted-tenancy integration follow-up (2026-11-02)<a class="headerlink" href="#hosted-tenancy-integration-follow-up-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The maintainer's <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
@@ -2817,6 +2817,23 @@ minimum owner policy APIs, MongoDB runner and serving-role wiring remain open.
 Unit/DOM/core/harness tiers pass after building local bundles, but the
 dependency tier still fails an unchanged assertion using ancestor-installed
 AJV 6.12.6. No full-suite or production/backend acceptance is inferred.</p>
+<p>Entries continuation <code>14ae16db</code> measures merge-upsert/resend, changing
+replacement/batch/every-form subsets and a shared v3 intent seam, with
+savepoints and post-commit internal events. The combined regression is 878
+passing, no pending. Exact JSON-equal replacement modification counts remain
+unsupported: BSON field order is absent from JSONB. Reviewed DDL/import,
+full v1/socket and route authorization/validation/current-grant integration,
+resource bounds and backend suites remain gaps. The
+<a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02">bounded continuation record</a>
+does not promote M1/M2.</p>
+<p>Merge <code>0de90852</code> then incorporates secrets recovery <code>78b915ab</code>: the combined
+gate is 879 passing with no pending. Synthetic logical PG restore, encrypted
+single-node Vault snapshot restore and actual worker SIGKILL/CAS retry are now
+measured, replacing those bounded unknowns. Production roles/auth/TLS/HA,
+coordinated online recovery, current grants/consumer cutover and operational
+recovery targets remain open. The next parallel dependency is a dormant
+minimum subject-policy/current-authority service; its checks cannot establish
+unwired data/socket revocation. See the <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02">recovery boundary and handoff</a>.</p>
 <p>The <a href="../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.html">multitenancy priorities assessment</a>
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev <code>61eb3733</code>. The storage harness and scope are merged; the PostgreSQL adapter,
