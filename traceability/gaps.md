@@ -22,6 +22,13 @@ comparison/reproducer, not a release prerequisite or confirmed root cause.
 Scheduled storage/identity and frontend modernization are merged, not open
 implementation gaps. No elapsed soak time or metadata survey closes a gap.
 
+The maintainer reports prior testing of contributed patches and high confidence;
+missing per-cohort rows are record-reconciliation work, not evidence of untested
+patches. This session clarifies compatibility then reconciles acceptance; private
+security, live operations/cohorts, candidate review and #8829 follow-up are
+assigned to other sessions. No new universal-compatibility requirement or release
+blocker is invented from the source-shape catalogue's limits.
+
 ## Domain Files
 
 - [Aid Algorithms](aid-algorithms-gaps.md) - 66 gaps

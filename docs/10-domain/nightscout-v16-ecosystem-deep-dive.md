@@ -97,6 +97,20 @@ units and event-time/receipt-time semantics explicit.
 
 ## Acceptance evidence and workstream handoff
 
+**Maintainer priorities confirmed November 2:** this session clarifies compatibility
+first, then reconciles acceptance records. Private security integration, live
+alerts/cohort/upgrade/rollback execution, candidate-PR review/placement and #8829
+follow-up belong in other sessions. Selective corpus repinning is not assigned
+by this decision. No agents or upstream implementation work are launched here.
+
+The maintainer reports that contributed patches had already been tested before
+submission and are high-confidence; live testers will provide further feedback.
+Record this as contributor/maintainer-reported prior validation, not as absent
+testing. No patch-by-patch tested-build list or new cohort outcome was supplied
+in this update, so the exact evidence rows remain to be collected by those
+workstreams. That is record reconciliation, not a presumption that the patches
+are defective or a new reason to stop the release process.
+
 Use the [testing notes](../../releases/cgm-remote-monitor-16.0.0/testing-notes.md)
 as a collection guide now; a formal tester announcement can follow a named RC.
 Do not wait to collect already-running cohort evidence.
@@ -117,6 +131,48 @@ verification is not the same as live validation. Still needed: final combined
 tree, attributable cohort outcomes, disposition of unresolved reports/residual
 risks, upgrade/rollback evidence, and maintainer approval. Elapsed time alone
 closes none of those.
+
+### Compatibility confidence: what the record supports
+
+**Assessment:** strong automated and source-derived evidence supports the
+intended interoperability of known client contracts without coordinated client
+upgrades. This review identified no confirmed requirement for all known AID
+clients to upgrade together. It does **not** establish unconditional backwards
+and forwards compatibility for every client version, consumer, configuration or
+future feature.
+
+The [client catalogue](../../releases/cgm-remote-monitor-16.0.0/compat/clients.json)
+has **15 implementations, 120 group-specific shape matches: 11 measured-tier,
+109 read-tier**. As the comparison's
+[limits](../../releases/cgm-remote-monitor-16.0.0/compat/page.yaml) explicitly
+state, no client application ran against those matrix trees. Even a measured
+shape match is not a live-app test. Client applications and actual live testers
+may have separate evidence; do not erase or double-count it.
+
+| Claim | Supported interpretation / boundary |
+|---|---|
+| Old clients with v16 | Legacy routes/reply shapes are retained without forcing adoption of new item envelopes. Known request shapes and extensive regression evidence support high confidence; intended identity/deletion/unit fixes still change some stored outcomes. |
+| New clients with old Nightscout | A new client that stays within the old contract can remain interoperable. A new-only feature needs an actual supported capability or tested fallback; sending an opt-in header is not by itself proof an old server supports its envelope. This reverse-version claim is not demonstrated for every client by the server write matrix. |
+| Forward-compatible data | Optional additional fields avoid an inherent lockstep requirement, but preservation and interpretation must be verified per endpoint. New metadata does not make old software understand a new behavior. |
+| No defect-classified matrix cells | All differences are classified within the synthetic experiment; this is not a proof of no defects in deployment, readers, third-party plugins or future data. |
+
+The catalogue itself maps intentional changes to known shapes: deleted-record
+behavior, profile identity, reply handling and Temporary Target unit corrections.
+These are not automatically broken clients. Some cells cross paths: for example,
+the "API v3 client _id refused" group is matched to a Loop **v1** override shape
+because the synthetic seed was written using v3. It is not evidence that Loop
+now sends a forbidden body `_id` to v3. Read the seed, write path and outcome
+together before turning a catalogue match into an incompatibility allegation.
+
+Recommended release wording:
+
+> Nightscout 16 is designed to preserve interoperability with existing clients
+> without coordinated client upgrades. New item-result replies are opt-in.
+> Identity, re-send, deletion and unit-handling fixes have documented behavior
+> changes; non-default strict/rejection settings need separate client checks.
+
+This qualifies the compatibility claim without downgrading confidence in already
+tested contributions or inventing a new release gate.
 
 ## Corpus metadata survey (2026-11-02)
 

@@ -15,6 +15,8 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Opt-in extension / changed default | Request-selected item envelope / new server-side re-send or index behavior | Independent client deployment requires documenting both, not describing every v16 behavior as backwards-identical. |
 | Unset / lenient identifier validation | Historical API v3 refusals retained / invalid identifiers treated as absent | These are distinct modes; do not promise that unset and explicit lenient are equivalent. |
 | Index off / drop | Do not build or remove / remove the identifier index | Switching to off alone is not a rollback of an already-created unique index. |
+| Source-shape match / live-app validation | A catalogue predicts the affected request contract / a specific app build was exercised | The 120 matches across 15 implementations are not 15 live-app tests. Prior contributor testing and live observations remain separate evidence. |
+| Backwards / forwards interoperability | Existing client using v16 / newer client using an older server's supported contract | Continued interoperation is not identical stored outcomes or automatic support for new-only features on old servers. |
 
 See the [current v16 ecosystem/acceptance record](../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)
 for the pinned head, delivery-check limitations and release gates.

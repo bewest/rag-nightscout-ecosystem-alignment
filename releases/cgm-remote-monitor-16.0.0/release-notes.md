@@ -12,6 +12,12 @@ theme. It also includes reporting, notification and interoperability fixes.
 It is **not** an automated-insulin-delivery algorithm upgrade, and it does not
 require all connected apps to release together.
 
+Nightscout 16 is designed to preserve interoperability with existing clients
+without coordinated client upgrades. New item-result replies are opt-in.
+Identity, re-send, deletion and unit-handling fixes have documented behavior
+changes; non-default strict/rejection settings need separate client checks.
+This is not a guarantee that every future client feature works on older servers.
+
 **Nightscout is not a medical device and nothing here is medical advice.**
 These notes complement the generated changelog, which records what merged.
 The [technical contents](contents.md) carry the full compatibility and known-defect

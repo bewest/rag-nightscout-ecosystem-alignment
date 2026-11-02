@@ -3335,6 +3335,14 @@ items:
       and production/service environments; RT-16-TOKEN-8829 tracks follow-up.
       Security and final-tree/live/cohort/rollback acceptance remain pre-tag
       work, not reasons to halt preparation. See the current ecosystem record.
+      Session allocation confirmed by the maintainer: this session clarifies
+      compatibility, then reconciles acceptance records; separate sessions
+      own private security integration, live operational/cohort/rollback
+      execution, candidate-PR review and nonblocking #8829 follow-up.
+      Contributions were tested before submission and are high-confidence
+      (maintainer report); live testers will provide further outcomes.
+      No new per-cohort pass or universal bidirectional compatibility
+      guarantee is inferred from that report.
 
       Previous 2026-11-01: dev 61eb3733 includes #8895 (BFQ-227) and
       #8896 (RT-CI-FIXTURES-8896). Both integrated CI and CodeQL runs pass;
@@ -3611,6 +3619,10 @@ items:
       observation interval, outcomes and failures. Re-run affected checks
       after private security integration; preserve earlier evidence as
       earlier-build observations rather than discarding it.
+      Maintainer follow-up: contributed patches were already tested and
+      are high-confidence. Live feedback will follow; collecting exact
+      evidence rows is reconciliation, not a claim that testing is absent.
+      Live execution/collection belongs to a separate session.
 
   - id: RT-16-TOKEN-8829
     title: "Nonblocking restricted-token browser report: environment comparison and reproducer"

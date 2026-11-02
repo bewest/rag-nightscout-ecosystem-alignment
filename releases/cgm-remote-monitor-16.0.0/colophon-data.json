@@ -75,24 +75,24 @@
         "evidence": "PR #8896 stabilized the cache-order and startup-state tests. Required checks and both post-merge workflows (41333677576 and 41333672054) passed on current dev 61eb3733."
       },
       {
-        "status": "blocked",
-        "gate": "Controller-registration entry bar: nightscout/cgm-remote-monitor#8857",
-        "evidence": "The PR diverges from current dev: dev is 97 commits ahead and the PR has 16 unique commits. Rebase, resolve D-REG-FLAG, and rerun entry-bar checks; existing green checks are on the old head."
+        "status": "pending",
+        "gate": "Candidate entry bar (not a pre-tag prerequisite): nightscout/cgm-remote-monitor#8857",
+        "evidence": "November 2: draft, mergeable, head 5f6c1275. Current-base validation and D-REG-FLAG disposition remain candidate work, assigned to another session; old green checks do not automatically admit it to v16."
       },
       {
         "status": "blocked",
         "gate": "Staging to master: nightscout/cgm-remote-monitor#8824",
-        "evidence": "PR is open and BLOCKED; master branch-protection settings still require checks the dev workflow does not emit."
+        "evidence": "November 2: PR open and BLOCKED at 61eb3733. The absent 4.4 requirement is removed; required Run Tests (22, 6) and (24, 6) are present and green, with one approving review required. The recorded Tests pass policy remains distinct from the observed setting; staging review/policy work continues."
       },
       {
         "status": "blocked",
         "gate": "Private BF-72/BF-161 integration and final-tree validation",
-        "evidence": "Both prepared private fixes contain current dev 61eb3733; combined focused tests passed 402, but full-suite acceptance is inconclusive. No private PR exists. Advisory association is confirmed; the maintainer must use Compare & pull request routing and then complete final-tree checks. No merge or publication."
+        "evidence": "Previously inspected prepared fixes contain dev 61eb3733; 402 focused tests passed, full-suite acceptance inconclusive, no private PR at that inspection. Authorized private integration, final-tree checks and coordinated disclosure remain pre-tag work in another session. No new private inspection, merge or publication claimed."
       },
       {
         "status": "pending",
-        "gate": "Named RC, cohort and operational checks",
-        "evidence": "No RC is named. Cohort verification, Pushover/APNs delivery, real-rig soak, BF-72/BF-161 advisory-fork merges, and rollback rehearsal remain before tagging; operator-facing release notes are written when an RC is named."
+        "gate": "Cohort underway; final-candidate and operational acceptance",
+        "evidence": "November 2 maintainer report: multiple testers running over 24-48 hours; contributed patches were tested before submission and are high-confidence. Live testers will supply further outcomes. No named RC or exact new per-cohort pass rows recorded here. Separate sessions own live Pushover/APNs, cohort and upgrade/rollback execution. Release notes and cohort guide are now drafts; final-tree approval remains pending. Issue 8829 is explicitly nonblocking, not a release dependency."
       }
     ]
   }

@@ -54,6 +54,18 @@ the privacy scan clean and noindex on 1,671/1,671 HTML pages. The next-gen rich
 page is regenerated from the committed source, including the nonblocking #8829
 disposition and corrected staging status.
 
+**Post-publication clarification:** the maintainer chose compatibility
+clarification first, then acceptance reconciliation here; private security,
+live operational/cohort/rollback work, candidate review/placement and #8829
+follow-up go to other sessions. Contributed patches were already tested and are
+high-confidence (maintainer report); further live feedback will follow.
+The compatibility catalogue has 15 implementations / 120 source-shape matches
+(11 measured-tier, 109 read-tier), not live execution of every app. Recorded
+high confidence in continued interoperability without coordinated upgrades,
+not an unconditional all-client-version or new-feature/old-server guarantee.
+Updated the colophon and its gate data to remove stale protection, cohort and
+unwritten-notes claims; no new tests or release blockers are invented.
+
 ## cgm-remote-monitor RC Readiness Triage (2026-11-01)
 
 **Publication follow-up:** integrated through a clean origin-main worktree,

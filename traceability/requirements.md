@@ -33,6 +33,14 @@ maintainers' non-reproduction must coexist in its release disposition:
 **nonblocking for v16**, decided by the maintainer November 2, with working
 DIY and production/service environments reported. It is not a new pre-tag gate.
 
+The compatibility catalogue covers 15 implementations through 120 shape matches
+(11 measured-tier, 109 read-tier), not live execution of every app. The supported
+release claim is high confidence in existing-client interoperability without
+coordinated upgrades, with documented intentional changes and opt-in boundaries.
+Universal new-client/old-server feature compatibility is not demonstrated.
+Previously tested contributions are high-confidence according to the maintainer;
+record that provenance separately from uncollected live outcome rows.
+
 ## Domain Files
 
 - [Aid Algorithms](aid-algorithms-requirements.md) - 56 requirements (+3 OREF)

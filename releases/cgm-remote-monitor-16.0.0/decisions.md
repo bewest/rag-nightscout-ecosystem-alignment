@@ -22,6 +22,15 @@ nonblocking follow-up, without claiming it is fixed.
 The [current acceptance/workstream record](../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md)
 records proposed follow-ups, not decisions to admit new PRs or change defaults.
 
+**Workstream decision, November 2:** clarify compatibility first, then reconcile
+acceptance records in this session. Other sessions own private security
+integration/final-tree validation; live alerts/cohort/upgrade/rollback execution;
+candidate PR review/placement; and nonblocking #8829 follow-up. The maintainer
+reports contributions were tested before submission and are high-confidence;
+live testers will provide further feedback. No new specific author request or
+per-cohort pass result was supplied. Record confidence and evidence provenance,
+not an unconditional all-clients/all-directions compatibility guarantee.
+
 **Historical implementation status, 2026-11-01:** #8895's callback fix and
 #8896's test hygiene are merged; integrated dev CI and CodeQL are green and
 the push workflow published the development image. This records implementation

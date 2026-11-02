@@ -9,6 +9,13 @@ The measured automated runs remain in the
 [integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md);
 release scope is in [contents.md](contents.md).
 
+The maintainer reports that contributed patches were already tested before
+submission and are high-confidence; live testers will inform further acceptance.
+The rows below reconcile that existing confidence with build/scenario evidence,
+not a requirement to restart all testing or a claim that the patches were untested.
+Live cohort/operational execution belongs in separate sessions; this session
+clarifies contracts and reconciles the records.
+
 ## Part 1: people using a site
 
 Use the connected apps and displays you normally use. Report missing readings,
