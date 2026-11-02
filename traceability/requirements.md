@@ -55,6 +55,15 @@ statement snapshot. Three implementation mutations demonstrate the checks.
 This does not waive bulk/upsert/every-form outcomes, constraint-specific
 retry, source labels, validation or commit-event integration.
 
+The integrated secrets continuation requires current authorization before
+every component operation and an independently committed, redacted audit
+attempt before provider work. Immutable ciphertext references are tenant-bound;
+maintenance rewrap uses a separate identity and CAS, not plaintext exposure
+or credential replacement. The 230-test combined acceptance and reconciled
+465-file tier map do not establish end-to-end data/socket revocation,
+backup/restore, process-crash recovery or settings/subject-policy API completion.
+The broad dependency tier still has an explicit ancestor-installed AJV failure.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new
 protocol requirement IDs. A PG pass executes applicable storage tests on the

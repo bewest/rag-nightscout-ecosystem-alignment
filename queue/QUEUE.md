@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 358 |
-| runnable gates | 414 |
+| runnable gates | 415 |
 | explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 783 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 784 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8389,7 +8389,7 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|---|---|---|---|
 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 5 run + 1 no-gate |
 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
-| `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
+| `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
@@ -8476,7 +8476,7 @@ alarm-readiness items, and the seam branch refresh.
   - Dormant read subset: 4 refusal/parameterization unit checks plus 6 real PG/MongoDB differential checks for supported AST, typed ids, count, sort/paging, findOne/normalization and tenant isolation.
 - `[integration]` `cd externals/work/crm-multitenant-20261102 && test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" && NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000 --exit --require ./tests/hooks.js tests/postgres-entries-write.test.js`
   - Dormant write subset: 1 refusal plus 8 real PG/MongoDB checks for scalar inserts/patches/deletes, typed identity selection, no-op counts, rollback, both-tenant writes and actual lock contention.
-- **NO GATE** &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 7bcfc8b0 remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, bulk/replace/every-form writes, events/source/validation integration, remaining methods, cursor caps and full query parity remain. Unsupported shapes explicitly refuse. No PG availability flag or hosted role is enabled.
+- **NO GATE** &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 6943dccb remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, bulk/replace/every-form writes, events/source/validation integration, remaining methods, cursor caps and full query parity remain. Unsupported shapes explicitly refuse. No PG availability flag or hosted role is enabled.
 
 **Evidence.**
 
@@ -8484,7 +8484,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/postgres-foundation/README.md`
 - `tools/lab/postgres-foundation/results.json`
 
-**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim. Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods: 158 passing, no pending across 11 focused files, with 8 real differential write checks and 1 refusal check. Actual two-backend lock contention guards disjoint patches and same- field restoration. Identity-kind, no-op-count and stale-snapshot mutations fail; restored implementation passes. ESLint, 462-file tier classification and existing write-boundary check pass. No full write-intent/event integration or backend promotion. Parallel session owns MIG-RUNNER, settings/subject policy and secrets.
+**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim. Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods: 158 passing, no pending across 11 focused files, with 8 real differential write checks and 1 refusal check. Actual two-backend lock contention guards disjoint patches and same- field restoration. Identity-kind, no-op-count and stale-snapshot mutations fail; restored implementation passes. ESLint, 462-file tier classification and existing write-boundary check pass. No full write-intent/event integration or backend promotion. Parallel session owns MIG-RUNNER, settings/subject policy and secrets. Integrated secrets commits through fec19ba5 via merge 6943dccb: 230 passing, no pending across 17 files; 465 test files classify. Existing unit/DOM/core/harness tiers pass after building local bundles. Dependency tier has 368 passing, 1 pending, 1 failure from unchanged har-validator resolving ancestor-installed AJV 6.12.6. No full-suite pass.
 
 ### `MT-CONFIG-MIN` &mdash; Reviewed initial tenant configuration and headless owner API contract
 
@@ -8519,10 +8519,10 @@ alarm-readiness items, and the seam branch refresh.
 | | |
 |---|---|
 | state (claimed) | `in-progress` |
-| repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `records/multitenant-roadmap-20261102` |
-| base | `main@28671cb4a` |
-| worktree | `-` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/dev@61eb3733` |
+| worktree | `externals/work/crm-multitenant-20261102` |
 | semver | `n/a` |
 | review | maintainer; provider/consumer boundary review before production |
 
@@ -8536,7 +8536,9 @@ alarm-readiness items, and the seam branch refresh.
 
 - `[integration]` `node tools/lab/vault-transit/harness.js`
   - Requires disposable loopback VAULT_ADDR/VAULT_TOKEN. Actual Transit encrypt/HMAC/verify, scoped/wrong-key refusals, non-exportability, rotation/rewrap, revocation and deliberately broad-policy control.
-- **NO GATE** &mdash; 9 feasibility checks pass on Vault 2.2.1; no production auth, persistence, TLS, unseal/recovery or HA acceptance yet. Transit does not store application ciphertext or enforce Nightscout tenant membership.
+- `[integration]` `cd externals/work/crm-multitenant-20261102 && NODE_ENV=test NS_VAULT_DOCKER_TEST=1 NS_SECRETS_POSTGRES_DOCKER_TEST=1 node_modules/.bin/mocha --fail-zero --timeout 30000 --exit --require ./tests/hooks.js tests/secrets.test.js tests/vault-secrets.integration.test.js tests/postgres-secrets.integration.test.js`
+  - 33 real component/Vault/PG acceptance checks: current-authority/audit boundaries, tenant/reference binding, JWT versions, append-only audit, immutable ciphertext, restart, maintenance-only rewrap/CAS and retries.
+- **NO GATE** &mdash; 9 feasibility checks pass on Vault 2.2.1; no production auth, persistence, TLS, unseal/recovery or HA acceptance yet. Transit does not store application ciphertext or enforce Nightscout tenant membership. PG persistence/restart and simulated lost-reply checks are measured, not backup/restore or process-SIGKILL recovery. Runtime consumers, current-grant policy service and minimum owner API remain unwired.
 
 **Evidence.**
 
@@ -8544,7 +8546,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/vault-transit/README.md`
 - `tools/lab/vault-transit/results.json`
 
-**Notes.** Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex. Continuation recommendation in response to maintainer: Vault-facing adapter next behind the provider-neutral contract; built-in remains an option. No comparative efficiency or production readiness claim.
+**Notes.** Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex. Continuation recommendation in response to maintainer: Vault-facing adapter next behind the provider-neutral contract; built-in remains an option. No comparative efficiency or production readiness claim. Parallel a3888080/cbbe9179/fec19ba5 integrated in local merge 6943dccb. Dormant component, PG ciphertext/audit and maintenance-only rewrap/CAS pass 33 focused secrets checks and the 230-test combined regression. Tiers reconciled to 465 files; entries write tier entry preserved. Separate secrets worktree may fast-forward to the integrated baseline, then pursue synthetic backup/restore and actual process-crash acceptance. Keep catalogue history immutable and do not enable runtime consumers.
 
 ### `TEN-RESOLVE` &mdash; Current-dev tenant resolution and private operator lifecycle
 

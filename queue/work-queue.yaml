@@ -202,7 +202,7 @@ items:
           counts, rollback, both-tenant writes and actual lock contention.
       - no-gate: >
           Binding/pooler and narrow generated-DDL/typed-identity proofs are
-          measured, not full M1 acceptance. Local tip 7bcfc8b0 remains dormant.
+          measured, not full M1 acceptance. Local tip 6943dccb remains dormant.
           Current v3/history/partial-unique identifier indexes, migration/import,
           bulk/replace/every-form writes, events/source/validation integration,
           remaining methods, cursor caps and full query parity remain.
@@ -242,6 +242,11 @@ items:
       passes. ESLint, 462-file tier classification and existing write-boundary
       check pass. No full write-intent/event integration or backend promotion.
       Parallel session owns MIG-RUNNER, settings/subject policy and secrets.
+      Integrated secrets commits through fec19ba5 via merge 6943dccb:
+      230 passing, no pending across 17 files; 465 test files classify.
+      Existing unit/DOM/core/harness tiers pass after building local bundles.
+      Dependency tier has 368 passing, 1 pending, 1 failure from unchanged
+      har-validator resolving ancestor-installed AJV 6.12.6. No full-suite pass.
 
   - id: MT-CONFIG-MIN
     title: "Reviewed initial tenant configuration and headless owner API contract"
@@ -283,9 +288,10 @@ items:
   - id: MT-SECRETS-CONTRACT
     title: "Tenant-bound secrets contract and early Vault Transit integration proof"
     parcel: tenancy
-    repo: rag-nightscout-ecosystem-alignment
-    branch: records/multitenant-roadmap-20261102
-    base: main@28671cb4a
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/dev@61eb3733
+    worktree: externals/work/crm-multitenant-20261102
     state: in-progress
     blast_radius: >
       Synthetic Vault API/ACL/key-lifecycle lab; sign/verify/encrypt/decrypt
@@ -303,10 +309,25 @@ items:
           Requires disposable loopback VAULT_ADDR/VAULT_TOKEN. Actual Transit
           encrypt/HMAC/verify, scoped/wrong-key refusals, non-exportability,
           rotation/rewrap, revocation and deliberately broad-policy control.
+      - run: >-
+          cd externals/work/crm-multitenant-20261102 &&
+          NODE_ENV=test NS_VAULT_DOCKER_TEST=1 NS_SECRETS_POSTGRES_DOCKER_TEST=1
+          node_modules/.bin/mocha --fail-zero --timeout 30000 --exit
+          --require ./tests/hooks.js tests/secrets.test.js
+          tests/vault-secrets.integration.test.js
+          tests/postgres-secrets.integration.test.js
+        kind: integration
+        describe: >
+          33 real component/Vault/PG acceptance checks: current-authority/audit
+          boundaries, tenant/reference binding, JWT versions, append-only audit,
+          immutable ciphertext, restart, maintenance-only rewrap/CAS and retries.
       - no-gate: >
           9 feasibility checks pass on Vault 2.2.1; no production auth, persistence,
           TLS, unseal/recovery or HA acceptance yet. Transit does not store
           application ciphertext or enforce Nightscout tenant membership.
+          PG persistence/restart and simulated lost-reply checks are measured,
+          not backup/restore or process-SIGKILL recovery. Runtime consumers,
+          current-grant policy service and minimum owner API remain unwired.
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
@@ -323,6 +344,13 @@ items:
       Continuation recommendation in response to maintainer: Vault-facing
       adapter next behind the provider-neutral contract; built-in remains an
       option. No comparative efficiency or production readiness claim.
+      Parallel a3888080/cbbe9179/fec19ba5 integrated in local merge 6943dccb.
+      Dormant component, PG ciphertext/audit and maintenance-only rewrap/CAS
+      pass 33 focused secrets checks and the 230-test combined regression.
+      Tiers reconciled to 465 files; entries write tier entry preserved.
+      Separate secrets worktree may fast-forward to the integrated baseline,
+      then pursue synthetic backup/restore and actual process-crash acceptance.
+      Keep catalogue history immutable and do not enable runtime consumers.
 
   - id: TEN-RESOLVE
     title: "Current-dev tenant resolution and private operator lifecycle"

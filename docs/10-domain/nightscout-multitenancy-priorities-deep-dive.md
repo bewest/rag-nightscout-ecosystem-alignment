@@ -62,6 +62,19 @@ integration remain; no backend is enabled. See the
 The other session owns migrations, settings/subject policy and provider-neutral
 secrets/Vault-facing work; this slice leaves those files unchanged.
 
+**Integrated continuation:** local merge `6943dccb` now joins the entries slice
+with the parallel secrets branch (`a3888080`, `cbbe9179`, `fec19ba5`):
+provider-neutral authorization/audit boundaries, Vault Transit, PG ciphertext/
+audit persistence and maintenance-only rewrap/CAS. **230 focused tests pass
+without pending**, including real Vault/PG, migration and entries checks
+together; all **465 test files** classify. Unit/DOM/core/harness tiers pass
+after building local bundles. The dependency tier remains non-green because
+its unchanged `har-validator` assertion resolves old AJV outside the worktree.
+See the [integration acceptance and parallel handoff](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02).
+The next isolated secrets objective is backup/restore and actual process-crash
+acceptance; owner-policy APIs, MongoDB migrations and runtime consumers remain
+unfinished. This is no backend promotion or production-Vault acceptance.
+
 ## 1. Bottom line
 
 The next useful delivery is **an entries-first PostgreSQL RLS slice on current

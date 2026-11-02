@@ -12,6 +12,33 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Multitenancy Entries and Secrets Integration (2026-11-02)
+
+Local upstream merge **`6943dccb`** preserves both parents: entries `7bcfc8b0`
+and secrets `fec19ba5` (including `a3888080`/`cbbe9179`). Dormant provider-neutral
+secrets/Vault, PG ciphertext/audit and maintenance rewrap/CAS now coexist with
+entries writes. No migration/entries source or dependency manifests changed
+in the merge. No upstream push, runtime wiring or backend promotion.
+
+**Validation:** **230 passing, no pending** across 17 focused files with real
+Vault/PG/MongoDB and all Docker opt-ins; ESLint, existing write-boundary check
+and **465-file** tier classification pass. After building local frontend
+artifacts, unit 2,108, DOM 205, core 319 and harness 92 pass. Dependency:
+368 passing, 1 pending, 1 failure from unchanged `har-validator` resolving
+AJV 6.12.6 in ancestor `/home/bewest/node_modules`; the broad command is not
+green. Owned lab containers removed; other sessions' resources preserved.
+
+**Parallel handoff:** fast-forward the secrets worktree to the integrated
+baseline, then pursue synthetic backup/restore and actual process-crash/retry
+acceptance without runtime consumer enablement. Entries upsert/batch/retry,
+MongoDB MIG-RUNNER and settings/subject policy remain separate unfinished work.
+See the [integration record and commands](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02).
+
+**Source references:**
+`externals/work/crm-multitenant-20261102/lib/secrets/component.js:16-140`,
+`externals/work/crm-multitenant-20261102/lib/secrets/postgres.js:34-153`,
+`externals/work/crm-multitenant-20261102/tests/postgres-secrets.integration.test.js:19-443`.
+
 ## Multitenancy Dormant Entries Writes (2026-11-02)
 
 Local upstream **`7bcfc8b0`** adds `insertOne`, `updateOne`, `deleteOne`,

@@ -20,6 +20,7 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Token validity / current authorization | A valid signature and expiry authenticate a token; the next protected operation must also check current grants/revocation | An unexpired JWT or stale worker cache cannot extend removed authority; unavailable authorization state fails closed. |
 | Migration checksum / catalogue authenticity | SHA-256 binds ledger history to exact reviewed SQL bytes; the PG runner commits SQL and ledger atomically | A matching checksum is not a signature, evidence of review, or a production migration catalogue. |
 | Read/write subset / supported backend | The dormant PG facades execute selected AST reads, scalar inserts/patches and deletes with measured MongoDB parity | Persistence results are not complete write-intent, commit-event, existing-API or backend acceptance; unsupported shapes explicitly refuse. |
+| Ciphertext rewrap / credential replacement | Maintenance-only Vault rewrap and PG CAS change key version without changing the immutable secret reference or plaintext | Rewrap does not change or revoke a connector credential; consumer reference cutover needs its own versioned configuration contract. |
 
 See the [multitenancy priorities assessment](../../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 for current-dev evidence, independent workstreams and the limits of Celld's beta claims.

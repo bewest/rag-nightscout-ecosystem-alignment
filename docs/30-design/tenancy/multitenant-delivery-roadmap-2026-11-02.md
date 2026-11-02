@@ -485,3 +485,109 @@ or claim Vault cost/efficiency/production readiness. Human identity,
 evaluator/events and next-generation execution remain separate. The next
 storage slice is entries upsert/resend/batch outcomes with constraint-specific
 retry, coordinated with the reviewed schema/catalogue owner.
+
+### Integration: entries and Vault-facing secrets (2026-11-02)
+
+**Local merge `6943dccb25e680d063a00e69ee0434d8bcb3eedb`** joins entries
+`7bcfc8b0` and the parallel secrets branch at
+`fec19ba5b0526e9c94c751dc24ea4505eb5d92ae`. Its three imported commits are
+`a3888080` (provider-neutral component/Vault adapter), `cbbe9179` (PG ciphertext
+and audit persistence) and `fec19ba5` (audited rewrap/CAS). The integration branch
+remains `workspace/multitenant-20261102`; nothing was pushed upstream.
+
+The dormant component authorizes each operation against injected current
+authority, awaits a redacted audit receipt, and binds encrypted plaintext and
+JWT audience to the tenant. Vault keys are not exported. The optional PG adapter
+persists immutable references and independently committed append-only audit
+attempts. A separate maintenance identity can rewrap ciphertext using CAS;
+it has neither record INSERT nor plaintext-decrypt authority. Concurrent
+rewraps have one winner; retries reload after a conflict or uncertain reply.
+The experimental secrets catalogue upgrades through the existing explicit
+operator runner; no migration is performed at serving boot.
+
+**Integrated acceptance: 230 passing, no pending, across 17 files.** This runs
+entries writes/reads/filter/identity/transactions, existing MongoDB filter,
+scope/backend/v3-write-intent regression checks, migrations/CLI, and the full
+33-test secrets/Vault/PG acceptance together. All three Docker opt-ins were
+enabled, as were disposable entries PG/MongoDB URIs. Real scoped Vault calls,
+PG restart, migration SIGKILL/restart, audit-before-provider visibility, tenant
+RLS, maintenance-only privileges, rewrap races and simulated lost replies
+execute rather than skip. Lab-owned containers were removed.
+
+`tests/tiers.json` merged without conflicts and keeps all four new test files:
+the entries-write file, secrets unit file and two secrets integration files.
+**All 465 files classify**. ESLint and the existing write-boundary check pass.
+No dependency-manifest, migration-runner, entries-source or serving-role file
+changed in this merge.
+
+The CI no-database runner was also exercised. Initially missing local frontend
+artifacts caused bundle/map, DOM and gzip-accounting failures; building with
+`npm run bundle` resolved them. On the built tree:
+
+| Tier | Result |
+|---|---|
+| unit | 2,108 passing |
+| DOM | 205 passing |
+| core | 319 passing |
+| harness | 92 passing |
+| dependency | 368 passing, 1 pending, 1 failing |
+
+The remaining unchanged dependency assertion finds `har-validator` and AJV
+6.12.6 in ancestor `/home/bewest/node_modules`, outside the integration tree,
+while requiring AJV >=6.14.0. No dependency manifest changed and no ancestor
+installation was altered. **The full no-database command is not green**;
+this is an explicit environment/dependency limitation, not a secrets/entries
+acceptance pass or permission to waive the gate. The production bundle builds
+with its three webpack performance warnings.
+
+Reproduce the combined checks in the integration worktree:
+
+```sh
+# Both URI variables must name disposable databases; MongoDB name contains test.
+test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" &&
+NODE_ENV=test NS_MIGRATION_DOCKER_TEST=1 NS_VAULT_DOCKER_TEST=1 \
+NS_SECRETS_POSTGRES_DOCKER_TEST=1 node_modules/.bin/mocha \
+  --fail-zero --timeout 30000 --exit --require ./tests/hooks.js \
+  tests/postgres-entries-write.test.js tests/postgres-entries-read.test.js \
+  tests/postgres-filter.test.js tests/postgres-identity.test.js \
+  tests/postgres-connection.test.js tests/storage.filter.test.js \
+  tests/api3.storage.filter-semantics.test.js tests/storage.tenant-scope.test.js \
+  tests/storage-backend-selection.test.js tests/test-backends.test.js \
+  tests/write-intent.v3.test.js tests/migrations.test.js \
+  tests/postgres-migrations.integration.test.js tests/nightscout-cli.test.js \
+  tests/secrets.test.js tests/vault-secrets.integration.test.js \
+  tests/postgres-secrets.integration.test.js
+node scripts/test-tiers.js check
+NODE_ENV=test node scripts/test-tiers.js run unit,dom,dependency,core,harness --ci
+```
+
+**Parallel continuation handoff:** the clean secrets worktree can first
+fast-forward to this integrated baseline, preserving the original commits:
+
+```sh
+git -C externals/work/crm-secrets-20261102 merge --ff-only \
+  workspace/multitenant-20261102
+```
+
+Its next bounded objective is **synthetic secrets backup/restore and process
+crash/retry acceptance** in that isolated worktree. Restore ciphertext/audit
+and necessary key versions; demonstrate unchanged references/values and
+explicit missing-key/provider refusal, then exercise actual process termination
+around rewrap/CAS. Do not equate an interrupted-call test or database restart
+with that result. Keep `0001`/`0002` catalogue checksums immutable; any schema
+change appends a reviewed candidate migration. Do not modify entries, enable
+consumers or push. Reconcile any new tier entry during the next integration.
+
+The entries lane retains upsert/resend/batch/constraint-retry work. MIG-RUNNER's
+MongoDB fencing/resume, minimum settings/subject-policy API and current-grant
+integration remain separate unfinished work; merging the secrets boundary
+does not complete them. Built-in signing remains an adopted option, with no
+Vault cost/efficiency/production claim. Human identity, evaluator/events and
+next-generation execution remain separate. M1/M2 and backend availability
+remain unpromoted.
+
+Source:
+`externals/work/crm-multitenant-20261102/lib/secrets/component.js:16-140`,
+`externals/work/crm-multitenant-20261102/lib/secrets/postgres.js:34-153`,
+`externals/work/crm-multitenant-20261102/lib/secrets/vault-transit.js:29-123`,
+`externals/work/crm-multitenant-20261102/tests/postgres-secrets.integration.test.js:19-443`.

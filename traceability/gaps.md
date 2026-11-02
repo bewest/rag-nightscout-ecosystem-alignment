@@ -50,6 +50,15 @@ constraint-specific retry/error mapping, source/validation/commit-event
 integration, reviewed DDL and bounded resource/query/backend acceptance.
 Migrations, settings/subject policy and secrets belong to the parallel session.
 
+Integration `6943dccb` incorporates the parallel provider-neutral/Vault
+component, PG ciphertext/audit and maintenance rewrap/CAS commits. The merged
+tree passes 230 focused tests with no pending; 465 files classify. Backup/
+restore, actual process-crash acceptance, consumer credential cutover,
+minimum owner policy APIs, MongoDB runner and serving-role wiring remain open.
+Unit/DOM/core/harness tiers pass after building local bundles, but the
+dependency tier still fails an unchanged assertion using ancestor-installed
+AJV 6.12.6. No full-suite or production/backend acceptance is inferred.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev `61eb3733`. The storage harness and scope are merged; the PostgreSQL adapter,
