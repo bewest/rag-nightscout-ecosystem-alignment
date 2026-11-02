@@ -49,6 +49,10 @@ terminology and duplicate-GAP checks pass. No global verification pass is claime
 despite the modular requirement corpus; that output is not acceptance evidence
 and is not committed over the older matrix. These tool/corpus limitations are
 separate follow-up, not repaired in this documentation-only refresh.
+Final `make site-check` passes with zero unresolved links, zero MkDocs warnings,
+the privacy scan clean and noindex on 1,671/1,671 HTML pages. The next-gen rich
+page is regenerated from the committed source, including the nonblocking #8829
+disposition and corrected staging status.
 
 ## cgm-remote-monitor RC Readiness Triage (2026-11-01)
 
