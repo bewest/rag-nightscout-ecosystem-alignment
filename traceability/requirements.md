@@ -23,6 +23,29 @@ pooler lab verifies the actual binding through one shared transaction-pooled
 backend, including an actual session-binding mutation, not separate-server
 clients. These refine existing acceptance and add no duplicate REQ IDs.
 
+The maintainer additionally selects current-state authorization on the next
+protected operation after revocation/grant removal, across workers. An
+unexpired token or stale cache is insufficient; an authorization-store outage
+refuses new protected operations. Socket writes/subscriptions/protected delivery
+and reconnect are included. Define the authorization linearization point and
+exercise races/outages; do not claim retroactive cancellation of an already
+authorized operation or implementation acceptance from this decision alone.
+
+The PostgreSQL operator-runner foundation now executes atomic SQL/ledger and
+pinned-client locking checks, including restart, concurrency and failure
+controls. Its injected catalogue is test/review input, not a production
+baseline. Full MIG-RUNNER acceptance still requires standalone MongoDB
+lease/fencing/resumability, actual catalogues and serving-role compatibility
+wiring. No default single-site boot change follows from this partial result.
+
+The entries read/filter continuation compares both answers and counts with the
+actual MongoDB collection on identical fixtures, including typed identities,
+null/missing, scalar type brackets, array-element predicates, ordering/paging,
+normalization and tenant isolation. Unsupported shapes must explicitly refuse,
+not silently weaken the query. These measured subset checks do not waive
+regex/projection/array-sort compatibility, bounded materialization, writes,
+current indexes or full backend-suite acceptance.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new
 protocol requirement IDs. A PG pass executes applicable storage tests on the

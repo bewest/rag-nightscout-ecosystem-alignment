@@ -21,6 +21,26 @@ current v3/partial-unique indexes, import fidelity and migration runner remain
 open. See the roadmap and `tools/lab/postgres-foundation/results.json`.
 No new protocol GAP IDs or hosted acceptance are claimed.
 
+Current-state revocation enforcement is now an explicit control-plane/runtime
+gap: the next protected operation must not accept a revoked grant from an
+unexpired JWT or stale worker cache, and unavailable authorization state must
+fail closed. The selected guarantee still needs cross-worker/socket race and
+outage acceptance; it is not supplied by the PG storage proofs.
+
+MIG-RUNNER now has a local PostgreSQL-only operator-command foundation
+(`68828b8d`): 39 migration/CLI checks pass, including 12 disposable-PG checks.
+Atomic SQL/ledger, locking and read-only inspection are measured; standalone
+MongoDB lease/fencing/resumability, production catalogues/baselines, catalogue
+authenticity and serving-role wiring remain gaps. This does not close the
+two-store runner or authorize default boot migrations.
+
+ST-PG now also has a dormant read/filter subset (`7d4f3872`) with 6 real
+PG/MongoDB differential and 4 refusal/parameterization checks, included in a
+145-passing combined regression. `findFiltered`, `count` and `findOne` are
+measured only for the supported subset. Regex/v1/projection/dotted-path and
+array-sort compatibility, bounded/cursor reads, remaining methods, writes/
+events, indexes/identifier retry and actual backend registration remain open.
+
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev `61eb3733`. The storage harness and scope are merged; the PostgreSQL adapter,

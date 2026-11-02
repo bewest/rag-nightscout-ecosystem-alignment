@@ -24,6 +24,31 @@ rules are at
 the new codec is at
 `externals/work/crm-multitenant-20261102/lib/storage/postgres-identity.js:13-38`.
 
+**Migration continuation:** local upstream `68828b8d` adds the explicit
+PostgreSQL-only operator runner, with atomic SQL/ledger commits, a pinned-client
+advisory lock and read-only compatibility inspection. **39 migration/CLI checks
+pass**, including 12 disposable-PG acceptance checks and failure controls.
+See the [execution record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-explicit-postgresql-operator-migrations-2026-11-02).
+MongoDB leases/resumability, production catalogues and serving-role wiring
+remain open; the command does not change default server boot.
+
+**Authorization decision, not implementation acceptance:** grant removal or
+revocation applies at the next protected operation across workers, including
+socket subscriptions/writes/protected delivery. Current authorization must be
+available; unexpired JWTs and stale caches are insufficient. Already-authorized
+operations are not retroactively undone. The control-plane/runtime slice still
+owes an explicit authorization linearization point and race/outage tests.
+
+**Entries continuation:** local upstream `7d4f3872` supplies a dormant
+parameterized read/filter subset (`findFiltered`, `count`, `findOne`) using the
+actual connection/identity modules. Six real PG/MongoDB differential checks and
+four unit checks run in the **145-passing combined regression**; this is not
+full M1. Regex/v1/dotted paths/projections, unsupported operands/types and
+array/object sorting refuse, and results are materialized without cursor caps.
+Writes/events/current indexes and backend registration remain absent. The
+[bounded acceptance and reproduction record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-readfilter-subset-2026-11-02)
+distinguishes this measured slice from full client/API compatibility.
+
 ## 1. Bottom line
 
 The next useful delivery is **an entries-first PostgreSQL RLS slice on current

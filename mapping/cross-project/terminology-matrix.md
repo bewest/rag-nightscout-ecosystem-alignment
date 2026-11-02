@@ -17,6 +17,9 @@ This matrix maps equivalent concepts across AID systems. Use this as a rosetta s
 | Client id spelling / stored id kind | ObjectId and a same-spelling string can be distinct stored records under current Nightscout matching rules | The PG candidate keeps `id_kind` outside the document; JSON serialization alone loses that distinction. |
 | Schema compatibility check / migration authority | Hosted serving roles inspect schema compatibility; an explicit operator command applies migrations | Passing a startup check does not authorize an API/evaluator role to modify schema. |
 | Owner subject policy / operator floor | Owner-managed subject grants and bounded token lifetimes are in the initial contract scope | Owners cannot weaken required authentication, tenant isolation or operator access. |
+| Token validity / current authorization | A valid signature and expiry authenticate a token; the next protected operation must also check current grants/revocation | An unexpired JWT or stale worker cache cannot extend removed authority; unavailable authorization state fails closed. |
+| Migration checksum / catalogue authenticity | SHA-256 binds ledger history to exact reviewed SQL bytes; the PG runner commits SQL and ledger atomically | A matching checksum is not a signature, evidence of review, or a production migration catalogue. |
+| Read/filter subset / supported backend | The dormant PG facade executes selected AST reads with measured MongoDB parity | Explicit unsupported-query refusals and passing subset tests do not mean the existing API or complete backend is available. |
 
 See the [multitenancy priorities assessment](../../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 for current-dev evidence, independent workstreams and the limits of Celld's beta claims.

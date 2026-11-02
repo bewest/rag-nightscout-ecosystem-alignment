@@ -179,12 +179,24 @@ items:
         describe: >
           Four identity codec checks: ObjectId/string JSON round trips,
           exact string spellings/nonmutation and unsupported/corrupt refusals.
+      - run: >-
+          cd externals/work/crm-multitenant-20261102 &&
+          test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" &&
+          NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000
+          --exit --require ./tests/hooks.js tests/postgres-filter.test.js
+          tests/postgres-entries-read.test.js
+        kind: integration
+        describe: >
+          Dormant read subset: 4 refusal/parameterization unit checks plus
+          6 real PG/MongoDB differential checks for supported AST, typed ids,
+          count, sort/paging, findOne/normalization and tenant isolation.
       - no-gate: >
           Binding/pooler and narrow generated-DDL/typed-identity proofs are
-          measured, not full M1 acceptance. Local tip 6b1bf889 remains dormant.
+          measured, not full M1 acceptance. Local tip 7d4f3872 remains dormant.
           Current v3/history/partial-unique identifier indexes, migration/import,
-          actual collection methods and applicable filter/read/write/identity
-          suites remain. No PG availability flag or hosted role is enabled.
+          writes/events, remaining methods, cursor caps and full query parity
+          remain. Unsupported shapes explicitly refuse. No PG availability
+          flag or hosted role is enabled.
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
@@ -205,6 +217,12 @@ items:
       Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks,
       with a single measured backend and controls. Emitter's typed-key option
       is experimental; default generated DDL unchanged. Complete adapter open.
+      Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured
+      bounded AST subset. Combined read/migration/existing regressions: 145
+      passing, no pending, across 12 files with owned disposable PG/MongoDB.
+      Regex/v1/projection/dotted paths/unsupported types/array-sort refuse;
+      no cursor/batch cap. Six differential and four unit checks, ESLint/tier
+      checks pass. No registration/writes/events or full M1 claim.
 
   - id: MT-CONFIG-MIN
     title: "Reviewed initial tenant configuration and headless owner API contract"
@@ -238,6 +256,10 @@ items:
       slice, covering tenant-local subject grants and bounded token lifetimes.
       Required authentication, tenant isolation and operator access stay pinned.
       Exact permissions, limits, concurrency and invalidation cases remain.
+      Further decision: grant removal/revocation applies at the next protected
+      operation across workers; current authorization unavailable means refusal.
+      JWT expiry/stale cache is not authority. Include protected socket delivery,
+      subscriptions/writes/reconnect and explicit authorization race semantics.
 
   - id: MT-SECRETS-CONTRACT
     title: "Tenant-bound secrets contract and early Vault Transit integration proof"
@@ -6372,9 +6394,10 @@ items:
     title: "`nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ""
-    base: official/dev
-    state: not-started
+    branch: workspace/multitenant-20261102
+    base: official/dev@61eb3733
+    worktree: externals/work/crm-multitenant-20261102
+    state: in-progress
     pr: []
     blast_radius: >
       A new `migrate` subcommand of bin/nightscout.js (D21), lib/storage
@@ -6388,13 +6411,24 @@ items:
     semver: minor
     semver_reason: a new subcommand and a boot step
     gates:
+      - run: >-
+          cd externals/work/crm-multitenant-20261102 &&
+          NS_MIGRATION_DOCKER_TEST=1 node_modules/.bin/mocha --timeout 30000
+          tests/migrations.test.js tests/postgres-migrations.integration.test.js
+          tests/nightscout-cli.test.js
+        kind: integration
+        describe: >
+          PG-only foundation: 39 checks (5 unit, 12 disposable-PG, 22 CLI),
+          atomic SQL/ledger, overlapping runners, SIGKILL/restart, bounded lock
+          wait, drift/history refusal, read-only/restricted identity and controls.
       - no-gate: >
-          Written with the build: the lab's restart, concurrency and drift
-          rows run against the shipping runner, each with its control.
-          Hosted serving roles must not execute migrations; explicit operator
-          execution and stale/incompatible-schema refusal are separate checks.
+          PG-only operator foundation is not full two-store acceptance.
+          MongoDB fencing-safe leases/resumability, production catalogues and
+          baseline, rollback/export policy and catalogue authenticity remain.
+          Serving-role compatibility wiring is absent; default boot unchanged.
     blocks_on: [MIG-VV]
     evidence:
+      - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
       - docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
@@ -6406,6 +6440,11 @@ items:
       Maintainer continuation 2026-11-02: explicit operator migration command
       for hosted deployments; serving roles check compatibility only. This
       does not introduce or change default single-site boot behavior in v16.
+
+      Local 68828b8d implements explicit PG operator up/status/check with
+      Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested,
+      not automatically detected. 39 checks pass; ESLint has zero errors and
+      two filesystem-path warnings. MongoDB/serving integration remains open.
 
       Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 

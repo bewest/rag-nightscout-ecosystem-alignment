@@ -32,17 +32,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 358 |
-| runnable gates | 411 |
+| runnable gates | 413 |
 | explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 780 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 782 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 76 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
-| `in-progress` | 14 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `not-started` | 75 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-WIRING, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `in-progress` | 15 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 17 | TEN-RESOLVE, TEN-LAB, RT-16-RELEASE, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8387,7 +8387,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 3 run + 1 no-gate |
+| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 4 run + 1 no-gate |
 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
@@ -8399,7 +8399,7 @@ alarm-readiness items, and the seam branch refresh.
 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `done` | `seam/t30-schema-cred` | n/a | 2 run + 2 no-gate |
 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `-` | n/a | 1 run + 2 no-gate |
 | `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `done` | `-` | n/a | 0 run + 1 no-gate |
-| `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 1 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
@@ -8472,7 +8472,9 @@ alarm-readiness items, and the seam branch refresh.
   - Owned disposable Docker lab: current connection plus historical emitted DDL through one transaction-pooled PgBouncer backend (9 checks), plus opt-in typed-key candidate and actual codec (4 checks). Includes actual binding/kind mutations; unsatisfied M1 properties stay explicit.
 - `[unit]` `NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js --fail-zero --exit externals/work/crm-multitenant-20261102/tests/postgres-identity.test.js`
   - Four identity codec checks: ObjectId/string JSON round trips, exact string spellings/nonmutation and unsupported/corrupt refusals.
-- **NO GATE** &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 6b1bf889 remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, actual collection methods and applicable filter/read/write/identity suites remain. No PG availability flag or hosted role is enabled.
+- `[integration]` `cd externals/work/crm-multitenant-20261102 && test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" && NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000 --exit --require ./tests/hooks.js tests/postgres-filter.test.js tests/postgres-entries-read.test.js`
+  - Dormant read subset: 4 refusal/parameterization unit checks plus 6 real PG/MongoDB differential checks for supported AST, typed ids, count, sort/paging, findOne/normalization and tenant isolation.
+- **NO GATE** &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 7d4f3872 remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, writes/events, remaining methods, cursor caps and full query parity remain. Unsupported shapes explicitly refuse. No PG availability flag or hosted role is enabled.
 
 **Evidence.**
 
@@ -8480,7 +8482,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/postgres-foundation/README.md`
 - `tools/lab/postgres-foundation/results.json`
 
-**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open.
+**Notes.** Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim.
 
 ### `MT-CONFIG-MIN` &mdash; Reviewed initial tenant configuration and headless owner API contract
 
@@ -8508,7 +8510,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain.
+**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain. Further decision: grant removal/revocation applies at the next protected operation across workers; current authorization unavailable means refusal. JWT expiry/stale cache is not authority. Include protected socket delivery, subscriptions/writes/reconnect and explicit authorization race semantics.
 
 ### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
 
@@ -8828,11 +8830,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `official/dev` |
-| worktree | `-` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/dev@61eb3733` |
+| worktree | `externals/work/crm-multitenant-20261102` |
 | semver | `minor` |
 | review | maintainer, plus a second human - it changes boot |
 | blocks on | `MIG-VV` |
@@ -8845,14 +8847,17 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Written with the build: the lab's restart, concurrency and drift rows run against the shipping runner, each with its control. Hosted serving roles must not execute migrations; explicit operator execution and stale/incompatible-schema refusal are separate checks.
+- `[integration]` `cd externals/work/crm-multitenant-20261102 && NS_MIGRATION_DOCKER_TEST=1 node_modules/.bin/mocha --timeout 30000 tests/migrations.test.js tests/postgres-migrations.integration.test.js tests/nightscout-cli.test.js`
+  - PG-only foundation: 39 checks (5 unit, 12 disposable-PG, 22 CLI), atomic SQL/ledger, overlapping runners, SIGKILL/restart, bounded lock wait, drift/history refusal, read-only/restricted identity and controls.
+- **NO GATE** &mdash; PG-only operator foundation is not full two-store acceptance. MongoDB fencing-safe leases/resumability, production catalogues and baseline, rollback/export policy and catalogue authenticity remain. Serving-role compatibility wiring is absent; default boot unchanged.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 - `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
+**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 
 ### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
 

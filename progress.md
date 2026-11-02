@@ -12,6 +12,38 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Multitenancy Entries Reads and Operator Migrations (2026-11-02)
+
+Two fresh-context implementation slices are persisted on the local upstream
+integration branch; **no upstream push or hosted enablement**.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Explicit PG operator runner | Local upstream `68828b8d`; `lib/migrations/`, `nightscout migrate` | Umzug 3.8.3, pinned-client advisory lock, atomic SQL/ledger, read-only status/check; no production catalogue or boot hook. |
+| Entries read/filter subset | Local upstream `7d4f3872`; `lib/storage/postgres-{filter,entries-read}.js` | Actual tenant-bound connection/typed identities; six real PG/MongoDB differential checks plus four refusal/parameterization checks. |
+| Decisions, gates and limits | [Delivery roadmap](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md), `queue/work-queue.yaml` | MIG-RUNNER now in progress, not complete; next-operation current authorization selected across workers, failing closed when unavailable. |
+
+**Validation:** **145 passing, no pending** across 12 focused upstream files
+with owned disposable PostgreSQL/MongoDB and project hooks. Migration-only run:
+39 passing, including 12 real PG acceptance cases for concurrency, bounded
+lock wait, SIGKILL/restart, rollback, drift/history and restricted checks, plus
+the unsafe split-commit control. ESLint: zero errors, two filesystem-path
+warnings. All 461 test files classified; generated typed DDL fixture hash
+matches. Owned containers and private credentials removed.
+
+**Remaining:** ST-PG/M1 is not complete. Unsupported query shapes refuse;
+cursor caps, remaining methods, writes/events, identifier retry/current
+indexes and backend registration remain. MIG-RUNNER still owes standalone
+MongoDB fencing-safe leases/resumability, actual catalogues/baselines and
+serving compatibility wiring. Revocation is an adopted contract, not yet
+an implemented guarantee. Single-site behavior is unchanged.
+
+**Source references:**
+`externals/work/crm-multitenant-20261102/lib/migrations/postgres.js:105-164`,
+`externals/work/crm-multitenant-20261102/lib/migrations/catalogue.js:19-38`,
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-filter.js:82-229`,
+`externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-read.js:49-98`.
+
 ## Multitenancy Pooler and Identity Continuation (2026-11-02)
 
 Completed the next bounded PG proofs and settled first-slice policy boundaries.
