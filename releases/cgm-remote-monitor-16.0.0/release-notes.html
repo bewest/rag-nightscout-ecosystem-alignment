@@ -2379,7 +2379,7 @@
 
 
 <h1 id="nightscout-1600---release-notes-draft">Nightscout 16.0.0 - release notes (DRAFT)<a class="headerlink" href="#nightscout-1600---release-notes-draft" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>80248ecb9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>51c599e6f</code>.</em></p>
 <p><strong>Draft for maintainer review, 2026-11-02. Not a release announcement.</strong>
 The version is decided: 16.0.0. The implementation is merged to development,
 but no named RC or v16 release is published. Informal testing is underway.
@@ -2390,6 +2390,11 @@ runtime dependencies and browser bundles, and an optional responsive modern
 theme. It also includes reporting, notification and interoperability fixes.
 It is <strong>not</strong> an automated-insulin-delivery algorithm upgrade, and it does not
 require all connected apps to release together.</p>
+<p>Nightscout 16 is designed to preserve interoperability with existing clients
+without coordinated client upgrades. New item-result replies are opt-in.
+Identity, re-send, deletion and unit-handling fixes have documented behavior
+changes; non-default strict/rejection settings need separate client checks.
+This is not a guarantee that every future client feature works on older servers.</p>
 <p><strong>Nightscout is not a medical device and nothing here is medical advice.</strong>
 These notes complement the generated changelog, which records what merged.
 The <a href="contents.html">technical contents</a> carry the full compatibility and known-defect

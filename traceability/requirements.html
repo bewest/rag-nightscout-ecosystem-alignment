@@ -2910,7 +2910,7 @@
 
 
 <h1 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>80248ecb9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>51c599e6f</code>.</em></p>
 <p>This document is an index of requirements organized by domain.</p>
 <h2 id="release-readiness-verification-2026-11-02">Release-readiness verification (2026-11-02)<a class="headerlink" href="#release-readiness-verification-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The <a href="../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current v16 ecosystem/acceptance record</a>
@@ -2939,6 +2939,13 @@ new normative protocol requirements. The reporter's #8829 result and both
 maintainers' non-reproduction must coexist in its release disposition:
 <strong>nonblocking for v16</strong>, decided by the maintainer November 2, with working
 DIY and production/service environments reported. It is not a new pre-tag gate.</p>
+<p>The compatibility catalogue covers 15 implementations through 120 shape matches
+(11 measured-tier, 109 read-tier), not live execution of every app. The supported
+release claim is high confidence in existing-client interoperability without
+coordinated upgrades, with documented intentional changes and opt-in boundaries.
+Universal new-client/old-server feature compatibility is not demonstrated.
+Previously tested contributions are high-confidence according to the maintainer;
+record that provenance separately from uncollected live outcome rows.</p>
 <h2 id="domain-files">Domain Files<a class="headerlink" href="#domain-files" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="aid-algorithms-requirements.html">Aid Algorithms</a> - 56 requirements (+3 OREF)</li>

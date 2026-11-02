@@ -1062,17 +1062,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#interpretation-limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interpretation limits
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -2250,17 +2239,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#interpretation-limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interpretation limits
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -2279,7 +2257,7 @@
 
 
 <h1 id="how-cgm-remote-monitor-1600-was-evaluated">How cgm-remote-monitor 16.0.0 was evaluated<a class="headerlink" href="#how-cgm-remote-monitor-1600-was-evaluated" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-01 at <code>f0be48fb1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>51c599e6f</code>.</em></p>
 <p><em>Contributor- and maintainer-facing release evidence. This colophon evaluates the merged <code>dev</code> tree,
 not a tagged release candidate. The complete comparison is the
 <a href="../../site/pages/cgm-remote-monitor-16.0.0-write-compatibility.html">write-compatibility report</a>;
@@ -2290,6 +2268,12 @@ It is not a claim that every deployed site or client has been exercised. The mea
 runtime, repeated runs, and test-data limitations are recorded with the comparison.
 The merged-dev endpoint disables the unique identifier index only so the matrix can seed intentional
 duplicate-identifier states; default index startup and duplicate-key races are separate evidence.</p>
+<p><strong>Acceptance reconciliation, 2026-11-02:</strong> the matrix measurement below remains
+the November 1 experiment, not a rerun. Informal cohort testing is underway.
+The maintainer reports that contributed patches were already tested before
+submission and are high-confidence; further live feedback will follow.
+Uncollected build/scenario rows are an evidence-recording task, not proof that
+the contributions were untested.</p>
 <h2 id="evidence-at-a-glance">Evidence at a glance<a class="headerlink" href="#evidence-at-a-glance" title="Permanent link">&para;</a></h2>
 <!-- chart: matrix-runs -->
 
@@ -2306,6 +2290,12 @@ bug fixes. The largest group is identifier-format handling (1,886 cells).</p>
 <p>The client catalogue contains 15 unique client implementations matched to 120 group-specific
 request shapes (11 measured-tier and 109 read-tier matches). These source-based matches do not
 represent client adoption, production traffic, or live application tests.</p>
+<p><strong>Compatibility assessment:</strong> high confidence in continued interoperability of
+known client contracts without coordinated upgrades; no universal guarantee for
+all versions, settings or future features. Legacy v1 replies remain the default,
+but intentional re-send/deletion/unit changes are not identical to 15.0.9.
+New clients relying on v16-only features still need tested fallback on older
+servers. See the <a href="../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html#compatibility-confidence-what-the-record-supports">claim-by-claim assessment</a>.</p>
 <h2 id="release-readiness">Release readiness<a class="headerlink" href="#release-readiness" title="Permanent link">&para;</a></h2>
 <!-- chart: release-gates -->
 
@@ -2315,9 +2305,10 @@ browser and 334 Connect cases gives 7,660 passing / 3 pending across suites
 counted once, not distinct test identities. The full CI matrix has 31,208
 passing / 13 pending executions because suites repeat across environments;
 these counts are not additional compatibility-matrix cells.</p>
-<p><strong>Private security remains blocked:</strong> BF-72/BF-161's prepared fixes contain
+<p><strong>Private security integration remains pending:</strong> the previously recorded
+BF-72/BF-161 prepared fixes contain
 current dev and combined focused tests passed 402; full-suite acceptance is
-inconclusive. No private PR exists. Advisory association is confirmed, but
+inconclusive. No private PR existed at that inspection. Advisory association was confirmed, but
 the maintainer must route the prepared patches through the advisory's
 Compare &amp; pull request workflow, then complete final integrated-tree checks.
 No private branch identifiers or payloads are published here.</p>
@@ -2329,7 +2320,12 @@ is still within the 16.0.0 entry bar and needs a current-base rebase and retest.
 work in <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8810">#8810</a> may roll to 16.1.0 under
 the plan's review condition; draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8891">#8891</a>
 is a profile prototype, not a release-critical gate.
-Operator-facing release notes remain unwritten until a candidate is named.</p>
+The earlier unwritten-notes status is superseded: <a href="release-notes.html">release notes</a> and
+<a href="testing-notes.html">cohort guidance</a> are now usable drafts, not final sign-off.
+Master's absent 4.4 protection requirement has been removed; retained required
+lanes are green, with staging review/policy work ongoing.</p>
+<h1 id="8829-is-nonblocking-by-maintainer-decision-neither-maintainer-reproduced-it">8829 is nonblocking by maintainer decision: neither maintainer reproduced it,<a class="headerlink" href="#8829-is-nonblocking-by-maintainer-decision-neither-maintainer-reproduced-it" title="Permanent link">&para;</a></h1>
+<p>and working DIY and production/service environments are reported.</p>
 <h2 id="interpretation-limits">Interpretation limits<a class="headerlink" href="#interpretation-limits" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The compatibility matrix measures synthetic request and storage outcomes; it does not prove that
