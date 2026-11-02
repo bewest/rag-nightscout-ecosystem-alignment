@@ -8209,7 +8209,7 @@
 
 
 <h1 id="nightscout-multitenancy-next-priorities-postgresql-rls-and-celld">Nightscout multitenancy: next priorities, PostgreSQL RLS and Celld<a class="headerlink" href="#nightscout-multitenancy-next-priorities-postgresql-rls-and-celld" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>f214b7dab</code>.</em></p>
 <p><strong>Assessment: 2026-11-02. Recommendations, not newly adopted decisions or
 production acceptance.</strong> Public <code>dev</code> was checked through GitHub and read from
 the local <code>official/dev</code> ref at <code>61eb37335954ae42c91345a0823bd67331025165</code>.
@@ -8222,6 +8222,15 @@ legacy per-tenant credentials, a reviewed settings subset and early Vault
 feasibility work. Human identity and next-generation execution have separate
 gates. The Celld section remains evidence of the evaluated alternative, not
 scheduled work.</p>
+<p><strong>Measured continuation:</strong> the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">roadmap's execution follow-up</a>
+now records 9 current-connection PgBouncer/DDL checks and 4 typed-identity
+checks. The historical JSON key collapses ObjectId/string copies; the opt-in
+typed-key candidate and dormant codec preserve both. This does not certify
+the entries adapter, migration runner or hosted operation. Source identity
+rules are at
+<code>externals/work/crm-multitenant-20261102/lib/server/object-id-forms.js:82-106</code>;
+the new codec is at
+<code>externals/work/crm-multitenant-20261102/lib/storage/postgres-identity.js:13-38</code>.</p>
 <h2 id="1-bottom-line">1. Bottom line<a class="headerlink" href="#1-bottom-line" title="Permanent link">&para;</a></h2>
 <p>The next useful delivery is <strong>an entries-first PostgreSQL RLS slice on current
 dev</strong>, alongside a <strong>tenant configuration/authentication integration workstream</strong>.
@@ -8299,7 +8308,7 @@ an untested idea.</p>
 </ul>
 <h3 id="a-coordination-blocker-two-generations-of-planning">A coordination blocker: two generations of planning<a class="headerlink" href="#a-coordination-blocker-two-generations-of-planning" title="Permanent link">&para;</a></h3>
 <p>At the initial assessment, the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f214b7dab0596783bb26c2482e3319c2143c8d62/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
 TEN-RESOLVE and TEN-LAB without corresponding executable-work items in
 <code>queue/work-queue.yaml</code>. The adopted roadmap has since added those queue items
 and bounded M0/Vault checks. Their complete acceptance is still open.

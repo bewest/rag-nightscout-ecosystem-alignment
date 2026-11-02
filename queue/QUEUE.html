@@ -3213,7 +3213,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>f214b7dab</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3256,7 +3256,7 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>409</td>
+<td>411</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3264,7 +3264,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 778 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 780 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20171,7 +20171,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>in-progress</code></td>
 <td><code>workspace/multitenant-20261102</code></td>
 <td>n/a</td>
-<td>1 run + 1 no-gate</td>
+<td>3 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>MT-CONFIG-MIN</code></td>
@@ -20677,13 +20677,19 @@ alarm-readiness items, and the seam branch refresh.</p>
 <ul>
 <li><code>[integration]</code> <code>test -n "$NS_TEST_POSTGRES_ADMIN_URI" &amp;&amp; NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js --fail-zero --timeout 15000 --exit externals/work/crm-multitenant-20261102/tests/postgres-connection.test.js</code></li>
 <li>M0 transaction foundation only: 9 real PostgreSQL checks including overlapping tenant identities, denied inserts/updates/TRUNCATE, rollback, released-scope refusal, pooled binding cleanup and breaks.</li>
-<li><strong>NO GATE</strong> &mdash; M0 binding/RLS proof is local at 27f085c9 plus ce14d637. PgBouncer revalidation and generated production DDL/migration acceptance remain. M1 still needs the real entries adapter and applicable backend/read/write/identity suites executing, not pending. No PG availability flag or hosted role is enabled by a foundation proof.</li>
+<li><code>[integration]</code> <code>node tools/lab/postgres-foundation/harness.js</code></li>
+<li>Owned disposable Docker lab: current connection plus historical emitted DDL through one transaction-pooled PgBouncer backend (9 checks), plus opt-in typed-key candidate and actual codec (4 checks). Includes actual binding/kind mutations; unsatisfied M1 properties stay explicit.</li>
+<li><code>[unit]</code> <code>NODE_ENV=test node externals/work/crm-multitenant-20261102/node_modules/mocha/bin/mocha.js --fail-zero --exit externals/work/crm-multitenant-20261102/tests/postgres-identity.test.js</code></li>
+<li>Four identity codec checks: ObjectId/string JSON round trips, exact string spellings/nonmutation and unsupported/corrupt refusals.</li>
+<li><strong>NO GATE</strong> &mdash; Binding/pooler and narrow generated-DDL/typed-identity proofs are measured, not full M1 acceptance. Local tip 6b1bf889 remains dormant. Current v3/history/partial-unique identifier indexes, migration/import, actual collection methods and applicable filter/read/write/identity suites remain. No PG availability flag or hosted role is enabled.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md</code></li>
+<li><code>tools/lab/postgres-foundation/README.md</code></li>
+<li><code>tools/lab/postgres-foundation/results.json</code></li>
 </ul>
-<p><strong>Notes.</strong> Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push.</p>
+<p><strong>Notes.</strong> Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled- cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open.</p>
 <h3 id="mt-config-min--reviewed-initial-tenant-configuration-and-headless-owner-api-contract"><code>MT-CONFIG-MIN</code> &mdash; Reviewed initial tenant configuration and headless owner API contract<a class="headerlink" href="#mt-config-min--reviewed-initial-tenant-configuration-and-headless-owner-api-contract" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20734,7 +20740,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <ul>
 <li><code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle.</p>
+<p><strong>Notes.</strong> Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain.</p>
 <h3 id="mt-secrets-contract--tenant-bound-secrets-contract-and-early-vault-transit-integration-proof"><code>MT-SECRETS-CONTRACT</code> &mdash; Tenant-bound secrets contract and early Vault Transit integration proof<a class="headerlink" href="#mt-secrets-contract--tenant-bound-secrets-contract-and-early-vault-transit-integration-proof" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20789,7 +20795,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>tools/lab/vault-transit/README.md</code></li>
 <li><code>tools/lab/vault-transit/results.json</code></li>
 </ul>
-<p><strong>Notes.</strong> Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex.</p>
+<p><strong>Notes.</strong> Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex. Continuation recommendation in response to maintainer: Vault-facing adapter next behind the provider-neutral contract; built-in remains an option. No comparative efficiency or production readiness claim.</p>
 <h3 id="ten-resolve--current-dev-tenant-resolution-and-private-operator-lifecycle"><code>TEN-RESOLVE</code> &mdash; Current-dev tenant resolution and private operator lifecycle<a class="headerlink" href="#ten-resolve--current-dev-tenant-resolution-and-private-operator-lifecycle" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -21331,19 +21337,19 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> A new <code>migrate</code> subcommand of bin/nightscout.js (D21), lib/storage migration adapters, a ledger per store; single sites migrate at boot under the lock; serving roles refuse a stale schema.</p>
+<p><strong>Blast radius.</strong> A new <code>migrate</code> subcommand of bin/nightscout.js (D21), lib/storage migration adapters, a ledger per store; single sites migrate at boot under the lock as separately planned; hosted migrations run by explicit operator command only, and serving roles only check compatibility.</p>
 <p><strong>What an operator sees.</strong> Database changes would be applied by a recorded, locked step, either at start-up (self-hosted) or by a command the hoster runs.</p>
 <p><strong>Why <code>minor</code>.</strong> a new subcommand and a boot step</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; Written with the build: the lab's restart, concurrency and drift rows run against the shipping runner, each with its control.</li>
+<li><strong>NO GATE</strong> &mdash; Written with the build: the lab's restart, concurrency and drift rows run against the shipping runner, each with its control. Hosted serving roles must not execute migrations; explicit operator execution and stale/incompatible-schema refusal are separate checks.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md</code></li>
 <li><code>docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.</p>
+<p><strong>Notes.</strong> 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.</p>
 <h3 id="t30-ory-proof--stand-up-kratos-1x-and-hydra-2x-and-try-to-make-one-pool-serve-two-tenants"><code>T30-ORY-PROOF</code> &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants<a class="headerlink" href="#t30-ory-proof--stand-up-kratos-1x-and-hydra-2x-and-try-to-make-one-pool-serve-two-tenants" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

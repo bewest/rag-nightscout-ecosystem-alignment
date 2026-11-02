@@ -2748,6 +2748,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation: pooler proof and typed identity primitive (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4977,6 +4988,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Continuation: pooler proof and typed identity primitive (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5077,6 +5099,12 @@ Deployment/runtime values remain in each role's environment; credentials are
 never settings. Re-census current dev before claiming full catalogue coverage.
 Detailed names, API paths and optimistic-concurrency/error shapes are design
 outputs of MT-CONFIG-MIN, not silently chosen here.</p>
+<p><strong>Continuation decisions (November 2):</strong> include owner-editable authorization
+policy in the first slice: tenant-local subject grants and bounded token
+lifetimes, under the code/operator floors. Mandatory authentication, tenant
+isolation and operator access cannot be weakened by an owner. Exact permission
+names, lifetime limits, revocation/invalidation and API cases remain contract
+outputs, not implemented settings.</p>
 <p>Preserve hashed <code>api-secret</code> headers, subject tokens and socket secret forms
 using <strong>each tenant's</strong> root credential. Resolve and authorize the tenant before
 credential verification; per-tenant JWT signing keys remain per-tenant. There
@@ -5169,6 +5197,9 @@ M0 does not certify M1, and M3 does not certify M6.</p>
 both stores with lock/ledger/drift/restart semantics from the measured lab.
 Hosted roles refuse stale schemas. Do not add a new default single-site boot
 migration behavior to the v16 candidate without its own placement/review.</p>
+<p>The maintainer selects <strong>explicit operator-run hosted migrations</strong>; serving
+roles check schema compatibility but do not migrate it. This does not revise
+the separately planned single-site boot behavior or change today's boot.</p>
 <p>Interprocess event delivery is a named design task: D-EVENT's in-process
 <code>storage-intent-committed</code> is not a durable bus. Reconcile D6's PG feed design
 with it, with a durable checkpoint/replay story and explicit ordering,
@@ -5241,7 +5272,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c7cb5bb2cc7eb6517e3f1d4e2632b6abc234402b/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f214b7dab0596783bb26c2482e3319c2143c8d62/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -5274,6 +5305,63 @@ to a disposable PostgreSQL admin connection. Do not use a production database.</
 configuration slice still owes its exact setting names, paths, preconditions
 and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
+<h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
+<p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f214b7dab0596783bb26c2482e3319c2143c8d62/tools/lab/postgres-foundation/results.json">sanitized results</a>
+exercise the actual connection module, not the September adapter. PostgreSQL
+<strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
+per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
+execute 24 interleaved tenant transactions on a measured single server PID.
+Reads/writes, rollback, binding cleanup, unbound readers and dirty/null/missing
+generated-column values pass. Disabling RLS, granting BYPASSRLS and mutating the
+actual connection module to session-local binding demonstrate the failures.
+The historical emitted entries DDL applies unchanged.</p>
+<p><strong>A discovered M1 blocker, not a passing adapter test:</strong> the current
+<code>externals/work/crm-multitenant-20261102/lib/server/object-id-forms.js:82-106</code>
+returns both an ObjectId and the same-spelling string. Ordinary JSON
+serialization collapses them, so the historical <code>(tenant_id, _id)</code> DDL rejects
+the second stored form with <code>23505</code>; raw Extended JSON instead fails its
+generated string key with <code>23502</code>. The maintainer explicitly requires preserving
+the distinction from the first adapter slice, not deferring it to import.</p>
+<p><strong>Local upstream commit <code>6b1bf889a275b52bd119d122553bceb717e06ca9</code></strong>
+adds the dormant identity codec:
+<code>externals/work/crm-multitenant-20261102/lib/storage/postgres-identity.js:13-38</code>.
+It keeps kind metadata outside the JSON document and reconstructs the original
+ObjectId/string; unsupported/corrupt identities refuse rather than coerce.
+The existing emitter now offers <strong>opt-in</strong> <code>--identity-kinds</code>
+(<code>tools/nsschema/emit/postgres_emit.py:284-318</code>), producing the lab candidate
+key <code>(tenant_id, id_kind, _id)</code> and kind/encoding constraints. The normal
+generated production-shaped files are unchanged. This is a migration candidate,
+not a boot-time schema modification.</p>
+<p><strong>4 real-PG identity checks pass</strong> using that generated candidate and actual
+codec: both forms in both tenants, case/custom-string preservation, kind-scoped
+deletion and constraint refusals. Flattening the actual codec's kind recreates
+the collision; the restored codec stores both. <strong>65 focused upstream checks</strong>
+pass across six files with disposable PG/MongoDB, plus ESLint and test-tier
+classification. Both new PG files are now in their appropriate test tiers.
+The schema pipeline has <strong>291 passing tests</strong>, including unchanged default DDL.
+One attempted regression run omitted the required MongoDB environment; the
+corrected isolated PG/MongoDB run is the reported green result.</p>
+<p><strong>Still open:</strong> this is not the entries collection adapter, arbitrary BSON
+import fidelity, filter/sort parity, durable events or migration-runner
+acceptance. The historical DDL also lacks current v3 <code>srvModified</code>/<code>isValid</code>
+indexes and the tenant-scoped partial unique identifier index. Those unsatisfied
+properties stay visible in the report's <code>adapterBlockers</code>; the separate
+<code>identityChecks</code> prove only the typed candidate. No backend availability flag,
+hosted role or single-site behavior changes. No upstream push was made.</p>
+<p><strong>Next implementation, without another architecture vote:</strong> integrate the
+typed identity into entries reads/writes and emitted migration plans. Preserve
+the current choice among identifier matches and ObjectId/string copies, not
+only their stored keys. Translate identifier-constraint collisions specifically
+and preserve retry outcomes without continuing an aborted PG transaction.
+Exercise the current filter/null/array/order/pagination, resend/delete/batch and
+source/event contracts before marking M1 accepted. Do not copy the old SQL
+compiler or registry availability flag as a shortcut.</p>
+<p><strong>Parallel:</strong> build MIG-RUNNER with explicit hosted operator execution; complete
+the minimum settings/subject-policy API and provider-neutral secrets contract.
+The recommendation is the Vault-facing adapter next, retaining the built-in
+option—not a claim that Vault is cheaper, more efficient or production-ready.
+Human identity, evaluator/events and next-generation execution remain separate.</p>
 
 
 

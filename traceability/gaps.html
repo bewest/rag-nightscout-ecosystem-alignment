@@ -2766,7 +2766,7 @@
 
 
 <h1 id="gaps">Gaps<a class="headerlink" href="#gaps" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>3d6d68bb0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>f214b7dab</code>.</em></p>
 <p>This document is an index of gaps organized by domain.</p>
 <h2 id="hosted-tenancy-integration-follow-up-2026-11-02">Hosted-tenancy integration follow-up (2026-11-02)<a class="headerlink" href="#hosted-tenancy-integration-follow-up-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The maintainer's <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
@@ -2776,6 +2776,14 @@ per-tenant credentials and a reviewed settings subset. Early Vault feasibility
 supports the existing secrets decision; a cryptographic API is not the complete
 tenant secret store. Human identity and durable runtime/next-gen execution are
 separate workstreams, not prerequisites to a synthetic storage proof.</p>
+<p><strong>Measured continuation:</strong> current-connection PgBouncer/DDL isolation now has
+9 passing checks and actual RLS/binding/privileged-role controls. M1 preflight
+exposes a historical-DDL identity gap: ObjectId/string twins collapse under
+ordinary JSON encoding. Local upstream <code>6b1bf889</code> and the opt-in generated
+typed-key candidate pass 4 narrow identity checks; the complete adapter,
+current v3/partial-unique indexes, import fidelity and migration runner remain
+open. See the roadmap and <code>tools/lab/postgres-foundation/results.json</code>.
+No new protocol GAP IDs or hosted acceptance are claimed.</p>
 <p>The <a href="../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.html">multitenancy priorities assessment</a>
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current
 dev <code>61eb3733</code>. The storage harness and scope are merged; the PostgreSQL adapter,

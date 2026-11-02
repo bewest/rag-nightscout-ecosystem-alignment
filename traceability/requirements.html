@@ -2954,7 +2954,7 @@
 
 
 <h1 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>3d6d68bb0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>f214b7dab</code>.</em></p>
 <p>This document is an index of requirements organized by domain.</p>
 <h2 id="hosted-tenancy-experiment-verification-2026-11-02">Hosted-tenancy experiment verification (2026-11-02)<a class="headerlink" href="#hosted-tenancy-experiment-verification-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The adopted <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
@@ -2964,6 +2964,16 @@ uses the supported headless API and project floors even when a vendor supplies
 UI. Initial configuration is a reviewed subset; unsupported settings and
 inactive alarm/integration features refuse explicitly. Synthetic token/root
 principals must not be audited as verified humans. Celld is out of scope.</p>
+<p>Continuation acceptance explicitly preserves ObjectId versus same-spelling
+string identities from the first PG adapter slice, including current
+lookup/deletion preference; JSON equality is insufficient. The opt-in typed
+key/codec proof is narrow, not general BSON/import fidelity. Owner-editable
+authorization includes tenant-local grants and bounded token lifetimes, never
+weaker authentication/isolation floors. Hosted migration execution is an
+explicit operator command; serving roles only check compatibility. The
+pooler lab verifies the actual binding through one shared transaction-pooled
+backend, including an actual session-binding mutation, not separate-server
+clients. These refine existing acceptance and add no duplicate REQ IDs.</p>
 <p>The <a href="../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.html">multitenancy priorities assessment</a>
 clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new
 protocol requirement IDs. A PG pass executes applicable storage tests on the
