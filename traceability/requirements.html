@@ -2954,7 +2954,7 @@
 
 
 <h1 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>348b129d0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>51006fccf</code>.</em></p>
 <p>This document is an index of requirements organized by domain.</p>
 <h2 id="hosted-tenancy-experiment-verification-2026-11-02">Hosted-tenancy experiment verification (2026-11-02)<a class="headerlink" href="#hosted-tenancy-experiment-verification-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>The adopted <a href="../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
@@ -3002,6 +3002,14 @@ well as disjoint patches: compare with the locked document, not a stale
 statement snapshot. Three implementation mutations demonstrate the checks.
 This does not waive bulk/upsert/every-form outcomes, constraint-specific
 retry, source labels, validation or commit-event integration.</p>
+<p>The integrated secrets continuation requires current authorization before
+every component operation and an independently committed, redacted audit
+attempt before provider work. Immutable ciphertext references are tenant-bound;
+maintenance rewrap uses a separate identity and CAS, not plaintext exposure
+or credential replacement. The 230-test combined acceptance and reconciled
+465-file tier map do not establish end-to-end data/socket revocation,
+backup/restore, process-crash recovery or settings/subject-policy API completion.
+The broad dependency tier still has an explicit ancestor-installed AJV failure.</p>
 <p>The <a href="../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.html">multitenancy priorities assessment</a>
 clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new
 protocol requirement IDs. A PG pass executes applicable storage tests on the

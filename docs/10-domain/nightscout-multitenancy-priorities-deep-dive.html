@@ -8209,7 +8209,7 @@
 
 
 <h1 id="nightscout-multitenancy-next-priorities-postgresql-rls-and-celld">Nightscout multitenancy: next priorities, PostgreSQL RLS and Celld<a class="headerlink" href="#nightscout-multitenancy-next-priorities-postgresql-rls-and-celld" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>348b129d0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>51006fccf</code>.</em></p>
 <p><strong>Assessment: 2026-11-02. Recommendations, not newly adopted decisions or
 production acceptance.</strong> Public <code>dev</code> was checked through GitHub and read from
 the local <code>official/dev</code> ref at <code>61eb37335954ae42c91345a0823bd67331025165</code>.
@@ -8265,6 +8265,18 @@ integration remain; no backend is enabled. See the
 <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-dormant-entries-writes-2026-11-02">write acceptance record</a>.
 The other session owns migrations, settings/subject policy and provider-neutral
 secrets/Vault-facing work; this slice leaves those files unchanged.</p>
+<p><strong>Integrated continuation:</strong> local merge <code>6943dccb</code> now joins the entries slice
+with the parallel secrets branch (<code>a3888080</code>, <code>cbbe9179</code>, <code>fec19ba5</code>):
+provider-neutral authorization/audit boundaries, Vault Transit, PG ciphertext/
+audit persistence and maintenance-only rewrap/CAS. <strong>230 focused tests pass
+without pending</strong>, including real Vault/PG, migration and entries checks
+together; all <strong>465 test files</strong> classify. Unit/DOM/core/harness tiers pass
+after building local bundles. The dependency tier remains non-green because
+its unchanged <code>har-validator</code> assertion resolves old AJV outside the worktree.
+See the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-entries-and-vault-facing-secrets-2026-11-02">integration acceptance and parallel handoff</a>.
+The next isolated secrets objective is backup/restore and actual process-crash
+acceptance; owner-policy APIs, MongoDB migrations and runtime consumers remain
+unfinished. This is no backend promotion or production-Vault acceptance.</p>
 <h2 id="1-bottom-line">1. Bottom line<a class="headerlink" href="#1-bottom-line" title="Permanent link">&para;</a></h2>
 <p>The next useful delivery is <strong>an entries-first PostgreSQL RLS slice on current
 dev</strong>, alongside a <strong>tenant configuration/authentication integration workstream</strong>.
@@ -8342,7 +8354,7 @@ an untested idea.</p>
 </ul>
 <h3 id="a-coordination-blocker-two-generations-of-planning">A coordination blocker: two generations of planning<a class="headerlink" href="#a-coordination-blocker-two-generations-of-planning" title="Permanent link">&para;</a></h3>
 <p>At the initial assessment, the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/348b129d0f060b8057958b6cea1f61b257da680f/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/51006fccf5715decf589660eff710de10fcb2e5b/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
 TEN-RESOLVE and TEN-LAB without corresponding executable-work items in
 <code>queue/work-queue.yaml</code>. The adopted roadmap has since added those queue items
 and bounded M0/Vault checks. Their complete acceptance is still open.

@@ -2792,6 +2792,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#integration-entries-and-vault-facing-secrets-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration: entries and Vault-facing secrets (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5065,6 +5076,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#integration-entries-and-vault-facing-secrets-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration: entries and Vault-facing secrets (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5349,7 +5371,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/348b129d0f060b8057958b6cea1f61b257da680f/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/51006fccf5715decf589660eff710de10fcb2e5b/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -5384,7 +5406,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/348b129d0f060b8057958b6cea1f61b257da680f/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/51006fccf5715decf589660eff710de10fcb2e5b/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
@@ -5591,6 +5613,118 @@ or claim Vault cost/efficiency/production readiness. Human identity,
 evaluator/events and next-generation execution remain separate. The next
 storage slice is entries upsert/resend/batch outcomes with constraint-specific
 retry, coordinated with the reviewed schema/catalogue owner.</p>
+<h3 id="integration-entries-and-vault-facing-secrets-2026-11-02">Integration: entries and Vault-facing secrets (2026-11-02)<a class="headerlink" href="#integration-entries-and-vault-facing-secrets-2026-11-02" title="Permanent link">&para;</a></h3>
+<p><strong>Local merge <code>6943dccb25e680d063a00e69ee0434d8bcb3eedb</code></strong> joins entries
+<code>7bcfc8b0</code> and the parallel secrets branch at
+<code>fec19ba5b0526e9c94c751dc24ea4505eb5d92ae</code>. Its three imported commits are
+<code>a3888080</code> (provider-neutral component/Vault adapter), <code>cbbe9179</code> (PG ciphertext
+and audit persistence) and <code>fec19ba5</code> (audited rewrap/CAS). The integration branch
+remains <code>workspace/multitenant-20261102</code>; nothing was pushed upstream.</p>
+<p>The dormant component authorizes each operation against injected current
+authority, awaits a redacted audit receipt, and binds encrypted plaintext and
+JWT audience to the tenant. Vault keys are not exported. The optional PG adapter
+persists immutable references and independently committed append-only audit
+attempts. A separate maintenance identity can rewrap ciphertext using CAS;
+it has neither record INSERT nor plaintext-decrypt authority. Concurrent
+rewraps have one winner; retries reload after a conflict or uncertain reply.
+The experimental secrets catalogue upgrades through the existing explicit
+operator runner; no migration is performed at serving boot.</p>
+<p><strong>Integrated acceptance: 230 passing, no pending, across 17 files.</strong> This runs
+entries writes/reads/filter/identity/transactions, existing MongoDB filter,
+scope/backend/v3-write-intent regression checks, migrations/CLI, and the full
+33-test secrets/Vault/PG acceptance together. All three Docker opt-ins were
+enabled, as were disposable entries PG/MongoDB URIs. Real scoped Vault calls,
+PG restart, migration SIGKILL/restart, audit-before-provider visibility, tenant
+RLS, maintenance-only privileges, rewrap races and simulated lost replies
+execute rather than skip. Lab-owned containers were removed.</p>
+<p><code>tests/tiers.json</code> merged without conflicts and keeps all four new test files:
+the entries-write file, secrets unit file and two secrets integration files.
+<strong>All 465 files classify</strong>. ESLint and the existing write-boundary check pass.
+No dependency-manifest, migration-runner, entries-source or serving-role file
+changed in this merge.</p>
+<p>The CI no-database runner was also exercised. Initially missing local frontend
+artifacts caused bundle/map, DOM and gzip-accounting failures; building with
+<code>npm run bundle</code> resolved them. On the built tree:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unit</td>
+<td>2,108 passing</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>205 passing</td>
+</tr>
+<tr>
+<td>core</td>
+<td>319 passing</td>
+</tr>
+<tr>
+<td>harness</td>
+<td>92 passing</td>
+</tr>
+<tr>
+<td>dependency</td>
+<td>368 passing, 1 pending, 1 failing</td>
+</tr>
+</tbody>
+</table>
+<p>The remaining unchanged dependency assertion finds <code>har-validator</code> and AJV
+6.12.6 in ancestor <code>/home/bewest/node_modules</code>, outside the integration tree,
+while requiring AJV &gt;=6.14.0. No dependency manifest changed and no ancestor
+installation was altered. <strong>The full no-database command is not green</strong>;
+this is an explicit environment/dependency limitation, not a secrets/entries
+acceptance pass or permission to waive the gate. The production bundle builds
+with its three webpack performance warnings.</p>
+<p>Reproduce the combined checks in the integration worktree:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Both URI variables must name disposable databases; MongoDB name contains test.</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">test</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">"</span><span class="nv">$NS_TEST_POSTGRES_ADMIN_URI</span><span class="s2">"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">"</span><span class="nv">$CUSTOMCONNSTR_mongo</span><span class="s2">"</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="nv">NS_MIGRATION_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_VAULT_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">NS_SECRETS_POSTGRES_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>node_modules/.bin/mocha<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span>--fail-zero<span class="w"> </span>--timeout<span class="w"> </span><span class="m">30000</span><span class="w"> </span>--exit<span class="w"> </span>--require<span class="w"> </span>./tests/hooks.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span>tests/postgres-entries-write.test.js<span class="w"> </span>tests/postgres-entries-read.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span>tests/postgres-filter.test.js<span class="w"> </span>tests/postgres-identity.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span>tests/postgres-connection.test.js<span class="w"> </span>tests/storage.filter.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span>tests/api3.storage.filter-semantics.test.js<span class="w"> </span>tests/storage.tenant-scope.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span>tests/storage-backend-selection.test.js<span class="w"> </span>tests/test-backends.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span>tests/write-intent.v3.test.js<span class="w"> </span>tests/migrations.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span>tests/postgres-migrations.integration.test.js<span class="w"> </span>tests/nightscout-cli.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">  </span>tests/secrets.test.js<span class="w"> </span>tests/vault-secrets.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">  </span>tests/postgres-secrets.integration.test.js
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>node<span class="w"> </span>scripts/test-tiers.js<span class="w"> </span>check
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span>node<span class="w"> </span>scripts/test-tiers.js<span class="w"> </span>run<span class="w"> </span>unit,dom,dependency,core,harness<span class="w"> </span>--ci
+</code></pre></div>
+<p><strong>Parallel continuation handoff:</strong> the clean secrets worktree can first
+fast-forward to this integrated baseline, preserving the original commits:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/work/crm-secrets-20261102<span class="w"> </span>merge<span class="w"> </span>--ff-only<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>workspace/multitenant-20261102
+</code></pre></div>
+<p>Its next bounded objective is <strong>synthetic secrets backup/restore and process
+crash/retry acceptance</strong> in that isolated worktree. Restore ciphertext/audit
+and necessary key versions; demonstrate unchanged references/values and
+explicit missing-key/provider refusal, then exercise actual process termination
+around rewrap/CAS. Do not equate an interrupted-call test or database restart
+with that result. Keep <code>0001</code>/<code>0002</code> catalogue checksums immutable; any schema
+change appends a reviewed candidate migration. Do not modify entries, enable
+consumers or push. Reconcile any new tier entry during the next integration.</p>
+<p>The entries lane retains upsert/resend/batch/constraint-retry work. MIG-RUNNER's
+MongoDB fencing/resume, minimum settings/subject-policy API and current-grant
+integration remain separate unfinished work; merging the secrets boundary
+does not complete them. Built-in signing remains an adopted option, with no
+Vault cost/efficiency/production claim. Human identity, evaluator/events and
+next-generation execution remain separate. M1/M2 and backend availability
+remain unpromoted.</p>
+<p>Source:
+<code>externals/work/crm-multitenant-20261102/lib/secrets/component.js:16-140</code>,
+<code>externals/work/crm-multitenant-20261102/lib/secrets/postgres.js:34-153</code>,
+<code>externals/work/crm-multitenant-20261102/lib/secrets/vault-transit.js:29-123</code>,
+<code>externals/work/crm-multitenant-20261102/tests/postgres-secrets.integration.test.js:19-443</code>.</p>
 
 
 
