@@ -12,6 +12,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Parallel Current Authority and Scalar Settings Acceptance (2026-11-02)
+
+Local control-plane commits **`1dd8990b`** and **`011802ba`** complete bounded
+dormant persistent subject authority and the typed units/seconds settings
+subset. Real persistence covers cross-worker revocation, outages, floors,
+version conflicts, isolation, attributed history and policy-aware rollback.
+Recorded local acceptance: **36 passing, zero pending**, ESLint clean and
+all **465** test files classified. No entries/runtime changes or serving.
+
+**Integration not yet confirmed:** the peer branch remains at `0de90852`.
+Hand off both commits and rerun targeted and broader integrated acceptance;
+record the actual merge/results before marking them integrated. Next feasible
+control-plane work is persistent operator policy plus atomic policy/write
+fencing; full settings/API, management authentication and M2 remain open.
+MongoDB migration work needs ownership confirmation; entries remain with the
+integration session. The roadmap now distinguishes local/integrated/unfinished
+work and records the ongoing alignment-main documentation process.
+
+See the [acceptance and handoff record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02).
+
 ## Multitenancy Secrets Recovery Integration (2026-11-02)
 
 Local merge **`0de90852`** joins entries `a8dd162d` and parallel recovery

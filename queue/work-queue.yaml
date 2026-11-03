@@ -301,9 +301,15 @@ items:
       operation across workers; current authorization unavailable means refusal.
       JWT expiry/stale cache is not authority. Include protected socket delivery,
       subscriptions/writes/reconnect and explicit authorization race semantics.
-      After integrated recovery 0de90852, the next parallel slice reconciles
-      this contract and implements a dormant subject-policy/current-authority
-      service with real cross-worker revocation/outage/version/floor checks.
+      Local 1dd8990b implements dormant persistent subject authority; 011802ba
+      adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and
+      whole policy-aware rollback. Combined local acceptance: 36 passing,
+      zero pending; ESLint and 465-file classification pass. Neither commit
+      is integrated at the verified peer tip 0de90852. Integrate and rerun
+      acceptance before marking integrated. Next control-plane milestone:
+      persistent operator rules/grant ceilings and atomic policy/write fencing.
+      Operator policy and management authentication remain injected; timezone,
+      token-lifetime policy, public API and runtime invalidation remain open.
       No owner/data/socket serving or end-to-end revocation acceptance implied.
 
   - id: MT-SECRETS-CONTRACT

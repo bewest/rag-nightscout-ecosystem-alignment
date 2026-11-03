@@ -11,6 +11,47 @@ in the [priorities assessment](../../10-domain/nightscout-multitenancy-prioritie
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.
 
+## Current status and parallel ownership (2026-11-02)
+
+**Read this summary before the execution history below.** Verified local
+integration tip: `0de90852`. It includes our secrets recovery commit `78b915ab`.
+The integrated gate reports **879 passing, zero pending**; the separate broad
+no-database AJV limitation remains unresolved. Nothing is pushed or enabled for
+serving. "Complete slice" means its bounded acceptance passed, not that its
+parent milestone is promoted.
+
+| Work / milestone | Current status | Owner / next action |
+|---|---|---|
+| M0: foundations | PG transaction/RLS and migration foundation slices accepted; full M0 promotion remains open | Integration/entries session: remaining deployment/schema acceptance |
+| M1: entries adapter | In progress: reads, filters, identity, writes/upserts and dormant v3 intents accepted; full adapter not promoted | Integration/entries session: reviewed DDL/import/field-order contract, compatibility and resource bounds |
+| Secrets component + Vault adapter | Complete dormant slice, integrated: tenant-bound crypto/JWT, ciphertext/audit persistence and rewrap/CAS | No additional Vault feature expansion assigned here |
+| Secrets synthetic recovery | Complete bounded slice, integrated in `0de90852`: database/key snapshots and actual worker SIGKILL/retry | Do not repeat; production recovery remains open |
+| Current subject authority | Complete dormant local slice in `1dd8990b`; not yet integrated | Integration session: incorporate and rerun acceptance; public/runtime enforcement remains open |
+| Minimum scalar settings | Complete dormant local subset in `011802ba`: units/seconds, provenance, versioned history and policy-aware rollback; not yet integrated | Control-plane session: persistent operator policy and atomic policy/write fencing next; full MT-CONFIG-MIN remains open |
+| MIG-RUNNER | PG explicit-operator foundation accepted; MongoDB fencing/resume and full runner acceptance unfinished | Separate unassigned lane in the latest handoff; do not assume another session is actively implementing it |
+| M2: tenant control plane | Open: secrets is only one dependency; settings, current grants, tenant resolution and runtime wiring remain | This session takes the bounded settings/authority dependency; coordinate later integration |
+| M3: two-tenant HTTP lab | Blocked on M1/M2; not completed by dormant service tests | Follow storage/control-plane acceptance, not a parallel implementation here yet |
+| M4: existing-client surface | Not accepted; full collections/v1/v3 compatibility and wiring remain | Entries session covers its bounded compatibility work; full M4 follows M3 |
+| M5: realtime/evaluator | Separate unfinished track | Not assigned to this session; durable events and socket enforcement need their own acceptance |
+| M6: hosted preview | Blocked on prior milestones and operational acceptance | Synthetic secrets recovery alone does not complete M6 |
+| Built-in signer, human identity, next-generation execution | Separate unfinished work; built-in option retained | Not assigned here; no Vault cost/efficiency/production-readiness conclusion |
+
+**Next here:** hand off `1dd8990b` and `011802ba` from
+`workspace/secrets-vault-20261102`, then pursue persistent operator policy and
+atomic policy/write fencing in the isolated control-plane worktree. See the
+[latest acceptance and process record](#parallel-control-plane-acceptance-and-next-handoff-2026-11-02).
+Keep entries, runtime consumers and existing migration checksums untouched.
+The next policy milestone is recommended, not started or accepted.
+The other session retains entries schema/import/compatibility acceptance.
+MongoDB migration work is unfinished, but current activity/ownership is not
+confirmed by the roadmap.
+
+The append-only execution record contains older "next" instructions and
+relative references to "this/other session." Those describe their recorded
+handoff, not today's assignment; the summary above and latest handoff supersede
+them. Queue cards remain in progress where a complete slice leaves parent
+acceptance outstanding.
+
 ## 1. Owner journeys and supported boundary
 
 The supported deliverable is a **headless, documented, versioned tenant-owner
@@ -784,3 +825,74 @@ Source:
 `externals/work/crm-multitenant-20261102/tests/postgres-secrets.integration.test.js:332-679`,
 `externals/work/crm-multitenant-20261102/tests/fixtures/secrets-rewrap-worker.js:1-49`,
 `externals/work/crm-multitenant-20261102/lib/secrets/README.md:324-408`.
+
+### Parallel control-plane acceptance and next handoff (2026-11-02)
+
+**Verified local state:** clean `externals/work/crm-secrets-20261102` on
+`workspace/secrets-vault-20261102` at `011802ba`, following `1dd8990b` and
+integrated baseline `0de90852`. The integration worktree still points to
+`0de90852`; neither new commit is its ancestor. These are complete bounded
+local slices, **not integrated acceptance or M2 promotion**.
+
+`1dd8990b` adds persisted exact subject grants behind the existing secrets
+authorization callback, versioned replacement and atomic redacted change audit.
+Real independently pooled adapters prove committed revocation on the next
+authorization read, code/operator ceilings, conflicts, tenant isolation,
+audit rollback and actual database-outage refusal. Management authentication
+and current operator limits remain injected trusted dependencies.
+
+`011802ba` adds only typed `DISPLAY_UNITS` and `SHOW_SECONDS`, effective-value
+provenance, whole operator-rule overrides, full owner snapshot replacement,
+immutable attributed history and whole rollback refusal under current policy.
+Real persistence proves cross-adapter visibility, concurrency, isolation,
+history rollback and database type/RLS/privilege refusals. Operator policy is
+injected; its snapshot and owner CAS are **not atomically fenced**.
+
+**Recorded local acceptance:** **36 passing, zero pending** with both Docker
+opt-ins, ESLint clean, all **465** test files classified and diff checks clean.
+This is not a fresh integrated run or the full application suite. Existing
+migration bytes/checksums, entries, runtime consumers and serving remain
+unchanged; the new schemas are separate experimental candidates. Actual
+mutations bypassing persisted-grant enforcement and rollback refusal failed;
+restored implementations passed.
+
+**Integration handoff:** the integration session should inspect its clean
+worktree and current ancestry, then incorporate `workspace/secrets-vault-20261102`
+with both commits. Do not fast-forward the advanced secrets branch to the old
+baseline or modify a peer's dirty worktree. Rerun from the incorporated worktree:
+
+```sh
+NS_SECRETS_POSTGRES_DOCKER_TEST=1 NS_VAULT_DOCKER_TEST=1 \
+  node_modules/.bin/mocha --fail-zero --timeout 30000 \
+  tests/secrets.test.js tests/vault-secrets.integration.test.js \
+  tests/postgres-secrets.integration.test.js
+node_modules/.bin/eslint lib/secrets lib/subject-policy lib/tenant-settings \
+  tests/secrets.test.js tests/vault-secrets.integration.test.js \
+  tests/postgres-secrets.integration.test.js tests/fixtures/secrets-rewrap-worker.js
+npm run test:tiers
+```
+
+Then rerun the integration session's broader combined gate; do not extrapolate
+its count from these local results. Record the actual merge SHA and results on
+alignment `main` before marking the slices integrated.
+
+**Next parallel milestones:** the control-plane lane should persist reviewed
+operator settings rules and subject-grant ceilings, with coordinated policy
+generation/preconditions so tightening cannot permit stale-policy owner writes
+or rollback. Prove real cross-worker races, outage refusal, isolation and
+atomic history before route enablement. Synthetic recovery of the new policy/
+settings/authority state can follow. Entries schema/import/compatibility stays
+with the integration session. MongoDB MIG-RUNNER fencing/renewable leases/resume
+is a separate feasible lane only after confirming ownership, with explicit
+hosted operator execution and real competing-runner/crash acceptance.
+
+Keep alignment records current at bounded acceptance and integration handoffs:
+update this status summary, append measured evidence, refresh progress/queue
+notes without promoting unfinished parents, and rebuild the generated HTML.
+No upstream push, publication or serving enablement is implied. Human identity,
+evaluator/events, built-in signer implementation and next-generation execution
+remain separate; Vault has no comparative cost/efficiency/readiness claim.
+
+Source:
+`externals/work/crm-secrets-20261102/lib/subject-policy/README.md:1-143`,
+`externals/work/crm-secrets-20261102/lib/tenant-settings/README.md:1-148`.
