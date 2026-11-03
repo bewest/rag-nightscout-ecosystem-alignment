@@ -2660,6 +2660,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#current-status-and-parallel-ownership-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current status and parallel ownership (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-owner-journeys-and-supported-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2819,6 +2830,17 @@
     <span class="md-ellipsis">
       
         Integration: secrets recovery acceptance and next control-plane slice (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-control-plane-acceptance-and-next-handoff-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel control-plane acceptance and next handoff (2026-11-02)
       
     </span>
   </a>
@@ -4966,6 +4988,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#current-status-and-parallel-ownership-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current status and parallel ownership (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-owner-journeys-and-supported-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5131,6 +5164,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#parallel-control-plane-acceptance-and-next-handoff-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel control-plane acceptance and next handoff (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5167,6 +5211,103 @@ reviewable slices. Alignment records may be published separately.</p>
 in the <a href="../../10-domain/nightscout-multitenancy-priorities-deep-dive.html">priorities assessment</a>.
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.</p>
+<h2 id="current-status-and-parallel-ownership-2026-11-02">Current status and parallel ownership (2026-11-02)<a class="headerlink" href="#current-status-and-parallel-ownership-2026-11-02" title="Permanent link">&para;</a></h2>
+<p><strong>Read this summary before the execution history below.</strong> Verified local
+integration tip: <code>0de90852</code>. It includes our secrets recovery commit <code>78b915ab</code>.
+The integrated gate reports <strong>879 passing, zero pending</strong>; the separate broad
+no-database AJV limitation remains unresolved. Nothing is pushed or enabled for
+serving. "Complete slice" means its bounded acceptance passed, not that its
+parent milestone is promoted.</p>
+<table>
+<thead>
+<tr>
+<th>Work / milestone</th>
+<th>Current status</th>
+<th>Owner / next action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M0: foundations</td>
+<td>PG transaction/RLS and migration foundation slices accepted; full M0 promotion remains open</td>
+<td>Integration/entries session: remaining deployment/schema acceptance</td>
+</tr>
+<tr>
+<td>M1: entries adapter</td>
+<td>In progress: reads, filters, identity, writes/upserts and dormant v3 intents accepted; full adapter not promoted</td>
+<td>Integration/entries session: reviewed DDL/import/field-order contract, compatibility and resource bounds</td>
+</tr>
+<tr>
+<td>Secrets component + Vault adapter</td>
+<td>Complete dormant slice, integrated: tenant-bound crypto/JWT, ciphertext/audit persistence and rewrap/CAS</td>
+<td>No additional Vault feature expansion assigned here</td>
+</tr>
+<tr>
+<td>Secrets synthetic recovery</td>
+<td>Complete bounded slice, integrated in <code>0de90852</code>: database/key snapshots and actual worker SIGKILL/retry</td>
+<td>Do not repeat; production recovery remains open</td>
+</tr>
+<tr>
+<td>Current subject authority</td>
+<td>Complete dormant local slice in <code>1dd8990b</code>; not yet integrated</td>
+<td>Integration session: incorporate and rerun acceptance; public/runtime enforcement remains open</td>
+</tr>
+<tr>
+<td>Minimum scalar settings</td>
+<td>Complete dormant local subset in <code>011802ba</code>: units/seconds, provenance, versioned history and policy-aware rollback; not yet integrated</td>
+<td>Control-plane session: persistent operator policy and atomic policy/write fencing next; full MT-CONFIG-MIN remains open</td>
+</tr>
+<tr>
+<td>MIG-RUNNER</td>
+<td>PG explicit-operator foundation accepted; MongoDB fencing/resume and full runner acceptance unfinished</td>
+<td>Separate unassigned lane in the latest handoff; do not assume another session is actively implementing it</td>
+</tr>
+<tr>
+<td>M2: tenant control plane</td>
+<td>Open: secrets is only one dependency; settings, current grants, tenant resolution and runtime wiring remain</td>
+<td>This session takes the bounded settings/authority dependency; coordinate later integration</td>
+</tr>
+<tr>
+<td>M3: two-tenant HTTP lab</td>
+<td>Blocked on M1/M2; not completed by dormant service tests</td>
+<td>Follow storage/control-plane acceptance, not a parallel implementation here yet</td>
+</tr>
+<tr>
+<td>M4: existing-client surface</td>
+<td>Not accepted; full collections/v1/v3 compatibility and wiring remain</td>
+<td>Entries session covers its bounded compatibility work; full M4 follows M3</td>
+</tr>
+<tr>
+<td>M5: realtime/evaluator</td>
+<td>Separate unfinished track</td>
+<td>Not assigned to this session; durable events and socket enforcement need their own acceptance</td>
+</tr>
+<tr>
+<td>M6: hosted preview</td>
+<td>Blocked on prior milestones and operational acceptance</td>
+<td>Synthetic secrets recovery alone does not complete M6</td>
+</tr>
+<tr>
+<td>Built-in signer, human identity, next-generation execution</td>
+<td>Separate unfinished work; built-in option retained</td>
+<td>Not assigned here; no Vault cost/efficiency/production-readiness conclusion</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Next here:</strong> hand off <code>1dd8990b</code> and <code>011802ba</code> from
+<code>workspace/secrets-vault-20261102</code>, then pursue persistent operator policy and
+atomic policy/write fencing in the isolated control-plane worktree. See the
+<a href="#parallel-control-plane-acceptance-and-next-handoff-2026-11-02">latest acceptance and process record</a>.
+Keep entries, runtime consumers and existing migration checksums untouched.
+The next policy milestone is recommended, not started or accepted.
+The other session retains entries schema/import/compatibility acceptance.
+MongoDB migration work is unfinished, but current activity/ownership is not
+confirmed by the roadmap.</p>
+<p>The append-only execution record contains older "next" instructions and
+relative references to "this/other session." Those describe their recorded
+handoff, not today's assignment; the summary above and latest handoff supersede
+them. Queue cards remain in progress where a complete slice leaves parent
+acceptance outstanding.</p>
 <h2 id="1-owner-journeys-and-supported-boundary">1. Owner journeys and supported boundary<a class="headerlink" href="#1-owner-journeys-and-supported-boundary" title="Permanent link">&para;</a></h2>
 <p>The supported deliverable is a <strong>headless, documented, versioned tenant-owner
 API</strong>, with conformance tests independent of vendor UI. A first-party hosted
@@ -5415,7 +5556,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4b299c159070f97dbffbe9a5aa43dfda0c653f36/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/21b5290d11fb4e467adb278a3d83acf2c0173d6c/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -5450,7 +5591,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4b299c159070f97dbffbe9a5aa43dfda0c653f36/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/21b5290d11fb4e467adb278a3d83acf2c0173d6c/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
@@ -5954,6 +6095,65 @@ schema/import/compatibility acceptance.</p>
 <code>externals/work/crm-multitenant-20261102/tests/postgres-secrets.integration.test.js:332-679</code>,
 <code>externals/work/crm-multitenant-20261102/tests/fixtures/secrets-rewrap-worker.js:1-49</code>,
 <code>externals/work/crm-multitenant-20261102/lib/secrets/README.md:324-408</code>.</p>
+<h3 id="parallel-control-plane-acceptance-and-next-handoff-2026-11-02">Parallel control-plane acceptance and next handoff (2026-11-02)<a class="headerlink" href="#parallel-control-plane-acceptance-and-next-handoff-2026-11-02" title="Permanent link">&para;</a></h3>
+<p><strong>Verified local state:</strong> clean <code>externals/work/crm-secrets-20261102</code> on
+<code>workspace/secrets-vault-20261102</code> at <code>011802ba</code>, following <code>1dd8990b</code> and
+integrated baseline <code>0de90852</code>. The integration worktree still points to
+<code>0de90852</code>; neither new commit is its ancestor. These are complete bounded
+local slices, <strong>not integrated acceptance or M2 promotion</strong>.</p>
+<p><code>1dd8990b</code> adds persisted exact subject grants behind the existing secrets
+authorization callback, versioned replacement and atomic redacted change audit.
+Real independently pooled adapters prove committed revocation on the next
+authorization read, code/operator ceilings, conflicts, tenant isolation,
+audit rollback and actual database-outage refusal. Management authentication
+and current operator limits remain injected trusted dependencies.</p>
+<p><code>011802ba</code> adds only typed <code>DISPLAY_UNITS</code> and <code>SHOW_SECONDS</code>, effective-value
+provenance, whole operator-rule overrides, full owner snapshot replacement,
+immutable attributed history and whole rollback refusal under current policy.
+Real persistence proves cross-adapter visibility, concurrency, isolation,
+history rollback and database type/RLS/privilege refusals. Operator policy is
+injected; its snapshot and owner CAS are <strong>not atomically fenced</strong>.</p>
+<p><strong>Recorded local acceptance:</strong> <strong>36 passing, zero pending</strong> with both Docker
+opt-ins, ESLint clean, all <strong>465</strong> test files classified and diff checks clean.
+This is not a fresh integrated run or the full application suite. Existing
+migration bytes/checksums, entries, runtime consumers and serving remain
+unchanged; the new schemas are separate experimental candidates. Actual
+mutations bypassing persisted-grant enforcement and rollback refusal failed;
+restored implementations passed.</p>
+<p><strong>Integration handoff:</strong> the integration session should inspect its clean
+worktree and current ancestry, then incorporate <code>workspace/secrets-vault-20261102</code>
+with both commits. Do not fast-forward the advanced secrets branch to the old
+baseline or modify a peer's dirty worktree. Rerun from the incorporated worktree:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">NS_SECRETS_POSTGRES_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_VAULT_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>node_modules/.bin/mocha<span class="w"> </span>--fail-zero<span class="w"> </span>--timeout<span class="w"> </span><span class="m">30000</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>tests/secrets.test.js<span class="w"> </span>tests/vault-secrets.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span>tests/postgres-secrets.integration.test.js
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>node_modules/.bin/eslint<span class="w"> </span>lib/secrets<span class="w"> </span>lib/subject-policy<span class="w"> </span>lib/tenant-settings<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>tests/secrets.test.js<span class="w"> </span>tests/vault-secrets.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span>tests/postgres-secrets.integration.test.js<span class="w"> </span>tests/fixtures/secrets-rewrap-worker.js
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>npm<span class="w"> </span>run<span class="w"> </span>test:tiers
+</code></pre></div>
+<p>Then rerun the integration session's broader combined gate; do not extrapolate
+its count from these local results. Record the actual merge SHA and results on
+alignment <code>main</code> before marking the slices integrated.</p>
+<p><strong>Next parallel milestones:</strong> the control-plane lane should persist reviewed
+operator settings rules and subject-grant ceilings, with coordinated policy
+generation/preconditions so tightening cannot permit stale-policy owner writes
+or rollback. Prove real cross-worker races, outage refusal, isolation and
+atomic history before route enablement. Synthetic recovery of the new policy/
+settings/authority state can follow. Entries schema/import/compatibility stays
+with the integration session. MongoDB MIG-RUNNER fencing/renewable leases/resume
+is a separate feasible lane only after confirming ownership, with explicit
+hosted operator execution and real competing-runner/crash acceptance.</p>
+<p>Keep alignment records current at bounded acceptance and integration handoffs:
+update this status summary, append measured evidence, refresh progress/queue
+notes without promoting unfinished parents, and rebuild the generated HTML.
+No upstream push, publication or serving enablement is implied. Human identity,
+evaluator/events, built-in signer implementation and next-generation execution
+remain separate; Vault has no comparative cost/efficiency/readiness claim.</p>
+<p>Source:
+<code>externals/work/crm-secrets-20261102/lib/subject-policy/README.md:1-143</code>,
+<code>externals/work/crm-secrets-20261102/lib/tenant-settings/README.md:1-148</code>.</p>
 
 
 
