@@ -908,6 +908,7 @@ QUEUE = $(PY) tools/queue
 ## queue: regenerate queue/QUEUE.md from queue/work-queue.yaml
 queue: queue-validate
 	@$(QUEUE)/emit.py
+	@$(QUEUE)/multitenant_dashboard.py
 
 ## views: fill the generated blocks inside docs/00-overview/*.md
 ##
@@ -1040,6 +1041,7 @@ queue-coverage:
 queue-check: queue-validate
 	@node tools/queue/gates/register-queue-coverage.js
 	@$(QUEUE)/emit.py --check
+	@$(QUEUE)/multitenant_dashboard.py --check
 	@$(QUEUE)/emit_views.py --check
 	@$(QUEUE)/emit_packets.py --check
 	@node tools/queue/gates/doc-links.js >/dev/null 2>&1 && \

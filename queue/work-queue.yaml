@@ -6557,7 +6557,8 @@ items:
       SIGKILL/restart rolls back uncommitted state or preserves exact committed
       ledger, followed by new-process retry. 56 combined/15 MongoDB checks pass;
       expiry-removal and split-data-session mutations fail. Both runner commits
-      await integration at peer tip 011802ba. No HA/host/power recovery claim.
+      are now incorporated at peer tip 436ef543; integrated acceptance remains
+      pending in these records. No HA/host/power recovery claim.
 
       Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 

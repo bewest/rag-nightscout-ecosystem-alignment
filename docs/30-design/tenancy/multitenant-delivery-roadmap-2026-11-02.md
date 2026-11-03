@@ -13,48 +13,19 @@ v16's release merge list.
 
 ## Current status and parallel ownership (2026-11-02)
 
-**Read this summary before the execution history below.** Verified local
-integration tip: `011802ba`, incorporating subject authority `1dd8990b` and
-scalar settings `011802ba`; their integrated testing is pending. The last
-recorded broader integrated gate at `0de90852` reports **879 passing, zero
-pending**, including secrets recovery `78b915ab`; the separate broad
-no-database AJV limitation remains unresolved. Nothing is pushed or enabled for
-serving. "Complete slice" means its bounded acceptance passed, not that its
-parent milestone is promoted.
+**Use the [working dashboard](multitenant-delivery-dashboard.md) for current
+milestone dependencies, parallel lanes, next gates and slice acceptance stages.**
+It is generated from queue claims plus dated acceptance metadata, not a live
+branch monitor. It distinguishes local acceptance, incorporation with testing
+pending, integrated acceptance and milestone promotion. Nothing is pushed or
+enabled merely because a dormant slice passes.
 
-| Work / milestone | Current status | Owner / next action |
-|---|---|---|
-| M0: foundations | PG transaction/RLS and migration foundation slices accepted; full M0 promotion remains open | Integration/entries session: remaining deployment/schema acceptance |
-| M1: entries adapter | In progress: reads, filters, identity, writes/upserts and dormant v3 intents accepted; full adapter not promoted | Integration/entries session: reviewed DDL/import/field-order contract, compatibility and resource bounds |
-| Nightscout API data importer | Requested for consideration; deferred, not implemented | Separate entries/import milestone after target schema/identity contract; do not confuse source API import with schema MIG-RUNNER or operator API execution |
-| Secrets component + Vault adapter | Complete dormant slice, integrated: tenant-bound crypto/JWT, ciphertext/audit persistence and rewrap/CAS | No additional Vault feature expansion assigned here |
-| Secrets synthetic recovery | Complete bounded slice, integrated in `0de90852`: database/key snapshots and actual worker SIGKILL/retry | Do not repeat; production recovery remains open |
-| Current subject authority | Complete dormant slice in `1dd8990b`, incorporated in peer branch; integrated testing pending | Integration session: finish acceptance; public/runtime enforcement remains open |
-| Minimum scalar settings | Complete dormant subset in `011802ba`, incorporated; integrated testing pending | Persistent operator policy and atomic policy/write fencing remain next control-plane work; full MT-CONFIG-MIN stays open |
-| MIG-RUNNER | PG foundation accepted; MongoDB replica-set slice `562f6206` plus primary-recovery acceptance `436ef543` locally accepted, not yet integrated | This parallel session: hand off both runner commits. Standalone/index fencing, catalogues and full runner acceptance remain open |
-| M2: tenant control plane | Open: secrets is only one dependency; settings, current grants, tenant resolution and runtime wiring remain | This session takes the bounded settings/authority dependency; coordinate later integration |
-| M3: two-tenant HTTP lab | Blocked on M1/M2; not completed by dormant service tests | Follow storage/control-plane acceptance, not a parallel implementation here yet |
-| M4: existing-client surface | Not accepted; full collections/v1/v3 compatibility and wiring remain | Entries session covers its bounded compatibility work; full M4 follows M3 |
-| M5: realtime/evaluator | Separate unfinished track | Not assigned to this session; durable events and socket enforcement need their own acceptance |
-| M6: hosted preview | Blocked on prior milestones and operational acceptance | Synthetic secrets recovery alone does not complete M6 |
-| Built-in signer, human identity, next-generation execution | Separate unfinished work; built-in option retained | Not assigned here; no Vault cost/efficiency/production-readiness conclusion |
-
-**Next here:** hand off MongoDB operator-runner commits `562f6206` and `436ef543` from
-`workspace/secrets-vault-20261102` and record actual integration acceptance.
-The originally assigned MIG-RUNNER lane resumed after the peer incorporated
-the two control-plane commits. See the
-[latest recovery acceptance](#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02).
-Keep entries, runtime consumers and existing migration checksums untouched.
-The next policy milestone is recommended, not started or accepted.
-The other session retains entries schema/import/compatibility acceptance.
-This session's replica-set slice does not complete standalone MongoDB migration
-support or safe index steps.
-
-The append-only execution record contains older "next" instructions and
-relative references to "this/other session." Those describe their recorded
-handoff, not today's assignment; the summary above and latest handoff supersede
-them. Queue cards remain in progress where a complete slice leaves parent
-acceptance outstanding.
+This page retains the adopted decisions and promotion criteria below. The
+[execution evidence](#execution-evidence-2026-11-02) is collapsed under section 6;
+existing heading anchors are preserved. Older "next" instructions and relative
+"this/other session" assignments describe their dated handoff, not today's
+ownership. The dashboard supersedes them for coordination. No full M0-M6
+promotion is recorded; the broad no-database AJV limitation remains unresolved.
 
 ## 1. Owner journeys and supported boundary
 
@@ -214,6 +185,9 @@ Do not delete or bulk-refresh shared old worktrees.
 Implementation results and commands are appended after measurement. No complete
 adapter, production secret backend, client compatibility or hosted acceptance
 is claimed by adopting this roadmap.
+
+<details markdown="1">
+<summary>Execution history and acceptance commands (dated evidence, not the current work board)</summary>
 
 ### Execution evidence (2026-11-02)
 
@@ -1038,3 +1012,5 @@ remain separate unfinished milestones.
 Source:
 `externals/work/crm-secrets-20261102/tests/mongodb-migrations.integration.test.js:195-321`,
 `externals/work/crm-secrets-20261102/tests/fixtures/migrations/mongo-worker.js:10-45`.
+
+</details>

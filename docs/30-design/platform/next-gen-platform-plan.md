@@ -128,6 +128,13 @@ The forward constraints are two mature backends behind one interface (D2–D4), 
 
 ## 3. The map
 
+For the initial multitenant implementation, use the
+[multitenant delivery dashboard](../tenancy/multitenant-delivery-dashboard.md):
+M0-M6 prerequisites, parallel lanes, remaining gates and dated local versus
+integrated acceptance. Its [roadmap](../tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+retains decisions and detailed execution evidence. This programme map keeps
+the broader execution, registration and command tracks separate.
+
 <!-- chart: map -->
 
 ## 4. The tracks in detail

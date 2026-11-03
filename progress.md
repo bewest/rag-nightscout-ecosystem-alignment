@@ -12,6 +12,21 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Multitenant Working Dashboard and Roadmap Grooming (2026-11-02)
+
+The [working dashboard](docs/30-design/tenancy/multitenant-delivery-dashboard.md)
+now separates milestone promotion from bounded slice acceptance and shows
+milestone/work dependencies, recorded parallel lanes, next gates and linked
+evidence. Queue states/prerequisites are generated directly from the manifest;
+a dated status overlay records acceptance stages without inventing percentages.
+`make queue` regenerates it and `make queue-check` refuses a stale dashboard.
+
+The roadmap keeps decisions and evidence anchors, collapses historical
+execution details, and directs current coordination to the dashboard. The
+broader next-gen programme source links to it rather than duplicating status.
+Verified peer tip `436ef543` incorporates both runner commits; broader
+integrated acceptance is still pending in these records.
+
 ## Parallel MongoDB Primary Recovery and Renewal Refusal (2026-11-02)
 
 Local **`436ef543`** extends `562f6206` with real expired-renewal outage refusal
