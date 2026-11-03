@@ -3213,7 +3213,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-02 at <code>21b5290d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>49220e779</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3256,7 +3256,7 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>415</td>
+<td>416</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3264,7 +3264,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 784 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 785 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20267,7 +20267,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>in-progress</code></td>
 <td><code>workspace/multitenant-20261102</code></td>
 <td>minor</td>
-<td>1 run + 1 no-gate</td>
+<td>2 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>T30-ORY-PROOF</code></td>
@@ -20744,7 +20744,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <ul>
 <li><code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain. Further decision: grant removal/revocation applies at the next protected operation across workers; current authorization unavailable means refusal. JWT expiry/stale cache is not authority. Include protected socket delivery, subscriptions/writes/reconnect and explicit authorization race semantics. Local 1dd8990b implements dormant persistent subject authority; 011802ba adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and whole policy-aware rollback. Combined local acceptance: 36 passing, zero pending; ESLint and 465-file classification pass. Neither commit is integrated at the verified peer tip 0de90852. Integrate and rerun acceptance before marking integrated. Next control-plane milestone: persistent operator rules/grant ceilings and atomic policy/write fencing. Operator policy and management authentication remain injected; timezone, token-lifetime policy, public API and runtime invalidation remain open. No owner/data/socket serving or end-to-end revocation acceptance implied.</p>
+<p><strong>Notes.</strong> Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain. Further decision: grant removal/revocation applies at the next protected operation across workers; current authorization unavailable means refusal. JWT expiry/stale cache is not authority. Include protected socket delivery, subscriptions/writes/reconnect and explicit authorization race semantics. Local 1dd8990b implements dormant persistent subject authority; 011802ba adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and whole policy-aware rollback. Combined local acceptance: 36 passing, zero pending; ESLint and 465-file classification pass. Both commits are now incorporated at peer tip 011802ba; integrated testing is pending, not accepted by ancestry alone. Next control-plane milestone: persistent operator rules/grant ceilings and atomic policy/write fencing. Operator policy and management authentication remain injected; timezone, token-lifetime policy, public API and runtime invalidation remain open. No owner/data/socket serving or end-to-end revocation acceptance implied.</p>
 <h3 id="mt-secrets-contract--tenant-bound-secrets-contract-and-early-vault-transit-integration-proof"><code>MT-SECRETS-CONTRACT</code> &mdash; Tenant-bound secrets contract and early Vault Transit integration proof<a class="headerlink" href="#mt-secrets-contract--tenant-bound-secrets-contract-and-early-vault-transit-integration-proof" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -21349,8 +21349,10 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Gates.</strong></p>
 <ul>
 <li><code>[integration]</code> <code>cd externals/work/crm-multitenant-20261102 &amp;&amp; NS_MIGRATION_DOCKER_TEST=1 node_modules/.bin/mocha --timeout 30000 tests/migrations.test.js tests/postgres-migrations.integration.test.js tests/nightscout-cli.test.js</code></li>
-<li>PG-only foundation: 39 checks (5 unit, 12 disposable-PG, 22 CLI), atomic SQL/ledger, overlapping runners, SIGKILL/restart, bounded lock wait, drift/history refusal, read-only/restricted identity and controls.</li>
-<li><strong>NO GATE</strong> &mdash; PG-only operator foundation is not full two-store acceptance. MongoDB fencing-safe leases/resumability, production catalogues and baseline, rollback/export policy and catalogue authenticity remain. Serving-role compatibility wiring is absent; default boot unchanged.</li>
+<li>PG operator foundation checks: unit, disposable-PG and CLI, atomic SQL/ledger, overlapping runners, SIGKILL/restart, bounded lock wait, drift/history refusal, read-only/restricted identity and controls.</li>
+<li><code>[integration]</code> <code>cd externals/work/crm-secrets-20261102 &amp;&amp; NS_MIGRATION_DOCKER_TEST=1 NS_MIGRATION_MONGO_DOCKER_TEST=1 NS_MIGRATION_MONGO_IMAGE=mongo:8 node_modules/.bin/mocha --fail-zero --timeout 40000 tests/migrations.test.js tests/postgres-migrations.integration.test.js tests/mongodb-migrations.integration.test.js tests/nightscout-cli.test.js</code></li>
+<li>Local 562f6206 plus 436ef543: 56 combined checks, zero pending; MongoDB 8.3.9 replica-set transactional data/ledger, renewable lease and shared fence, SIGSTOP takeover, real SIGKILL retries and standalone refusal. All 15 MongoDB checks also pass on mongo:5.0.32. Actual primary SIGKILL/restart before/after commit and expired-renewal outage refusal.</li>
+<li><strong>NO GATE</strong> &mdash; PG-only operator foundation is not full two-store acceptance. The bounded MongoDB replica-set slice is locally accepted, not integrated. Standalone/index fencing and resumability, production catalogues and baseline, rollback/export policy and catalogue authenticity remain. Serving-role compatibility wiring is absent; default boot unchanged.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
@@ -21358,7 +21360,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md</code></li>
 <li><code>docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.</p>
+<p><strong>Notes.</strong> 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Parallel 562f6206 adds replica-set-only transactional scalar-set steps with an atomic shared fence and renewable server-time lease. Data and ledger commit together. Mutations removing the fence/data session fail; restored checks pass. 466 files classify; lint has zero errors/two path warnings. Ready to integrate, not full MIG-RUNNER or standalone support. No entries, serving, dependencies or existing migration checksum changes. Follow-up 436ef543 is tests/fixture/README only: expired renewal after actual database pause refuses without data or reacquisition; primary SIGKILL/restart rolls back uncommitted state or preserves exact committed ledger, followed by new-process retry. 56 combined/15 MongoDB checks pass; expiry-removal and split-data-session mutations fail. Both runner commits are now incorporated at peer tip 436ef543; integrated acceptance remains pending in these records. No HA/host/power recovery claim. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.</p>
 <h3 id="t30-ory-proof--stand-up-kratos-1x-and-hydra-2x-and-try-to-make-one-pool-serve-two-tenants"><code>T30-ORY-PROOF</code> &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants<a class="headerlink" href="#t30-ory-proof--stand-up-kratos-1x-and-hydra-2x-and-try-to-make-one-pool-serve-two-tenants" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

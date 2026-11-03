@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">
       
       
-        <link rel="prev" href="index.html">
+        <link rel="prev" href="multitenant-delivery-dashboard.html">
       
       
         <link rel="next" href="nightscout-configuration-and-delegation-2026-09-10.html">
@@ -2539,6 +2539,8 @@
       
         
       
+        
+      
     
     
     
@@ -2591,6 +2593,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-delivery-dashboard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant delivery dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -2841,6 +2871,28 @@
     <span class="md-ellipsis">
       
         Parallel control-plane acceptance and next handoff (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-mig-runner-transactional-mongodb-slice-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel MIG-RUNNER transactional MongoDB slice (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel MIG-RUNNER primary recovery and renewal loss (2026-11-02)
       
     </span>
   </a>
@@ -5175,6 +5227,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#parallel-mig-runner-transactional-mongodb-slice-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel MIG-RUNNER transactional MongoDB slice (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel MIG-RUNNER primary recovery and renewal loss (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5212,102 +5286,18 @@ in the <a href="../../10-domain/nightscout-multitenancy-priorities-deep-dive.htm
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.</p>
 <h2 id="current-status-and-parallel-ownership-2026-11-02">Current status and parallel ownership (2026-11-02)<a class="headerlink" href="#current-status-and-parallel-ownership-2026-11-02" title="Permanent link">&para;</a></h2>
-<p><strong>Read this summary before the execution history below.</strong> Verified local
-integration tip: <code>0de90852</code>. It includes our secrets recovery commit <code>78b915ab</code>.
-The integrated gate reports <strong>879 passing, zero pending</strong>; the separate broad
-no-database AJV limitation remains unresolved. Nothing is pushed or enabled for
-serving. "Complete slice" means its bounded acceptance passed, not that its
-parent milestone is promoted.</p>
-<table>
-<thead>
-<tr>
-<th>Work / milestone</th>
-<th>Current status</th>
-<th>Owner / next action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>M0: foundations</td>
-<td>PG transaction/RLS and migration foundation slices accepted; full M0 promotion remains open</td>
-<td>Integration/entries session: remaining deployment/schema acceptance</td>
-</tr>
-<tr>
-<td>M1: entries adapter</td>
-<td>In progress: reads, filters, identity, writes/upserts and dormant v3 intents accepted; full adapter not promoted</td>
-<td>Integration/entries session: reviewed DDL/import/field-order contract, compatibility and resource bounds</td>
-</tr>
-<tr>
-<td>Secrets component + Vault adapter</td>
-<td>Complete dormant slice, integrated: tenant-bound crypto/JWT, ciphertext/audit persistence and rewrap/CAS</td>
-<td>No additional Vault feature expansion assigned here</td>
-</tr>
-<tr>
-<td>Secrets synthetic recovery</td>
-<td>Complete bounded slice, integrated in <code>0de90852</code>: database/key snapshots and actual worker SIGKILL/retry</td>
-<td>Do not repeat; production recovery remains open</td>
-</tr>
-<tr>
-<td>Current subject authority</td>
-<td>Complete dormant local slice in <code>1dd8990b</code>; not yet integrated</td>
-<td>Integration session: incorporate and rerun acceptance; public/runtime enforcement remains open</td>
-</tr>
-<tr>
-<td>Minimum scalar settings</td>
-<td>Complete dormant local subset in <code>011802ba</code>: units/seconds, provenance, versioned history and policy-aware rollback; not yet integrated</td>
-<td>Control-plane session: persistent operator policy and atomic policy/write fencing next; full MT-CONFIG-MIN remains open</td>
-</tr>
-<tr>
-<td>MIG-RUNNER</td>
-<td>PG explicit-operator foundation accepted; MongoDB fencing/resume and full runner acceptance unfinished</td>
-<td>Separate unassigned lane in the latest handoff; do not assume another session is actively implementing it</td>
-</tr>
-<tr>
-<td>M2: tenant control plane</td>
-<td>Open: secrets is only one dependency; settings, current grants, tenant resolution and runtime wiring remain</td>
-<td>This session takes the bounded settings/authority dependency; coordinate later integration</td>
-</tr>
-<tr>
-<td>M3: two-tenant HTTP lab</td>
-<td>Blocked on M1/M2; not completed by dormant service tests</td>
-<td>Follow storage/control-plane acceptance, not a parallel implementation here yet</td>
-</tr>
-<tr>
-<td>M4: existing-client surface</td>
-<td>Not accepted; full collections/v1/v3 compatibility and wiring remain</td>
-<td>Entries session covers its bounded compatibility work; full M4 follows M3</td>
-</tr>
-<tr>
-<td>M5: realtime/evaluator</td>
-<td>Separate unfinished track</td>
-<td>Not assigned to this session; durable events and socket enforcement need their own acceptance</td>
-</tr>
-<tr>
-<td>M6: hosted preview</td>
-<td>Blocked on prior milestones and operational acceptance</td>
-<td>Synthetic secrets recovery alone does not complete M6</td>
-</tr>
-<tr>
-<td>Built-in signer, human identity, next-generation execution</td>
-<td>Separate unfinished work; built-in option retained</td>
-<td>Not assigned here; no Vault cost/efficiency/production-readiness conclusion</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Next here:</strong> hand off <code>1dd8990b</code> and <code>011802ba</code> from
-<code>workspace/secrets-vault-20261102</code>, then pursue persistent operator policy and
-atomic policy/write fencing in the isolated control-plane worktree. See the
-<a href="#parallel-control-plane-acceptance-and-next-handoff-2026-11-02">latest acceptance and process record</a>.
-Keep entries, runtime consumers and existing migration checksums untouched.
-The next policy milestone is recommended, not started or accepted.
-The other session retains entries schema/import/compatibility acceptance.
-MongoDB migration work is unfinished, but current activity/ownership is not
-confirmed by the roadmap.</p>
-<p>The append-only execution record contains older "next" instructions and
-relative references to "this/other session." Those describe their recorded
-handoff, not today's assignment; the summary above and latest handoff supersede
-them. Queue cards remain in progress where a complete slice leaves parent
-acceptance outstanding.</p>
+<p><strong>Use the <a href="multitenant-delivery-dashboard.html">working dashboard</a> for current
+milestone dependencies, parallel lanes, next gates and slice acceptance stages.</strong>
+It is generated from queue claims plus dated acceptance metadata, not a live
+branch monitor. It distinguishes local acceptance, incorporation with testing
+pending, integrated acceptance and milestone promotion. Nothing is pushed or
+enabled merely because a dormant slice passes.</p>
+<p>This page retains the adopted decisions and promotion criteria below. The
+<a href="#execution-evidence-2026-11-02">execution evidence</a> is collapsed under section 6;
+existing heading anchors are preserved. Older "next" instructions and relative
+"this/other session" assignments describe their dated handoff, not today's
+ownership. The dashboard supersedes them for coordination. No full M0-M6
+promotion is recorded; the broad no-database AJV limitation remains unresolved.</p>
 <h2 id="1-owner-journeys-and-supported-boundary">1. Owner journeys and supported boundary<a class="headerlink" href="#1-owner-journeys-and-supported-boundary" title="Permanent link">&para;</a></h2>
 <p>The supported deliverable is a <strong>headless, documented, versioned tenant-owner
 API</strong>, with conformance tests independent of vendor UI. A first-party hosted
@@ -5530,6 +5520,8 @@ Do not delete or bulk-refresh shared old worktrees.</p>
 <p>Implementation results and commands are appended after measurement. No complete
 adapter, production secret backend, client compatibility or hosted acceptance
 is claimed by adopting this roadmap.</p>
+<details>
+<summary>Execution history and acceptance commands (dated evidence, not the current work board)</summary>
 <h3 id="execution-evidence-2026-11-02">Execution evidence (2026-11-02)<a class="headerlink" href="#execution-evidence-2026-11-02" title="Permanent link">&para;</a></h3>
 <p><strong>Upstream local commits <code>27f085c93ad3f1eaef2bfcecc5cfa8544f2036d5</code>
 and <code>ce14d637</code> (explicit connection-URI guard)</strong> on
@@ -5556,7 +5548,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/21b5290d11fb4e467adb278a3d83acf2c0173d6c/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3468ab2f30def56f73e9ec5e4a9872f1a02514f7/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -5591,7 +5583,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/21b5290d11fb4e467adb278a3d83acf2c0173d6c/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3468ab2f30def56f73e9ec5e4a9872f1a02514f7/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
@@ -6154,6 +6146,152 @@ remain separate; Vault has no comparative cost/efficiency/readiness claim.</p>
 <p>Source:
 <code>externals/work/crm-secrets-20261102/lib/subject-policy/README.md:1-143</code>,
 <code>externals/work/crm-secrets-20261102/lib/tenant-settings/README.md:1-148</code>.</p>
+<h3 id="parallel-mig-runner-transactional-mongodb-slice-2026-11-02">Parallel MIG-RUNNER transactional MongoDB slice (2026-11-02)<a class="headerlink" href="#parallel-mig-runner-transactional-mongodb-slice-2026-11-02" title="Permanent link">&para;</a></h3>
+<p><strong>Local commit <code>562f6206</code></strong>, on the clean isolated
+<code>workspace/secrets-vault-20261102</code> worktree, extends the existing explicit
+Umzug operator command with <code>--backend mongodb</code>. The peer branch now contains
+<code>1dd8990b</code> and <code>011802ba</code>; their integrated runs are pending, not accepted here.
+The runner commit is not yet incorporated. No peer worktree was modified.</p>
+<p><strong>Bounded scope:</strong> MongoDB 5+ writable replica-set primaries, transactional
+idempotent scalar-equality <code>$set</code> backfills against existing collections.
+No arbitrary JavaScript, standalone mutation, application DDL/index steps,
+production catalogue, rollback, serving integration or single-site boot change.
+Existing PostgreSQL/secrets/settings/subject-policy migration bytes and
+checksums are untouched, as are entries and dependency manifests.</p>
+<p>An expiry-only lease cannot fence a paused worker's arbitrary cross-document
+standalone writes. This slice instead changes lease owner/epoch and a shared
+fence together in a transaction. Every data migration checks the current lease,
+writes that fence and commits its data plus ledger in one transaction. Takeover
+must write the same fence, so a stale transaction refuses/conflicts before a
+data command; a takeover cannot commit across an active fenced transaction.
+Server-time expiry and serialized renewal use a separate lease document.
+Failed renewal is surfaced, not ignored. Release cannot remove a successor's
+lease or reset its epoch. Completed migrations survive; retries apply the
+pending suffix. A transaction already holding the fence may finish after lease
+expiry but before successor takeover; expiry is not retroactive cancellation.</p>
+<p><strong>Measured acceptance:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Combined PG/MongoDB/CLI, PostgreSQL 16 and MongoDB 8.3.9</td>
+<td><strong>53 passing, zero pending</strong></td>
+</tr>
+<tr>
+<td>All MongoDB checks against 5.0.32</td>
+<td><strong>12 passing, zero pending</strong></td>
+</tr>
+<tr>
+<td>Shared-fence removal mutation</td>
+<td>Fails: a stale worker attempts data after takeover</td>
+</tr>
+<tr>
+<td>Data-session removal mutation</td>
+<td>Fails: uncommitted data becomes externally visible</td>
+</tr>
+<tr>
+<td>Restored affected mutation selectors</td>
+<td><strong>2 passing, zero pending</strong></td>
+</tr>
+<tr>
+<td>ESLint / tiers / diff checks</td>
+<td>Zero errors, two filesystem-path warnings; <strong>466 files</strong> classified; clean diff</td>
+</tr>
+</tbody>
+</table>
+<p>Real authenticated disposable single-node replica sets prove renewal across
+two lease periods, overlapping runners, SIGSTOP/expiry/takeover, blocked
+takeover across a live transaction, actual SIGKILL before and after commit
+with new-process retries, failed-ledger rollback, drift/history refusal,
+read-only checking and paused-database outage refusal. A separate actual
+standalone server refuses before metadata or data mutation. Fixtures use
+synthetic credentials, loopback-only random ports, no persistent volumes and
+owned worker/container teardown. The lab bounds abandoned transactions to
+five seconds; production parameters and replica-set failover are not accepted
+by these tests.</p>
+<p>From <code>externals/work/crm-secrets-20261102</code> (or the incorporated worktree):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">NS_MIGRATION_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_MIGRATION_MONGO_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nv">NS_MIGRATION_MONGO_IMAGE</span><span class="o">=</span>mongo:8<span class="w"> </span>node_modules/.bin/mocha<span class="w"> </span>--fail-zero<span class="w"> </span>--timeout<span class="w"> </span><span class="m">40000</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span>tests/migrations.test.js<span class="w"> </span>tests/postgres-migrations.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span>tests/mongodb-migrations.integration.test.js<span class="w"> </span>tests/nightscout-cli.test.js
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="nv">NS_MIGRATION_MONGO_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_MIGRATION_MONGO_IMAGE</span><span class="o">=</span>mongo:5.0.32<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span>node_modules/.bin/mocha<span class="w"> </span>--fail-zero<span class="w"> </span>--timeout<span class="w"> </span><span class="m">40000</span><span class="w"> </span>tests/mongodb-migrations.integration.test.js
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>node_modules/.bin/eslint<span class="w"> </span>lib/migrations<span class="w"> </span>lib/cli/commands/migrate.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">  </span>tests/migrations.test.js<span class="w"> </span>tests/mongodb-migrations.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">  </span>tests/fixtures/migrations/mongo-worker.js
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>npm<span class="w"> </span>run<span class="w"> </span>test:tiers
+</code></pre></div>
+<p>Local <code>mongo:8</code> measured 8.3.9; always report the actual server version rather
+than assuming a moving tag. The new MongoDB suite needs its own explicit
+<code>NS_MIGRATION_MONGO_DOCKER_TEST=1</code> opt-in: do not count skipped tests as passing.</p>
+<p><strong>Handoff/remaining:</strong> integrate <code>562f6206</code>, rerun these and the broader
+integration gates, then record actual SHA/results on alignment <code>main</code>.
+MIG-RUNNER remains in progress: safe standalone/index operation or quiescence
+contract, bounded/chunked backfills, actual catalogues/baselines, authenticity,
+rollback/export policy and serving compatibility wiring remain unfinished.
+Persistent operator policy and atomic policy/write fencing remain the next
+independent control-plane option; neither was silently implemented here.
+No push, publication or serving enablement is authorized.</p>
+<p><strong>API import clarification:</strong> the maintainer means importing existing
+Nightscout data by reading its API, not exposing schema migration over an API.
+Defer this separate candidate to the entries/import lane after its target
+schema, identity and field-order contract is reviewed. Acceptance should cover
+least-privilege source access, resumable bounded pagination/checkpoints,
+duplicate-safe retries and value/identity verification, with an explicit
+concurrent-source-change/cutover policy. API projections may omit stored fields
+or BSON order; do not call this a raw database backup or silently claim lossless
+import. This is a follow-on scope decision, not an implemented importer or a
+change to the explicit schema operator boundary.</p>
+<p>Source:
+<code>externals/work/crm-secrets-20261102/lib/migrations/mongodb.js:59-199</code>,
+<code>externals/work/crm-secrets-20261102/tests/mongodb-migrations.integration.test.js:108-287</code>.</p>
+<h3 id="parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02">Parallel MIG-RUNNER primary recovery and renewal loss (2026-11-02)<a class="headerlink" href="#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02" title="Permanent link">&para;</a></h3>
+<p><strong>Local <code>436ef543</code></strong> follows runner <code>562f6206</code> on
+<code>workspace/secrets-vault-20261102</code>. This continuation changes only the MongoDB
+integration tests, synthetic worker fixture and migration README. Implementation,
+catalogue/checksum bytes, dependency manifests, entries and serving remain
+unchanged. The peer branch still points to <code>011802ba</code>: both runner commits
+are ready for integration, not yet incorporated or integrated-tested here.</p>
+<p><strong>New measured cases:</strong></p>
+<ul>
+<li>Pause the actual database across two lease periods while a worker waits
+  before the transaction fence. Expired renewal explicitly matches zero rows;
+  the worker reports <code>MIG_LOCK_LOST</code>, attempts no data, does not reacquire its
+  epoch, and leaves original data/empty ledger. A new process acquires a higher
+  epoch and completes.</li>
+<li>Abruptly restart the actual owned primary with
+  <code>docker restart --signal SIGKILL</code>, after transactional data but before commit,
+  or after committed completion. Verify a changed primary host PID, kill the
+  waiting worker to prevent replay, reconnect using the rediscovered published
+  port, and inspect persisted state independently. Uncommitted data/ledger
+  roll back; committed values and the exact ledger row survive. A fresh worker
+  applies only the pending suffix or no-ops when already committed.</li>
+</ul>
+<p><strong>Validation:</strong> <strong>56 combined PG/MongoDB/CLI checks</strong>, zero pending on MongoDB
+8.3.9; all <strong>15 MongoDB checks</strong> pass at 5.0.32 too. The same combined and floor
+commands in the preceding section apply, with the additional three cases.
+Removing renewal expiry produces a matched-count failure (1 instead of 0);
+removing the transactional data session leaves changed data after primary
+crash without its ledger and fails the persisted-value assertion. Restored code
+passes. ESLint: zero errors/two filesystem-path warnings; <strong>466 files</strong> classify;
+diff checks pass and owned fixtures are removed.</p>
+<p><strong>Limits and handoff:</strong> this is single-node primary-process/journal recovery,
+not multi-member failover, network partition, lost-disk/host/power recovery,
+archive restoration, unknown-commit-response recovery or production RPO/RTO.
+No new serving or schema API is enabled. Integrate both commits from the clean
+parallel branch and rerun targeted plus broader integration gates; record actual
+SHA/results before promoting any slice. Persistent operator-policy fencing,
+standalone/index migrations and the deferred source-Nightscout API importer
+remain separate unfinished milestones.</p>
+<p>Source:
+<code>externals/work/crm-secrets-20261102/tests/mongodb-migrations.integration.test.js:195-321</code>,
+<code>externals/work/crm-secrets-20261102/tests/fixtures/migrations/mongo-worker.js:10-45</code>.</p>
+</details>
 
 
 

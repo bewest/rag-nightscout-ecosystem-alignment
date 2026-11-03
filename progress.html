@@ -2154,6 +2154,39 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#multitenant-working-dashboard-and-roadmap-grooming-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenant Working Dashboard and Roadmap Grooming (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-mongodb-primary-recovery-and-renewal-refusal-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel MongoDB Primary Recovery and Renewal Refusal (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-transactional-mongodb-operator-migrations-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel Transactional MongoDB Operator Migrations (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#parallel-current-authority-and-scalar-settings-acceptance-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3544,6 +3577,39 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#multitenant-working-dashboard-and-roadmap-grooming-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multitenant Working Dashboard and Roadmap Grooming (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-mongodb-primary-recovery-and-renewal-refusal-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel MongoDB Primary Recovery and Renewal Refusal (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallel-transactional-mongodb-operator-migrations-2026-11-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel Transactional MongoDB Operator Migrations (2026-11-02)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#parallel-current-authority-and-scalar-settings-acceptance-2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4901,7 +4967,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>21b5290d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>3468ab2f3</code>.</em></p>
 <p>This document tracks completed documentation cycles and candidates for future work.</p>
 <blockquote>
 <p><strong>Archive</strong>: Older entries moved to:
@@ -4913,6 +4979,51 @@
 - <a href="docs/archive/progress-archive-2026-01-30-batch4.html">progress-archive-2026-01-30-batch4.md</a></p>
 </blockquote>
 <hr />
+<h2 id="multitenant-working-dashboard-and-roadmap-grooming-2026-11-02">Multitenant Working Dashboard and Roadmap Grooming (2026-11-02)<a class="headerlink" href="#multitenant-working-dashboard-and-roadmap-grooming-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>The <a href="docs/30-design/tenancy/multitenant-delivery-dashboard.html">working dashboard</a>
+now separates milestone promotion from bounded slice acceptance and shows
+milestone/work dependencies, recorded parallel lanes, next gates and linked
+evidence. Queue states/prerequisites are generated directly from the manifest;
+a dated status overlay records acceptance stages without inventing percentages.
+<code>make queue</code> regenerates it and <code>make queue-check</code> refuses a stale dashboard.</p>
+<p>The roadmap keeps decisions and evidence anchors, collapses historical
+execution details, and directs current coordination to the dashboard. The
+broader next-gen programme source links to it rather than duplicating status.
+Verified peer tip <code>436ef543</code> incorporates both runner commits; broader
+integrated acceptance is still pending in these records.</p>
+<p><strong>Validation:</strong> three focused generator tests pass, including stale-output
+refusal; both Mermaid dependency maps parse with the pinned runtime. Queue and
+site checks pass with zero warnings/unresolved links. Browser verification
+confirms the original dormant-entries anchor still exists and automatically
+expands its collapsed evidence section. Nothing published or enabled.</p>
+<h2 id="parallel-mongodb-primary-recovery-and-renewal-refusal-2026-11-02">Parallel MongoDB Primary Recovery and Renewal Refusal (2026-11-02)<a class="headerlink" href="#parallel-mongodb-primary-recovery-and-renewal-refusal-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>Local <strong><code>436ef543</code></strong> extends <code>562f6206</code> with real expired-renewal outage refusal
+and primary SIGKILL/restart before/after migration commit. Independent persisted
+reads and fresh-worker retries prove rollback or exact committed-ledger
+survival. Two mutations fail at matched-count/persisted-value assertions;
+restored code passes. No implementation/catalogue/checksum/serving change.</p>
+<p><strong>Acceptance:</strong> <strong>56 combined checks</strong>, zero pending; all <strong>15 MongoDB checks</strong>
+pass on 5.0.32 and 8.3.9. Lint: zero errors/two filesystem-path warnings;
+466 files classify, diff checks pass, fixtures removed. Both runner commits
+await integration; peer remains at <code>011802ba</code>. Single-node process recovery
+is not HA, host/disk failure or production RPO/RTO acceptance.</p>
+<p>See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02">acceptance/handoff record</a>.</p>
+<h2 id="parallel-transactional-mongodb-operator-migrations-2026-11-02">Parallel Transactional MongoDB Operator Migrations (2026-11-02)<a class="headerlink" href="#parallel-transactional-mongodb-operator-migrations-2026-11-02" title="Permanent link">&para;</a></h2>
+<p>Local <strong><code>562f6206</code></strong> adds the bounded MongoDB replica-set transactional lane
+to the explicit Umzug operator command: renewable server-time leases, shared
+transaction fence, atomic data/ledger and pending-suffix retry. Real MongoDB
+5.0.32 and 8.3.9 acceptance covers contention, paused stale-worker takeover,
+SIGKILL before/after commit, outages, history/failure rollback and read-only
+checks. Standalone mutation and index steps explicitly refuse; existing boot,
+entries, dependency manifests and migration checksums stay unchanged.</p>
+<p><strong>Validation:</strong> <strong>53 combined PG/MongoDB/CLI checks</strong>, zero pending; all <strong>12</strong>
+MongoDB checks pass at the floor too. Fence-removal and split-session mutations
+fail; restored affected checks pass. ESLint has zero errors/two filesystem-path
+warnings, 466 test files classify and diff checks pass. Owned fixtures removed.</p>
+<p><strong>Status:</strong> ready for integration, not full MIG-RUNNER acceptance. Peer branch
+now incorporates the prior authority/settings commits, but their integrated
+testing is pending. No peer files modified or upstream push made.
+See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-mig-runner-transactional-mongodb-slice-2026-11-02">acceptance and handoff</a>.</p>
 <h2 id="parallel-current-authority-and-scalar-settings-acceptance-2026-11-02">Parallel Current Authority and Scalar Settings Acceptance (2026-11-02)<a class="headerlink" href="#parallel-current-authority-and-scalar-settings-acceptance-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Local control-plane commits <strong><code>1dd8990b</code></strong> and <strong><code>011802ba</code></strong> complete bounded
 dormant persistent subject authority and the typed units/seconds settings
