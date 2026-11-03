@@ -12,6 +12,26 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Parallel Transactional MongoDB Operator Migrations (2026-11-02)
+
+Local **`562f6206`** adds the bounded MongoDB replica-set transactional lane
+to the explicit Umzug operator command: renewable server-time leases, shared
+transaction fence, atomic data/ledger and pending-suffix retry. Real MongoDB
+5.0.32 and 8.3.9 acceptance covers contention, paused stale-worker takeover,
+SIGKILL before/after commit, outages, history/failure rollback and read-only
+checks. Standalone mutation and index steps explicitly refuse; existing boot,
+entries, dependency manifests and migration checksums stay unchanged.
+
+**Validation:** **53 combined PG/MongoDB/CLI checks**, zero pending; all **12**
+MongoDB checks pass at the floor too. Fence-removal and split-session mutations
+fail; restored affected checks pass. ESLint has zero errors/two filesystem-path
+warnings, 466 test files classify and diff checks pass. Owned fixtures removed.
+
+**Status:** ready for integration, not full MIG-RUNNER acceptance. Peer branch
+now incorporates the prior authority/settings commits, but their integrated
+testing is pending. No peer files modified or upstream push made.
+See the [acceptance and handoff](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-transactional-mongodb-slice-2026-11-02).
+
 ## Parallel Current Authority and Scalar Settings Acceptance (2026-11-02)
 
 Local control-plane commits **`1dd8990b`** and **`011802ba`** complete bounded

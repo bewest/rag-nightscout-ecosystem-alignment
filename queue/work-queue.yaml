@@ -304,9 +304,9 @@ items:
       Local 1dd8990b implements dormant persistent subject authority; 011802ba
       adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and
       whole policy-aware rollback. Combined local acceptance: 36 passing,
-      zero pending; ESLint and 465-file classification pass. Neither commit
-      is integrated at the verified peer tip 0de90852. Integrate and rerun
-      acceptance before marking integrated. Next control-plane milestone:
+      zero pending; ESLint and 465-file classification pass. Both commits
+      are now incorporated at peer tip 011802ba; integrated testing is pending,
+      not accepted by ancestry alone. Next control-plane milestone:
       persistent operator rules/grant ceilings and atomic policy/write fencing.
       Operator policy and management authentication remain injected; timezone,
       token-lifetime policy, public API and runtime invalidation remain open.
@@ -6502,12 +6502,26 @@ items:
           tests/nightscout-cli.test.js
         kind: integration
         describe: >
-          PG-only foundation: 39 checks (5 unit, 12 disposable-PG, 22 CLI),
+          PG operator foundation checks: unit, disposable-PG and CLI,
           atomic SQL/ledger, overlapping runners, SIGKILL/restart, bounded lock
           wait, drift/history refusal, read-only/restricted identity and controls.
+      - run: >-
+          cd externals/work/crm-secrets-20261102 &&
+          NS_MIGRATION_DOCKER_TEST=1 NS_MIGRATION_MONGO_DOCKER_TEST=1
+          NS_MIGRATION_MONGO_IMAGE=mongo:8 node_modules/.bin/mocha
+          --fail-zero --timeout 40000 tests/migrations.test.js
+          tests/postgres-migrations.integration.test.js
+          tests/mongodb-migrations.integration.test.js tests/nightscout-cli.test.js
+        kind: integration
+        describe: >
+          Local 562f6206: 53 combined checks, zero pending; MongoDB 8.3.9
+          replica-set transactional data/ledger, renewable lease and shared
+          fence, SIGSTOP takeover, real SIGKILL retries and standalone refusal.
+          All 12 MongoDB checks also pass on mongo:5.0.32.
       - no-gate: >
           PG-only operator foundation is not full two-store acceptance.
-          MongoDB fencing-safe leases/resumability, production catalogues and
+          The bounded MongoDB replica-set slice is locally accepted, not
+          integrated. Standalone/index fencing and resumability, production catalogues and
           baseline, rollback/export policy and catalogue authenticity remain.
           Serving-role compatibility wiring is absent; default boot unchanged.
     blocks_on: [MIG-VV]
@@ -6529,6 +6543,13 @@ items:
       Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested,
       not automatically detected. 39 checks pass; ESLint has zero errors and
       two filesystem-path warnings. MongoDB/serving integration remains open.
+
+      Parallel 562f6206 adds replica-set-only transactional scalar-set steps
+      with an atomic shared fence and renewable server-time lease. Data and
+      ledger commit together. Mutations removing the fence/data session fail;
+      restored checks pass. 466 files classify; lint has zero errors/two path
+      warnings. Ready to integrate, not full MIG-RUNNER or standalone support.
+      No entries, serving, dependencies or existing migration checksum changes.
 
       Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 

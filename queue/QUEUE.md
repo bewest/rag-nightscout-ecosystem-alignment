@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 358 |
-| runnable gates | 415 |
+| runnable gates | 416 |
 | explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 784 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 785 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8399,7 +8399,7 @@ alarm-readiness items, and the seam branch refresh.
 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `done` | `seam/t30-schema-cred` | n/a | 2 run + 2 no-gate |
 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `-` | n/a | 1 run + 2 no-gate |
 | `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `done` | `-` | n/a | 0 run + 1 no-gate |
-| `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 1 run + 1 no-gate |
+| `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
@@ -8512,7 +8512,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain. Further decision: grant removal/revocation applies at the next protected operation across workers; current authorization unavailable means refusal. JWT expiry/stale cache is not authority. Include protected socket delivery, subscriptions/writes/reconnect and explicit authorization race semantics. Local 1dd8990b implements dormant persistent subject authority; 011802ba adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and whole policy-aware rollback. Combined local acceptance: 36 passing, zero pending; ESLint and 465-file classification pass. Neither commit is integrated at the verified peer tip 0de90852. Integrate and rerun acceptance before marking integrated. Next control-plane milestone: persistent operator rules/grant ceilings and atomic policy/write fencing. Operator policy and management authentication remain injected; timezone, token-lifetime policy, public API and runtime invalidation remain open. No owner/data/socket serving or end-to-end revocation acceptance implied.
+**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain. Further decision: grant removal/revocation applies at the next protected operation across workers; current authorization unavailable means refusal. JWT expiry/stale cache is not authority. Include protected socket delivery, subscriptions/writes/reconnect and explicit authorization race semantics. Local 1dd8990b implements dormant persistent subject authority; 011802ba adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and whole policy-aware rollback. Combined local acceptance: 36 passing, zero pending; ESLint and 465-file classification pass. Both commits are now incorporated at peer tip 011802ba; integrated testing is pending, not accepted by ancestry alone. Next control-plane milestone: persistent operator rules/grant ceilings and atomic policy/write fencing. Operator policy and management authentication remain injected; timezone, token-lifetime policy, public API and runtime invalidation remain open. No owner/data/socket serving or end-to-end revocation acceptance implied.
 
 ### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
 
@@ -8852,8 +8852,10 @@ alarm-readiness items, and the seam branch refresh.
 **Gates.**
 
 - `[integration]` `cd externals/work/crm-multitenant-20261102 && NS_MIGRATION_DOCKER_TEST=1 node_modules/.bin/mocha --timeout 30000 tests/migrations.test.js tests/postgres-migrations.integration.test.js tests/nightscout-cli.test.js`
-  - PG-only foundation: 39 checks (5 unit, 12 disposable-PG, 22 CLI), atomic SQL/ledger, overlapping runners, SIGKILL/restart, bounded lock wait, drift/history refusal, read-only/restricted identity and controls.
-- **NO GATE** &mdash; PG-only operator foundation is not full two-store acceptance. MongoDB fencing-safe leases/resumability, production catalogues and baseline, rollback/export policy and catalogue authenticity remain. Serving-role compatibility wiring is absent; default boot unchanged.
+  - PG operator foundation checks: unit, disposable-PG and CLI, atomic SQL/ledger, overlapping runners, SIGKILL/restart, bounded lock wait, drift/history refusal, read-only/restricted identity and controls.
+- `[integration]` `cd externals/work/crm-secrets-20261102 && NS_MIGRATION_DOCKER_TEST=1 NS_MIGRATION_MONGO_DOCKER_TEST=1 NS_MIGRATION_MONGO_IMAGE=mongo:8 node_modules/.bin/mocha --fail-zero --timeout 40000 tests/migrations.test.js tests/postgres-migrations.integration.test.js tests/mongodb-migrations.integration.test.js tests/nightscout-cli.test.js`
+  - Local 562f6206: 53 combined checks, zero pending; MongoDB 8.3.9 replica-set transactional data/ledger, renewable lease and shared fence, SIGSTOP takeover, real SIGKILL retries and standalone refusal. All 12 MongoDB checks also pass on mongo:5.0.32.
+- **NO GATE** &mdash; PG-only operator foundation is not full two-store acceptance. The bounded MongoDB replica-set slice is locally accepted, not integrated. Standalone/index fencing and resumability, production catalogues and baseline, rollback/export policy and catalogue authenticity remain. Serving-role compatibility wiring is absent; default boot unchanged.
 
 **Evidence.**
 
@@ -8861,7 +8863,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
+**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Parallel 562f6206 adds replica-set-only transactional scalar-set steps with an atomic shared fence and renewable server-time lease. Data and ledger commit together. Mutations removing the fence/data session fail; restored checks pass. 466 files classify; lint has zero errors/two path warnings. Ready to integrate, not full MIG-RUNNER or standalone support. No entries, serving, dependencies or existing migration checksum changes. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 
 ### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
 

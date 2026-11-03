@@ -14,8 +14,10 @@ v16's release merge list.
 ## Current status and parallel ownership (2026-11-02)
 
 **Read this summary before the execution history below.** Verified local
-integration tip: `0de90852`. It includes our secrets recovery commit `78b915ab`.
-The integrated gate reports **879 passing, zero pending**; the separate broad
+integration tip: `011802ba`, incorporating subject authority `1dd8990b` and
+scalar settings `011802ba`; their integrated testing is pending. The last
+recorded broader integrated gate at `0de90852` reports **879 passing, zero
+pending**, including secrets recovery `78b915ab`; the separate broad
 no-database AJV limitation remains unresolved. Nothing is pushed or enabled for
 serving. "Complete slice" means its bounded acceptance passed, not that its
 parent milestone is promoted.
@@ -24,11 +26,12 @@ parent milestone is promoted.
 |---|---|---|
 | M0: foundations | PG transaction/RLS and migration foundation slices accepted; full M0 promotion remains open | Integration/entries session: remaining deployment/schema acceptance |
 | M1: entries adapter | In progress: reads, filters, identity, writes/upserts and dormant v3 intents accepted; full adapter not promoted | Integration/entries session: reviewed DDL/import/field-order contract, compatibility and resource bounds |
+| Nightscout API data importer | Requested for consideration; deferred, not implemented | Separate entries/import milestone after target schema/identity contract; do not confuse source API import with schema MIG-RUNNER or operator API execution |
 | Secrets component + Vault adapter | Complete dormant slice, integrated: tenant-bound crypto/JWT, ciphertext/audit persistence and rewrap/CAS | No additional Vault feature expansion assigned here |
 | Secrets synthetic recovery | Complete bounded slice, integrated in `0de90852`: database/key snapshots and actual worker SIGKILL/retry | Do not repeat; production recovery remains open |
-| Current subject authority | Complete dormant local slice in `1dd8990b`; not yet integrated | Integration session: incorporate and rerun acceptance; public/runtime enforcement remains open |
-| Minimum scalar settings | Complete dormant local subset in `011802ba`: units/seconds, provenance, versioned history and policy-aware rollback; not yet integrated | Control-plane session: persistent operator policy and atomic policy/write fencing next; full MT-CONFIG-MIN remains open |
-| MIG-RUNNER | PG explicit-operator foundation accepted; MongoDB fencing/resume and full runner acceptance unfinished | Separate unassigned lane in the latest handoff; do not assume another session is actively implementing it |
+| Current subject authority | Complete dormant slice in `1dd8990b`, incorporated in peer branch; integrated testing pending | Integration session: finish acceptance; public/runtime enforcement remains open |
+| Minimum scalar settings | Complete dormant subset in `011802ba`, incorporated; integrated testing pending | Persistent operator policy and atomic policy/write fencing remain next control-plane work; full MT-CONFIG-MIN stays open |
+| MIG-RUNNER | PG foundation accepted; MongoDB replica-set transactional slice locally accepted in `562f6206`, not yet integrated | This parallel session: hand off bounded runner. Standalone/index fencing, catalogues and full runner acceptance remain open |
 | M2: tenant control plane | Open: secrets is only one dependency; settings, current grants, tenant resolution and runtime wiring remain | This session takes the bounded settings/authority dependency; coordinate later integration |
 | M3: two-tenant HTTP lab | Blocked on M1/M2; not completed by dormant service tests | Follow storage/control-plane acceptance, not a parallel implementation here yet |
 | M4: existing-client surface | Not accepted; full collections/v1/v3 compatibility and wiring remain | Entries session covers its bounded compatibility work; full M4 follows M3 |
@@ -36,15 +39,16 @@ parent milestone is promoted.
 | M6: hosted preview | Blocked on prior milestones and operational acceptance | Synthetic secrets recovery alone does not complete M6 |
 | Built-in signer, human identity, next-generation execution | Separate unfinished work; built-in option retained | Not assigned here; no Vault cost/efficiency/production-readiness conclusion |
 
-**Next here:** hand off `1dd8990b` and `011802ba` from
-`workspace/secrets-vault-20261102`, then pursue persistent operator policy and
-atomic policy/write fencing in the isolated control-plane worktree. See the
-[latest acceptance and process record](#parallel-control-plane-acceptance-and-next-handoff-2026-11-02).
+**Next here:** hand off MongoDB operator-runner commit `562f6206` from
+`workspace/secrets-vault-20261102` and record actual integration acceptance.
+The originally assigned MIG-RUNNER lane resumed after the peer incorporated
+the two control-plane commits. See the
+[latest runner acceptance](#parallel-mig-runner-transactional-mongodb-slice-2026-11-02).
 Keep entries, runtime consumers and existing migration checksums untouched.
 The next policy milestone is recommended, not started or accepted.
 The other session retains entries schema/import/compatibility acceptance.
-MongoDB migration work is unfinished, but current activity/ownership is not
-confirmed by the roadmap.
+This session's replica-set slice does not complete standalone MongoDB migration
+support or safe index steps.
 
 The append-only execution record contains older "next" instructions and
 relative references to "this/other session." Those describe their recorded
@@ -896,3 +900,95 @@ remain separate; Vault has no comparative cost/efficiency/readiness claim.
 Source:
 `externals/work/crm-secrets-20261102/lib/subject-policy/README.md:1-143`,
 `externals/work/crm-secrets-20261102/lib/tenant-settings/README.md:1-148`.
+
+### Parallel MIG-RUNNER transactional MongoDB slice (2026-11-02)
+
+**Local commit `562f6206`**, on the clean isolated
+`workspace/secrets-vault-20261102` worktree, extends the existing explicit
+Umzug operator command with `--backend mongodb`. The peer branch now contains
+`1dd8990b` and `011802ba`; their integrated runs are pending, not accepted here.
+The runner commit is not yet incorporated. No peer worktree was modified.
+
+**Bounded scope:** MongoDB 5+ writable replica-set primaries, transactional
+idempotent scalar-equality `$set` backfills against existing collections.
+No arbitrary JavaScript, standalone mutation, application DDL/index steps,
+production catalogue, rollback, serving integration or single-site boot change.
+Existing PostgreSQL/secrets/settings/subject-policy migration bytes and
+checksums are untouched, as are entries and dependency manifests.
+
+An expiry-only lease cannot fence a paused worker's arbitrary cross-document
+standalone writes. This slice instead changes lease owner/epoch and a shared
+fence together in a transaction. Every data migration checks the current lease,
+writes that fence and commits its data plus ledger in one transaction. Takeover
+must write the same fence, so a stale transaction refuses/conflicts before a
+data command; a takeover cannot commit across an active fenced transaction.
+Server-time expiry and serialized renewal use a separate lease document.
+Failed renewal is surfaced, not ignored. Release cannot remove a successor's
+lease or reset its epoch. Completed migrations survive; retries apply the
+pending suffix. A transaction already holding the fence may finish after lease
+expiry but before successor takeover; expiry is not retroactive cancellation.
+
+**Measured acceptance:**
+
+| Gate | Result |
+|---|---|
+| Combined PG/MongoDB/CLI, PostgreSQL 16 and MongoDB 8.3.9 | **53 passing, zero pending** |
+| All MongoDB checks against 5.0.32 | **12 passing, zero pending** |
+| Shared-fence removal mutation | Fails: a stale worker attempts data after takeover |
+| Data-session removal mutation | Fails: uncommitted data becomes externally visible |
+| Restored affected mutation selectors | **2 passing, zero pending** |
+| ESLint / tiers / diff checks | Zero errors, two filesystem-path warnings; **466 files** classified; clean diff |
+
+Real authenticated disposable single-node replica sets prove renewal across
+two lease periods, overlapping runners, SIGSTOP/expiry/takeover, blocked
+takeover across a live transaction, actual SIGKILL before and after commit
+with new-process retries, failed-ledger rollback, drift/history refusal,
+read-only checking and paused-database outage refusal. A separate actual
+standalone server refuses before metadata or data mutation. Fixtures use
+synthetic credentials, loopback-only random ports, no persistent volumes and
+owned worker/container teardown. The lab bounds abandoned transactions to
+five seconds; production parameters and replica-set failover are not accepted
+by these tests.
+
+From `externals/work/crm-secrets-20261102` (or the incorporated worktree):
+
+```sh
+NS_MIGRATION_DOCKER_TEST=1 NS_MIGRATION_MONGO_DOCKER_TEST=1 \
+NS_MIGRATION_MONGO_IMAGE=mongo:8 node_modules/.bin/mocha --fail-zero --timeout 40000 \
+  tests/migrations.test.js tests/postgres-migrations.integration.test.js \
+  tests/mongodb-migrations.integration.test.js tests/nightscout-cli.test.js
+NS_MIGRATION_MONGO_DOCKER_TEST=1 NS_MIGRATION_MONGO_IMAGE=mongo:5.0.32 \
+  node_modules/.bin/mocha --fail-zero --timeout 40000 tests/mongodb-migrations.integration.test.js
+node_modules/.bin/eslint lib/migrations lib/cli/commands/migrate.js \
+  tests/migrations.test.js tests/mongodb-migrations.integration.test.js \
+  tests/fixtures/migrations/mongo-worker.js
+npm run test:tiers
+```
+
+Local `mongo:8` measured 8.3.9; always report the actual server version rather
+than assuming a moving tag. The new MongoDB suite needs its own explicit
+`NS_MIGRATION_MONGO_DOCKER_TEST=1` opt-in: do not count skipped tests as passing.
+
+**Handoff/remaining:** integrate `562f6206`, rerun these and the broader
+integration gates, then record actual SHA/results on alignment `main`.
+MIG-RUNNER remains in progress: safe standalone/index operation or quiescence
+contract, bounded/chunked backfills, actual catalogues/baselines, authenticity,
+rollback/export policy and serving compatibility wiring remain unfinished.
+Persistent operator policy and atomic policy/write fencing remain the next
+independent control-plane option; neither was silently implemented here.
+No push, publication or serving enablement is authorized.
+
+**API import clarification:** the maintainer means importing existing
+Nightscout data by reading its API, not exposing schema migration over an API.
+Defer this separate candidate to the entries/import lane after its target
+schema, identity and field-order contract is reviewed. Acceptance should cover
+least-privilege source access, resumable bounded pagination/checkpoints,
+duplicate-safe retries and value/identity verification, with an explicit
+concurrent-source-change/cutover policy. API projections may omit stored fields
+or BSON order; do not call this a raw database backup or silently claim lossless
+import. This is a follow-on scope decision, not an implemented importer or a
+change to the explicit schema operator boundary.
+
+Source:
+`externals/work/crm-secrets-20261102/lib/migrations/mongodb.js:59-199`,
+`externals/work/crm-secrets-20261102/tests/mongodb-migrations.integration.test.js:108-287`.
