@@ -4330,6 +4330,8 @@
       
         
       
+        
+      
     
     
     
@@ -4606,6 +4608,8 @@
       
         
           
+        
+      
         
       
         
@@ -5640,7 +5644,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>49220e779</code>.</em></p>
+<p><em>Living document, last changed 2026-11-02 at <code>6475428b7</code>.</em></p>
 <p><em>Contributor-facing. Current at cgm-remote-monitor dev <code>497d08c9</code> (2026-11-01), after #8894 merged. Status: proposed; the decisions in §5 are open. Release placement is proposed in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
@@ -5696,9 +5700,9 @@ See <a href="../../10-domain/nightscout-v16-ecosystem-deep-dive.html">current re
 </tr>
 <tr>
 <td>Tenancy</td>
-<td>nothing</td>
-<td>merged 2026-10-30: #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (<code>991b0654</code>; #8862 closed as superseded)</td>
-<td>tenant configuration, resolution, tenant-scoped auth, multitenant lab</td>
+<td>#8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (<code>991b0654</code>; #8862 closed as superseded)</td>
+<td>Local integration commits through <code>a19b549c</code>: one-time entries import/schema candidate, dormant provider-neutral tenant policy and HTTP boundaries, and a passing 10-case two-tenant HTTP lab. M1/M2/M3 milestones remain open; see the <a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> for current gates and the <a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html">roadmap</a> for evidence.</td>
+<td>Full entries/API compatibility; deployment-owned tenant authority, data router and listener wiring; M3 promotion</td>
 </tr>
 </tbody>
 </table>
@@ -5939,12 +5943,12 @@ manual confirmation. Two records already sharing an identifier is a question for
 </table>
 <p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT decided 2026-10-31: one in-process event per write, named from WriteResult.items[], and the per-database-call event kept as backend instrumentation; delivery between processes is decided with the serve roles; its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name.</p>
 <h2 id="3-the-map">3. The map<a class="headerlink" href="#3-the-map" title="Permanent link">&para;</a></h2>
-<p>For the initial multitenant implementation, use the
-<a href="../tenancy/multitenant-delivery-dashboard.html">multitenant delivery dashboard</a>:
-M0-M6 prerequisites, parallel lanes, remaining gates and dated local versus
-integrated acceptance. Its <a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html">roadmap</a>
-retains decisions and detailed execution evidence. This programme map keeps
-the broader execution, registration and command tracks separate.</p>
+<p>For multitenant status and sequencing, use the
+<a href="../tenancy/multitenant-delivery-dashboard.html">multitenant delivery dashboard</a>.
+It owns M0-M6 prerequisites, parallel lanes, bounded slices and current
+acceptance. The <a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html">roadmap</a>
+retains decisions, limits and detailed execution evidence; this platform
+overview intentionally summarizes rather than duplicates those tenancy gates.</p>
 <!-- chart: map -->
 
 <h2 id="4-the-tracks-in-detail">4. The tracks in detail<a class="headerlink" href="#4-the-tracks-in-detail" title="Permanent link">&para;</a></h2>

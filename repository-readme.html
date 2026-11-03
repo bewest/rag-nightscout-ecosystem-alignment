@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/repository-readme.html">
       
       
-        <link rel="prev" href="LIVE-BACKLOG.html">
+        <link rel="prev" href="CLAUDE.html">
       
       
         <link rel="next" href="progress.html">
@@ -1988,6 +1988,8 @@
       
         
       
+        
+      
     
     
     
@@ -2040,14 +2042,42 @@
   
   
     <li class="md-nav__item">
-      <a href="LIVE-BACKLOG.html" class="md-nav__link">
+      <a href="AGENTS.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Live Backlog
+    Working in this repository: the contract for any agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CLAUDE.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE
   
 
     
@@ -2236,7 +2266,7 @@
   <a href="#for-ai-coding-agents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For AI Coding Agents
+        For AI coding agents
       
     </span>
   </a>
@@ -2256,21 +2286,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tooling-for-agents" class="md-nav__link">
+  <a href="#research-tooling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tooling for Agents
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#agent-guardrails" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Agent Guardrails
+        Research tooling
       
     </span>
   </a>
@@ -2541,7 +2560,7 @@
   <a href="#for-ai-coding-agents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        For AI Coding Agents
+        For AI coding agents
       
     </span>
   </a>
@@ -2561,21 +2580,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tooling-for-agents" class="md-nav__link">
+  <a href="#research-tooling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tooling for Agents
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#agent-guardrails" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Agent Guardrails
+        Research tooling
       
     </span>
   </a>
@@ -2677,7 +2685,7 @@
 
 
 <h1 id="nightscout-alignment-workspace">Nightscout Alignment Workspace<a class="headerlink" href="#nightscout-alignment-workspace" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-09-25 at <code>8135442fe</code>.</em></p>
+<p><em>Living document, last changed 2026-11-03 at <code>a7af645d1</code>.</em></p>
 <p>A multi-repository workspace for working across Nightscout, AAPS, Loop, and Trio projects without merging them into a single giant repo.</p>
 <h2 id="current-work--cgm-remote-monitor">Current work — cgm-remote-monitor<a class="headerlink" href="#current-work--cgm-remote-monitor" title="Permanent link">&para;</a></h2>
 <p>Three parallel horizons: <strong>remedial</strong> (defects that already ship), <strong>modernization</strong>
@@ -2854,15 +2862,11 @@
 <a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>├── docs/                  # General documentation
 <a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>└── README.md
 </code></pre></div>
-<h2 id="for-ai-coding-agents">For AI Coding Agents<a class="headerlink" href="#for-ai-coding-agents" title="Permanent link">&para;</a></h2>
-<p>This workspace is designed to work well with coding agents (Replit, GitHub Copilot, Claude, local LLMs):</p>
-<ol>
-<li><strong>Predictable layout</strong>: All external repos live in <code>externals/</code></li>
-<li><strong>Version pinning</strong>: Use <code>make freeze</code> to lock exact commits</li>
-<li><strong>No cross-repo git pollution</strong>: Each repo maintains its own git history</li>
-<li><strong>Easy reset</strong>: Delete <code>externals/</code> and re-run <code>make bootstrap</code></li>
-<li><strong>Enhanced tooling</strong>: Query, trace, and validate with JSON output</li>
-</ol>
+<h2 id="for-ai-coding-agents">For AI coding agents<a class="headerlink" href="#for-ai-coding-agents" title="Permanent link">&para;</a></h2>
+<p>Read <a href="AGENTS.html"><code>AGENTS.md</code></a> first. It is the vendor-neutral contract: where each fact lives,
+the measurement rules, the git and worktree rules, what may enter the public tree, and how to
+hand off to another agent. <code>.github/copilot-instructions.md</code> and <code>CLAUDE.md</code> point to it;
+procedures live in <code>.github/skills/&lt;name&gt;/SKILL.md</code>.</p>
 <h2 id="cross-algorithm-validation-framework">Cross-Algorithm Validation Framework<a class="headerlink" href="#cross-algorithm-validation-framework" title="Permanent link">&para;</a></h2>
 <p>This workspace includes a cross-implementation validation harness that verifies
 AID dosing algorithm implementations produce equivalent outputs given identical
@@ -2902,31 +2906,10 @@ inputs. Validated across 300 test vectors (100 oref0-native + 200 Loop):</p>
 - <code>make xval-validate</code> — Run full cross-validation (100 oref0 vectors)
 - <code>make xval-smoke</code> — Quick smoke test (10 vectors)</p>
 <p>See <code>docs/architecture/cross-validation-assessment.md</code> for full metrics and methodology.</p>
-<h3 id="tooling-for-agents">Tooling for Agents<a class="headerlink" href="#tooling-for-agents" title="Permanent link">&para;</a></h3>
-<p><strong>Quick Start</strong>:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Interactive exploration</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>make<span class="w"> </span>cli
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Query documentation</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>python3<span class="w"> </span>tools/query_workspace.py<span class="w"> </span>--search<span class="w"> </span><span class="s2">"authentication"</span><span class="w"> </span>--json
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Trace requirement coverage</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>python3<span class="w"> </span>tools/query_workspace.py<span class="w"> </span>--tests-for<span class="w"> </span>REQ-001<span class="w"> </span>--json
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1"># Validate changes</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>python3<span class="w"> </span>tools/run_workflow.py<span class="w"> </span>--workflow<span class="w"> </span>quick<span class="w"> </span>--json
-</code></pre></div></p>
-<p><strong>Documentation</strong>:
-- <code>docs/TOOLING-GUIDE.md</code> - Comprehensive guide
-- <code>docs/TOOLING-QUICKREF.md</code> - Quick reference
-- <code>make help</code> - All available commands</p>
-<h3 id="agent-guardrails">Agent Guardrails<a class="headerlink" href="#agent-guardrails" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Agents should NOT commit directly to <code>main</code>/<code>master</code> in external repos</li>
-<li>Create topic branches: <code>git checkout -b workspace/feature-name</code></li>
-<li>The workspace repo tracks ONLY configuration, not external code</li>
-<li>Always validate before committing: <code>make workflow TYPE=quick</code></li>
-</ul>
+<h3 id="research-tooling">Research tooling<a class="headerlink" href="#research-tooling" title="Permanent link">&para;</a></h3>
+<p>The January–April 2026 research facets (mappings, specs, conformance, traceability) have their own
+query and verification tools: <code>docs/TOOLING-GUIDE.md</code>, <code>make help</code>. They are not part of the
+programme's gates.</p>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="repository-wont-clone">Repository won't clone<a class="headerlink" href="#repository-wont-clone" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2940,9 +2923,9 @@ inputs. Validated across 300 test vectors (100 oref0-native + 200 Loop):</p>
 <li>Commit, stash, or discard changes as appropriate</li>
 </ul>
 <h3 id="reset-everything">Reset everything<a class="headerlink" href="#reset-everything" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>rm<span class="w"> </span>-rf<span class="w"> </span>externals/*
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>touch<span class="w"> </span>externals/.keep
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>make<span class="w"> </span>bootstrap
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>rm<span class="w"> </span>-rf<span class="w"> </span>externals/*
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>touch<span class="w"> </span>externals/.keep
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>make<span class="w"> </span>bootstrap
 </code></pre></div>
 <h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
 <p>To contribute changes back to upstream projects:</p>

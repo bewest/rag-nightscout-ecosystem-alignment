@@ -5,7 +5,11 @@
          <lastmod>2026-11-03</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/LIVE-BACKLOG.html</loc>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/AGENTS.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/CLAUDE.html</loc>
          <lastmod>2026-11-03</lastmod>
     </url>
     <url>
@@ -37,7 +41,35 @@
          <lastmod>2026-11-03</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/sdqctl-verify.html</loc>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/evidence-harness/index.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/evidence-harness/SKILL.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/queue-item/index.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/queue-item/SKILL.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/release-record/index.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/release-record/SKILL.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/session-handoff/index.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/session-handoff/SKILL.html</loc>
          <lastmod>2026-11-03</lastmod>
     </url>
     <url>
@@ -3877,6 +3909,10 @@
          <lastmod>2026-11-03</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/progress-archive-2026-02-to-09.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/progress-archive-2026-03-18-to-31.html</loc>
          <lastmod>2026-11-03</lastmod>
     </url>
@@ -4161,6 +4197,10 @@
          <lastmod>2026-11-03</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/sdqctl-proposals/sdqctl-verify-skill.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/sdqctl-proposals/selective-repo-loading-proposal.html</loc>
          <lastmod>2026-11-03</lastmod>
     </url>
@@ -4198,6 +4238,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/sdqctl-proposals/backlogs/index.html</loc>
+         <lastmod>2026-11-03</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/sdqctl-proposals/backlogs/LIVE-BACKLOG.html</loc>
          <lastmod>2026-11-03</lastmod>
     </url>
     <url>

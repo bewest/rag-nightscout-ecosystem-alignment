@@ -6,35 +6,35 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Validate and inspect sdqctl workflow files without LLM calls">
+        <meta name="description" content="Record a merge, a maintainer decision, a test run or a cohort check in the release directory (releases/<product>-<version>/) and keep the backfix register's status words and the queue's states consistent with it. Use whenever a PR merges to dev, a decision is taken, a V&V run completes, or a session hands off programme state. The release records are the state of record for a cycle; overview pages and progress.md are not.">
       
       
       
-        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/sdqctl-verify.html">
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/.github/skills/release-record/SKILL.html">
       
       
         <link rel="prev" href="index.html">
       
       
-        <link rel="next" href="../../conformance/index.html">
+        <link rel="next" href="../session-handoff/index.html">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>sdqctl Verification Skill - Nightscout ecosystem alignment</title>
+        <title>Release record: what merged, what was decided, what was checked - Nightscout ecosystem alignment</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,7 +53,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sdqctl-verification-skill" class="md-skip">
+        <a href="#release-record-what-merged-what-was-decided-what-was-checked" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              sdqctl Verification Skill
+              Release record: what merged, what was decided, what was checked
             
           </span>
         </div>
@@ -227,7 +227,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../index.html" class="md-tabs__link">
+      <a href="../../../index.html" class="md-tabs__link">
         
   
   
@@ -248,7 +248,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../docs/00-overview/index.html" class="md-tabs__link">
+        <a href="../../../docs/00-overview/index.html" class="md-tabs__link">
           
   
   
@@ -270,7 +270,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../releases/index.html" class="md-tabs__link">
+        <a href="../../../releases/index.html" class="md-tabs__link">
           
   
   
@@ -292,7 +292,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../queue/index.html" class="md-tabs__link">
+        <a href="../../../queue/index.html" class="md-tabs__link">
           
   
   
@@ -314,7 +314,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../docs/index.html" class="md-tabs__link">
+        <a href="../../../docs/index.html" class="md-tabs__link">
           
   
   
@@ -336,7 +336,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../mapping/index.html" class="md-tabs__link">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
           
   
   
@@ -358,7 +358,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../reports/index.html" class="md-tabs__link">
+        <a href="../../../reports/index.html" class="md-tabs__link">
           
   
   
@@ -380,7 +380,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../tools/index.html" class="md-tabs__link">
+        <a href="../../../tools/index.html" class="md-tabs__link">
           
   
   
@@ -402,7 +402,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../traceability/index.html" class="md-tabs__link">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
           
   
   
@@ -424,7 +424,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../visualizations/index.html" class="md-tabs__link">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
           
   
   
@@ -446,7 +446,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../site/pages/index.html" class="md-tabs__link">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
           
   
   
@@ -479,7 +479,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../index.html" class="md-tabs__link">
+        <a href="../../index.html" class="md-tabs__link">
           
   
   
@@ -518,7 +518,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -548,7 +548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../index.html" class="md-nav__link">
+      <a href="../../../index.html" class="md-nav__link">
         
   
   
@@ -629,7 +629,7 @@
   
   
   
-    <a href="../../docs/00-overview/index.html" class="md-nav__link">
+    <a href="../../../docs/00-overview/index.html" class="md-nav__link">
       
   
   
@@ -696,7 +696,7 @@
   
   
   
-    <a href="../../releases/index.html" class="md-nav__link">
+    <a href="../../../releases/index.html" class="md-nav__link">
       
   
   
@@ -755,7 +755,7 @@
   
   
   
-    <a href="../../queue/index.html" class="md-nav__link">
+    <a href="../../../queue/index.html" class="md-nav__link">
       
   
   
@@ -886,7 +886,7 @@
   
   
   
-    <a href="../../docs/index.html" class="md-nav__link">
+    <a href="../../../docs/index.html" class="md-nav__link">
       
   
   
@@ -991,7 +991,7 @@
   
   
   
-    <a href="../../mapping/index.html" class="md-nav__link">
+    <a href="../../../mapping/index.html" class="md-nav__link">
       
   
   
@@ -1064,7 +1064,7 @@
   
   
   
-    <a href="../../reports/index.html" class="md-nav__link">
+    <a href="../../../reports/index.html" class="md-nav__link">
       
   
   
@@ -1159,7 +1159,7 @@
   
   
   
-    <a href="../../tools/index.html" class="md-nav__link">
+    <a href="../../../tools/index.html" class="md-nav__link">
       
   
   
@@ -1270,7 +1270,7 @@
   
   
   
-    <a href="../../traceability/index.html" class="md-nav__link">
+    <a href="../../../traceability/index.html" class="md-nav__link">
       
   
   
@@ -1461,7 +1461,7 @@
   
   
   
-    <a href="../../visualizations/index.html" class="md-nav__link">
+    <a href="../../../visualizations/index.html" class="md-nav__link">
       
   
   
@@ -1556,7 +1556,7 @@
   
   
   
-    <a href="../../site/pages/index.html" class="md-nav__link">
+    <a href="../../../site/pages/index.html" class="md-nav__link">
       
   
   
@@ -1691,7 +1691,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../index.html" class="md-nav__link ">
+            <a href="../../index.html" class="md-nav__link ">
               
   
   
@@ -1735,14 +1735,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../copilot-instructions.html" class="md-nav__link">
+      <a href="../../copilot-instructions.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Nightscout Ecosystem Alignment Workspace
+    Nightscout ecosystem alignment workspace
   
 
     
@@ -1789,7 +1789,7 @@
   
   
   
-    <a href="../instructions/index.html" class="md-nav__link">
+    <a href="../../instructions/index.html" class="md-nav__link">
       
   
   
@@ -1797,6 +1797,203 @@
     
   
     instructions/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_1_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    skills/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_1_4" id="__nav_12_1_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_12_1_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    skills/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../evidence-harness/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    evidence-harness/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../queue-item/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    queue-item/
   
 
     
@@ -1846,7 +2043,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_1_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_1_4_4" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -1857,7 +2054,7 @@
   <span class="md-ellipsis">
     
   
-    skills/
+    release-record/
   
 
     
@@ -1868,18 +2065,18 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_12_1_4" id="__nav_12_1_4_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_12_1_4_4" id="__nav_12_1_4_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_12_1_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_12_1_4">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_12_1_4_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12_1_4_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    skills/
+    release-record/
   
 
           </label>
@@ -1910,7 +2107,7 @@
   <span class="md-ellipsis">
     
   
-    sdqctl Verification Skill
+    Release record: what merged, what was decided, what was checked
   
 
     
@@ -1921,14 +2118,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="sdqctl-verify.html" class="md-nav__link md-nav__link--active">
+      <a href="SKILL.html" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    sdqctl Verification Skill
+    Release record: what merged, what was decided, what was checked
   
 
     
@@ -1954,10 +2151,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#validate-workflow-syntax" class="md-nav__link">
+  <a href="#which-file-takes-what" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validate Workflow Syntax
+        Which file takes what
       
     </span>
   </a>
@@ -1965,10 +2162,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#show-parsed-structure" class="md-nav__link">
+  <a href="#procedure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Show Parsed Structure
+        Procedure
       
     </span>
   </a>
@@ -1976,10 +2173,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#preview-execution-dry-run" class="md-nav__link">
+  <a href="#what-the-record-never-does" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Preview Execution (Dry Run)
+        What the record never does
       
     </span>
   </a>
@@ -1987,43 +2184,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-with-mock-adapter" class="md-nav__link">
+  <a href="#capturing-the-verification-record" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test with Mock Adapter
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#check-system-status" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Check System Status
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validate-all-workflows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validate All Workflows
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#when-to-use-this-skill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to Use This Skill
+        Capturing the verification record
       
     </span>
   </a>
@@ -2033,6 +2197,74 @@
     </ul>
   
 </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../session-handoff/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    session-handoff/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
       
     </li>
   
@@ -2094,7 +2326,7 @@
   
   
   
-    <a href="../../conformance/index.html" class="md-nav__link">
+    <a href="../../../conformance/index.html" class="md-nav__link">
       
   
   
@@ -2162,7 +2394,7 @@
   
   
   
-    <a href="../../specs/index.html" class="md-nav__link">
+    <a href="../../../specs/index.html" class="md-nav__link">
       
   
   
@@ -2224,7 +2456,7 @@
   
   
   
-    <a href="../../templates/index.html" class="md-nav__link">
+    <a href="../../../templates/index.html" class="md-nav__link">
       
   
   
@@ -2282,7 +2514,7 @@
   
   
   
-    <a href="../../workflows/index.html" class="md-nav__link">
+    <a href="../../../workflows/index.html" class="md-nav__link">
       
   
   
@@ -2324,6 +2556,8 @@
       
         
       
+        
+      
     
     
     
@@ -2342,7 +2576,7 @@
   
   
   
-    <a href="../../LIVE-BACKLOG.html" class="md-nav__link">
+    <a href="../../../AGENTS.html" class="md-nav__link">
       
   
   
@@ -2403,10 +2637,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#validate-workflow-syntax" class="md-nav__link">
+  <a href="#which-file-takes-what" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validate Workflow Syntax
+        Which file takes what
       
     </span>
   </a>
@@ -2414,10 +2648,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#show-parsed-structure" class="md-nav__link">
+  <a href="#procedure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Show Parsed Structure
+        Procedure
       
     </span>
   </a>
@@ -2425,10 +2659,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#preview-execution-dry-run" class="md-nav__link">
+  <a href="#what-the-record-never-does" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Preview Execution (Dry Run)
+        What the record never does
       
     </span>
   </a>
@@ -2436,43 +2670,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-with-mock-adapter" class="md-nav__link">
+  <a href="#capturing-the-verification-record" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test with Mock Adapter
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#check-system-status" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Check System Status
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validate-all-workflows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validate All Workflows
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#when-to-use-this-skill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to Use This Skill
+        Capturing the verification record
       
     </span>
   </a>
@@ -2496,52 +2697,97 @@
 
 
 
-<h1 id="sdqctl-verification-skill">sdqctl Verification Skill<a class="headerlink" href="#sdqctl-verification-skill" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-01-20 at <code>44a81f153</code>.</em></p>
-<p>Use this skill to validate, inspect, and dry-run sdqctl workflows.
-All commands in this skill run <strong>without LLM calls</strong> and are safe for CI/CD.</p>
-<h2 id="validate-workflow-syntax">Validate Workflow Syntax<a class="headerlink" href="#validate-workflow-syntax" title="Permanent link">&para;</a></h2>
-<p>Check that a <code>.conv</code> file has valid syntax:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sdqctl<span class="w"> </span>validate<span class="w"> </span>&lt;workflow.conv&gt;
+<h1 id="release-record-what-merged-what-was-decided-what-was-checked">Release record: what merged, what was decided, what was checked<a class="headerlink" href="#release-record-what-merged-what-was-decided-what-was-checked" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-03 at <code>a7af645d1</code>.</em></p>
+<p><code>releases/README.md</code> gives the convention and <code>releases/VERIFICATION-RECORDS.md</code> the verification
+record format. This skill is the procedure for keeping a cycle's records current while work lands.</p>
+<h2 id="which-file-takes-what">Which file takes what<a class="headerlink" href="#which-file-takes-what" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>event</th>
+<th>file</th>
+<th>form</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a PR merged to <code>dev</code>, a branch opened or re-based, a session handoff</td>
+<td><code>contents.md</code></td>
+<td>a dated <strong>Update</strong> table appended under "What is merged so far" or the relevant section: PR, head SHA, what it carries, register ids, what was measured, what is left</td>
+</tr>
+<tr>
+<td>a decision by the maintainer</td>
+<td><code>decisions.md</code></td>
+<td>one row: decision as it stands, date, who decided, link to the evidence</td>
+</tr>
+<tr>
+<td>a test run, soak, replay or cohort check</td>
+<td>the integration record <code>docs/30-design/remedial/rc-&lt;version&gt;-integration-record.md</code></td>
+<td>the next <code>R&lt;n&gt;</code> entry: tree, command, totals, what it does not cover</td>
+</tr>
+<tr>
+<td>a defect's status moved</td>
+<td>the backfix register, the entry's status cell</td>
+<td><code>open</code> → <code>fixed &lt;date&gt;</code> (branch, commit) → <code>merged &lt;date&gt;</code> (PR) → <code>released &lt;tag&gt;</code></td>
+</tr>
+<tr>
+<td>an item's state moved</td>
+<td><code>queue/work-queue.yaml</code></td>
+<td>see the <code>queue-item</code> skill; switch the gate to <code>official/dev</code> ancestry when it merges</td>
+</tr>
+<tr>
+<td>a new queue id named in the records</td>
+<td><code>verification-selection.txt</code></td>
+<td>one id per line, same commit</td>
+</tr>
+</tbody>
+</table>
+<h2 id="procedure">Procedure<a class="headerlink" href="#procedure" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Anchor first.</strong> Read the current tree from the remote, not from a brief:
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/cgm-remote-monitor-official<span class="w"> </span>fetch<span class="w"> </span>official
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git<span class="w"> </span>-C<span class="w"> </span>externals/cgm-remote-monitor-official<span class="w"> </span>log<span class="w"> </span>-1<span class="w"> </span>--format<span class="o">=</span><span class="s1">'%h %s'</span><span class="w"> </span>official/dev
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>gh<span class="w"> </span>pr<span class="w"> </span>view<span class="w"> </span>&lt;n&gt;<span class="w"> </span>--repo<span class="w"> </span>nightscout/cgm-remote-monitor<span class="w"> </span>--json<span class="w"> </span>state,mergeCommit,headRefOid
+</code></pre></div></li>
+<li><strong>Write the contents.md row</strong> with the figures you ran (<code>reproduced</code>) or read (<code>read-derived</code>),
+   labelled. Totals name the suite and the tree (<code>npm test</code> 6035/0/3 on <code>dev</code> <code>f54941b5</code>, MongoDB
+   5.0). A count that moves is given with the command that reproduces it.</li>
+<li><strong>Move the status words</strong> in the register and the queue in the same commit, and nowhere else.
+   Merged to <code>dev</code> is <code>merged</code>, never <code>released</code>; <code>released</code> appears only when a tag exists that
+   operators install.</li>
+<li><strong>Add a release-notes line</strong> in <code>release-notes.md</code> for every operator-visible change: what they
+   will notice, when, and what to do. Plain language; every safety caveat kept; no individual dosing
+   advice. A change with no operator-visible effect is said to have none.</li>
+<li><strong>Keep the three files agreeing</strong>: the count of operator-visible changes in <code>tag-message.txt</code>
+   and <code>release-notes.md</code>, the version number everywhere including the directory name, and no
+   caveat softened between <code>contents.md</code> and the notes.</li>
+<li><strong>Run the checks</strong> after <code>git add</code>:
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>make<span class="w"> </span>queue-check<span class="w">          </span><span class="c1"># coverage, generated views, links</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>make<span class="w"> </span>docs-links
 </code></pre></div>
-<p>Returns validation status and any syntax errors.</p>
-<h2 id="show-parsed-structure">Show Parsed Structure<a class="headerlink" href="#show-parsed-structure" title="Permanent link">&para;</a></h2>
-<p>Display the internal representation of a workflow:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sdqctl<span class="w"> </span>show<span class="w"> </span>&lt;workflow.conv&gt;
-</code></pre></div>
-<p>Shows: model, adapter, mode, prompts, context patterns, output config.</p>
-<h2 id="preview-execution-dry-run">Preview Execution (Dry Run)<a class="headerlink" href="#preview-execution-dry-run" title="Permanent link">&para;</a></h2>
-<p>See what would happen without actually running:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>sdqctl<span class="w"> </span>run<span class="w"> </span>&lt;workflow.conv&gt;<span class="w"> </span>--dry-run
-</code></pre></div>
-<p>Shows configuration and prompts that would be sent.</p>
-<h2 id="test-with-mock-adapter">Test with Mock Adapter<a class="headerlink" href="#test-with-mock-adapter" title="Permanent link">&para;</a></h2>
-<p>Run the full workflow mechanics without LLM calls:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>sdqctl<span class="w"> </span>run<span class="w"> </span>&lt;workflow.conv&gt;<span class="w"> </span>--adapter<span class="w"> </span>mock<span class="w"> </span>--verbose
-</code></pre></div>
-<p>Uses canned responses to test workflow flow, checkpoints, and output.</p>
-<h2 id="check-system-status">Check System Status<a class="headerlink" href="#check-system-status" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Overview</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>sdqctl<span class="w"> </span>status
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Available adapters</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>sdqctl<span class="w"> </span>status<span class="w"> </span>--adapters
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Active sessions</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>sdqctl<span class="w"> </span>status<span class="w"> </span>--sessions
-</code></pre></div>
-<h2 id="validate-all-workflows">Validate All Workflows<a class="headerlink" href="#validate-all-workflows" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">for</span><span class="w"> </span>f<span class="w"> </span><span class="k">in</span><span class="w"> </span>workflows/*.conv<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>sdqctl<span class="w"> </span>validate<span class="w"> </span><span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"FAILED: </span><span class="nv">$f</span><span class="s2">"</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">done</span>
-</code></pre></div>
-<h2 id="when-to-use-this-skill">When to Use This Skill<a class="headerlink" href="#when-to-use-this-skill" title="Permanent link">&para;</a></h2>
+   If the next-gen plan changed: <code>tools/site/render_nextgen.py</code>, then move <code>source_commit</code> in
+   <code>site/pages/pages.yaml</code> to the plan commit, and commit both.</li>
+<li><strong>Commit by path</strong>, no trailers; quote the hash from the <code>git commit</code> output in any message that
+   names it.</li>
+</ol>
+<h2 id="what-the-record-never-does">What the record never does<a class="headerlink" href="#what-the-record-never-does" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Before committing</strong>: Validate new/modified <code>.conv</code> files</li>
-<li><strong>In CI/CD</strong>: Verify workflow definitions are valid</li>
-<li><strong>During review</strong>: Inspect what a workflow will do</li>
-<li><strong>Debugging</strong>: Test workflow mechanics with mock adapter</li>
+<li>It never describes a defect that is live on the shipping release by recipe; mechanism only.</li>
+<li>It never narrates how a belief changed ("was X, now Y"). Correct the fact in place; git holds the
+  history.</li>
+<li>It never carries a name, email, glucose value or identifier from user data.</li>
+<li>It never calls a step verified that nobody ran. A skipped gate is written as skipped.</li>
 </ul>
+<h2 id="capturing-the-verification-record">Capturing the verification record<a class="headerlink" href="#capturing-the-verification-record" title="Permanent link">&para;</a></h2>
+<p>Once, at the tag, over the ids in <code>verification-selection.txt</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python3<span class="w"> </span>tools/queue/verification-record.py<span class="w"> </span>--release<span class="w"> </span>cgm-remote-monitor-&lt;version&gt;<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--captured-at<span class="w"> </span><span class="s2">"</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%dT%H:%M:%S%:z<span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="k">$(</span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s1">'^#'</span><span class="w"> </span>releases/cgm-remote-monitor-&lt;version&gt;/verification-selection.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">'s/^/--id /'</span><span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>--out-dir<span class="w"> </span>releases/cgm-remote-monitor-&lt;version&gt;
+</code></pre></div>
+<p>The <code>.md</code> is generated from the <code>.json</code>; never hand-edit it. <code>--check --from-json</code> reports DRIFT if
+anyone did.</p>
 
 
 
@@ -2600,11 +2846,11 @@ All commands in this skill run <strong>without LLM calls</strong> and are safe f
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
   
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   
