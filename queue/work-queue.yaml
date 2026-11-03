@@ -6514,10 +6514,11 @@ items:
           tests/mongodb-migrations.integration.test.js tests/nightscout-cli.test.js
         kind: integration
         describe: >
-          Local 562f6206: 53 combined checks, zero pending; MongoDB 8.3.9
+          Local 562f6206 plus 436ef543: 56 combined checks, zero pending; MongoDB 8.3.9
           replica-set transactional data/ledger, renewable lease and shared
           fence, SIGSTOP takeover, real SIGKILL retries and standalone refusal.
-          All 12 MongoDB checks also pass on mongo:5.0.32.
+          All 15 MongoDB checks also pass on mongo:5.0.32. Actual primary
+          SIGKILL/restart before/after commit and expired-renewal outage refusal.
       - no-gate: >
           PG-only operator foundation is not full two-store acceptance.
           The bounded MongoDB replica-set slice is locally accepted, not
@@ -6550,6 +6551,13 @@ items:
       restored checks pass. 466 files classify; lint has zero errors/two path
       warnings. Ready to integrate, not full MIG-RUNNER or standalone support.
       No entries, serving, dependencies or existing migration checksum changes.
+
+      Follow-up 436ef543 is tests/fixture/README only: expired renewal after
+      actual database pause refuses without data or reacquisition; primary
+      SIGKILL/restart rolls back uncommitted state or preserves exact committed
+      ledger, followed by new-process retry. 56 combined/15 MongoDB checks pass;
+      expiry-removal and split-data-session mutations fail. Both runner commits
+      await integration at peer tip 011802ba. No HA/host/power recovery claim.
 
       Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 

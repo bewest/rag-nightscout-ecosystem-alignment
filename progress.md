@@ -12,6 +12,22 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Parallel MongoDB Primary Recovery and Renewal Refusal (2026-11-02)
+
+Local **`436ef543`** extends `562f6206` with real expired-renewal outage refusal
+and primary SIGKILL/restart before/after migration commit. Independent persisted
+reads and fresh-worker retries prove rollback or exact committed-ledger
+survival. Two mutations fail at matched-count/persisted-value assertions;
+restored code passes. No implementation/catalogue/checksum/serving change.
+
+**Acceptance:** **56 combined checks**, zero pending; all **15 MongoDB checks**
+pass on 5.0.32 and 8.3.9. Lint: zero errors/two filesystem-path warnings;
+466 files classify, diff checks pass, fixtures removed. Both runner commits
+await integration; peer remains at `011802ba`. Single-node process recovery
+is not HA, host/disk failure or production RPO/RTO acceptance.
+
+See the [acceptance/handoff record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02).
+
 ## Parallel Transactional MongoDB Operator Migrations (2026-11-02)
 
 Local **`562f6206`** adds the bounded MongoDB replica-set transactional lane

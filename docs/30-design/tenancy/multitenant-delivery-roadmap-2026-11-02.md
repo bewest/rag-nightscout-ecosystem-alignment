@@ -31,7 +31,7 @@ parent milestone is promoted.
 | Secrets synthetic recovery | Complete bounded slice, integrated in `0de90852`: database/key snapshots and actual worker SIGKILL/retry | Do not repeat; production recovery remains open |
 | Current subject authority | Complete dormant slice in `1dd8990b`, incorporated in peer branch; integrated testing pending | Integration session: finish acceptance; public/runtime enforcement remains open |
 | Minimum scalar settings | Complete dormant subset in `011802ba`, incorporated; integrated testing pending | Persistent operator policy and atomic policy/write fencing remain next control-plane work; full MT-CONFIG-MIN stays open |
-| MIG-RUNNER | PG foundation accepted; MongoDB replica-set transactional slice locally accepted in `562f6206`, not yet integrated | This parallel session: hand off bounded runner. Standalone/index fencing, catalogues and full runner acceptance remain open |
+| MIG-RUNNER | PG foundation accepted; MongoDB replica-set slice `562f6206` plus primary-recovery acceptance `436ef543` locally accepted, not yet integrated | This parallel session: hand off both runner commits. Standalone/index fencing, catalogues and full runner acceptance remain open |
 | M2: tenant control plane | Open: secrets is only one dependency; settings, current grants, tenant resolution and runtime wiring remain | This session takes the bounded settings/authority dependency; coordinate later integration |
 | M3: two-tenant HTTP lab | Blocked on M1/M2; not completed by dormant service tests | Follow storage/control-plane acceptance, not a parallel implementation here yet |
 | M4: existing-client surface | Not accepted; full collections/v1/v3 compatibility and wiring remain | Entries session covers its bounded compatibility work; full M4 follows M3 |
@@ -39,11 +39,11 @@ parent milestone is promoted.
 | M6: hosted preview | Blocked on prior milestones and operational acceptance | Synthetic secrets recovery alone does not complete M6 |
 | Built-in signer, human identity, next-generation execution | Separate unfinished work; built-in option retained | Not assigned here; no Vault cost/efficiency/production-readiness conclusion |
 
-**Next here:** hand off MongoDB operator-runner commit `562f6206` from
+**Next here:** hand off MongoDB operator-runner commits `562f6206` and `436ef543` from
 `workspace/secrets-vault-20261102` and record actual integration acceptance.
 The originally assigned MIG-RUNNER lane resumed after the peer incorporated
 the two control-plane commits. See the
-[latest runner acceptance](#parallel-mig-runner-transactional-mongodb-slice-2026-11-02).
+[latest recovery acceptance](#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02).
 Keep entries, runtime consumers and existing migration checksums untouched.
 The next policy milestone is recommended, not started or accepted.
 The other session retains entries schema/import/compatibility acceptance.
@@ -992,3 +992,49 @@ change to the explicit schema operator boundary.
 Source:
 `externals/work/crm-secrets-20261102/lib/migrations/mongodb.js:59-199`,
 `externals/work/crm-secrets-20261102/tests/mongodb-migrations.integration.test.js:108-287`.
+
+### Parallel MIG-RUNNER primary recovery and renewal loss (2026-11-02)
+
+**Local `436ef543`** follows runner `562f6206` on
+`workspace/secrets-vault-20261102`. This continuation changes only the MongoDB
+integration tests, synthetic worker fixture and migration README. Implementation,
+catalogue/checksum bytes, dependency manifests, entries and serving remain
+unchanged. The peer branch still points to `011802ba`: both runner commits
+are ready for integration, not yet incorporated or integrated-tested here.
+
+**New measured cases:**
+
+- Pause the actual database across two lease periods while a worker waits
+  before the transaction fence. Expired renewal explicitly matches zero rows;
+  the worker reports `MIG_LOCK_LOST`, attempts no data, does not reacquire its
+  epoch, and leaves original data/empty ledger. A new process acquires a higher
+  epoch and completes.
+- Abruptly restart the actual owned primary with
+  `docker restart --signal SIGKILL`, after transactional data but before commit,
+  or after committed completion. Verify a changed primary host PID, kill the
+  waiting worker to prevent replay, reconnect using the rediscovered published
+  port, and inspect persisted state independently. Uncommitted data/ledger
+  roll back; committed values and the exact ledger row survive. A fresh worker
+  applies only the pending suffix or no-ops when already committed.
+
+**Validation:** **56 combined PG/MongoDB/CLI checks**, zero pending on MongoDB
+8.3.9; all **15 MongoDB checks** pass at 5.0.32 too. The same combined and floor
+commands in the preceding section apply, with the additional three cases.
+Removing renewal expiry produces a matched-count failure (1 instead of 0);
+removing the transactional data session leaves changed data after primary
+crash without its ledger and fails the persisted-value assertion. Restored code
+passes. ESLint: zero errors/two filesystem-path warnings; **466 files** classify;
+diff checks pass and owned fixtures are removed.
+
+**Limits and handoff:** this is single-node primary-process/journal recovery,
+not multi-member failover, network partition, lost-disk/host/power recovery,
+archive restoration, unknown-commit-response recovery or production RPO/RTO.
+No new serving or schema API is enabled. Integrate both commits from the clean
+parallel branch and rerun targeted plus broader integration gates; record actual
+SHA/results before promoting any slice. Persistent operator-policy fencing,
+standalone/index migrations and the deferred source-Nightscout API importer
+remain separate unfinished milestones.
+
+Source:
+`externals/work/crm-secrets-20261102/tests/mongodb-migrations.integration.test.js:195-321`,
+`externals/work/crm-secrets-20261102/tests/fixtures/migrations/mongo-worker.js:10-45`.
