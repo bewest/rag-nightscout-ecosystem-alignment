@@ -968,6 +968,11 @@ Candidate acceptance must test the new command/help/error behavior and confirm n
 available. If it does not clear review and the candidate's acceptance window, defer it without
 delaying the single-tenant release.
 
+**Merged 2026-11-03:** #8899 carries the naming amendment in `dev`
+`4a482627` (head `75fb4cdf`). The merged tree equals the locally tested head;
+release acceptance is separate ([integration record R21/R22](../remedial/rc-16.0.0-integration-record.md)).
+No multitenant role is enabled.
+
 ### 2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)
 
 The census ([re-measured on dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md)) classes each of

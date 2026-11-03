@@ -7,7 +7,7 @@ It is not a release approval, clinical validation or a claim of a certified QMS.
 
 ## Release position
 
-`official/dev` at `61eb37335954ae42c91345a0823bd67331025165` is the current
+`official/dev` at `4a482627bfdafb1fef8dcbe0ac6c484811cae563` is the current
 16.0.0 release candidate. Release preparation is in progress, not blocked; the
 remaining acceptance and staging steps are pending. The latest published
 release is still `v15.0.9`, and no 16.0.0 tag or release is published. The
@@ -18,10 +18,13 @@ been accepted.
 
 The merged backend storage/write/identity work, frontend bundles, dependency
 refresh and optional modern dashboard are implementation outputs, not a remaining
-modernization merge queue. Public CI on this head remains green: 6,323 passing /
-3 pending in the top-level suite, or 7,660 passing / 3 pending counting each
-reported suite once. These are the previously recorded hosted runs, not a new
-test execution or proof of live acceptance.
+modernization merge queue. The previous candidate `61eb3733` has recorded
+green public CI: 6,323 passing / 3 pending in the top-level suite, or 7,660
+passing / 3 pending counting each reported suite once. #8899 adds the D21
+CLI naming amendment; its merged tree equals the locally tested PR head
+(6652 passing / 3 pending / 0 failing across non-browser tiers). Merged-head
+CI was in progress at capture. See the [integration record R21/R22](../30-design/remedial/rc-16.0.0-integration-record.md).
+These results are not proof of live acceptance.
 
 BF-72 and BF-161 remain pre-tag private-security work. No new private inspection,
 merge or disclosure is claimed here. The previously recorded 402 focused tests

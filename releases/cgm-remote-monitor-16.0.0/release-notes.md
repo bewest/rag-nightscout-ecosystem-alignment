@@ -2,7 +2,7 @@
 
 **Draft for maintainer review, 2026-11-03. Not a release announcement.**
 The version is decided: 16.0.0. The current release candidate is
-`official/dev` `61eb37335954ae42c91345a0823bd67331025165`. Informal testing is
+`official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563`. Informal testing is
 underway; private security integration and final release acceptance remain
 pending. No tag or v16 release is published.
 
@@ -128,7 +128,8 @@ The image command is `nightscout single`; SIGTERM/SIGINT now stop connections
 cleanly. Under `restart: on-failure`, a SIGTERM not originating from `docker stop`
 now exits successfully and can leave the container stopped. Custom entrypoints
 must not prepend `node` to `nightscout single`. The command name for future
-multitenant roles is `nightscout multitenant`; no multitenant role is enabled
+multitenant roles is `nightscout multitenant` (renamed from the reserved
+`nightscout serve`; update experimental invocations); no multitenant role is enabled
 in 16.0.0. This is not a production multitenancy release.
 
 ## Known issues and release acceptance still open

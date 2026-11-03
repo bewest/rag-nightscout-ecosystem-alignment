@@ -1,6 +1,6 @@
 # cgm-remote-monitor 16.0.0 — contents
 
-**Current update, 2026-11-03:** `official/dev` `61eb37335954ae42c91345a0823bd67331025165`
+**Current update, 2026-11-03:** `official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563`
 is the current 16.0.0 release candidate. Release preparation is **in progress**,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
 testing is underway, with over 24-48 hours reported by the maintainer, not yet a
@@ -13,7 +13,7 @@ and production/service environments work. The maintainer dispositions #8829
 | Date | Candidate and process status | Evidence and remaining steps |
 |---|---|---|
 | 2026-11-03 | `official/dev` `61eb37335954ae42c91345a0823bd67331025165` is the current release candidate; release preparation is in progress. No tag or release is published. | Candidate anchor read from refreshed `official/dev`. Existing acceptance record has green integrated CI/CodeQL on this head; private security integration and final-tree checks, live alert checks, pinned cohort/rig/rollback evidence, and staging/review remain pending. No release-level test or cohort result is asserted here. |
-| 2026-11-03 | D21 CLI naming follow-up is committed locally as `75fb4cdf` on `workspace/cli-profile-20261103`, based on `official/dev` `61eb37335954ae42c91345a0823bd67331025165`; it is not yet pushed, merged or in the candidate. | Replaces the unavailable `nightscout serve` namespace with `nightscout multitenant`; enables no roles and preserves `single` and legacy start paths. Reproduced: full non-browser `npm run test:all` 6652 passing / 3 pending / 0 failing on Node 22.23.4 and disposable MongoDB 8.0.34; targeted CLI/listener/headless suites 46/0; changed-file ESLint 0 errors, 6 warnings. The new no-alias assertion fails on archived dev with the expected old-command error. Configuration traps and evidence boundaries are in [R21](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r21---d21-cli-profile-naming-on-75fb4cdf-2026-11-03). Independent review and candidate acceptance remain pending. |
+| 2026-11-03 | #8899 merged at 22:52:32Z as `official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563` (head `75fb4cdfd8fca37d83dab7d2bc3cc2fed37b45ed`); the D21 CLI naming amendment is in the candidate, not released. | Replaces the unavailable `nightscout serve` namespace with `nightscout multitenant`; enables no roles and preserves `single` and legacy start paths. Reproduced on the PR head: full non-browser `npm run test:all` 6652 passing / 3 pending / 0 failing on Node 22.23.4 and disposable MongoDB 8.0.34; targeted CLI/listener/headless suites 46/0; changed-file ESLint 0 errors, 6 warnings; red no-alias control. Reproduced: merged tree equals the tested PR head (`git diff --exit-code 75fb4cdf 4a482627`). Read-derived: pre-merge test/build/CodeQL checks passed, browser and maintained-MongoDB checks were still pending; merged-head CI and CodeQL were in progress at capture. See [R21](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r21---d21-cli-profile-naming-on-75fb4cdf-2026-11-03) and R22. Release-level acceptance remains pending. |
 
 See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md),
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).

@@ -69,6 +69,24 @@
 #   Self-test: python3 tools/queue/vacuity.py --self-test
 
 controls:
+  - gate: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1b2801f7 official/dev
+    cwd: .
+    control: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1b2801f7 1b2801f7^
+    positive-control: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1b2801f7 official/dev
+    proves: >
+      2026-11-03: #8865's head passes on refreshed dev 4a482627 (exit 0)
+      and fails against its own parent (exit 1). Supplies the previously
+      missing control for the retained inclusion gate.
+
+  - gate: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 75fb4cdf official/dev
+    cwd: .
+    control: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 75fb4cdf 61eb3733
+    positive-control: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 75fb4cdf official/dev
+    proves: >
+      2026-11-03: #8899's head passes on refreshed dev 4a482627 (exit 0)
+      and fails on pre-merge dev 61eb3733 (exit 1). Measures inclusion of
+      the CLI naming amendment, not immunity to a later revert.
+
   - gate: |-
       gh pr view 8895 --repo nightscout/cgm-remote-monitor --json state,mergeCommit --jq '.state == "MERGED" and .mergeCommit.oid == "bb85d10fba9500d9e7a8a728cb4d93d557803bc6"' | grep -qx true
     cwd: .
