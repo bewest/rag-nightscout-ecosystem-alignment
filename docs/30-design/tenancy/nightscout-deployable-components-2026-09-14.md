@@ -26,7 +26,7 @@ per second — not milliseconds.
 
 ## TL;DR
 
-**Recommendation (adopted as D5): four hosted entrypoints — `api` (stateless), `evaluator`
+**Recommendation (adopted as D5): four multitenant service roles — `api` (stateless), `evaluator`
 (change-driven), `realtime` (socket fan-out) and `vcpool` — over one shared core, plus the
 existing single-tenant server as `single`, which changes nothing.** D7 adds `ns-admin` on its own
 unrouted interface and D16 a tenant-owner listener, `ns-tenant-admin`; neither changes the cost
@@ -280,8 +280,8 @@ Self-hosted single-tenant stays first-class permanently, on data-rights and miss
 tenant residency is unambiguously right: the cache costs 2.6 MB and saves every read a
 round-trip, and nothing about a single site needs a change feed.
 
-**This is what stops the decomposition from being a rewrite.** The hosted entrypoints and the
-single-tenant server are different `bin/` scripts over the same `lib/`. Nothing in §2.1–2.4
+**This is what stops the decomposition from being a rewrite.** The multitenant roles and the
+single-tenant server are different runtime profiles over the same `lib/`. Nothing in §2.1–2.4
 deletes code the single-tenant target needs; it selects a different subset of it.
 
 ## 3. Program structure
@@ -303,9 +303,9 @@ bin/
   vcpool.js             ns-vcpool    — connect actors + egress proxy
 ```
 
-*Amended 2026-10-26 by **D21**: the roles below are started as subcommands of one executable, `nightscout single` and `nightscout serve <roles>`, not as one script per role. The table of which factories each role calls is unchanged ([execution plan §2.12](nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26)).*
+*Amended 2026-10-26 and 2026-11-03 by **D21**: the roles below are started by one executable. `nightscout single` remains the single-tenant monolith; `nightscout multitenant <roles>` names the separate PostgreSQL/RLS multitenant target. This changes neither the role decomposition nor which factories each role calls ([execution plan §2.12](nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-explicit-tenancy-subcommands-maintainer-amended-2026-11-03)).*
 
-**Four hosted entrypoints and one legacy entrypoint, over one `package.json` and one CI
+**Four multitenant service roles and one legacy entrypoint, over one `package.json` and one CI
 pipeline** — not five repositories. {M} §10.5 already argued this and it holds: these are
 thin `bin/` scripts selecting which factories to call, not independent products with
 independent release cycles.

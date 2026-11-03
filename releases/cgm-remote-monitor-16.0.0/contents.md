@@ -1,14 +1,20 @@
 # cgm-remote-monitor 16.0.0 — contents
 
-**Current update, 2026-11-02:** dev remains `61eb3733`; no named RC or v16
-release is published. Informal cohort/real-rig testing is **underway**, with
-over 24-48 hours reported by the maintainer, not yet a version-pinned acceptance
-record. Master protection no longer requires the absent 4.4 check; its two
+**Current update, 2026-11-03:** `official/dev` `61eb37335954ae42c91345a0823bd67331025165`
+is the current 16.0.0 release candidate. Release preparation is **in progress**,
+not blocked; the candidate is not tagged or released. Informal cohort/real-rig
+testing is underway, with over 24-48 hours reported by the maintainer, not yet a
+version-pinned acceptance record. Master protection no longer requires the absent 4.4 check; its two
 remaining required lanes are green and review/staging continues. #8829's reporter
 reports persistence on dev, but neither maintainer reproduced it and many DIY
 and production/service environments work. The maintainer dispositions #8829
 **nonblocking** for v16; diagnosis remains follow-up. #8855 now has green checks; new report proposal
 #8897 has no checks returned. BF-72/BF-161 remain private pre-tag work.
+| Date | Candidate and process status | Evidence and remaining steps |
+|---|---|---|
+| 2026-11-03 | `official/dev` `61eb37335954ae42c91345a0823bd67331025165` is the current release candidate; release preparation is in progress. No tag or release is published. | Candidate anchor read from refreshed `official/dev`. Existing acceptance record has green integrated CI/CodeQL on this head; private security integration and final-tree checks, live alert checks, pinned cohort/rig/rollback evidence, and staging/review remain pending. No release-level test or cohort result is asserted here. |
+| 2026-11-03 | D21 CLI naming follow-up is committed locally as `75fb4cdf` on `workspace/cli-profile-20261103`, based on `official/dev` `61eb37335954ae42c91345a0823bd67331025165`; it is not yet pushed, merged or in the candidate. | Replaces the unavailable `nightscout serve` namespace with `nightscout multitenant`; enables no roles and preserves `single` and legacy start paths. Reproduced: full non-browser `npm run test:all` 6652 passing / 3 pending / 0 failing on Node 22.23.4 and disposable MongoDB 8.0.34; targeted CLI/listener/headless suites 46/0; changed-file ESLint 0 errors, 6 warnings. The new no-alias assertion fails on archived dev with the expected old-command error. Configuration traps and evidence boundaries are in [R21](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r21---d21-cli-profile-naming-on-75fb4cdf-2026-11-03). Independent review and candidate acceptance remain pending. |
+
 See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.md),
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.

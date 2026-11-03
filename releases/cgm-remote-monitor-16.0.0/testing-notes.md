@@ -1,10 +1,11 @@
 # Nightscout 16.0.0 — testing notes for the release candidate
 
-**Working cohort guide, 2026-11-02. Not a formal named-RC announcement.**
-Informal testing has already started: the maintainer reports multiple testers
-have run the code for over 24-48 hours. No named v16 RC is published. Current
-official dev is `61eb37335954ae42c91345a0823bd67331025165`; record the exact
-commit/image each tester actually ran rather than assuming it is this one.
+**Working cohort guide, 2026-11-03.**
+The current 16.0.0 release candidate is `official/dev`
+`61eb37335954ae42c91345a0823bd67331025165`. Informal testing has already
+started: the maintainer reports multiple testers have run the code for over
+24-48 hours. No v16 tag or release is published. Record the exact commit/image
+each tester actually ran rather than assuming it is this one.
 The measured automated runs remain in the
 [integration record](../../docs/30-design/remedial/rc-16.0.0-integration-record.md);
 release scope is in [contents.md](contents.md).

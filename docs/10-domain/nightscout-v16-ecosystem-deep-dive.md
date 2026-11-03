@@ -1,19 +1,20 @@
 # Nightscout v16 ecosystem and release acceptance
 
-**Evidence refresh: 2026-11-02.** This is the current contributor-facing follow-up to
+**Evidence refresh: 2026-11-03.** This is the current contributor-facing follow-up to
 the [November 1 readiness snapshot](nightscout-rc-readiness-2026-11-01.md).
 It records upstream metadata, maintainer reports and proposed next work separately.
 It is not a release approval, clinical validation or a claim of a certified QMS.
 
 ## Release position
 
-Official `dev` remains `61eb37335954ae42c91345a0823bd67331025165`.
-The latest published release is still `v15.0.9`; no named v16 RC was returned by
-the release listing. The **candidate under informal testing** is not the same
-thing as a named, immutable RC. The maintainer reports multiple testers have
-been using the code for over 24-48 hours and that AID authors are considering
-changes. This establishes that cohort/rig testing has started, not which
-versions, scenarios or outcomes have been accepted.
+`official/dev` at `61eb37335954ae42c91345a0823bd67331025165` is the current
+16.0.0 release candidate. Release preparation is in progress, not blocked; the
+remaining acceptance and staging steps are pending. The latest published
+release is still `v15.0.9`, and no 16.0.0 tag or release is published. The
+maintainer reports multiple testers have been using the code for over 24-48
+hours and that AID authors are considering changes. This establishes that
+cohort/rig testing has started, not which versions, scenarios or outcomes have
+been accepted.
 
 The merged backend storage/write/identity work, frontend bundles, dependency
 refresh and optional modern dashboard are implementation outputs, not a remaining

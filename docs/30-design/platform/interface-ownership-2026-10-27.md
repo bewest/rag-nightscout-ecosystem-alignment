@@ -19,7 +19,8 @@ The decisions split hosted multitenant along two axes:
   tenant owner, and `ns-admin` for the platform operator.
 - **Workload** gives the roles `api`, `evaluator`, `realtime` and `vcpool` (D5).
 
-D21 packages both as `nightscout serve <roles>`.
+D21 packages them as `nightscout multitenant <roles>`; `nightscout single` remains the
+single-tenant monolith. This CLI naming amendment does not make any multitenant role available.
 
 Most v1, v2, v3 and v4 data operations stay on the data listener. Owner actions and owner
 configuration move to the tenant-owner listener. Tenant lifecycle exists only on the operator's
@@ -37,12 +38,12 @@ The sources leave several things unplaced or in conflict (§4):
 | interface | bind address | callers | credential | role / process |
 |---|---|---|---|---|
 | **single's one listener** | `HOSTNAME`/`PORT` (read: `lib/server/server.js:41-42,58`); socket.io on the same server (`:74`) | everyone | `API_SECRET` (grants `['*']`, exec plan §2.8), subject tokens, JWTs from the v2 exchange; configuration from `process.env` (D15) | `nightscout single` = `node lib/server/server.js` (D21 rule 1; #8865 `lib/cli/commands/single.js`) |
-| **data / consumer, `ns-api`** | `API_HOSTNAME`/`API_PORT`, falling back to `HOSTNAME`/`PORT` (read: #8865 `lib/server/serve/listeners.js:8-11`) | uploaders, AID controllers, apps, followers, browsers | per-tenant root credential, per-tenant subject tokens, per-tenant JWT signing key; tenant resolved from Host before any credential is examined (D13, D14, AU3). No deployment secret | `serve api` (#8865; the only role that starts today) |
-| **realtime socket, `ns-realtime`** | `REALTIME_HOSTNAME`/`REALTIME_PORT` (read: #8865 `roles.js:27-31`); not startable yet | browsers, followers, AndroidAPS 3.4.x's v1 socket (authority §9 item 7) | as data; checked at the `authorize` event (read: `websocket.js:142-160,1034`) | `serve realtime` (D5, D21); D16 puts it in the same audience row as `ns-api` |
-| **tenant owner, `ns-tenant-admin`** | `TENANT_ADMIN_HOSTNAME`/`_PORT` (read: #8865 `roles.js:36-40`); decided 2026-10-16 as a second bound socket inside `ns-api` | the tenant owner; later caregivers | the tenant's own root credential today (§F.1); people through an interchangeable identity provider, with Nightscout's `nsjwt` exchange minting the per-tenant token (D17 row 2, gated; amended 2026-10-27) | `serve tenant-admin` in D21, or a socket in the `api` process per D16; listed in #8865, not startable |
-| **platform operator, `ns-admin`** | default `127.0.0.1:1338`. A non-loopback bind is refused without `ADMIN_INSECURE_BIND_ACKNOWLEDGED=true`; the consumer address is refused on any port (read: #8865 `listeners.js:13-17`, `roles.js:41-46`; exec plan §2.3) | the hoster | none: secured by being unreachable (D7) | `serve admin` (D21), or `bin/admin.js` on the seam chain; on neither dev nor #8865 |
+| **data / consumer, `ns-api`** | `API_HOSTNAME`/`API_PORT`, falling back to `HOSTNAME`/`PORT` (read: #8865 `lib/server/serve/listeners.js:8-11`) | uploaders, AID controllers, apps, followers, browsers | per-tenant root credential, per-tenant subject tokens, per-tenant JWT signing key; tenant resolved from Host before any credential is examined (D13, D14, AU3). No deployment secret | `nightscout multitenant api` is the intended role; no multitenant role is available |
+| **realtime socket, `ns-realtime`** | `REALTIME_HOSTNAME`/`REALTIME_PORT` (read: #8865 `roles.js:27-31`); not startable yet | browsers, followers, AndroidAPS 3.4.x's v1 socket (authority §9 item 7) | as data; checked at the `authorize` event (read: `websocket.js:142-160,1034`) | `nightscout multitenant realtime` (D5, D21); D16 puts it in the same audience row as `ns-api` |
+| **tenant owner, `ns-tenant-admin`** | `TENANT_ADMIN_HOSTNAME`/`_PORT` (read: #8865 `roles.js:36-40`); decided 2026-10-16 as a second bound socket inside `ns-api` | the tenant owner; later caregivers | the tenant's own root credential today (§F.1); people through an interchangeable identity provider, with Nightscout's `nsjwt` exchange minting the per-tenant token (D17 row 2, gated; amended 2026-10-27) | `nightscout multitenant tenant-admin` in D21, or a socket in the `api` process per D16; listed in #8865, not startable |
+| **platform operator, `ns-admin`** | default `127.0.0.1:1338`. A non-loopback bind is refused without `ADMIN_INSECURE_BIND_ACKNOWLEDGED=true`; the consumer address is refused on any port (read: #8865 `listeners.js:13-17`, `roles.js:41-46`; exec plan §2.3) | the hoster | none: secured by being unreachable (D7) | `nightscout multitenant admin` (D21), or `bin/admin.js` on the seam chain; on neither dev nor #8865 |
 | **well-known discovery** | data listener, unauthenticated (v4 doc §2, operations 1–3) | controllers, at launch and after a release | none | in #8857, mounted only in single's `app.js` |
-| `ns-evaluator`, `ns-vcpool` | no inbound listener | — | outbound only | `serve evaluator`, `serve vcpool` |
+| `ns-evaluator`, `ns-vcpool` | no inbound listener | — | outbound only | `nightscout multitenant evaluator`, `nightscout multitenant vcpool` |
 
 ## 2. APIs by owner
 

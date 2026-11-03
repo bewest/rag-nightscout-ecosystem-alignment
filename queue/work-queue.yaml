@@ -3686,7 +3686,7 @@ items:
     branch: official/dev
     base: official/master
     worktree: externals/cgm-remote-monitor-official
-    state: blocked
+    state: in-progress
     pr: []
     blast_radius: >
       16.0.0 is everything in official/master..official/dev, currently dev
@@ -3719,7 +3719,10 @@ items:
       - releases/cgm-remote-monitor-16.0.0/contents.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
-      Current 2026-11-02: informal cohort/real-rig testing has started,
+      Current 2026-11-03: official/dev 61eb37335954ae42c91345a0823bd67331025165
+      is the current 16.0.0 release candidate. Release preparation is
+      in-progress, not blocked; the planned acceptance and staging steps remain
+      pending. Informal cohort/real-rig testing has started,
       with over 24-48 hours reported across testers by the maintainer.
       Individual builds, scenarios and acceptance outcomes are not yet
       collected here. The absent 4.4 protection requirement has been removed;
@@ -3742,11 +3745,11 @@ items:
       Previous 2026-11-01: dev 61eb3733 includes #8895 (BFQ-227) and
       #8896 (RT-CI-FIXTURES-8896). Both integrated CI and CodeQL runs pass;
       the push workflow published the multi-architecture dev image, not a
-      named RC. Release remains BLOCKED on the existing pre-tag private
-      security, live alerts and rig-soak requirements, plus staging protection,
-      identity cohort/rollback and final integrated-head acceptance. No tag
-      or release authorization follows from green CI. Older entries below
-      are historical evidence.
+      release tag. The private security, live alerts and rig-soak requirements,
+      staging protection, identity cohort/rollback and final integrated-head
+      acceptance remain steps in the release process. No tag or release
+      authorization follows from green CI. Older entries below are historical
+      evidence.
 
       2026-10-27 (maintainer): done before the tag means (1) live alerts
       checked: Pushover emergency delivery, acknowledgement and cancellation,
@@ -24505,7 +24508,7 @@ items:
       so SIGTERM reaches the server.
 
   - id: PLAT-SERVE
-    title: "`nightscout serve <roles>` (D21): hosted roles carved from bootevent one at a time, `api` first; each listener bound separately"
+    title: "`nightscout multitenant <roles>` (D21): multitenant roles carved from bootevent one at a time, `api` first; each listener bound separately"
     parcel: platform
     repo: cgm-remote-monitor
     branch: feat/nightscout-serve
@@ -24519,8 +24522,8 @@ items:
       (listener construction per role).
     review: maintainer, plus a second human - the boot sequence moves
     operator_visible: >
-      Nothing for single-tenant sites. A hoster can start `serve api`
-      without the in-memory data layer.
+      Single-tenant behavior is unchanged. The reserved CLI name is
+      `nightscout multitenant`; no multitenant role is currently available.
     semver: minor
     semver_reason: new subcommands; `single` unchanged
     gates:
@@ -24534,6 +24537,20 @@ items:
       - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
       - tools/lab/image-start-forms/README.md
     notes: >
+      2026-11-03: D21's command-name follow-up is targeted to the open
+      16.0.0 candidate on local branch workspace/cli-profile-20261103 at
+      75fb4cdf (local, unpushed),
+      based on official/dev 61eb3733. It replaces the reserved `serve`
+      namespace with `multitenant` only; no role is enabled, and `single`
+      plus legacy start paths remain unchanged. Reproduced: the targeted
+      CLI/listener/headless suites pass 46/0 against disposable MongoDB
+      8.0.34. Full non-browser test:all passes 6652/0/3 pending on
+      Node 22.23.4 and that database; see integration record R21 for
+      commands, the red no-alias control, and configuration traps.
+      ESLint reports 0 errors and 6 warnings. Independent review and
+      candidate acceptance remain pending. The ancestry gate below
+      measures the original #8865 merge, not this unmerged follow-up.
+
       2026-10-30: #8865 merged to dev as 991b0654 (head 1b2801f7) by the
       maintainer; in 16.0.0, not released.
       2026-10-27 night (maintainer): #8865 joins the 16.0.0 merge list.

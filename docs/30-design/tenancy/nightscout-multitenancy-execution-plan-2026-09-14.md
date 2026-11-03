@@ -3,7 +3,7 @@
 *Contributor- and maintainer-facing.*
 
 **Status: living document — the decision record.** Decisions D1–D21 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all **adopted**, except **D17 row 2**
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
 gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
@@ -140,7 +140,7 @@ preference.
 | **D2** | **Shared logical storage with a tenant discriminator** — *not* database-per-tenant. Database-per-tenant costs 47 WiredTiger files and ~3.7 MB of non-evictable `mongod` RSS **per tenant holding zero documents**, and fatal-asserts on file descriptors; the shared shape is 104 files total at 400 tenants, flat | {DB} §4, §7 |
 | **D3** | **PostgreSQL + RLS for the multitenant service.** Index locality no longer separates the engines — the deciding property is that a forgotten filter returns **0 rows** under RLS and **every tenant's rows** under a discriminator | {DB} §7.1, §8.2 |
 | **D4** | **MongoDB is permanent for the single-tenant target**, not a deprecated path. Existing self-hosters keep their databases, so the storage seam carries two mature backends permanently (§4) | maintainer, 2026-09-14 |
-| **D5** | **Four hosted entrypoints over one core** — `api` (stateless), `evaluator` (change-driven), `realtime` (fan-out), `vcpool` — plus `single` unchanged. The split is also a configuration-source split (D15). *(packaged by D21 as `nightscout serve <roles>`, 2026-10-26)* | {C} §2, {DB} §6 |
+| **D5** | **Four multitenant service roles over one core** — `api` (stateless), `evaluator` (change-driven), `realtime` (fan-out), `vcpool` — plus `single` unchanged. The split is also a configuration-source split (D15). *(packaged by D21 as `nightscout multitenant <roles>`, amended 2026-11-03)* | {C} §2, {DB} §6 |
 | **D6** | **Change feed = replication slot (spine) + `NOTIFY` (latency) + bounded aggregate poll (backstop)**, with `NOTIFY` emitted **by the slot reader, never by a trigger** | {DB} §8.5, §9.4; measured in T4.1 |
 | **D7** | **The platform-admin plane gets its own entrypoint on its own network interface**, ORY-style, secured by unreachability rather than a credential. Tenant admin stays on the consumer interface under RLS *(superseded in part by D16: tenant admin has its own listener, `ns-tenant-admin`, reachable by owners; noted 2026-10-27)*. A deliberate departure from Nocturne | maintainer, 2026-09-14 — §2 |
 | **D8** | **API v3's closed operator set is the query contract; v1 is bounded by corpus evidence.** `mingo` is the differential-test oracle | maintainer, 2026-09-14 — §3 |
@@ -150,13 +150,13 @@ preference.
 | **D12** | **`rag-nightscout-ecosystem-alignment` carries the tooling, documentation, evidence and QC; `cgm-remote-monitor` stays pristine** | maintainer, 2026-09-14 — §2.7 |
 | **D13** | **In `TENANCY_MODE=multi` there is no deployment-wide secret on any interface.** `API_SECRET` is a *single-tenant* bootstrapping mechanism and does not exist in multi mode; each tenant holds its own root credential, stored with its configuration. The platform-admin plane remains credential-free (D7) | maintainer, 2026-09-15 — §2.8 |
 | **D14** | **Per-tenant JWT signing key**, stored with tenant configuration. Tenant resolution runs before any credential is examined, so the correct key is known at verify time; cross-tenant token reuse becomes a *signature* failure rather than a claim-check failure | maintainer, 2026-09-15 — §2.8 |
-| **D15** | **Configuration source diverges by entrypoint.** `single` reads the process environment; hosted entrypoints read per-tenant configuration from the database, administered by the tenant owner. Env-sourced configuration must not reach the multi path | maintainer, 2026-09-15 — §2.8 |
+| **D15** | **Configuration source diverges by entrypoint.** `single` reads the process environment; multitenant roles read per-tenant configuration from the database, administered by the tenant owner. Env-sourced configuration must not reach the multi path | maintainer, 2026-09-15 — §2.8 |
 | **D16** | **Three listeners, three audiences** — consumer/data (`ns-api`, plus `single`), tenant-owner configuration (`ns-tenant-admin`), platform operator (`ns-admin`). **Prerequisite: tenant resolution and credential verification extract into one module before the third listener exists** | maintainer, 2026-09-16 — §2.9 |
 | **D17** | **The auth plane splits by audience, not by build-versus-buy.** Adopted: devices and the data path keep a **native per-tenant credential permanently**; Hydra is **deferred**; D7 is **unchanged**. **Adopted in principle, gated (2026-10-12):** human identity via one cohort-wide Ory Kratos pool, hosted-only; cookie scope E (apex behind a hardened edge, 2026-10-12); no real identities until the edge's production conditions are measured over https and the compliance question has an owner. D14 holds either way: Nightscout mints its own per-tenant token after authentication. **Amended 2026-10-27 (maintainer):** the identity provider is interchangeable ("bring your own auth": Kratos, Clerk or another provider), behind Nightscout's own token exchange, to keep in-house human-identity security surface small | maintainer, 2026-09-16 — §2.9 |
 | **D18** | **Controller registration has two tiers.** *Well-known* declarations ship with the hub, so legacy writers are described with no controller change (backwards compatibility). *Controller-owned* registrations are dynamic and typed: a controller declares its own definitions — intent kinds, states, transitions, initiators, effect fields, command contract — and the hub offers typed API for them, so controller-unique features have a home other than untyped `devicestatus`. Adoption follows the WHATWG pattern: specify what happens now, leave room to extend; the controller owns its registration's lifecycle. **Roles:** the hub (Nightscout, Nocturne) is responsible for observability; the controller is responsible for sending data accurately and for syncing and reconciling. The hub records a controller's composition and reconciliation results; it does not compute dosing state. **Addendum (2026-10-12):** every extensible field is typed; the grammar is must-ignore with typed, namespaced extensions, open vocabularies, per-kind versions, declared horizons and hub/controller negotiation, so neither side releases in lockstep | maintainer, 2026-10-09 and 2026-10-12 — §2.6.1 |
 | **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. *(corrected 2026-10-15: reverse-DNS, `dev.nightscout/` — the well-known label prefix of rule 7; specified 2026-10-15, `SPEC-REG-INSTANCE`, hub-sync design §3.6)* | maintainer, 2026-10-14 — §2.6.2 |
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
-| **D21** | **One executable, and roles are served by `nightscout serve <roles>`.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands, as Consul and node-multienv's `start_container.sh` do. `nightscout single` is today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). Hosted roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are started as `nightscout serve <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7), as Ory's `serve public|admin|all` does. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed `serve` of every role is part of the multi target or only a small-hoster convenience | maintainer, 2026-10-26 — §2.12 |
+| **D21** | **One executable; `single` and `multitenant` name the tenancy profiles.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands. `nightscout single` remains today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). The multitenant roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are invoked as `nightscout multitenant <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7). `serve` describes an HTTP operation, not a tenancy mode, and is not the selected CLI namespace. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer and test tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's configuration split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed invocation of every multitenant role is part of the target or only a small-operator convenience | maintainer, 2026-10-26, amended 2026-11-03 — §2.12 |
 | **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them | maintainer, 2026-10-27 — §2.13 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
@@ -895,25 +895,44 @@ notification), the text is user-facing. It must say plainly which party to conta
 and it must not suggest that contacting anyone replaces the person's own care team when the
 problem concerns their therapy rather than the software.
 
-### 2.12 D21 — one entrypoint, `serve <roles>` (maintainer, 2026-10-26)
+### 2.12 D21 — one entrypoint, explicit tenancy subcommands (maintainer, amended 2026-11-03)
 
 D5 decided the roles and D16 the listeners; neither said how an operator starts one. The
 components document sketched one `bin/` script per role ({C} §3). D21 replaces that sketch
-with one executable and a subcommand per role, the pattern Consul uses for its agent and tools,
-node-multienv uses in `start_container.sh` (`multienv`, `resolver`, `runner`, `inspector`, …),
-and Ory uses to turn its public and admin listeners on and off (`serve public`, `serve admin`,
-`serve all`).
+with one executable and explicit tenancy subcommands. The CLI names the two supported deployment
+targets, rather than calling one `single` and the other a generic HTTP verb. The role split remains
+within the multitenant profile; it does not imply matching single-tenant role commands.
+
+#### Supported profile contract
+
+| profile | tenancy and storage | execution shape | status |
+|---|---|---|---|
+| `nightscout single` | single-tenant, MongoDB | existing monolith, unchanged | current first-class target |
+| `nightscout multitenant <role>[,<role>…]` | multitenant, PostgreSQL with RLS | one or more separately bound service roles | intended target; roles remain unavailable until their acceptance gates pass |
+
+This is the supported target set, not a Cartesian product of tenancy modes and storage adapters.
+Single-tenant PostgreSQL and multitenant MongoDB are not current goals. SQLite/Celld is a possible
+future backend direction, not a current profile; adding it requires an explicit backend and tenancy
+decision plus compatibility, isolation, migration, operations and QA acceptance for each profile
+it is meant to support.
+
+The existing single-tenant API v3 headless launcher is not a third deployment profile. The
+`scripts/headless-test-server.js` launcher in the integration worktree is explicitly for tests and
+development, outside the operator CLI and container image. It is not the single-tenant monolith
+and does not establish a supported single-tenant API-only deployment. If that deployment is later
+desired, define its operator contract and evidence separately rather than promoting the test
+launcher.
 
 | subcommand | what it runs | configuration (D15) |
 |---|---|---|
 | `nightscout single` | today's server: one process, `ctx.ddata`, the cache, every listener | the process environment |
-| `nightscout serve api` | express and storage; no bus, no `ddata` | per-tenant, from the database |
-| `nightscout serve evaluator` | change feed, plugins, notifications; no express | per-tenant, from the database |
-| `nightscout serve realtime` | socket.io and the change feed; no storage writes | per-tenant, from the database |
-| `nightscout serve vcpool` | connector actors and the egress proxy | per-tenant, from the database |
-| `nightscout serve tenant-admin` | the tenant owner's configuration listener (D16) | per-tenant, from the database |
-| `nightscout serve admin` | the platform operator's listener, on its own interface (D7) | the deployment's own settings |
-| `nightscout serve api,realtime` | several roles in one process, each listener on its own bind address | as each role |
+| `nightscout multitenant api` | express and storage; no bus, no `ddata` | per-tenant, from the database |
+| `nightscout multitenant evaluator` | change feed, plugins, notifications; no express | per-tenant, from the database |
+| `nightscout multitenant realtime` | socket.io and the change feed; no storage writes | per-tenant, from the database |
+| `nightscout multitenant vcpool` | connector actors and the egress proxy | per-tenant, from the database |
+| `nightscout multitenant tenant-admin` | the tenant owner's configuration listener (D16) | per-tenant, from the database |
+| `nightscout multitenant admin` | the platform operator's listener, on its own interface (D7) | the deployment's own settings |
+| `nightscout multitenant api,realtime` | several roles in one process, each listener on its own bind address | as each role |
 | `nightscout diagnose data`, `healthcheck`, `version`, `env` | operator tools against a deployed site | as `single`, or as the role named |
 
 Rules that follow:
@@ -930,16 +949,24 @@ Rules that follow:
 5. **The image's healthcheck is `nightscout healthcheck`**, so the image needs no curl.
 
 Work items: PLAT-ENTRY (the dispatcher with `single` and the operator tools, no behaviour
-change) and PLAT-SERVE (the hosted roles, carved one at a time from `bootevent`'s factory chain,
+change) and PLAT-SERVE (the multitenant roles, carved one at a time from `bootevent`'s factory chain,
 starting with `api`) in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and the
 [next-gen platform plan](../platform/next-gen-platform-plan.md) §4.4.
 
-**Amended 2026-10-27 (maintainer): the subcommand selects tenancy.** `nightscout single` is
-single-tenant and every `nightscout serve` role is multitenant, so no separate tenancy setting is
-needed: where this plan says `TENANCY_MODE=multi`, read "a `serve` role". `serve` refuses every
-role until that role is multitenant; the single-tenant code of the `api` profile runs as
-`scripts/headless-test-server.js` for tests and development, outside the operator CLI (rule 3).
-Built on #8865 at `b01b77c3`.
+**Amended 2026-10-27 (maintainer; CLI name amended 2026-11-03): the subcommand selects
+tenancy.** `nightscout single` is single-tenant and every `nightscout multitenant` role is
+multitenant, so no separate tenancy setting is needed. The earlier `serve` name is not the chosen
+operator namespace; the selected name is `multitenant`. The roles remain unavailable until their
+acceptance gates pass. The single-tenant API v3 test launcher remains test/development tooling
+outside the operator CLI (rule 3), not a supported profile.
+
+**Release placement (maintainer, 2026-11-03):** include the CLI namespace clarification in the
+current 16.0.0 `dev` candidate while its merge list remains open. Replace the unavailable
+`nightscout serve` command with `nightscout multitenant`; do not enable any multitenant role as
+part of this change. Preserve `nightscout single` and every legacy single-tenant start path.
+Candidate acceptance must test the new command/help/error behavior and confirm no role becomes
+available. If it does not clear review and the candidate's acceptance window, defer it without
+delaying the single-tenant release.
 
 ### 2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)
 
@@ -953,7 +980,7 @@ model.
 
 **The layers.**
 
-1. **Project floors**, in code, in every `nightscout serve` role only (multitenant; `TENANCY_MODE` retired by the D21 amendment). The server refuses to start, or refuses to
+1. **Project floors**, in code, in every `nightscout multitenant` role only (multitenant; `TENANCY_MODE` retired by the D21 amendment). The server refuses to start, or refuses to
    save a policy or a value, that breaks one. Decided as five groups (the fifth added the same day):
    - **no deployment secrets**: `API_SECRET` and `API_SECRET_FILE` refused (D13 as a check);
      `API3_SECURITY_ENABLE=false` refused;
@@ -1041,7 +1068,7 @@ and tokens expire the attacker can neither write nor reveal, where under A the s
 tokens until every tenant's key is rotated. Cost: one verify call per edit, and edits depend on the secrets
 component being up.
 
-The secrets component is a role of the one executable (D21), `nightscout serve secrets`, from the same
+The secrets component is a role of the one executable (D21), `nightscout multitenant secrets`, from the same
 image. Its first adapter is a **built-in signer**: keys encrypted under a master key supplied only to that
 container, for development and small operators; in Docker Compose it is one more service with one mounted
 secret. Vault transit and a cloud key service are the production adapters, behind the same interface.

@@ -1,9 +1,10 @@
 # Nightscout 16.0.0 - release notes (DRAFT)
 
-**Draft for maintainer review, 2026-11-02. Not a release announcement.**
-The version is decided: 16.0.0. The implementation is merged to development,
-but no named RC or v16 release is published. Informal testing is underway.
-Private security integration and final release acceptance remain pending.
+**Draft for maintainer review, 2026-11-03. Not a release announcement.**
+The version is decided: 16.0.0. The current release candidate is
+`official/dev` `61eb37335954ae42c91345a0823bd67331025165`. Informal testing is
+underway; private security integration and final release acceptance remain
+pending. No tag or v16 release is published.
 
 Nightscout 16 modernizes both the backend and frontend: shared storage and write
 contracts, more consistent record identity and re-send handling, refreshed
@@ -126,8 +127,9 @@ data. Normal write logs use summaries. Do not publish raw diagnostic logs or tok
 The image command is `nightscout single`; SIGTERM/SIGINT now stop connections
 cleanly. Under `restart: on-failure`, a SIGTERM not originating from `docker stop`
 now exits successfully and can leave the container stopped. Custom entrypoints
-must not prepend `node` to `nightscout single`. `nightscout serve` is reserved;
-this is not a production multitenancy release.
+must not prepend `node` to `nightscout single`. The command name for future
+multitenant roles is `nightscout multitenant`; no multitenant role is enabled
+in 16.0.0. This is not a production multitenancy release.
 
 ## Known issues and release acceptance still open
 

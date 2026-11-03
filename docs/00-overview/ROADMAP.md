@@ -140,7 +140,7 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 | 1 | `RT-BUNDLE-THEME-SPLIT` | Load the modern theme's client code only when it is chosen (page-bundle budget o | `not-started` | &mdash; |
 | 1 | `RT-JSDOM-REST` | Retire the whole-bundle jsdom harness that cut 1 keeps; secure-jsdom stays as th | `not-started` | &mdash; |
 | 2 | `OID-MIGRATION` | Opt-in migration that stores every string _id as the ObjectId it names, then ret | `not-started` | `OID-PREVALENCE` |
-| 2 | `RT-16-RELEASE` | Release 16.0.0 | `blocked` | `RT-16-LIVE-ALARMS`, `RT-16-RIG-SOAK`, `BFQ-72`, `BFQ-161` |
+| 2 | `RT-16-RELEASE` | Release 16.0.0 | `in-progress` | `RT-16-LIVE-ALARMS`, `RT-16-RIG-SOAK`, `BFQ-72`, `BFQ-161` |
 
 <!-- END GENERATED: road-release-train -->
 
