@@ -12,6 +12,64 @@ This document tracks completed documentation cycles and candidates for future wo
 
 ---
 
+## Tenant JWT Proof Integration and HTTP Gate (2026-11-02)
+
+Fast-forward integrated the one-commit `workspace/tenant-jwt-proof-20261102`
+branch at `dc2c5fbf`; no push or new commit was made. Its real secrets-backed
+JWT HTTP tests verify tenant-alias binding, current grants, and fail-closed
+behavior on authority outage. The combined tenant HTTP suite passes **19** with
+**10 Docker-gated cases pending** when the Docker gate is off; explicitly
+enabling the disposable PostgreSQL M3 lab passes all **10** cases. The trusted
+proxy test now recognizes the actual local IPv4 and IPv6 loopback peers.
+`npm run test:tiers` reports **470 test files across 8 tiers: OK**.
+
+**Boundary:** this verifies the JWT-to-HTTP authorization seam and existing
+test lab only. Source API import/backend acceptance and production tenant role
+runtime wiring remain open; M1/M2 are not promoted, so M3 remains blocked as a
+milestone despite its lab passing. No serving enablement or upstream push.
+
+## Multitenant M1/M2 slices and M3 HTTP lab (2026-11-02)
+
+On `workspace/multitenant-20261102`, four bounded commits now cover the M1
+one-time importer and entries-schema candidate (`327cbb1f`, `025704cd`), the
+M2 persistent policy/fencing and provider-neutral HTTP boundary (`c496d009`),
+and the M3 two-tenant HTTP lab (`a19b549c`). No upstream push or serving-role
+enablement occurred. The entries schema remains an explicit operator-migration
+candidate; the importer does not apply schema changes or register PostgreSQL
+as a serving backend.
+
+**Compatibility decision:** the inspected client corpus uses named entry
+fields, and the maintainer confirms no known client depends on JSON key order.
+The API3 replacement response does not expose `modifiedCount`, so PostgreSQL
+keeps JSONB logical equality: an order-only replacement may report `0` where
+MongoDB reports `1`. No BSON-order sidecar or importer metadata is required.
+
+**Acceptance:** importer, CLI and PostgreSQL writer unit tests passed **9**;
+the tenant-bound PostgreSQL importer target passed **1**. Disposable-Docker
+migration and tenant HTTP suites passed **23** (13 migrations, 10 lab cases).
+Tenant resolver/app/JWT HTTP tests passed **19**, and the integrated
+secrets/Vault/PostgreSQL policy gate passed **37**. `npm run test:tiers`
+classifies **473 files across 8 tiers**. The CRM changed-code ESLint checks,
+alignment `make site-check`, and `make queue-check` pass. The full broad suite
+was not rerun; the earlier broad-suite AJV failure remains a separate,
+unresolved gate.
+
+**Boundary:** the lab uses real PostgreSQL/RLS, the candidate migration, actual
+API3 GET handling, and a test-only POST/PATCH adapter around shared validation
+and M1 intent writes. It proves tenant isolation, cross-tenant refusal,
+persisted outcomes, reconnect, and refusal to bind when the migration ledger
+is absent, pending, or stale. The baseline importer is offset-paginated and
+not snapshot-isolated; `srvModified` history is best-effort, and hard deletes
+have no tombstones. Production credential/policy adapters, full legacy
+write-route/runtime wiring, and complete M1/M2 compatibility remain open.
+No serving role was enabled.
+
+Source: `externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:220-239`,
+`externals/work/crm-multitenant-20261102/tests/postgres-entries-write.test.js:270-279`,
+`externals/work/crm-multitenant-20261102/lib/api3/generic/update/replace.js:34-58`,
+`externals/work/crm-multitenant-20261102/lib/server/tenant-app/index.js:107-155`,
+`externals/work/crm-multitenant-20261102/tests/tenant-entries-http.integration.test.js:172-327`.
+
 ## Multitenant Working Dashboard and Roadmap Grooming (2026-11-02)
 
 The [working dashboard](docs/30-design/tenancy/multitenant-delivery-dashboard.md)
@@ -24,8 +82,9 @@ a dated status overlay records acceptance stages without inventing percentages.
 The roadmap keeps decisions and evidence anchors, collapses historical
 execution details, and directs current coordination to the dashboard. The
 broader next-gen programme source links to it rather than duplicating status.
-Verified peer tip `436ef543` incorporates both runner commits; broader
-integrated acceptance is still pending in these records.
+Verified peer tip `436ef543` incorporates both runner commits; the broad
+integrated gate remains pending, while their targeted acceptance is recorded
+below.
 
 **Validation:** three focused generator tests pass, including stale-output
 refusal; both Mermaid dependency maps parse with the pinned runtime. Queue and
@@ -44,14 +103,14 @@ restored code passes. No implementation/catalogue/checksum/serving change.
 **Acceptance:** **56 combined checks**, zero pending; all **15 MongoDB checks**
 pass on 5.0.32 and 8.3.9. Lint: zero errors/two filesystem-path warnings;
 466 files classify, diff checks pass, fixtures removed. Both runner commits
-await integration; peer remains at `011802ba`. Single-node process recovery
-is not HA, host/disk failure or production RPO/RTO acceptance.
+are integrated at `436ef543`. Single-node process recovery is not HA,
+host/disk failure or production RPO/RTO acceptance.
 
 See the [acceptance/handoff record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02).
 
 ## Parallel Transactional MongoDB Operator Migrations (2026-11-02)
 
-Local **`562f6206`** adds the bounded MongoDB replica-set transactional lane
+Integrated **`562f6206`** adds the bounded MongoDB replica-set transactional lane
 to the explicit Umzug operator command: renewable server-time leases, shared
 transaction fence, atomic data/ledger and pending-suffix retry. Real MongoDB
 5.0.32 and 8.3.9 acceptance covers contention, paused stale-worker takeover,
@@ -64,28 +123,30 @@ MongoDB checks pass at the floor too. Fence-removal and split-session mutations
 fail; restored affected checks pass. ESLint has zero errors/two filesystem-path
 warnings, 466 test files classify and diff checks pass. Owned fixtures removed.
 
-**Status:** ready for integration, not full MIG-RUNNER acceptance. Peer branch
-now incorporates the prior authority/settings commits, but their integrated
-testing is pending. No peer files modified or upstream push made.
+**Integration:** fast-forwarded into `workspace/multitenant-20261102` at
+**`436ef543`** after confirming clean peer state and disjoint entries edits.
+Integrated acceptance: **56 passing** on MongoDB 8.3.9 with PostgreSQL 16 and
+the CLI, **15 passing** on MongoDB 5.0.32, ESLint zero errors/two filesystem-path
+warnings, and **466 test files** classified. No upstream push or serving
+enablement. Standalone/index fencing, catalogues and full runner acceptance
+remain open.
 See the [acceptance and handoff](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-transactional-mongodb-slice-2026-11-02).
 
 ## Parallel Current Authority and Scalar Settings Acceptance (2026-11-02)
 
-Local control-plane commits **`1dd8990b`** and **`011802ba`** complete bounded
+Control-plane commits **`1dd8990b`** and **`011802ba`** complete bounded
 dormant persistent subject authority and the typed units/seconds settings
 subset. Real persistence covers cross-worker revocation, outages, floors,
 version conflicts, isolation, attributed history and policy-aware rollback.
 Recorded local acceptance: **36 passing, zero pending**, ESLint clean and
 all **465** test files classified. No entries/runtime changes or serving.
 
-**Integration not yet confirmed:** the peer branch remains at `0de90852`.
-Hand off both commits and rerun targeted and broader integrated acceptance;
-record the actual merge/results before marking them integrated. Next feasible
-control-plane work is persistent operator policy plus atomic policy/write
-fencing; full settings/API, management authentication and M2 remain open.
-MongoDB migration work needs ownership confirmation; entries remain with the
-integration session. The roadmap now distinguishes local/integrated/unfinished
-work and records the ongoing alignment-main documentation process.
+**Integrated acceptance at `436ef543`:** the combined secrets, authority and
+settings suite passed **36 tests**, ESLint was clean, and all **466** test
+files classified. These dormant services do not enable routes or serving.
+Persistent operator policy and atomic policy/write fencing, tenant resolution,
+management authentication and runtime wiring remain open; the full M2
+milestone is not promoted.
 
 See the [acceptance and handoff record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02).
 
@@ -3245,3 +3306,74 @@ instead of resident `ddata` help cold-start / db-op cases?)**
   measured); added EXP-MT-054 to close it.
 - Added EXP-MT-054 to the canonical §8.3 table; re-ran `tools/verify_refs.py` — no new
   broken refs from this doc.
+
+### Entries API import reconciliation decision (2026-11-02)
+
+The maintainer selected online, zero-pause best-effort reconciliation for the
+initial API-based entries importer. API v3 history filters by `srvModified >`
+and includes soft-deleted records, but a permanent v3 delete and v1 DELETE
+physically remove rows without a history tombstone. The importer must state
+that hard deletes can leave stale target rows or be missed; it must not claim
+exact deletion reconciliation or raw-backup fidelity. The baseline scan must
+also include legacy records without `srvModified`, which history cannot return.
+
+**Source Files Analyzed**:
+- `externals/work/crm-multitenant-20261102/lib/api3/generic/history/operation.js:25,84,115`
+- `externals/work/crm-multitenant-20261102/lib/api3/generic/delete/operation.js:21-24,55-62`
+- `externals/work/crm-multitenant-20261102/lib/server/soft-deleted.js:3-20`
+
+### PostgreSQL entries preserve JSON document values (2026-11-02)
+
+The dormant PostgreSQL entries writer now accepts recursively JSON-safe nested
+objects and arrays in inserted and set fields, while still rejecting BSON
+objects, cycles, accessors, non-finite numbers, negative zero and other
+lossy/non-JSON values. This is necessary for API import fidelity; PostgreSQL
+JSONB still provides logical value equality rather than BSON key-order parity.
+The disposable PostgreSQL 16 / MongoDB 8.0.34 differential suite passed all 22
+tests, including nested insert and update. This does not register the backend
+or implement the API importer.
+
+**Source Files Analyzed**:
+- `externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:34-63`
+- `externals/work/crm-multitenant-20261102/tests/postgres-entries-write.test.js:24-39,167-177`
+
+### One-time API entries importer and M1/M2 gates (2026-11-02)
+
+Added a one-shot Nightscout API importer for initial PostgreSQL tenant
+population. It scans live entries in bounded baseline pages, catches best-effort
+updates and soft-delete markers through the `srvModified` history route, and
+writes each page in a tenant-bound transaction. Reruns replay from the beginning
+and upsert duplicate identities; there is no durable checkpoint. This is not
+ongoing NS-to-NS sync; `nightscout-connect` remains that separate pipeline.
+Source API credentials are a read-scoped bearer token supplied per run and are
+never written to importer state or logs. Physical hard deletes remain
+unrecoverable from history.
+
+**Local acceptance:** importer unit/API contract tests pass **5**, PostgreSQL
+target isolation/replay integration passes **1**, and the PostgreSQL/MongoDB
+entries differential suite passes **22**. Persistent operator policy, subject
+authority, settings and atomic policy/write fencing pass **16** disposable
+PostgreSQL checks. Tenant HTTP/resolution/import focused checks pass **24**;
+ESLint is clean and `npm run test:tiers` classifies **473 files across 8 tiers**.
+
+**Boundary:** this importer uses the still-dormant PostgreSQL entries writer
+through an importer-only adapter; PostgreSQL is not added to the global
+serve-time backend registry. Full API/storage compatibility and live-source
+acceptance remain open. M2 still lacks production management authentication,
+production tenant credential/policy composition and `serve` role wiring; M1/M2 remain in
+progress, so the passing M3 lab does not promote M3. No commit, serving
+enablement or push was made.
+
+**Source files**:
+- `externals/work/crm-multitenant-20261102/lib/import/entries.js`
+- `externals/work/crm-multitenant-20261102/tools/import-entries.js`
+- `externals/work/crm-multitenant-20261102/tests/entries-importer.test.js`
+- `externals/work/crm-multitenant-20261102/tests/entries-importer-postgres.integration.test.js`
+
+### M2 production authority boundary (2026-11-02)
+
+The maintainer selected provider-neutral injected authority ports. Tenant
+resolution, credential verification and current authorization remain explicit
+composition dependencies; no test or fallback authority is promoted to
+production. Keep all multitenant `serve` roles disabled until a deployment
+adapter supplies tenant aliases/credentials and current authorization.

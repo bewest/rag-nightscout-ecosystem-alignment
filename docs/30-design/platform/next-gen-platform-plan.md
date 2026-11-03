@@ -35,7 +35,7 @@ See [current readiness and workstreams](../../10-domain/nightscout-v16-ecosystem
 | Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1). ST-V3-DECOUPLE (with #8865, 2026-10-30). `write(intent)` release 1, every write path through one step (#8874, `368e6c23`, 2026-10-31). `write(intent)` release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, `51d38f9f`, 2026-11-01) . ST-VIEWS, unwired (#8875, `1fc6d8be`, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, `f54941b5`, 2026-11-01) | ST-VIEWS-PROFILE prototype, draft #8891 (`744d1968`, with provisos) | PostgreSQL |
 | Identity | `identifier` is the client's, `_id` the server's; #8879/#8890 merged identifier-first matching and compatibility decisions A/B; #8888/#8890 fixed BF-225; #8889 added strict v1 validation and opt-in per-item batch replies; #8892 added site resend settings; #8894 added the unique index and Q-IDX retry, merged as `497d08c9`. SPEC-ID-AMEND is complete in this repository. | ID-BATCH reply and duplicate-key race behavior are implemented in #8889/#8894; no separate local integration PR is currently required. Full release compatibility and cohort verification remain. | PostgreSQL |
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | draft #8857: S0, S1, S2, S5, off by default (head `5f6c1275`, `BEHIND` latest `dev` `497d08c9`; rebase and retest before the entry bar) | typed writes (S3), projected views (S4) |
-| Tenancy | nothing | merged 2026-10-30: #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`991b0654`; #8862 closed as superseded) | tenant configuration, resolution, tenant-scoped auth, multitenant lab |
+| Tenancy | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`991b0654`; #8862 closed as superseded) | Local integration commits through `a19b549c`: one-time entries import/schema candidate, dormant provider-neutral tenant policy and HTTP boundaries, and a passing 10-case two-tenant HTTP lab. M1/M2/M3 milestones remain open; see the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md) for current gates and the [roadmap](../tenancy/multitenant-delivery-roadmap-2026-11-02.md) for evidence. | Full entries/API compatibility; deployment-owned tenant authority, data router and listener wiring; M3 promotion |
 
 ## 1. 16.0.0 scope (maintainer, 2026-10-30)
 
@@ -128,12 +128,12 @@ The forward constraints are two mature backends behind one interface (D2–D4), 
 
 ## 3. The map
 
-For the initial multitenant implementation, use the
-[multitenant delivery dashboard](../tenancy/multitenant-delivery-dashboard.md):
-M0-M6 prerequisites, parallel lanes, remaining gates and dated local versus
-integrated acceptance. Its [roadmap](../tenancy/multitenant-delivery-roadmap-2026-11-02.md)
-retains decisions and detailed execution evidence. This programme map keeps
-the broader execution, registration and command tracks separate.
+For multitenant status and sequencing, use the
+[multitenant delivery dashboard](../tenancy/multitenant-delivery-dashboard.md).
+It owns M0-M6 prerequisites, parallel lanes, bounded slices and current
+acceptance. The [roadmap](../tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+retains decisions, limits and detailed execution evidence; this platform
+overview intentionally summarizes rather than duplicates those tenancy gates.
 
 <!-- chart: map -->
 

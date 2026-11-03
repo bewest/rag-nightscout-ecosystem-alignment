@@ -33,7 +33,9 @@ tools/               # Python automation scripts
 
 ## Multi-Faceted Analysis Pattern
 
-When analyzing any component, **update all 5 facets**:
+For explicitly requested cross-project interoperability research, use the following facets as a checklist and **update only affected facets**. Read-only questions require no file changes; do not invent gaps or requirements to fill the checklist.
+
+Routine cgm-remote-monitor implementation, debugging, CI, reviews, release preparation, status questions, and handoffs do not require the ecosystem-alignment skill or five-facet updates. Consult relevant Claude memories through `~/.claude/projects/-home-bewest-src-rag-nightscout-ecosystem-alignment/memory/MEMORY.md` as context, verifying historical status and commands against current repository evidence. Keep release evidence in the existing `releases/cgm-remote-monitor-<version>/` records and validate implementation changes with the target worktree's tests and lint tooling.
 
 | Facet | File | Purpose |
 |-------|------|---------|

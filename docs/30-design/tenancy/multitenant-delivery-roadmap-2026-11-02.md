@@ -25,7 +25,8 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded; the broad no-database AJV limitation remains unresolved.
+promotion is recorded. The local non-database tiers now pass with the
+dependency-resolution fix; the full integrated gate remains pending.
 
 ## 1. Owner journeys and supported boundary
 
@@ -190,6 +191,22 @@ is claimed by adopting this roadmap.
 <summary>Execution history and acceptance commands (dated evidence, not the current work board)</summary>
 
 ### Execution evidence (2026-11-02)
+
+### Tenant JWT Proof Integration and HTTP Gate
+
+The one-commit `workspace/tenant-jwt-proof-20261102` branch is integrated at
+`dc2c5fbf`. Its real secrets-backed HTTP tests pass for tenant-bound
+verification, current-grant checks, and fail-closed authority outage. The
+combined tenant HTTP suite passes 19 with its 10 PostgreSQL lab cases skipped
+when Docker is not enabled; explicitly enabling the disposable M3 PostgreSQL
+lab passes all 10. `npm run test:tiers` classifies 470 test files across 8
+tiers. The trusted-proxy test accepts the fixture's IPv4 and IPv6 loopback
+addresses.
+
+This proves the JWT-to-HTTP authorization seam and the M3 test lab, not
+production tenant runtime wiring. M1 source import/backend acceptance and M2
+production control-plane/runtime acceptance remain open; M3 is not promoted.
+No serving enablement or upstream push.
 
 **Upstream local commits `27f085c93ad3f1eaef2bfcecc5cfa8544f2036d5`
 and `ce14d637` (explicit connection-URI guard)** on
@@ -702,13 +719,22 @@ NS_SECRETS_POSTGRES_DOCKER_TEST=1 node_modules/.bin/mocha \
   tests/postgres-secrets.integration.test.js
 ```
 
-**M1/M2 remain open.** Next storage work is the reviewed entries DDL/import/
-field-order contract, full v1/socket write-intent acceptance, remaining API and
-query forms, resource/lock/materialization bounds and actual backend suites.
-The narrow v3 seam does not complete route validation, current grants,
-per-database instrumentation, cache/socket events or serving-role wiring.
-The earlier broad no-database AJV failure remains unresolved and was not
-waived or reclassified by this targeted run.
+**M1/M2 remain open; bounded code slices are now committed locally.** M1 has
+the one-time API importer and entries-schema candidate (`327cbb1f`,
+`025704cd`); JSONB key-order parity is not required. The importer target and
+candidate-schema/RLS checks pass, but this does not establish full API/storage
+compatibility or a point-in-time import. M2 has persistent policy/settings
+services, atomic policy/write fencing, tenant resolution and dormant HTTP
+composition (`c496d009`); the injected-authority boundary is tested, but no
+deployment adapter or serving role is enabled. The opt-in M3 lab
+(`a19b549c`) passes its 10 PostgreSQL HTTP cases but does not promote M3.
+
+Remaining M1 work is complete backend compatibility, route and query behavior,
+resend/delete/batch outcomes, resource bounds, and documented source-import
+limitations. Remaining M2 work is a deployment-owned alias/credential/current-
+authorization adapter, production data-router and listener composition, and
+owner/operator lifecycle acceptance. The earlier broad no-database AJV failure
+remains unresolved and was not waived or reclassified by these targeted runs.
 
 Parallel ownership is unchanged: secrets backup/restore and process-crash
 acceptance, minimum settings/subject policy and MongoDB migration fencing stay
@@ -952,16 +978,32 @@ Persistent operator policy and atomic policy/write fencing remain the next
 independent control-plane option; neither was silently implemented here.
 No push, publication or serving enablement is authorized.
 
-**API import clarification:** the maintainer means importing existing
-Nightscout data by reading its API, not exposing schema migration over an API.
-Defer this separate candidate to the entries/import lane after its target
-schema, identity and field-order contract is reviewed. Acceptance should cover
-least-privilege source access, resumable bounded pagination/checkpoints,
-duplicate-safe retries and value/identity verification, with an explicit
-concurrent-source-change/cutover policy. API projections may omit stored fields
-or BSON order; do not call this a raw database backup or silently claim lossless
-import. This is a follow-on scope decision, not an implemented importer or a
-change to the explicit schema operator boundary.
+**API import clarification and implementation:** this is a one-time database
+population by reading the source Nightscout API, not schema migration over an
+API and not ongoing NS-to-NS synchronization (`nightscout-connect` remains
+separate). The committed importer (`externals/work/crm-multitenant-20261102/lib/import/entries.js:108-181`)
+uses a bounded live `/api/v3/entries` baseline followed by best-effort
+`srvModified` history. It runs from the beginning on rerun; durable checkpoints
+are not required. The source bearer token is read-scoped and not persisted.
+The entries schema is an explicit operator-migration candidate, not applied by
+the importer. JSONB logical equality is accepted; no known client depends on
+JSON object field ordering.
+
+The zero-pause reconciliation is best effort, not snapshot-isolated: the
+baseline uses offset pages, so concurrent source writes may shift page
+boundaries. History can catch updates and soft-delete markers with
+`srvModified`, but there is no guarantee of a complete point-in-time copy.
+API v3 permanent delete removes a row, and v1 DELETE physically removes
+matching rows; neither leaves a history tombstone
+(`externals/work/crm-multitenant-20261102/lib/api3/generic/delete/operation.js:21-24`,
+`externals/work/crm-multitenant-20261102/lib/server/soft-deleted.js:18-20`).
+Hard deletes during import can therefore leave stale target rows or be missed.
+History also cannot return legacy rows without `srvModified`, so the baseline
+scan must cover them. Repeated textual IDs fail closed rather than merge
+ambiguous string/ObjectId identities. API projections may omit stored fields;
+do not call this a raw database backup or claim lossless import. The importer
+does not enable the global PostgreSQL serving backend or the `serve` roles.
+This policy does not change the explicit schema operator boundary.
 
 Source:
 `externals/work/crm-secrets-20261102/lib/migrations/mongodb.js:59-199`,
@@ -1014,3 +1056,32 @@ Source:
 `externals/work/crm-secrets-20261102/tests/fixtures/migrations/mongo-worker.js:10-45`.
 
 </details>
+
+### M1-M2 code slices and acceptance (2026-11-02)
+
+The integration worktree `externals/work/crm-multitenant-20261102` now has
+four bounded commits, with no upstream push:
+
+| Commit | Slice | Acceptance boundary |
+|---|---|---|
+| `327cbb1f` | One-time Nightscout API entries importer, candidate entries schema, JSONB-safe PostgreSQL target | Importer replay and tenant-bound PostgreSQL write pass; no snapshot guarantee, full backend compatibility, or serving registration |
+| `025704cd` | Candidate entries schema and forced-RLS migration acceptance | Generated v3 fields, typed IDs, identifier uniqueness and RLS are checked through the operator runner |
+| `c496d009` | Persistent settings/subject/operator policy, atomic write fencing, tenant resolution and dormant HTTP composition | Provider-neutral dependencies fail closed; no deployment-owned authority adapter or production listener |
+| `a19b549c` | Opt-in two-tenant entries HTTP lab | All 10 PostgreSQL lab cases pass; this is a test harness, not an enabled service role |
+
+**Measured checks:** the importer, CLI and PostgreSQL writer unit tests pass
+(9 total; importer and CLI account for 7); its disposable PostgreSQL target
+test passes (1). The migration and tenant HTTP Docker suites
+pass 23 combined (13 migrations, 10 HTTP lab). The provider-neutral
+resolver/app/JWT HTTP tests pass 19. The combined secrets, Vault and PostgreSQL
+policy gate passes 37, including persisted current grants and atomic
+settings/grant fencing. ESLint passes for the changed CRM code, and
+`npm run test:tiers` classifies 473 files across 8 tiers.
+
+These slices do not promote M1 or M2. M1 still needs full entries/API/storage
+compatibility and resource acceptance; the importer is offset-paginated and
+best-effort, not a consistent snapshot. M2 still needs deployment-owned tenant
+aliases, trusted credential/current-authorization adapters, production data
+router and listener separation. `serve` roles remain disabled. The M3 test lab
+does not replace those prerequisites. The broader no-database suite's known
+AJV failure remains separate and unresolved.

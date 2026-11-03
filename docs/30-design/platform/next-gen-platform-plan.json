@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-01 08:28 PST; cgm-remote-monitor dev 497d08c9; #8894 merged with all required hosted checks passing",
+ "measured": "2026-11-02; cgm-remote-monitor dev 497d08c9; tenancy integration workspace through a19b549c; detailed milestone gates live in the multitenant delivery dashboard",
  "tracks": [
   {
    "id": "storage",
@@ -308,13 +308,24 @@
    "id": "ST-PG",
    "track": "storage",
    "phase": "multi",
-   "state": "planned",
-   "short": "PostgreSQL backend",
-   "title": "PostgreSQL with row-level security behind the same interface, entries first (D3)",
-   "where": "lib/storage/postgres-storage.js (reference: old chain 983ff64f, 7cc03cda)",
-   "check": "the backend-selectable suite run on both stores",
+   "state": "progress",
+   "short": "Entries import and adapter",
+   "title": "Committed M1 slices: one-time API baseline plus best-effort srvModified catch-up, tenant-bound PostgreSQL target, entries schema candidate and forced-RLS proof. This is not a complete API/storage backend or snapshot import.",
+   "where": "lib/import/entries.js, lib/storage/postgres-entries-write.js, migrations/candidates/postgres-entries-v1.json",
+   "check": "bounded importer replay, tenant-bound target and candidate-schema/RLS gates pass; full backend compatibility and source-import guarantees remain open",
    "depends": [
     "ST-HARNESS"
+   ],
+   "ref": "Integration commits 327cbb1f and 025704cd; overall M1 remains open.",
+   "spec": [
+    {
+     "label": "multitenant delivery dashboard",
+     "href": "../tenancy/multitenant-delivery-dashboard.md"
+    },
+    {
+     "label": "M1/M2 acceptance evidence",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02"
+    }
    ]
   },
   {
@@ -678,9 +689,10 @@
    "id": "TEN-RESOLVE",
    "track": "tenancy",
    "phase": "multi",
-   "state": "planned",
-   "short": "Tenant resolution",
-   "title": "A request resolves to a tenant or is refused; platform admin on its own interface (reference: old chain T3.1, T3.2)",
+   "state": "progress",
+   "short": "Provider-neutral tenant boundary",
+   "title": "Committed tenant alias resolution and dormant HTTP composition require injected trusted credential verification, current authorization and separate operator services; no default tenant or production authority fallback.",
+   "ref": "Integration commit c496d009; production tenant aliases, trusted transport and listener/data-router wiring remain open.",
    "depends": [
     "ST-HARNESS",
     "T30-SCHEMA-CONFIG",
@@ -692,9 +704,10 @@
    "id": "T30-WIRING",
    "track": "tenancy",
    "phase": "multi",
-   "state": "planned",
+   "state": "progress",
    "short": "Tenant-scoped auth",
-   "title": "Tenant-scoped API keys and per-tenant JWT signing keys (D13, D14)",
+   "title": "Tenant-bound JWT verification and current-grant checks are proven through injected HTTP boundaries; production credential/authority adapters and runtime composition remain open.",
+   "ref": "Tenant JWT proof dc2c5fbf; dormant HTTP boundary c496d009. No serving role enabled.",
    "depends": [
     "TEN-RESOLVE"
    ]
@@ -703,9 +716,10 @@
    "id": "TEN-LAB",
    "track": "tenancy",
    "phase": "multi",
-   "state": "planned",
-   "short": "Two-tenant lab",
-   "title": "A Docker Compose lab: two tenants on PostgreSQL, isolation checked with a control, uploaders and a follower app against each",
+   "state": "progress",
+   "short": "Two-tenant HTTP lab",
+   "title": "Committed opt-in PostgreSQL HTTP lab; 10 cases pass for tenant isolation, writes, revocation, startup refusal and data-plane separation. M3 remains blocked until M1/M2 production acceptance.",
+   "ref": "Integration commit a19b549c; see the multitenant delivery dashboard for promotion gates.",
    "depends": [
     "ST-PG",
     "T30-WIRING",

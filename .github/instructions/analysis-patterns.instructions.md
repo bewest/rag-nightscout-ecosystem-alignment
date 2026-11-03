@@ -1,5 +1,7 @@
 # Analysis Patterns for Nightscout Ecosystem
 
+These patterns apply to explicitly requested cross-project interoperability research, not routine CRM implementation, CI, release work, status questions, or handoffs. Update only affected facets; read-only questions require no documentation changes. For CRM work, consult relevant Claude memories as context, verify current repository evidence, and keep release evidence in the existing release records.
+
 ## CGM Protocol Analysis
 
 When analyzing a CGM protocol (Dexcom G6/G7, Libre 2/3, etc.):
@@ -33,7 +35,9 @@ Key files to examine for Dexcom protocols:
 - `externals/xDrip/libkeks/src/main/java/jamorham/keks/` - J-PAKE implementation
 - `externals/xdripswift/xdrip/BluetoothTransmitter/CGM/Dexcom/` - iOS BLE handling
 
-### Step 4: Update All 5 Facets
+### Step 4: Update Affected Facets
+
+Use the following as a checklist, not a requirement to modify every file:
 
 1. **Terminology Matrix** (`mapping/cross-project/terminology-matrix.md`)
    - Add any new terms discovered (opcodes, message types, etc.)

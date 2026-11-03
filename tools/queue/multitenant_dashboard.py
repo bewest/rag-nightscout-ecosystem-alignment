@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 STATUS = ROOT / "docs/30-design/tenancy/multitenant-delivery-status.json"
 OUTPUT = ROOT / "docs/30-design/tenancy/multitenant-delivery-dashboard.md"
 ROADMAP = "multitenant-delivery-roadmap-2026-11-02.md"
+PROGRAMME_OVERVIEW = "../../../site/pages/nightscout-next-gen-platform.html"
+FULL_QUEUE = "../../../queue/QUEUE.md"
 STAGES = {
     "local-accepted": "Locally accepted",
     "incorporated-pending": "Incorporated; testing pending",
@@ -83,8 +85,8 @@ def render(data, queue, roadmap):
         "and the acceptance ledger for what has actually passed. No milestone is promoted by a completed dependency slice.",
         "",
         f"[Decisions and detailed acceptance]({ROADMAP}) | "
-        "[Programme overview](../../../site/pages/nightscout-next-gen-platform.html) | "
-        "[Full queue](../../../queue/QUEUE.md)", "",
+        f"[Programme overview]({PROGRAMME_OVERVIEW}) | "
+        f"[Full queue]({FULL_QUEUE})", "",
         "## Acceptance stages", "",
         "**Locally accepted -> incorporated / testing pending -> integrated acceptance recorded -> milestone promoted.** "
         "Incorporation is ancestry, not a passing test run. Stages below are dated evidence claims, "

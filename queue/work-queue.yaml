@@ -198,21 +198,21 @@ items:
           --exit --require ./tests/hooks.js tests/postgres-entries-write.test.js
         kind: integration
         describe: >
-          Dormant write/v3 intent subset: 1 refusal plus 17 real checks for
+          Dormant write/v3 intent subset: 1 refusal plus 20 real checks for
           scalar writes, merge upserts, changing replacements, batch errors,
           every-form identities, savepoints, actual lock/identifier races,
-          shared v3 rules and post-commit events. Equal replacement counters
-          explicitly refuse; no full API/backend acceptance.
+          shared v3 rules and post-commit events. Order-only replacement counts
+          follow JSONB equality; exact BSON-order parity is not required.
       - no-gate: >
-          Binding/pooler and narrow generated-DDL/typed-identity proofs are
-          measured, not full M1 acceptance. Local tip 0de90852 remains dormant.
-          Current v3/history/partial-unique identifier indexes, migration/import,
-          complete bulk/replace/every-form and v1/socket intent acceptance,
-          BSON field-order-dependent counts, route validation/current grants,
+          Binding/pooler, entries schema/RLS and one-time API importer slices
+          are measured, not full M1 acceptance. Integration tip a19b549c remains
+          dormant.           Full v3/history import coverage, complete bulk/replace/every-form and
+          v1/socket intent acceptance, route validation/current grants,
           per-database/cache/socket events,
           remaining methods, cursor caps and full query parity remain.
-          Unsupported shapes explicitly refuse. No PG availability
-          flag or hosted role is enabled.
+          The offset-paginated import is not snapshot-isolated and hard deletes
+          have no history tombstone. Unsupported shapes explicitly refuse.
+          No PG availability flag or hosted role is enabled.
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
@@ -264,6 +264,14 @@ items:
       metadata. No catalogue change, upstream push or backend promotion.
       Recovery 78b915ab integrated via 0de90852; same combined command now
       passes 879 tests without pending, including all 34 secrets checks.
+      Current local acceptance: the user-approved contract is JSONB logical
+      equality; the inspected client corpus uses named fields and no known
+      client depends on BSON key order. Order-only replacements may report
+      modifiedCount 0 in PostgreSQL where Mongo reports 1; the API3 update
+      response does not expose that count. M1 entries schema candidate passes
+      13 MIG-RUNNER integration checks; entries read/write/filter/identity/
+      connection suites pass 45. Import, full API/runtime compatibility and
+      promotion remain open.
 
   - id: MT-CONFIG-MIN
     title: "Reviewed initial tenant configuration and headless owner API contract"
