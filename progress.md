@@ -27,6 +27,12 @@ broader next-gen programme source links to it rather than duplicating status.
 Verified peer tip `436ef543` incorporates both runner commits; broader
 integrated acceptance is still pending in these records.
 
+**Validation:** three focused generator tests pass, including stale-output
+refusal; both Mermaid dependency maps parse with the pinned runtime. Queue and
+site checks pass with zero warnings/unresolved links. Browser verification
+confirms the original dormant-entries anchor still exists and automatically
+expands its collapsed evidence section. Nothing published or enabled.
+
 ## Parallel MongoDB Primary Recovery and Renewal Refusal (2026-11-02)
 
 Local **`436ef543`** extends `562f6206` with real expired-renewal outage refusal
