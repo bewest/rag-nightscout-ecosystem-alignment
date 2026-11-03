@@ -36,8 +36,8 @@ docs/60-research/{remedial,modernization,tenancy,programme}/
 
 Files left **loose** at the top of `30-design` and `60-research` are either
 cross-programme entry points (the post-Phase-0 roadmap, the adoption roadmap) or
-older material. **The Jan–Apr 2026 research campaign was deliberately left where
-it is** and is not filed by programme.
+older material. **The Jan–Apr 2026 research campaign is not filed by programme**; its
+verification dumps are under [`archive/verification-campaign-2026-04/`](archive/verification-campaign-2026-04/README.md).
 
 `make docs-links` proves every path the groomed material cites still resolves.
 

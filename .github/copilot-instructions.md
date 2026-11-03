@@ -1,126 +1,60 @@
-# Nightscout Ecosystem Alignment Workspace
+# Nightscout ecosystem alignment workspace
 
-## Overview
+**Read [`AGENTS.md`](../AGENTS.md) first.** It is the operating contract for every agent in this
+repository: where each fact lives, the measurement rules, the git and worktree rules, what may enter
+the public tree, and how to hand off to another agent. This file adds only the repository map and
+the Copilot-specific pointers.
 
-This workspace coordinates cross-project analysis of 20 CGM/AID (Continuous Glucose Monitor / Automated Insulin Delivery) repositories to ensure interoperability and data alignment across the Nightscout ecosystem.
-
-## Repository Structure
-
-```
-externals/           # Git-ignored external repos (reproducible via workspace.lock.json)
-  ├── LoopWorkspace/      # Loop iOS app
-  ├── cgm-remote-monitor/ # Nightscout web server
-  ├── AndroidAPS/         # AAPS Android app
-  ├── Trio/               # Trio iOS app
-  ├── xDrip/              # xDrip+ Android CGM app
-  ├── xdripswift/         # xDrip4iOS app
-  ├── DiaBLE/             # DiaBLE iOS Libre reader
-  └── ... (20 repos total)
-mapping/             # Per-project and cross-project field mappings
-specs/               # OpenAPI 3.0 and JSON Schema specifications
-conformance/         # Test scenarios and assertions (YAML)
-traceability/        # Requirements, gaps, coverage matrices
-docs/                # Research and deep-dive documentation
-tools/               # Python automation scripts
-```
-
-## Working with External Repos
-
-- Run `make bootstrap` to clone all external repos to `externals/`
-- Run `make freeze` to pin current commits in `workspace.lock.json`
-- **Never commit directly to main/master** in external repos
-- Create topic branches: `git checkout -b workspace/feature-name`
-
-## Multi-Faceted Analysis Pattern
-
-For explicitly requested cross-project interoperability research, use the following facets as a checklist and **update only affected facets**. Read-only questions require no file changes; do not invent gaps or requirements to fill the checklist.
-
-Routine cgm-remote-monitor implementation, debugging, CI, reviews, release preparation, status questions, and handoffs do not require the ecosystem-alignment skill or five-facet updates. Consult relevant Claude memories through `~/.claude/projects/-home-bewest-src-rag-nightscout-ecosystem-alignment/memory/MEMORY.md` as context, verifying historical status and commands against current repository evidence. Keep release evidence in the existing `releases/cgm-remote-monitor-<version>/` records and validate implementation changes with the target worktree's tests and lint tooling.
-
-| Facet | File | Purpose |
-|-------|------|---------|
-| Terminology | `mapping/cross-project/terminology-matrix.md` | Cross-project term mapping |
-| Gaps | `traceability/gaps.md` | GAP-XXX-NNN identifiers |
-| Requirements | `traceability/requirements.md` | REQ-NNN identifiers |
-| Deep Dive | `docs/10-domain/{component}-deep-dive.md` | Technical documentation |
-| Progress | `progress.md` | Dated completion entry |
-
-## ID Conventions
-
-### Gap IDs: `GAP-<CATEGORY>-<NNN>`
-
-| Prefix | Domain |
-|--------|--------|
-| GAP-G7-NNN | Dexcom G7 protocol |
-| GAP-CGM-NNN | CGM data source |
-| GAP-SYNC-NNN | Synchronization |
-| GAP-TREAT-NNN | Treatments |
-| GAP-DS-NNN | DeviceStatus |
-| GAP-ALG-NNN | Algorithm comparison |
-| GAP-ENTRY-NNN | Entries collection |
-| GAP-PROF-NNN | Profile/therapy settings |
-
-### Requirement IDs: `REQ-<NNN>`
-
-| Range | Domain |
-|-------|--------|
-| REQ-001-009 | Override behavior |
-| REQ-010-019 | Timestamp handling |
-| REQ-020-029 | Sync identity |
-| REQ-030-039 | Data validation |
-| REQ-050-059 | CGM data source |
-| REQ-060-069 | Algorithm |
-
-Check `traceability/requirements.md` for next available number.
-
-## Code References
-
-Always use explicit file:line references:
+## Repository map
 
 ```
-`externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/BgReading.java:45`
+AGENTS.md            # the contract (vendor-neutral)
+queue/               # ONE work queue across all programmes. work-queue.yaml is the source;
+                     # QUEUE.md is generated. `make queue-status` runs the gates.
+releases/            # one directory per release: contents, decisions, testing notes, V&V records
+docs/00-overview/    # PROGRAMME-STATUS, ROADMAP, NEEDS-A-HUMAN, REVIEWER-ONBOARDING, DEFINITION-OF-DONE
+docs/30-design/      # design by horizon: remedial (incl. the backfix register), modernization,
+                     # tenancy, platform
+docs/60-research/    # dated measurement records by horizon; older research campaigns
+reports/             # reviewer packets (generated), PR bodies, census and survey outputs
+tools/queue/         # manifest validator, gate runner, vacuity controls, view and packet emitters
+tools/qc/, tools/lab/ # harnesses that require() the shipping module by path
+externals/           # git-ignored clones pinned by workspace.lock.json (`make bootstrap`);
+                     # externals/work/ holds per-lane worktrees and local HANDOFF-*.md files
+mapping/ specs/ conformance/ traceability/   # the ecosystem research facets
 ```
 
-## Key OpenAPI Specs
+## Two kinds of task
 
-| Spec | Collection |
-|------|------------|
-| `specs/openapi/aid-entries-2025.yaml` | SGV, MBG, calibration |
-| `specs/openapi/aid-treatments-2025.yaml` | Bolus, carbs, temp basal |
-| `specs/openapi/aid-devicestatus-2025.yaml` | Loop vs oref0 structure |
-| `specs/openapi/aid-profile-2025.yaml` | Therapy settings |
+| task | instructions |
+|---|---|
+| cgm-remote-monitor programme work: implementation in a worktree, CI, review, release records, status questions, handoffs | `AGENTS.md` and the skills below. No research-facet updates. |
+| explicitly requested cross-project interoperability research (protocols, field mappings, gaps, requirements) | `.github/instructions/analysis-patterns.instructions.md` (path-scoped) |
 
-Specs use `x-aid-*` extensions for gap annotations and controller support.
+## Skills
 
-## Validation Commands
+Procedures live in `.github/skills/<name>/SKILL.md` (agentskills.io format) and are shared with
+Claude Code through `.claude/skills`:
+
+| skill | use it to |
+|---|---|
+| `queue-item` | add or update a work-queue item, define a gate and its control, run the checks |
+| `release-record` | record a merge, decision or test run in the release directory and keep the register's status words right |
+| `evidence-harness` | verify a change or a compatibility claim by measurement: labs, the write-contract matrix, controls, dated records |
+| `session-handoff` | write a handoff another agent (any vendor) can resume from |
+
+## Validation
 
 ```bash
-make verify              # Run all static verification
-make traceability        # Generate traceability matrix
-make workflow TYPE=quick # Fast validation subset
-make workflow TYPE=full  # Complete CI pipeline
+make queue-status     # run the gates; `state` in the manifest is only a claim
+make queue-check      # what CI proves: register coverage, generated views current, links
+make docs-links       # after moving or renaming any documented path
 ```
 
-## Domain Knowledge
+## Guardrails that Copilot must keep
 
-### Diabetes/CGM Terminology
-- **SGV**: Sensor Glucose Value (mg/dL or mmol/L)
-- **IOB**: Insulin on Board (active insulin)
-- **COB**: Carbs on Board (unabsorbed carbs)
-- **CR**: Carb Ratio (g carbs per unit insulin)
-- **ISF**: Insulin Sensitivity Factor
-- **DIA**: Duration of Insulin Action
-- **SMB**: Super Micro Bolus (oref0/AAPS feature)
-- **UAM**: Unannounced Meal detection
-
-### AID Systems
-- **Loop**: iOS closed-loop (LoopKit, LoopWorkspace)
-- **AAPS**: Android APS using oref0/oref1 algorithms
-- **Trio**: iOS fork using oref1 algorithm
-- **oref0/oref1**: OpenAPS Reference Design algorithms
-
-### CGM Apps
-- **xDrip+**: Android CGM data manager (20+ sources)
-- **xDrip4iOS**: iOS port with fewer sources
-- **DiaBLE**: iOS Libre sensor reader
-- **Nightscout**: Central data aggregation server
+- Never push. Hand the maintainer the branch and plain `git push` / `gh pr create` commands.
+- Never commit to `main`/`master` of a repository under `externals/`; branch as `workspace/<name>`.
+- Commit by explicit path (`git commit -- <paths>`): the index is shared with other sessions.
+- No commit trailers. No PII, health data or credentials in any committed file.
+- Status words: merged to `dev` is not released.

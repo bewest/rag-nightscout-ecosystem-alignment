@@ -439,7 +439,7 @@ rag-nightscout-ecosystem-alignment/
 
 - INTEGRATION-PROPOSAL.md (not in the repository) - sdqctl team's integration roadmap
 - [workflows/README.md](../workflows/README.md) - Workflow documentation
-- [replit.md](../replit.md) - Workspace overview and patterns
+- [replit.md](archive/replit-agent-notes-2026-01.md) - Workspace overview and patterns
 
 ---
 

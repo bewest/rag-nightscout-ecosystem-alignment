@@ -128,15 +128,12 @@ make refresh
 └── README.md
 ```
 
-## For AI Coding Agents
+## For AI coding agents
 
-This workspace is designed to work well with coding agents (Replit, GitHub Copilot, Claude, local LLMs):
-
-1. **Predictable layout**: All external repos live in `externals/`
-2. **Version pinning**: Use `make freeze` to lock exact commits
-3. **No cross-repo git pollution**: Each repo maintains its own git history
-4. **Easy reset**: Delete `externals/` and re-run `make bootstrap`
-5. **Enhanced tooling**: Query, trace, and validate with JSON output
+Read [`AGENTS.md`](AGENTS.md) first. It is the vendor-neutral contract: where each fact lives,
+the measurement rules, the git and worktree rules, what may enter the public tree, and how to
+hand off to another agent. `.github/copilot-instructions.md` and `CLAUDE.md` point to it;
+procedures live in `.github/skills/<name>/SKILL.md`.
 
 ## Cross-Algorithm Validation Framework
 
@@ -163,34 +160,11 @@ Key tools:
 
 See `docs/architecture/cross-validation-assessment.md` for full metrics and methodology.
 
-### Tooling for Agents
+### Research tooling
 
-**Quick Start**:
-```bash
-# Interactive exploration
-make cli
-
-# Query documentation
-python3 tools/query_workspace.py --search "authentication" --json
-
-# Trace requirement coverage
-python3 tools/query_workspace.py --tests-for REQ-001 --json
-
-# Validate changes
-python3 tools/run_workflow.py --workflow quick --json
-```
-
-**Documentation**:
-- `docs/TOOLING-GUIDE.md` - Comprehensive guide
-- `docs/TOOLING-QUICKREF.md` - Quick reference
-- `make help` - All available commands
-
-### Agent Guardrails
-
-- Agents should NOT commit directly to `main`/`master` in external repos
-- Create topic branches: `git checkout -b workspace/feature-name`
-- The workspace repo tracks ONLY configuration, not external code
-- Always validate before committing: `make workflow TYPE=quick`
+The January–April 2026 research facets (mappings, specs, conformance, traceability) have their own
+query and verification tools: `docs/TOOLING-GUIDE.md`, `make help`. They are not part of the
+programme's gates.
 
 ## Troubleshooting
 

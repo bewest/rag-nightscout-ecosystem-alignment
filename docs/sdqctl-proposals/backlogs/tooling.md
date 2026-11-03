@@ -147,7 +147,7 @@ Covers: sdqctl directives, plugins, LSP integration, agentic automation
 
 **Status**: ✅ COMPLETE  
 **Deliverable**: `workflows/orchestration/backlog-cycle-v3.conv`
-**Source**: [LIVE-BACKLOG](../../../LIVE-BACKLOG.md)
+**Source**: [LIVE-BACKLOG](LIVE-BACKLOG.md)
 
 ### Goals (All Addressed)
 

@@ -1,7 +1,7 @@
 # Live Backlog
 
 > **Purpose**: Midflight requests from humans during sdqctl processing sessions.  
-> **Parent**: [ECOSYSTEM-BACKLOG.md](docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md)
+> **Parent**: [ECOSYSTEM-BACKLOG.md](../ECOSYSTEM-BACKLOG.md)
 
 ---
 
@@ -202,7 +202,7 @@ export SWIFTLY_HOME_DIR=~/.local/share/swiftly
 | PR #8405 timezone review | P2 | ✅ Complete (GAP-TZ-001 addressed, safe to merge) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 19) | P0 | ✅ Complete (Ready Queue 2→5 items, PR #8422 review done) | 2026-01-30 |
 | PR #8422 OpenAPI compliance review | P2 | ✅ Complete (safe to merge, robustness fix, no interop gap) | 2026-01-30 |
-| backlog-cycle-v3 + LSP research + PR review queue | P2 | ✅ Queued to [tooling.md](docs/sdqctl-proposals/backlogs/tooling.md) + [nightscout-api.md](docs/sdqctl-proposals/backlogs/nightscout-api.md) | 2026-01-30 |
+| backlog-cycle-v3 + LSP research + PR review queue | P2 | ✅ Queued to [tooling.md](tooling.md) + [nightscout-api.md](nightscout-api.md) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 18) | P0 | ✅ Complete (Ready Queue 2 items, tooling deprecation done) | 2026-01-30 |
 | Tooling deprecation evaluation (#11) | P3 | ✅ Complete (7 tools identified for deprecation) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 17) | P0 | ✅ Complete (Ready Queue 2 items, aid-algorithms medium items done) | 2026-01-30 |
@@ -258,7 +258,7 @@ export SWIFTLY_HOME_DIR=~/.local/share/swiftly
 | OQ-010 Item #7: Profile sync comparison | P2 | ✅ Complete (GAP-SYNC-038/039/040, 3 REQs) | 2026-01-30 |
 | OQ-010 Item #6: percentage/timeshift handling | P2 | ✅ Complete (GAP-NOCTURNE-005, 2 REQs) | 2026-01-30 |
 | Phase 4 backlog grooming (cycle 1) | P0 | ✅ Complete (5→7 Ready Queue, dedup sync-identity) | 2026-01-30 |
-| Backlog-cycle-v3.conv proposal | P3 | → Queued to [tooling.md](docs/sdqctl-proposals/backlogs/tooling.md) | 2026-01-30 |
+| Backlog-cycle-v3.conv proposal | P3 | → Queued to [tooling.md](tooling.md) | 2026-01-30 |
 | OQ-010 ProfileSwitch research queue (Nocturne focus) | P2 | ✅ Complete (11 items queued: sync-identity + API) | 2026-01-30 |
 | Document new tooling usage | P3 | ✅ Complete (+60 lines, sdqctl guide) | 2026-01-30 |
 | Unit test coverage for tools/ | P2 | ✅ Complete (17 tests, 6 tools covered) | 2026-01-30 |

@@ -813,39 +813,11 @@ exclusions:
     axis: noise
     reason: "Guard: vendored npm packages. None tracked."
     decided_by: "maintainer 2026-09-30"
-  - pattern: "*VERIFICATION*"
+  - pattern: "docs/archive/verification-campaign-2026-04/**"
     axis: noise
-    reason: "Root-level verification dumps from April 2026 sessions."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "verification*"
+    reason: "The January-April 2026 research campaign's verification dumps, moved from the repository root on 2026-11-03; kept for history, not published."
+    decided_by: "maintainer 2026-09-30 (as root-level patterns); relocated 2026-11-03"
+  - pattern: "docs/archive/replit-agent-notes-2026-01.md"
     axis: noise
-    reason: "Root-level verification dumps (lower-case names)."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "SESSION_*"
-    axis: noise
-    reason: "Root-level session checkpoint."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "CAMPAIGN_FINAL_REPORT.md"
-    axis: noise
-    reason: "Root-level session or campaign dump."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "PRODUCTIONIZATION-SESSION-2026-04-23.md"
-    axis: noise
-    reason: "Root-level session or campaign dump."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "REVIEW_NOTES.md"
-    axis: noise
-    reason: "Root-level session or campaign dump."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "replit.md"
-    axis: noise
-    reason: "Root-level session or campaign dump."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "_report_list.txt"
-    axis: noise
-    reason: "Root-level session or campaign dump."
-    decided_by: "maintainer 2026-09-30"
-  - pattern: "plan_update.txt"
-    axis: noise
-    reason: "Root-level session or campaign dump."
-    decided_by: "maintainer 2026-09-30"
+    reason: "Replit agent notes from January 2026, moved from the repository root on 2026-11-03."
+    decided_by: "maintainer 2026-09-30 (as replit.md); relocated 2026-11-03"

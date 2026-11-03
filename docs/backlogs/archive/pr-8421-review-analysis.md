@@ -441,7 +441,7 @@ git status
 
 - [PR #8421](https://github.com/nightscout/cgm-remote-monitor/pull/8421)
 - [Reviewer's Guide](../../PR-8421-reviewers-guide.md)
-- [LIVE-BACKLOG.md](../../../LIVE-BACKLOG.md) - Session tracking
+- [LIVE-BACKLOG.md](../../sdqctl-proposals/backlogs/LIVE-BACKLOG.md) - Session tracking
 - Worktree (not in the repository)
 - [GAP-SYNC-045 Test Report](../../test-reports/GAP-SYNC-045-entries-uuid-fix.md)
 - [Client ID Deep Dive](../../10-domain/client-id-handling-deep-dive.md)

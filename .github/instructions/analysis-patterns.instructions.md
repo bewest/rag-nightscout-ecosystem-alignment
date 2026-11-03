@@ -1,6 +1,14 @@
-# Analysis Patterns for Nightscout Ecosystem
+---
+applyTo: "mapping/**,specs/**,conformance/**,traceability/**,docs/10-domain/**"
+---
 
-These patterns apply to explicitly requested cross-project interoperability research, not routine CRM implementation, CI, release work, status questions, or handoffs. Update only affected facets; read-only questions require no documentation changes. For CRM work, consult relevant Claude memories as context, verify current repository evidence, and keep release evidence in the existing release records.
+# Analysis patterns for cross-project research
+
+These patterns apply to **explicitly requested cross-project interoperability research** (a
+protocol, a field mapping, a gap or requirement across the ecosystem's apps). They do not apply to
+cgm-remote-monitor programme work (implementation, CI, review, release records, status questions,
+handoffs), which follows [`AGENTS.md`](../../AGENTS.md). Update only the facets a finding affects;
+a read-only question changes no file. Do not invent gaps or requirements to fill the checklist.
 
 ## CGM Protocol Analysis
 
@@ -200,3 +208,19 @@ Brief description of what was analyzed.
 **Source Files Analyzed**:
 - `externals/repo/path/file.ext`
 ```
+
+---
+
+## ID conventions for the research facets
+
+Gap ids are `GAP-<CATEGORY>-<NNN>` (`G7`, `CGM`, `SYNC`, `TREAT`, `DS`, `ALG`, `ENTRY`, `PROF`);
+requirement ids are `REQ-<NNN>` in ranges by domain (001–009 overrides, 010–019 timestamps,
+020–029 sync identity, 030–039 validation, 050–059 CGM sources, 060–069 algorithms). Read the next
+free number from `traceability/requirements.md` and `traceability/gaps.md` at the moment of writing.
+Backfix ids (`BF-`) belong to the programme's register, not to these facets.
+
+Code references are explicit `path:line`, for example
+`externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/BgReading.java:45`.
+
+The OpenAPI specs in `specs/openapi/aid-*-2025.yaml` carry `x-aid-*` extensions for gap
+annotations and controller support.

@@ -31,7 +31,8 @@ it:
 - `queue/`, `releases/` and `reports/`.
 
 **Out of scope until the maintainer extends it:** the January–April 2026 AID research campaign,
-including the 53 `VERIFICATION-*` files at the repository root and the loose files in
+including the April 2026 verification dumps (since 2026-11-03 under
+`docs/archive/verification-campaign-2026-04/`, formerly at the repository root) and the loose files in
 `docs/60-research`, and the July 2026 telemetry design documents. They stay where they are
 (maintainer decision, 2026-09-16).
 

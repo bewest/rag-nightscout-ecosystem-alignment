@@ -191,7 +191,7 @@ Questions about priorities, scope, and project direction.
 - Analyze Nocturne as a potential next-generation platform?
 - Both?
 
-**Source**: [LIVE-BACKLOG.md](../LIVE-BACKLOG.md) - "modernization plan for cgm-remote-monitor vs adopting Nocturne"
+**Source**: [LIVE-BACKLOG.md](sdqctl-proposals/backlogs/LIVE-BACKLOG.md) - "modernization plan for cgm-remote-monitor vs adopting Nocturne"
 
 **Resolution**: Both - parallel analysis. Queue:
 1. cgm-remote-monitor gap analysis and evolution proposals
@@ -424,4 +424,4 @@ Questions explicitly listed in existing ADRs.
 - [traceability/gaps.md](../traceability/gaps.md) - Technical gaps
 - [docs/90-decisions/](90-decisions) - ADRs
 - [docs/sdqctl-proposals/ECOSYSTEM-BACKLOG.md](sdqctl-proposals/ECOSYSTEM-BACKLOG.md) - Work queue
-- [LIVE-BACKLOG.md](../LIVE-BACKLOG.md) - Human requests
+- [LIVE-BACKLOG.md](sdqctl-proposals/backlogs/LIVE-BACKLOG.md) - Human requests

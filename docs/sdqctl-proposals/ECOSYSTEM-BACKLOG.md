@@ -15,7 +15,7 @@
 | Tooling | [backlogs/tooling.md](backlogs/tooling.md) | sdqctl enhancements, plugins, automation |
 | **iOS Mobile Platform** | [backlogs/ios-mobile-platform.md](backlogs/ios-mobile-platform.md) | iOS apps, NightscoutKit SDK, App Store |
 | **Documentation Accuracy** | [backlogs/documentation-accuracy.md](backlogs/documentation-accuracy.md) | Bottom-up claim verification |
-| Live requests | [../../LIVE-BACKLOG.md](../../LIVE-BACKLOG.md) | Midflight human requests |
+| Live requests | [../../LIVE-BACKLOG.md](backlogs/LIVE-BACKLOG.md) | Midflight human requests |
 
 ---
 

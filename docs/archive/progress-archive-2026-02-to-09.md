@@ -1,0 +1,2816 @@
+# Progress archive: 2026-02 to 2026-09
+
+*Entries moved from `progress.md` on 2026-11-03. Snapshot; not maintained. Paths are as written at the time and are relative to the repository root.*
+
+## cgm-remote-monitor Telemetry Emitter Branch (2026-07-16)
+
+Prepared a cgm-remote-monitor implementation branch for the first disabled-by-default aggregate telemetry slice.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| cgm branch | `<workspace>/worktrees/nightscout/cgm-pr-8447` branch `wip/bewest/nightscout-telemetry-emitter` commit `a8f6c31f` | Adds local telemetry config parsing, allowlists, monthly HMAC ID helper, counters, schema-shaped payload builder, no-network facade, and tests |
+| cgm preview slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `df8b218e` | Adds admin-only `/api/telemetry/preview.json` endpoint so reviewers/operators can inspect the exact pending aggregate payload without any network sender |
+| identity-source update | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `5005aa26` | Keeps telemetry identity separate from `API_SECRET` and JWT `randomString`; supports explicit `NIGHTSCOUT_TELEMETRY_SECRET` and labels ephemeral preview IDs |
+| route-counter slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `6555e713` | Adds allowlisted route-family/status counters and websocket connection counts locally, with no raw URL/query/body/IP/user-agent retention |
+| manual sender slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `c3d6f33d` | Adds explicit `sendOnce()` POST support to `NIGHTSCOUT_TELEMETRY_ENDPOINT`; no automatic scheduling or default emission |
+| persistence slice | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `8a3376f2` | Persists a telemetry-specific generated secret and prototype counter state; scheduling review found counter retention should align with send windows before production |
+| scheduling helper | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `10b63a99` | Adds pure schedule calculations for first-run jitter, weekly success interval, and failure retry without automatic timers |
+| retention fix | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `b8149521` | Retains counters across day boundaries until successful send, then resets and persists send state |
+| manual E2E trigger | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `4ae99daf` | Adds admin-only `POST /api/telemetry/send.json`, gated by `NIGHTSCOUT_TELEMETRY_MANUAL_SEND`, for local E2E testing |
+| report counter fix | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `ea47d14e` | Counts `/report` page opens directly as `reports.opened` and adds focused preview test coverage |
+| scheduled-send gate | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `5e7a54d4` | Adds explicit `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND` gate and `runDue()` path, with tests proving no send before first-run jitter due time |
+| tick lifecycle wiring | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `a6825185` | Wires scheduled send checks to existing tick lifecycle, still gated by `NIGHTSCOUT_TELEMETRY_SCHEDULED_SEND=false` by default |
+| Mongo-backed state | `<workspace>/worktrees/nightscout/cgm-pr-8447` commit `5969531e` | Prefers Mongo-backed telemetry secret/counter/schedule state when `ctx.store` is available, with file fallback for local/dev |
+| Reviewer guide | `docs/reports/cgm-remote-monitor-telemetry-branch-reviewer-guide-2026-07-16.md` | Summarizes branch commits, safety boundaries, validation, review focus, and next slices |
+
+**Key Findings**:
+- The first code slice is intentionally non-emitting: no network sender is active and no app route middleware is mounted yet.
+- `NIGHTSCOUT_TELEMETRY` defaults to `off`; `aggregate` only enables the local facade configuration.
+- Focused tests cover env parsing, monthly ID rotation, allowlist filtering, coarse counters, payload shape, admin-only preview, and no-network preview behavior.
+- Existing auth/JWT secrets are not used as telemetry identity material; a dedicated telemetry secret or later persisted telemetry-specific secret is preferred.
+- A local two-component smoke test confirmed cgm `sendOnce()` can POST a schema-valid aggregate payload to the `crm-telemetry` receiver and receive `204`.
+- cgm now has telemetry-specific secret persistence, counter retention through send success, and send-state persistence, still without automatic scheduling or default emission.
+- cgm now has a gated manual-send endpoint for local E2E testing without enabling automatic scheduling.
+- The known `/report` E2E counter gap is fixed in cgm with direct app-page instrumentation.
+- Schema/cgm updates now allow tallying enabled `connect` plugin and allowlisted Nightscout Connect source names such as Dexcom Share, Glooko, LibreLinkUp, Minimed CareLink, and Nightscout, without credentials or URLs.
+- Scheduling is wired to the existing tick lifecycle but remains explicitly gated and disabled by default.
+- cgm now prefers Mongo-backed telemetry state, addressing ephemeral runtime concerns while preserving file fallback for local/dev.
+
+**Validation**:
+- `TEST=telemetry npm run test-single`
+- `npm run test:unit -- --grep telemetry`
+
+**Source Files Changed**:
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/env.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/telemetry/`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/tests/telemetry.test.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json`
+
+---
+
+## Nightscout Telemetry Execution Materials (2026-07-16)
+
+Converted the telemetry strategy into first-pass execution materials for board, developer, schema, and implementation planning.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Execution summary | `docs/reports/nightscout-telemetry-execution-summary-2026-07-16.md` | Consolidates navigation, current status, implemented components, E2E proof, and remaining decisions |
+| Buy-vs-build strategy | `docs/reports/nightscout-telemetry-buy-vs-build-strategy-2026-07-16.md` | Recommends Nightscout-owned schema/receiver/emitter with managed object storage/hosting and separate diagnostics vendors |
+| Aggregate telemetry schema | `specs/jsonschema/nightscout-telemetry-aggregate.schema.json` | Strict default-on aggregate census schema with monthly rotating installation ID, coarse counters, health buckets, and prohibited-field rejection |
+| Telemetry charter | `docs/reports/nightscout-telemetry-charter-2026-07-16.md` | Defines purpose, non-purpose, data-rights commitments, prohibited data, identifier policy, retention, and governance gates |
+| Board/developer packet | `docs/reports/nightscout-telemetry-board-developer-packet-2026-07-16.md` | Frames the maintenance budget ask, urgent connector/cloud-access tally need, and data-rights-preserving opt-out commitments |
+| Community FAQ draft | `docs/reports/nightscout-telemetry-community-faq-draft-2026-07-16.md` | Public-facing explanation of what changes, why, what is sent, opt-out, default-on rationale, and data-rights framing |
+| Implementation breakdown | `docs/30-design/nightscout-telemetry-implementation-breakdown-2026-07-16.md` | Splits work into charter/schema, cgm-remote-monitor emitter, sibling backend, diagnostics separation, and maintainer workflow |
+| Schema fixtures and validator | `specs/fixtures/telemetry/`, `tools/validate_telemetry_schema.py`, `make validate-telemetry` | Provides accepted/rejected payload examples and a fast validation path that does not wait on release-gate decisions |
+| Backend service design | `docs/30-design/nightscout-telemetry-backend-service-design-2026-07-16.md` | Defines a sibling endpoint, storage layout, aggregation model, dashboard outputs, metadata constraints, and tests inspired by Trio telemetry |
+| cgm emitter map | `docs/30-design/cgm-remote-monitor-telemetry-emitter-map-2026-07-16.md` | Maps cgm-remote-monitor env, boot, Express, API, report, websocket, preview, module, and PR-slice touchpoints |
+| Local integration plan | `docs/30-design/nightscout-telemetry-local-integration-plan-2026-07-16.md` | Shows how to run cgm-remote-monitor and `crm-telemetry` locally together once sender wiring exists |
+| Scheduling/dedupe model | `docs/30-design/nightscout-telemetry-scheduling-dedupe-model-2026-07-16.md` | Recommends weekly jittered attempts, monthly rotating IDs, and backend monthly dedupe to avoid thundering herd behavior |
+| Lifecycle policy | `docs/30-design/nightscout-telemetry-lifecycle-policy-2026-07-16.md` | Defines retention and deletion behavior for raw accepted payloads, rejected requests, aggregate exports, dashboards, metrics, and incidents |
+| Deployment lifecycle examples | `docs/30-design/nightscout-telemetry-deployment-lifecycle-examples-2026-07-16.md` | Adds provider-neutral, S3-style, Terraform, and Scaleway-compatible examples for 60-day raw retention |
+| Full local E2E report | `docs/reports/nightscout-telemetry-local-e2e-report-2026-07-16.md` | Documents cgm manual endpoint to crm receiver to accepted payload storage to monthly export to dashboard rendering |
+
+**Key Findings**:
+- The first milestone can remain narrow enough for default-on aggregate telemetry if the payload is previewable, schema-bound, opt-out, and server-side rejected on unknown fields.
+- The highest-risk work is governance and field discipline, not the mechanics; Trio telemetry already demonstrates the operational pattern.
+- The implementation path should start with materials and schema validation before emitter/backend code.
+- Release-gate language remains discussable, but fixtures, tests, backend design, and disabled-by-default prototype branches are non-blocking technical progress.
+- Local two-component testing is feasible: backend fixture validation and HTTP accept/reject behavior already work, while cgm preview/counter payloads are ready for a future sender.
+- `crm-telemetry` commit `e42040c` adds monthly aggregation that dedupes active installations and feature-active counts without exposing raw installation IDs.
+- `crm-telemetry` commit `4b6f25f` stores accepted payloads in local object-store-style partitions without retained network metadata.
+- `crm-telemetry` commit `5a37596` exports monthly aggregate JSON from stored payloads without raw installation IDs.
+- `crm-telemetry` commit `d0ca8f3` renders a static monthly dashboard from aggregate exports without raw installation IDs or network metadata.
+
+**Source Files Analyzed**:
+- `docs/10-domain/nightscout-telemetry-observability-deep-dive.md`
+- `specs/jsonschema/aid-events.schema.json`
+- `docs/reports/nightscout-dependabot-context-2026-07-07.md`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/{env,server,app,bootevent,websocket}.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api3/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/settings.js`
+
+---
+
+## Libre 3 Direct-Reader Readiness (2026-07-16)
+
+Refreshed the stale Libre 3 "eavesdrop only" report against Trio PR #1275 and Loop `next-dev` evidence.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Libre 3 readiness report | `docs/10-domain/libre3-protocol-gap-analysis.md` | Reclassifies Libre 3/3+ direct BLE from absolute blockage to active direct-reader validation via LibreLoop/LibreCRKit |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Adds shared terms for LibreLoopCGMManager, LibreCRKit, receiver identity, backfill, status, and cloud fallback |
+| Gap updates | `traceability/cgm-sources-gaps.md` | Updates GAP-CGM-003/GAP-CGM-030/GAP-CGM-032 and adds GAP-CGM-035 for provenance/readiness evidence |
+| Requirement update | `traceability/cgm-sources-requirements.md` | Adds REQ-LIBRE-007 for direct-reader readiness evidence |
+
+**Key Findings**:
+- Trio PR #1275 is open and adds Libre 3/3+ through `LibreLoop`, `LibreCRKit`, and `LoopAlgorithm` submodules with PluginManager/PluginSource wiring.
+- Loop `next-dev` has repeated LibreLoop/LibreCRKit stabilization commits covering backfill, reconnect, sensor attention, display units, receiver identity, and expired-vs-transient error handling.
+- DiaBLE remains a protocol research reference, now documenting Libre 3 Direct-To-Watch via Messina while still warning that direct Apple Watch BLE is prototype-stage.
+- LibreLinkUp remains a required fallback/interoperability path for non-direct-reader clients.
+
+**Gaps Identified**: GAP-CGM-035
+
+**Source Files Analyzed**:
+- `externals/Trio` fetched PR ref `origin/pr-1275`
+- `externals/readiness/LoopWorkspace-next-dev`
+- `externals/readiness/LoopWorkspace-next-dev/LibreLoop`
+- `externals/readiness/LoopWorkspace-next-dev/LibreCRKit`
+- `externals/DiaBLE/README.md`
+- `externals/nightscout-connect/README.md`
+- `externals/nightscout-connect/test/librelinkup.test.js`
+
+---
+
+## Full Nightscout-to-Nightscout Sync (2026-07-07)
+
+Extended `nightscout-connect` Nightscout source/output support from entries-only to all core v1 collections.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Full sync branch | `wip/bewest/full-nightscout-sync` (`6dfc4f0`) | Fetches and writes entries, treatments, devicestatus, and profiles |
+| Fixture-backed test | `test/fixtures/nightscout-full-sync.json` | Representative Loop-style entries/treatments/devicestatus/profile batch |
+| Gap/doc updates | `traceability/connectors-gaps.md`, `docs/10-domain/nightscout-connect-deep-dive.md` | GAP-CONNECT-002 partially remediated for Nightscout source |
+
+**Key Findings**:
+- Nocturne's Nightscout connector confirmed the correct v1 endpoint set and the need for independent collection cursors.
+- External Nightscout output now posts `/api/v1/entries.json`, `/api/v1/treatments.json`, `/api/v1/devicestatus.json`, and `/api/v1/profile.json`.
+- Full sync remains v1-based; v3 identifiers/upsert are still separate future work.
+
+**Source Files Analyzed**:
+- `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js`
+- `<workspace>/worktrees/nightscout-connect/lib/outputs/nightscout.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/api/{entries,treatments,devicestatus,profile}/index.js`
+- `externals/nocturne/src/Connectors/Nocturne.Connectors.Nightscout/Services/NightscoutConnectorService.cs`
+
+---
+
+## Glooko Public Connectivity Research (2026-07-07)
+
+Researched public Glooko API and Nightscout integration evidence to determine whether web-login and v3 graph behavior could be implemented deterministically.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Public research note | `docs/10-domain/glooko-public-connectivity-research-2026-07-07.md` | Web-login, session profile, and v3 graph CGM fallback are deterministic enough behind flags, but unofficial and still fixture-dependent |
+| Gap status update | `traceability/connectors-gaps.md` | GAP-CONNECT-014 marked partially remediated by `nightscout-connect` dev commit `c06c037` |
+
+**Key Findings**:
+- Multiple public clients independently document the same web-session flow: sign-in page, CSRF token, form POST, `_logbook-web_session`, then internal API calls.
+- Public projects and Nocturne converge on `/api/v3/session/users` plus `/api/v3/graph/data` with `cgmHigh`, `cgmNormal`, and `cgmLow`.
+- GlookoServiceKit is an uploader rather than a downloader, but it confirms Classic-vs-XT backend separation, 2FA, region resolution, `x-timezone`, local timestamp semantics, and retry after 401/421.
+- Glooko's official public developer portal exists, but detailed API use is relationship-gated. Community paths remain unofficial and should stay feature-flagged until real-account fixtures validate behavior.
+
+**Source Files / Resources Analyzed**:
+- `externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
+- `externals/GlycemicGPT/tools/glooko-capture/`
+- `externals/GlycemicGPT/apps/api/src/services/integrations/glooko/`
+- `externals/glooko-reader/`
+- `externals/glooko2nightscout/`
+- `externals/glooko-nightscout-eu/`
+- `externals/GlookoServiceKit/`
+- `https://developers.glooko.com/docs`
+
+---
+
+## nightscout-connect Architecture Review Refresh (2026-07-07)
+
+Reviewed the updated `nightscout-connect` dev branch architecture after the connector integration pass and compared it with Nocturne's connector architecture.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Architecture review | `docs/10-domain/nightscout-connect-architecture-review-2026-07-07.md` | Captures additional tests, architectural recommendations, and Nocturne lessons |
+
+**Key Findings**:
+- The new `node --test` suite materially improves connector confidence, but machine-level XState transition tests are still the next highest-value gap.
+- Nocturne's separation of configuration, auth token providers, connector services, mappers, and timezone services is the best reference for future `nightscout-connect` refactors.
+- Glooko web-login/v3 graph work should be feature-flagged and fixture-backed, not folded into the 0.0.13 release baseline.
+
+**Source Files Analyzed**:
+- `<workspace>/worktrees/nightscout-connect/lib/builder.js`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/session.js`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/fetch.js`
+- `<workspace>/worktrees/nightscout-connect/lib/machines/cycle.js`
+- `<workspace>/worktrees/nightscout-connect/machines.md`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Core/Services/BaseConnectorService.cs`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
+
+---
+
+## nightscout-connect Dev Connectivity Branches (2026-07-07)
+
+Promoted the tested `nightscout-connect` connectivity baseline onto `origin/dev`, then worked methodically on branches cut from `dev` for Dexcom, LibreLinkUp, and Glooko connectivity.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Dev baseline | `nightscout-connect@origin/dev` (`52afd55`) | Integrates Dexcom, Nightscout source/output, LibreLinkUp, and Glooko compatibility fixes |
+| Dexcom branch | `wip/bewest/dexcom-connectivity` | Adds regional server, accountId wrapper, non-HTTP failure, and timestamp/trend tests |
+| Libre branch | `wip/bewest/libre-connectivity` | Fixes omitted-region default, multi-patient mismatch, missing graph/current data, and timezone-qualified timestamps |
+| Glooko branch | `wip/bewest/glooko-connectivity` | Fixes hardcoded device identity regression and maps v2 CGM readings to Nightscout entries |
+| Triage doc update | `docs/10-domain/nightscout-connect-connector-triage-2026-07-07.md` | Records branch sequence and international compatibility notes |
+
+**Key Findings**:
+- Working directly on top of `origin/dev` preserved existing unreleased LibreLinkUp and Glooko contributions before adding the 0.0.13 connectivity baseline.
+- The test suite now has 32 `node --test` cases covering Dexcom, Nightscout source/output, LibreLinkUp, and Glooko connector contracts.
+- Glooko EU CSRF web-login and v3 graph fallback are still larger follow-up work; they should be a dedicated branch with fixtures, not silently folded into the release baseline.
+
+**Source Files Analyzed**:
+- `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/librelinkup.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Dexcom/Services/DexcomAuthTokenProvider.cs`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.Glooko/`
+- `<workspace>/rag-nightscout-ecosystem-alignment/externals/nocturne/src/Connectors/Nocturne.Connectors.FreeStyle/`
+
+---
+
+## Nightscout Telemetry and Observability Plan (2026-07-16)
+
+Surveyed local telemetry discussion notes, ecosystem telemetry references, the Trio telemetry implementation, current cgm-remote-monitor logging posture, comparable open-source analytics patterns, and the adjacent data-ops/shared-services proposal.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Telemetry deep dive | `docs/10-domain/nightscout-telemetry-observability-deep-dive.md` | Recommends separated planes for community feature census, diagnostics, logs, and consented data commons work |
+| Gap updates | `traceability/telemetry-observability-gaps.md` | Adds GAP-OBS-001 through GAP-OBS-005 for architecture, schema, precedent, diagnostics, and stakeholder alignment gaps |
+| Requirement updates | `traceability/telemetry-observability-requirements.md` | Adds REQ-OBS-001 through REQ-OBS-009 for schema, identifiers, opt-out, endpoints, diagnostics, governance, and data commons separation |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Adds telemetry and observability terms across Nightscout, Trio telemetry, Foundation/DataOps, and comparable projects |
+
+**Key Findings**:
+- Trio telemetry is the strongest ecosystem precedent, but its App Attest, `idfv`, free-form payload, and 180-day object retention model should not be copied directly into Nightscout default telemetry.
+- cgm-remote-monitor has deployment logging precedent via Papertrail, but logs are not a feature census and should remain operator-directed.
+- Home Assistant and Homebrew support the idea of disclosed, aggregate, public analytics used for maintainer prioritization, but Nightscout should be more conservative because health-adjacent metadata is sensitive.
+- The unifying plan is a phased proposal series: telemetry charter, feature census, structured logs, scrubbed diagnostics, OpenTelemetry, then Foundation shared-service/data-ops integration.
+
+**Gaps Identified**: GAP-OBS-001, GAP-OBS-002, GAP-OBS-003, GAP-OBS-004, GAP-OBS-005
+
+**Source Files Analyzed**:
+- `~/Downloads/nightscout_telemetry_observability_options.md`
+- `externals/trio-telemetry/trio-telemetry-backend/README.md`
+- `externals/trio-telemetry/trio-telemetry-backend/app/main.py`
+- `externals/trio-telemetry/trio-telemetry-backend/app/metrics.py`
+- `externals/trio-telemetry/trio-telemetry-backend/app/logs.py`
+- `externals/trio-telemetry/trio-telemetry-backend/app/canonical.py`
+- `externals/trio-telemetry/trio-telemetry-cronjob/README.md`
+- `externals/cgm-remote-monitor-official/app.json`
+- `../ns-ml-data-ops-proposal/docs/technical-architecture.md`
+- `../ns-ml-data-ops-proposal/docs/ecosystem-shared-services.md`
+
+---
+
+## Nightscout Dependabot Alert Context Report (2026-07-07)
+
+Reviewed the cgm-remote-monitor dependency-dev-tooling branch in `<workspace>/worktrees/nightscout/cgm-pr-8447` and wrote a report for closing or consolidating low-value Dependabot PRs without misrepresenting raw advisory counts.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Dependabot context report | `docs/reports/nightscout-dependabot-context-2026-07-07.md` | Dev dependency refresh reduces production audit findings from 51 to 29 and criticals from 2 to 0; remaining alerts need code-path triage |
+
+**Key Findings**:
+- Raw Dependabot counts mix core runtime paths, optional connector paths, browser/report dependencies, dev/test/build tooling, and superseded PRs.
+- Nightscout maintainers are balancing limited review capacity, stability, backward/forward compatibility, and third-party connector constraints.
+- The recommended closure workflow classifies PRs as covered by dev refresh, dev/test-only, optional-feature-path, major-migration-needed, or keep-open-runtime.
+
+**Source Files Analyzed**:
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package-lock.json`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/app.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/websocket.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/middleware/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/bootevent.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/client/index.js`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/lib/server/purifier.js`
+
+---
+
+## nightscout-connect Connector PR Triage (2026-07-07)
+
+Inspected the cgm-remote-monitor dev candidate PR #8482 and set up a clean sibling `nightscout-connect` worktree to triage Dexcom Share, Glooko, and Nightscout connector issues and PRs.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Connector triage deep dive | `docs/10-domain/nightscout-connect-connector-triage-2026-07-07.md` | Dexcom #55 is narrow and mergeable; Glooko needs a new focused web-login/v3 graph PR; Nightscout v3 #52 should be split |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Added connector auth/session/source terms for Dexcom Share, Glooko, and Nightscout |
+| Gap updates | `traceability/connectors-gaps.md` | Added GAP-CONNECT-013 through GAP-CONNECT-015 |
+| Requirement updates | `traceability/connectors-requirements.md` | Added REQ-CONNECT-013 through REQ-CONNECT-015 |
+
+**Key Findings**:
+- cgm-remote-monitor PR #8482 does not include a `nightscout-connect` version bump, so connector fixes need a package release before they can affect the candidate release.
+- Dexcom Share PR #55 directly addresses current source bugs in auth failure propagation and modern `{accountId}` response shape handling.
+- Glooko reports now point to EU CSRF rejection on JSON login, not just missing device metadata; existing PRs are partial, too broad, or known to have timestamp problems.
+- Nightscout v3 support PR #52 is too broad for release stabilization and has a reported `register_loop` crash.
+
+**Gaps Identified**: GAP-CONNECT-013, GAP-CONNECT-014, GAP-CONNECT-015
+
+**Source Files Analyzed**:
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package.json`
+- `<workspace>/worktrees/nightscout/cgm-pr-8447/package-lock.json`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/dexcomshare.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/glooko/index.js`
+- `<workspace>/worktrees/nightscout-connect/lib/sources/nightscout.js`
+- `<workspace>/worktrees/nightscout-connect/lib/outputs/nightscout.js`
+
+---
+
+## Report Refresh: Consistent Benchmark Figures for All Three Domains (2026-07-01, post-close)
+
+User asked whether any deliverables needed refreshing after the session's updates. Checked `reports/therapy-trajectory-state/report.html`: still current (verified its embedded AUC numbers, 0.612 refined, match the latest recency-feature re-test). Found a real gap though: basal had a dedicated benchmark figure but ISF and CR only had numbers in the docs, no visuals.
+
+| Deliverable | Location | Notes |
+|-------------|----------|-------|
+| Reusable figure generator | `tools/cgmencode/production/action_label_benchmark_figures.py` | Replaces the one-off basal plotting script with a tested function handling both two-method (basal/ISF) and single-method (CR) summaries |
+| Tests | `test_action_label_benchmark_figures.py` (4) | |
+| Regenerated/new figures | `reports/therapy-trajectory-state/{basal,isf,cr}-label-benchmark.png` | Basal regenerated with the new function (values unchanged, confirms consistency); ISF and CR are new |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7.4-§7.5 | Added the ISF and CR figure references alongside basal's |
+
+All three domains now have the same visual treatment. Full production unit suite: 1165 passed, no regressions.
+
+---
+
+## Unified Research-Stage Action-Label Scorer (2026-07-01, session close)
+
+Closes out the action-label pivot with `tools/cgmencode/production/action_label_scorer.py`: one function, `score_patient_actions(parquet_dir, patient_id)`, packaging the empirically preferred method per domain (basal: direct-advisor primary; ISF: facts-loader primary with direct-advisor fallback/corroboration; CR: direct-advisor only) into a single callable, tagged `promotion_stage: "research"` throughout. 4 new tests; verified against real data (patient `c`: basal `decrease` conf 0.55, ISF `increase` conf 0.61 with both methods agreeing, CR `none`). Explicitly **not** wired into `ClinicalDecisionPolicy`/`ClinicalDecisionReport` — this is reusable/testable infrastructure, not a production change. Full production unit suite: 1161 passed, no regressions. See `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7.7 for details.
+
+This closes the state-aware-harness research thread for this session (todos: 10/10 done). Summary of the full arc: Candidly/LangSmith parallel analysis -> per-patient therapy-trajectory-state harness (72h turns, rule-based labels, physiology features) -> predictive-signal validation (honest "not yet" for the generic label) -> pivot to action-space labels aligned with the recommender's actual basal/ISF/CR domains -> per-domain benchmarks of existing label sources -> unified research-stage scorer. Next steps for a future session are recorded in §7.6-§7.7 of the design doc (ISF advisor performance, CR's second method, `candidate`-stage promotion).
+
+---
+
+## ISF and CR Action-Label Benchmarks (2026-07-01, final)
+
+Extended the basal action-label benchmark (previous entry) to ISF and CR, completing the cross-domain comparison.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| ISF benchmark | `tools/cgmencode/production/isf_action_label_benchmark.py` | Pairs `compute_isf_gap_bootstrap` (EXP-2861, facts-loader) vs `advise_correction_isf` (EXP-2579/2585, direct advisor) on correction-event windows |
+| CR benchmark | `tools/cgmencode/production/cr_action_label_benchmark.py` | Validates the single available method (`advise_effective_cr`, EXP-2609) since no CR-equivalent facts-loader exists in this codebase |
+| Tests | `test_isf_action_label_benchmark.py` (8), `test_cr_action_label_benchmark.py` (5) | Synthetic correction-event / meal-event grids with controllable observed ISF / effective CR |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7.4-§7.6 | Full cross-domain comparison table and findings |
+
+**Key Findings**:
+- **ISF shows the opposite pattern from basal**: direct-advisor still wins coverage (100% vs 60.5%), but the facts-loader method is dramatically *more* temporally stable (86.0% vs 61.0% persistence) despite firing less often, on a 119-window/10-patient subset. Agreement between the two methods was only 51.4% (near chance) — lower than basal's 61.6%. There is no single "which method is better" answer across domains; each needs its own empirical check, exactly as raised in discussion.
+- **`advise_correction_isf` does not scale well**: single-patient runtimes at 14-day windows ranged from 0.25s to over 20s depending on how many correction events a patient generates, and a full 28-patient/30-day sweep was too slow to complete in-session — recorded as a concrete performance follow-up, not silently worked around.
+- **CR has only one evidence path**: no CR-equivalent facts-loader exists; `advise_cr_adequacy` (a second CR algorithm) requires pre-extracted meal-event dicts from the meal-detection pipeline, which was out of scope to wire up here. Coverage was 100% and persistence *improved* with a longer window (63.4% at 14 days -> 71.2% at 30 days across 303/135 windows, 27 patients), supporting the hypothesis that meal-response assessment needs more days to stabilize than correction-event assessment does.
+- **Cross-domain summary**: no domain shares the same winning recipe (basal: direct-advisor wins both coverage and persistence; ISF: split decision; CR: single method, longer window wins) — confirming domain-specific evidence windows and methods are genuinely necessary, not just a theoretical concern.
+
+**Next steps** (documented, not yet built): profile/optimize `advise_correction_isf` for cohort-scale backtesting; wire `advise_cr_adequacy` to the meal-detection pipeline as CR's second independent method; only then stage the winning per-domain method as a `candidate` action-label signal.
+
+---
+
+## Action-Space Basal Label Benchmark and Recency-Feature Re-test (2026-07-01, latest)
+
+Continued iterating on the §6.4 "not yet" finding, then pivoted the whole framing based on discussion: instead of a generic pooled glycemic-outcome label, align trajectory "states" with the actual recommender action space (basal/ISF/CR x increase/decrease/none x time-block).
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Recency/momentum feature re-test | `tools/cgmencode/production/therapy_trajectory_state.py` (extended `TurnFeatures`), `therapy_trajectory_predictive_validation.py` (`REFINED_FEATURES`, GBM model option) | Added last-24h sub-window TIR/TBR, within-turn TIR trend, flux volatility, and saturation episode-level detail; re-tested with both logistic regression and `HistGradientBoostingClassifier` |
+| Basal action-label benchmark | `tools/cgmencode/production/basal_action_label_benchmark.py` | Compares `compute_basal_mismatch` (EXP-2865/2869, facts-loader/revealed-preference) against `advise_overnight_basal_quadrant` (EXP-2589, direct advisor) on the same 14-day rolling windows |
+| Tests | `test_therapy_trajectory_state.py` (+2), `test_basal_action_label_benchmark.py` (12 new) | Momentum/episode feature correctness, benchmark coverage/agreement/persistence logic |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §7 | Full writeup of both the recency-feature re-test and the action-label pivot/benchmark |
+| Figure | `reports/therapy-trajectory-state/basal-label-benchmark.png` | Coverage/persistence/agreement comparison chart |
+
+**Key Findings**:
+- **Recency/momentum features also didn't help**: refined-feature AUC (0.612 logistic) was essentially the same as the mean-only "full" feature set (0.615) and still below the glycemic-only baseline (0.638) — ruling out "flat-mean dilution" as the explanation for the earlier null result. GBM scored worse than logistic regression across every feature set (e.g. baseline 0.596 vs 0.638), most likely reflecting overfitting risk at this sample size rather than a genuine nonlinearity advantage.
+- **Action-space reframing**: pooling basal/ISF/CR-relevant signal into one binary "resolved vs not" label is exactly the kind of averaging that hides state-dependent effects — the same lesson Candidly's own pooled-vs-per-state analysis teaches. `SettingsRecommendation` already has the right shape (`parameter`, `direction`, `affected_hours`) to use directly as the label target instead.
+- **Basal benchmark result**: the direct-advisor method (EXP-2589) has 100% coverage of 303 fourteen-day windows across 27 patients vs the facts-loader method's (EXP-2865/2869) 32.7% — a serious practical gap for decision-support usability. Both show real temporal persistence well above chance (73% vs 66%), with direct-advisor slightly more stable. The two methods agree only 61.6% of the time when both are available, meaning they capture related but distinct aspects of "basal need" (revealed-preference actual-delivery ratio vs overnight glucose-slope dynamics) rather than being redundant.
+- **Practical recommendation**: use the direct-advisor method as the primary wide-coverage basal label; treat facts-loader agreement as an optional higher-confidence layer, not a replacement. Neither is wired into `ClinicalDecisionPolicy` yet — both remain `research`-stage.
+
+**Next steps** (documented, not yet built): extend the same benchmark methodology to ISF (correction-event-based window) and CR (meal-response-window based), each likely needing its own evidence-window length and possibly its own modeling approach rather than reusing the 14-day basal window; only after per-domain labels are chosen should any be staged as a `candidate` signal into `ClinicalDecisionPolicy`.
+
+---
+
+## Therapy Trajectory State: Predictive Validation and Controller Stratification (2026-07-01, even later)
+
+Deepened the per-patient therapy-trajectory-state work with the next Candidly-playbook step: proving the emission features actually carry forward-looking signal (their "AUC-proof" step), scaled to the full available cohort, and stratified by controller lineage to guard against Simpson's-paradox-style confounding.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Full-cohort scaling | `externals/experiments/therapy-trajectory-state/turns_full_cohort.parquet` (git-ignored) | 28 patients (of 31 with >=4 turns), 1481 turns, up from the initial 4-patient/240-turn smoke test |
+| Predictive-signal validation | `tools/cgmencode/production/therapy_trajectory_predictive_validation.py` + `run_therapy_trajectory_validation.py` | Leave-patient-out cross-validated logistic regression comparing glycemic-only vs full (+physiology) feature sets for predicting next-turn outcome; controller-lineage stratification (population view + within-patient AUC lift) |
+| Tests | `tools/cgmencode/production/test_therapy_trajectory_predictive_validation.py` | 8 tests, including synthetic-data checks that the harness correctly detects a real injected signal (AUC>0.85) and reports near-chance AUC on pure noise |
+| Report v2 | `reports/therapy-trajectory-state/report.html`, `tools/cgmencode/production/therapy_trajectory_figures.py` (+2 figures), `render_therapy_trajectory_report.py` | Now 7 figures (added AUC-comparison and controller-TIR charts) plus narrative sections for both new findings |
+| Design doc update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §6.3-§6.5 | Full writeup of the scaling, predictive-validation, and controller-stratification findings, renumbered against the existing §6.6-§6.7 |
+
+**Key Findings**:
+- **Label coherence holds at scale**: across 1481 turns/28 patients, mean TIR remained highest in `stable_good` (87.8%) and lowest in `stable_poor` (59.8%); weekend-fraction/TIR correlation stayed negligible (-0.009).
+- **Honest "not yet" on the physiology features**: leave-patient-out AUC for predicting next-turn resolution was 0.638 for glycemic-only features (TIR/TBR/TAR/CV) vs 0.615 for the full set including physiology features (activity, flux/EGP, saturation, glycogen proxy, site wear) — physiology features did not improve on the simple baseline in this first cut, robust to regularization strength (0.61-0.62 across C=1.0/0.1/0.01). Physiology-alone (no glycemic state) scored only 0.532, barely above chance. Plausible causes recorded for follow-up: feature-count-vs-sample-size, mean-aggregation over 72h destroying within-turn timing signal, or a genuinely harder prediction task at this horizon than Candidly's conversational one.
+- **Controller lineage is a population confound, not a within-patient predictor**: mean TIR differs hugely by controller (Loop 63.6% vs Trio/oref1 81.0% across 21 patients with known lineage, EXP-2753), but adding controller identity to the leave-patient-out classifier only changed AUC by +0.005 within-patient — the expected, correct behavior for a patient-level-constant covariate under this validation design. This confirms the §6.6 predictive-validation null result isn't a controller-mix artifact in disguise.
+- The evaluation harness was validated on synthetic data before trusting it on real data: a feature engineered to be the true driver of a synthetic label scored AUC>0.85 under the same leave-patient-out methodology, confirming the null result on real data reflects the current features, not a broken validation method.
+
+**Next steps** (documented, not yet built): any regime-dependence audit of `ClinicalDecisionPolicy` gates should lead with the *validated* signals (current TIR/TBR, controller lineage) rather than the not-yet-validated physiology features; refining the physiology features (avoiding mean-aggregation, e.g. max/percentile/timing-aware features) before re-running this same validation harness is the natural next iteration.
+
+---
+
+## Per-Patient Therapy Trajectory State Harness (2026-07-01, later)
+
+Built the first concrete piece from the state-aware-harness parallel analysis, after a scope refinement (documented in the doc's §6): the primary target is per-patient therapy trajectory, not the autoresearch tooling loop originally proposed.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Design update | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` §6 | Records the pivot, the turn-granularity/label/feature design decisions, and what would need to be true before attempting unsupervised state discovery |
+| Turn/feature/label harness | `tools/cgmencode/production/therapy_trajectory_state.py` | Segments a patient's grid into fixed 72h sequential turns; computes ~25 continuous emission features (glycemic, activity, supply/demand flux/EGP via `metabolic_engine`, insulin "wall"/overflow saturation via `clinical_rules.detect_insulin_saturation`, a 48h trailing-carbs glycogen-loading proxy, and CGM/infusion-site wear/age); labels each turn with a rule-based, ADA-threshold, safety-first outcome proxy (`improving`/`stable_good`/`stable_poor`/`worsening`/`unknown`) |
+| Tests | `tools/cgmencode/production/test_therapy_trajectory_state.py` | 16 tests on synthetic grids: segmentation, feature computation, all 5 label branches (incl. safety-priority over TIR), graceful degradation without profile columns |
+| Cohort CLI | `tools/cgmencode/run_therapy_trajectory_state.py` | `python -m tools.cgmencode.run_therapy_trajectory_state` builds a labeled-turn table for a cohort and logs it as a tracked MLflow evidence artifact |
+| Visualizations | `tools/cgmencode/production/therapy_trajectory_figures.py` | 5 reader-facing figures: turn-label distribution, mean TIR by label, saturation ("overflow") by label, weekend-fraction-vs-TIR scatter, per-patient TIR/TBR timeline with state-colored markers |
+| Figure tests | `tools/cgmencode/production/test_therapy_trajectory_figures.py` | 9 smoke tests on synthetic frames |
+| HTML report | `tools/cgmencode/render_therapy_trajectory_report.py` | Self-contained HTML report (`reports/therapy-trajectory-state/report.html`) with embedded figures + JSON summary, logged to MLflow, matching the existing clinical-decision-report visual convention |
+
+**Key Findings**:
+- 72h (not calendar weekday/weekend) turns were chosen deliberately: long enough for ~3 repetitions of each daily basal segment, short enough to stay state-like; day-type is carried as a continuous `weekend_day_fraction` feature rather than a hard turn boundary, so it can be validated as predictive rather than assumed.
+- Unsupervised state discovery (the IO-HMM Candidly used) is explicitly deferred, not attempted: our patient-turn scale (~20-30 patients x 40-60 turns) and within-patient autocorrelation make naive clustering prone to discovering "which patient this is" rather than a transferable regime — the same Simpson's-paradox risk this repo already treats carefully in `deconfounding.py`. A rule-based ADA-threshold label plus stored continuous features is the interim step; §6.4 of the design doc lists the four preconditions (leave-patient-out validation, BIC-based k selection, controller-lineage stratification, and a comparison baseline) before attempting discovery.
+- Verified against real longitudinal data (patients a-d, ~180 days each -> 60 turns/patient): full harness runs end-to-end, all 25 new tests (16 harness + 9 figures) plus the full production unit suite pass with no regressions (1112 total), MLflow logging (metrics + summary JSON artifacts for both the cohort build and the report render) was confirmed via a direct tracking-store query, and the HTML report renders 5 legible, self-contained figures (~295KB).
+- Early non-causal sanity check on 4 patients: mean TIR was highest in `stable_good` turns (79.2%) and lowest in `stable_poor` (55.2%), consistent with the label scheme being behaviorally coherent; `weekend_day_fraction`-vs-TIR correlation was negligible (0.012) in this small sample (not evidence either way yet). The per-patient timeline for patient c shows TIR oscillating ~35-85% over ~6 months with no clear long-run trend, mostly landing in `worsening`/`stable_poor` turns — consistent with prior decision-support findings that patient c has meaningful room for basal/ISF improvement.
+- The autoresearch-session-tracking angle from the original analysis was explicitly dropped from active work (not deleted from the doc) since it doesn't move any clinical outcome and the counter-causal-audit gap it would address remains a documented but non-urgent opportunity.
+
+**Enables next** (not yet built): regime-dependence audits for `ClinicalDecisionPolicy` gate thresholds, reconciling `ClinicalDecisionReport`'s projected 2-week outcomes against realized ones using the same join pattern, and a replay-and-diff harness for policy config changes using this cohort table as a frozen evaluation set.
+
+---
+
+## State-Aware Harness Parallels: Candidly/LangSmith Blog Analysis (2026-07-01)
+
+Researched Candidly's LangChain blog post on state-aware agent harnesses (turn-level state inference via an IO-HMM, replacing ex-post conversation grading with a mid-stream control signal) and mapped its architecture onto our own research/decision-support tooling.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Analysis doc | `docs/60-research/state-aware-harness-parallels-2026-07-01.md` | Full parallel mapping, prioritized recommendations, and explicit non-transferable caveats |
+
+**Key Findings**:
+- `autoresearch_agent.py`'s `evaluate_research_plan()` (line 2055) computes an ex-post `readiness_score` per single plan call — structurally identical to Candidly's *starting point* (ex-post conversation labels), not yet their end state (a turn-level signal read mid-session).
+- Our existing `_counter_causal_audit()` (line 1646) audits one plan in isolation; there is no session-level trend tracking across successive plan/direction calls to detect a "circling" research session (recurring counter-causal category, shrinking evidence diversity, flat/oscillating readiness) the way Candidly's coding-agent analogy describes ("edits circling the same files," "tests failing in new ways vs the same way every time").
+- `deconfounding.py` / `clinical_rules.py` already implement a causal analog of Candidly's emission/transition-input split (patient-side physiological signal vs controller-masking behavior), so the conceptual groundwork for a future state model already exists.
+- `ClinicalDecisionPolicy` gates (`min_confidence_for_change`, deconfounded confidence caps) are global constants; Candidly's central finding — pooled effects hide state-dependent harms/benefits — is a direct warning against further global-threshold tuning without checking regime-dependence via existing phenotype/controller signals.
+- The MLflow promotion ladder proposed in the 2026-06-27 MLflow experience report is structurally equivalent to Candidly's "versioned policy per state" concept, but recommendation-card artifacts don't yet carry the producing advisor's run id/promotion stage, and projected 2-week outcomes are never reconciled against realized outcomes on the same trace.
+- A full IO-HMM is premature given our much smaller-n regime (patients/sessions vs Candidly's thousands of conversations); rule-based trend features are the appropriate first step, matching the MLflow ladder's own research→candidate progression.
+
+**Recommended next steps (prioritized in the doc)**: session-level trend tracking in autoresearch (P0), MLflow run/promotion-stage tagging on recommendation cards (P0), regime-dependence audit before further policy gate tuning (P1), a replay-and-diff harness for policy config changes (P1), realized-outcome logging back onto originating MLflow runs (P2), and only then a lightweight regime classifier (P2, deferred).
+
+---
+
+## Clinical-Grade Decision Support Layer (2026-06-30)
+
+Added a configurable, reimbursement-ready decision support layer to `cgmencode` that turns raw advisory output into clinically documentable basal/bolus recommendations comparable across AID systems and multiple-daily-injection therapy. Every recommendation (including a documented no-change) carries practical-vs-theoretical framing, a 2-week expected-outcome projection, and explicit success plus stop/escalate criteria for an automatic feedback loop.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Policy layer | `tools/cgmencode/production/clinical_decision_policy.py` | All clinical judgement (gating, titration clamp, CR sequencing, severe-hyper exception, onboarding-reboot composite, output/reimbursement toggles) is isolated in one config object, so behavior is easy to retune without rewiring core logic |
+| Report builder | `tools/cgmencode/production/clinical_decision_report.py` | Structured report: insulin sufficiency overview, per-domain basal/ISF/CR change-vs-no-change, practical step in-body with theoretical optimum in addenda, 2-week outcomes, and reimbursement evidence |
+| Renderers | `tools/cgmencode/production/clinical_decision_render.py` | Markdown + JSON deliverables with consolidated (default) or split audience-specific outputs |
+| Analyzer integration | `tools/cgmencode/analyze_patient.py` | `--reimbursement`, `--split-output`, and repeatable `--patient-barrier` toggles; deliverables generated alongside existing reports |
+
+**Key Findings**:
+- Carb ratio is automatically deferred when basal and ISF are changed in lock-step (unless severe persistent post-meal hyperglycemia fires the exception), so overnight and meal-response dynamics can settle independently before CR titration.
+- The practical titration clamp (default 20% per cycle) keeps in-body recommendations safe while preserving the larger theoretical optimum in the addenda for transparency.
+- On Loop patient `c`, controller masking correctly dampens confidence below the change gate, producing a fully documented no-change with reviewed risks, mitigations, and a 2-week prediction — exactly the line-item evidence reimbursement review needs.
+- An onboarding reinitialization ("settings reboot") is recommended only when a severe-mismatch composite holds: extreme hypo/hyper burden, large parameter mismatch, and low recommendation consistency.
+
+**Validation**: 59 new TDD tests (red→green) across policy, builder, and renderers; full production unit suite remains green (378 passed); end-to-end smoke run on patient `c` produced JSON + markdown deliverables.
+
+**Update (later 2026-06-30)**: Added HTML deliverables with a clinical look & feel and embedded data visualizations. Each patient report now also emits `clinical-decision-report.html` (self-contained, base64-embedded figures) plus decision-relevant plots: time-in-range distribution and ambulatory glucose profile (AGP) for the overview, and **per-domain** figures so readers can relate each setting to its target/direction. Basal shows an overnight glucose profile (with drift annotation) and reuses the analyzer's scheduled-vs-actual basal plot; ISF reuses the existing ISF reconciliation plot (profile vs observed); carb ratio shows a new post-meal excursion curve annotated with the recommended direction. Figures are section-tagged and the report is built before figures so each can annotate its reason for change. Consolidated (default) or split audience-specific outputs are supported.
+
+**Update (deconfounding, 2026-06-30)**: Made recommendations deconfounding-aware so they are more accurate and less conservative where the data science supports it. Deconfounded advisories (demand-phase ISF EXP-2651, correction-denominator/bilateral EXP-2741, deconfounded basal EXP-3447) explicitly remove the controller-masking confound, so the pipeline's uniform masking penalty double-counts it and over-holds. The decision layer now prefers deconfounded, gate-passing advisories when selecting each domain recommendation, and credits deconfounded ISF/CR confidence by reversing the controller trust penalty — bounded by an ISF safety cap (EXP-2738: the controller's residual ~22% margin must remain; removing it raises TBR ~+6.2pp) and a CR cap. The deconfounding basis is documented in each justification and the addenda. All behavior is policy-toggled (`prefer_deconfounded`, `trust_deconfounded`) and safety-bounded; the titration clamp is unchanged. On live-recent this surfaces a deconfounded morning basal increase (EXP-3447, conf 0.67, 1.7→1.87 U/h) that was previously held.
+
+**Update (ISF dose-shaping clarity, 2026-06-30)**: Fixed a confusing ISF presentation. The ISF non-linearity advisor (EXP-2511) outputs a dose-conditional effective ISF for large corrections (e.g. 16 mg/dL/U at 2.8U) — split-dose guidance, not a baseline ISF schedule change — but it was being shown as the ISF "theoretical optimum", contradicting the reconciliation figure (observed ~54). Dose-shaping advisories are now excluded from the headline domain recommendation and surfaced as clearly-labeled addenda guidance. The ISF reconciliation figure caption now explains the observed value is AID-amplified/apparent (not a direct target) and that the recommendation preserves the controller's residual safety margin (EXP-2738).
+
+**Update (demand-phase ISF, 2026-06-30)**: Surfaced and visualized the validated demand-phase ISF (the true 0–2h insulin effect, EXP-2651) as the ISF target. `synthesize_demand_isf_rec` reproducibly turns the pipeline's `compute_demand_isf` output (`result.dual_phase_isf`) into a deconfounded ISF candidate; a new figure decomposes profile vs apparent/AID-inflated vs demand-phase ISF (with 95% CI). The synthesized rec keeps its intrinsic demand-phase confidence (not the controller-masking credit, which is now restricted to recs actually dampened by the pipeline via a `[Controller:]` marker), so a high-confidence estimate produces a safety-bounded ISF change while a sparse one holds with informative context. On live-recent this resolves the earlier confusion: ISF holds with theoretical target 30 mg/dL/U (demand-phase) — not the misleading 16 (dose-shaping) or 54/88.5 (apparent/inflated) — because only 5 corrections give low confidence; a reproducible `demand-phase-isf.json` is written. Total CDS tests: 132 (red→green); full production unit suite green (1084 passed).
+
+**Update (EXP-3447, later 2026-06-30)**: Added a live-recent deconfounding audit and promoted its safest finding into production. The audit compares 30/60/90 day windows, excludes inferred/hybrid-supported meal contamination from correction events, and tests clean basal blocks under TBR guardrails. It found enough evidence to relax the basal gate only for a narrow daytime block: the refreshed live-recent decision report recommends a +10% basal step from 06:00-12:00 (confidence 0.67), while continuing to hold ISF and CR. All naive correction events were contaminated by inferred meals after hybrid exclusion, so ISF strengthening remains unsupported.
+
+**Update (EXP-3448/3449, later 2026-06-30)**: Added focused ISF and basal replay audits for live-recent. EXP-3448 showed the observed correction-denominator ISF near 52-56 mg/dL/U appears in logged-only correction windows but does not survive inferred-meal exclusion, leaving zero clean correction events for a baseline ISF change. EXP-3449 stress-tested the +10% 06:00-12:00 basal step: controller-replacement and additive replay scenarios stayed within safety bounds, while the extreme floor-risk scenario stayed below 4% TBR but exceeded the 1 pp worsening guardrail. The resulting strategy is basal-first, single-parameter, monitored titration, with ISF held until prospective clean correction windows accumulate.
+
+**Update (EXP-3450, later 2026-06-30)**: Added a natural-experiment audit comparing clean matched morning windows where Loop already delivered at least the proposed basal rate against lower-delivery windows. The global high-delivery group had low near-term low risk (0.87%), but matched strata were mixed (weighted future-low-rate difference +1.67 pp), so this does not justify relaxing the 2-week TBR guardrail. It supports the same conservative interpretation: the basal step remains plausible only as a monitored single-parameter step, and ISF remains unpromoted until post-step clean correction windows exist.
+
+**Update (EXP-3451, later 2026-06-30)**: Added an ISF decomposition ladder for live-recent to reconcile the scheduled 40, response-curve apparent 78, demand-apparent 88.5, demand-phase 30, correction-denominator 53.7, UAM-filtered correction-denominator, controller-subtracted, and dose-shaping 16 values. The ladder documents which values are explanatory versus usable baseline targets. The only currently usable configured baseline is still 40; 30 is a low-confidence candidate, 53.7 is plausible but sparse and fails UAM exclusion, and 88/78/16 are not baseline targets.
+
+**Update (EXP-3452, later 2026-06-30)**: Added an ISF horizon decision-robustness audit. It compares exact and nadir ISF estimates from 1h through 6h and asks whether any horizon would flip the current ISF hold. The strongest logged-only challenger is exact 4h (median 53.7, CI 41.1-86.4), but every qualifying event overlaps inferred/hybrid meal windows and no UAM-clean horizon has any events. The decision support conclusion remains: show 2h and 4h as sensitivity context, but do not change baseline ISF.
+
+**Update (EXP-3453, later 2026-06-30)**: Added a clean-ISF evidence acquisition audit. The sequential funnel shows 24 bolus events become 6 apparently isolated correction candidates, then all 6 are rejected by strict inferred-meal exclusion. Live-recent has 61 clean high-BG episodes without a clean correction, so future passive data can change the decision only if clean correction events accumulate. Reopen ISF analysis at 10 strict-UAM-clean correction events; require roughly 62 events or tighter CI evidence before promoting a baseline ISF change.
+
+**Update (EXP-3454, later 2026-06-30)**: Added a UAM-aware autosens/deviation audit with reconstructed delivered-insulin activity. The live-recent grid lacks native `insulin_activity`, so EXP-3454 compares raw IOB-decay BGI against a normalized rapid-action activity kernel. Reconstructed activity improves the proxy on 23/33 available patient datasets, but only 1/33 clean-strata summaries would support a baseline ISF change. On live-recent-180, UAM-positive windows have larger positive deviations than non-UAM windows, while strict clean non-UAM activity evidence still does not support the 53-56 baseline. This supports the current interpretation: use autosens-style deviations for stratification and confound detection, not direct ISF promotion when meals are unannounced.
+
+**Update (EXP-3455, later 2026-06-30)**: Added an ISF proxy ladder from TDD and meal evidence. Combined basal+bolus actual TDD gives an 1800-rule ISF around 31.6, while profile/scheduled TDD gives about 43.4. Logged meals are sparse but their median implied CR is ~10.2 g/U, close to the configured CR; inferred meals are more frequent and median ~55.6 g at profile ISF. Re-scaling inferred meal sizes by ISF 53-56 makes meals smaller (~40-41 g median), while demand-phase ISF 30 makes them larger (~74 g median). These proxies do not independently support baseline ISF 53-56; they support a future joint latent meal+insulin model rather than direct ISF promotion.
+
+**Update (EXP-3456, later 2026-06-30)**: Added a joint latent meal+insulin model and a 180-day meal phenotype review. The model fits meal absorption scale plus delivered-insulin activity across ISF candidates; unconstrained and constrained meal-scale modes consistently prefer lower ISF (27.6-30) over 53-56 on validation, so it does not rescue the correction-denominator signal. The meal phenotype is clinically plausible for the stated behavior: 349 inferred meals over 172 days, median 2/day, with lunch and late/overnight events prominent. Late/overnight meals have the highest 4-8h tail-high burden (mean ~53%), and 27/63 dinner/evening events have a late/overnight follow-up within 8h, supporting the dinner+dessert/alcohol slow-digestion hypothesis.
+
+**Update (EXP-3457, later 2026-06-30)**: Added a combined basal+ISF safety stress. This explicitly separates "low ISF fits delta-RMSE" from "lower programmed ISF is safe": in Loop, ISF feeds insulin correction units and therefore can increase both moderated temp basal and automatic bolus recommendations. The coarse stress test does not show a large TBR increase, but it depends on speculative correction-opportunity assumptions and still lacks strict-UAM-clean correction evidence. The decision remains: do not combine basal and lower ISF; keep basal-first, single-parameter titration.
+
+**Update (EXP-3458, later 2026-06-30)**: Redesigned ISF acquisition around Loop's actual correction route. Bolus-only clean-correction gates were structurally biased because this Loop configuration expresses most corrections as temp basal/excess basal. EXP-3458 treats high-glucose excess-basal episodes as controller-route correction evidence: live-recent has 61 strict-UAM-clean basal-route episodes in 90d and 89 in 180d. This solves the evidence-count bottleneck, but the dose-normalized basal-route response is far below 53-56 (4h median ~10.7-12.3 mg/dL/U), indicating these episodes are controller-modulated basal/EGP-equilibrium evidence, not a direct baseline ISF target. Interpreting low-net-flux windows as ISF requires an EGP/basal-equilibrium assumption; conditioned on good-enough basal, they point toward stronger insulin effect/lower ISF, not 53-56.
+
+**Update (EXP-3459, later 2026-06-30)**: Extended basal-route ISF extraction to the full 6h insulin tail and added basal/EGP-equilibrium conditioning. The 180d strict-clean basal-route exact-6h estimate is ~10.8 mg/dL/U; equilibrium-context filtering raises it to ~13.8, and equilibrium-now filtering raises exact-4h to ~19.5, but no conditioning mode approaches 53-56. This confirms the expert concern that basal-route analysis needs the full insulin tail and good-enough basal/EGP assumptions, while also reinforcing that basal-route evidence is not a direct argument for a 53-56 baseline ISF.
+
+**Update (EXP-3460, later 2026-07-01)**: Added a route-aware ISF evidence monitor so future basal-first follow-up can be replayed consistently at 7/14/21 days and across 30/60/90/full-history windows. The monitor tracks bolus corrections and Loop excess-temp-basal correction episodes separately over 2h/4h/6h horizons with strict inferred-meal exclusion from 2h before through 6h after. On live-recent-180, strict-clean bolus evidence remains sparse (2 full-history events, none in the most recent 90d), so baseline ISF promotion fails the event gate (`n 2 below 57`). Basal-route evidence is available (41 strict-clean episodes, 35 equilibrium-context episodes), but its full-history equilibrium exact-6h estimate remains low (~10.8 mg/dL/U) and is kept as controller-workload/directionality context rather than bolus-equivalent baseline ISF evidence. The decision remains: hold ISF; rerun the monitor after basal-first data accumulates.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/production/advisor/_pipeline.py`
+- `tools/cgmencode/production/clinical_rules.py`
+- `tools/cgmencode/production/types.py`
+- `tools/cgmencode/analyze_patient.py`
+
+---
+
+## Nightscout Write Purification Compatibility (2026-09-02)
+
+Assessed whether server-side stored-XSS purification for Nightscout data writes is likely to break normal mobile or edge-client payloads.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Compatibility deep dive | `docs/10-domain/nightscout-write-purification-compatibility-deep-dive.md` | Reviewed Loop/NightscoutKit, AAPS, Trio, xDrip+, xDrip4iOS, tconnectsync, and LoopCaregiver paths; no typical client dependency on intentional HTML in treatment metadata was found |
+| API gap and requirement | `traceability/nightscout-api-{gaps,requirements}.md` | Added purification-parity gap and requirement for API v1 REST, API v3 REST, and legacy WebSocket mutable data writes |
+| Terminology update | `mapping/cross-project/terminology-matrix.md` | Classified treatment metadata as plain text and distinguished structured stringified JSON from executable markup |
+
+**Key Findings**:
+- Typical apps model `notes`, `enteredBy`, `reason`, `foodType`, event metadata, and related fields as plain text or generated JSON, not HTML.
+- API v3 parity matters because AAPS writes treatments, entries, device status, food, and profile data through `/v3/*` endpoints.
+- The main compatibility caveat is stringified JSON or user labels containing literal angle brackets; representative fixtures should guard against unintended semantic changes.
+
+**Gaps Identified**: GAP-API-022
+
+**Source Files Analyzed**:
+- `externals/NightscoutKit/Sources/NightscoutKit/Models/Treatments/NightscoutTreatment.swift`
+- `externals/LoopWorkspace/NightscoutService/NightscoutServiceKit/Extensions/{OverrideTreament.swift,SyncCarbObject.swift,DoseEntry.swift}`
+- `externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/networking/NightscoutRemoteService.kt`
+- `externals/AndroidAPS/core/nssdk/src/main/kotlin/app/aaps/core/nssdk/remotemodel/RemoteTreatment.kt`
+- `externals/xDrip/app/src/main/java/com/eveningoutpost/dexdrip/models/Treatments.java`
+- `externals/xdripswift/xDrip/Treatments/TreatmentNSResponse.swift`
+- `externals/tconnectsync/tconnectsync/parser/nightscout.py`
+
+---
+
+## Hybrid Meal Detector Prototype (2026-06-27)
+
+Implemented the first runnable meal-independent hybrid detector experiment for `cgmencode`, combining short-horizon rise/UAM-style trigger features, medium-horizon throughput and balance features, and controller-context features under leave-one-patient-out evaluation.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Hybrid detector experiment | `tools/cgmencode/exp_hybrid_meal_detector_3446.py` | A multiclass leave-one-patient-out model can combine trigger, throughput, balance, and controller-context features into a substantially stronger meal-like detector than any single component |
+| Repro wrapper integration | `tools/cgmencode/run_research_reproduction.py` | The hybrid detector now runs through the same MLflow-friendly reproduction surface as other standalone physiology experiments |
+| Production support annotation | `tools/cgmencode/production/{hybrid_meal_support.py,pipeline.py}` | Inferred meals now carry experimental hybrid-support metadata so downstream CR logic can gate on evidence quality without replacing the validated residual detector |
+
+**Key Findings**:
+- The hybrid model clearly outperformed the standalone components on held-out patients: meal F1 rose to about **0.62** versus **0.33** for throughput-only and **0.33** for trigger-only.
+- The hybrid detector also materially improved meal precision to about **0.64** while retaining recall around **0.71**, supporting the hypothesis that multi-timescale/controller-aware fusion is better than any single proxy family.
+- CR-support scoring is now measurable: high-confidence hybrid windows reached about **0.64** precision and **0.74** recall, but only about **55%** of folds met the preliminary promotion-ready signal, so CR recommendations remain gated rather than automatic.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/exp_hybrid_meal_detector_3446.py`
+- `tools/cgmencode/production/hybrid_meal_support.py`
+- `tools/cgmencode/production/pipeline.py`
+- `tools/cgmencode/exp_metabolic_flux.py`
+- `tools/cgmencode/exp_metabolic_441.py`
+- `externals/experiments/exp291_uam_detection.json`
+- `externals/experiments/exp443_throughput_balance.json`
+- `externals/experiments/exp583_correction_event_taxonomy.json`
+
+---
+
+## Autosens, Autotune, and Controller-Aware Usefulness (2026-06-27)
+
+Refreshed the autosens/autotune comparison with source-backed reasons for why these methods do not generalize consistently across groups, and documented the narrower but stronger case for controller-aware decision support and settings extraction.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Autosens/autotune analysis refresh | `docs/10-domain/autosens-dynamic-isf-comparison.md` | Group inconsistency follows from exclusion windows, meal dependence, bounded tuning heuristics, and controller-mediated feedback, not just from user noise |
+| Algorithm gaps / requirements update | `traceability/aid-algorithms-{gaps,requirements}.md` | Added controller-aware cohort validation gap and requirement for adaptive tuning outputs |
+| Terminology refinement | `mapping/cross-project/terminology-matrix.md` | Distinguished controller operating parameters from physiological parameters and highlighted meal-excluded tuning windows |
+
+**Key Findings**:
+- We do have a reasonable basis for discussing why oref0 autosens/autotune do not work consistently for groups: both depend on selective non-excluded windows and bounded heuristics that are strongly shaped by controller behavior and meal logging.
+- We also have a reasonable basis for discussing why our decision support may be useful, but the defensible claim is controller-aware usefulness with safety validation, not universal autotune correctness.
+- The biggest missing piece is controller-aware cohort validation of adaptive tuning outputs, especially for carb-ratio paths that still depend on announced meals.
+
+**Source Files Analyzed**:
+- `externals/oref0/bin/oref0-detect-sensitivity.js`
+- `externals/oref0/lib/determine-basal/autosens.js`
+- `externals/oref0/lib/autotune/index.js`
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/autotune/AutotuneCore.kt`
+- `externals/AndroidAPS/plugins/aps/src/main/kotlin/app/aaps/plugins/aps/openAPSAutoISF/DetermineBasalAutoISF.kt`
+- `docs/10-domain/autosens-dynamic-isf-comparison.md`
+
+---
+
+## Effective Parameter Extractor Pilot (2026-06-27)
+
+Turned the `parameter-extraction` autoresearch direction into a registration-ready physiology-model pilot that now emits a learned parameter bundle, evaluation and threshold artifacts, titration guidance, and a runnable MLflow pyfunc package derived from validated results plus settings experiments.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Parameter bundle + thresholds | `tools/cgmencode/parameter_model_bundle.py` | Learned physiology artifacts can be evaluated in descriptive, prescriptive, and safety terms rather than treated as opaque checkpoints |
+| Model packaging CLI | `tools/cgmencode/build_effective_parameter_extractor.py` | A reproducible builder now packages the current effective-parameter extractor from validated artifacts into a runnable pyfunc model plus JSON evidence bundle |
+| Autoresearch-to-model bridge | `tools/cgmencode/{autoresearch_agent.py,mlflow_pyfunc_models.py}` | The `parameter-extraction` memo can now produce a model candidate, bundle assessment, and titration guidance instead of only prose output |
+
+**Key Findings**:
+- The strongest next step for parameter extraction is a structured physiology artifact, not only another memo: bundle the validated effective-ISF evidence, period-wise basal signals, and schedule optimizers into one tracked object.
+- Safety gating is necessary before promotion: large basal steps and concurrent basal+ISF changes should force `needs-review`, while small safe titrations can still be surfaced as warnings instead of hard failures.
+- The current pilot is viable end to end under MLflow, with local package artifacts written under `externals/experiments/parameter-models/`.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/autoresearch_agent.py`
+- `tools/cgmencode/build_effective_parameter_extractor.py`
+- `tools/cgmencode/mlflow_pyfunc_models.py`
+- `tools/cgmencode/parameter_model_bundle.py`
+- `tools/cgmencode/test_validation.py`
+- `visualizations/clinical-validation/validation_results.json`
+- `externals/experiments/exp58{1,2,4}_*.json`
+
+---
+
+## MLflow Experience Report and Tracking Scope (2026-06-27)
+
+Documented the current `cgmencode` MLflow tracking surface, clarified that model-producing forecasters and learned physiological algorithms both belong in standard MLflow tracking, and outlined next directions for parameter-artifact lineage and promotion.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Experience report | `docs/60-research/mlflow-experience-report-2026-06-27.md` | MLflow is already useful as a local-first evidence layer across forecast sweeps, validated reports, legacy backfills, and agentic research pilots |
+| Tracking classification update | `tools/cgmencode/README.md` | Learned ISF, basal, CR, EGP, and dose-response artifacts should be treated as structured model outputs even when no neural checkpoint exists |
+
+**Key Findings**:
+- In this repo, “model” should include schedules, coefficients, rules, and validation bundles learned from data, not only serialized neural network checkpoints.
+- The forecasting lane is already the cleanest MLflow fit, while algorithm-design work needs better conventions for parameter artifacts, cohort lineage, and promotion state.
+- The GenAI surface remains most appropriate for autoresearch and retrieval/report-generation workflows, not for the bulk of forecasting or physiological parameter recovery.
+
+**Source Files Analyzed**:
+- `tools/cgmencode/README.md`
+- `tools/cgmencode/mlflow_utils.py`
+- `tools/cgmencode/run_experiments.py`
+- `tools/cgmencode/run_pattern_experiments.py`
+- `tools/cgmencode/experiments_validated.py`
+- `tools/cgmencode/run_validation_report.py`
+- `tools/cgmencode/run_research_reproduction.py`
+- `tools/cgmencode/production/settings_optimizer.py`
+
+---
+
+## Canonical CGM Decision-Support Prototype (2026-06-18)
+
+Built a reproducible decision-support HTML prototype for `cgmencode` personal-data analysis that now derives recommendation cards and supporting visuals from the canonical parquet-backed report bundle instead of a divergent secondary recommendation path.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Decision-support report prototype | `tools/report/generate_html_report.py` | HTML now prefers canonical `pipeline.json` / `facts.json` outputs when present and renders decision-first cards with staged/guarded/action states |
+| Canonical evidence alignment | `tools/report/generate_html_report.py` | Prototype cards now reflect the same basal, ISF, correction-threshold, meal, and dinner-override recommendations as the parquet-backed `analyze_patient` report bundle |
+| Recommendation-specific visuals | `externals/ns-data/live-recent/reports/2026-06-17-cgmencode/plots/{07_correction_dose_response,08_correction_threshold_context,09_overnight_drift_static,10_meal_timing_announced_vs_uam,11_dinner_excursion_overlay}.png` | Confidence-building visuals can be regenerated from the same analyzed data and linked directly to the recommendation cards |
+
+**Key Findings**:
+- The earlier HTML prototype could disagree with the canonical markdown/parquet report because it mixed a weaker JSON loader path with therapy-only heuristics.
+- Recommendation trust improved once the prototype preferred the canonical parquet-backed bundle and used its recommendation objects as the source of truth.
+- Recommendation-specific visuals are feasible and materially improve interpretability: overnight drift, correction dose-response, correction-threshold context, dinner excursion overlays, and announced-vs-unannounced meal timing all render reproducibly from the analyzed data.
+
+**Source Files Analyzed**:
+- `tools/report/generate_html_report.py`
+- `tools/report/therapy_analyzer.py`
+- `tools/cgmencode/analyze_patient.py`
+- `externals/ns-data/live-recent/reports/2026-06-17-cgmencode/{pipeline.json,facts.json,meal_audit.csv}`
+
+---
+
+## Nightscout Reference Freshness Grooming (2026-06-17)
+
+Updated active Nightscout documentation to point at the current official `cgm-remote-monitor` dev repository instead of stale `crm` fork paths for API v3, authorization, careportal, and treatment references.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Reference registry cleanup | `docs/_includes/code-refs.md` | Official repo paths now validate for auth, API v3, websocket, and plugin references |
+| Mapping refresh | `mapping/{cross-project,nightscout}/` | Live mapping docs now cite the current Nightscout source tree instead of broken legacy paths |
+| Gap/deep-dive freshness | `traceability/nightscout-api-gaps.md`, `docs/10-domain/authentication-flows-deep-dive.md` | Security and auth claims remain documented, but now point to the maintained upstream implementation |
+
+**Key Findings**:
+- The live documentation had drifted because `crm` resolves to a legacy fork without the current `lib/api3` and `lib/authorization` tree.
+- The current authoritative paths exist in `externals/cgm-remote-monitor-official/` and should be used for modern Nightscout API and auth claims.
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor-official/lib/api3/swagger.yaml`
+- `externals/cgm-remote-monitor-official/lib/api3/generic/create/validate.js`
+- `externals/cgm-remote-monitor-official/lib/authorization/index.js`
+- `externals/cgm-remote-monitor-official/lib/server/enclave.js`
+
+---
+
+## Trio, Loop, and Nightscout Claim Audit (2026-06-17)
+
+Verified current Trio Nightscout client behavior, current Loop automatic dosing safety logic, and active Nightscout authorization/treatment identity claims against refreshed upstream sources.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Trio Nightscout sync refresh | `mapping/trio/nightscout-sync.md` | Trio now documents broader `enteredBy` exclusion filters and clarified `id` vs legacy `_id` handling |
+| Loop safety refresh | `mapping/loop/safety.md` | Loop does not expose `maximumActiveInsulin`; automatic IOB headroom is derived from `maximumBolus * 2.0` |
+| Cross-project algorithm/API cleanup | `docs/10-domain/{algorithm-comparison-deep-dive,nightscout-api-comparison}.md`, `mapping/cross-project/terminology-matrix.md` | Active comparison docs now reflect verified Trio response handling and Loop safety terminology |
+
+**Key Findings**:
+- **Needs update**: Several active Loop docs still described a non-existent `maximumActiveInsulin` setting instead of the current derived automatic dosing IOB limit.
+- **Needs update**: Several Trio docs still described older two-value `enteredBy` exclusion logic and an oversimplified `_id` mapping.
+- **Still accurate**: Nightscout auth and identity claims remain directionally correct; the server authorizes treatment writes but does not bind `enteredBy` to the authenticated subject in treatment creation.
+
+**Source Files Analyzed**:
+- `externals/Trio/Trio/Sources/Services/Network/Nightscout/NightscoutAPI.swift`
+- `externals/Trio/Trio/Sources/Models/BloodGlucose.swift`
+- `externals/Trio/Trio/Sources/Models/NightscoutTreatment.swift`
+- `externals/LoopWorkspace/Loop/Loop/Managers/LoopDataManager.swift`
+- `externals/LoopWorkspace/Loop/LoopCore/LoopSettings.swift`
+- `externals/cgm-remote-monitor-official/lib/api/treatments/index.js`
+- `externals/cgm-remote-monitor-official/lib/authorization/index.js`
+
+---
+
+## Wave-13: Controller Dynamics and Grand Synthesis (2026-04-20)
+
+Decomposed controller contributions during corrections, tested regression-based ISF extraction, and synthesized 55+ experiments across two independent research tracks.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Controller Decomposition | `tools/cgmencode/exp_controller_decomposition_2753.py` | Controller does 63.8% of insulin during corrections; user bolus only 15.9% |
+| Regression ISF | `tools/cgmencode/exp_regression_isf_2754.py` | Confounding by indication → β₁≈0; regression 26× more precise but biased |
+| Grand Synthesis | `tools/cgmencode/exp_grand_synthesis_2755.py` | Correction-denominator best for 90.9% of patients; 77.3% have actionable recommendations |
+| Report | `docs/60-research/wave13-controller-dynamics-report-2026-04-20.md` | Four confound layers framework; controller margin IS safety margin |
+| Visualizations | `visualizations/{controller-decomposition,regression-isf,grand-synthesis}/` | Per-patient ISF landscape, confound waterfall, safety tradeoff |
+
+**Key Findings**:
+- Controller-initiated insulin (SMBs + excess basal) = 63.8% of total during corrections
+- Confounding by indication: regression β≈0 for correction insulin (fundamental observational limit)
+- Four confound layers: EGP (compensated), basal (78% gap closure via correction-denom), controller dynamics (22%, NOT removable = safety margin), confounding by indication (fundamental)
+- Correction-denominator ISF is the best practical method: safe, interpretable, 78% gap closure
+- The 22% ISF gap to profile is the controller's intentional safety reserve — removing it → TBR +6.2pp
+
+**Hypotheses**: 8/15 PASS across 3 experiments (53.3%)
+
+**Gaps Identified**: Layer 4 (confounding by indication) requires instrumental variables or RCT; 40-min autocorrelation is controller dynamics (unfixable from observational data)
+
+**Source Files Analyzed**: 22 patients, 2,801 correction events, 1,085,260 grid rows
+
+---
+
+## Wave-12: Multi-Factor Isolation — Context-Specific Deconfounding (2026-04-20)
+
+Tested context-specific subtraction: basal analysis subtracts corrections/meals, ISF analysis subtracts basal/EGP, CR analysis subtracts corrections/EGP. **Key finding**: controller compensation is the dominant confound, not EGP.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2740 | `tools/cgmencode/exp_basal_egp_equilibrium_2740.py` | 70% well-matched; controller already compensates EGP |
+| EXP-2741 | `tools/cgmencode/exp_isf_multifactor_2741.py` | Correction-only denominator: **67% ISF gap closure** (4.3→43.7→63) |
+| EXP-2742 | `tools/cgmencode/exp_cr_multifactor_2742.py` | **Precision +64%** (CV 1.04→0.38) but gap widens |
+| Report | `docs/60-research/wave12-multifactor-isolation-report-2026-04-20.md` | 7-part report |
+| Viz | `visualizations/basal-egp-equilibrium/` | Fasting equilibrium analysis |
+| Viz | `visualizations/isf-multifactor/` | ISF method ladder |
+| Viz | `visualizations/cr-multifactor/` | CR precision vs accuracy |
+
+**Deep insight**: EGP subtraction is unnecessary — the controller ALREADY compensates for EGP through basal delivery (residual ~0.05 mg/dL/5min). The 3 confound layers: (1) EGP ✅ compensated, (2) steady-state basal ✅ 67% gap closure, (3) dynamic controller adjustments 🔄 33% remaining.
+
+**Scorecard**: ~40 experiments, ~166 hypotheses, ~96 PASS (~58%)
+
+---
+
+## Wave-11: The Safety Wall — Precision, Interactions & Clinical Translation (2026-04-20)
+
+Critical safety and precision wave: proved naive ISF replacement is dangerous, settings are coupled but separable, and personalized EGP delivers 4.3× basal improvement.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2737 | `tools/cgmencode/exp_settings_interactions_2737.py` | ISF↔CR coupled (r=0.609) but joint only +2.5% — separable |
+| EXP-2738 | `tools/cgmencode/exp_safety_simulation_2738.py` | **TBR +6.2pp — naive ISF replacement unsafe** (ρ=−0.85) |
+| EXP-2739 | `tools/cgmencode/exp_egp_personalization_2739.py` | **Basal 83.7/100** with personal EGP (was 19.5) |
+| Report | `docs/60-research/wave11-safety-precision-report-2026-04-20.md` | 7-part report: safety wall + EGP precision |
+| Viz | `visualizations/settings-interactions/settings_interactions.png` | Coupling matrix + perturbation analysis |
+| Viz | `visualizations/safety-simulation/safety_simulation.png` | TIR/TBR/TAR counterfactual |
+| Viz | `visualizations/egp-personalization/egp_personalization.png` | Per-patient EGP profiling |
+
+**Safety Finding**: Profile ISF (55) isn't wrong — it's the controller's operating margin for EGP compensation. ISF gap = 1.93× (EGP) × 2.66× (controller). Removing this margin increases hypoglycemia.
+
+**Precision Finding**: Population EGP over-corrects 91% of patients. Per-patient EGP → basal score 83.7/100 (vs 48.2 population, 19.5 naive).
+
+**Scorecard**: ~37 experiments, ~151 hypotheses, ~90 PASS (~60%)
+
+---
+
+## 🎉🎉🎉 MILESTONE: All 4 Domains 100% REQ + 100% GAP (2026-02-01) 🎉🎉🎉
+
+| Domain | REQs | GAPs |
+|--------|------|------|
+| Treatments | 35/35 ✅ | 9/9 ✅ |
+| CGM Sources | 18/18 ✅ | 52/52 ✅ |
+| Sync-Identity | 32/32 ✅ | 25/25 ✅ |
+| Algorithm | 56/56 ✅ | 66/66 ✅ |
+| **Total** | **141/141** | **152/152** |
+
+**Session Stats (Cycles 102-120)**: 363 assertions, 50 REQs covered, 138 GAPs covered, 17 commits
+
+---
+
+## Wave-10: Validation, EGP-Aware Optimization, and ISF Reconciliation (2026-04-20)
+
+Critical validation wave: cross-validated settings, fixed basal optimization with EGP, reconciled ISF hierarchy.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2734 | `tools/cgmencode/exp_temporal_crossval_2734.py` | **5/5 PASS** — settings generalize perfectly (test/train=1.00) |
+| EXP-2735 | `tools/cgmencode/exp_egp_basal_optimization_2735.py` | EGP=92% of drift; 0 patients need >100% TDD change (vs 7) |
+| EXP-2736 | `tools/cgmencode/exp_isf_reconciliation_2736.py` | 10× ISF gap = 1.93× (EGP) × 2.66× (controller) |
+| Report | `docs/60-research/wave10-validation-reconciliation-report-2026-04-20.md` | 7-part comprehensive report |
+| Viz | `visualizations/temporal-crossval/temporal_crossval.png` | Cross-validation 2×2 panel |
+| Viz | `visualizations/egp-basal/egp_basal.png` | EGP-aware basal 2×2 panel |
+| Viz | `visualizations/isf-reconciliation/isf_reconciliation.png` | ISF reconciliation 2×3 panel |
+
+**Scorecard**: ~34 experiments, ~136 hypotheses, ~86 PASS (~63%)
+
+---
+
+## Wave-9: Complete Settings Suite — CR, Basal, Unified (2026-04-21)
+
+Extended validated ISF pipeline to CR and basal, then unified all three into per-patient calibration assessment.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2729 | `tools/cgmencode/exp_carb_ratio_extraction_2729.py` | Profile CR 8.8 vs observed 4.9; 95.5% improve with deconfounded CR |
+| EXP-2730 | `tools/cgmencode/exp_basal_optimization_2730.py` | 100% need non-trivial adjustment; drift→basal conversion works but too aggressive |
+| EXP-2731 | `tools/cgmencode/exp_unified_settings_2731.py` | ISF worst (score 0/100), CR moderate (56), basal poor (19.5) |
+| Report | `docs/60-research/wave9-complete-settings-report-2026-04-21.md` | 8-part comprehensive report |
+| Viz | `visualizations/carb-ratio/carb_ratio.png` | CR extraction 2×2 panel |
+| Viz | `visualizations/basal-optimization/basal_optimization.png` | Basal optimization 2×2 panel |
+| Viz | `visualizations/unified-settings/unified_settings.png` | Unified calibration 2×2 panel |
+
+**Scorecard**: 30 experiments (EXP-2702–2731), ~110 hypotheses, ~76 PASS (~69%)
+
+**Also integrated**: Other researcher's EXP-2726/2726b/2727/2728 (prospective validation, EGP decomposition)
+
+---
+
+## Wave-8: Patient Settings & Clinical Translation (2026-04-20)
+
+Payoff wave: extracted per-patient ISF, assessed basal circadian, deconfounded DynISF.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2723 | `tools/cgmencode/exp_patient_settings_2723.py` | 90.5% patients improve, median 75.8% MAE reduction |
+| EXP-2724 | `tools/cgmencode/exp_basal_circadian_2724.py` | Drift circadian (p<1e-38) but patient-specific |
+| EXP-2725 | `tools/cgmencode/exp_dynisf_deconfound_2725.py` | SR⊥ISF (r=0.008); gap reduced 41.6% |
+| Report | `docs/60-research/wave8-comprehensive-synthesis-2026-04-20.md` | 8-part master synthesis |
+| Viz | `visualizations/master-synthesis/master_synthesis.png` | 6-panel research arc |
+
+**Scorecard**: 24 experiments (EXP-2702-2725), 96 hypotheses, 55 PASS (57%)
+
+---
+
+## Wave-7: Actionable Settings Extraction (2026-04-20)
+
+Converted deconfounding research into 3 practical outputs + forward simulator fix.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2720 | `tools/cgmencode/exp_independent_settings_2720.py` | Independent-event ISF: 29% lower MAE |
+| EXP-2721 | `tools/cgmencode/exp_circadian_shrinkage_2721.py` | Circadian ISF real (2.87×) but not predictive |
+| EXP-2722 | `tools/cgmencode/exp_cross_controller_normalization_2722.py` | Controller η² reduced 55% |
+| β fix | `tools/cgmencode/production/forward_simulator.py` | Power-law dampening disabled |
+| Report | `docs/60-research/wave7-actionable-settings-report-2026-04-20.md` | 7-part synthesis |
+
+**Key Findings**:
+- Independent-event ISF (N=6K, 2h gap) predicts 29% better than all-event ISF
+- Circadian ISF schedule (2.87× ratio, r=0.80 stability) does NOT improve point-level MAE
+- Cross-controller normalization converges ISFs: Loop 20.6, Trio 16.9, OpenAPS 20.2
+- β=0.9 power-law disabled — proven transient PK artifact (EXP-2716)
+
+**Scorecard**: 21 experiments, 84 hypotheses, 47 PASS (56%)
+
+---
+
+## Wave-6: Supply-Demand Decomposition (2026-04-20)
+
+Tested whether glucose supply-side (EGP/glycogen) improves ISF extraction.
+
+| Deliverable | Location | Key Result |
+|-------------|----------|------------|
+| EXP-2717 | `tools/cgmencode/exp_supply_contamination_2717.py` | Supply contaminates ISF 27% but subtraction destroys signal |
+| EXP-2718 | `tools/cgmencode/exp_multi_timescale_2718.py` | 72h > 48h but only 0.2% ΔR² |
+| EXP-2719 | `tools/cgmencode/exp_bgi_decomposition_2719.py` | BGI/deviation r=-0.941 (coupled) |
+| Report | `docs/60-research/supply-demand-decomposition-report-2026-04-20.md` | 7-part synthesis |
+
+**Key Finding**: Supply-side adds <0.2% to multi-factor model. Demand-side R²≈0.17 sufficient.
+
+---
+
+## Wave-5: Robustness Check — What Survives Independence? (2026-04-19)
+
+Critical validation wave: tested all prior findings against statistical independence and horizon sensitivity.
+
+| EXP | Title | Verdicts | Key Finding |
+|-----|-------|----------|-------------|
+| 2714 | Independence Corrected | H1✓ H2✗ H3✓ H4✗ | R² survives (0.173), but SC ceiling β collapses (-0.04); 65K→6K independent events |
+| 2715 | Shrinkage Circadian | H1✗ H2✗ H3✗ H4✓ | Stability +159% (r: 0.24→0.61), but flat ISF still wins on MAE |
+| 2716 | β Horizon Sensitivity | H1✓ H2✗ H3✗ H4✗ | β DECREASES with horizon (0.31→0.006 at 6h); SC ceiling is transient PK |
+
+**Meta-Findings**:
+- Multi-factor deconfounding R² IS REAL (0.173, bootstrap CI [0.15, 0.29])
+- SC ceiling power-law is NOT robust — transient absorption bottleneck, not dose-response
+- GAP-ALG-073 RESOLVED: β=0.595 and β=0.9 are both horizon-dependent artifacts
+- 65K events are ~6K independent observations (lag-1 AC: 0.638→-0.051)
+- Shrinkage improves stability 159% even when MAE doesn't improve
+
+**Report**: `docs/60-research/wave5-robustness-check-report-2026-04-19.md`
+**Visualization**: `visualizations/wave5-synthesis/wave5_synthesis.png`
+
+## Wave-4: Actionable Settings & Residual Analysis (2026-04-19)
+
+Three experiments translating deconfounding discoveries into actionable outputs.
+
+| EXP | Title | Verdicts | Key Finding |
+|-----|-------|----------|-------------|
+| 2711 | Circadian Settings | H1✓ H2✗ H3✓ H4✗ | Settings differ 94% from profile but per-block tables too noisy to beat flat ISF |
+| 2712 | SC Ceiling Settings | H1✓ H2✓ H3✓ H4✓ | Population β=0.595 reduces MAE for ALL patients; far better than simulator β=0.9 (R² 0.93 vs 0.71) |
+| 2713 | Residual Structure | H1✓ H2✗ H3✓ H4✓ | Residual has massive autocorrelation (lag1=0.64); overlapping windows, not independent events |
+
+**Key Discoveries**:
+- SC ceiling power-law is the most actionable single deconfounding factor (all patients improved)
+- Per-block circadian ISF needs more events per block — flat BG-adjusted ISF outperforms noisy circadian tables
+- Residual autocorrelation (0.638 lag-1) reveals overlapping-window dependency — events are NOT independent
+- Controller differences in residual: openaps MAR=36.5 vs loop=18.4 (2× larger unexplained variance)
+
+**Report**: `docs/60-research/deconfounding-signal-extraction-report-2026-04-19.md`
+**Visualization**: `visualizations/deconfounding-synthesis/deconfounding_synthesis.png`
+
+## Wave-3: BG-Adjusted Circadian ISF, SC Ceiling Detection, Multi-Factor (2026-04-19)
+
+Three experiments combining deconfounding techniques for maximum signal extraction.
+
+| EXP | Title | Verdicts | Key Finding |
+|-----|-------|----------|-------------|
+| 2708 | BG-Adjusted Circadian ISF | H1✓ H2✓ H3✗ H4✓ | Peak shifts 12-16h→20-24h; 15.2% MAE improvement; TRUE circadian ratio 5.57× (larger, not smaller) |
+| 2709 | SC Ceiling BG-Controlled | H1✗ H2✓ H3✓ H4✗ | Within-BG-band: ALL 6 bands show SC ceiling; power-law R²=0.934 vs linear 0.418 (β=0.595) |
+| 2710 | Multi-Factor Deconfounding | H1✓ H2✓ H3✓ H4✓ | Combined R²=0.183; CV reduced 19.8%; BG MAE: 145.8→24.8 mg/dL; ALL 21 patients improve |
+
+**Key Discoveries**:
+- BG stratification successfully reveals SC ceiling hidden in raw observational data
+- Multi-factor deconfounding reduces BG prediction error by 83% vs profile ISF
+- True circadian ISF variation is LARGER than raw data suggests (BG confound was suppressing it)
+- 6 of 7 deconfounding factors contribute incremental R² in stepwise addition
+
+**Gaps**: GAP-ALG-073 (SC ceiling β=0.595 ≠ forward_simulator β=0.9)
+
+## Follow-Up Experiments: Deconfounding the Deconfounders (2026-04-19)
+
+Three follow-up experiments investigated confounds identified in the Tier-1 wave.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2705 | `tools/cgmencode/exp_midday_isf_peak_2705.py` | Midday ISF peak is BG confound; after control, peak shifts to 16-20h |
+| EXP-2706 | `tools/cgmencode/exp_sc_slope_2706.py` | SC slope is positive (confounding by indication); ceiling not detectable this way |
+| EXP-2707 | `tools/cgmencode/exp_glycogen_confound_2707.py` | Loaded glycogen → higher ISF is REAL; supports EGP as useful decomposition |
+
+**Key Findings**:
+- **Circadian confound identified**: Midday ISF peak (EXP-2702) is partially a BG-level confound. BG0 explains 71% of the joint model. After BG control, pattern shape changes completely (rank r=0.203 vs raw). Peak shifts from 12-16h to 16-20h.
+- **BGI subtraction REVEALS signal**: Counter-intuitively, deviation has MORE circadian variance (η²=0.018) than raw ISF (η²=0.003). This means BGI subtraction removes a confound (BG level) that was masking the true circadian insulin effect.
+- **SC ceiling undetectable by slope**: Dose-response slope is positive (median 0.856) — confounding by indication. Higher IOB → higher starting BG → more room to fall. The SC ceiling requires different methodology (likely comparison to simulated linear absorption, not observational dose-response).
+- **Glycogen effect is REAL, not confounded**: EXP-2707 found that controlling for BG does NOT remove the glycogen effect within BG bands (effect is actually stronger: 3.2 vs 1.6 mg/dL/U). BG does not mediate the pathway (-9%). Interpretation: loaded glycogen → suppressed EGP → insulin is genuinely more effective. This validates EGP as a useful decomposition axis.
+- **Confounding by indication is pervasive**: Both SC ceiling (EXP-2706) and glycogen (EXP-2707 H1) show controller behavior masking or reversing expected relationships. The controller gives more insulin when BG is high, creating positive correlations where negative ones are expected.
+
+**Gaps Identified**: GAP-ALG-072 (confounding by indication makes SC ceiling undetectable from observational dose-response)
+
+---
+
+## Tier-1 Deconfounding Experiments: Circadian, SC Ceiling, Glycogen (2026-04-19)
+
+Ran three Tier-1 experiments on full 22-patient cohort using the new deconfounding infrastructure.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2702 | `tools/cgmencode/exp_circadian_demand_isf_2702.py` | Circadian ISF: 1.35× population, 2.02× per-patient; 76% patients improve |
+| EXP-2703 | `tools/cgmencode/exp_sc_ceiling_per_patient_2703.py` | SC ceiling highly variable; reliable (r=0.811) but ceiling↔wall correlation weak |
+| EXP-2704 | `tools/cgmencode/exp_glycogen_state_detection_2704.py` | 48h carb signal exists (r=0.131, 13/21 sig) but too weak for settings |
+
+**Key Findings**:
+- Circadian demand-ISF is real and actionable: peak at 12-16h (28.8 mg/dL/U) vs trough 04-08h (21.3). All controllers show it.
+- Dawn phenomenon is NOT a simple ISF shift — dawn and overnight ISF are nearly identical. The circadian peak is midday, not dawn.
+- SC ceiling methodology needs refinement: IOB quantile binning at 50% threshold is too coarse. Most patients show no measurable ceiling. Consider dose-response slope instead of threshold.
+- Glycogen (48h carbs) is a real but weak signal: 13/21 patients have significant correlation, but effect size is only -6.5% ISF modification. Not enough for settings extraction. Confirms EXP-2627's 9.2% R² as an upper bound.
+- Counter-intuitive: loaded glycogen shows HIGHER ISF (26.3) than depleted (24.7). This contradicts insulin resistance expectation — may reflect confounding (more carbs → more insulin → more corrections at high BG where ISF is naturally higher).
+
+**Gaps Identified**: GAP-ALG-071 (circadian ISF peak is midday, not dawn — implication for dawn phenomenon modeling)
+
+---
+
+## Deconfounding Pipeline Infrastructure & Three-Audience Report (2026-04-19)
+
+Built reusable deconfounding infrastructure (4 production modules) and validated against EXP-2698. Extracted settings for 22 patients. Wrote three-audience transition report covering data understanding, settings optimization, and AID controller R&D recommendations.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Deconfounding strategies | `tools/cgmencode/production/deconfounding.py` | BGI subtraction, channel decomposition, event categorization, isolation, experiment presets |
+| Experiment base class | `tools/cgmencode/production/experiment_base.py` | Standard data loading, declarative pipeline, auto-validation |
+| R² Waterfall analysis | `tools/cgmencode/production/waterfall.py` | 5-stage R² (0.01→0.84), category models, controller splits, ISF recovery |
+| Accuracy/precision framework | `tools/cgmencode/production/accuracy_precision.py` | Precision Grade A (CI 4.2), accuracy varies by patient |
+| Integration test | `tools/cgmencode/production/test_waterfall_integration.py` | 6/6 scientific patterns, 8/11 quantitative, reproduces EXP-2698 |
+| Three-audience report | `docs/60-research/deconfounding-pipeline-report-2026-04-19.md` | Data understanding + settings optimization + controller R&D |
+| Waterfall visualization | `visualizations/waterfall-integration/waterfall_comparison.png` | Side-by-side R² comparison |
+
+**Key Findings**:
+- BGI subtraction is the dominant deconfounding lever (+0.31 R²; oref0 architecture validated)
+- All 3 insulin channels interchangeable for subtraction (~−124 to −131 mg/dL/U)
+- Precision Grade A across all patients (CI width 4.2 mg/dL/U); accuracy varies 0.3–2.8× ISF inflation
+- ISF inflation measurable per-patient: Loop median 1.1×, Trio 1.2×, OpenAPS 1.3×
+- Subtraction-over-exclusion keeps Trio/SMB data (exclusion yields ~0 events)
+- 12/21 patients have accurate ISF extraction (bias <15 mg/dL/U)
+- Trio basals well-calibrated (6/6 appropriate); Loop basals run high (3/4 too high)
+
+**Gaps Identified**: None new (infrastructure consolidates existing findings)
+
+**Source Files Analyzed**: EXP-2698, 45+ EGP/hepatic experiments catalogued, 22-patient settings extraction
+
+---
+
+## Expanded Cohort Experiment Validation (2026-04-18)
+
+Reran 5 priority experiments on expanded 31+12 patient cohort after robustness audit.
+Fixed Nyquist violations (2h→6h isolation, 4h→12h blocks), added NaN guards, parameterized
+parquet paths, and added controller stratification.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Expanded Cohort Report | `docs/60-research/expanded-cohort-validation-report-2026-04-18.md` | 3 findings strengthened, 3 weakened at larger N |
+| DynISF Characterization | `docs/60-research/dynisf-cohort-characterization-report-2026-04-18.md` | Cross-cohort reproducibility analysis |
+| EXP-2651 results | `externals/experiments/exp-2651_two_phase_isf*.json` | N=25+12, demand ISF wins 92-100% at 2h |
+| EXP-2652 results | `externals/experiments/exp-2652_circadian_profiling*.json` | N=18+10, 12h blocks modest improvement |
+| EXP-2656 results | `externals/experiments/exp-2656_sc_ceiling*.json` | N=29+12, 100% slower than linear |
+| EXP-2662 results | `externals/experiments/exp-2662_patience_mode*.json` | N=27+12, safe, 34-42% SMB savings |
+| EXP-2640 results | `externals/experiments/exp-2640_per_patient_isf.json` | N=6, log model 5/6, LOO stable |
+
+**Key Findings**:
+- Two-phase ISF: Universally replicated (25/25 + 12/12). Demand ISF 1.3-5.3× lower than apparent.
+- SC ceiling: 100% of patients slower than linear at high IOB. Ceiling range 30-56%.
+- Patience mode: Safe across all patients. Max hyper +2.1pp. Mean hypo -0.4pp.
+- Circadian 12h RMSE: Day/night split rarely improves prediction — signal detectable but weak.
+- SC ceiling ↔ sticky hyper correlation weakens: r=-0.29 at N=29 (was r=-0.60 at N=12).
+
+**Gaps Identified**: GAP-ALG-070 (circadian ISF insufficient RMSE gain for recommendation)
+
+**Source Files Analyzed**: 5 experiment scripts in `tools/cgmencode/exp_*`
+
+---
+
+## Tier-2 DynISF Cross-Validation (2026-04-18)
+
+Cross-validated 4 tier-2 experiments on 12-patient DynISF cohort to confirm algorithm-independence.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| DynISF Cross-Validation Report | `docs/60-research/tier2-dynisf-cross-validation-report-2026-04-18.md` | Core findings replicate across AID algorithms |
+| EXP-2663 dynisf | `externals/experiments/exp-2663_demand_dose_dependence_dynisf.json` | Demand |r|=0.110 (dose-independent, replicates orig 0.097) |
+| EXP-2667 dynisf | `externals/experiments/exp-2667_sc_ceiling_demand_isf_dynisf.json` | Higher ceiling 34.4% (vs 22.5% orig); H4 flips FAIL→PASS |
+| EXP-2669 dynisf | `externals/experiments/exp-2669_wall_resolution_mechanism_dynisf.json` | 78% unaccounted (vs 68% orig) |
+| EXP-2668 dynisf | `externals/experiments/exp-2668_controller_isf_signatures_dynisf.json` | H1-H4 SKIP (single controller type, expected) |
+
+**Key Findings**:
+- Demand ISF dose-independence replicates (|r|<0.15 both cohorts)
+- DynISF patients show higher SC ceiling (34.4% vs 22.5%) — better absorption
+- Higher unaccounted wall resolution (78% vs 68%) — DynISF users may intervene more
+
+---
+
+## Tier-3 Therapy & Phenotyping (2026-04-18)
+
+Ran 4 tier-3 synthesis experiments (2291/2321/2331/2351) on 31+12 patients.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Tier-3 Report | `docs/60-research/tier3-therapy-phenotype-report-2026-04-18.md` | 16/31 safe to implement; mean TIR -0.5pp |
+| EXP-2351 results | `externals/experiments/exp-2351-2358_insulin_pk*.json` | 26/31 slow PK type, DIA 12.3h median |
+| EXP-2321 results | `externals/experiments/exp-2321-2328_phenotype*.json` | 8 HIGH, 11 MOD, 3 LOW risk |
+| EXP-2331 results | `externals/experiments/exp-2331-2338_prediction_bias*.json` | Only 2/29 safe; most show prediction benefit |
+| EXP-2291 results | `externals/experiments/exp-2291-2298_integrated*.json` | 16/31 safe, 20/31 ≥70% TIR |
+| EXP-2665 results | `externals/experiments/exp-2665_nyquist_circadian_isf*.json` | H4 PASS: demand ISF has NO circadian variation |
+
+**Key Findings**:
+- Conservative guardrails: most patients show benefit potential but few pass all 7 safety checks
+- Demand ISF circadian variation confirmed absent at all Nyquist-appropriate block sizes
+- DynISF patients show similar risk/phenotype distributions
+- Mean TIR improvement slightly negative (-0.5pp) — settings optimization is harder than expected
+
+**Gaps Identified**: GAP-ALG-072 (integrated recommendation TIR degradation needs investigation)
+
+---
+
+## Tier-2 Expanded Cohort: Dose-Dependence & Wall Resolution (2026-04-18)
+
+Reran 5 tier-2 experiments (EXP-2636/2640/2663/2667/2669) after robustness audit.
+Fixed 6h Nyquist isolation (was 2h), NaN guards on scipy, argparse parameterization,
+dynamic patient discovery from parquet.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Tier-2 Report | `docs/60-research/tier2-expanded-cohort-report-2026-04-18.md` | Demand ISF dose-independent, wall episodes 68% out-of-band |
+| EXP-2636 results | `externals/experiments/exp-2636_dose_dependent_isf*.json` | N=18+dynisf, 175 corrections, H4 PASS (19.2% RMSE improvement) |
+| EXP-2663 results | `externals/experiments/exp-2663_demand_dose_dependence.json` | N=23, demand |r|=0.097 — dose-INDEPENDENT |
+| EXP-2667 results | `externals/experiments/exp-2667_sc_ceiling_demand_isf.json` | N=29, demand-ISF ceiling beats scheduled-ISF |
+| EXP-2669 results | `externals/experiments/exp-2669_wall_resolution_mechanism.json` | N=24, 1763 episodes, 68% unaccounted resolution |
+| EXP-2640 results | `externals/experiments/exp-2640_per_patient_isf.json` | N=6 (3 new patients), log model wins 6/6 |
+
+**Key Findings**:
+- Demand-phase ISF is dose-INDEPENDENT (|r|=0.097) — constant per-patient ISF sufficient for dosing
+- SC ceiling model with demand ISF outperforms scheduled ISF (EXP-2667 H3 PASS)
+- 68% of wall resolutions show glucose drops without IOB increase — out-of-band interventions
+- EXP-2636 H1/H2 reversed at 6h isolation: larger boluses → LESS drop/unit (ISF deflation)
+- Resolution timing clusters at 2-4h (demand-phase cycle, 58.3% in 1.5-4.5h window)
+
+**Gaps Identified**: GAP-ALG-071 (out-of-band interventions invisible to telemetry, 68% confound)
+
+**Source Files Analyzed**: 5 experiment scripts in `tools/cgmencode/exp_*_26{36,40,63,67,69}.py`
+
+---
+
+## Cross-Controller Validation & Autoprepare Gate (2026-04-19)
+
+Validated cross-controller data fidelity on expanded 31-patient dataset (Loop=9, Trio=13, 
+OpenAPS=8). Two experiments: EXP-2671 (8-panel validation dashboard) and EXP-2672 
+(qualification gate). Fixed enacted-rate percent-encoding bug in grid.py.
+
+### Key Results
+
+| EXP | Purpose | Verdict | Key Finding |
+|-----|---------|---------|-------------|
+| 2671 | Cross-controller data fidelity | PASS (w/ caveats) | Core fields safe; 7 patients flagged |
+| 2672 | Autoprepare qualification gate | ALL 4 GATES PASS | 22 qualified patients ready for autoresearch |
+
+### Autoresearch Wave (EXP-2673–2675)
+
+| EXP | Question | Key Finding |
+|-----|----------|-------------|
+| 2673A | Circadian ISF replication | NO signal (p=0.18, 562 events, 22 patients) |
+| 2673B | Sensitivity ratio validation | Effective ISF 1.4-5.2× inflated vs demand (r=0.70) |
+| 2674 | DynISF formula effect | **Sigmoid=6.6× inflation vs Log=2.5×** — formula predicts inflation |
+| 2675 | Cross-controller portability | **Patient physiology = 81.9% of ISF variance** |
+
+### Deliverables
+
+| Deliverable | Location |
+|-------------|----------|
+| Validation Report | `docs/60-research/cross-controller-validation-report-2026-04-19.md` |
+| EXP-2671 Figures | `visualizations/cross-controller-validation/fig[1-8]_*.png` |
+| EXP-2672 Gate Figures | `visualizations/autoprepare-gate/fig[1-4]_*.png` |
+| EXP-2673 Wave 1 Figures | `visualizations/autoresearch-wave1/fig[1-6]_*.png` |
+| EXP-2674 DynISF Figures | `visualizations/autoresearch-wave2/fig[1-6]_*.png` |
+| EXP-2675 Portability Figures | `visualizations/autoresearch-wave3/fig[1-5]_*.png` |
+| Qualified Manifest | `externals/experiments/autoprepare-qualified.json` |
+| Pipeline Fix | `tools/ns2parquet/grid.py` (percent-encoding auto-fix) |
+
+### Status: 🔬 Autoresearch IN PROGRESS
+
+---
+
+## EGP Deconfounding & Recovery Model Comparison (2026-04-13/14)
+
+Two rounds of autoresearch testing whether EGP or any single-factor model can improve
+AID post-correction predictions. 7 experiments (EXP-2629–2635) across 219 properly-filtered
+correction events from 9 patients.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2629 | AID Compensation Cascade | PASS (H1) | IOB drops 55% before hypo crossing |
+| 2630 | EGP vs AID Deconfounding | COUPLED | Sum=34 vs actual=4.1 mg/dL/hr, loop gain=8.3× |
+| 2634 | 5-Model Recovery Comparison | ALL FAIL | All R² negative (−2.4 to −3.2); Hill EGP worst |
+| 2635 | Recovery Attribution | IOB r=−0.07 | Only bolus size significant (r=−0.31, negative) |
+
+### Research Lines Closed
+
+- ❌ EGP as additive prediction term (WORST model, R² = −3.2)
+- ❌ IOB decay as recovery driver (r = −0.068, no correlation)
+- ❌ Glycogen/48h carbs → recovery (r = −0.15, wrong direction)
+- ❌ Circadian recovery (p = 0.85, no effect)
+- ❌ ALL single-factor physiological models (all R² < 0)
+
+### Reports & Figures
+
+| Deliverable | Location |
+|-------------|----------|
+| Round 1 Report | `docs/60-research/egp-deconfounding-report-2026-04-13.md` |
+| Round 2 Report (Revised) | `docs/60-research/egp-calibration-report-2026-04-13.md` |
+| Figures 19–24 | `visualizations/egp-deconfounding/fig19-24*.png` |
+| Figures 29–31 | `visualizations/egp-deconfounding/fig29-31*.png` |
+
+### GAP-EGP-004/005/006
+
+- GAP-EGP-004: No single recovery model works (all R² < 0)
+- GAP-EGP-005: IOB decay does not drive recovery (r = −0.068)
+- GAP-EGP-006: Bolus-size-dependent ISF needed (r = −0.307)
+
+## Dose-Dependent ISF & Methodology Validation (2026-04-13, Rounds 3–4)
+
+Two rounds continuing EGP deconfounding: Round 3 discovered dose-dependent ISF as the
+strongest signal; Round 4 validated methodology and characterized per-patient curves.
+5 experiments (EXP-2636–2640), 8 figures (fig32–39), 2 reports.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2636 | Dose-Dependent ISF | CONFIRMED | r = −0.56, ISF = 100→22 mg/dL/U (4.6× range) |
+| 2637 | Stacking Worsens Outcomes | REFUTED | AID compensates, CV diff −5.6% (p=0.28) |
+| 2638 | Controller Predictability | UNPREDICTABLE | R² = 0.074, oscillates at 1.42h |
+| 2639 | Sampling Robustness | ALL PASS | Bootstrap CI [−0.67, −0.44], survives subsampling |
+| 2640 | Per-Patient ISF Curves | LOG MODEL | 5/6 patients log-ISF, LOO all r < −0.49 |
+
+### New Discoveries
+
+- **Logarithmic ISF**: ISF ≈ 50 − 28 × ln(dose_U), universal across patients
+- **Cross-patient convergence**: CV = 8–9% at matched doses (1.5–3.0U)
+- **Methodology validated**: Block bootstrap, subsampling, LOO all confirm findings
+- **48h carb effects underpowered**: Need N=347 vs our N=219
+
+### GAP-EGP-007/008/009
+
+- GAP-EGP-007: ISF is dose-dependent with logarithmic scaling
+- GAP-EGP-008: Glucose drop ceiling (~140 mg/dL population average, up to 340 individual)
+- GAP-EGP-009: Cross-patient ISF convergence at medium doses (universal correction factor feasible)
+
+### Reports & Figures
+
+| Deliverable | Location |
+|-------------|----------|
+| Round 3 Report | `docs/60-research/egp-dose-isf-report-2026-04-13.md` |
+| Round 4 Report | `docs/60-research/egp-methodology-validation-report-2026-04-13.md` |
+| Figures 32–35 | `visualizations/egp-deconfounding/fig32-35*.png` |
+| Figures 36–39 | `visualizations/egp-deconfounding/fig36-39*.png` |
+
+## Descriptive-Prescriptive Paradox (2026-04-13, Round 5)
+
+Tests whether dose-dependent ISF can improve correction dosing. Reveals a fundamental
+paradox: the best descriptive model is the worst prescriptive one.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2641 | Forward Sim Log-ISF | PARTIAL | Per-patient log MAE=59 (30% better), but all R² < 0 |
+| 2642 | Retrospective Dose Audit | ALL FAIL | Log-ISF recommends 2.3× optimal dose; fixed ISF closer |
+
+### Core Discovery
+
+Apparent ISF from corrections is an **emergent closed-loop property** that includes the
+AID controller's response (basal withdrawal). Using it for dosing creates a circular
+dependency: changing the dose changes the controller response, invalidating the ISF.
+
+- Fixed ISF + controller feedback is near-optimal
+- 16% hypo rate is from irreducible per-event variability, not systematic ISF error
+- Controller gain ~8× means the controller, not the bolus, drives glucose trajectory
+
+### GAP-EGP-010/011
+
+- GAP-EGP-010: Apparent ISF is emergent (closed-loop), not intrinsic (cannot be used for dosing)
+- GAP-EGP-011: Per-event ISF variability irreducibly high (all models R² < 0)
+
+### Reports & Figures
+
+| Deliverable | Location |
+|-------------|----------|
+| Round 5 Report | `docs/60-research/egp-prescriptive-paradox-report-2026-04-13.md` |
+| Figures 40–43 | `visualizations/egp-deconfounding/fig40-43*.png` |
+
+---
+
+## Digital Twin & Settings Autoresearch (2026-07-14/15)
+
+12 experiments (EXP-2561–2572) systematically tested digital twin and settings optimization hypotheses.
+1 production module updated. Branch: `workspace/digital-twin-fidelity`.
+
+### Key Results
+
+| EXP | Hypothesis | Verdict | Key Finding |
+|-----|-----------|---------|-------------|
+| 2561 | Metabolic phase hypo predictor | NEGATIVE | -0.008 AUC; ceiling is information-theoretic |
+| 2562 | Forward sim counterfactuals | POSITIVE | ISF+20%→+2.1pp, CR+20%→+3.3pp TIR |
+| 2563 | Per-patient ISF/CR optimization | SUPPORTED | 95% ISF≠1.0, 100% CR≠1.0 |
+| 2564 | Forward sim fidelity | PARTIAL | Correction r=0.74 ✅, meal r=0.37 ❌ |
+| 2565 | Per-patient DIA/ISF calibration | MARGINAL | Population params sufficient for NS |
+| 2566 | Circadian ISF/CR variation | WEAK | Not significant at population level |
+| 2567 | Extended CR grid [0.8-3.0] | SUPPORTED | Mean optimal CR×2.10, 8/11 clear peaks |
+| 2568 | Joint ISF×CR optimization | SUPPORTED | TIR 0.309→0.720 (+41pp), synergy +8.9pp |
+| 2569 | Sim TIR vs actual TIR | NOT SUPPORTED | MAE=0.409; sim can't predict absolute TIR |
+| 2570 | Closed-loop digital twin | NOT SUPPORTED | MAE 0.409→0.380; loop can't compensate |
+| 2571 | Phenotype→optimization direction | NOT SUPPORTED | ISF↓/CR↑ universal across phenotypes |
+| 2572 | ISF artifact check | MIXED | Sim overshoots 22%; ISF×0.5 partially artifact |
+
+### Productionization
+
+- **`advise_forward_sim_optimization()`** added to `settings_advisor.py` (EXP-2568 → production)
+- Joint 7×7 ISF×CR grid search via forward simulator
+- Directional recommendations only (NOT magnitude predictions)
+- All 348 production tests pass
+
+### Lines of Research Closed
+
+- Metabolic phase hypo features (ceiling is fundamental)
+- Per-patient DIA/ISF calibration (population params sufficient)
+- Circadian CR/ISF profiling (individual, not population effect)
+- Forward sim absolute TIR prediction (missing loop model)
+- Phenotype-based optimization direction (direction is universal)
+
+### Lines of Research Open
+
+- Extended CR grid for patients a,g (still saturating at 3.0)
+- ISF bias correction (sim overshoots 22% — needs dampening)
+- Meal-size-dependent CR optimization
+- Natural experiment validation (settings changes → outcome)
+
+## E-Series: Strategic Clinical Classification Experiments (2026-07-12)
+
+Full-scale validation (11 patients, 5 seeds) of 8 clinical classification tasks.
+Discovered 2 deployable classifiers (AUC ≥ 0.80) and critical methodological insights.
+
+### Infrastructure Fix: Per-Patient Temporal Split
+Fixed critical data leakage in `temporal_split()` — pooled multi-patient data caused
+val set = last patient only. Now splits chronologically within each patient via `pids=` param.
+Commit: `3aa1837`.
+
+### Full-Scale Results (11 patients, 5 seeds)
+
+| EXP | Task | Key Metric | Deployable? |
+|-----|------|-----------|-------------|
+| 412 | Overnight HIGH risk | AUC=0.805 ±0.009 | ✅ YES |
+| 412 | Overnight HYPO risk | AUC=0.676 ±0.007 | ⚠️ Not yet |
+| 413 | Next-day TIR (CNN) | MAE=12.0% | Useful |
+| 413 | Bad-day classification | AUC=0.784 | Near |
+| 415 | High recurrence 24h | AUC=0.882 | ✅ YES |
+| 415 | High recurrence 3d | AUC=0.919 | ✅ YES |
+| 415 | Hypo recurrence | AUC=0.63-0.67 | ⚠️ Not yet |
+| 416 | Weekly hotspot analytics | Two phenotypes found | Actionable |
+| 417 | PK channel benefit | Task-specific (not uniform) | Insight |
+| 418 | EMA smoothing | Helps high, hurts hypo | Insight |
+
+### Key Scientific Findings
+
+1. **Overnight HIGH is deployable** (AUC=0.805) — evening alert feasible today
+2. **High recurrence at 24h/3d is excellent** (AUC=0.88-0.92) — pattern-based alerts work
+3. **Hypo prediction is the bottleneck** (AUC 0.63-0.73 across all tasks)
+4. **PK channels are task-specific**: PK6 helps hypo at 4-6h, 16ch helps high at 2-4h
+5. **Two patient phenotypes** (EXP-416): "morning-high" (dawn phenomenon) vs "night-hypo"
+6. **Quick mode (4pt) is unreliable** for feature selection — EXP-418 EMA direction reversed at full scale
+7. **Cross-patient generalization fails** for multi-day quality (EXP-414 LOSO F1=0.17)
+
+### Gaps Identified
+- GAP-ALG-080: Hypo classification AUC stuck below 0.75 across all tasks
+- GAP-ALG-081: Cross-patient transfer learning not viable without adaptation
+- GAP-ALG-082: Quick mode (4 patients) gives directionally wrong feature importance
+
+### Source Files
+- `tools/cgmencode/exp_treatment_planning.py` (EXP-411 through EXP-418)
+- `externals/experiments/exp41[2-8]_*.json` (all results)
+
+---
+
+## Completed Work
+
+### Phase 3 Completion: 3-Way Cross-Validation & All Prediction Curves Aligned (2026-03-31)
+
+Achieved full cross-implementation parity across JS, Swift, and AAPS-JS oref0
+implementations on 300 test vectors (100 oref0-native + 200 Loop). All 4
+testable prediction curves (IOB, ZT, COB, UAM) now have <0.02 mg/dL avg MAE.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| IOB/tau activity derivation | `adapters/oref0-js/index.js`, `main.swift` | `activity = IOB / (DIA*60/1.85)` when activity=0; fixes Loop vectors |
+| 3-way parity (JS/Swift/AAPS) | `adapters/aaps-js/index.js` | Same IOB/tau fallback; all 3 agree on 294/295 eventualBG |
+| ZT activity fallback | `main.swift` | When iobWithZeroTemp absent, fall back to regular activity |
+| UAM formula port | `Predictions.swift` | 3 fixes: uci vs ci separation, dual decay model, predDev term |
+| Assessment A14–A16 | `docs/architecture/cross-validation-assessment.md` | Full metrics history |
+| Loop vectors | `conformance/loop/vectors/` | 200 vectors from 90-day NS fixture |
+
+**Final 3-Way Results (300 vectors)**:
+
+| Vector Suite | EventualBG | Rate ±0.5 |
+|-------------|------------|-----------|
+| oref0-native (100) | **100/100 (100%)** | **72/72 (100%)** |
+| Loop (200) | **194/195 (99.5%)** | **129/131 (98.5%)** |
+| **Combined (300)** | **294/295 (99.7%)** | **201/203 (99.0%)** |
+
+**All 4 Prediction Curves Aligned (JS ↔ Swift)**:
+
+| Curve | Avg MAE | Before | Fix |
+|-------|---------|--------|-----|
+| IOB | 0.005 | 0.888 | A12: IOB array architecture |
+| ZT | 0.013 | 13.4 (1 outlier) | ZT activity fallback |
+| COB | 0.000 | 38.5 | A4: deviation-based COB |
+| UAM | 0.002 | 71.7 | A16: UCI/ci separation, dual decay, predDev |
+
+**Key Technical Discoveries (A14–A16)**:
+- **IOB/tau derivation**: When NS devicestatus has `activity=0` but `IOB>0` (common
+  in Loop data), derive: `activity = IOB / tau` where `tau = DIA * 60 / 1.85`
+- **UCI vs CI**: JS maintains two variables — `uci` (uncapped) for UAM decay,
+  `ci` (capped at maxCI) for predDev. Must preserve this separation.
+- **UAM dual decay**: `predUCI = min(slope_decay, linear_decay)`, NOT `exp(-t/90)`
+- **ZT absent vs zero**: When `iobWithZeroTemp` is nil (not just activity=0),
+  fall back to regular activity rather than computing separate IOB/tau value
+
+**Commits**:
+- `130ff11`, `c8d80ce` (A14): IOB/tau derivation + assessment
+- `7af6428`, `a05c6c0` (A15): AAPS-JS adapter + 3-way assessment
+- `9054aa6`: ZT activity fallback fix
+- `447b97d` (A16): UAM assessment
+- `7a7fee5` (apex): UAM formula port to Swift
+
+
+### Digital Twin Forward Sim Phase 4: Basal Adequacy, Meal Response & CSF Calibration (2026-07-15)
+
+Extended the forward simulator calibration with 8 experiments (EXP-2589–2596)
+and 3 productionizations, bringing total advisories to 14.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2589 Basal adequacy | `exp_basal_adequacy_2589.py` | Quadrant analysis for closed-loop |
+| EXP-2590 Dawn phenomenon | `exp_dawn_phenomenon_2590.py` | Selection bias kills EGP measurement |
+| EXP-2591 IOB-corrected EGP | `exp_iob_corrected_egp_2591.py` | 6/9 patients have positive EGP |
+| EXP-2592 Dual-pathway sim | `exp_dual_pathway_sim_2592.py` | Complexity ceiling (closes line) |
+| EXP-2593 Loop workload | `exp_loop_workload_2593.py` | 9/12 basal too high (systematic) |
+| EXP-2594 Meal response | `exp_meal_response_2594.py` | Sim ranks r=0.917, peaks -54 mg/dL |
+| EXP-2595 Carb calibration | `exp_carb_calibration_2595.py` | Root cause: ISF/CR coupling |
+| EXP-2596 Decoupled CSF | `exp_decoupled_csf_2596.py` | CSF=2.0 sweet spot (r=0.933, 53%) |
+| Research report update | `digital-twin-autoresearch-2026-07-14.md` | Phase 4 added |
+
+**Key Findings**:
+- Overnight basal quadrant analysis invented (glucose slope × net basal direction)
+- 9/12 patients have scheduled basal systematically too high
+- Forward sim is a ranking tool (r=0.88-0.92), not magnitude predictor
+- ISF and CSF serve different purposes; coupling via ISF/CR kills meal prediction
+- Population CSF=2.0 mg/dL/g is the optimal decoupled value
+
+**Productionized**: quadrant advisory (#13), workload advisory (#14), decoupled CSF
+**Gaps Identified**: GAP-SIM-001 (magnitude accuracy), GAP-BASAL-001 (systematic overestimation)
+**Tests**: 348 passing throughout
+
+**Source Files Analyzed**:
+- `tools/cgmencode/production/settings_advisor.py` (14 advisories)
+- `tools/cgmencode/production/forward_simulator.py` (carb_sensitivity decoupling)
+- `externals/ns-parquet/training/grid.parquet` (270 meal events, 9 patients)
+
+### Digital Twin Autoresearch Phase 5-6 (2026-07-15)
+
+Advisory system validation and ISF fix across 6 experiments (EXP-2601–2606).
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2601 | `exp_dose_response_2601.py` | CRITICAL: ISF advisory magnitude inflated by sim calibration |
+| EXP-2602 | `exp_isf_comparison_2602.py` | Correction-based ISF is clinically correct |
+| EXP-2603 | `exp_circadian_isf_2603.py` | Circadian ISF varies 70-125% but direction is patient-specific |
+| EXP-2604 | `exp_basal_adequacy_2604.py` | NEGATIVE: closed-loop confound masks basal adequacy |
+| EXP-2605 | `exp_temporal_stability_2605.py` | ALL CONFIRMED: r=0.968 SQS stability |
+| EXP-2606 | `exp_outcome_validation_2606.py` | SQS vs TIR r=0.726 (validated post-fix) |
+| ISF fix | `settings_advisor.py` | Removed sim ISF, correction-based only |
+| SQS update | `settings_advisor.py` | magnitude_pct basis (was tir_delta) |
+
+**Key Findings**:
+- ISF×0.5 sim calibration should NOT be used as clinical recommendation
+- Advisory system is temporally stable (r=0.968 across halves)
+- SQS with magnitude-based formula correlates with TIR (r=0.726)
+- Overnight basal adequacy doesn't work for closed-loop (loop compensates)
+- Circadian ISF direction is patient-specific, not universal
+
+**Gaps Identified**: GAP-SIM-006 (sim calibration ≠ clinical recommendation)
+
+**Productionized**: 19 features total (ISF source fix, SQS formula update)
+
+**Source Files Modified**:
+- `tools/cgmencode/production/settings_advisor.py` (19 productionized features)
+
+### Phase 7: Advisory Hardening & Effective CR (2026-07-16)
+
+Cross-controller validation, effective CR from meal response, SQS optimization,
+and several negative results that closed research lines.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2607 | `exp_odc_validation_2607.py` | Cross-controller valid: combined r=0.689 (p=0.006, n=14) |
+| EXP-2608 | `exp_drift_detection_2608.py` | Advisory too coarse for drift detection |
+| EXP-2609 | `exp_effective_cr_2609.py` | Effective CR: 5/9 under-bolused, dawn CR tighter for 6/9 |
+| EXP-2610 | `exp_cr_comparison_2610.py` | Sim CR = 0.5× artifact (same as ISF). r=0.934 with effective CR |
+| EXP-2611 | `exp_prebolus_timing_2611.py` | Selection bias: pre-bolus ≠ better outcomes in observational data |
+| EXP-2612 | `exp_post_cr_validation_2612.py` | Post-fix SQS still significant (p=0.043) |
+| EXP-2613 | `exp_sqs_optimization_2613.py` | Weighted SQS (ISF 2×) best: r=0.603 (p=0.022) |
+| EXP-2614 | `exp_isf_refinement_2614.py` | Grid boundary problem, not resolution |
+
+**Key Findings**:
+- Advisory system generalizes across AID controllers (NS + ODC)
+- Sim CR has same 0.5× calibration artifact as ISF — removed from advisory
+- Effective CR from meal response is actionable: +7.8pp TIR for correct bolusing
+- ISF weighted 2× in SQS formula gives best TIR correlation
+- Pre-bolus timing confounded by meal selection bias
+- ISF grid needs extension not refinement (5/9 hit boundary)
+
+**Gaps Identified**: Overlapping CR advisors need consolidation
+
+**Productionized**: 23 features total (+4: effective CR, sim CR removal, SQS weighted, CR threshold)
+
+**Source Files Modified**:
+- `tools/cgmencode/production/settings_advisor.py` (23 productionized features)
+
+**Closed Research Lines** (cumulative: 18 lines closed):
+- Sim CR recommendations, pre-bolus timing, ISF grid refinement, drift detection
+
+### Phase 8: Timescale Deconfounding & Metabolic Context (2026-07-16)
+
+Systematic investigation of timescale hierarchy, loop deconfounding,
+and metabolic state effects on insulin sensitivity.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2615 | `exp_circadian_cr_2615.py` | Dawn CR effect too small (p=0.96) |
+| EXP-2616 | `exp_actual_delivery_2616.py` | Loop adjusts basal 65-88%, reactive SMB confound |
+| EXP-2617 | `exp_suspension_natural_2617.py` | Suspension windows not cleaner |
+| EXP-2618 | `exp_long_window_2618.py` | 8h sim fails: no metabolic demand model |
+| EXP-2619 | `exp_metabolic_context_2619.py` | 6/9 show ISF split by carb history, patient-specific |
+
+**Key Findings**:
+- Forward sim valid regime: 2h correction windows ONLY
+- Beyond 2h, unmeasured metabolic demand (glycogen, HGP) overwhelms insulin signal
+- counter_reg_k absorbs both physiology AND insulin accounting errors
+- Closed-loop confound is structural: loop delivery is FUNCTION of glucose
+- Metabolic context explains 5-23% of ISF variance (patient-specific)
+- Glycogen cycling operates on 24-72h timescale (literature + data confirm)
+
+**Closed Research Lines** (cumulative: 23 lines closed):
+- Circadian CR, actual delivery sim, suspension windows,
+  8h+ sim, universal metabolic context
+
+### Phase 9: Validation, Overrides & Advisory Maturity (2026-07-16)
+
+Loop prediction validation, override ISF detection, and advisory
+convergence analysis. Two findings productionized.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2620 | `exp_loop_prediction_validation_2620.py` | Universal positive bias in loop predictions |
+| EXP-2621 | `exp_override_exercise_2621.py` | 8/12 show ISF split during overrides → productionized |
+| EXP-2622 | `exp_advisory_convergence_2622.py` | CR stable by 21d, direction by 7d → productionized |
+| Productionized | `settings_advisor.py` | 2 new advisories, 12 new tests (360 total) |
+
+**Productionized**:
+- `advise_override_isf()` — ISF split detection during overrides
+- `compute_advisory_confidence_tier()` — Data-dependent confidence tiers
+- Advisory count: 17 (up from 15), test count: 360 (up from 348)
+
+**Closed Research Lines** (cumulative: 27 lines closed):
+- Loop prediction as ISF validation, exercise ISF, override filtering,
+  corrections→convergence speed
+
+### Phase 10: Validation & Production Hardening (2026-07-15)
+
+Shifted from exploration to validation. Tested whether 17 advisories work
+coherently, generalize to unseen patients, and are clinically safe.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2623 | `tools/cgmencode/production/exp_multi_feature_isf_2623.py` | R²=7.6%, closes ISF prediction line |
+| EXP-2624 | `tools/cgmencode/production/exp_advisory_audit_2624.py` | 0 contradictions, SQS↔TIR r=0.717 |
+| EXP-2625 | `tools/cgmencode/production/exp_odc_crossval_2625.py` | Generalizes to 7 ODC patients |
+| EXP-2626 | `tools/cgmencode/production/exp_safety_guardrails_2626.py` | 36% exceed 25%, safety clamp added |
+| Safety clamp | `tools/cgmencode/production/settings_advisor.py` | apply_safety_clamp(), 366 tests pass |
+| Research report | `docs/60-research/digital-twin-autoresearch-2026-07-14.md` | Phase 10 section |
+
+**Key Findings**:
+- Advisory pipeline validated across 16 patients (9 NS + 7 ODC)
+- Zero contradictions, consistent priority (CR > ISF > basal)
+- Settings Quality Score correlates with TIR (r=0.717, p=0.030)
+- Safety clamp caps magnitudes at 25% per cycle
+
+**Gaps Identified**: Advisory deduplication (per-block CR fires 3-5x),
+forward sim lacks glycogen model for >2h accuracy.
+
+**Closed Research Lines**: Per-window ISF prediction, multi-feature ISF,
+loop workload ratio as ISF predictor (3 new closures, 30 total).
+
+### Phase 10 Addendum: EXP-2627-2628 (2026-07-15)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| EXP-2627 | `tools/cgmencode/production/exp_deduplication_2627.py` | 52% reduction, 100% direction agreement |
+| EXP-2628 | `tools/cgmencode/production/exp_autosens_validation_2628.py` | Autosens ≠ ISF calibration |
+| Deduplication | `tools/cgmencode/production/settings_advisor.py` | _deduplicate_same_direction(), 371 tests |
+| Final report | `docs/60-research/digital-twin-autoresearch-2026-07-14.md` | Cumulative research summary |
+
+**Cumulative totals**: 68 experiments, ~147 hypotheses, ~75 confirmed (51%).
+19 production features. 371 tests. 34 closed research lines.
+Validated across 16 patients from 2 independent sources.
+
+### Cross-Controller PK Model Comparison — EXP-2676 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| PK model comparison | `tools/cgmencode/exp_pk_model_comparison_2676.py` | All 4 AID systems use identical exponential PK formula |
+| 6-panel dashboard | `visualizations/pk-model-comparison/fig[1-6]_*.png` | IOB decomposition, decay, activity, BG prediction |
+| Updated report | `docs/60-research/cross-controller-validation-report-2026-04-19.md` | PK section added |
+
+**Key Findings**:
+- ALL 4 systems (Loop, oref0, AAPS, Trio) share identical exponential IOB formula from LoopKit #388
+- Difference is only parameters: DIA (3h-10h), peak (45-75min)
+- IOB decomposition is perfect: bolus_iob + basal_iob = total IOB (MAE < 0.001U)
+- Empirical IOB decay does NOT match theory — AID continuous dosing masks true PK
+- IOB semantics differ: Loop median=0.69U, Trio=0.00U, OpenAPS=0.08U
+- pred_iob_30 is a BG prediction (mg/dL), not insulin — OpenAPS best accuracy (MAE=13.9)
+
+**Cumulative (EXP-2671-2676)**: 6 cross-controller experiments, 22 qualified patients
+(Loop=8, Trio=11, OpenAPS=3), 44 visualizations.
+
+### AID Compensation Artifact — EXP-2677 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| AID compensation analysis | `tools/cgmencode/exp_aid_compensation_artifact_2677.py` | 57% negative ISF is artifact |
+| 6-panel dashboard | `visualizations/aid-compensation-artifact/fig[1-6]_*.png` | Prevalence, trajectory, insulin, basal, timing, BG |
+
+**Key Findings**:
+- 57% of correction events show negative ISF (glucose RISES) — universal across ALL controllers
+- Root cause: corrections at in-range glucose (median BG=106 for neg ISF vs 160 for positive)
+- NOT AID backing off (IOB change is HIGHER for neg ISF events)
+- NOT glucose already rising (pre-bolus ROC lower for neg ISF events)
+- BG floor filter dramatically reduces: ≥120→39%, ≥160→27%, ≥180→23%, ≥200→20%
+- Remaining ~20% at high BG is genuine AID compensation + regression to mean
+- METHODOLOGY FIX: All correction ISF extraction must require BG ≥ 150-180 mg/dL
+
+### BG Floor Sensitivity Analysis — EXP-2678 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Sensitivity analysis | `tools/cgmencode/exp_bg_floor_sensitivity_2678.py` | 3 key findings change with BG floor |
+| Summary figure | `visualizations/bg-floor-sensitivity/fig1_sensitivity_summary.png` | All 3 tests on one chart |
+
+**Key Findings**:
+- CIRCADIAN ISF: At BG≥180, p=0.0009 — genuine circadian signal MASKED by meal noise in EXP-2673
+  - BG≥0: p<0.001 (artifact from meal timing), BG≥120: p=0.82, BG≥150: p=0.15, BG≥180: p=0.0009
+- VARIANCE DECOMPOSITION: ROBUST — patient >> controller at all BG floors (0.4-3.8% controller)
+- DYNISF INFLATION: Lower with BG floor (1.2-1.8× vs 6.6× in EXP-2674) — earlier extremes from near-range corrections
+
+**Methodology revision**: EXP-2673's "no circadian signal" conclusion is QUALIFIED.
+True corrections (BG≥180) DO show circadian ISF variation. Must re-investigate.
+
+### Circadian ISF Deep Dive — EXP-2679 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Circadian ISF analysis | `tools/cgmencode/exp_circadian_isf_deep_dive_2679.py` | Loop-specific circadian signal |
+| 5-panel dashboard | `visualizations/circadian-isf-deep-dive/fig[1-5]_*.png` | Hourly, controller, patient, dawn, magnitude |
+
+**Key Findings**:
+- Overall Kruskal-Wallis p=0.0009 with BG≥180 filter (confirms EXP-2678)
+- Signal is LOOP-SPECIFIC: Loop p=7e-06 (n=597), OpenAPS p=0.40 (n=402), Trio p=0.40 (n=57)
+- Peak ISF at 2PM UTC (31.7 mg/dL/U), trough at midnight (2.0)
+- NO dawn phenomenon: dawn (4-8AM) ISF=17.0 vs non-dawn=15.6, p=0.95
+- 75.3% positive ISF with BG≥180 floor (vs 43% without)
+- Interpretation: likely controller behavior artifact (Loop temp basal patterns) not pure physiology,
+  since OpenAPS (n=402) shows no signal with adequate power
+
+### Definitive ISF Characterization — EXP-2680 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Definitive ISF analysis | `tools/cgmencode/exp_definitive_isf_2680.py` | BG≥180 + 2h isolation on 22 patients |
+| 7-panel dashboard | `visualizations/definitive-isf/fig[1-7]_*.png` | Distribution, per-patient, variance, profile, DynISF, stability, summary |
+
+**Key Findings**:
+- 7986 events (all BG), 1226 at BG≥180 — 73-88% positive ISF with floor vs 36-43% without
+- Trio severely underpowered at BG≥180 (only 66 events — tight control)
+- ISF differs significantly across controllers (Kruskal-Wallis p<0.0001)
+- Demand ISF appears dose-dependent (r=-0.418) at BG≥180 — REVISES EXP-2663
+
+### BG Drop Direct Modeling — EXP-2681 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| BG drop model | `tools/cgmencode/exp_bg_drop_model_2681.py` | Dose-independent drop, BG0 is best predictor |
+| 6-panel dashboard | `visualizations/bg-drop-model/fig[1-6]_*.png` | Dose-response, BG, IOB, multivariate, per-patient, bins |
+
+**BREAKTHROUGH FINDING**: BG drop after correction is ~74 mg/dL REGARDLESS of dose:
+- Loop: 78 mg/dL drop with 4.0U dose
+- OpenAPS: 71 mg/dL drop with 1.0U dose
+- Trio: 64 mg/dL drop with 1.4U dose
+
+Model R² breakdown:
+- log(dose): 0.015 — dose barely predicts BG drop
+- BG0: 0.141 — starting BG is the best single predictor
+- IOB: 0.001 — IOB doesn't help
+- Full: 0.146 — adding all predictors barely improves
+
+**Implication**: In observational AID data, bolus dose shows low correlation with BG drop
+(R²=0.015). This reflects the controller compensating through other channels (SMB, temp
+basal), NOT that insulin is ineffective. The "dose-dependent ISF" from EXP-2680 is a ratio
+artifact (constant drop / varying dose). Isolating the bolus treatment effect requires causal
+methods — the controller's co-intervention confounds observational estimates.
+
+### Controller vs Bolus Insulin — EXP-2682 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Controller vs bolus | `tools/cgmencode/exp_controller_vs_bolus_2682.py` | Neither bolus NOR total insulin predicts BG drop |
+| 5-panel dashboard | `visualizations/controller-vs-bolus/fig[1-5]_*.png` | Insulin, fraction, response, trajectory, models |
+
+**HEADLINE**: Total 2h insulin (R²=0.0007) predicts BG drop even LESS than bolus alone (R²=0.004).
+Trio delivers 4× OpenAPS insulin (8.3U vs 2.3U) for a SMALLER BG drop (64 vs 71 mg/dL).
+
+R² model comparison:
+- BG0: 0.141 — starting BG is the only meaningful predictor
+- Net basal excess: 0.011
+- Bolus dose: 0.004
+- IOB start: 0.001
+- Total 2h insulin: 0.001
+- Full model: 0.192
+
+**Bolus fraction of total 2h insulin**:
+- Loop: 58% (bolus-dominant correction)
+- OpenAPS: 42% (mixed)
+- Trio: 20% (controller-dominant — aggressive SMBs)
+
+**Implication**: 86% of BG drop variance is unexplained by ANY insulin measure.
+BG drop is dominated by physiological factors (EGP, carb absorption, exercise, stress)
+not by insulin dose — whether manual or controller-delivered.
+
+### Unexplained BG Drop Variance — EXP-2683 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Variance analysis | `tools/cgmencode/exp_unexplained_variance_2683.py` | 83.5% irreducible stochastic variance |
+| 5-panel dashboard | `visualizations/unexplained-variance/fig[1-5]_*.png` | ROC, carbs, regression, random effects, model |
+
+**HEADLINE**: Full model with ALL available predictors achieves R²=0.165.
+83.5% of correction BG drop variance is IRREDUCIBLE noise.
+
+R² Model Comparison:
+- Full (FE + all): 0.165 — ceiling
+- BG₀ alone: 0.138 — most of what's predictable
+- Regression to mean: 0.130 — BG returns toward mean regardless
+- Patient FE: 0.028 — patient identity barely helps
+- Glucose ROC: 0.000 — momentum is irrelevant
+- Has carbs: 0.000 — concurrent carbs don't change drop
+
+Additional findings:
+- 51% of BG≥180 correction events have concurrent carbs (>5g)
+- Carb events show identical drop (75 vs 74 mg/dL, p=0.87)
+- ICC = 0.173 — only 17% of variance is between-patient
+- Regression to mean slope = 0.38 (each 10 mg/dL above patient mean → 3.8 mg/dL extra drop)
+
+**Interpretation**: BG correction outcome is dominated by stochastic physiological factors
+(EGP variation, stress hormones, physical activity, meal timing uncertainty).
+Neither insulin dose, controller behavior, glucose momentum, nor carb presence meaningfully
+predicts whether a correction will be effective. The BG≥180 → ~74 mg/dL drop is essentially
+regression to the mean plus physiological noise.
+
+### Aggregate Outcome Modeling — EXP-2684 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Aggregate outcomes | `tools/cgmencode/exp_aggregate_outcomes_2684.py` | Settings don't predict TIR |
+| 6-panel dashboard | `visualizations/aggregate-outcomes/fig[1-6]_*.png` | By controller, ISF, CR, TDD, safety, summary |
+
+**HEADLINE**: Trio achieves 89.9% TIR (median) vs Loop 73.3% vs OpenAPS 68.4%.
+But ISF/CR/TDD settings show ZERO correlation with outcomes:
+
+- ISF vs TIR: r=-0.046 (p=0.84)
+- CR vs TIR: r=0.194 (p=0.39)  
+- TDD vs TIR: r=-0.120 (p=0.59)
+
+Trio uses 56% more insulin than Loop (42.7 vs 27.3 U/day) for 17pp higher TIR.
+OpenAPS uses similar insulin to Trio (43.9 U/day) but achieves the worst TIR.
+
+**Interpretation**: Controller algorithm strategy matters more than any individual setting.
+Trio's aggressive SMB + DynISF approach achieves better outcomes regardless of ISF/CR tuning.
+
+### Controller Decision-Making Strategy — EXP-2685 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Strategy comparison | `tools/cgmencode/exp_controller_strategy_2685.py` | Bang-bang vs proportional control |
+| 7-panel dashboard | `visualizations/controller-strategy/fig[1-7]_*.png` | Dosing, thresholds, reaction, basal, SMB, suspend, time-of-day |
+
+**HEADLINE**: Trio/Loop are "bang-bang" controllers (83%/65% suspended), OpenAPS is proportional (33% normal).
+
+| Strategy | Loop | Trio | OpenAPS |
+|----------|------|------|---------|
+| Basal suspended | 64.7% | 82.6% | 33.9% |
+| SMB rate | 15.0% | 19.8% | 0.0% |
+| Normal basal | 6% | 5% | 33% |
+| TIR achieved | 73.3% | 89.9% | 68.4% |
+
+- Trio/Loop: suspend basal most of the time, deliver bursts of SMBs when BG rises
+- OpenAPS (these sites): no SMBs, smooth basal modulation — likely oref0 without SMB enabled
+- 0-minute reaction time: Loop/Trio deliver SMBs at the SAME 5-min interval as BG≥150 crossing
+- Trio achieves best TIR with the most extreme bang-bang strategy
+
+### Safety Analysis — EXP-2686 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Safety analysis | `tools/cgmencode/exp_safety_analysis_2686.py` | IOB near zero at hypo onset |
+| 6-panel dashboard | `visualizations/safety-analysis/fig[1-6]_*.png` | Frontier, characterization, temporal, pre-hypo, IOB, DynISF |
+
+**Clinical target (TIR≥70%, hypo≤4%)**:
+- Trio: 5/10 (50%) — best
+- Loop: 3/9 (33%)
+- OpenAPS: 1/3 (33%)
+
+**IOB at hypo onset is near zero for ALL controllers** — but this is the
+controller's RESPONSE (suspension), not the cause. Hypos are caused by insulin
+delivered earlier. Loop IOB trajectory into hypo: 1.95U → 0.88 → 0.28 → −0.31U
+over 2h. The controller detects falling BG and suspends, mitigating severity.
+Without AID suspension, hypos would be deeper and longer.
+
+**OpenAPS has deepest hypos** (nadir 57 vs 62) and longest (25min vs 15-20) —
+consistent with less aggressive suspension (proportional control, not bang-bang).
+
+**DynISF formula within Trio**: log → 90.5% TIR / 5.1% hypo; sigmoid → 86.0% TIR / 3.3% hypo.
+Log formula is more aggressive (higher TIR but more hypos).
+
+### Null Model Benchmark — EXP-2687 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Null model | `tools/cgmencode/exp_null_model_2687.py` | No-bolus drop > bolus drop |
+| 6-panel dashboard | `visualizations/null-model/fig[1-6]_*.png` | Null, trajectory, treatment effect, dose-response |
+
+**BREAKTHROUGH**: No-bolus events at BG≥180 drop **MORE** than bolus events:
+- Bolus drop: 53 mg/dL (median)
+- No-bolus (null): 61.7 mg/dL
+- "Treatment effect": **−8.7 mg/dL** (negative — bolus events do worse!)
+
+**Null model accounts for 116.5% of bolus drop.** The AID controller alone handles
+high BG more effectively than user boluses. BUT see EXP-2689 for confounding analysis.
+
+### Within-Patient Temporal Trends — EXP-2688 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Temporal trends | `tools/cgmencode/exp_temporal_trends_2688.py` | No learning curve |
+| 5-panel dashboard | `visualizations/temporal-trends/fig[1-5]_*.png` | Weekly TIR, first/last, settings drift |
+
+**No learning curve detected**: TIR change first→last month = +0.9 pp (p=0.579).
+Only 3/22 patients show significant improvement. Settings tuning does not measurably
+improve outcomes. Controller algorithm dominates from the start.
+
+### Confounding by Indication — EXP-2689 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Confounding analysis | `tools/cgmencode/exp_confounding_2689.py` | Users bolus in harder situations |
+| 6-panel dashboard | `visualizations/confounding-analysis/fig[1-6]_*.png` | Pre-trajectory, carbs, matched |
+
+**Why bolus events drop less** (explains EXP-2687):
+1. **Pre-event trajectory**: Bolus pre-slope = +1.9 (rising), null = −0.4 (falling).
+   Users bolus when BG is going UP, not when already coming down.
+2. **53% of boluses are meal boluses** fighting incoming carbs (drop = 47 mg/dL).
+3. **IOB already higher at bolus events** (2.5U vs 1.8U) — controller was already maxed.
+4. **Correction-only boluses**: 58 mg/dL (closer to null 61, but still less).
+5. **Rising BG only**: bolus=48, null=46 → Δ=+2 (no treatment effect when BG rising).
+
+**Conclusion**: Confounding by indication explains the negative "treatment effect" in
+EXP-2687. Users bolus in harder situations (rising BG, concurrent meals, controller
+already at high effort). The "no-bolus" condition is NOT zero insulin — the controller
+is still actively managing via temp basals and SMBs. We cannot estimate the true
+treatment effect of a bolus from this observational data because the controller's
+co-intervention confounds the comparison. All insulin channels (bolus, SMB, basal
+modulation) contribute to glucose management; isolating any one requires causal methods.
+
+### Multi-Channel Insulin Decomposition — EXP-2690 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Multi-channel decomposition | `tools/cgmencode/exp_multi_channel_2690.py` | All channels significant |
+| 7-panel dashboard | `visualizations/multi-channel/fig[1-7]_*.png` | Correlation, effects, variance |
+
+**Multi-factor analysis recovers R²=0.296** (vs 0.015 for bolus alone):
+- Starting BG: 13.3% unique variance (largest factor)
+- **Bolus: 7.3% unique** (p≈0, highly significant when controlling for co-intervention)
+- **Excess basal: 6.4% unique** (controller's basal modulation is a major channel)
+- SMB: 0.9%, Carbs: 0.6%, ROC: 0.5% — all significant
+- Within-patient R²=0.318; controller-stratified: Loop=0.378, Trio=0.394, OpenAPS=0.132
+
+**Key correction**: Earlier "insulin irrelevance" was an artifact of single-factor analysis.
+When controlling for all channels simultaneously, each shows significant partial effects.
+The controller compensates through other channels, which MASKS the bolus effect in
+univariate analysis but does NOT mean the bolus has no effect.
+
+### Settings Mediation Analysis — EXP-2691 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Settings mediation | `tools/cgmencode/exp_settings_mediation_2691.py` | Settings → behavior → outcomes |
+| 6-panel dashboard | `visualizations/settings-mediation/fig[1-6]_*.png` | Mediation, within-patient, frontier |
+
+**Settings DO affect outcomes, mediated through controller behavior:**
+- ISF → SMB rate: r=−0.115, p=1.2e-11 (lower ISF → more aggressive dosing)
+- SMB rate → TIR: r=+0.169, p=2.2e-23 (more SMBs → higher TIR)
+- Patient-level (settings + controller → TIR): R²=0.335 (n=22, underpowered)
+
+**Within-patient natural experiments**: Settings barely change (ISF range=0.1 mg/dL/U),
+limiting power. Mean r(ΔISF, ΔTIR)=0.110; 2/22 patients show significant effects.
+
+**Key insight**: Settings configure controller behavior. Controller behavior determines
+outcomes. The causal chain is: Settings → Controller aggressiveness → Glucose outcomes.
+This is the coupled system working as designed.
+
+### Advanced Multi-Factor Analysis — EXP-2692 to EXP-2694 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Dose-response curves | `tools/cgmencode/exp_dose_response_2692.py` | Marginal effects, non-linearity, substitution |
+| TIR gap decomposition | `tools/cgmencode/exp_tir_gap_2693.py` | Oaxaca decomposition, multi-factor TIR model |
+| Time-resolved decomposition | `tools/cgmencode/exp_time_resolved_2694.py` | R² growth 0.183→0.296, controller channel substitution |
+| 18-panel visualizations | `visualizations/{dose-response,tir-gap,time-resolved}/` | Complete analysis dashboards |
+
+**EXP-2692: Dose-Response — All coefficients are NEGATIVE (confounding by indication)**
+- Bolus: −7.48 mg/dL/U, SMB: −4.34, Excess basal: −7.88
+- More insulin → less BG drop because controller gives more in harder situations
+- Non-linearity: R² +2.4pp (0.296→0.320), statistically significant but modest
+- Trio SMBs strongest per-unit (−11.20), Loop boluses strongest (−8.56)
+
+**EXP-2693: TIR Gap Decomposition — 11.4pp gap nearly fully explained**
+- CV glucose: +11.9pp (patient selection — Trio patients less variable)
+- SMB rate: +11.6pp (algorithm feature)
+- TDD: −9.3pp (Trio uses more insulin)
+- Full patient-level model: R²=0.702 (controller alone: 0.427)
+
+**EXP-2694: Time-Resolved — R² grows linearly with horizon**
+- 30 min: 0.183 → 60 min: 0.215 → 90 min: 0.254 → 120 min: 0.296
+- Controller substitution: when user boluses, controller suspends (−3.51 vs −1.41U)
+  and adds SMBs (2.29 vs 0.00U) — channels are dynamically interchangeable
+- BG₀-matched comparison shows similar trajectories with/without bolus
+
+**Cumulative findings (24 experiments, EXP-2671–2694)**:
+Multi-factor decomposition is mandatory for AID analysis. Single-factor misleads.
+70% of patient-level TIR variance explained. 30% of event-level variance explained.
+Controller channel substitution is the primary reason observational analysis fails.
+
+### Causal Inference Toolkit — EXP-2695 to EXP-2697 (2026-04-19)
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Propensity score matching | `tools/cgmencode/exp_causal_psm_2695.py` | ATT = −1.2 mg/dL at 120m; controller compensates ~90% |
+| Impulse response functions | `tools/cgmencode/exp_impulse_response_2696.py` | Granger 15/15 sig; pre-trends FAIL (−5.9) |
+| Variance decomposition | `tools/cgmencode/exp_variance_decomp_2697.py` | ICC=0.019; 84% stochastic; 21/21 negative β |
+| 18-panel visualizations | `visualizations/{causal-psm,impulse-response,variance-decomposition}/` | Complete causal analysis |
+
+**EXP-2695: Propensity Score Matching — Controller compensates ~90%**
+- 47,045 matched pairs (caliper=0.05, exact BG band match)
+- ATT: −11.8 (30m) → −8.0 (60m) → −4.0 (90m) → −1.2 (120m)
+- Channel substitution: user bolus → +1.46U SMB, −1.29U basal → net +0.17U
+- ROC still imbalanced after matching (SMD=0.141) — residual confounding
+
+**EXP-2696: Impulse Response — Granger yes, pre-trends fail**
+- Local Projection: peak −1.63 mg/dL/U at 105 min
+- Granger causality: 15/15 patients significant (insulin precedes BG change)
+- Falsification FAILS: pre-event β = −5.9 (users bolus in anticipation)
+- Cross-correlation: BG→insulin (reactive) stronger than insulin→BG (causal)
+
+**EXP-2697: Variance Decomposition — 84% stochastic**
+- Between-patient: 1.9%, Between-day: 14.2%, Within-day residual: 83.9%
+- All 21 patients have negative bolus coefficients (confounding within patients too)
+- Settings barely change (ISF range=0.1); no natural experiment power
+- Hierarchical R²: event=0.296, day=0.164, patient=0.276, TIR=0.702
+
+**Causal identification conclusion (27 experiments)**:
+Standard econometric methods (regression, PSM, local projection, Granger)
+CANNOT isolate causal treatment effects from observational closed-loop AID data.
+The controller's simultaneous co-intervention, unobserved predictions, and
+anticipatory user behavior create irreducible confounding. Structural PK/PD models,
+instrumental variables, or controller open-loop periods would be needed.
+
+### Nightscout Multitenancy Discussion (2026-09-09)
+
+Cross-project analysis of what it would take to make `cgm-remote-monitor` multitenant,
+what Nocturne's existing multitenancy demonstrates, and how to benchmark the options
+rather than argue about them.
+
+| Deliverable | Location | Key Insights |
+|-------------|----------|--------------|
+| Multitenancy discussion doc | `docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md` | Single-tenant assumption map, 5 candidate architectures, storage/keyv/WASM/eBPF assessment, EXP-MT benchmark matrix and decision rule |
+
+**Key Findings**:
+- The plugin sandbox is already tenant-shaped (`lib/sandbox.js:45-84` takes settings+data),
+  but `ctx` — ddata, cache, dataloader, settings, plugins, bus, authorization — is not.
+- Nightscout holds ~48 h entries / 60 h treatments / 24–48 h devicestatus per site
+  (`lib/server/cache.js:26-31`) and issues ~14 DB ops per load (`lib/data/dataloader.js:128-146`).
+- Synthetic sizing: ~1.21 MB heap per bare `ddata`-shaped object (576 SGVs, 600 treatments,
+  576 Loop devicestatus); 4–8 MB/tenant resident is the working hypothesis to be measured.
+- Three O(n²) hot spots: `idMergePreferNew` (`lib/data/ddata.js:82-106`), `nsArrayTreatments`
+  (`lib/data/calcdelta.js:15-76`), repeated treatment filtering (`lib/data/ddata.js:249-337`).
+- Socket.IO uses a single non-tenant room `DataReceivers` (`lib/server/websocket.js:150`, `:792`).
+- Nocturne: host-header subdomain resolution, shared tables + `tenant_id` with EF Core filters
+  **and** PostgreSQL `FORCE ROW LEVEL SECURITY` (fail-closed), tenant-GUID-prefixed SignalR
+  groups, and deliberately **no** per-tenant ddata equivalent — many small TTL'd caches instead.
+- keyv suits ephemeral tenant-keyed state (sessions, tokens, counters, resolution cache) but
+  cannot serve Nightscout's range/predicate queries; the real seam is a repository interface
+  speaking the documented API v3 query model.
+- WASM's strongest argument is memory representation, not speed; eBPF belongs in the
+  benchmark harness as observability, not in the runtime.
+
+**Measured follow-up (cold wake / hot cache / WASM)** — harness in `tools/mt-bench/`:
+- Cold wake of one tenant's 48 h window is ~3–4 ms from a local store; ~80% of that is
+  `JSON.parse` materialising objects, not I/O. `v8.deserialize` is slower than `JSON.parse`.
+- SQLite-in-WASM is **2.5–7× slower** than native `better-sqlite3` on the server; the
+  "WASM makes SQLite faster" intuition inverts outside the browser.
+- A WASM host runtime optimises instantiation cost Nightscout does not have, while taxing
+  the JS hot path it does (QuickJS-in-WASM commonly 5–20× slower steady state).
+- Columnar typed arrays vs JS objects for the SGV window: ~20× less memory
+  (9.9 vs 202.5 KB/tenant) and ~500× faster wake (0.001 vs 0.559 ms) — and needs no WASM.
+- SQLite-file-per-tenant scales: 1 000 open handles = 66 MB RSS, cold open p99 0.06 ms.
+
+**Measured follow-up 2 (is Node the right host?)** — `tools/mt-bench/rust/`, `amplifiers.js`:
+- Rust `serde_json::Value` (untyped) is **worse than V8**: 4.60 ms vs 2.47 ms parse, and
+  1552 vs 202 KB/tenant. Rewriting in Rust without a schema is a regression.
+- Columnar JS (9.9 KB/tenant) ties columnar Rust (10.2 KB) and beats typed Rust structs
+  (53.7 KB). **Representation dominates language.**
+- Node baseline RSS 44.0 MB vs Rust 3.0 MB — a fixed per-process cost. At 1 tenant/process
+  it is 41 MB/tenant (dominant); at 1 000 it is 41 KB/tenant (negligible). So multitenancy
+  and a runtime rewrite are **substitutes for the same cost**, not complements.
+- The O(n²) merge/delta are a **tail/fairness** problem, not throughput: at 600 treatments
+  the nested scan costs 0.022 ms and the Map "fix" is 3.5x slower; at 5 000 it is 80.9 ms
+  vs 2.7 ms (30x, an event-loop stall). Corrects an over-claim in the first draft.
+- `structuredClone` (4.18 ms) is slower than the current JSON clone (3.79 ms).
+- Server and browser invert: native wins server-side, WASM is the only browser option;
+  the shared artefact is a typed stateless core plus one columnar wire/storage/compute format.
+
+**Measured follow-up 3 (deployment models, prompted by real hoster experience with
+Kubernetes cost at ~scores-to-thousands of tenants)** — `tools/mt-bench/{footprint,arch}.js`,
+prior art at `<workspace>/node-multienv`:
+- **Correction**: Nocturne's Rust is small (6 618 LOC vs 89 430 C#, ~7%), optional, and
+  **off by default** — the alert engine selector defaults to managed C#; Rust only runs in
+  `shadow` (side-effect-free comparison) or explicit `rust` mode
+  (`AlertEngineSelector.cs:6-9,28-69`). A prior draft's phrasing overstated this.
+- A bare Nightscout process (`-official`, no tenant data) costs **~99 MB RSS / 52 MB PSS**
+  before loading anything, vs ~1.2 MB for one tenant's actual `ddata` — code outweighs data
+  ~80:1 in the pod-per-tenant model.
+- Three Node architectures compared at fixed N with identical tenant data: `process`
+  (today's model, one pod/tenant) costs 101.9 MB/tenant **provisioned** (RSS) but only
+  53.7 MB/tenant **physical** (PSS, kernel-deduplicated) at 16 tenants w/ full require
+  graph; `worker_threads` (56.8 MB/tenant) is *not* cheaper than `process` once real code
+  is loaded — each isolate re-pays the require graph; `shared` (`Map<tenantId,ctx>`, one
+  process) wins by **10–20×** on both metrics (5.4 MB RSS / 5.1 MB PSS per tenant).
+- Cold spawn+require (no DB I/O): 22 ms bare Node → 266 ms p50 (503 ms p95) for the full
+  Nightscout require graph — relevant to scale-to-zero viability, and a fixed cost the
+  `shared` architecture doesn't pay per tenant at all.
+- Prior art `node-multienv` (this workspace, four architecture generations, ending in a
+  Metacontroller-based per-tenant Kubernetes controller) independently confirms the real
+  Kubernetes ceiling is **object count** (11–12 k8s objects/tenant — DB StatefulSet, CDC,
+  PVCs, etc. — `COMPONENT-SEPARATION-SUMMARY.md:127-135`), which is orthogonal to runtime
+  language: a Rust/Go rewrite would still need 11–12 objects/tenant under that deployment
+  model. Its configured pod memory request (128Mi) is already below the measured 99 MB RSS
+  floor — a concrete discrepancy worth flagging to that project.
+- **Conclusion**: neither "migrate to Nocturne" nor "rewrite the runtime" is supported by
+  measurement. The load-bearing move is the `shared`-process architecture (§4B) plus
+  adopting RLS-style fail-closed isolation as a *storage* property (portable to Node+pg,
+  not a .NET property) — both deliverable inside cgm-remote-monitor.
+
+**Measured follow-up 4 (is Postgres+RLS+knex actually better than Nocturne/Rust, or
+non-inferior?)** — `tools/mt-bench/rls-poc/` (`test.js`, `perf.js`), a real Postgres 16
+Docker container, reimplementing Nocturne's verified RLS pattern with `knex`/`pg`:
+- **Live-demonstrated, not just described**: a query against the RLS-scoped table **with
+  zero `tenant_id` predicate written in the SQL** still returns only the bound tenant's
+  600 rows; a connection that never binds a tenant sees 0 rows (not an error, not
+  everything). The same "forgot the filter" bug simulated against a MongoDB-shaped
+  application-only filter leaks every tenant's rows — the asymmetry the whole exercise is
+  about, since MongoDB (as Nightscout uses it, `ctx.store.collection()`,
+  `lib/server/entries.js:203-205`) has no server-enforced equivalent.
+  RLS overhead measured at 500 tenants × 600 rows: ~0.32 ms vs. an equivalent hand-written
+  `WHERE tenant_id=` (0.95 vs 0.63 ms p50) — real but noise against Nightscout's actual
+  query rate (~14 ops/tenant/1–5 s cycle).
+- **Answered the three-way comparison directly** (new §5.4): Postgres+RLS+knex-in-Node is
+  **better than migrating to Nocturne** (same isolation primitive, none of the .NET/EF
+  Core migration cost or roadmap dependency, and Nocturne's own Rust is optional/off by
+  default per the earlier correction); it is **non-inferior, not directly comparable, to
+  a native/Rust rewrite** (RLS solves isolation, a native core would solve a separate,
+  CPU-bound problem, and §8.1 already showed Rust losing on Nightscout's actual document
+  shape); it is **strictly better than today's MongoDB app-layer-only filter** on the
+  isolation axis specifically, with the honest unmeasured cost being the query-model
+  migration itself (tracked as new EXP-MT-037).
+- Confirmed mongoose does not help here even as a schema tool: it's Mongo-specific ODM,
+  doesn't enforce tenant boundaries, and the workspace's real schema asset (OpenAPI +
+  compiled Ajv/zod) already covers document validation without deepening Mongo coupling.
+
+**Follow-up 5 (Mongo→Postgres migration mechanics + a layered/sequencing model)** — new
+§5.2.2 and a rewritten §11:
+- **Verified the documents are less regular than feared, which argues for JSONB-first, not
+  against Postgres.** `Treatment` requires only `eventType`+`created_at`
+  (`aid-treatments-2025.yaml:130-132`); every other field varies across 28 enumerated
+  `eventType` values (`:77-111`). What's actually indexed *today* is a short, stable,
+  already-named list: 7 scalar fields for entries, 13 for treatments, 2 for devicestatus
+  (`lib/server/{entries,treatments,devicestatus}.js` `indexedFields` arrays).
+- Proposed shape: one JSONB `doc` column holding the whole document + generated columns
+  for only those ~22 already-indexed fields + RLS (the primitive demonstrated live in
+  follow-up 4) — a mechanical translation of existing indexes, not a schema redesign.
+  Full normalization is deferred indefinitely; the query-model seam (§5.2) is what lets
+  most call sites not notice which store answers.
+- Migration mechanism: because multitenancy is being introduced at the same time, the
+  storage migration and the tenancy migration are the *same* migration, done per-tenant
+  (strangler fig, no flag day) — new tenants land on Postgres directly, existing
+  Mongo-backed single-tenant sites migrate opt-in via backfill + bounded dual-write +
+  cutover.
+- **Correction, same round:** initially claimed `~/src/node-multienv`'s Kafka/CDC pipeline
+  was "already prototyped" and "directly reusable" for the dual-write step. Direct
+  inspection of that repo shows this overstated it: `cmd/webhook/handlers/resources.js`
+  does generate real `MongoSourceConnector`/`KafkaConnector`/`KafkaTopic` config
+  (per-tenant topic map, DLQ, error tolerance) — genuine, not vaporware — but it is
+  manifest-generation code only, has no test coverage, and by the project's own
+  `STATUS.md` has never been run end-to-end against a live cluster ("Strimzi Kafka +
+  KafkaConnect" is an unchecked prerequisite; "Validate CDC: End-to-end...testing" is a
+  listed pending next step). It also only implements the source side (Mongo→Kafka); no
+  sink into Postgres exists anywhere in that codebase. Revised recommendation: for a
+  bounded, per-tenant, one-time migration, a plain Mongo change-stream-tailing Node
+  script writing directly into Postgres is simpler and more directly testable than
+  standing up Strimzi+Kafka Connect; Kafka only earns its keep for continuous CDC at
+  scale, which is not what this migration needs. Updated EXP-MT-037 to include timing the
+  plain change-stream approach before considering Kafka.
+- **Layered dependency model (§11), because tactics mixed across this whole document are
+  not all compatible or additive**: Layer 0 (typed schema) is a hard prerequisite for
+  everything else and ships alone risk-free; Layer 1 (storage isolation) must ship
+  *before* Layer 2 (shared-process) — sharing a process without isolation turns an
+  app-layer bug into a live cross-tenant leak, not just a discipline gap; Layer 2 and "a
+  runtime rewrite" are substitutes, not complements (§8.2) — pick one; Layer 4 (fairness
+  fixes) should land *with* Layer 2, not after, because Layer 2 is precisely what turns a
+  private tail-latency hiccup into a shared-tenant outage; Layer 5 (native/WASM core) is
+  conditional and last, and attempting it before Layer 0 is the single most measurably
+  counterproductive sequencing mistake this document can name (§8.1: Rust loses to V8
+  without a schema). Layers 0 and 3 (columnar) have no tenancy dependency and should ship
+  on their own timeline regardless of the multitenancy decision.
+
+**Source Files Analyzed**:
+- `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
+- `externals/cgm-remote-monitor-official/lib/server/{cache,websocket,bootevent,env}.js`
+- `externals/cgm-remote-monitor-official/lib/{sandbox,settings,bus}.js`
+- `externals/cgm-remote-monitor-official/lib/storage/mongo-storage.js`
+- `externals/nocturne/src/API/Nocturne.API/Multitenancy/TenantResolutionMiddleware.cs`
+- `externals/nocturne/src/Infrastructure/Nocturne.Infrastructure.Data/NocturneDbContext.cs`
+- `externals/nocturne/crates/nocturne-alerts-{core,ffi}/`
+
+**Follow-up 6 (10 000-tenant recommendation; Node vs Bun vs .NET measured directly; is
+dual Mongo+Postgres support a real/common pattern?)** — new §8.10 and new §12:
+- **Measured, not assumed, the Node/Bun/.NET question.** Ran a minimal `net10.0` ASP.NET
+  Core app (verified same target framework as Nocturne itself,
+  `externals/nocturne/**/*.csproj:TargetFramework` = `net10.0`) and the only Bun available
+  in this environment (1.0.0) side by side with Node 24 at N=1, 4, 8 concurrent processes,
+  measuring PSS (the actual physical cost once page-sharing across siblings is counted,
+  not solo RSS). Result inverts the intuition this document used on faith in §3: at N=4,
+  .NET's marginal PSS/process (21.3 MB) is statistically indistinguishable from Node's
+  (22.3 MB) — CoreCLR's ReadyToRun images page-share as well as Node's V8/glibc do. Bun is
+  the actual outlier, at ~2× Node's PSS/process even at N=8 (39.6 vs 21.2 MB) — the
+  opposite of its "leaner than Node" reputation, at least for this 2023-era build — and it
+  hit a real CLI-compatibility gap (`-e` prints a help banner instead of evaluating)
+  breaking `execFileSync`-based tooling.
+- Corrected §3/§8.9's framing accordingly: the reason to stay on Node is not a memory
+  number (there isn't one, once measured) — it's the switching cost of rewriting the
+  codebase/maintainer base into C#, against §8.1's finding that a typed Node/V8 core
+  already isn't beaten by untyped Rust, so there's no performance case pulling away from
+  Node either. Flagged Deno as simply unmeasured (no install available; new EXP-MT-038)
+  and Bun's 1.0.0 result as version-dated, not final (EXP-MT-038/039).
+- **New §12 answers the 10 000-tenant question directly and honestly bounds confidence**:
+  enough evidence for a *directional* recommendation (shared-process architecture +
+  storage isolation, stay on Node, keep native/WASM conditional per §11) but not enough to
+  certify the exact number 10 000 — named the concrete missing pieces: `shared` arch
+  marginal cost against real (not synthetic) `ddata`/`dataloader` code (EXP-MT-035, still
+  open), and an entirely new gap this round surfaced: nothing in this document has tested
+  a single Postgres primary's behavior under anything near 10 000 tenants' worth of RLS
+  policies/connections/ingest (new EXP-MT-040), nor re-tested the k8s object-count model
+  at that scale empirically.
+- **Answered the Mongo+Postgres dual-support question directly**: temporary dual-backend
+  support during migration is a well-established, named pattern (the "strangler fig"
+  shape already specified in §5.2.2) whose defining feature is that the old backend is
+  meant to be retired, not run in parallel forever. Distinguished that explicitly from
+  *permanent* dual-backend support as a standing feature (roughly doubles the query
+  surface and test matrix for every future feature, indefinitely) and recommended against
+  the latter — the repository seam in §5.2 should be read as enabling migration, not as a
+  commitment to maintain two backends forever. Carved out the one legitimate long-term
+  exception: self-hosted single-tenant Mongo operators are a permanent second deployment
+  target on their own terms, which is a different claim than "two backends inside the
+  multitenant service forever."
+
+**Source Files Analyzed (this round)**:
+- `externals/nocturne/**/*.csproj` (TargetFramework verification)
+- Live measurement: Node 24.15, Bun 1.0.0, and a scaffolded `net10.0` minimal ASP.NET Core
+  app, all run and measured directly in this session (not from prior art)
+
+**Follow-up 7 (monorepo, two targets, shared core — verified against the actual module
+structure)** — new §11.1:
+- Tested the user's proposal (single-tenant and multitenant as independent targets, in
+  tandem in a monorepo, sharing vendor connectivity + sandbox/data-isolation code) against
+  the real module boundaries rather than answering abstractly.
+- Found `lib/server/bootevent.js` (`:16-226`) is already a pure factory over an injected
+  `env`, not a singleton; `lib/sandbox.js`'s `init()` (`:8-13`) — literally the "ddata
+  sandbox" this whole document is about — allocates fresh state per call with zero
+  module-level mutable state; same shape confirmed for `lib/plugins/index.js`,
+  `lib/data/{ddata,dataloader,calcdelta}.js`. A direct grep for module-level mutable state
+  across those files returned zero matches. Vendor-connectivity plugins
+  (`bridge.js` Dexcom Share, `mmconnect.js` Medtronic CareLink) are already
+  `init(env, bus, ...)`-shaped, reading per-tenant credentials from
+  `env.extendedSettings`, not a global.
+- The only process-global leakage found: direct `process.env.*` reads outside
+  `lib/server/env.js`, small and contained — 13 occurrences, 3 files
+  (`lib/server/app.js`, `lib/plugins/webhook.js`, `lib/server/bridge-connect-compat.js`).
+- Conclusion: the codebase is already shaped as the user proposed, it just isn't packaged
+  that way. Proposed concrete package boundary: `@nightscout/core` (sandbox, ddata,
+  plugins incl. vendor connectivity, authorization, storage adapters, api3 — all already
+  tenant-agnostic), `@nightscout/single-tenant` (today's one-`bootevent()`-per-process
+  deployment, unchanged), `@nightscout/multitenant` (per-request tenant resolution +
+  `ctxFor(tenantId)`, calling the *same* core factories N times). Every layer in §11's
+  table localizes cleanly to one of these three packages without new abstraction — Layers
+  0/3 land in core and benefit both targets for free; Layer 1 is a core storage-adapter
+  concern the single-tenant target can simply not opt into; Layer 2 lives entirely in
+  `@nightscout/multitenant`. Reconciled with §2.6 (which lists these same things as
+  "process-global" today): §2.6 is the symptom (one instance exists per process); §11.1
+  establishes the cause is entirely in the outer wiring (one `bootevent()` call), not in
+  the factories themselves — which is why sharing the process is a viable path rather
+  than a rewrite.
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/bootevent.js`
+- `externals/cgm-remote-monitor-official/lib/sandbox.js`
+- `externals/cgm-remote-monitor-official/lib/plugins/{index,bridge,mmconnect}.js`
+- `externals/cgm-remote-monitor-official/lib/data/{ddata,dataloader,calcdelta}.js`
+- `externals/cgm-remote-monitor-official/lib/authorization/index.js`
+
+**Follow-up 8 (eBPF as the tenant→shard router; does the multitenant model make sharding
+Postgres easier than today's per-tenant-Mongo model beyond 10k tenants?)** — new §6.3 and
+§12.4:
+- Checked the specific eBPF routing proposal (read incoming host:tenant mapping, forward
+  on a fast datapath to a shard with a hot cache) against how the kernel hooks actually
+  work, rather than treating "eBPF" as one undifferentiated capability. Verified
+  Nocturne's actual tenant-resolution rule is by subdomain
+  (`externals/nocturne/.../TenantResolutionMiddleware.cs:14-15`, `{slug}.{BaseDomain}`),
+  the same convention today's single-tenant deployments already use — confirming hostname
+  *is* the tenant identity, which is what makes SNI-based routing applicable at all.
+- **Correction**: `sk_lookup` (L4 socket selection) has no SNI/TLS visibility and cannot
+  do hostname-based routing by itself; bare XDP doesn't reassemble TCP streams cleanly
+  enough to parse a ClientHello. The hook that actually does this is `sockmap`/`sk_msg`,
+  which can inspect the ClientHello's cleartext SNI and splice the socket in-kernel to a
+  backend, still encrypted, without a userspace proxy copying bytes through it — the real
+  mechanism behind existing SNI-passthrough routers.
+- Scoped this honestly as an *optimization* on an already-solved problem (nginx/Envoy/HAProxy
+  already do SNI-based routing in userspace in microseconds today), not a new capability —
+  the win is kernel-bypass CPU/copy savings at high connection churn, not routing
+  capability that doesn't otherwise exist. The genuinely hard part (the tenant→shard
+  control-plane map itself: assignment, rebalancing, failure handling) is unchanged by
+  which technology executes the lookup, and was already named as a cross-cutting
+  requirement in §4E before this round. Split "route to the shard holding a hot ctx" (sound,
+  same thing as §4B's `Map<tenantId,ctx>`) from "serve data from inside the eBPF program
+  itself" (not feasible — eBPF is verifier-bounded, no general app logic) — the proposal is
+  correct read as the first, not the second. Added EXP-MT-041 to prototype a boring
+  userspace SNI router first, replacing it with sockmap only if measured to be a bottleneck.
+- **Answered the sharding-comparison question directly, with a corrected framing**: not
+  "Postgres shards better than Mongo as engines" (MongoDB has native sharding; a shared
+  Mongo-with-tenantId model would face the same exercise) — the real asymmetry is that
+  today's per-tenant-Mongo model is already maximally partitioned (shard count = tenant
+  count) and was *never forced to build* a tenant→shard map, so it has no dial to turn,
+  while the multitenant model is forced to build exactly that map (§4E) regardless of
+  storage engine, and extending it to also mean "which Postgres node" is the same
+  generalization applied once more (matching Citus's flagship documented use case:
+  distribute-by-tenant_id with colocated per-tenant tables) rather than new
+  infrastructure. Confirmed RLS and sharding-by-tenant are orthogonal and stack (safety
+  vs. scale), so this doesn't revisit the RLS work already done. Left EXP-MT-040
+  (Postgres-primary ceiling) as the still-open number this reasoning depends on.
+
+**Source Files Analyzed (this round)**:
+- `externals/nocturne/src/API/Nocturne.API/Multitenancy/TenantResolutionMiddleware.cs`
+- Web research on `sk_lookup` vs `sockmap`/`sk_msg` vs XDP capabilities for SNI-based
+  routing, cited inline in the new §6.3
+
+**Follow-up 9 (mongoose's query convenience vs. bounded, typed queries for AID
+controllers/alarm followers)** — new §5.5, plus EXP-MT-042:
+- Took the maintainer's specific claim on its own terms — mongoose turns a PHP-style
+  nested query string into a correctly typed, sophisticated Mongo query "for free," where
+  the project's own query handling has gaps — and checked both halves against the code.
+- **Correction**: the nested-query-string-to-object translation isn't mongoose's. Express
+  4.22's default `qs` parser already does that, with no ODM present. What mongoose would
+  actually add is schema-driven *casting* (a `Schema` knows a path's type without a
+  hand-maintained per-field list) — a real, separate win, not the one usually credited.
+- **Confirmed the gap is real and found it twice, independently.** Legacy
+  `lib/server/query.js`'s `walker(spec)` (`query.js:186-238`) types only the fields a
+  collection's hand-written spec names (`entries.js:184-197`: 7 fields, all `parseInt`;
+  `treatments.js:257-269`: 3 more, plus the only 3 fields anywhere with regex support via
+  `parseRegEx`, `query.js:251-256`) — everything else passes through untyped and
+  unconstrained straight into `.find()`, with no field allowlist at all. API v3's
+  `lib/api3/generic/search/input.js` is a second, independently built query layer (its own
+  `field$operator=value` DSL) that improves on two things — an explicit operator allowlist
+  (`eq/ne/gt/gte/lt/lte/in/nin/re`, `input.js:111`) and a real result-size cap
+  (`API3_MAX_LIMIT`=1000, `lib/api3/const.json:6`) — but repeats the same field-typing gap
+  via hard-coded special-casing in `parseValue`, and has **no field allowlist** either.
+- **New, concrete finding, not hypothetical**: API v3's `re` operator is wired straight to
+  MongoDB's `$regex` with the client's raw string, on any field name
+  (`lib/api3/storage/mongoCollection/utils.js:77-79`), and grep across `lib/api3/` and
+  `lib/storage/` confirms there is **no `maxTimeMS`, regex length/complexity guard, or
+  `.hint()` anywhere in the query path** (`find.js:68-82`). This is a live,
+  unmitigated ReDoS/full-collection-scan vector today, independent of multitenancy — and
+  becomes a sharper noisy-neighbor problem the moment tenants share a process (§8.3).
+- **Reconciliation proposed**: casting (mongoose-equivalent, but store-agnostic —
+  zod/Ajv from `specs/openapi/`, already recommended in §5.3) and query-shape *bounding*
+  are separable problems; fix both with typed **query profiles per consumer class** —
+  narrow, indexed-only, no-regex, capped profiles for AID controllers/alarm followers
+  (anchored on the existing `indexedFields` list, `entries.js:214-221`, already used for
+  the §5.2.2 Postgres migration proposal) vs. a broader but still-capped profile for
+  human/browse use. Proposed as a new `x-aid-query-profile` OpenAPI extension generated
+  from the same source as validation, replacing both hand-maintained lists, scoped by the
+  API-token scopes Nightscout already uses to distinguish controller tokens from browser
+  sessions.
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/query.js` (full file)
+- `externals/cgm-remote-monitor-official/lib/server/{entries,treatments,devicestatus}.js`
+  (walker specs, `indexedFields`)
+- `externals/cgm-remote-monitor-official/lib/api3/generic/search/{input,operation}.js`
+- `externals/cgm-remote-monitor-official/lib/api3/generic/collection.js` (`parseLimit`)
+- `externals/cgm-remote-monitor-official/lib/api3/storage/mongoCollection/{utils,find}.js`
+- `externals/cgm-remote-monitor-official/lib/api3/const.json`
+- `externals/cgm-remote-monitor-official/node_modules/express/package.json` (version check)
+
+**Follow-up 10 (headless multitenant Nightscout: reorg vs. new code vs. low/no-code, and
+whether the in-process sandbox/cache needs to scale at all)** — new §5.3, plus
+EXP-MT-043/044. Note: the discussion doc was independently restructured/tightened
+(2 197→1 365 lines, commits `5f069849`/`642a95b2`) between the prior round and this one;
+section numbers shifted (query-profile work is now §6.5, storage-comparison is §6.6) —
+this round's addition was placed against the current structure, not the prior one.
+- Answered the core question directly: **scaling the in-process cache/sandbox is very
+  likely not needed for a headless (API-only, no browser) target.** Traced why: `ddata`'s
+  O(old×new) `calcdelta` diff and the single socket room exist specifically to serve many
+  *concurrently polling browser viewers of one site* cheaply — a consumer headless doesn't
+  have. AID controllers/alarm followers already poll on their own schedule with a known,
+  bounded query shape (exactly what §6.5's query-profile proposal, from the prior round,
+  independently arrived at) — they have no use for a delta-vs-last-broadcast optimisation.
+- Isolated the two things that *do* still need server-side compute in a headless target,
+  and showed neither requires a resident, scaled-up sandbox: **(1) alarm evaluation**
+  (`plugins.checkNotifications(sbx)`, `bootevent.js:338`) is a small bounded computation
+  over a recent window, and §5D (stateless/on-demand) was previously disfavoured
+  specifically because "the client protocol is delta-oriented" — a browser-only
+  constraint that disappears once there's no delta stream to maintain; **(2) vendor
+  connectivity** (`lib/plugins/bridge.js:115` Dexcom Share, `lib/plugins/mmconnect.js:24`
+  Medtronic CareLink) — verified both are `init(env, ...)`-factory-shaped `setInterval`
+  closures over one tenant's `env.extendedSettings` credentials with zero shared state
+  between ticks, i.e. already cron-job-shaped, not resident-process-shaped; 1 000 resident
+  timers in shared processes is an avoidable cost, not a requirement.
+- **Evaluated Supabase concretely, piece by piece**, rather than as one bundled
+  recommendation: managed Postgres+RLS maps exactly onto the already-recommended Layer 1b
+  (§6.1); JWT auth + RLS policies reading `auth.jwt()` claims collapse tenant-resolution
+  middleware and storage-enforcement into one DB-level check; Realtime (WAL→subscription)
+  can replace the whole `calcdelta`+socket-room mechanism for headless followers, since
+  Postgres already knows what changed; Edge Functions (Deno, cron-triggerable) are a close
+  fit for the vendor-connectivity shape found above. **Named the honest cost plainly**:
+  real platform lock-in, and it does not replace the self-hosted deployment target already
+  concluded to be permanent (§10.3) — scoped Supabase as one swappable implementation of
+  the existing repository-seam recommendation (§6.2), not a hard dependency.
+- **Reorg vs. new code, answered directly**: the compute logic needs almost no rewriting
+  (§9.1's factory-shape finding already established this and holds unchanged here); what's
+  genuinely new is the *trigger model* — replacing the resident bus's heartbeat+debounce
+  polling (`bootevent.js:301-330`) with event-triggered (NOTIFY/webhook/queue) invocation
+  — plus stripping the already-separable static-file/browser-socket mounts
+  (`lib/server/app.js:192-197`). Small, bounded new-code surface, not a rewrite.
+- Added EXP-MT-043 (headless workload: resident multi-ctx vs. stateless-on-read+RLS, does
+  removing the browser make D competitive with B/C?) and EXP-MT-044 (managed-platform vs.
+  self-hosted cost/latency at matched tenant counts) to the main arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/bootevent.js` (load cycle, `:338`)
+- `externals/cgm-remote-monitor-official/lib/server/app.js` (static file mounts, `:190-198`)
+- `externals/cgm-remote-monitor-official/lib/server/websocket.js` (single room confirmation)
+- `externals/cgm-remote-monitor-official/lib/plugins/bridge.js` (`:100-125`, Dexcom Share timer)
+- `externals/cgm-remote-monitor-official/lib/plugins/mmconnect.js` (`:1-30`, CareLink timer)
+- Web knowledge of Supabase's architecture (managed Postgres+RLS, GoTrue/JWT auth,
+  Realtime logical-replication push, Deno Edge Functions) — general platform knowledge, not
+  fetched from a specific doc URL this round; flagged for a follow-up web-verification pass
+  if the maintainers want citations before treating any Supabase-specific claim as final.
+
+**Follow-up 11 (does headless preclude real-time push, and where does MQTT fit for a
+mobile-first/light UI?)** — new §5.4, plus EXP-MT-045.
+- **Corrected an overstatement in §5.3**: that section had grouped "browser-socket
+  mounts" with static-file serving as things a headless target sheds. Corrected: headless
+  removes the *browser-specific cost centre* (resident `ddata` + O(old×new) `calcdelta`
+  diff broadcast to one shared room, §2.1/§2.4), not the value of push generally — a
+  mobile/light UI, or an AID controller wanting faster-than-polling notice, is a realtime
+  consumer that isn't a browser, and nothing in §5.3 argues against push for it.
+- **Framed the actual choice as "keep push, change what produces it."** Compared three
+  transports against §5.3's Postgres+RLS baseline: (1) today's Socket.IO mechanism, which
+  only stays cheap if the delta-producing step changes too (reusing it as-is reintroduces
+  the resident-state cost §5.3 argued away); (2) Postgres logical-replication push
+  (Supabase Realtime, or hand-rolled `LISTEN`/`NOTIFY`+`pgoutput`), which needs nothing
+  beyond the already-recommended Layer 1b — the WAL already knows the delta, per tenant_id,
+  under the same RLS enforcement as everything else in §5.3; (3) MQTT, broker-fed by the
+  same WAL/`NOTIFY` stream, topic-per-tenant (`tenants/{tenantId}/entries`).
+- **Argued MQTT is additive, not redundant with Socket.IO**, on three concrete grounds:
+  QoS 1/2 persistent-session delivery survives a phone's connectivity drop in a way a live
+  Socket.IO connection cannot; topic-per-tenant maps onto the same tenant-scoped-room
+  authorization pattern already required in §5.2 item 2, so it's not a new auth model;
+  last-will lets a follower app signal "gone offline" for a caregiver dashboard — a
+  safety-relevant capability this document had no prior mechanism for.
+- **Kept the residency conclusion of §5.3 intact and said so explicitly**: transport
+  choice and residency are separable questions; whichever transport is used, the pushed
+  content should still originate at/near storage (WAL-driven), not from a resident,
+  per-tenant merged `ddata` — this section only answers the transport question.
+- Added EXP-MT-045 (push-delivery comparison: Socket.IO+resident-ddata vs. Postgres
+  Realtime vs. MQTT, measuring delivery latency and miss behaviour under simulated mobile
+  connectivity drops) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/lib/server/websocket.js` (`:120-150`, `:780-801`
+  — auth handshake, room join, `emitData`/delta broadcast, confirming the single-room and
+  resident-`lastData` dependency claimed in §5.4)
+- No MQTT references exist anywhere in `externals/cgm-remote-monitor-official` today
+  (confirmed by grep) — this is a genuinely new transport option for the ecosystem, not an
+  existing-but-undocumented one.
+
+**Follow-up 12 (maintainer pushback: MQTT wasn't required and had prior history; why is
+mongoose rejected given a permanent single-tenant-Mongo target; what would shared
+Mongo/Postgres storage infrastructure look like?)** — revises §5.4, rewrites §6.4 into
+§6.4 + new §6.4.1, updates the two stale cross-references (§11 open-questions table,
+§12 tooling-relationship table), adds EXP-MT-046.
+- **Corrected §5.4 on MQTT, from direct maintainer correction**: found via git history
+  that `lib/server/mqtt.js` (317 lines) existed for bidirectional mobile sync and was
+  removed in 2018 (`0e2ae003`, "npm update and remove mqtt") — so MQTT is a previously-
+  shipped-and-dropped capability, not a novel proposal. Re-scoped it from "named candidate
+  transport" to explicitly optional: Postgres logical-replication push (`NOTIFY`/Realtime)
+  is now the stated default recommendation (needs nothing beyond the already-recommended
+  storage layer, no broker to operate), with MQTT kept only as an available upgrade for the
+  mobile QoS/offline case, to be added only if EXP-MT-045 shows Realtime falls short.
+- **Reconsidered the mongoose rejection, given the maintainer's specific point that the
+  single-tenant target will permanently stay on MongoDB (§10.3)**: the prior blanket "no
+  ODM" verdict conflated two different scopes. Split it three ways: (1) casting/validation
+  — mongoose genuinely helps here, closing the exact real gap already found in §6.5
+  (`query.js`'s walker-spec-only-covers-listed-fields); (2) isolation — mongoose does
+  nothing, unchanged, still an application-filter/RLS question (§6.1); (3) query-cost
+  bounding — mongoose does nothing, unchanged, still needs the query-profile work (§6.5).
+  Concluded mongoose is legitimate specifically as an internal implementation detail of the
+  MongoDB adapter behind the repository seam (§6.2) — used only by the permanent
+  single-tenant-Mongo target, never touching `@nightscout/core` or the Postgres/
+  multitenant path — provided its schemas are *generated* from `specs/openapi/` rather
+  than hand-maintained as a fourth drift-prone source of truth (alongside the OpenAPI spec
+  itself, the Ajv/zod boundary validators, and knex's Postgres migrations).
+- **Answered "what would shared Mongo/Postgres storage infrastructure look like?"
+  directly, with a new diagram (§6.4.1)**: the repository interface (§6.2) is the entire
+  shared surface — domain modules, query profiles, and boundary validators are written
+  once, engine-agnostic; mongoose (Mongo adapter) and knex/RLS (Postgres adapter) share
+  zero code with each other below that line, only the interface shape. This also surfaces
+  an honest cost not previously named: the two adapters can diverge in exactly which query
+  shapes they permit, so the query-profile contract (§6.5) needs conformance testing across
+  both adapters, not just documentation, if a two-store Nightscout is ever real (§10.3).
+- Updated two stale cross-references that still said "no, don't adopt mongoose" without
+  qualification: the §11 open-questions table and the §12 tooling-evaluation-relationship
+  table, both now reflect the scoped "yes, inside the Mongo adapter only" position.
+- Added EXP-MT-046 (mongoose-schema casting cost at N-tenant ingest rate vs. today's
+  hand-rolled casting, scoped to the MongoDB adapter) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official` git history: `git log --oneline --all -- '*mqtt*'`
+  and `git show 0e2ae003` (confirmed MQTT existed 2015ish–2018, removed in commit
+  `0e2ae003`, 2018-11-20, "npm update and remove mqtt")
+- Re-read §6.2 (repository interface / backend comparison table) and §6.5 (query cost
+  finding, unchanged) to ground the adapter-boundary argument in already-verified facts
+  rather than re-deriving them
+
+**Follow-up 13 (maintainer pushback: isn't multitenancy mostly a tenant discriminator +
+Mongo aggregation, doesn't require leaving Mongo; is a headless multitenant backend on
+PostgREST feasible; requested actual prototypes, not more argument)** — adds new §6.1.1
+and §5.5, two new live prototypes, EXP-MT-047.
+- **New prototype `tools/mt-bench/mongo-iso-poc/`** against a live MongoDB 7 container:
+  built the enforced-filter repository seam §6.1 described in the abstract, and a
+  `$lookup`-based join correlating treatments with nearby entries. Confirmed both parts of
+  the maintainer's challenge are correct — a `tenantId` discriminator + compound index is
+  the whole schema change, and `$lookup` genuinely reproduces a Postgres-view-shaped
+  correlation query. But confirmed the underlying §6.1 conclusion is unchanged by either:
+  bypassing the seam (mirroring `entries.js:203-205`'s raw collection handle) leaks both
+  tenants' rows, and omitting the tenantId `$match` inside the `$lookup` sub-pipeline leaks
+  the same way, one layer up. Mongo's query model is not the bottleneck; the isolation
+  guarantee is still a discipline property (single seam, code review), not a database
+  property (regardless of code path) — same distinction §6.1 already drew, now demonstrated
+  with a join, not just a plain find. Wrote up as new §6.1.1.
+- **New prototype `tools/mt-bench/postgrest-poc/`** against a live PostgREST 16.2 +
+  Postgres 16 stack, answering "is a headless multitenant Nightscout backend on PostgREST
+  feasible": confirmed a JWT `role` claim drives PostgREST's own `SET ROLE` per request, no
+  custom pre-request function, and the RLS policy from `../rls-poc` reads `tenant_id`
+  straight out of PostgREST's `request.jwt.claims` GUC unmodified — same fail-closed
+  primitive, zero new isolation code. Verified: unauthenticated requests get 401 (not a
+  silent empty list); a tenant-scoped JWT sees only that tenant's rows with zero
+  `tenant_id` in the querystring; PostgREST's native `date=gte.<iso>` querystring operators
+  cover the API v3 date-range shape; a tampered JWT is rejected before RLS is reached.
+  Scoped honestly in write-up (new §5.5): answers the CRUD-surface question, does not
+  answer where computed state (IOB/COB, alerts, vendor connectivity) would live — proposed
+  shape is PostgREST for CRUD + a small stateless compute service, not "PostgREST instead
+  of Node."
+- Both write-ups explicit that neither prototype argues Mongo is "wrong" or Postgres+
+  PostgREST is "required" — they answer capability questions (can Mongo's model express
+  multitenancy and joins; can PostgREST alone serve a headless CRUD surface), leaving the
+  cost/risk recommendation exactly where §10 already put it.
+- Added EXP-MT-047 to the arms table (§8.3): PostgREST-fronted CRUD vs. a thin Node API
+  layer over the same RLS tables, at realistic tenant/request counts.
+
+**Source Files Analyzed (this round)**:
+- `tools/mt-bench/rls-poc/` (reused, not re-derived — same RLS policy/role pattern)
+- New: `tools/mt-bench/mongo-iso-poc/{seed.js,test.js,README.md}` (live MongoDB 7 container)
+- New: `tools/mt-bench/postgrest-poc/{setup.sql,postgrest.conf,test.js,README.md}` (live
+  PostgREST 16.2 + Postgres 16 containers)
+- `lib/server/entries.js:203-205` (re-cited — the raw-collection-handle call site the
+  mongo-iso-poc bypass test mirrors)
+
+**Follow-up 14 (what services sit on top of PostgREST; do multitenant hosters like T1Pal/
+NSPro need a different shape than indie single-tenant operators; do websocket/MQTT
+realtime and vendor-cloud connectivity (Tandem, Tidepool, Glooko, Dexcom, Medtronic,
+LibreLinkUp) need different solutions)** — adds new §5.6, a correction to §3.2, EXP-MT-048.
+- Investigated `node_modules/nightscout-connect` (the module `bootevent.js` wires as
+  `ctx.nightscoutConnect`, already referenced but not previously analyzed in depth):
+  `lib/builder.js` composes `xstate` session/fetch/cycle/poll machines with real backoff
+  (`lib/backoff.js`); every vendor source (`lib/sources/librelinkup.js:74-117`,
+  `glooko/index.js:258-`, `minimedcarelink/index.js:235-`) does
+  `authFromCredentials`→session→repeated `dataFromSession(session, last_known)`, reusing
+  the session token across polls rather than re-authenticating every tick (Glooko scrapes
+  a CSRF-token web login; CareLink does a multi-step `sessionID`/`sessionData` flow).
+  Confirms vendor connectivity holds real per-tenant-account state (session + backoff)
+  across ticks — structurally different from a stateless request handler.
+- **Found and documented a second module-scope cross-tenant hazard**, same class as
+  `speech.js` (§3.2, previously the only listed instance): `lib/plugins/bridge.js:4`'s
+  `mostRecentRecord` is read on every poll to size the next fetch window
+  (`bridge.js:119`) and gate whether a poll is due (`bridge.js:89`) — genuinely
+  load-bearing, not cosmetic. Two tenants' bridges sharing one process would corrupt each
+  other's fetch windows. Added to §3.2 as a correction to §5.3's earlier "stateless"
+  characterization of vendor-connectivity plugins (true at the invocation-shape level,
+  not true of this one module-scope variable).
+- **New §5.6** answers the question directly: three services sit alongside PostgREST
+  regardless of tenant count (auth/JWT-minting, realtime fan-out, vendor-connectivity
+  workers), and the indie-vs-hoster split matters differently for each — CRUD/realtime are
+  already right-sized for indie deployments as-is, but for a 1000-tenant hoster the
+  scaling axis is "N actors per worker process," which is *already how nightscout-connect
+  is internally shaped* (one process running many xstate actors); the hoster-specific work
+  is a scheduler/queue and per-tenant credential storage in front of it, not a rewrite of
+  the fetch logic. Argued websocket/MQTT (server→client, WAL-triggered, stateless
+  fan-out/routing) and vendor connectivity (outbound, rate-limited, credentialed pull,
+  session-sticky per tenant account) are genuinely different problems, not two facets of
+  "the realtime layer" — the fan-out service can be rebuilt stateless and scaled
+  trivially; vendor-connectivity workers cannot, because losing a session on restart costs
+  a re-login that itself risks vendor-side rate limiting.
+- Added EXP-MT-048 (vendor-connectivity worker density) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/node_modules/nightscout-connect/index.js`
+  (the `manage(env, ctx)` entry point wired from `bootevent.js`)
+- `.../nightscout-connect/lib/builder.js` (xstate session/fetch/cycle/poller composition)
+- `.../nightscout-connect/lib/sources/librelinkup.js:74-117`
+- `.../nightscout-connect/lib/sources/glooko/index.js:258-`
+- `.../nightscout-connect/lib/sources/minimedcarelink/index.js:235-`
+- `lib/plugins/bridge.js:4,89,119` (module-scope `mostRecentRecord`, re-examined; new
+  finding, not previously flagged in §3)
+
+**Follow-up 15 (what's required for connectivity+realtime "across the board" using a
+multitenant PostgREST layer vs. a Node monolith; is an integrated monolith the way to go,
+or PostgREST alongside several sidecars?)** — adds new §9.3, EXP-MT-049. Synthesis of
+already-established findings (§5.5, §5.6, §7.4, §9.1), no new prototype needed — the
+prior two rounds' PostgREST/mongo-iso prototypes and the vendor-connectivity analysis
+already supplied the evidence this question needed to be answered from.
+- Answered per-piece, not as a single yes/no: CRUD is a genuine tie (either PostgREST or
+  the Node monolith serves it, per §5.5/§9.1); tenant auth/JWT-minting is a new sidecar
+  either way; **computed state (`calcdelta`/IOB/COB/alarms) belongs in the Node monolith,
+  not a sidecar** — this is the load-bearing conclusion, because §7.4's measured 10–20×
+  `shared`-architecture win specifically depends on `ddata`/`calcdelta`/alarm state living
+  in the same process/isolate as the tenant's loaded data, and splitting it out
+  reintroduces the per-tenant constant cost that architecture eliminated, while also
+  making §3.1's alarm-state consistency guarantee harder across a network boundary, not
+  easier; realtime fan-out and vendor connectivity are both justified sidecar splits, but
+  for reasons independent of the CRUD/PostgREST decision (§5.6).
+- Named the hidden cost the "PostgREST replaces Node" framing hides: if PostgREST owns
+  writes, `@nightscout/multitenant` doesn't disappear — it must now subscribe to
+  Postgres's NOTIFY/WAL to learn about writes it no longer performs itself, a materially
+  more complex role ("owns computed state, reacts to writes it doesn't perform") than
+  today's ("owns computed state and the writes that produce it"), not a smaller one.
+- Concluded neither "integrated monolith" nor "PostgREST + several sidecars" is the right
+  framing — it's a hybrid where the split is decided per-piece by the isolate-cost
+  argument (§7.4), not a stylistic default. Added an explicit sidecar-sprawl warning tied
+  to §6.1: every added network hop is another place tenant identity must be correctly
+  re-derived/forwarded, echoing RLS's "one call site instead of every call site" value
+  proposition — default to the fewest sidecars the isolate-cost argument actually
+  requires (vendor connectivity, and realtime fan-out once tenant count justifies it), not
+  services-per-concern as a default posture.
+- Added EXP-MT-049 (split topology vs. minimal-sidecar alternative, measuring cost of the
+  added hops) to the arms table (§8.3).
+
+**Follow-up 16 (additional experiments for clarity; confirming the nightscout-connect
+in-tree decision; does a Node server scale with additional services or fan out sidecars/
+edge-lambda; should nightscout-roles-gateway's features fold into core like Nocturne, or
+stay separately scoped?)** — adds a correction to §9.1, new §9.4, new prototype
+`tools/mt-bench/nrg-resolution-poc/`, EXP-MT-050.
+- **Confirmed the in-tree Connect decision already exists in this workspace's own docs**
+  (`docs/reports/nightscout-release-planning-2026-09/feature-backlog-prioritization.md:19`,
+  proposing bringing `nightscout-connect` in-tree for PR-ownership reasons, independent of
+  multitenancy) and verified the mechanics: `package.json`'s `nightscout-connect` dependency
+  is a GitHub tarball pinned to a commit sha, not an npm-registry package, meaning any
+  coordinated change already requires touching both repos today. Updated §9.1's
+  `@nightscout/core` package list to note `nightscout-connect` belongs there once in-tree,
+  citing its `manage(env, ctx)` entry point (`node_modules/nightscout-connect/index.js:20`)
+  as already `init`-shaped, consistent with the rest of `core` — in-tree changes where the
+  code lives, not its multitenancy-readiness, which §5.6 already established.
+- **Investigated `~/src/nightscout-roles-gateway` (NRG) in depth**: `lib/policies/
+  index.js:33-49`'s `find_expected_name` (a knex LEFT JOIN across `registered_sites`/
+  `nightscout_authenticity_records`), RBAC group policies with weekly schedules
+  (`lib/policies/`, `migrations/`), ORY Kratos/Hydra-based delegated identity/ownership
+  claims (`env.js:8-13`), JWT brokering against each site's own `API_SECRET` via
+  `/api/v2/authorization/subjects` (`lib/tokens/index.js:9-40`), and the
+  `x-upstream-origin`/`x-forwarded-host` headers it hands NGINX for `auth_request`-style
+  reverse proxying (`lib/routes.js:327-330`, `specify_upstream_handler`).
+- **New prototype `tools/mt-bench/nrg-resolution-poc/`**: measured NRG's actual resolution
+  query shape (knex LEFT JOIN, 2000 seeded sites) against Postgres vs. the same data held
+  in an in-process `Map`. Two independent runs: sidecar p50 0.21/0.45 ms, p99 1.08/1.11 ms;
+  in-core p50 0.0002/0.0004 ms, p99 0.0011/0.0025 ms — **~1 000× for the resolution step
+  specifically**, small in absolute terms but the first concrete number behind §9.3's
+  abstract "every added hop re-derives tenant identity" argument.
+- **New §9.4 answers the fold-in-vs-stay-separate question in three parts, not one**:
+  (1) resolution (hostname→tenant) is worth folding into core's in-process lookup, cheaply,
+  reusing NRG's schema as a data source, not its code; (2) RBAC/group/schedule enforcement
+  should stay separately scoped — it is genuinely richer than `cgm-remote-monitor`'s
+  authorization model, depends on an external OAuth2/OIDC provider relationship (Kratos/
+  Hydra) that Nocturne's own precedent (tenant-claim verification only, no group/schedule
+  policy authoring) does not argue for absorbing either; (3) per-site `API_SECRET`
+  brokering is specific to NRG's fleet-of-single-tenant-instances deployment model and has
+  no equivalent need in the shared-process multitenant target — that problem doesn't exist
+  there. Net: NRG stays the right tool for Architecture A (fleet of single-tenant
+  instances), and only its resolution *data shape*, not its RBAC/brokering scope, should
+  migrate into the shared multitenant target's core.
+- Added EXP-MT-050 (validate the resolution-only migration drops the hop cost without
+  silently losing any production RBAC/schedule rule) to the arms table (§8.3).
+
+**Source Files Analyzed (this round)**:
+- `docs/reports/nightscout-release-planning-2026-09/feature-backlog-prioritization.md:19,149`
+  (existing in-tree-Connect decision context in this workspace)
+- `externals/cgm-remote-monitor-official/package.json` (nightscout-connect tarball pin)
+- `externals/cgm-remote-monitor-official/node_modules/nightscout-connect/index.js:20`
+- `~/src/nightscout-roles-gateway/env.js`, `lib/policies/index.js`, `lib/tokens/index.js`,
+  `lib/routes.js`, `knexfile.js`, `README.md`, `migrations/` (directory listing only)
+
+**Follow-up 17 ("for multitenant implementation are we still leaning towards custom Node
+js server built for multitenant compatibility, or towards some kind of PostgREST + edge
+function/lambda architecture?")** — no new prototype needed; synthesized the already-
+measured findings from §5.5/§5.6/§9.3 into an explicit answer at the §10.2 recommendation
+level, since the detailed per-piece analysis in those sections risked leaving the
+top-line lean ambiguous.
+- Added a new passage to §10.2 stating the answer plainly: **the lean is toward extending
+  the Node monolith, with PostgREST/edge-functions positioned as an optional front for one
+  piece (CRUD), not as the architecture** — restated as a false-binary correction, because
+  "custom Node" vs. "PostgREST+edge/lambda" is not the actual choice this document's
+  evidence supports.
+- Grounded this in three already-measured facts, tied together explicitly for the first
+  time at the recommendation level: (1) computed state (calcdelta/IOB/COB/alarms) has no
+  edge/lambda-shaped answer at all — §7.4's 10-20x win is inseparable from that state
+  living in one long-running process's memory, and lambda/edge cold-starts (§7.1's
+  measured ~3-4ms/cold-wake tax) are the opposite of what that finding needs; this is why
+  the recommendation is "extend the monolith," not "go serverless" — the piece that must
+  not be serverless is also the piece the central finding rests on; (2) CRUD is where
+  PostgREST is legitimate and load-bearing (§5.5's live measurement), a choice about which
+  process performs writes made after the isolation-primitive decision, not a substitute for
+  the compute-locality decision; (3) edge/lambda fits vendor connectivity's per-tick
+  invocation shape (§5.3) but not its cross-tick session-continuity requirement (§5.6/
+  §9.3's LibreLinkUp/Glooko/CareLink session state), making it a qualified, not
+  unqualified, fit.
+- Concluded explicitly: a custom Node process for the piece that must stay stateful/
+  colocated, with PostgREST and edge/lambda as independently justified options for the
+  genuinely stateless/interval-shaped pieces (CRUD, realtime fan-out, vendor-connectivity
+  ticks) — not either extreme as the whole architecture.
+
+**Follow-up 18 (mature architecture at 10k/100k/1M tenants, router facade, Elixir/Phoenix
+vs. Unix-composable tooling, how many deployment targets, rate-limiting/proxy-IP-pool
+concern for vendor connectivity at density)** — synthesis across already-established
+sections plus one new gap identified and investigated live.
+- Investigated whether `nightscout-connect` has any existing egress-proxy or per-IP rate
+  accounting: `lib/backoff.js` implements exponential backoff with jitter, which is a
+  **per-account** retry policy only; grepped the module for `proxy`/`rate limit`/`429`/
+  `blocked`/`banned` — none present. Confirmed this is a genuinely new gap, not a variant
+  of the backoff problem already solved: backoff answers "should this account retry,"
+  the density problem is "does my IP's aggregate request rate look like abuse to the
+  vendor regardless of any single account's behavior" — a problem invisible in today's
+  pod-per-tenant model because each tenant's vendor traffic already has its own IP, and
+  one this document's own worker-pool-density recommendation (§5.6/§9.3) would
+  reintroduce if not designed for.
+- Added new **§10.5** ("The mature architecture: components at k tenants, the router
+  facade, and how many deployment targets"), assembling §5.5/§5.6/§9.3/§9.4/§10.2/§10.4
+  findings into one component diagram (`ROUTER`, `AUTH`, N `APP` shards, `REALTIME`,
+  `VCPOOL`) plus the new rate-limiting/proxy-pool finding.
+- Answered Elixir/Phoenix vs. Unix-composability directly and narrowly: Phoenix/OTP is a
+  genuinely strong fit for exactly two boxes (`REALTIME`, `VCPOOL` — both "hold many
+  small per-tenant state machines, supervised, distributable" problems BEAM was built
+  for), but not for `APP` (compute-state box), where §7.3's "representation beats
+  language" finding applies regardless of runtime. Concluded: use whichever runtime
+  measures best per-box, not one runtime for the whole system — a restatement of the
+  existing per-piece answer with a third runtime added, not a reason to prefer Elixir or
+  Unix-style composition as an abstract value.
+- Answered the deployment-target-count question by separating two conflated axes:
+  **codebase targets** (still 3 — `@nightscout/core`, `@nightscout/single-tenant`,
+  `@nightscout/multitenant`, per §9.1, since `ROUTER`/`AUTH`/`REALTIME`/`VCPOOL` are all
+  thin enough to be additional entry points within existing packages) vs. **deployable
+  units** (legitimately grows to 4-5 processes at mature scale, an operational scaling
+  decision made per-deployment, not a codebase decision).
+- Answered the repo-transformation-size question with a concrete, bounded 4-item list
+  (close §3's module-scope leaks; bring `nightscout-connect` in-tree; build four new thin
+  components; land the storage/query-model seam) — explicitly not a rewrite of `APP`,
+  consistent with §9.1's "most of the codebase is already factory-shaped" finding.
+- Added EXP-MT-051 (simulated vendor rate-limiter + egress-proxy-pool test) and
+  EXP-MT-052 (end-to-end multi-component harness at increasing shard count) to the
+  canonical §8.3 arms table.
+- Validated the new §10.5 mermaid diagram with `npx @mermaid-js/mermaid-cli` (renders
+  clean) and re-ran `tools/verify_refs.py` — no new broken refs introduced by this doc
+  (all 96 broken refs reported are pre-existing, in unrelated files).
+
+**Source Files Analyzed (this round)**:
+- `externals/cgm-remote-monitor-official/node_modules/nightscout-connect/lib/backoff.js`
+  (confirmed per-account exponential backoff only, no IP/proxy-pool awareness)
+- `docs/sdqctl-proposals/nightscout-connect-vendor-interop.md` (grepped for existing
+  rate-limit/proxy coverage — none found, confirming this is a new topic for the doc)
+
+**Follow-up 19 (VCPOOL vs REALTIME clarification; does committing early to typed
+schemas — including tenant-uploadable custom-resource/CRD-like schemas — simplify the
+multitenancy analysis?)**
+- Clarified in chat: `VCPOOL` = vendor-connectivity worker pool (outbound pull from
+  Dexcom/Tandem/Glooko/etc., §5.6/§9.3); `REALTIME` = fan-out push to connected clients
+  (websocket/WAL-driven, §5.4/§9.3) — different directions, different statefulness shape.
+- Added new **§6.5.1**: committing early to a typed vocabulary (§9.2 Layer 0) is
+  unconditionally good regardless of CRD-like extensibility — it is the same
+  casting+query-profile generation pipeline §6.5 already wants, just triggered at
+  registration time instead of `specs/openapi/` build time. But it does **not** dissolve
+  the §7.2/§7.3 columnar-representation tension: that win required a shape known at
+  compile/build time, which open-ended tenant-registered schemas structurally cannot
+  provide. Cited Kubernetes' own built-in-vs-CRD storage/performance split as an
+  analogous, explicitly-labeled-as-analogy precedent (not a benchmark run here).
+  Concluded a two-tier boundary: closed core set (existing 4 `specs/openapi/aid-*.yaml`
+  collections) stays compile-time-typed/columnar-eligible; tenant-uploaded custom
+  resources are schema-validated JSON/JSONB with their own query profile, promoted into
+  the core set only via a reviewed spec change, not automatically.
+- Added EXP-MT-053 (register a synthetic custom resource via CRD-like flow, confirm
+  casting/query-profile generation and cache-tier exclusion) to the canonical §8.3 table.
+- Re-ran `tools/verify_refs.py` — no new broken refs from this doc.
+
+**Follow-up 20 (where does the multitenant monolith struggle first, and does Redis
+instead of resident `ddata` help cold-start / db-op cases?)**
+- Added new **§7.7**, synthesizing §7.1/§7.2/§7.5/§6.1 into a direct answer rather than a
+  new prototype: the monolith's first bottleneck is **event-loop CPU budget**, not RSS
+  (§7.2 keeps memory to 9.9-202.5 KB/tenant) and not the database (§6.1's RLS overhead is
+  ~0.3-0.6 ms/query and I/O is async, non-blocking) — it is the *synchronous* per-tenant
+  work (wake/clone ~3-4ms §7.1, O(n²) merge/delta up to 81.2ms §7.5) that stalls every
+  co-resident tenant sharing one process, restating §7.5's fairness finding as the answer
+  to "which area breaks first."
+- Answered the Redis question by separating what it replaces: (1) it legitimately removes
+  a DB round-trip for a shard's first touch of a tenant (a real win, and it also loosens
+  tenant-shard pinning for §10.5's `ROUTER`); (2) it does **not** remove the materialisation
+  cost, which §7.1's own row ("`JSON.parse` of a 795 KB snapshot — the hot cache in
+  Redis/keyv path" = 2.52 ms) already measured as the dominant cost, not the round-trip —
+  so Redis is only as fast as what is stored in it, the same representation lever as
+  §7.2/§7.3 applied one layer up (a columnar blob in Redis removes the parse cost the way
+  it does in-process).
+- Named the one honest gap: no measurement yet of the actual network round-trip for a
+  Redis-held columnar blob (only in-process 0.001 ms and JSON-in-Redis 2.52 ms are
+  measured); added EXP-MT-054 to close it.
+- Added EXP-MT-054 to the canonical §8.3 table; re-ran `tools/verify_refs.py` — no new
+  broken refs from this doc.
+
+### Entries API import reconciliation decision (2026-11-02)
+
+The maintainer selected online, zero-pause best-effort reconciliation for the
+initial API-based entries importer. API v3 history filters by `srvModified >`
+and includes soft-deleted records, but a permanent v3 delete and v1 DELETE
+physically remove rows without a history tombstone. The importer must state
+that hard deletes can leave stale target rows or be missed; it must not claim
+exact deletion reconciliation or raw-backup fidelity. The baseline scan must
+also include legacy records without `srvModified`, which history cannot return.
+
+**Source Files Analyzed**:
+- `externals/work/crm-multitenant-20261102/lib/api3/generic/history/operation.js:25,84,115`
+- `externals/work/crm-multitenant-20261102/lib/api3/generic/delete/operation.js:21-24,55-62`
+- `externals/work/crm-multitenant-20261102/lib/server/soft-deleted.js:3-20`
+
+### PostgreSQL entries preserve JSON document values (2026-11-02)
+
+The dormant PostgreSQL entries writer now accepts recursively JSON-safe nested
+objects and arrays in inserted and set fields, while still rejecting BSON
+objects, cycles, accessors, non-finite numbers, negative zero and other
+lossy/non-JSON values. This is necessary for API import fidelity; PostgreSQL
+JSONB still provides logical value equality rather than BSON key-order parity.
+The disposable PostgreSQL 16 / MongoDB 8.0.34 differential suite passed all 22
+tests, including nested insert and update. This does not register the backend
+or implement the API importer.
+
+**Source Files Analyzed**:
+- `externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:34-63`
+- `externals/work/crm-multitenant-20261102/tests/postgres-entries-write.test.js:24-39,167-177`
+
+### One-time API entries importer and M1/M2 gates (2026-11-02)
+
+Added a one-shot Nightscout API importer for initial PostgreSQL tenant
+population. It scans live entries in bounded baseline pages, catches best-effort
+updates and soft-delete markers through the `srvModified` history route, and
+writes each page in a tenant-bound transaction. Reruns replay from the beginning
+and upsert duplicate identities; there is no durable checkpoint. This is not
+ongoing NS-to-NS sync; `nightscout-connect` remains that separate pipeline.
+Source API credentials are a read-scoped bearer token supplied per run and are
+never written to importer state or logs. Physical hard deletes remain
+unrecoverable from history.
+
+**Local acceptance:** importer unit/API contract tests pass **5**, PostgreSQL
+target isolation/replay integration passes **1**, and the PostgreSQL/MongoDB
+entries differential suite passes **22**. Persistent operator policy, subject
+authority, settings and atomic policy/write fencing pass **16** disposable
+PostgreSQL checks. Tenant HTTP/resolution/import focused checks pass **24**;
+ESLint is clean and `npm run test:tiers` classifies **473 files across 8 tiers**.
+
+**Boundary:** this importer uses the still-dormant PostgreSQL entries writer
+through an importer-only adapter; PostgreSQL is not added to the global
+serve-time backend registry. Full API/storage compatibility and live-source
+acceptance remain open. M2 still lacks production management authentication,
+production tenant credential/policy composition and `serve` role wiring; M1/M2 remain in
+progress, so the passing M3 lab does not promote M3. No commit, serving
+enablement or push was made.
+
+**Source files**:
+- `externals/work/crm-multitenant-20261102/lib/import/entries.js`
+- `externals/work/crm-multitenant-20261102/tools/import-entries.js`
+- `externals/work/crm-multitenant-20261102/tests/entries-importer.test.js`
+- `externals/work/crm-multitenant-20261102/tests/entries-importer-postgres.integration.test.js`
+
+### M2 production authority boundary (2026-11-02)
+
+The maintainer selected provider-neutral injected authority ports. Tenant
+resolution, credential verification and current authorization remain explicit
+composition dependencies; no test or fallback authority is promoted to
+production. Keep all multitenant `serve` roles disabled until a deployment
+adapter supplies tenant aliases/credentials and current authorization.
