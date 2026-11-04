@@ -338,6 +338,47 @@ integration worktree. Use fresh isolated worktrees from the confirmed common
 head rather than repointing existing lanes. Commit explicit paths with no
 trailers. Agents never push; prepare themed PR updates and maintainer commands.
 
+#### P2 entries projection slice handoff (2026-11-03)
+
+**Read-derived from agent-executed evidence, not a coordinator replay.**
+Owned lane `externals/work/crm-entries-next-20261103`, branch
+`workspace/entries-next-20261103`, reports clean head
+`cabb5eecb5a15ee9050f8894299a78ae300ae731`, from common baseline `0afdb87f`.
+Changed paths are `lib/storage/postgres-entries-read.js`,
+`tests/postgres-entries-read.test.js` and `tests/postgres-filter.test.js`.
+The adapter supports API3 dotted inclusion projection after decoding JSONB;
+unsupported exclusions/mixed projections refuse. Default Mongo serving and
+shared handlers are unchanged.
+
+With both URI variables set locally to owned disposable PostgreSQL/MongoDB
+services, the agent ran:
+
+```sh
+NODE_ENV=test ./node_modules/.bin/mocha --no-config --no-package --fail-zero \
+  --reporter ./scripts/execution-reporter.js --timeout 30000 \
+  --require ./tests/hooks.js tests/postgres-filter.test.js \
+  tests/postgres-identity.test.js tests/postgres-entries-read.test.js \
+  tests/api3.storage.find.test.js tests/api3.storage.filter-semantics.test.js \
+  tests/api3.read.test.js tests/api3.fields.test.js --exit
+```
+
+Reported result: **50 passing**. Differential cases cover dotted nested-array
+projection, missing paths and `_id` inclusion; real API3 reads assert projected
+200 responses, Last-Modified and conditional 304 behavior. Refusing all nonempty
+projections makes the handler check fail `500 !== 200`. Returning array members
+without recursive projection makes `uploader.radios.id` retain extra `signal`
+fields compared with MongoDB. Restored implementation passes. An attempted
+unsupported-overlapping-path assertion was removed because that refusal was
+not an established contract; no differential mismatch was reported.
+
+Focused lint, tier classification and whitespace checks pass; owned containers
+were removed. Reproducible setup uses ephemeral loopback mappings
+`127.0.0.1::5432` and `127.0.0.1::27017`, with assigned ports read through
+`docker port`; never put live database URLs in evidence.
+SQL-side projection/performance, broader list/history/mutation acceptance,
+full-suite and combined integration remain UNMEASURED. The branch is unpushed,
+not incorporated and not PR-ready.
+
 #### P2 authority slice handoff (2026-11-03)
 
 **Read-derived from agent-executed evidence, not a coordinator replay.**
