@@ -36,6 +36,13 @@ Historical status/measurement sections below retain their dates.
 | [Fresh-context M1-M6 preview packets](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#preview-dispatch-packets-m1-m6-2026-11-04) scope the next six milestones; M0 acceptance remains required within the foundations. | Two isolated agents prepare entries mutation and real-provider/runtime packets from `c10290d2`, stopping before implementation approval. Coordinator owns records/joins/decisions. Later integration, pinned-client, realtime and operational packets are staged behind their acceptance inputs, not dispatched as six competing implementations. Current selected queue measurement: ST-PG unit gate passes; seven other items unmeasured, integration gates skipped. |
 | T30-WIRING claim corrected to in-progress; dashboard refreshed through R27. | R25-R27 measure partial credential/exchange/current-authority HTTP implementation, not full production runtime acceptance. M1/M2 criteria remain incomplete; M3/M4/M6 remain dependency-constrained. No milestone promotion, new operator-visible default, OIDC prerequisite or serving-role enablement. |
 
+### Update: dormant entries POST implementation (2026-11-04)
+
+| Work / state | Evidence and next gate |
+|---|---|
+| Actual tenant entries POST/create/resend fixed locally on `workspace/entries-mutations-20261104`, `6cad7a42d804d6bb115c9d4eff55fe931b68a7cf`; unpushed, not merged/released. | [R29](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r29---dormant-tenant-entries-post-on-6cad7a42-2026-11-04): agent-reproduced, parent log-read evidence; nonbrowser 6807 passing/73 pending/0 failing, separate browser684, focused78, six source controls red as intended, lint/tier/final prcheck pass. Preserves fresh branch-specific authority, current attribution, parser/purifier, tenant-local configured pruning and Mongo defaults; repairs legitimate hyphen/Unicode extension-key compatibility. |
+| Preview acceptance remains incomplete; no operator-visible default change. | Independent real-provider lab is not included in this tree. Combine accepted slices and rerun combined-head validation before claiming runtime/POST integration. Pinned-client/wider REST, durable notifications/recovery and operations acceptance remain separate gates; no milestone promoted. Published foundations PR remains `81bc71e6`, `official/dev` remains `4a482627`. |
+
 ### Update: ingress boundary and POST admission (2026-11-04)
 
 | Work / state | Evidence and next gate |
