@@ -22,6 +22,12 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: bounded entries search (2026-11-04)
+
+| Tree / work | Evidence and remaining acceptance |
+|---|---|
+| Local dormant `workspace/tenant-entries-search-20261104` at `c10290d2b804f86853ce3d92014baaf62d10a745`, extending R26's `81bc71e6`; includes `official/dev` `4a482627`, not merged to `dev`. | Read-derived agent-run [R27](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r27---dormant-tenant-entries-search-on-c10290d2-2026-11-04): live MongoDB/PG differential 8 passes, actual HTTP search 2 passes, affected 115 passing/16 pending/0 failing, full nonbrowser 6764 passing/88 pending/0 failing, browser 684/0/0. Three source controls fail as intended and are restored; lint/tier/prcheck pass. Supports bounded list/search through shipping handlers with current tenant authority; history/mutations, pinned-client replay, production runtime/provider/import and resource acceptance remain open. No operator-visible default change, role enablement or milestone promotion. |
+
 ### Update: bounded authority lane handoff (2026-11-03)
 
 | Tree / work | Evidence and remaining acceptance |
