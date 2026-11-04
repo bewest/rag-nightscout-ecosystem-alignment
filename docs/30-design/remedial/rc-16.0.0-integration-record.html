@@ -4661,7 +4661,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>82826a22e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-04 at <code>4714b1a74</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -6312,6 +6312,779 @@ provisioning/import, scoped provider runtime/recovery, cross-process races,
 v1/v2 data routes, mutations, resource bounds, owner/operator lifecycle and
 listeners remain outside acceptance. Mongo migration opt-in was not enabled.
 No milestone promotion follows.</p>
+<h3 id="r27---dormant-tenant-entries-search-on-c10290d2-2026-11-04">R27 - dormant tenant entries search on <code>c10290d2</code> (2026-11-04)<a class="headerlink" href="#r27---dormant-tenant-entries-search-on-c10290d2-2026-11-04" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived agent-run evidence</strong>, reviewed against local logs on
+2026-11-04, not coordinator replay or production acceptance. Clean local
+<code>workspace/tenant-entries-search-20261104</code> at
+<code>c10290d2b804f86853ce3d92014baaf62d10a745</code> extends R26's <code>81bc71e6</code> and
+contains <code>official/dev</code> <code>4a482627</code>.</p>
+<p>The dormant reader adds <code>findMany</code> using the shipping filter-definition
+parser and existing PostgreSQL AST compiler, projection and normalization.
+Actual API3 collection/search handlers are exercised through the existing
+tenant credential/current-authority bridge. Supported reads require explicit
+sort, positive safe-integer limit and nonnegative safe-integer skip; unsupported
+filter/sort shapes refuse rather than approximate MongoDB or read unboundedly.
+The bridge binds only current <code>api:entries:read</code>; reserved history routes,
+mutations and other collections remain unsupported. No single-site default,
+client protocol, backend registration, listener or role is changed.</p>
+<table>
+<thead>
+<tr>
+<th>Campaign on <code>c10290d2</code></th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Live MongoDB/PostgreSQL reader differential</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>New actual HTTP search selectors</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:affected -- --since 2bbdf3121a6ea2b9c16742b77067c4dbc21cfb38</code></td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:all</code>, seven nonbrowser tiers summed once</td>
+<td style="text-align: right;">6764</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:browser</code></td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Campaigns overlap; do not add them. Nonbrowser tier passes are unit 2133,
+DOM 205, dependency 368 (2 pending), core 319, harness 93, integration 3628
+(86 pending), stress 18. The integration tier alone is not the full-suite
+total. An initial run failed four existing test-database name guards; the
+corrected owned database name includes <code>test</code>, without bypassing the guard.
+The inherited R26 focused campaign was not rerun as one combined selector;
+its 85 passes are not a post-change combined result.</p>
+<p>Disposable MongoDB 8.0.34 uses loopback/random ports and nofile 64000;
+PostgreSQL 16 is also disposable. Source <code>tests/ci.test.env</code> first, then
+provide owned <code>CUSTOMCONNSTR_mongo</code> and <code>NS_TEST_POSTGRES_ADMIN_URI</code>, with
+<code>TZ=UTC TEST_SHUFFLE_SEED=41574423920 TEST_ENV_FILE=/dev/null NODE_ENV=test</code>.
+The full run leaves the four tenant-HTTP/authority/Vault Docker flags unset.
+The affected run enables <code>NS_TENANT_CREDENTIAL_HTTP_DOCKER_TEST</code>,
+<code>NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST</code>, <code>NS_TENANT_HTTP_DOCKER_TEST</code> and
+<code>NS_VAULT_DOCKER_TEST</code>. Reader differential uses
+<code>tests/postgres-entries-read.test.js</code>; actual HTTP search cases are in
+<code>tests/tenant-credential-http.integration.test.js</code>. The local ignored
+<code>externals/work/HANDOFF-tenant-entries-search-20261104.md</code> carries the
+environment recipe and log names.</p>
+<p>Actual HTTP cases measure exchange-issued JWTs, overlapping tenant IDs,
+pagination/projection, current grant revocation across independently pooled
+workers, root/anonymous policies, invalid credentials, reserved history
+refusal, unsupported filters, store failure and unchanged stored rows.
+Source controls in owned scratch fail as intended: bypassing current
+authority returns 200 instead of revoked-search 403; binding the other tenant
+returns the wrong synthetic row; removing pagination offset breaks the
+MongoDB/PostgreSQL differential. Sources are restored and scratch removed.</p>
+<p>Agent-reported full lint has zero errors and 22 existing warnings; focused
+lint, whitespace, 477-file/eight-tier classification and final prcheck pass.
+Broader pinned-client replay, history/mutations, production import/provider
+composition, resource acceptance, owner/operator lifecycle and listeners
+remain unmeasured. Mongo migration opt-in remains skipped because of its
+literal shared temporary path. No queue state or milestone is promoted;
+there is no operator-visible default change.</p>
+<h3 id="r28---entries-post-contract-characterization-on-c10290d2-2026-11-04">R28 - entries POST contract characterization on <code>c10290d2</code> (2026-11-04)<a class="headerlink" href="#r28---entries-post-contract-characterization-on-c10290d2-2026-11-04" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived agent-run characterization</strong>, not implemented PostgreSQL HTTP
+POST acceptance. Owned <code>workspace/entries-mutations-20261104</code> starts at
+<code>c10290d2b804f86853ce3d92014baaf62d10a745</code>; characterization tests are local
+uncommitted packet artifacts. Production source and migrations were unchanged
+for this capture. Current <code>official/dev</code> is <code>4a482627</code>; published foundations
+PR remains at <code>81bc71e6</code>.</p>
+<p>The actual MongoDB API3 application/purifier and existing live PostgreSQL/Mongo
+write differentials pass 34 selected checks, zero pending/failing. A separate
+credential/metadata campaign passes four checks with one intended acceptance
+failure: accepted credential GET succeeds, but POST remains 405 rather than
+the future 201. This red result is evidence of missing implementation, not a
+completed gate. The original root GET mismatch was a fixture using plaintext
+instead of the shipping accepted root digest; an explicit shipping/verifier/
+actual-GET matrix now agrees. No shipping credential regression is inferred.</p>
+<p>Measured contracts: current missing subject-name metadata leaves existing GET
+valid but refuses exchange 401; metadata-query unavailability returns 503.
+Shipping parser/purifier accepts a synthetic field above the unrelated owner
+parser's size limit, scrubs disallowed inert markup, and retains its existing
+malformed-JSON error behavior. The exact 50 MiB parser boundary is read-derived,
+not load-tested. Actual configured pruning runs after create-only writes
+without requiring caller delete permission, preserves its OR age predicate
+and hourly collection throttle, and is absent when retention is disabled.</p>
+<p>Commands from the alignment root after sourcing the owned lane's
+<code>tests/ci.test.env</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>node<span class="w"> </span>externals/work/entries-mutations-run-owned.cjs
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>node<span class="w"> </span>externals/work/entries-mutations-run-owned.cjs<span class="w"> </span>gap
+</code></pre></div>
+<p>The ignored runner supplies disposable PostgreSQL 16 and MongoDB 8.0.34 on
+random loopback ports, Mongo nofile 64000, owned test connections,
+<code>TZ=UTC TEST_SHUFFLE_SEED=41574423920 TEST_ENV_FILE=/dev/null NODE_ENV=test</code>.
+It uses the execution reporter; gap mode explicitly enables the credential
+HTTP opt-in. The local ignored
+<code>externals/work/HANDOFF-entries-mutations-packet-20261104.md</code> identifies
+characterization selectors and logs
+<code>entries-mutations-policy-characterization-final.log</code> (34 passes) and
+<code>entries-mutations-root-metadata-followup.log</code> (4 passes, intended 1 failure).
+An earlier fixture-only update overgrant made create-only resend incorrectly
+succeed (200 instead of 403); restored checks pass. That is not an implemented
+production source-ablation control.</p>
+<p>The approved next slice is actual tenant entries POST/create/resend with
+current branch-sensitive grants, exact attribution, explicit input/outage
+classification and configured tenant-local pruning, using a trusted collection
+intent factory while retaining Mongo defaults. Approved refusal semantics live
+in release decisions. Actual PG HTTP compatibility, controlled races,
+source-ablation controls, full suites and final prcheck remain pending for
+that implementation. Other mutation methods/history, runtime enablement,
+client replay and milestone promotion are outside this characterization.</p>
+<h3 id="r29---dormant-tenant-entries-post-on-6cad7a42-2026-11-04">R29 - dormant tenant entries POST on <code>6cad7a42</code> (2026-11-04)<a class="headerlink" href="#r29---dormant-tenant-entries-post-on-6cad7a42-2026-11-04" title="Permanent link">&para;</a></h3>
+<p><strong>Agent-reproduced; parent read-derived from retained logs and handoff.</strong>
+Local <code>workspace/entries-mutations-20261104</code> is clean at
+<code>6cad7a42d804d6bb115c9d4eff55fe931b68a7cf</code>, based on <code>c10290d2</code>.
+Parent fetched <code>official/dev</code> at <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>;
+published foundations PR remains OPEN at <code>81bc71e6</code>. This slice is unpushed,
+not merged or released, and is not the independent real-Vault composition lab.</p>
+<p>Actual entries list POST now uses the shipping create/resend handler and a
+trusted per-Collection PostgreSQL intent/storage factory; Mongo remains the
+default. Fresh create/update grants follow the stored-identity branch; subject
+attribution uses the current exact display name. Missing attribution refuses
+401, metadata outages 503. Submitted representation failures alone become 400;
+recognized storage unavailability becomes 503 and internal failures remain 500.
+The shared parser/purifier and tenant-local configured autoprune are retained.
+Adjacent mutation methods/history remain unsupported; no serving role,
+listener, migration or default profile is enabled.</p>
+<p>The measured Mongo201/PG400 extension-key gap is repaired by separating literal
+document keys from mutation-map validation. Independent hyphenated, Unicode
+and ordinary unknown-field cases agree across actual Mongo/PG HTTP insert,
+replacement and configured merge, including omission/unset behavior. Existing
+dot/dollar path refusals, immutable identity and losslessness checks remain.
+This is bounded compatibility evidence, not proof for every Mongo input/client.</p>
+<table>
+<thead>
+<tr>
+<th><code>npm run test:all</code> tier</th>
+<th style="text-align: right;">passing</th>
+<th style="text-align: right;">pending</th>
+<th style="text-align: right;">failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unit</td>
+<td style="text-align: right;">2133</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>dom</td>
+<td style="text-align: right;">205</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>dependency</td>
+<td style="text-align: right;">368</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>core</td>
+<td style="text-align: right;">319</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>harness</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>integration</td>
+<td style="text-align: right;">3671</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>stress</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><strong>Nonbrowser, each tier counted once</strong></td>
+<td style="text-align: right;"><strong>6807</strong></td>
+<td style="text-align: right;"><strong>73</strong></td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Separate browser: <strong>684 passing</strong>, zero pending/failing. Focused actual HTTP,
+live read/write differential and create checks: <strong>78 passing</strong>, zero
+pending/failing. Post-sync committed affected groups total <strong>3475 passing /
+13 pending / 0 failing</strong>, not another full-suite result. Production lint:
+zero errors, 22 warnings outside changed source; owned test lint and whitespace
+checks pass. Tier registry: 478 files across eight tiers, valid. Final
+<code>tools/review/prcheck/prcheck.sh</code> log ends <code>OK</code>.</p>
+<p>Actual HTTP cases include two tenants/workers, current-name change after
+exchange, next-operation revocation, branch-specific permissions, parser
+behavior, configured retention without fabricated delete permission,
+rollback/no-events and postcommit visibility before notifications. Synchronized
+identifier races preserve measured Mongo outcomes: create-only <code>[201,500]</code>,
+create+update <code>[200,201]</code>; no new race guarantee is claimed.</p>
+<p>Six isolated source controls go red with assertion failures: restoring ASCII
+validation returns400 instead of201 for hyphen/Unicode; overgranting update
+returns200 instead of403; bypassing fresh authority accepts a revoked caller;
+wrong entries tenant binding exposes the other synthetic row; removing the
+owned transaction returns201 instead of rollback500; removing the retry
+permission guard changes create-only race outcomes to <code>[200,201]</code>.
+Clean focused/full checks were rerun after restoring controls.</p>
+<p>Reproduce from alignment root, repeating the environment prefix in each shell:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">set</span><span class="w"> </span>-a
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>.<span class="w"> </span>./externals/work/crm-entries-mutations-20261104/tests/ci.test.env
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nb">set</span><span class="w"> </span>+a
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>node<span class="w"> </span>externals/work/entries-mutations-run-owned.cjs<span class="w"> </span>focused
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>node<span class="w"> </span>externals/work/entries-mutations-run-owned.cjs<span class="w"> </span>all
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>node<span class="w"> </span>externals/work/entries-mutations-run-owned.cjs<span class="w"> </span>browser
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>node<span class="w"> </span>externals/work/entries-mutations-run-owned.cjs<span class="w"> </span>affected
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>node<span class="w"> </span>externals/work/entries-mutations-controls.cjs
+</code></pre></div>
+<p>The ignored runner prints exact child invocations; uses owned random-loopback
+PG16/Mongo8.0.34 (Mongo nofile64000), UTC, seed41574423920 and
+<code>TEST_ENV_FILE=/dev/null</code>; overrides connections after sourcing CI settings;
+and enables the credential HTTP opt-in. Helpers/control copies were removed.
+The migration fixture requiring literal <code>/tmp/ns-repl-key</code> remains skipped;
+pending opt-ins are not passes. Current-dev synchronization preceded final
+checks. Exact selectors, lint/tier commands and local artifact names are in
+<code>externals/work/HANDOFF-entries-mutations-implementation-20261104.md</code>.
+Session logs: <code>entries-mutations-full-nonbrowser-final.log</code>,
+<code>entries-mutations-browser.log</code>, <code>entries-mutations-final-focused.log</code>,
+<code>entries-mutations-postsync-affected-enabled.log</code>,
+<code>entries-mutations-lint-tier.log</code>, <code>entries-mutations-controls-summary.log</code>,
+the six named control logs and <code>entries-mutations-prcheck.log</code>.</p>
+<p>No pinned-client campaign, production TLS/provider operations, durable
+cross-worker notification/recovery, combined runtime/POST acceptance or major
+milestone completion is established here.</p>
+<h3 id="r30---real-provider-runtime-lab-on-e410b163-2026-11-04">R30 - real-provider runtime lab on e410b163 (2026-11-04)<a class="headerlink" href="#r30---real-provider-runtime-lab-on-e410b163-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Tree: <code>workspace/runtime-composition-20261104</code>
+<code>e410b1637038c4a4e5f4675a340c4697398bbcba</code>, extending search <code>c10290d2</code>;
+includes freshly fetched <code>official/dev</code>
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. The clean commit changes only
+<code>tests/tenant-runtime-vault.integration.test.js</code> and <code>tests/tiers.json</code>.
+No runtime, production configuration, listener or role is changed. The
+separate POST slice <code>6cad7a42</code> is not included.</p>
+<p>Evidence provenance: agent-reproduced; parent read the retained logs and
+verified committed scope, clean worktree and upstream anchors, not a second
+execution of the campaigns. Tests use synthetic data, real scoped Vault
+Transit, PostgreSQL/RLS and actual HTTP exchange/read/search across two
+workers. They measure tenant-local overlapping IDs, next-operation committed
+grant revocation/recovery, wrong-tenant Vault ACL refusal, actual Vault
+pause/unpause yielding sanitized 503 and recovery, unsafe serving-role refusal,
+stale migration-catalogue refusal and clean worker/pool closure.</p>
+<table>
+<thead>
+<tr>
+<th>Command / campaign</th>
+<th style="text-align: right;">passing</th>
+<th style="text-align: right;">pending</th>
+<th style="text-align: right;">failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled new lab</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Enabled new lab, credential HTTP, real Transit and PG secrets suites</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:all</code>, seven nonbrowser tiers counted once</td>
+<td style="text-align: right;">6725</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:browser</code>, separate</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Post-fetch <code>npm run test:affected</code>, nonbrowser selection</td>
+<td style="text-align: right;">1755</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Post-fetch affected browser selection, separate</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>The full nonbrowser breakdown is unit 2133, DOM 205, dependency 368/2 pending,
+core 319, harness 93, integration 3589/130 pending, stress 18.
+Focused/affected totals overlap the full suite and are not additions.
+Pending opt-ins are not passes. <code>npm run lint</code> exits zero with zero errors and
+22 existing warnings; <code>npm run test:tiers</code> validates 478 files/eight tiers.
+<code>git diff --check</code> passes. After fresh fetch/merge (already up to date), the
+affected campaigns pass and final <code>tools/review/prcheck/prcheck.sh</code> ends <code>OK</code>.
+Its full branch range includes inherited work; it is not permission to push.</p>
+<p>Source-ablation control removes request-local tenant binding in owned scratch:
+the actual GET returns 500 instead of expected 200, with
+<code>postgres transaction ran with no tenant bound</code> (0 passing/1 failing).
+This establishes fail-closed binding coverage, not successful cross-tenant
+data exposure. The wrong-key ACL refusal is a distinct expected provider case.
+An earlier affected attempt reached ambient MongoDB 3.6 and failed the driver's
+wire-version requirement; it was stopped and rerun successfully with owned
+disposable MongoDB 8 on a random loopback port, not treated as a source defect.</p>
+<p>Exact reproduction/environment and local helper ownership are in
+<code>externals/work/HANDOFF-runtime-composition-implementation-20261104.md</code>.
+Retained session logs: <code>runtime-composition-focused-final.log</code>,
+<code>runtime-composition-enabled-focused-exact.log</code>,
+<code>runtime-composition-test-all-exact.log</code>,
+<code>runtime-composition-browser-exact.log</code>,
+<code>runtime-composition-lint-exact.log</code>,
+<code>runtime-composition-affected-postfetch.log</code>,
+<code>runtime-composition-tenant-scope-ablation.log</code> and
+<code>runtime-composition-prcheck-final.log</code>.</p>
+<p>The pre-bind migration check is a test-owned read-only catalogue check, not a
+production readiness protocol. Production Vault TLS/unseal/HA, service identity,
+token renewal/recovery policy, production provider sourcing, owner/operator auth,
+canonical ingress, real data, combined runtime/POST acceptance and role
+enablement remain outside this result. No M1/M2/M3 promotion follows.</p>
+<h3 id="r31---canonical-ingress-packet-on-6cad7a42-2026-11-04">R31 - canonical ingress packet on 6cad7a42 (2026-11-04)<a class="headerlink" href="#r31---canonical-ingress-packet-on-6cad7a42-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Tree: accepted POST <code>6cad7a42d804d6bb115c9d4eff55fe931b68a7cf</code>, copied to
+packet-only <code>workspace/canonical-ingress-20261104</code>. No production edits or
+commit in the packet. Agent-reproduced, parent packet-read evidence:
+<code>lib/tenant-resolution/index.js:73-79</code> gives trusted forwarded Host lookup
+precedence over Host. A known internal Host resolves alone; adding an unknown
+disposable public forwarded name refuses <code>TENANT_HOST_UNKNOWN</code>. A known
+forwarded alias for another tenant selects that alias's ID under the existing
+direct-alias contract. The proposed canonical acceptance probe is expected-red;
+it does not indicate a direct-alias regression.</p>
+<p>The unchanged resolver suite ran through a dependency-free <code>node:test</code> wrapper,
+not the normal Mocha/full-tier campaign. Existing source-ablation controls
+demonstrate coverage for direct-alias precedence, exact trust, duplicate wire
+selectors and resolved-ID assertions. Packet commands, predictions, outcomes
+and local logs are retained in
+<code>externals/work/HANDOFF-canonical-ingress-packet-20261104.md</code> and the lane's
+untracked <code>packet/</code>; these instruments are not shipping changes.</p>
+<p>Maintainer approved rewritten Host as sole canonical selector with explicit
+immediate-transport trust, preserving direct mode and assertion-only resolved
+ID. Bounded resolver/tenant-app implementation/tests are delegated separately;
+their proposed behavior and real transport integration remain UNMEASURED.
+Registry allocation/lifecycle and vendor routing are not implemented by a
+static resolver map. Selected <code>TEN-RESOLVE</code>/<code>T30-WIRING</code> queue gates remain
+UNMEASURED (no runnable gate), not green. No role enablement or milestone
+promotion follows.</p>
+<h3 id="r32---real-provider-post-composition-on-4621d5c4-2026-11-04">R32 - real-provider POST composition on 4621d5c4 (2026-11-04)<a class="headerlink" href="#r32---real-provider-post-composition-on-4621d5c4-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Tree: <code>workspace/preview-composition-20261104</code>
+<code>4621d5c4c349f5b5798fa39873274b3dc02928ee</code>, joining accepted POST
+<code>6cad7a42d804d6bb115c9d4eff55fe931b68a7cf</code> and runtime
+<code>e410b1637038c4a4e5f4675a340c4697398bbcba</code> through merge
+<code>acd46750d26728339582a0a91fa3057b0448b282</code>. Both histories are preserved.
+The only merge conflict was adjacent tier registrations; both were retained.
+The focused commit changes only the existing runtime integration test.
+No production source, schema, dependency or public protocol changed.</p>
+<p>Evidence provenance: agent-reproduced; parent verified clean committed scope,
+fresh upstream anchors and retained outcome/control logs, not a second run.
+The existing lab now injects the accepted trusted PG entries intent and shared
+parser/purifier, with separate collections/buses per tenant/worker. It measures
+real Vault exchange followed by actual POST201 and another worker's GET200 for
+two tenants with identical identifiers; matched POST200 replacement removes an
+omitted extension field without changing the other tenant's document.
+Post-issuance grants remain current: create-only cannot replace, update-only
+cannot insert, and revoked update cannot mutate rows (403).
+Actual Vault pause refuses POST503 without a write; unpause permits POST201
+and cross-worker GET200 using the previously issued credential.</p>
+<table>
+<thead>
+<tr>
+<th>Campaign / command</th>
+<th style="text-align: right;">passing</th>
+<th style="text-align: right;">pending</th>
+<th style="text-align: right;">failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled runtime / credential HTTP / Vault / PG secrets suites</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:all</code>, seven nonbrowser tiers counted once</td>
+<td style="text-align: right;">6807</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:browser</code>, separate</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Focused permanent HTTP/create/PG read/write selection</td>
+<td style="text-align: right;">78</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Committed post-sync affected selection, including selected browser</td>
+<td style="text-align: right;">3475</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Nonbrowser breakdown: unit2133, DOM205, dependency368/2 pending, core319,
+harness93, integration3671/77 pending, stress18. The enabled campaign contains
+runtime6, credential HTTP32, Vault8, PG secrets16. The full campaign enables
+credential HTTP but not the runtime/Vault/PG-secrets opt-ins; those pending
+cases are not passes and are measured separately in enabled62.
+Focused/affected totals overlap other campaigns and are not additions.
+Lint has zero errors/22 existing warnings; changed-test lint and whitespace
+pass; tier registry validates 479 files/eight tiers. After fresh fetch/merge
+of <code>official/dev</code> (already up to date at <code>4a482627</code>), committed enabled/affected
+campaigns pass and final <code>tools/review/prcheck/prcheck.sh</code> ends <code>OK</code>.</p>
+<p>Three isolated source controls each fail the new actual POST composite
+(0 passing/1 failing): empty trusted intent returns500 instead of201 with
+<code>step.identifiers is not a function</code>; forced update authority returns200
+instead of expected403 for create-only replacement; removed tenant scope
+returns500 instead of201 with <code>postgres transaction ran with no tenant bound</code>.
+The last demonstrates fail-closed binding coverage, not a data leak.
+An initial synthetic POST missing required <code>app</code> returned400 and was corrected
+to the accepted fixture shape; it was not classified as a production defect.
+An earlier removed-factory control stopped at constructor validation, so the
+final empty-intent control was used to reach actual POST.</p>
+<p>Reproduce from alignment root, repeating the environment prefix in each shell:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">set</span><span class="w"> </span>-a
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>.<span class="w"> </span>./externals/work/crm-preview-composition-20261104/tests/ci.test.env
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nb">set</span><span class="w"> </span>+a
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>node<span class="w"> </span>externals/work/preview-composition-run-owned.cjs<span class="w"> </span>enabled
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>node<span class="w"> </span>externals/work/preview-composition-run-owned.cjs<span class="w"> </span>focused
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>node<span class="w"> </span>externals/work/preview-composition-run-owned.cjs<span class="w"> </span>all
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>node<span class="w"> </span>externals/work/preview-composition-run-owned.cjs<span class="w"> </span>browser
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>node<span class="w"> </span>externals/work/preview-composition-run-owned.cjs<span class="w"> </span>affected
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>node<span class="w"> </span>externals/work/preview-composition-controls.cjs
+</code></pre></div>
+<p>Ignored helpers use disposable random-loopback PG16/Mongo8.0.34 and separate
+suite-owned provider containers, UTC, seed41574423920 and
+<code>TEST_ENV_FILE=/dev/null</code>, overriding connections after CI settings.
+Runners report owned helpers removed; control scratch is removed.
+The Mongo migration opt-in remains skipped. Exact selectors, opt-ins and
+cleanup are in <code>externals/work/HANDOFF-preview-composition-20261104.md</code>.
+Session logs have prefix <code>preview-composition-</code>: <code>enabled-postsync.log</code>,
+<code>full.log</code>, <code>browser.log</code>, <code>focused.log</code>, <code>affected-postsync.log</code>, <code>lint.log</code>,
+<code>controls.log</code>, the three <code>control-*.log</code> files and <code>prcheck.log</code>.</p>
+<p>Fresh upstream read: candidate remains
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>; foundations PR #8898 remains
+OPEN/draft at <code>81bc71e634c0c2e60ac4e86cfba2e063501c9192</code>.
+This local head does not include canonical ingress or establish production
+provider/transport readiness, broad client/REST acceptance, durable events,
+operational preview or any M1/M2/M3 completion. No push or role enablement.</p>
+<h3 id="r33---canonical-ingress-on-468c41dc-2026-11-04">R33 - canonical ingress on 468c41dc (2026-11-04)<a class="headerlink" href="#r33---canonical-ingress-on-468c41dc-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Tree: <code>workspace/canonical-ingress-20261104</code>
+<code>468c41dcab391f827a5bd1d9a581af9de2f0e10b</code>, extending accepted POST
+<code>6cad7a42d804d6bb115c9d4eff55fe931b68a7cf</code>, with current candidate
+<code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>.
+The committed five-file surface is the resolver and its README, tenant-app
+README, resolver tests and app tests. Tracked paths are clean; the packet's
+untracked instruments remain excluded. No production listener/startup, provider,
+registry, allocator, migration or role was changed.</p>
+<p>Evidence provenance: agent-reproduced; parent verified commit/scope and read
+retained validation/control logs, not a second run.
+Constructor-only <code>canonical-internal</code> mode selects only normalized Host from a
+copied internal-name map, with one portless canonical name per stable ID and
+explicit exact synchronous trusted-peer approval on every request.
+Default <code>direct-alias</code> behavior remains. Unknown well-formed forwarded public
+names are metadata; known conflicting aliases and unequal resolved-ID
+assertions refuse, and neither can rescue an unknown canonical name.
+Original raw-header duplicate/list/name refusals remain. A thrown trust
+decision reaches the app's sanitized unavailable response.</p>
+<table>
+<thead>
+<tr>
+<th>Command / campaign</th>
+<th style="text-align: right;">passing</th>
+<th style="text-align: right;">pending</th>
+<th style="text-align: right;">failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Focused resolver and tenant-app Mocha</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:all</code>, seven nonbrowser tiers counted once</td>
+<td style="text-align: right;">6815</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Separate complete browser tier</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Post-sync affected selection, including selected browser</td>
+<td style="text-align: right;">3490</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Full nonbrowser breakdown: unit2138, DOM205, dependency368/2 pending,
+core319, harness93, integration3674/71 pending, stress18. Pending opt-ins
+are not passes; this tree does not include the separate runtime provider lab.
+Affected/focused totals overlap other campaigns, not additional full suites.
+Focused ESLint passes; production lint has zero errors and 22 existing warnings
+outside changed source; tier check validates 478 files/eight tiers; whitespace
+passes. Fresh fetch/merge was already up to date; final prcheck ends <code>OK</code>.</p>
+<p>Four in-memory source controls each produce 23 passing/2 failing:
+restored forwarded precedence gives <code>TENANT_HOST_UNKNOWN</code> instead of canonical
+success in resolver/app; public-alias/ID fallback admits an unknown canonical
+name; checking trust only for extra selector fields admits untrusted Host-only
+requests; skipped consistency admits a conflicting known public alias.
+The clean focused campaign passes without ablation. These measure resolver/app
+coverage, not a real production ingress transport.</p>
+<p>Reproduction and exact environment are in
+<code>externals/work/HANDOFF-canonical-ingress-implementation-20261104.md</code>.
+The existing ignored <code>entries-mutations-run-owned.cjs</code> accepts
+<code>NS_MUTATIONS_WORKTREE</code> for this tree's <code>all</code>, <code>browser</code> and <code>affected</code> modes;
+it uses owned random-loopback PG16/Mongo8, UTC, seed41574423920 and
+<code>TEST_ENV_FILE=/dev/null</code>, overriding connections after CI settings and
+removing owned helpers afterward. Session logs:
+<code>canonical-focused-mocha.log</code>, <code>canonical-full-nonbrowser.log</code>,
+<code>canonical-full-browser.log</code>, <code>canonical-postsync-affected.log</code>,
+<code>canonical-focused-eslint.log</code>, <code>canonical-full-eslint.log</code>,
+<code>canonical-test-tiers-check.log</code>, four <code>canonical-control-*.log</code> files and
+<code>canonical-prcheck-final.log</code>.</p>
+<p>Production transport provenance, durable allocation/lifecycle, atomic
+publication/invalidation, wider REST/clients, durable realtime and operational
+preview remain outside acceptance. The clean-head join with real-provider POST
+<code>4621d5c4</code> is dispatched separately; combined behavior is UNMEASURED.
+Fresh upstream read keeps #8898 OPEN/draft at <code>81bc71e6</code> and the candidate
+at <code>4a482627</code>. No push, role enablement or M1/M2/M3 promotion.</p>
+<h3 id="r34---cumulative-canonical-provider-post-on-c527fb7e-2026-11-04">R34 - cumulative canonical provider POST on c527fb7e (2026-11-04)<a class="headerlink" href="#r34---cumulative-canonical-provider-post-on-c527fb7e-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Tree: <code>workspace/canonical-preview-20261104</code>
+<code>c527fb7e0d309b7fc567861a41e8f3862e0922df</code>. Merge
+<code>b1c3437aa6617aa5ff5e6f3f008159f67ae3b25f</code> preserves accepted ingress
+<code>468c41dcab391f827a5bd1d9a581af9de2f0e10b</code> and provider/POST
+<code>4621d5c4c349f5b5798fa39873274b3dc02928ee</code>, including their runtime and POST
+ancestors. The focused commit changes only the existing runtime integration
+test. Source worktree is clean; no further production source, schema,
+dependency, tier, listener or role change.</p>
+<p>Evidence provenance: agent-reproduced; parent verified clean committed scope,
+fresh upstream anchors and retained outcome/control logs, not a second run.
+The new composed case temporarily restarts the lab workers with canonical
+resolvers, then restores direct mode and trust state in <code>finally</code>.
+The explicit synchronous test predicate checks immediate loopback socket peer
+and mutable test-local trust on each request; no caller header grants trust.
+This is not a production transport adapter.</p>
+<p>Real Vault exchange succeeds with canonical A Host and an unknown disposable
+public forwarded name, followed by PG/RLS POST201 and another worker's GET200.
+Public-name rotation preserves the stable row and exchanged credential.
+Known conflicting public aliases refuse400 without mutation; unknown canonical
+Host cannot be rescued by a public alias/ID assertion (404).
+An A credential on canonical B refuses401 for GET and POST without mutation,
+while B's credential still reads its fixture. Host-only POST after trust loss
+refuses400 without mutation; restoring trust permits update/read.
+Existing direct-mode POST, fresh grants and actual provider pause/recovery
+cases remain enabled. Fixtures/grants/workers are restored or cleaned.</p>
+<table>
+<thead>
+<tr>
+<th>Campaign / command</th>
+<th style="text-align: right;">passing</th>
+<th style="text-align: right;">pending</th>
+<th style="text-align: right;">failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Focused resolver/tenant-app</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Runtime suite alone</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Enabled runtime/credential HTTP/Vault/PG secrets suites after sync</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><code>npm run test:all</code>, seven nonbrowser tiers counted once</td>
+<td style="text-align: right;">6815</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Separate complete browser tier</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Post-sync affected selection including selected browser</td>
+<td style="text-align: right;">3490</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Full nonbrowser breakdown: unit2138, DOM205, dependency368/2 pending,
+core319, harness93, integration3674/78 pending, stress18.
+Full/affected enable credential HTTP only; provider opt-ins are separately
+measured in enabled63. Pending opt-ins are not passes; overlapping campaigns
+must not be added together. Production lint has zero errors/22 existing
+warnings outside changed test paths; focused lint and whitespace pass; tier
+check validates 479 files/eight tiers. After fetch/merge (already current),
+committed enabled/affected campaigns pass and final prcheck ends <code>OK</code>.</p>
+<p>Three in-memory source controls run the composed actual request path, each
+0 passing/1 failing: restored forwarded precedence yields exchange404 instead
+of200; removed Host-only trust refusal yields POST200 instead of400; removed
+known-alias conflict refusal yields POST200 instead of400.
+These are request assertion failures, not constructor/setup-only refusals.
+Prior intent/overgrant/tenant-scope POST controls are retained in R32, not
+re-run or counted as new controls here.</p>
+<p>Reproduce from alignment root, repeating the environment prefix in each shell:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">set</span><span class="w"> </span>-a
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>.<span class="w"> </span>./externals/work/crm-canonical-preview-20261104/tests/ci.test.env
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">set</span><span class="w"> </span>+a
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nv">NS_CANONICAL_PREVIEW_WORKTREE</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/externals/work/crm-canonical-preview-20261104"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span>node<span class="w"> </span>./externals/work/canonical-preview-run-owned.cjs<span class="w"> </span>enabled
+</code></pre></div>
+<p>The ignored runner also supports <code>runtime</code>, <code>all</code>, <code>browser</code>, <code>affected</code>;
+the local handoff supplies exact source-control hook commands and opt-ins:
+<code>externals/work/HANDOFF-canonical-preview-20261104.md</code>.
+Helpers use owned random-loopback PG16/Mongo8, UTC, seed41574423920,
+<code>TEST_ENV_FILE=/dev/null</code>, sourcing CI settings before connection overrides;
+suite-owned provider containers and pools close, and runners report owned
+helpers removed. Session logs have prefix <code>canonical-preview-</code>:
+<code>enabled-postsync.log</code>, <code>full-nonbrowser.log</code>, <code>browser.log</code>,
+<code>affected-postsync.log</code>, <code>resolver-app-focused.log</code>, <code>runtime-initial.log</code>,
+<code>lint-tiers.log</code>, three <code>control-*.log</code> files and <code>prcheck-final.log</code>.</p>
+<p>Fresh upstream read keeps candidate <code>official/dev</code>
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code> and foundations PR #8898
+OPEN/draft at <code>81bc71e634c0c2e60ac4e86cfba2e063501c9192</code>.
+No upstream CI, production transport/service identity, registry durability,
+complete entries/history/import/resource coverage, wider REST/client,
+durable realtime or operational preview acceptance is established by this
+local bounded join. No push, role enablement or M1/M2/M3 promotion.</p>
+<h3 id="r35---provisioning-runtime-packet-on-c527fb7e-2026-11-04">R35 - provisioning runtime packet on c527fb7e (2026-11-04)<a class="headerlink" href="#r35---provisioning-runtime-packet-on-c527fb7e-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Packet tree: <code>workspace/provisioning-runtime-packet-20261104</code>, unchanged
+accepted <code>c527fb7e0d309b7fc567861a41e8f3862e0922df</code>; no tracked edits.
+Agent-reproduced, parent log-read: two existing PostgreSQL integration checks
+pass, a paired readiness source control fails, then unchanged checks pass again.
+<code>tenant-authorization-postgres.integration.test.js</code> verifies additive display
+metadata leaves existing names NULL without rewriting the applied catalogue,
+original stable ID or checksum. <code>postgres-migrations.integration.test.js</code>
+verifies status/check are read-only even before namespace/ledger existence.
+Removing only the <code>MIG_STALE</code> refusal in memory makes the latter test fail
+with <code>Missing expected rejection</code> (0 passing/1 failing); restored selection
+passes2. This is readiness-check sensitivity, not credential fidelity proof.</p>
+<p>Reproduce the two checks from the packet worktree with CI settings sourced
+first, UTC, seed41574423920, <code>TEST_ENV_FILE=/dev/null</code>, opt-ins
+<code>NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST=1</code> and
+<code>NS_MIGRATION_DOCKER_TEST=1</code>, Mocha <code>--no-config --no-package --fail-zero</code>,
+execution reporter and the selector
+<code>appends current display metadata|status/check are read-only even before</code>.
+Exact dependency path/command and in-memory preload are in
+<code>externals/work/HANDOFF-provisioning-runtime-packet-20261104.md</code>.
+Tests own and remove disposable random-loopback PG16 containers.
+Retained session logs: <code>provisioning-runtime-packet-existing-positive.log</code>,
+<code>provisioning-runtime-packet-readiness-control.log</code>,
+<code>provisioning-runtime-packet-restored-positive.log</code>.</p>
+<p>Read-derived inventory: explicit operator schema CLI, entries-only importer,
+read-only legacy/current authority readers and encrypted root insertion exist;
+no tenant/credential provisioning-import command joins them. Components commit
+independently, so schema currency does not certify complete tenant preparation
+or atomic activation. Duplicate root insertion refuses; it is not an
+idempotent multi-store import. The existing runtime fixture hand-seeds metadata
+and binds workers before encrypting roots; successful setup is not production
+prebind readiness. A test-only source-credential/current-metadata fidelity
+slice is the next bounded action, not an implementation of missing tooling.</p>
+<p>No new authenticator, root recovery, registry lifecycle, numeric bound,
+production transport/service identity or listener policy is selected.
+Full suites/provider/production acceptance were not rerun by this packet.
+No serving enablement, push or M2 promotion.</p>
+<h3 id="r36---entries-patch-characterization-on-c527fb7e-2026-11-04">R36 - entries PATCH characterization on c527fb7e (2026-11-04)<a class="headerlink" href="#r36---entries-patch-characterization-on-c527fb7e-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Packet tree: <code>workspace/entries-patch-packet-20261104</code>, unchanged accepted
+<code>c527fb7e0d309b7fc567861a41e8f3862e0922df</code>; no production implementation.
+Agent-reproduced, parent packet/log-read: corrected baseline23 passing,
+permission source control0 passing/1 failing, restored baseline23 passing.
+The original red baseline is retained: fixture assumptions expected allowed
+inert markup to be removed and unaddressed subapplication PATCH400, while
+shipping purifier retains allowed markup and actual route fallback is404.
+Only those two characterization expectations were corrected after review;
+no enforcement assertion was weakened or shipping behavior changed.</p>
+<p>The actual shipping addressed PATCH performs merge/unset, omission retention,
+nested merge, array replacement, immutable/identifier/read-only/deleted checks,
+seconds-floored preconditions, current-name modifiedBy stamps and events.
+The prepared source ablation removes only the update-permission demand:
+the reference request returns200 instead of expected403, proving that check
+is non-vacuous. These are actual shipping Mongo handler checks, not a pinned
+client replay or real-provider PATCH campaign.</p>
+<p>Actual tenant PG HTTP PATCH still returns405 before credential verification;
+those refusals do not prove post-admission authentication/authorization.
+Trusted PG merge primitives independently support ordinary JSON changes and
+rollback with no committed event; the handler's two direct intent factories
+still bypass the accepted injected PG intent seam. Read-derived minimal next
+surface is addressed PATCH admission/current authority plus both trusted
+factory call sites, not a new update language or schema.
+Mongo top-level dotted updates succeed with path semantics while PG mutation
+maps refuse; nested literal dotted members are distinct. Do not approximate
+that difference or silently claim parity.</p>
+<p>Exact-name attribution/missing-name/outage treatment for modifiedBy and marked
+nonrepresentable submitted-input status require review before implementation.
+Preserve existing shipping read-then-write/seconds-floor/invalid-date behavior;
+no stronger atomic compare-and-swap or changed single/Mongo behavior is selected.</p>
+<p>Reproduction commands, exact source anchors and synthetic fixture scope:
+<code>externals/work/HANDOFF-entries-patch-packet-20261104.md</code>.
+Session logs: <code>entries-patch-packet-baseline.log</code> (original red),
+<code>entries-patch-packet-corrected-baseline.log</code>,
+<code>entries-patch-packet-permission-control.log</code>,
+<code>entries-patch-packet-final-baseline.log</code>. The ignored packet runner owns
+random-loopback Mongo8/PG16 and removes helpers; source settings precede
+connection overrides, UTC/seed41574423920/<code>TEST_ENV_FILE=/dev/null</code>.
+Full suites/browser, production PATCH, remaining methods/history and
+M1/M2/M3 promotion remain outside this packet. No push or serving enablement.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
