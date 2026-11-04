@@ -1101,6 +1101,56 @@ The three alerts were individually dismissed as false positives. GitHub API
 read-back confirmed `state: dismissed`, `dismissed_reason: false positive`
 for each, at `2026-11-04T01:01:38Z` (November 3 locally). No source suppression,
 global rule exclusion or production rate-limiting change was made.
-The CodeQL check no longer appeared in the subsequent PR-check listing.
+The CodeQL check subsequently reported `pass` in `gh pr checks 8898`.
 This disposition does not establish full security acceptance of the branch
 or resolve the separate failing database CI jobs in run `41574423920`.
+
+### PR #8898 database-CI accounting fix (2026-11-03)
+
+Reproduced on PR head `a19b549c`: eight deliberately disabled integration
+lab files registered pending tests through ordinary `describe.skip`, but
+`scripts/execution-reporter.js` recognized only backend exclusions.
+The representative Node 22.23.4/MongoDB 8.0 CI job completed 3,583 integration
+tests and 18 stress tests, then exited 8 for missing test-body execution.
+Running the eight files without their opt-ins reproduced 77 pending tests
+and eight `TEST_EXECUTION` missing-body errors, not failed lab assertions.
+The inspected MongoDB 6 and maintained-MongoDB jobs had the same accounting
+symptom.
+
+Fix `04321de0e3b3a7ea8d624fc5b8d3673aab218c56` adds an explicit
+`optInSuite` requirement marker to those eight suites and accounts for its
+pending events. Disabled labs remain visibly pending, not passing.
+Enabled labs, ordinary skipped files and empty labs retain execution
+enforcement. Serial/parallel regression tests cover enabled, disabled,
+failing, skipped, nested and empty cases. Ablating the reporter's opt-in
+recognition makes the regression fail with
+`TEST_EXECUTION: no test body completed in tests/fixtures/opt-in.fixture.js`;
+the restored implementation passes. No shipping REST implementation,
+dependency manifest or lockfile changed.
+
+The separate merge `0afdb87f83c3b66a5206fa8bd9e5046696bcc2d1` incorporates
+`official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563`, preserving
+`migrate`, `single`, `multitenant` and rejection of the former `serve` alias.
+The tested isolated branch is `workspace/pr8898-ci-20261103`; the existing
+`workspace/multitenant-20261102` integration branch was fast-forwarded to
+that head. Its pre-existing uncommitted dependency-resolution test edit
+was preserved and is not part of the tested committed tree.
+
+Reproduced on the merged tree, Node 22.23.4 and disposable MongoDB 8.0.34,
+with `TZ=UTC` and CI shuffle seed `41574423920`: all seven non-browser
+tiers passed, 6,711 passing / 100 pending / 0 failing. Tier totals:
+unit 2,125; DOM 205; dependency 368 with 2 pending; core 319; harness 93;
+integration 3,583 with 98 pending; stress 18. Focused selection/backend
+regressions passed 39. Additional enabled PostgreSQL/Vault/import/HTTP
+and selected migration/persistence checks passed 36. Pending opt-in
+cases are not evidence of exercised PostgreSQL behavior.
+
+Changed-file ESLint: zero errors, two existing filesystem-path warnings.
+Test classification: 473 files across eight tiers. Whitespace checks and
+the final `tools/review/prcheck/prcheck.sh` passed; it confirmed the tested
+branch contains current `official/dev`. Browser replay, MongoDB migration
+opt-ins and the remaining PostgreSQL migration/secrets campaigns were not
+rerun. These results do not promote M1-M6 or establish fresh remote CI
+success. No agent push was performed.
+Exact run commands and acceptance limits are recorded in
+[R23](../remedial/rc-16.0.0-integration-record.md#r23---8898-opt-in-ci-accounting-on-0afdb87f-2026-11-03).
