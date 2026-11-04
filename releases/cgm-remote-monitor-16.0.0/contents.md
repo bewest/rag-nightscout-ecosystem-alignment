@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: next entries and provisioning packets dispatched (2026-11-04)
+
+| Work / state | Evidence and next decision boundary |
+|---|---|
+| Two independent packets dispatched from accepted cumulative `c527fb7e0d309b7fc567861a41e8f3862e0922df`: entries PATCH characterization in `workspace/entries-patch-packet-20261104`, and provisioning/runtime-identity inventory in `workspace/provisioning-runtime-packet-20261104`. | New packet results are UNMEASURED. The entries lane must establish the actual shipping PATCH contract, smallest tenant/PG gap, paired controls and a bounded implementation proposal. The runtime lane must distinguish existing operator migration/import seams from lab hand-seeding, propose the next provisioning/fidelity slice and name production identity/lifecycle decisions without selecting defaults. Both stop at packet stage; no production implementation follows automatically. |
+| M1/M2 remain in progress; complete M3 and preview acceptance remain pending. | Preserve single/Mongo compatibility and separate owner/data/operator authority. No new authenticator, secret-recovery policy, resource bound, registry lifecycle or transport-trust assumption is authorized. No milestone promotion, operator-visible default change, role enablement or push. |
+
 ### Update: cumulative canonical/provider/POST acceptance (2026-11-04)
 
 | Work / state | Evidence and remaining acceptance |
