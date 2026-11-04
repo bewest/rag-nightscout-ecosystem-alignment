@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: real-provider lab and canonical ingress approval (2026-11-04)
+
+| Work / state | Evidence and next gate |
+|---|---|
+| Test-only runtime composition committed locally on `workspace/runtime-composition-20261104`, `e410b1637038c4a4e5f4675a340c4697398bbcba`, from search baseline `c10290d2`; clean, unpushed, not merged to `dev`. | [R30](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r30---real-provider-runtime-lab-on-e410b163-2026-11-04): agent-reproduced, parent log-read evidence; enabled focused 44 passing/0 pending/0 failing, full nonbrowser 6725 passing/132 pending/0 failing, separate browser 684/0/0, tenant-binding source control red, lint/tier/final prcheck pass. Actual HTTP reads/exchange compose real Vault Transit and PostgreSQL/RLS, current-authority revocation and provider outage/recovery. No production runtime/configuration change or operator-visible default effect. |
+| Canonical ingress packet completed; maintainer approved rewritten Host plus explicit transport trust, with implementation delegated on accepted POST base `6cad7a42`. | [R31](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r31---canonical-ingress-packet-on-6cad7a42-2026-11-04) records the reproduced forwarded-alias precedence gap. The [decision](decisions.md#multitenant-ingress-and-post-continuation-2026-11-04) preserves direct aliases and makes internal mode opt-in with unconditional per-request trusted-peer checks; implementation acceptance remains UNMEASURED. Durable allocation/lifecycle, versioned registry publication and production transport provenance stay separate and open. |
+| No preview milestone promoted; 16.0.0 candidate process remains separate. | Runtime lab does not include POST `6cad7a42`; join clean accepted runtime, POST and ingress slices and validate the combined head before claiming their integration. Wider REST/pinned clients, durable realtime and operational preview remain open. Fresh upstream reads: `official/dev` remains `4a482627bfdafb1fef8dcbe0ac6c484811cae563`; foundations PR #8898 remains OPEN/draft at `81bc71e634c0c2e60ac4e86cfba2e063501c9192`. No push or role enablement. |
+
 ### Update: bounded entries search (2026-11-04)
 
 | Tree / work | Evidence and remaining acceptance |
