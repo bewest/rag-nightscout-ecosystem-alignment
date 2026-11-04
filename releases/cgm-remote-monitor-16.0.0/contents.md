@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: bounded preview write-composition dispatch (2026-11-04)
+
+| Work / state | Evidence and next gate |
+|---|---|
+| Independent test-only join dispatched: accepted POST `6cad7a42d804d6bb115c9d4eff55fe931b68a7cf` plus real-provider lab `e410b1637038c4a4e5f4675a340c4697398bbcba`, in new lane `workspace/preview-composition-20261104`. | Inputs rechecked clean; combined behavior is UNMEASURED. Extend the existing real Vault/PG lab through the approved trusted entries intent: actual POST/read across workers, same-identifier tenant isolation, replacement semantics, fresh create/update grants and provider-outage refusal without writes. Require explicit enabled campaigns, source-ablation controls and cumulative-head validation; inherited counts are not results for the join. Stop on a production/design mismatch rather than expand the test-only scope. |
+| Approved canonical ingress implementation continues independently on POST base `6cad7a42`; its resolver/app-test surface is separate from the composition lab. | Parent joins clean accepted ingress and composition heads only after bounded acceptance. Neither lane enables roles, production listeners or real-data access; neither completes M1/M2/M3. No new release-candidate prerequisite or operator-visible default change. |
+
 ### Update: real-provider lab and canonical ingress approval (2026-11-04)
 
 | Work / state | Evidence and next gate |
