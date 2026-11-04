@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: cumulative canonical/provider/POST acceptance (2026-11-04)
+
+| Work / state | Evidence and remaining acceptance |
+|---|---|
+| Local cumulative `workspace/canonical-preview-20261104`, `c527fb7e0d309b7fc567861a41e8f3862e0922df`, preserves accepted canonical ingress `468c41dc` and provider/POST `4621d5c4`; clean and unpushed. | [R34](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r34---cumulative-canonical-provider-post-on-c527fb7e-2026-11-04): agent-reproduced, parent log-read evidence; enabled provider suites 63 passing/0 pending/0 failing, full nonbrowser 6815/80 pending/0 failing, separate browser 684/0/0, three composed source controls red; lint/tier/final prcheck pass. Actual canonical Host selection, disposable public-name rotation, real Vault exchange, PG/RLS POST/read across workers, conflicting selectors, foreign credentials and Host-only trust loss are measured together. |
+| Bounded join accepted, not full preview or M1/M2/M3 completion. | Trust uses synthetic test-local loopback provenance; production ingress identity/transport, durable registry allocation/lifecycle/publication, remaining entries/history/import/resource acceptance, wider REST/pinned clients, durable realtime and operations remain open. No production enablement, operator-visible default change or push. Fresh upstream reads keep the 16.0.0 candidate at `official/dev` `4a482627` and foundations PR #8898 OPEN/draft at `81bc71e6`; upstream CI does not cover this local cumulative head. |
+
 ### Update: canonical ingress accepted locally; cumulative join dispatched (2026-11-04)
 
 | Work / state | Evidence and next gate |
