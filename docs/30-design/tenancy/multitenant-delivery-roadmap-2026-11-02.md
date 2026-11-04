@@ -1085,3 +1085,22 @@ aliases, trusted credential/current-authorization adapters, production data
 router and listener separation. `serve` roles remain disabled. The M3 test lab
 does not replace those prerequisites. The broader no-database suite's known
 AJV failure remains separate and unresolved.
+
+### PR #8898 security-check disposition (2026-11-03)
+
+Read-derived review of `nightscout/cgm-remote-monitor#8898`, still open at
+`a19b549ce524b93eb5f91f013c573e4e44aed217`, found that CodeQL alerts
+141, 142 and 143 (`js/missing-rate-limiting`) refer only to
+`tests/fixtures/tenant-entries-lab.js:54-57,104-105`. The fixture's only caller
+is the opt-in disposable integration test, with a loopback listener and
+generated credentials. Its enclosing tenant middleware verifies credentials
+and current authorization before these handlers. No shipping startup imports
+the fixture; these alerts do not establish production exposure.
+
+The three alerts were individually dismissed as false positives. GitHub API
+read-back confirmed `state: dismissed`, `dismissed_reason: false positive`
+for each, at `2026-11-04T01:01:38Z` (November 3 locally). No source suppression,
+global rule exclusion or production rate-limiting change was made.
+The CodeQL check no longer appeared in the subsequent PR-check listing.
+This disposition does not establish full security acceptance of the branch
+or resolve the separate failing database CI jobs in run `41574423920`.
