@@ -4661,7 +4661,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>80248ecb9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-03 at <code>22d0bdd41</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -4671,10 +4671,13 @@ decisions are in <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.
 BF-161 are live on the shipping release (15.0.9), so this record describes them by mechanism only.
 No verification record is captured until release time
 (<a href="../../../releases/VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>).</em></p>
-<p><strong>Current follow-up, 2026-11-02:</strong> dev is unchanged at <code>61eb3733</code>.
-Cohort/real-rig testing has started (maintainer reports over 24-48 hours across
-testers); individual builds, intervals and outcomes are not yet captured here.
-This is a maintainer report, not a new reproduced run or completed gate.
+<p><strong>Current follow-up, 2026-11-03:</strong> <code>official/dev</code>
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code> is the current 16.0.0 release
+candidate. Release preparation is in progress, not blocked; no tag or release
+is published. Cohort/real-rig testing has started (maintainer reports over
+24-48 hours across testers); individual builds, intervals and outcomes are not
+yet captured here. This is a maintainer report, not a new reproduced run or
+completed gate.
 Master no longer requires the absent 4.4 check; its two retained lanes are green.</p>
 <h1 id="8829s-reporter-reports-persistence-on-dev-but-neither-maintainer-reproduced">8829's reporter reports persistence on dev, but neither maintainer reproduced<a class="headerlink" href="#8829s-reporter-reports-persistence-on-dev-but-neither-maintainer-reproduced" title="Permanent link">&para;</a></h1>
 <p>it; the maintainer reports working DIY and production/service environments and
@@ -5809,6 +5812,113 @@ head, combined focused tests passed 402, but full-suite MongoDB validation is
 inconclusive and private PR targeting was rejected for an invalid base.
 No security merge/publication or issue closure. RT-CI-FIXTURES-8896 records
 test hygiene, not a new backfix-register defect.</p>
+<h3 id="r21---d21-cli-profile-naming-on-75fb4cdf-2026-11-03">R21 - D21 CLI profile naming on <code>75fb4cdf</code> (2026-11-03)<a class="headerlink" href="#r21---d21-cli-profile-naming-on-75fb4cdf-2026-11-03" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced</strong>, local branch <code>workspace/cli-profile-20261103</code>, head
+<code>75fb4cdfd8fca37d83dab7d2bc3cc2fed37b45ed</code>, based on <code>official/dev</code>
+<code>61eb37335954ae42c91345a0823bd67331025165</code>. Queue/design inputs:
+<code>PLAT-SERVE</code>, D21. This changes the reserved command name from <code>serve</code> to
+<code>multitenant</code>; it enables no role and preserves the single-tenant monolith
+and test-only headless API v3 launcher.</p>
+<p>Node 22.23.4, disposable MongoDB 8.0.34, synthetic test data.
+<code>env -u MONGO_CONNECTION npm run test:all</code> used an owned, ignored
+<code>my.test.env</code> with <code>CUSTOMCONNSTR_mongo</code> pointing to the disposable test
+database. Results by tier:</p>
+<table>
+<thead>
+<tr>
+<th>tier</th>
+<th>passing</th>
+<th>pending</th>
+<th>failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unit</td>
+<td>2081</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>dom</td>
+<td>205</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>dependency</td>
+<td>368</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>core</td>
+<td>319</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>harness</td>
+<td>92</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>integration</td>
+<td>3569</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>stress</td>
+<td>18</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>total</td>
+<td>6652</td>
+<td>3</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>The initial <code>test:all:ci</code> invocation supplied only <code>MONGO_CONNECTION</code>.
+Fixtures reading <code>CUSTOMCONNSTR_mongo</code> instead reached the environment's
+MongoDB 3.6; driver 7 refused it, producing 18 integration failures.
+The outer override also masked the credential-warning fixture's synthetic
+password, producing one unit failure. Configuring the test environment's
+canonical connection key and removing the outer override resolved both
+symptoms; no shipping code or committed test configuration changed.</p>
+<p>The targeted CLI/listener/headless suites previously passed 46/0 together.
+<code>npm run test:tiers</code> classified 455 test files across eight tiers.
+Changed-file ESLint: 0 errors, 6 warnings; whitespace checks passed.
+Negative control: the new no-<code>serve</code>-alias assertion, run against archived
+<code>official/dev</code> with the branch's test, failed 0/1 because the old dispatcher
+returned the reserved-role error instead of <code>unknown command: serve</code>.
+The branch's full run includes the passing assertion.</p>
+<p>This is not browser, live notification, deployment, PostgreSQL/RLS, or
+private-security combined-tree acceptance. Those checks and independent
+review remain separate; the branch is local and unpushed.</p>
+<h3 id="r22---8899-merged-cli-profile-naming-2026-11-03">R22 - #8899 merged CLI profile naming (2026-11-03)<a class="headerlink" href="#r22---8899-merged-cli-profile-naming-2026-11-03" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived:</strong> GitHub reports #8899 merged at 22:52:32Z as
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>, head
+<code>75fb4cdfd8fca37d83dab7d2bc3cc2fed37b45ed</code>. Refreshed <code>official/dev</code>
+points to that merge. <strong>Reproduced:</strong> <code>git diff --exit-code 75fb4cdf 4a482627</code>
+returns zero: the merged tree equals the PR head tested in R21.
+The R21 counts apply to that tree; they are not a fresh merged-head test run.</p>
+<p>Pre-merge checks read through <code>gh pr checks 8899</code>: test lanes, no-database
+lanes, install/build, Docker validation and CodeQL passed; browser checks
+and maintained-MongoDB checks were still pending at capture.
+Merged-head CI runs 41734530693 (push) and 41734541089 (pull_request),
+and CodeQL runs 41734530179 / 41734541082, were in progress.
+No merged-head CI result or development-image publication is asserted.</p>
+<p>Queue <code>PLAT-SERVE</code> retains its #8865 ancestry measurement and adds #8899's
+head ancestry. The latter passes on refreshed <code>official/dev</code> and fails
+against pre-merge <code>61eb3733</code> (exit 1), proving the known-negative control.
+An ancestry gate measures inclusion, not immunity to a later revert.
+No multitenant role is enabled, and no release tag or release acceptance
+follows from this merge.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5882,9 +5992,9 @@ test hygiene, not a new backfix-register defect.</p>
 <td>a fault-injection cell (an insert error on a socket treatment array under <code>reject</code>), once its shape is decided (<code>ARCH-8854-FAILED</code>)</td>
 </tr>
 <tr>
-<td>the release candidate</td>
-<td>not named</td>
-<td>a full run on Node 22.23.4, 24.22.1 and 26.12.1 × MongoDB 5.0 and 8.0, the browser suite on three engines, the BF-176 arms and the Docker image boot with an old Node refused</td>
+<td>current candidate <code>official/dev</code> <code>4a482627</code></td>
+<td>release preparation in progress</td>
+<td>R21 covers the identical public tree on Node 22.23.4 / MongoDB 8.0.34; record the remaining candidate-pinned runtime/database lanes, browsers on three engines, BF-176 arms, Docker old-Node refusal and eventual private-security combined-tree acceptance</td>
 </tr>
 <tr>
 <td>the verification record</td>

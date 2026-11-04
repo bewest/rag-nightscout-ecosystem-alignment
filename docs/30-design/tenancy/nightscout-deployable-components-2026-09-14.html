@@ -5356,7 +5356,7 @@ maximise performance.</strong> So the units here are processes, gigabytes and da
 per second — not milliseconds.</p>
 <hr />
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p><strong>Recommendation (adopted as D5): four hosted entrypoints — <code>api</code> (stateless), <code>evaluator</code>
+<p><strong>Recommendation (adopted as D5): four multitenant service roles — <code>api</code> (stateless), <code>evaluator</code>
 (change-driven), <code>realtime</code> (socket fan-out) and <code>vcpool</code> — over one shared core, plus the
 existing single-tenant server as <code>single</code>, which changes nothing.</strong> D7 adds <code>ns-admin</code> on its own
 unrouted interface and D16 a tenant-owner listener, <code>ns-tenant-admin</code>; neither changes the cost
@@ -5652,8 +5652,8 @@ random window in each vendor driver (measured, plan T0.4). Both windows exist as
 ({M} §11). It keeps <code>ctx.ddata</code>, <code>ctx.cache</code>, <code>calcdelta</code> and one process, because at one
 tenant residency is unambiguously right: the cache costs 2.6 MB and saves every read a
 round-trip, and nothing about a single site needs a change feed.</p>
-<p><strong>This is what stops the decomposition from being a rewrite.</strong> The hosted entrypoints and the
-single-tenant server are different <code>bin/</code> scripts over the same <code>lib/</code>. Nothing in §2.1–2.4
+<p><strong>This is what stops the decomposition from being a rewrite.</strong> The multitenant roles and the
+single-tenant server are different runtime profiles over the same <code>lib/</code>. Nothing in §2.1–2.4
 deletes code the single-tenant target needs; it selects a different subset of it.</p>
 <h2 id="3-program-structure">3. Program structure<a class="headerlink" href="#3-program-structure" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>packages/
@@ -5671,8 +5671,8 @@ deletes code the single-tenant target needs; it selects a different subset of it
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  realtime.js           ns-realtime  — socket.io + change feed, no storage writes
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  vcpool.js             ns-vcpool    — connect actors + egress proxy
 </code></pre></div>
-<p><em>Amended 2026-10-26 by </em><em>D21</em><em>: the roles below are started as subcommands of one executable, <code>nightscout single</code> and <code>nightscout serve &lt;roles&gt;</code>, not as one script per role. The table of which factories each role calls is unchanged (<a href="nightscout-multitenancy-execution-plan-2026-09-14.html#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26">execution plan §2.12</a>).</em></p>
-<p><strong>Four hosted entrypoints and one legacy entrypoint, over one <code>package.json</code> and one CI
+<p><em>Amended 2026-10-26 and 2026-11-03 by </em><em>D21</em><em>: the roles below are started by one executable. <code>nightscout single</code> remains the single-tenant monolith; <code>nightscout multitenant &lt;roles&gt;</code> names the separate PostgreSQL/RLS multitenant target. This changes neither the role decomposition nor which factories each role calls (<a href="nightscout-multitenancy-execution-plan-2026-09-14.html#212-d21--one-entrypoint-explicit-tenancy-subcommands-maintainer-amended-2026-11-03">execution plan §2.12</a>).</em></p>
+<p><strong>Four multitenant service roles and one legacy entrypoint, over one <code>package.json</code> and one CI
 pipeline</strong> — not five repositories. {M} §10.5 already argued this and it holds: these are
 thin <code>bin/</code> scripts selecting which factories to call, not independent products with
 independent release cycles.</p>

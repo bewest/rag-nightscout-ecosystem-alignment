@@ -8157,25 +8157,29 @@
 
 
 <h1 id="nightscout-v16-ecosystem-and-release-acceptance">Nightscout v16 ecosystem and release acceptance<a class="headerlink" href="#nightscout-v16-ecosystem-and-release-acceptance" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>51c599e6f</code>.</em></p>
-<p><strong>Evidence refresh: 2026-11-02.</strong> This is the current contributor-facing follow-up to
+<p><em>Living document, last changed 2026-11-03 at <code>22d0bdd41</code>.</em></p>
+<p><strong>Evidence refresh: 2026-11-03.</strong> This is the current contributor-facing follow-up to
 the <a href="nightscout-rc-readiness-2026-11-01.html">November 1 readiness snapshot</a>.
 It records upstream metadata, maintainer reports and proposed next work separately.
 It is not a release approval, clinical validation or a claim of a certified QMS.</p>
 <h2 id="release-position">Release position<a class="headerlink" href="#release-position" title="Permanent link">&para;</a></h2>
-<p>Official <code>dev</code> remains <code>61eb37335954ae42c91345a0823bd67331025165</code>.
-The latest published release is still <code>v15.0.9</code>; no named v16 RC was returned by
-the release listing. The <strong>candidate under informal testing</strong> is not the same
-thing as a named, immutable RC. The maintainer reports multiple testers have
-been using the code for over 24-48 hours and that AID authors are considering
-changes. This establishes that cohort/rig testing has started, not which
-versions, scenarios or outcomes have been accepted.</p>
+<p><code>official/dev</code> at <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code> is the current
+16.0.0 release candidate. Release preparation is in progress, not blocked; the
+remaining acceptance and staging steps are pending. The latest published
+release is still <code>v15.0.9</code>, and no 16.0.0 tag or release is published. The
+maintainer reports multiple testers have been using the code for over 24-48
+hours and that AID authors are considering changes. This establishes that
+cohort/rig testing has started, not which versions, scenarios or outcomes have
+been accepted.</p>
 <p>The merged backend storage/write/identity work, frontend bundles, dependency
 refresh and optional modern dashboard are implementation outputs, not a remaining
-modernization merge queue. Public CI on this head remains green: 6,323 passing /
-3 pending in the top-level suite, or 7,660 passing / 3 pending counting each
-reported suite once. These are the previously recorded hosted runs, not a new
-test execution or proof of live acceptance.</p>
+modernization merge queue. The previous candidate <code>61eb3733</code> has recorded
+green public CI: 6,323 passing / 3 pending in the top-level suite, or 7,660
+passing / 3 pending counting each reported suite once. #8899 adds the D21
+CLI naming amendment; its merged tree equals the locally tested PR head
+(6652 passing / 3 pending / 0 failing across non-browser tiers). Merged-head
+CI was in progress at capture. See the <a href="../30-design/remedial/rc-16.0.0-integration-record.html">integration record R21/R22</a>.
+These results are not proof of live acceptance.</p>
 <p>BF-72 and BF-161 remain pre-tag private-security work. No new private inspection,
 merge or disclosure is claimed here. The previously recorded 402 focused tests
 do not establish full combined-tree acceptance. Integrate privately, validate the
@@ -8373,10 +8377,10 @@ upgrades. This review identified no confirmed requirement for all known AID
 clients to upgrade together. It does <strong>not</strong> establish unconditional backwards
 and forwards compatibility for every client version, consumer, configuration or
 future feature.</p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a7af645d13a151a8dac06cf2e1148d34bd93d6e6/releases/cgm-remote-monitor-16.0.0/compat/clients.json">client catalogue</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/22d0bdd413397345f5b8b9a29bdb3ead391bc787/releases/cgm-remote-monitor-16.0.0/compat/clients.json">client catalogue</a>
 has <strong>15 implementations, 120 group-specific shape matches: 11 measured-tier,
 109 read-tier</strong>. As the comparison's
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a7af645d13a151a8dac06cf2e1148d34bd93d6e6/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">limits</a> explicitly
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/22d0bdd413397345f5b8b9a29bdb3ead391bc787/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">limits</a> explicitly
 state, no client application ran against those matrix trees. Even a measured
 shape match is not a live-app test. Client applications and actual live testers
 may have separate evidence; do not erase or double-count it.</p>

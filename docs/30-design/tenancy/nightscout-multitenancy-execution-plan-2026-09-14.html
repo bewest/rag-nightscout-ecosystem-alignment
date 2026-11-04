@@ -3158,13 +3158,30 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#212-d21--one-entrypoint-serve--maintainer-2026-10-26" class="md-nav__link">
+  <a href="#212-d21--one-entrypoint-explicit-tenancy-subcommands-maintainer-amended-2026-11-03" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.12 D21 — one entrypoint, serve &lt;roles&gt; (maintainer, 2026-10-26)
+        2.12 D21 — one entrypoint, explicit tenancy subcommands (maintainer, amended 2026-11-03)
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="2.12 D21 — one entrypoint, explicit tenancy subcommands (maintainer, amended 2026-11-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-profile-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported profile contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -5601,13 +5618,30 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#212-d21--one-entrypoint-serve--maintainer-2026-10-26" class="md-nav__link">
+  <a href="#212-d21--one-entrypoint-explicit-tenancy-subcommands-maintainer-amended-2026-11-03" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.12 D21 — one entrypoint, serve &lt;roles&gt; (maintainer, 2026-10-26)
+        2.12 D21 — one entrypoint, explicit tenancy subcommands (maintainer, amended 2026-11-03)
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="2.12 D21 — one entrypoint, explicit tenancy subcommands (maintainer, amended 2026-11-03)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-profile-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported profile contract
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -5734,14 +5768,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>ae4ad1827</code>.</em></p>
+<p><em>Living document, last changed 2026-11-03 at <code>22d0bdd41</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D21 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a7af645d13a151a8dac06cf2e1148d34bd93d6e6/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/22d0bdd413397345f5b8b9a29bdb3ead391bc787/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5969,7 +6003,7 @@ preference.</p>
 </tr>
 <tr>
 <td><strong>D5</strong></td>
-<td><strong>Four hosted entrypoints over one core</strong> — <code>api</code> (stateless), <code>evaluator</code> (change-driven), <code>realtime</code> (fan-out), <code>vcpool</code> — plus <code>single</code> unchanged. The split is also a configuration-source split (D15). <em>(packaged by D21 as <code>nightscout serve &lt;roles&gt;</code>, 2026-10-26)</em></td>
+<td><strong>Four multitenant service roles over one core</strong> — <code>api</code> (stateless), <code>evaluator</code> (change-driven), <code>realtime</code> (fan-out), <code>vcpool</code> — plus <code>single</code> unchanged. The split is also a configuration-source split (D15). <em>(packaged by D21 as <code>nightscout multitenant &lt;roles&gt;</code>, amended 2026-11-03)</em></td>
 <td>{C} §2, {DB} §6</td>
 </tr>
 <tr>
@@ -6019,7 +6053,7 @@ preference.</p>
 </tr>
 <tr>
 <td><strong>D15</strong></td>
-<td><strong>Configuration source diverges by entrypoint.</strong> <code>single</code> reads the process environment; hosted entrypoints read per-tenant configuration from the database, administered by the tenant owner. Env-sourced configuration must not reach the multi path</td>
+<td><strong>Configuration source diverges by entrypoint.</strong> <code>single</code> reads the process environment; multitenant roles read per-tenant configuration from the database, administered by the tenant owner. Env-sourced configuration must not reach the multi path</td>
 <td>maintainer, 2026-09-15 — §2.8</td>
 </tr>
 <tr>
@@ -6049,8 +6083,8 @@ preference.</p>
 </tr>
 <tr>
 <td><strong>D21</strong></td>
-<td><strong>One executable, and roles are served by <code>nightscout serve &lt;roles&gt;</code>.</strong> <code>bin/nightscout.js</code> (Node, not a shell script) is the container <code>ENTRYPOINT</code> and dispatches subcommands, as Consul and node-multienv's <code>start_container.sh</code> do. <code>nightscout single</code> is today's server, and every existing way of starting it (<code>Procfile</code>, <code>npm start</code>, <code>server.js</code>, iisnode's <code>web.config</code>, <code>start.sh</code>, the image's <code>CMD</code>) stays equal to it (D1). Hosted roles — D5's <code>api</code>, <code>evaluator</code>, <code>realtime</code>, <code>vcpool</code> and D16's <code>tenant-admin</code> and <code>admin</code> — are started as <code>nightscout serve &lt;role&gt;[,&lt;role&gt;…]</code>; several roles may share one process, and each listener has its own bind address, so <code>admin</code> stays off the consumer interface (D7), as Ory's <code>serve public|admin|all</code> does. Subcommands an operator runs against a deployed site (<code>diagnose data</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code>, later <code>migrate</code>) live in the same dispatcher; developer tooling stays in <code>scripts/</code>. The dispatcher selects the bootstrap and keeps D15's split. Reorganising the repository into packages ({C} §3) is a separate, later track. <strong>Open:</strong> whether a composed <code>serve</code> of every role is part of the multi target or only a small-hoster convenience</td>
-<td>maintainer, 2026-10-26 — §2.12</td>
+<td><strong>One executable; <code>single</code> and <code>multitenant</code> name the tenancy profiles.</strong> <code>bin/nightscout.js</code> (Node, not a shell script) is the container <code>ENTRYPOINT</code> and dispatches subcommands. <code>nightscout single</code> remains today's server, and every existing way of starting it (<code>Procfile</code>, <code>npm start</code>, <code>server.js</code>, iisnode's <code>web.config</code>, <code>start.sh</code>, the image's <code>CMD</code>) stays equal to it (D1). The multitenant roles — D5's <code>api</code>, <code>evaluator</code>, <code>realtime</code>, <code>vcpool</code> and D16's <code>tenant-admin</code> and <code>admin</code> — are invoked as <code>nightscout multitenant &lt;role&gt;[,&lt;role&gt;…]</code>; several roles may share one process, and each listener has its own bind address, so <code>admin</code> stays off the consumer interface (D7). <code>serve</code> describes an HTTP operation, not a tenancy mode, and is not the selected CLI namespace. Subcommands an operator runs against a deployed site (<code>diagnose data</code>, <code>healthcheck</code>, <code>version</code>, <code>env</code>, later <code>migrate</code>) live in the same dispatcher; developer and test tooling stays in <code>scripts/</code>. The dispatcher selects the bootstrap and keeps D15's configuration split. Reorganising the repository into packages ({C} §3) is a separate, later track. <strong>Open:</strong> whether a composed invocation of every multitenant role is part of the target or only a small-operator convenience</td>
+<td>maintainer, 2026-10-26, amended 2026-11-03 — §2.12</td>
 </tr>
 <tr>
 <td><strong>D22</strong></td>
@@ -7141,13 +7175,48 @@ recommendation: <strong>two fields with different owners, never merged into one.
 notification), the text is user-facing. It must say plainly which party to contact and for what,
 and it must not suggest that contacting anyone replaces the person's own care team when the
 problem concerns their therapy rather than the software.</p>
-<h3 id="212-d21--one-entrypoint-serve--maintainer-2026-10-26">2.12 D21 — one entrypoint, <code>serve &lt;roles&gt;</code> (maintainer, 2026-10-26)<a class="headerlink" href="#212-d21--one-entrypoint-serve--maintainer-2026-10-26" title="Permanent link">&para;</a></h3>
+<h3 id="212-d21--one-entrypoint-explicit-tenancy-subcommands-maintainer-amended-2026-11-03">2.12 D21 — one entrypoint, explicit tenancy subcommands (maintainer, amended 2026-11-03)<a class="headerlink" href="#212-d21--one-entrypoint-explicit-tenancy-subcommands-maintainer-amended-2026-11-03" title="Permanent link">&para;</a></h3>
 <p>D5 decided the roles and D16 the listeners; neither said how an operator starts one. The
 components document sketched one <code>bin/</code> script per role ({C} §3). D21 replaces that sketch
-with one executable and a subcommand per role, the pattern Consul uses for its agent and tools,
-node-multienv uses in <code>start_container.sh</code> (<code>multienv</code>, <code>resolver</code>, <code>runner</code>, <code>inspector</code>, …),
-and Ory uses to turn its public and admin listeners on and off (<code>serve public</code>, <code>serve admin</code>,
-<code>serve all</code>).</p>
+with one executable and explicit tenancy subcommands. The CLI names the two supported deployment
+targets, rather than calling one <code>single</code> and the other a generic HTTP verb. The role split remains
+within the multitenant profile; it does not imply matching single-tenant role commands.</p>
+<h4 id="supported-profile-contract">Supported profile contract<a class="headerlink" href="#supported-profile-contract" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>profile</th>
+<th>tenancy and storage</th>
+<th>execution shape</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nightscout single</code></td>
+<td>single-tenant, MongoDB</td>
+<td>existing monolith, unchanged</td>
+<td>current first-class target</td>
+</tr>
+<tr>
+<td><code>nightscout multitenant &lt;role&gt;[,&lt;role&gt;…]</code></td>
+<td>multitenant, PostgreSQL with RLS</td>
+<td>one or more separately bound service roles</td>
+<td>intended target; roles remain unavailable until their acceptance gates pass</td>
+</tr>
+</tbody>
+</table>
+<p>This is the supported target set, not a Cartesian product of tenancy modes and storage adapters.
+Single-tenant PostgreSQL and multitenant MongoDB are not current goals. SQLite/Celld is a possible
+future backend direction, not a current profile; adding it requires an explicit backend and tenancy
+decision plus compatibility, isolation, migration, operations and QA acceptance for each profile
+it is meant to support.</p>
+<p>The existing single-tenant API v3 headless launcher is not a third deployment profile. The
+<code>scripts/headless-test-server.js</code> launcher in the integration worktree is explicitly for tests and
+development, outside the operator CLI and container image. It is not the single-tenant monolith
+and does not establish a supported single-tenant API-only deployment. If that deployment is later
+desired, define its operator contract and evidence separately rather than promoting the test
+launcher.</p>
 <table>
 <thead>
 <tr>
@@ -7163,37 +7232,37 @@ and Ory uses to turn its public and admin listeners on and off (<code>serve publ
 <td>the process environment</td>
 </tr>
 <tr>
-<td><code>nightscout serve api</code></td>
+<td><code>nightscout multitenant api</code></td>
 <td>express and storage; no bus, no <code>ddata</code></td>
 <td>per-tenant, from the database</td>
 </tr>
 <tr>
-<td><code>nightscout serve evaluator</code></td>
+<td><code>nightscout multitenant evaluator</code></td>
 <td>change feed, plugins, notifications; no express</td>
 <td>per-tenant, from the database</td>
 </tr>
 <tr>
-<td><code>nightscout serve realtime</code></td>
+<td><code>nightscout multitenant realtime</code></td>
 <td>socket.io and the change feed; no storage writes</td>
 <td>per-tenant, from the database</td>
 </tr>
 <tr>
-<td><code>nightscout serve vcpool</code></td>
+<td><code>nightscout multitenant vcpool</code></td>
 <td>connector actors and the egress proxy</td>
 <td>per-tenant, from the database</td>
 </tr>
 <tr>
-<td><code>nightscout serve tenant-admin</code></td>
+<td><code>nightscout multitenant tenant-admin</code></td>
 <td>the tenant owner's configuration listener (D16)</td>
 <td>per-tenant, from the database</td>
 </tr>
 <tr>
-<td><code>nightscout serve admin</code></td>
+<td><code>nightscout multitenant admin</code></td>
 <td>the platform operator's listener, on its own interface (D7)</td>
 <td>the deployment's own settings</td>
 </tr>
 <tr>
-<td><code>nightscout serve api,realtime</code></td>
+<td><code>nightscout multitenant api,realtime</code></td>
 <td>several roles in one process, each listener on its own bind address</td>
 <td>as each role</td>
 </tr>
@@ -7218,15 +7287,26 @@ and Ory uses to turn its public and admin listeners on and off (<code>serve publ
 <li><strong>The image's healthcheck is <code>nightscout healthcheck</code></strong>, so the image needs no curl.</li>
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
-change) and PLAT-SERVE (the hosted roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a7af645d13a151a8dac06cf2e1148d34bd93d6e6/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+change) and PLAT-SERVE (the multitenant roles, carved one at a time from <code>bootevent</code>'s factory chain,
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/22d0bdd413397345f5b8b9a29bdb3ead391bc787/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
-<p><strong>Amended 2026-10-27 (maintainer): the subcommand selects tenancy.</strong> <code>nightscout single</code> is
-single-tenant and every <code>nightscout serve</code> role is multitenant, so no separate tenancy setting is
-needed: where this plan says <code>TENANCY_MODE=multi</code>, read "a <code>serve</code> role". <code>serve</code> refuses every
-role until that role is multitenant; the single-tenant code of the <code>api</code> profile runs as
-<code>scripts/headless-test-server.js</code> for tests and development, outside the operator CLI (rule 3).
-Built on #8865 at <code>b01b77c3</code>.</p>
+<p><strong>Amended 2026-10-27 (maintainer; CLI name amended 2026-11-03): the subcommand selects
+tenancy.</strong> <code>nightscout single</code> is single-tenant and every <code>nightscout multitenant</code> role is
+multitenant, so no separate tenancy setting is needed. The earlier <code>serve</code> name is not the chosen
+operator namespace; the selected name is <code>multitenant</code>. The roles remain unavailable until their
+acceptance gates pass. The single-tenant API v3 test launcher remains test/development tooling
+outside the operator CLI (rule 3), not a supported profile.</p>
+<p><strong>Release placement (maintainer, 2026-11-03):</strong> include the CLI namespace clarification in the
+current 16.0.0 <code>dev</code> candidate while its merge list remains open. Replace the unavailable
+<code>nightscout serve</code> command with <code>nightscout multitenant</code>; do not enable any multitenant role as
+part of this change. Preserve <code>nightscout single</code> and every legacy single-tenant start path.
+Candidate acceptance must test the new command/help/error behavior and confirm no role becomes
+available. If it does not clear review and the candidate's acceptance window, defer it without
+delaying the single-tenant release.</p>
+<p><strong>Merged 2026-11-03:</strong> #8899 carries the naming amendment in <code>dev</code>
+<code>4a482627</code> (head <code>75fb4cdf</code>). The merged tree equals the locally tested head;
+release acceptance is separate (<a href="../remedial/rc-16.0.0-integration-record.html">integration record R21/R22</a>).
+No multitenant role is enabled.</p>
 <h3 id="213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27">2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)<a class="headerlink" href="#213-d22--per-setting-policy-project-floors-and-secrets-maintainer-2026-10-27" title="Permanent link">&para;</a></h3>
 <p>The census (<a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">re-measured on dev</a>) classes each of
 dev's 264 settings as T, TS, D, B or X. Twelve resisted the classes (§3 there). Eight of the twelve were "the
@@ -7237,7 +7317,7 @@ infrastructure, driver code and database rules rather than in a settings model. 
 model.</p>
 <p><strong>The layers.</strong></p>
 <ol>
-<li><strong>Project floors</strong>, in code, in every <code>nightscout serve</code> role only (multitenant; <code>TENANCY_MODE</code> retired by the D21 amendment). The server refuses to start, or refuses to
+<li><strong>Project floors</strong>, in code, in every <code>nightscout multitenant</code> role only (multitenant; <code>TENANCY_MODE</code> retired by the D21 amendment). The server refuses to start, or refuses to
    save a policy or a value, that breaks one. Decided as five groups (the fifth added the same day):</li>
 <li><strong>no deployment secrets</strong>: <code>API_SECRET</code> and <code>API_SECRET_FILE</code> refused (D13 as a check);
      <code>API3_SECURITY_ENABLE=false</code> refused;</li>
@@ -7318,7 +7398,7 @@ during a listener compromise the reach is the same as A's, but no key leaves, an
 and tokens expire the attacker can neither write nor reveal, where under A the stolen keys keep minting
 tokens until every tenant's key is rotated. Cost: one verify call per edit, and edits depend on the secrets
 component being up.</p>
-<p>The secrets component is a role of the one executable (D21), <code>nightscout serve secrets</code>, from the same
+<p>The secrets component is a role of the one executable (D21), <code>nightscout multitenant secrets</code>, from the same
 image. Its first adapter is a <strong>built-in signer</strong>: keys encrypted under a master key supplied only to that
 container, for development and small operators; in Docker Compose it is one more service with one mounted
 secret. Vault transit and a cloud key service are the production adapters, behind the same interface.</p>
