@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: real-provider POST composition accepted locally (2026-11-04)
+
+| Work / state | Evidence and next gate |
+|---|---|
+| Test-only cumulative `workspace/preview-composition-20261104`, `4621d5c4c349f5b5798fa39873274b3dc02928ee`, preserves both accepted POST `6cad7a42` and runtime `e410b163` histories; clean and unpushed. | [R32](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r32---real-provider-post-composition-on-4621d5c4-2026-11-04): agent-reproduced, parent log-read evidence; enabled real-provider suites 62 passing/0 pending/0 failing, full nonbrowser 6807/79 pending/0 failing, separate browser 684/0/0, focused 78/0/0; three POST-specific source controls red; lint/tier/final prcheck pass. Actual Vault-authenticated POST/read/replacement, cross-worker current grants, tenant isolation and provider-outage no-write/recovery are measured. No production change or operator-visible default effect. |
+| Canonical ingress is not included; no M1/M2/M3 promotion or role enablement. | Join clean accepted ingress after its independent acceptance, then validate the cumulative head. Production provider identity/TLS/HA, registry lifecycle, broader REST/pinned clients, durable realtime and operational preview remain open. Fresh upstream reads still show candidate `official/dev` `4a482627` and OPEN/draft foundations PR #8898 at `81bc71e6`; this local result is not upstream CI. |
+
 ### Update: bounded preview write-composition dispatch (2026-11-04)
 
 | Work / state | Evidence and next gate |
