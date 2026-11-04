@@ -36,6 +36,13 @@ Historical status/measurement sections below retain their dates.
 | [Fresh-context M1-M6 preview packets](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#preview-dispatch-packets-m1-m6-2026-11-04) scope the next six milestones; M0 acceptance remains required within the foundations. | Two isolated agents prepare entries mutation and real-provider/runtime packets from `c10290d2`, stopping before implementation approval. Coordinator owns records/joins/decisions. Later integration, pinned-client, realtime and operational packets are staged behind their acceptance inputs, not dispatched as six competing implementations. Current selected queue measurement: ST-PG unit gate passes; seven other items unmeasured, integration gates skipped. |
 | T30-WIRING claim corrected to in-progress; dashboard refreshed through R27. | R25-R27 measure partial credential/exchange/current-authority HTTP implementation, not full production runtime acceptance. M1/M2 criteria remain incomplete; M3/M4/M6 remain dependency-constrained. No milestone promotion, new operator-visible default, OIDC prerequisite or serving-role enablement. |
 
+### Update: ingress boundary and POST admission (2026-11-04)
+
+| Work / state | Evidence and next gate |
+|---|---|
+| Durable DNS-friendly internal tenant name is distinct from optional disposable public aliases and stable tenant ID. | Maintainer adopted a provider-neutral authoritative mapping and explicit trusted internal-ingress mode, preserving direct aliases and vendor-private routing. Current resolver's forwarded-alias precedence does not yet implement that mode; the [measured gap and next packet](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#canonical-internal-hostname-boundary-2026-11-04) are recorded. No production trust, durable registry or Consul integration is asserted. |
+| Entries POST packet approved; implementation runs separately from the real-provider composition lab. | [R28](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r28---entries-post-contract-characterization-on-c10290d2-2026-11-04) records 34 selected characterization passes and a separate four-pass/one-intended-failure POST gap campaign. Decisions select 401 for missing current subject attribution, input-only 400, recognized outages 503 and other internal failures 500; single remains unchanged. Actual PG POST, configured pruning, source controls and full validation remain pending. Registration/schema negotiation can assist future fields but is not implemented or a new prerequisite for legacy clients. No operator-visible default change or milestone promotion. |
+
 ### Update: bounded authority lane handoff (2026-11-03)
 
 | Tree / work | Evidence and remaining acceptance |

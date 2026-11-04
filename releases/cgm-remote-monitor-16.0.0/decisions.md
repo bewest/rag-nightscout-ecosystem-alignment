@@ -82,6 +82,26 @@ See [the readiness record](../../docs/10-domain/nightscout-rc-readiness-2026-11-
 | **Preserve exact current subject name alongside stable subject ID for compatible exchange responses** | maintainer, 2026-11-03 | `T30-WIRING` | Shipping exchange returns the exact current name as response `sub` (`lib/authorization/index.js:326`); token prefixes cannot reconstruct it. Add current-name metadata through a new operator-run candidate, preserve it during import and update on rename; stable ID remains identity. Read current name and permission groups together. Incomplete name imports refuse exchange rather than invent a name. No single behavior or JWT identity-format change. |
 | **Tenant compatibility exchange issues eight-hour tokens with an eight-hour maximum for this issuer/verifier** | maintainer, 2026-11-03 | `T30-WIRING`, `MT-SECRETS-CONTRACT` | Matches measured shipping issuance duration (`lib/server/enclave.js:58-60`) while explicitly configuring the tenant secrets duration ceiling. Expiry and current authority checks still apply; duration is not a revocation grace period. Future owner/operator lifetime policy is separate. No existing single issuance change or claim of cross-deployment JWT portability. |
 
+## Multitenant ingress and POST continuation (2026-11-04)
+
+| decision | who, when | queue | as it stands |
+|---|---|---|---|
+| **Separate disposable public aliases, durable DNS-friendly internal tenant names and stable tenant IDs; introduce internal ingress only through an explicit trusted mode** | maintainer, 2026-11-04 | `TEN-RESOLVE`, `T30-WIRING` | Preserve existing direct-alias mode. A provider-neutral authoritative deployment mapping binds an internal name to a stable ID; public alias rotation must not change identity, data or credentials. Consul/Kubernetes/vendor discovery is optional, not first-party infrastructure or caller authentication. Vendor domain provisioning, customer mappings, certificates and private routing remain vendor-owned; no private implementation is imported. Current resolver supports static aliases but gives trusted forwarded public Host precedence, not this new internal-ingress mode. Durable allocation, provenance, transport trust, collision/reassignment rules and conformance remain implementation/design outputs. See the [boundary and measured gap](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#canonical-internal-hostname-boundary-2026-11-04). |
+| **Tenant subject POST requires complete current attribution metadata: missing name refuses 401; unavailable metadata refuses 503** | maintainer, 2026-11-04 | `T30-WIRING`, `ST-PG` | Reuse exchange's current-subject refusal; existing GET remains unchanged. This is not only an import race: incomplete provisioning or later metadata changes can also prevent writes. Once valid current metadata and grants exist, normal create/resend outcomes apply. Import should finish metadata before admitting traffic; do not omit attribution, substitute stable IDs or trust stale JWT metadata. Root remains an explicit principal without an invented subject name. Characterization and limits are in R28. |
+| **Classify demonstrably nonrepresentable submitted data as tenant-only 400, recognized unavailable services as 503, and unclassified/internal stored-state failures as 500** | maintainer, 2026-11-04 | `ST-PG` | No blanket mapping of TypeError or unsupported-adapter errors. Preserve existing single/Mongo behavior. This improves refusal classification; it does not establish Mongo/PG input parity or broad client retry compatibility. Measure actual HTTP JSON edge cases and legitimate client shapes; do not reject fields merely because their names are unfamiliar or coerce/drop data to achieve parity. Existing parser/purifier, branch-sensitive create/update grants, resend behavior and tenant-local configured pruning remain required. |
+
+### Future fields and controller registration
+
+The [specified registration contract](../../docs/30-design/platform/spec/registration.md)
+already provides typed declarations, per-element version/capability negotiation,
+must-ignore grammar members, namespaced extensions and declared legacy
+carriers (sections 2-5). It is specified, not implemented. It can describe and
+negotiate future controller fields; it does not make an otherwise
+unrepresentable value storable, bypass authorization or authorize arbitrary
+schema execution. Legacy POST does not acquire a registration prerequisite.
+Unknown representable fields and unsupported storage shapes are different
+contracts; future schema upload does not waive current compatibility testing.
+
 ## Tests and the jsdom harness
 
 | decision | who, when | queue | as it stands |

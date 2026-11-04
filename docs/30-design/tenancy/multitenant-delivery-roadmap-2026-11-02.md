@@ -404,6 +404,46 @@ behavior, compatibility/operator impact and a recommendation. Check peer
 decisions first; ask one topic at a time. No automatic push or milestone
 promotion is delegated.
 
+### Canonical internal hostname boundary (2026-11-04)
+
+**Adopted direction, not implemented ingress or durable provisioning.** Keep
+three separate concepts: optional disposable public aliases, a durable
+DNS-friendly internal tenant name, and the stable tenant ID used by data and
+credentials. The authoritative deployment mapping binds internal name to ID;
+an internal name is not a backend IP/port, a public domain or caller identity.
+Alias rotation must not recreate tenants or change data/credential ownership.
+
+First-party scope is the provider-neutral mapping/ingress contract, validation,
+trust checks and conformance. Consul, Kubernetes and vendor discovery are
+optional adapters. Public domain provisioning, customer mappings, certificates
+and private edge routing remain deployment/vendor concerns; no private
+implementation or configuration is copied into the public tree.
+
+Read-derived prior art: node-multienv at `2602c94e` separates tenant naming
+from discovered host/port (`lib/consul.js:215-240`) and configures workload
+hostname/subdomain from the internal name
+(`lib/webhook/tenant-phases/resources.js:35-46`). Its complete DNS allocation
+and durability rules were not verified or adopted wholesale.
+
+**Reproduced current gap on `c10290d2`:** configure only a synthetic canonical
+internal Host in `lib/tenant-resolution`; direct Host resolves to its stable
+ID. Add a trusted but unknown disposable public `X-Forwarded-Host` and the
+same request refuses `TENANT_HOST_UNKNOWN`. The current resolver deliberately
+uses forwarded alias precedence (`index.js:65-79`); a resolved-ID assertion
+cannot replace that alias lookup. Existing DNS validation/static alias
+rotation is not a durable canonical-name registry or an internal-ingress mode.
+
+Next packet must preserve direct-alias mode and define an explicit
+internal-ingress mode where only trusted transport may supply canonical
+internal selection; public forwarded names do not override it. The source
+of selection must be deployment configured, never selected by caller headers.
+No DNS lookup itself grants authority. Define durable allocation/collisions,
+rename/reassignment/deletion behavior and consistency before adding the
+operator writer. Prove public alias rotation preserves identity, spoofed or
+conflicting selectors refuse, trust loss closes access, and mapping changes
+do not leak cached authority. No provider, production transport trust or
+automatic Consul dependency is selected by this direction.
+
 ### Accepted read and authority continuations (2026-11-04)
 
 The [integration record](../remedial/rc-16.0.0-integration-record.md)
