@@ -4661,7 +4661,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>22d0bdd41</code>.</em></p>
+<p><em>Living document, last changed 2026-11-03 at <code>82826a22e</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -5919,6 +5919,399 @@ against pre-merge <code>61eb3733</code> (exit 1), proving the known-negative con
 An ancestry gate measures inclusion, not immunity to a later revert.
 No multitenant role is enabled, and no release tag or release acceptance
 follows from this merge.</p>
+<h3 id="r23---8898-opt-in-ci-accounting-on-0afdb87f-2026-11-03">R23 - #8898 opt-in CI accounting on <code>0afdb87f</code> (2026-11-03)<a class="headerlink" href="#r23---8898-opt-in-ci-accounting-on-0afdb87f-2026-11-03" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced</strong>, separate dormant foundations branch, not the release candidate:
+<code>0afdb87f83c3b66a5206fa8bd9e5046696bcc2d1</code>, containing CI fix
+<code>04321de0e3b3a7ea8d624fc5b8d3673aab218c56</code> and current <code>official/dev</code>
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. The isolated worktree is
+<code>externals/work/crm-pr8898-ci-20261103</code>; its committed tree excludes the
+pre-existing dependency-resolution edit in the shared integration worktree.</p>
+<p>Node 22.23.4 / disposable MongoDB 8.0.34, UTC, CI shuffle seed <code>41574423920</code>.
+Full non-browser tiers: <strong>6,711 passing / 100 pending / 0 failing</strong>, exit 0.
+Unit 2,125; DOM 205; dependency 368 plus 2 pending; core 319; harness 93;
+integration 3,583 plus 98 pending; stress 18. Disabled labs remain pending,
+not exercised or counted as passes. Focused selection/backend regressions:
+39 passing. Two explicit enabled-lab runs: 17 and 19 passing respectively,
+including real PostgreSQL 16.15, Vault, importer and tenant HTTP checks.</p>
+<p>Commands ran from the isolated worktree. <code>TEST_ENV_FILE</code> named an ignored
+synthetic test environment; database URI variables name disposable resources.
+The named scratch directories and owned containers were removed after capture;
+recreate synthetic fixtures before replaying, without committing credentials.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">TZ</span><span class="o">=</span>UTC<span class="w"> </span><span class="nv">TMPDIR</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>realpath<span class="w"> </span>../pr8898-ci-scratch-20261103<span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="nv">TEST_ENV_FILE</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/.ci-scratch/test.env"</span><span class="w"> </span><span class="nv">TEST_SHUFFLE_SEED</span><span class="o">=</span><span class="m">41574423920</span><span class="w"> </span>node<span class="w"> </span>scripts/test-tiers.js<span class="w"> </span>run<span class="w"> </span>unit,dom,dependency,core,harness,integration,stress
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="nv">TMPDIR</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/.ci-scratch"</span><span class="w"> </span>node<span class="w"> </span>node_modules/mocha/bin/mocha.js<span class="w"> </span>--no-config<span class="w"> </span>--no-package<span class="w"> </span>--reporter<span class="w"> </span>./scripts/execution-reporter.js<span class="w"> </span>--timeout<span class="w"> </span><span class="m">20000</span><span class="w"> </span>--exit<span class="w"> </span>tests/test-select.test.js<span class="w"> </span>tests/test-backends.test.js
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="nv">NS_TEST_POSTGRES_ADMIN_URI</span><span class="o">=</span><span class="s2">"</span><span class="nv">$DISPOSABLE_POSTGRES_URI</span><span class="s2">"</span><span class="w"> </span><span class="nv">NS_VAULT_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">TMPDIR</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>realpath<span class="w"> </span>../pr8898-ci-scratch-20261103<span class="k">)</span><span class="s2">"</span><span class="w"> </span>node<span class="w"> </span>node_modules/mocha/bin/mocha.js<span class="w"> </span>--no-config<span class="w"> </span>--no-package<span class="w"> </span>--fail-zero<span class="w"> </span>--reporter<span class="w"> </span>./scripts/execution-reporter.js<span class="w"> </span>--timeout<span class="w"> </span><span class="m">30000</span><span class="w"> </span>--exit<span class="w"> </span>tests/postgres-connection.test.js<span class="w"> </span>tests/entries-importer-postgres.integration.test.js<span class="w"> </span>tests/vault-secrets.integration.test.js
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="nv">NS_TEST_POSTGRES_ADMIN_URI</span><span class="o">=</span><span class="s2">"</span><span class="nv">$DISPOSABLE_POSTGRES_URI</span><span class="s2">"</span><span class="w"> </span><span class="nv">CUSTOMCONNSTR_mongo</span><span class="o">=</span><span class="s2">"</span><span class="nv">$DISPOSABLE_COMPARISON_MONGO_URI</span><span class="s2">"</span><span class="w"> </span><span class="nv">NS_TENANT_HTTP_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_MIGRATION_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_SECRETS_POSTGRES_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">TMPDIR</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>realpath<span class="w"> </span>../pr8898-ci-scratch-20261103<span class="k">)</span><span class="s2">"</span><span class="w"> </span>node<span class="w"> </span>node_modules/mocha/bin/mocha.js<span class="w"> </span>--no-config<span class="w"> </span>--no-package<span class="w"> </span>--fail-zero<span class="w"> </span>--reporter<span class="w"> </span>./scripts/execution-reporter.js<span class="w"> </span>--timeout<span class="w"> </span><span class="m">60000</span><span class="w"> </span>--exit<span class="w"> </span>tests/postgres-entries-read.test.js<span class="w"> </span>tests/tenant-entries-http.integration.test.js<span class="w"> </span>tests/postgres-migrations.integration.test.js<span class="w"> </span>tests/postgres-secrets.integration.test.js<span class="w"> </span>--grep<span class="w"> </span><span class="s1">'PostgreSQL entries read matches|M3 tenant entries HTTP lab|status/check are read-only|runs the actual operator CLI|stores immutable tenant-local ciphertext'</span>
+</code></pre></div>
+<p><strong>Control:</strong> removing reporter recognition of opt-in pending events makes the
+focused regression fail with <code>TEST_EXECUTION: no test body completed in
+tests/fixtures/opt-in.fixture.js</code>. Restored behavior passes. Existing ordinary
+skipped/empty file enforcement remains tested, serially and in parallel.
+The original eight disabled labs reproduced 77 pending and exit 8;
+with the fix they retain 77 pending and exit 0.</p>
+<p>Changed-file ESLint: zero errors, two existing filesystem-path warnings.
+Tier map: 473 files/eight tiers. Whitespace and final PR check passed.
+<strong>Unmeasured:</strong> browser replay, MongoDB migration opt-ins, remaining PG
+migration/secrets campaigns and fresh remote CI on this unpushed head.
+An earlier full attempt was aborted after an owned MongoDB descriptor-limit
+failure and scratch-directory dependency leakage; it is not counted green.
+The complete replay used an owned MongoDB descriptor limit of 64,000 and
+scratch outside the package tree. No M1-M6 promotion or runtime enablement.
+See <a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html#pr-8898-database-ci-accounting-fix-2026-11-03">mechanism and integration record</a>.</p>
+<h3 id="r24---combined-p2-dormant-slices-on-8b193e18-2026-11-03">R24 - combined P2 dormant slices on <code>8b193e18</code> (2026-11-03)<a class="headerlink" href="#r24---combined-p2-dormant-slices-on-8b193e18-2026-11-03" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived agent-run evidence</strong>, not coordinator remeasurement or candidate
+acceptance. Clean isolated <code>workspace/p2-integration-20261103</code> at
+<code>8b193e187fecaa93b41b5f3ced786a80d3e219f0</code> joins entries <code>cabb5eec</code>
+and authority <code>ad0cbdac</code>, includes refreshed <code>official/dev</code> <code>4a482627</code>,
+and is unpushed. PR #8898 remains open/draft at published <code>0afdb87f</code>.
+Eight changed paths relative to that PR head are the entries reader and two
+focused tests, tenant-authorization README/adapter/candidate and integration
+test, plus <code>tests/tiers.json</code>. No role is enabled.</p>
+<p>Runtime: Node 22.23.4, MongoDB 8.0.34 with nofile 64000, PostgreSQL 16.15.
+Owned synthetic loopback databases and scratch outside the package tree;
+bundles built in the owned worktree. After sourcing <code>tests/ci.test.env</code>,
+set the owned MongoDB connection environment, <code>TZ=UTC</code>, external <code>TMPDIR</code>,
+<code>TEST_SHUFFLE_SEED=41574423920</code>, and <code>TEST_ENV_FILE=/dev/null</code> for nonbrowser
+tiers so default configuration cannot override the owned database.</p>
+<table>
+<thead>
+<tr>
+<th>Command / suite</th>
+<th>Passing</th>
+<th>Pending</th>
+<th>Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm run test:all</code> unit</td>
+<td>2127</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>205</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>dependency</td>
+<td>368</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>core</td>
+<td>319</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>harness</td>
+<td>93</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>integration</td>
+<td>3583</td>
+<td>106</td>
+<td>0</td>
+</tr>
+<tr>
+<td>stress</td>
+<td>18</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Nonbrowser total</td>
+<td>6713</td>
+<td>108</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>npm run test:browser</code></td>
+<td>684</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>npm run test:affected</code> (overlapping replay, not additive)</td>
+<td>7293</td>
+<td>108</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Explicit campaigns use <code>node_modules/.bin/mocha --no-config --no-package
+--fail-zero --reporter ./scripts/execution-reporter.js</code>, owned dependencies,
+and 30000-120000ms timeouts:</p>
+<table>
+<thead>
+<tr>
+<th>Selectors / environment</th>
+<th>Passing / pending / failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>postgres-entries-read</code>, <code>postgres-connection</code>, <code>entries-importer-postgres.integration</code> test files; both disposable database URI variables</td>
+<td>18 / 0 / 0</td>
+</tr>
+<tr>
+<td><code>postgres-entries-write.test.js</code>; both disposable database URI variables</td>
+<td>22 / 0 / 0</td>
+</tr>
+<tr>
+<td><code>tenant-authorization-postgres.integration.test.js</code>; <code>NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST=1</code></td>
+<td>7 / 0 / 0</td>
+</tr>
+<tr>
+<td><code>tenant-entries-http.integration.test.js</code>; <code>NS_TENANT_HTTP_DOCKER_TEST=1</code></td>
+<td>10 / 0 / 0</td>
+</tr>
+<tr>
+<td><code>postgres-migrations.integration.test.js</code>; <code>NS_MIGRATION_DOCKER_TEST=1</code></td>
+<td>13 / 0 / 0</td>
+</tr>
+<tr>
+<td><code>postgres-secrets.integration.test.js</code>; <code>NS_SECRETS_POSTGRES_DOCKER_TEST=1 NS_VAULT_DOCKER_TEST=1</code></td>
+<td>16 / 0 / 0</td>
+</tr>
+<tr>
+<td><code>vault-secrets.integration.test.js</code>; <code>NS_VAULT_DOCKER_TEST=1</code></td>
+<td>6 / 0 / 0</td>
+</tr>
+</tbody>
+</table>
+<p>Campaign counts overlap full-suite cases; do not add them as a unique census.
+Actual state controls demonstrate unbound/session binding leakage, foreign rows
+when RLS is disabled and unsafe-authority startup refusal. Owned idle database
+termination leaves the child alive; its next authorization refuses. Grant,
+ledger/checksum, audit privilege and provider-key mutations exercise refusal
+and recovery. No new source ablation was run on this combined tree; original
+source controls retain their lane-head evidence. HTTP revocation/outage still
+uses fixture authority, not production credential wiring.</p>
+<p>Focused ESLint, whitespace and <code>npm run test:tiers</code> pass (474 files, eight
+tiers). Final <code>tools/review/prcheck/prcheck.sh
+externals/work/crm-p2-integration-20261103</code> passes after current-dev checks,
+tests and owned resource cleanup. Only read-only checks followed.
+The Mongo migration opt-in was <strong>skipped</strong> because its fixture writes literal
+<code>/tmp/ns-repl-key</code> without a path override. Production credential-to-principal
+verification, HTTP/listener wiring and owner/operator provisioning remain
+UNMEASURED. This records tested dormant integration, not full multitenant
+acceptance or release readiness.</p>
+<h3 id="r25---tenant-credentialcurrent-authority-get-on-7eb76c71-2026-11-03">R25 - tenant credential/current-authority GET on <code>7eb76c71</code> (2026-11-03)<a class="headerlink" href="#r25---tenant-credentialcurrent-authority-get-on-7eb76c71-2026-11-03" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived agent-run evidence</strong>, not coordinator replay or production
+acceptance. Clean isolated <code>workspace/tenant-auth-http-20261103</code> at
+<code>7eb76c713ace783dc24f412f1242678f1fd23770</code> extends combined <code>8b193e18</code>
+and includes refreshed <code>official/dev</code> <code>4a482627</code>. Unpushed; #8898 remains
+open/draft at published <code>0afdb87f</code>.</p>
+<p>The dormant slice adds tenant-bound legacy credential verification inside the
+secrets boundary, separate operator-run credential-reference/subject metadata,
+and an optional entries GET data-access bridge. The actual API3 handler gets
+only the asynchronously established <code>api:entries:read</code> permission through an
+internal synchronous binding. No wildcard, HTTP-supplied identity or Promise
+serves as Shiro authority. Owner/operator authentication and default single
+paths remain unchanged. Other data methods explicitly refuse; this is not
+full REST compatibility.</p>
+<p>Verification preserves shipping root/subject derivation in synthetic
+differential tests, including presentation-prefix variants. Imported stable
+IDs/root authority remain necessary for existing credentials. Trusted metadata
+selects the current encrypted root reference; authorized/audited decryption
+and digest calculation stay inside the secrets boundary. Real Vault decrypt
+is tested separately; Transit HMAC is measured as different from legacy
+digests and is not substituted. Signing keys remain nonexportable.</p>
+<p>Authentication reads current credential metadata; authorization separately
+reads current subject/default-role policy. These are sequential snapshots,
+not an atomic transaction spanning stores. Previously verified/authorized
+in-flight operations may finish. Invalid supplied credentials refuse rather
+than become anonymous. Missing references, audit refusal and store failures
+produce sanitized unavailable responses.</p>
+<p>Enabled focused command, from the owned lane with Docker and owned scratch:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">NS_TENANT_CREDENTIAL_HTTP_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nv">NS_TENANT_HTTP_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_VAULT_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>node_modules/.bin/mocha<span class="w"> </span>--no-config<span class="w"> </span>--no-package<span class="w"> </span>--fail-zero<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>--reporter<span class="w"> </span>./scripts/execution-reporter.js<span class="w"> </span>--timeout<span class="w"> </span><span class="m">90000</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>tests/tenant-legacy-credentials.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span>tests/tenant-credential-http.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span>tests/tenant-authorization-postgres.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span>tests/tenant-entries-http.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span>tests/tenant-resolution.test.js<span class="w"> </span>tests/tenant-app.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span>tests/tenant-jwt-http.integration.test.js<span class="w"> </span>tests/secrets.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span>tests/vault-secrets.integration.test.js
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Campaign on committed tree</th>
+<th>Passing</th>
+<th>Pending</th>
+<th>Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled focused command</td>
+<td>72</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>npm run test:all</code></td>
+<td>6718</td>
+<td>118</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>npm run test:browser</code></td>
+<td>684</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Enabled <code>npm run test:affected -- --since 8b193e187fecaa93b41b5f3ced786a80d3e219f0</code></td>
+<td>2006</td>
+<td>23</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Counts overlap, never additive. Nonbrowser tier passes: unit 2132, DOM 205,
+dependency 368 (2 pending), core 319, harness 93, integration 3583 (116
+pending), stress 18. Full/affected setup sources <code>tests/ci.test.env</code> then
+overrides the owned MongoDB environment, <code>TZ=UTC</code>,
+<code>TEST_SHUFFLE_SEED=41574423920</code>, <code>TEST_ENV_FILE=/dev/null</code>, external owned
+<code>TMPDIR</code>. Runtime Node 22.23.4, MongoDB 8.0.34/no-file limit 64000; PG fixtures
+use <code>postgres:16</code>. Separate MongoDB instances prevent concurrent suite
+interference.</p>
+<p>Nine new persistent HTTP cases and five unit cases cover legacy credential
+forms, real GET/304, tenant isolation, root/uploader distinctions,
+invalid/expired JWT, anonymous modes, policy/grant changes, reference/subject
+removal and metadata/audit/authority refusal. The HTTP provider is synthetic;
+data authority and credential metadata are real PostgreSQL state. Independent
+pools run in one process, not a two-OS-worker deployment.</p>
+<p>Three actual source controls in owned scratch go red: bypassing current
+authority returns 200 instead of 403 after revocation; caching root-reference
+metadata returns 200 instead of 401 after replacement; clearing entries tenant
+binding returns 404 instead of own-tenant 200. The latter proves binding
+dependence, not foreign disclosure. Restored selectors pass 3/0/0. An earlier
+mutation broke setup liveness and was not counted as the final control.</p>
+<p>Focused lint, whitespace and 476-file/eight-tier classification pass.
+After fetch/current-dev confirmation and repeated focused checks,
+<code>tools/review/prcheck/prcheck.sh externals/work/crm-tenant-auth-http-20261103</code>
+passes as the final readiness gate. Owned containers/scratch removed.</p>
+<p><strong>Remaining:</strong> tenant exchange endpoints and pinned client cohorts, full
+v1/v2/v3 carriers/REST compatibility, production import/provisioning,
+scoped provider runtime identity/recovery, cross-process races,
+owner/operator lifecycle and listeners, resource limits and role enablement.
+Other historical opt-ins, including Mongo migration, were not enabled.
+No new JWT format or coordinated client upgrade is introduced, but broad
+client compatibility and preexisting single-site JWT portability are not
+established by these tests.</p>
+<h3 id="r26---dormant-tenant-exchange-to-get-on-81bc71e6-2026-11-03">R26 - dormant tenant exchange to GET on <code>81bc71e6</code> (2026-11-03)<a class="headerlink" href="#r26---dormant-tenant-exchange-to-get-on-81bc71e6-2026-11-03" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived agent-run evidence</strong>, captured 2026-11-04T07:22:29Z, not
+coordinator replay or production acceptance. Clean unpushed
+<code>workspace/tenant-exchange-20261103</code> at
+<code>81bc71e634c0c2e60ac4e86cfba2e063501c9192</code> extends characterization
+<code>2bbdf312</code> and credential/GET <code>7eb76c71</code>, with refreshed <code>official/dev</code>
+<code>4a482627</code> included. #8898 remains open at published <code>0afdb87f</code>.</p>
+<p>The explicit dormant composition adds only the shipping v2 subject-token
+exchange path and its join to actual entries GET. Response fields remain
+<code>token,sub,permissionGroups,iat,exp</code>; exact current subject name and permission
+arrays come from a fresh tenant-bound authority snapshot. An appended candidate
+migration adds nullable subject display-name metadata without changing the
+original migration. Missing imported names refuse exchange, not unrelated data
+reads. Canonicalization/signing stays inside secrets; root exchange refuses.
+Eight-hour issuance and maximum are explicit for this issuer/verifier.
+Current grants still govern subsequent GET; JWT response groups are not
+cached authority. No default single, client, JWT-envelope, OIDC, listener,
+role enablement or wider REST change.</p>
+<p>Node 22.23.4, MongoDB 8.0.34/nofile 64000; owned synthetic loopback services,
+external project scratch and pinned PG/Vault fixtures. Full setup sources
+<code>tests/ci.test.env</code>, then supplies the owned MongoDB environment, <code>TZ=UTC</code>,
+<code>TEST_SHUFFLE_SEED=41574423920</code> and <code>TEST_ENV_FILE=/dev/null</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">NS_TENANT_CREDENTIAL_HTTP_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nv">NS_TENANT_HTTP_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NS_VAULT_DOCKER_TEST</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">NODE_ENV</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>node_modules/.bin/mocha<span class="w"> </span>--no-config<span class="w"> </span>--no-package<span class="w"> </span>--fail-zero<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>--reporter<span class="w"> </span>./scripts/execution-reporter.js<span class="w"> </span>--timeout<span class="w"> </span><span class="m">90000</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span>tests/authorization-exchange-contract.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span>tests/tenant-legacy-credentials.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span>tests/tenant-credential-http.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span>tests/tenant-authorization-postgres.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span>tests/tenant-entries-http.integration.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span>tests/tenant-resolution.test.js<span class="w"> </span>tests/tenant-app.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span>tests/tenant-jwt-http.integration.test.js<span class="w"> </span>tests/secrets.test.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span>tests/vault-secrets.integration.test.js
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Campaign</th>
+<th>Passing</th>
+<th>Pending</th>
+<th>Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled focused command</td>
+<td>85</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>npm run test:all</code></td>
+<td>6725</td>
+<td>124</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>npm run test:browser</code></td>
+<td>684</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Enabled <code>npm run test:affected -- --since 2bbdf3121a6ea2b9c16742b77067c4dbc21cfb38</code></td>
+<td>77</td>
+<td>16</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Counts overlap. Nonbrowser passes: unit 2133, DOM 205, dependency 368 (2
+pending), core 319, harness 93, integration 3589 (122 pending), stress 18.
+Focused cases prove accepted legacy credential canonicalization,
+exchange-issued token to actual own-tenant GET, cross-tenant refusal,
+empty-bearer handshake, exact-name updates, current grants, duration bounds,
+schema upgrade and provider/audit/store refusals. HTTP crypto provider remains
+synthetic with actual PostgreSQL metadata/authority; real Vault exchange is
+measured separately, not as one production deployment.</p>
+<p>Four actual source ablations in owned scratch fail: cached name/grants return
+stale display metadata; signing caller input instead of canonical token changes
+decoded accessToken; bypassed data authority permits revoked GET (200 vs 403);
+removed duration verification permits an overlong token (200 vs 401).
+Restored selectors pass 2/0/0. Preliminary migration/Vault expectations were
+corrected against actual contracts: stale check throws <code>MIG_STALE</code>; mismatched
+Vault signing versions may produce provider refusal before audience checking.
+That provider case does not establish uniform cross-tenant HTTP status behavior.</p>
+<p>Full production lint passes with 22 warnings in unchanged files, zero errors;
+focused lint, whitespace and 477-file/eight-tier classification pass. Final
+prcheck passes after current-dev sync and post-fetch focused checks. Owned
+containers/scratch removed. Global queue measurement was not green:
+PASS 204 / FAIL 36 / UNMEASURED 118; no unrelated states/gates changed.</p>
+<p>Read-derived client source inventory: AndroidAPS pinned <code>7e1d537d</code>, Connect
+workspace pin <code>b394411a</code> and NightscoutKit <code>4ec9fd12</code> retain existing exchange
+or direct-credential call shapes; no client was edited or replayed. Broad
+backward/forward client compatibility remains UNMEASURED. Production
+provisioning/import, scoped provider runtime/recovery, cross-process races,
+v1/v2 data routes, mutations, resource bounds, owner/operator lifecycle and
+listeners remain outside acceptance. Mongo migration opt-in was not enabled.
+No milestone promotion follows.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
