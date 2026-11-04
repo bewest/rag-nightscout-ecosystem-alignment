@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: implementation-first CLI and CRUD dispatch (2026-11-04)
+
+| Work / state | Evidence and delivery boundary |
+|---|---|
+| Maintainer approved parallel full entries CRUD and runnable `nightscout multitenant api`, replacing interstitial packet chains with code/test/handoff deliverables. | Fresh lanes `workspace/entries-crud-20261104` and `workspace/runnable-multitenant-20261104` start at accepted `c527fb7e`. [Decisions](decisions.md#runnable-preview-and-parallel-crud-delivery-2026-11-04) approve POST-derived tenant CRUD attribution/refusal and explicit config/environment-bound preview API boot. New implementation/CLI acceptance is UNMEASURED; full-programme milestone criteria remain, but do not gate development of the bounded runtime on full CRUD/HA/registry/owner coverage. |
+| Test-only operator-prepared fidelity committed locally as `9e97d07338108f3b338f754c3a3466c7da8d29a8`; clean and unpushed. | Agent-reproduced, parent handoff-read: credential HTTP33 passing; source-ID control expected200/got401 and missing-name control expected401/got200 go red; lint/syntax/whitespace/final prcheck pass. Full nonbrowser/browser are explicitly UNMEASURED; validate after joining the implementation lanes, not a separate readiness claim. No supported importer, idempotent multi-store rerun or atomic activation is asserted. |
+| Fresh GitHub read observes draft #8898 now published at accepted cumulative `c527fb7e`; maintainer publication, not an agent push. | Its new remote CI/review is not yet asserted here. No new CRUD/runtime implementation has been published, no extra role enabled, and no CRM merge to the 16.0.0 candidate is implied. |
+
 ### Update: PATCH packet characterized; implementation remains scoped (2026-11-04)
 
 | Work / state | Evidence and next decision boundary |
