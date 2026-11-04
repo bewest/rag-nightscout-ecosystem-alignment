@@ -28,6 +28,14 @@ Historical status/measurement sections below retain their dates.
 |---|---|
 | Local dormant `workspace/tenant-entries-search-20261104` at `c10290d2b804f86853ce3d92014baaf62d10a745`, extending R26's `81bc71e6`; includes `official/dev` `4a482627`, not merged to `dev`. | Read-derived agent-run [R27](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r27---dormant-tenant-entries-search-on-c10290d2-2026-11-04): live MongoDB/PG differential 8 passes, actual HTTP search 2 passes, affected 115 passing/16 pending/0 failing, full nonbrowser 6764 passing/88 pending/0 failing, browser 684/0/0. Three source controls fail as intended and are restored; lint/tier/prcheck pass. Supports bounded list/search through shipping handlers with current tenant authority; history/mutations, pinned-client replay, production runtime/provider/import and resource acceptance remain open. No operator-visible default change, role enablement or milestone promotion. |
 
+### Update: preview dispatch and published checkpoint (2026-11-04)
+
+| Work / state | Evidence and next gate |
+|---|---|
+| nightscout/cgm-remote-monitor#8898 is published at `81bc71e6`, open/draft; local `c10290d2` remains the accepted cumulative search head. | Read-derived current PR checks: tests/build/browsers pass; three new CodeQL fixture alerts were individually dismissed after source review, without exclusions or protocol changes. API read-back confirms dismissal and CodeQL/Tests pass SUCCESS. [Disposition](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#published-exchange-checkpoint-codeql-disposition-2026-11-04) distinguishes dismissal from a new scan. No merge to dev or release acceptance follows. |
+| [Fresh-context M1-M6 preview packets](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#preview-dispatch-packets-m1-m6-2026-11-04) scope the next six milestones; M0 acceptance remains required within the foundations. | Two isolated agents prepare entries mutation and real-provider/runtime packets from `c10290d2`, stopping before implementation approval. Coordinator owns records/joins/decisions. Later integration, pinned-client, realtime and operational packets are staged behind their acceptance inputs, not dispatched as six competing implementations. Current selected queue measurement: ST-PG unit gate passes; seven other items unmeasured, integration gates skipped. |
+| T30-WIRING claim corrected to in-progress; dashboard refreshed through R27. | R25-R27 measure partial credential/exchange/current-authority HTTP implementation, not full production runtime acceptance. M1/M2 criteria remain incomplete; M3/M4/M6 remain dependency-constrained. No milestone promotion, new operator-visible default, OIDC prerequisite or serving-role enablement. |
+
 ### Update: bounded authority lane handoff (2026-11-03)
 
 | Tree / work | Evidence and remaining acceptance |

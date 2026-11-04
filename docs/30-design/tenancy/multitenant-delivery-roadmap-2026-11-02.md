@@ -11,7 +11,7 @@ in the [priorities assessment](../../10-domain/nightscout-multitenancy-prioritie
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.
 
-## Current status and parallel ownership (2026-11-02)
+## Current status and parallel ownership (2026-11-04)
 
 **Use the [working dashboard](multitenant-delivery-dashboard.md) for current
 milestone dependencies, parallel lanes, next gates and slice acceptance stages.**
@@ -25,8 +25,10 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The local non-database tiers now pass with the
-dependency-resolution fix; the full integrated gate remains pending.
+promotion is recorded. The latest accepted local slice is `c10290d2`;
+published foundations PR nightscout/cgm-remote-monitor#8898 contains
+`81bc71e6`. Integrated acceptance is bounded to the recorded slices, not
+complete storage, runtime or preview acceptance.
 
 ## 1. Owner journeys and supported boundary
 
@@ -225,7 +227,209 @@ provide disposable dependencies and record the actual verdicts.
 | P5: expand M4 and advance M5 independently | API lane expands supported collections and v1/v2/v3 contracts in measured client-priority order. Runtime lane completes MT-RUNTIME-PLAN's durable event/replay contract before evaluator/websocket implementation. | Pinned uploader/follower cases and tenant-local batch/history/index behavior; separately, durable checkpoints, ordering/duplicate/delete recovery, socket revocation/reconnect and replay-equivalent evaluator views. M4 development may begin earlier, but promotion follows M3. |
 | P6: multitenant preview acceptance | M6 joins M4/M5 with chosen owner capabilities, private lifecycle, export/deletion and operational acceptance. | Synthetic backup/restore, upgrade/rollback, bounded resources/egress, provider/recovery review and final-tree validation. Real-data/identity acceptance and role enablement require separate explicit approval; no inference from lab passes. |
 
-#### First dispatch packets
+### Preview dispatch packets M1-M6 (2026-11-04)
+
+This is the continuation of P3-P6, not a second milestone system. M0
+foundation acceptance remains a prerequisite within M1. The next six
+milestones are M1 through M6; they are not six agents dispatched together.
+Two fresh-context implementation lanes run initially, with the coordinator
+owning integration, decisions, CodeQL disposition and alignment records.
+Future packets are instantiated from the accepted cumulative head, never
+blindly from the planning anchor below.
+
+**Anchors read for this dispatch:** published PR head `81bc71e6`, current
+`official/dev` `4a482627`, local cumulative CRM `c10290d2`, alignment
+`main` `82826a22e`, records branch `59ebd0efe`. R27's agent-run nonbrowser
+result is 6764 passing / 88 pending / 0 failing, browser separately 684/0/0;
+eight reader differential and two actual HTTP search checks pass. These
+overlapping campaigns are not additive. Source controls caught revoked
+search succeeding, wrong tenant rows and ignored pagination. Broad client
+replay, actual HTTP mutations/history and production runtime remain outside
+that acceptance.
+
+#### Common fresh-context dispatch contract
+
+Each agent reads AGENTS.md, confirms the current head and that the task is
+still open, checks ownership and creates its own lane. Stop and report a
+mismatch rather than reaching for the nearest thing that works. A handoff
+must carry the facts, not require retained chat context.
+
+Every instantiated packet names: parent queue IDs; exact base and dev heads;
+owned branch/worktree and allowed files; shipped contract with file:line;
+reproduced gap versus read-derived hypothesis; one bounded output; explicit
+non-goals; test commands and environment-variable names; expected positive,
+refusal and outage outcomes; actual source-ablation controls; cleanup; and
+the decision that stops the slice. No credentials, connection URLs, user data
+or shipping-defect recipes enter tracked records.
+
+Use the configured high-capability general-purpose agent defaults for
+implementation, cross-store authorization and lifecycle reasoning. Do not
+hard-code a model/version in the plan. Bounded command execution may use a
+task agent when it needs separate context; do not delegate simple lookups.
+A fresh agent takes each independent slice; retained agents receive only
+same-slice follow-ups. No agent spawns another agent or changes its scope.
+
+The first turn is an inventory/reproduction packet, not permission for a
+blanket implementation. The coordinator approves its exact change surface
+before code. Shared auth/handler/schema files have one owner at a time.
+Committed migration bytes remain immutable; schema additions require the
+schema owner. Integration starts only after clean committed lane results.
+
+After implementation, run focused real-store/actual-handler checks first;
+then the full applicable nonbrowser and browser suites, lint/tier checks,
+current-dev synchronization, affected tests and final prcheck. Report
+per-tier totals, skipped opt-ins and overlapping campaigns separately.
+Use owned disposable loopback services, synthetic fixtures and scratch
+outside the package tree. A non-test database name trips the existing guard;
+select a test database, never bypass it. The Mongo migration fixture's shared
+temporary path remains a named skip, not a workaround.
+
+#### M1 packet: entries mutation and history acceptance
+
+**Queue home:** ST-PG and MIG-RUNNER. Initial lane:
+`workspace/entries-mutations-20261104`, from `c10290d2`. Inventory the actual
+shipping POST handler through write-intent, stored-identity resolution,
+permission decisions and post-commit events. Reproduce the smallest gap,
+then propose one POST/create/resend family, not POST/PATCH/PUT/DELETE at once.
+The earlier lab's test-only mutation adaptation is not the reference.
+
+Own entries adapter/API-specific tests; a shared handler or private permission
+bridge change requires coordinator agreement. Use actual handlers and
+MongoDB/PostgreSQL differentials, independently pooled tenants with overlapping
+IDs, and current branch-sensitive create/update grants. Expected outcomes:
+own-tenant success with matching stored result and response; no anonymous
+write, foreign row or revoked success; failure does not emit a committed
+intent. Break permission enforcement, tenant binding and identity/retry
+handling in owned scratch and observe exact assertion failures.
+
+Follow with separately scoped PATCH/PUT/DELETE/history packets, then import,
+query/resource and complete applicable backend acceptance. Stop for a new
+permission/linearization policy, client-required change, approximate MongoDB
+semantics or an unapproved schema/limit. M1 promotion requires its whole
+contract, not the first mutation slice.
+
+#### M2 packet: real-provider composition and readiness
+
+**Queue home:** MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MIG-RUNNER, TEN-RESOLVE
+and T30-WIRING. Initial lane: `workspace/runtime-composition-20261104`, from
+`c10290d2`. Inventory existing provider/readiness ports and reproduce the
+missing real-provider + PostgreSQL + actual HTTP join. Prefer the smallest
+explicit synthetic lab composing existing adapters; do not invent a runtime
+framework or duplicate the entries API.
+
+Own provider/runtime-specific composition and tests, not mutation handlers.
+Expected outcomes: scoped real-provider credentials support own-tenant
+exchange/read; cross-tenant keys/hosts and untrusted selectors refuse;
+committed revocation is observed; unavailable provider/authority is not stale
+success; stale/unsafe schema refuses without DDL. Break provider ACLs and
+tenant binding in scratch and show the actual isolation/refusal assertion
+fails. A real-provider development lab does not certify production auth,
+TLS, unseal, HA or recovery.
+
+Follow with explicit provisioning/import fidelity, trusted runtime identity,
+separate data/owner/private-operator listeners and shutdown/recovery packets.
+Stop before selecting a new operator authenticator, secret-recovery policy,
+numeric resource default or deployment trust assumption. Existing OIDC work
+is separate, not a prerequisite invented for this join.
+
+#### M3 packet: cumulative two-tenant acceptance
+
+**Queue home:** TEN-LAB, gated by complete M1/M2 acceptance. A fresh integration
+agent receives exact clean lane heads, allowed conflict resolutions and all
+applicable selectors. Merge into a new owned integration lane; do not rebase
+shared published history. Exercise the combined application, not only narrow
+fixtures: overlapping identities, actual authorized requests/stored outcomes,
+pool reuse, concurrent changes, current grants, outages and schema refusal.
+Expected positives and paired breaks must survive integration. Stop on
+changed behavior or unexplained test accounting rather than waive a failure.
+Full suites and final prcheck apply to the exact combined head. Record
+remaining gaps before any milestone promotion; keep all roles dormant.
+
+#### M4 packet: pinned clients and wider REST surface
+
+**Queue home:** ST-PG, TEN-LAB and MT-RUNTIME-PLAN; promotion follows M3.
+First inventory actual pinned uploader/follower operations, then choose one
+client/collection/route family. The inventory must name version/hash and
+ordinary handshake, read, write, retry and refusal behavior; source inspection
+alone is not replay acceptance. Extend further collections, v1/v2/v3,
+history/indexes and tenant-local batches in that measured order.
+Expected output is a reproducible synthetic client replay and stored-result
+comparison, including an unchanged legacy response without opt-in.
+Break retry/identity or response semantics and demonstrate a client assertion
+fails. Stop if a coordinated app upgrade, changed default or unsupported
+client safety assumption would be required.
+
+#### M5 packet: durable events, realtime and evaluator
+
+**Queue home:** MT-RUNTIME-PLAN. Contract work may proceed independently of
+M3/M4; runtime acceptance still requires its storage/authority inputs.
+First reconcile the existing D6 feed and D-EVENT commit contract, naming
+durable checkpoint ownership, commit coupling, ordering, duplicates, hard
+and soft deletes, configuration invalidation and restart boundaries.
+No timer substitutes for lost writes.
+
+Only after that contract is approved, implement one producer/consumer recovery
+slice. Expected output: kill/restart and duplicate/replay tests reconstruct
+the same tenant-local view; disconnected/revoked sockets do not retain
+authority; caches and evaluator state do not cross tenants. Break checkpoint
+or replay handling to make those assertions fail. Owner ack/snooze and actual
+notification delivery retain their separate gates. Stop for a new ordering,
+retention or recovery guarantee rather than infer one from the in-process bus.
+
+#### M6 packet: synthetic operational preview
+
+**Queue home:** TEN-LAB and MT-RUNTIME-PLAN, plus their named operational
+items; promotion requires M4/M5 and chosen owner capabilities. Dispatch one
+backup/restore, upgrade/rollback, export/deletion or resource/egress family
+at a time, with exact artifacts and expected recovery boundaries.
+Verify import fidelity, tenant-local ciphertext/key recovery and audit
+redaction; inject failed restore/upgrade/provider operations and prove explicit
+refusal and recovery. No preview claim follows from a fresh empty database.
+
+The final packet joins accepted operations on one immutable tree, documents
+supported/unsupported capabilities and obtains maintainer review. Real-data,
+human identity, production traffic, serving-role enablement and publication
+require explicit separate approval. An unresolved numeric bound, retention
+rule or owner capability becomes a decision question, not an agent default.
+
+#### Records and decision join after every packet
+
+Record measurements in the next integration R entry and a dated release
+contents update; record maintainer choices in decisions.md. Update existing
+queue claims and dashboard slice metadata when they change, regenerate their
+views, and run queue-check/docs-links (site-check for dashboard changes).
+SQLite tracks session tasks/dependencies, never substitutes for those files.
+Questions carry the mechanism with file:line, measured versus unmeasured
+behavior, compatibility/operator impact and a recommendation. Check peer
+decisions first; ask one topic at a time. No automatic push or milestone
+promotion is delegated.
+
+### Accepted read and authority continuations (2026-11-04)
+
+The [integration record](../remedial/rc-16.0.0-integration-record.md)
+is the measurement home: R24 records combined projection/current authority
+at `8b193e18`; R25 records legacy credential/current-authority GET at
+`7eb76c71`; R26 records compatible exchange/GET at `81bc71e6`; R27 records
+actual entries list/search at `c10290d2`. R27's agent-run nonbrowser total
+is 6764/88 pending/0 failing, browser separately 684/0/0. Current authority,
+wrong-tenant and pagination controls fail as intended. No parent replay,
+pinned-client acceptance, full REST or production runtime is asserted.
+
+### Published exchange checkpoint CodeQL disposition (2026-11-04)
+
+Read-derived source review on PR head `81bc71e6` found three opt-in synthetic
+fixture alerts, individually dismissed as false positives via GitHub API:
+144, missing rate limiting on the loopback ephemeral test handler
+(`tests/tenant-credential-http.integration.test.js:99,112-114`); 145 and
+146, deliberate SHA1 reference derivation of synthetic legacy credentials
+(`tests/vault-secrets.integration.test.js:146-149,180-183`). The latter tests
+measure the existing compatibility contract; actual JWT signing uses Transit
+keys, not the reference hash. No query/path exclusion, production suppression,
+algorithm change or rate-limiting acceptance follows. API read-back confirms
+all three dismissed; subsequent PR check read-back reports CodeQL and Tests
+pass SUCCESS. This is disposition of the existing analysis, not a new scan.
+
+#### First dispatch packets (historical 2026-11-03)
 
 Use **two implementation lanes at most initially**, plus the coordinator.
 P1 is the first bounded task in each lane; P2 is dispatched only after its
