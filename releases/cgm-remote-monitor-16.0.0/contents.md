@@ -22,6 +22,12 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: PATCH packet characterized; implementation remains scoped (2026-11-04)
+
+| Work / state | Evidence and next decision boundary |
+|---|---|
+| Corrected PATCH characterization on accepted `c527fb7e` passes23; update-permission source control fails as predicted, then restored baseline passes23. No tracked production edits. | [R36](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r36---entries-patch-characterization-on-c527fb7e-2026-11-04) retains the original fixture-assumption failures and distinguishes actual Mongo reference success, tenant admission405 and PG primitive support. Current-name attribution and explicit unsupported-input status require review before PATCH implementation; preserve shipping read-then-write precondition semantics. No broad mutation-language, client or milestone acceptance. |
+
 ### Update: provisioning packet and PATCH characterization follow-up (2026-11-04)
 
 | Work / state | Evidence and next decision boundary |

@@ -59,7 +59,7 @@ full suites, paired source controls and exact-head integration remain required.
 
 | Checkpoint / queue home | Next bounded action and prerequisite | Completion evidence / decision stop |
 |---|---|---|
-| C1: remaining entries methods, ST-PG | Fresh PATCH packet on `c527fb7e` is active. Accept one method family before separately dispatching PUT, DELETE and history. | Actual Mongo/PG HTTP stored-result/response comparison, fresh branch-specific authority, preconditions, rollback/no-events and non-vacuous controls. Stop on changed client behavior, approximate storage semantics or new attribution/error policy. |
+| C1: remaining entries methods, ST-PG | R36 PATCH packet on `c527fb7e` is characterized; settle exact-name attribution and nonrepresentable-input status before bounded implementation. Accept one method family before PUT, DELETE and history. | Actual Mongo/PG HTTP stored-result/response comparison, fresh branch-specific authority, preconditions, rollback/no-events and non-vacuous controls. Stop on changed client behavior, approximate storage semantics or new attribution/error policy. |
 | C2: import and resource acceptance, ST-PG/MIG-RUNNER | After identifying the supported source/target contract, measure import/rerun fidelity and bounded queries/writes. Do not equate one-time best-effort import with snapshot or hard-delete reconciliation. | Explicit supported/unsupported shapes, rerun and failure recovery, schema/RLS checks and measured bounds. Numeric limits, consistency/recovery guarantees and unsupported shape policy require decisions before implementation. Completes M1 only with all C1/M0 requirements. |
 | C3: provisioning fidelity, T30-WIRING/TEN-RESOLVE | R35 packet distinguishes existing operator tooling from test hand-seeding; test-only operator import-seam fidelity is delegated. No credential/tenant provisioning-import command exists at the accepted head. | Stable IDs, current exact names/grants, root-reference/secrets linkage and incomplete-state refusal through existing operator seams, with controls. Test choreography is not a supported importer, idempotent multi-store rerun or atomic activation. No invented authenticator, secret export or lifecycle defaults. |
 | C4: production trust and lifecycle, TEN-RESOLVE/MT-SECRETS-CONTRACT | Use C3 inventory to separate runtime service identity, provider credentials/TLS/renewal, canonical mapping lifecycle and private operator/data/owner listener packets. | Explicit approved trust/auth/recovery contracts, provision/suspend/export/delete boundaries, readonly readiness and shutdown/recovery. Durable allocation/nonreassignment/publication and real transport provenance remain open; a static resolver or development Vault is not acceptance. Completes M2 only with all its requirements. |
@@ -72,7 +72,8 @@ full suites, paired source controls and exact-head integration remain required.
 Packet ownership is local and resumable: the entries and provisioning lanes
 write `externals/work/HANDOFF-entries-patch-packet-20261104.md` and
 `externals/work/HANDOFF-provisioning-runtime-packet-20261104.md`, respectively.
-PATCH remains packet-only while fixture assumptions are corrected against shipping behavior.
+PATCH characterization is complete, with original fixture-assumption failures retained;
+production implementation awaits the bounded attribution/refusal policy review.
 Provisioning packet review authorizes only test-owned import-seam fidelity,
 not a production importer or its activation/rerun policy. OIDC remains optional, deferred research;
 it is not a prerequisite for these checkpoints or for the 16.0.0 candidate.
