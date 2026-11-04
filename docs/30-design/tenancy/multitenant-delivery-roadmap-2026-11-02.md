@@ -176,6 +176,168 @@ remains responsible for its dosing decisions and reconciliation.
 
 ## 6. Queue and execution record
 
+### Execution phases and subagent plan (2026-11-03)
+
+**Execution plan, not acceptance or role enablement.** Work advances through
+bounded slices on the existing queue items. M3/M4/M6 dependencies constrain
+promotion, not isolated development. The supported profile remains the MongoDB
+single monolith; the target is PostgreSQL/RLS multitenant. Single PostgreSQL,
+multitenant MongoDB, SQLite/Celld, human login and next-generation commands are
+outside this execution series. Multitenant completion is not a 16.0.0 tag gate;
+placement of each reviewed dormant slice remains separate from enabling roles.
+
+**Planning anchors, captured 2026-11-03 at 17:19:20-08:00:** refreshed
+`official/dev` is `4a482627bfdafb1fef8dcbe0ac6c484811cae563`; the published,
+open draft nightscout/cgm-remote-monitor#8898 head and clean tested lane
+`externals/work/crm-pr8898-ci-20261103` are
+`0afdb87f83c3b66a5206fa8bd9e5046696bcc2d1`. Alignment planning starts from
+records branch `records/pr8898-confidence-20261103` at `32fca4abe`.
+These are starting anchors, not instructions to use an obsolete head.
+
+Read-derived from `gh pr checks 8898 --repo nightscout/cgm-remote-monitor`:
+CodeQL, all four diagonal/required-name database jobs, both no-database jobs,
+both Docker validations and npm install/build pass on the published head.
+Browser jobs and maintained MongoDB remain pending at capture; the whole PR
+is not yet green. R23 retains the earlier local execution evidence.
+
+Reproduced prerequisite measurement:
+
+```sh
+python3 tools/queue/status.py --id ST-PG --id TEN-RESOLVE \
+  --id T30-WIRING --id TEN-LAB --id MIG-RUNNER --id MT-CONFIG-MIN \
+  --id MT-SECRETS-CONTRACT --id MT-RUNTIME-PLAN
+```
+
+Only the ST-PG unit identity gate ran and passed. Integration gates were
+explicitly skipped; the other seven items were UNMEASURED. This is not M1/M2
+acceptance. Future packets must select the relevant integration instruments,
+provide disposable dependencies and record the actual verdicts.
+
+#### Sequence and joins
+
+| Phase | Bounded output / queue home | Prerequisite and exit gate |
+|---|---|---|
+| P0: establish the common baseline | Coordinator checks published #8898 head, current dev, CI, clean lanes and ownership. Pending CI is monitored separately from implementation. | Read current PR checks, preserve any failed job's exact symptom, and diagnose rather than waive it. Later slices may start dormant from the tested head while CI is pending; no PR-ready claim until all required checks pass. |
+| P1: prepare the first two packets | Storage/API agent produces an entries operation/contract inventory and failing cases; authority/runtime agent produces an injected-port/deployment contract inventory and failing cases. Both use shipping source, not the fixture as a compatibility specification. | Each inventory distinguishes reproduced gaps, read-derived hypotheses, supported shapes and explicit refusals. Coordinator agrees on the smallest first slice, file ownership, test selectors and controls before implementation. No blanket full-REST rewrite. |
+| P2: implement entries reads and authority wiring in parallel | ST-PG first slice: entries v3 GET/list/conditional response behavior and adapter gaps required by those cases. TEN-RESOLVE/T30-WIRING first slice: deployment-owned aliases, tenant credentials and current HTTP authority feeding the existing composition, still unbound by default. | Actual MongoDB/PG differential reads and real handler response assertions; positive own-tenant behavior, cross-tenant/refused/outage cases and red implementation controls. Authority uses independently pooled current-state reads, not fixture constants or JWT claims as grants. |
+| P3: complete entries mutation acceptance and runtime composition | Storage lane adds real entries create/patch/replace/delete/search/history slices, one contract family at a time. Runtime lane adds schema-readiness/privilege separation, runtime validation and distinct owner/data/private-operator listeners in explicit synthetic labs. | Shared write rules, retry/batch/precondition/header outcomes and post-commit visibility measured on actual handlers. Startup/readiness remains read-only; revoked/suspended/unknown access fails closed. No public operator mount, process-wide tenant secret, global PG registry change or automatic role enablement. |
+| P4: integrate and assess M0-M3 | Coordinator joins accepted slices, reviewed schema/catalogues, remaining M1 resource/import contracts and M2 control-plane acceptance. TEN-LAB runs the combined two-tenant application, not only the earlier narrow fixture. | Full applicable backend and HTTP acceptance, pooled isolation, concurrent identities, current authorization and unsafe-schema refusal on the exact combined head. Remaining gaps stay named; only complete milestone criteria permit promotion. |
+| P5: expand M4 and advance M5 independently | API lane expands supported collections and v1/v2/v3 contracts in measured client-priority order. Runtime lane completes MT-RUNTIME-PLAN's durable event/replay contract before evaluator/websocket implementation. | Pinned uploader/follower cases and tenant-local batch/history/index behavior; separately, durable checkpoints, ordering/duplicate/delete recovery, socket revocation/reconnect and replay-equivalent evaluator views. M4 development may begin earlier, but promotion follows M3. |
+| P6: multitenant preview acceptance | M6 joins M4/M5 with chosen owner capabilities, private lifecycle, export/deletion and operational acceptance. | Synthetic backup/restore, upgrade/rollback, bounded resources/egress, provider/recovery review and final-tree validation. Real-data/identity acceptance and role enablement require separate explicit approval; no inference from lab passes. |
+
+#### First dispatch packets
+
+Use **two implementation lanes at most initially**, plus the coordinator.
+P1 is the first bounded task in each lane; P2 is dispatched only after its
+packet is concrete. Do not launch another agent to rediscover the same trace.
+Later independent runtime work can use a new agent once its inputs are ready.
+
+**Storage/API lane (ST-PG; later M4).** First inventory the actual entries
+collection interface and API3 read/write handlers against
+`lib/storage/postgres-entries-{read,write,intent}.js`. The current reader refuses
+v1, driver read options, nonempty projections and unsorted pagination;
+the intent adapter only accepts source `v3`. The HTTP lab deliberately uses a
+test-only POST/PATCH adaptation and duplicate POST refusal, not complete legacy
+handler response semantics. Do not reproduce that shortcut as the target.
+
+Deliver an operation table covering GET/list/count/search/history,
+POST/PATCH/PUT/DELETE, identifier resolution, ordering/projection,
+preconditions/headers, batch/retry outcomes and source labels/events. Each row
+names the shipping implementation, PostgreSQL applicability, existing test,
+remaining case and refusal. Start implementation with the smallest entries
+read/conditional-response gap exposed by the table, then progress through
+mutations before broadening collections. Preserve POST replacement versus
+PATCH merge and JSONB logical equality; do not invent BSON-key-order parity.
+Public client priority is established by pinned client/version evidence, not
+assumed popularity. The inventory itself is not compatibility acceptance.
+
+Own entries adapter/API-specific source and focused tests only. Any shared
+handler extraction must preserve the MongoDB path and obtain coordinator
+agreement before touching it. Do not change auth, secrets, migration catalogue
+bytes, CLI enablement or the backend registry. Candidate DDL additions go
+through the schema owner; committed migration checksums stay immutable.
+
+**Authority/runtime lane (TEN-RESOLVE, T30-WIRING, MT-CONFIG-MIN).** Inventory
+`lib/tenant-resolution`, `lib/server/tenant-app`, current secrets verification,
+subject/operator policy and tenant settings. Deliver the deployment-owned
+alias/configuration shape, verified credential-to-principal mapping, current
+data/owner/operator permission contract, authorization linearization point,
+suspension/revocation behavior, readiness privileges and listener layout.
+Name unresolved operator choices rather than selecting a provider, permission
+vocabulary, lifetime ceiling or numeric resource policy by convenience.
+Existing subject-policy grants authorize secrets operations only; they are not
+general HTTP ACLs. Preserve current authorization on the next protected
+operation across workers and fail-closed authority outages.
+
+First implement the smallest reviewed adapter feeding the existing injected
+ports with persistent trusted state. Use the existing data-router port for
+cross-lane integration; this lane does not implement a competing entries API.
+Prove alias selection and verified/current authority with actual two-tenant
+requests and independent workers. Listener and lifecycle slices follow under
+explicit synthetic opt-ins. No global app context, default tenant, process-wide
+root credential, public signup or change to single startup.
+
+**Shared baseline commands**, run from each owned CRM lane with dependencies
+already installed. These are proposed selectors, not new measured results:
+
+```sh
+NODE_ENV=test node node_modules/mocha/bin/mocha.js --no-config --no-package \
+  --fail-zero --reporter ./scripts/execution-reporter.js --timeout 20000 --exit \
+  tests/postgres-filter.test.js tests/postgres-identity.test.js \
+  tests/tenant-resolution.test.js tests/tenant-app.test.js \
+  tests/tenant-jwt-http.integration.test.js
+NS_TENANT_HTTP_DOCKER_TEST=1 NODE_ENV=test \
+  node node_modules/mocha/bin/mocha.js --no-config --no-package \
+  --fail-zero --reporter ./scripts/execution-reporter.js --timeout 60000 --exit \
+  tests/tenant-entries-http.integration.test.js
+node scripts/test-tiers.js check
+```
+
+Storage acceptance also selects `tests/postgres-entries-read.test.js`,
+`tests/postgres-entries-write.test.js`, shared write-intent/API regressions and
+import cases as applicable, with both disposable database URI variables set.
+Authority acceptance selects the existing secrets/Vault/PostgreSQL campaign
+with its required Docker flags when exercising persisted policy. Run new cases
+through the same execution reporter; disabled labs remain pending, never
+passes. Derive exact selectors and required setup from the chosen slice;
+do not run an unrelated full campaign for every inventory edit.
+
+#### Dispatch, controls and integration rules
+
+Every dispatch carries the freshly read head and task-open/ownership check,
+owned worktree/branch, permitted files, reproduced evidence, predicted
+positive/negative outcomes, exact commands and teardown. Explicitly instruct:
+**confirm the head commit and that the task is still open before starting**;
+**stop and report a mismatch rather than reaching for the nearest thing that
+works**. No shipping implementation agents are launched by recording this plan.
+
+Each behavior change needs a focused case that fails without it and a paired
+break-it control against the actual implementation in owned scratch. Expected
+symptoms include foreign-only data appearing when binding is removed,
+revoked access succeeding when current lookup is bypassed, an incorrect HTTP
+response when conditional logic is removed, and data/event visibility before
+commit. Select the control appropriate to the slice and explain what red
+proves. Never mutate a peer worktree. Queue gate additions declare their exact
+controls in `queue/gate-controls.yaml`; a test selector is not a complete
+parent acceptance gate.
+
+At each join, the coordinator reconciles shared handlers, schema and tier
+entries, refreshes/merges current `official/dev` into the owned branch, and
+reruns affected combined tests. Before calling a shipping branch ready, run
+the full suite (including the browser tier), explicit applicable PostgreSQL
+campaigns, existing lint/tier checks and the final `prcheck` step. A failed or
+pending required check stops promotion/publication readiness, not unrelated
+bounded design. Do not repeatedly launch agents on an unexplained failure.
+
+Keep measurements in dated evidence, status/dependencies in the single queue,
+and cycle updates in the release records. Dashboard metadata changes only
+when recording a newly measured slice or changing the next gate; generated
+views are regenerated, never hand-edited. Confirm peer lane ownership before
+dispatch; preserve the pre-existing dependency-test edit in the shared
+integration worktree. Use fresh isolated worktrees from the confirmed common
+head rather than repointing existing lanes. Commit explicit paths with no
+trailers. Agents never push; prepare themed PR updates and maintainer commands.
+
 New queue items ST-PG, TEN-RESOLVE and TEN-LAB give the existing platform cards
 an executable-work index. MT-CONFIG-MIN scopes the initial subset without
 claiming the full T30-SCHEMA-CONFIG catalogue complete. T30-WIRING's current-dev
