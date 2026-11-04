@@ -338,6 +338,62 @@ integration worktree. Use fresh isolated worktrees from the confirmed common
 head rather than repointing existing lanes. Commit explicit paths with no
 trailers. Agents never push; prepare themed PR updates and maintainer commands.
 
+#### P2 authority slice handoff (2026-11-03)
+
+**Read-derived from agent-executed evidence, not a coordinator replay.**
+Owned lane `externals/work/crm-authority-next-20261103`, branch
+`workspace/authority-next-20261103`, reports clean head
+`ad0cbdac058789bd806ae49047c7f95a6670332c` from the common `0afdb87f`
+baseline. It is not incorporated into the integration branch or published.
+
+The bounded slice adds `lib/tenant-authorization/{README.md,postgres.js,postgres-candidate.json}`,
+`tests/tenant-authorization-postgres.integration.test.js` and its tier entry.
+The explicit operator-run candidate has forced-RLS tenant configuration,
+subjects, roles and tenant-composite subject-role links. A read-only adapter
+accepts resolved tenant, trusted subject/root/anonymous context and the actual
+handler-required Shiro permission. Current configuration and grants are read
+in one statement; that committed snapshot is the authorization linearization
+point. Defaults preserve `denied`, `readable`, `status-only`, with no anonymous
+writes. Subject/default permissions combine; unknown configuration and malformed
+authority state refuse explicitly, while a known subject without permission denies.
+Root requires a configured tenant and remains a trusted injected identity,
+not a credential selected by request input.
+
+Agent command, from its owned lane:
+
+```sh
+NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST=1 \
+  ./node_modules/.bin/mocha --no-config --no-package --fail-zero \
+  --reporter ./scripts/execution-reporter.js --timeout 30000 \
+  tests/tenant-resolution.test.js tests/tenant-app.test.js \
+  tests/tenant-jwt-http.integration.test.js \
+  tests/tenant-authorization-postgres.integration.test.js
+```
+
+Reported result: **26 passing, 0 failing, 0 pending**, including seven authority
+integration tests. Focused lint and tier classification pass (474 files,
+eight tiers). Own disposable PostgreSQL containers are removed.
+The stale-decision-cache mutation fails committed revocation with
+`true !== false`; restoring the current lookup passes. Disabling RLS makes
+adapter initialization reject `TENANT_AUTHORITY_UNSAFE`, while a direct
+app-role query exposes foreign rows. That control proves the guard and unsafe
+state, not HTTP behavior under broken RLS.
+
+The outage case replaces an earlier closed-pool-only check. A live child pool
+survives termination of its owned PostgreSQL container through the existing
+`postgres-connection.js` idle-error listener; the next authorization rejects
+`TENANT_AUTHORITY_UNAVAILABLE`, and the child exits zero without an unhandled
+error. Isolate with the same integration selector and
+`--grep 'idle-connection termination'`. This measures a request after
+termination, not an in-flight query during termination.
+
+A broader tier attempt hit ten-second MongoDB setup hook timeouts in
+`00_production-safety` and `XX_clean`; it is not a successful full-suite run.
+Production credential-to-stable-subject verification, provisioning, HTTP
+adapter integration, readiness/listeners, in-flight outage and the full suite
+remain UNMEASURED. This is a bounded implementation handoff, not integrated
+acceptance, milestone promotion or PR readiness.
+
 New queue items ST-PG, TEN-RESOLVE and TEN-LAB give the existing platform cards
 an executable-work index. MT-CONFIG-MIN scopes the initial subset without
 claiming the full T30-SCHEMA-CONFIG catalogue complete. T30-WIRING's current-dev

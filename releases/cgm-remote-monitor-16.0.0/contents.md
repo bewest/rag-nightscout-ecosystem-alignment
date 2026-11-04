@@ -22,6 +22,12 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: bounded authority lane handoff (2026-11-03)
+
+| Tree / work | Evidence and remaining acceptance |
+|---|---|
+| `workspace/authority-next-20261103` at `ad0cbdac058789bd806ae49047c7f95a6670332c`, isolated and unpushed; not merged to `dev`. Read-only tenant-scoped PostgreSQL/RLS Shiro authority candidate, preserving anonymous access modes. | Read-derived agent-executed evidence: 26 focused passes, zero pending/failing; current-grant and RLS controls; actual idle database termination leaves the worker alive and its next authorization unavailable. Lint/tier checks pass. See the [authority slice handoff](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#p2-authority-slice-handoff-2026-11-03) for commands and limits. No coordinator replay, full-suite pass, production verifier/HTTP wiring, in-flight outage acceptance or role enablement; no operator-visible change. |
+
 **2026-11-01 release-preparation follow-up:** the dated
 [RC readiness triage](../../docs/10-domain/nightscout-rc-readiness-2026-11-01.md)
 records current CI/staging blockers, candidate PR dispositions, issue follow-up
