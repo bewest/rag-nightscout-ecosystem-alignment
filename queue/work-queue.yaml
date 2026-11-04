@@ -206,8 +206,8 @@ items:
       - no-gate: >
           Binding/pooler, entries schema/RLS and one-time API importer slices
           are measured, not full M1 acceptance. Latest accepted local tip
-          c10290d2 adds actual entries list/search after credential/exchange
-          wiring at 81bc71e6. Existing commands above target the older
+          c527fb7e includes actual entries search/POST with real Vault/PG HTTP
+          and canonical ingress (R29-R34). Existing commands above target the older
           foundation lane, not the whole latest composition.
           Full v3/history import coverage, complete bulk/replace/every-form and
           v1/socket intent acceptance, route validation/current grants,
@@ -222,10 +222,11 @@ items:
       - tools/lab/postgres-foundation/README.md
       - tools/lab/postgres-foundation/results.json
     notes: >
-      Current 2026-11-04: R24-R27 in the release integration record capture
-      bounded current-authority, credential/exchange and entries search
-      acceptance. M1 mutation/history, import and resource criteria remain
-      open. The preview dispatch packets in the roadmap scope the next lanes.
+      Current 2026-11-04: R29-R34 in the release integration record capture
+      bounded entries POST and real-provider/canonical HTTP acceptance at
+      c527fb7e. Fresh PATCH characterization packet uses that accepted head;
+      PUT/DELETE/history, import and resource criteria remain open.
+      Roadmap completion checkpoints scope each next slice and its controls.
       Maintainer 2026-11-02: storage first, one integration branch, no upstream
       push. ST-HARNESS is already merged as #8881; the September seam is
       reference, not a bulk-merge prerequisite. Preserve default MongoDB.
@@ -423,7 +424,10 @@ items:
     gates:
       - no-gate: >
           Provider-neutral resolution and current-authority data/exchange
-          slices are measured in R24-R27, not complete M2 lifecycle acceptance.
+          slices are measured through R34 at c527fb7e, including canonical
+          Host with real-provider HTTP, not complete M2 lifecycle acceptance.
+          Static maps and test-local trust do not provide durable allocation,
+          production transport identity or versioned publication.
           Deployment provisioning, suspension and listener composition remain.
           Required controls: unknown/suspended tenants refuse,
           untrusted forwarded hosts cannot select tenants, private operator
@@ -431,7 +435,11 @@ items:
     blocks_on: [MT-CONFIG-MIN, MIG-RUNNER, PLAT-SERVE]
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
-    notes: "M2; current-dev slice, operator-only lifecycle, single unchanged."
+    notes: >
+      M2; canonical resolver at 468c41dc and cumulative provider/POST at c527fb7e
+      are bounded accepted slices.       Provisioning/runtime-identity packet inventories the next operator
+      import/fidelity and identity boundaries; test-only fidelity is delegated.
+      Dependencies remain open; operator-only lifecycle, single unchanged.
 
   - id: TEN-LAB
     title: "Two-tenant entries HTTP lab on PostgreSQL"
@@ -457,7 +465,10 @@ items:
     blocks_on: [ST-PG, T30-WIRING, MIG-RUNNER]
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
-    notes: "M3; cumulative acceptance, not full hosted preview."
+    notes: >
+      M3; R34 accepts bounded canonical/provider/POST composition at c527fb7e,
+      not full preview. Complete M1/M2 and repeatable cumulative gate/control
+      coverage before promotion. Local accepted ancestry alone is insufficient.
 
   - id: MT-RUNTIME-PLAN
     title: "Continuous v1/v3, realtime and evaluator integration contracts"
@@ -6671,9 +6682,9 @@ items:
     title: T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/tenant-entries-search-20261104
+    branch: workspace/canonical-preview-20261104
     base: official/dev@4a482627
-    worktree: externals/work/crm-tenant-entries-search-20261104
+    worktree: externals/work/crm-canonical-preview-20261104
     state: in-progress
     blast_radius: >
       Dormant tenant-app credential/exchange composition, private API3
@@ -6686,11 +6697,12 @@ items:
     register: [BF-25]
     gates:
       - no-gate: >
-          Bounded agent-run R25-R27 campaigns measure current legacy
-          verification, exchange and entries reads; no complete production
-          runtime gate is wired into the queue. HTTP crypto is synthetic and
-          real Vault exchange is separately measured, not yet one combined
-          provider/PG/HTTP deployment. Required D14 property: A's token presented
+          Bounded agent-run R25-R34 campaigns measure current legacy
+          verification, exchange and entries GET/search/POST, including
+          real Vault/PG HTTP and canonical ingress at c527fb7e. No complete
+          production runtime gate is wired into the queue; loopback test-local
+          trust is not production transport provenance. Required D14 property:
+          A's token presented
           against tenant B's host fails as a SIGNATURE failure, not a claim
           check - with a control where the same token against A's own host
           succeeds, so the failure is known to come from the key and not from
@@ -6701,8 +6713,10 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
-      Current 2026-11-04: partial implementation at c10290d2, R25-R27.
-      Runtime/provider/readiness packet is scoped from that cumulative head.
+      Current 2026-11-04: partial implementation at c527fb7e, R25-R34.
+      Real-provider/canonical HTTP join is accepted; R35 inventories existing
+      operator provisioning/import and production runtime identity. Test-only
+      import-seam fidelity is delegated; no supported credential importer exists.
       This in-progress claim does not complete TEN-RESOLVE dependencies or
       promote M2/M3; production provisioning, runtime identity and listeners
       remain open. No OIDC, client protocol or role enablement is inferred.

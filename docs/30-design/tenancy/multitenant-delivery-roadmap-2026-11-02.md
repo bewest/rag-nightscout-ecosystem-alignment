@@ -25,10 +25,57 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted local slice is `c10290d2`;
+promotion is recorded. The latest accepted local cumulative head is `c527fb7e`;
 published foundations PR nightscout/cgm-remote-monitor#8898 contains
-`81bc71e6`. Integrated acceptance is bounded to the recorded slices, not
-complete storage, runtime or preview acceptance.
+`81bc71e6`. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
+and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
+separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted POST provider and canonical continuations (2026-11-04)
+
+The state of record is the release
+[integration record](../remedial/rc-16.0.0-integration-record.md):
+[R29](../remedial/rc-16.0.0-integration-record.md#r29---dormant-tenant-entries-post-on-6cad7a42-2026-11-04)
+accepts actual POST/create/resend at `6cad7a42`;
+[R30](../remedial/rc-16.0.0-integration-record.md#r30---real-provider-runtime-lab-on-e410b163-2026-11-04)
+accepts the real Vault/PG HTTP lab at `e410b163`;
+[R32](../remedial/rc-16.0.0-integration-record.md#r32---real-provider-post-composition-on-4621d5c4-2026-11-04)
+joins their actual write path at `4621d5c4`;
+[R33](../remedial/rc-16.0.0-integration-record.md#r33---canonical-ingress-on-468c41dc-2026-11-04)
+accepts explicit canonical ingress at `468c41dc`; and
+[R34](../remedial/rc-16.0.0-integration-record.md#r34---cumulative-canonical-provider-post-on-c527fb7e-2026-11-04)
+accepts their cumulative composition at `c527fb7e`.
+The generated dashboard carries dated slice stages, not independently rerun
+results. These local acceptances preserve direct aliases and single/Mongo;
+static maps and test-local loopback provenance do not establish registry
+durability or production transport/service identity.
+
+### Completion checkpoints and publication (2026-11-04)
+
+**Finish criteria, not additional completed work.** Each implementation begins
+with a bounded accepted packet and stops on a new policy decision. Applicable
+full suites, paired source controls and exact-head integration remain required.
+`UNMEASURED` and a passing historical foundation gate do not close a checkpoint.
+
+| Checkpoint / queue home | Next bounded action and prerequisite | Completion evidence / decision stop |
+|---|---|---|
+| C1: remaining entries methods, ST-PG | Fresh PATCH packet on `c527fb7e` is active. Accept one method family before separately dispatching PUT, DELETE and history. | Actual Mongo/PG HTTP stored-result/response comparison, fresh branch-specific authority, preconditions, rollback/no-events and non-vacuous controls. Stop on changed client behavior, approximate storage semantics or new attribution/error policy. |
+| C2: import and resource acceptance, ST-PG/MIG-RUNNER | After identifying the supported source/target contract, measure import/rerun fidelity and bounded queries/writes. Do not equate one-time best-effort import with snapshot or hard-delete reconciliation. | Explicit supported/unsupported shapes, rerun and failure recovery, schema/RLS checks and measured bounds. Numeric limits, consistency/recovery guarantees and unsupported shape policy require decisions before implementation. Completes M1 only with all C1/M0 requirements. |
+| C3: provisioning fidelity, T30-WIRING/TEN-RESOLVE | R35 packet distinguishes existing operator tooling from test hand-seeding; test-only operator import-seam fidelity is delegated. No credential/tenant provisioning-import command exists at the accepted head. | Stable IDs, current exact names/grants, root-reference/secrets linkage and incomplete-state refusal through existing operator seams, with controls. Test choreography is not a supported importer, idempotent multi-store rerun or atomic activation. No invented authenticator, secret export or lifecycle defaults. |
+| C4: production trust and lifecycle, TEN-RESOLVE/MT-SECRETS-CONTRACT | Use C3 inventory to separate runtime service identity, provider credentials/TLS/renewal, canonical mapping lifecycle and private operator/data/owner listener packets. | Explicit approved trust/auth/recovery contracts, provision/suspend/export/delete boundaries, readonly readiness and shutdown/recovery. Durable allocation/nonreassignment/publication and real transport provenance remain open; a static resolver or development Vault is not acceptance. Completes M2 only with all its requirements. |
+| C5: repeatable cumulative gates, TEN-LAB | Turn accepted combined fixtures into read-only queue instruments with paired controls; select the complete M1/M2 set after C1-C4. Existing no-gate markers remain until real instruments exist. | `make queue-status` with relevant integrations, non-vacuous controls, exact-head full suites and unsafe-schema/isolation/current-authority acceptance. Only then assess M3 promotion; adding a passing narrow gate alone is insufficient. |
+| C6: client surface, M4 | Inventory pinned uploader/follower versions and operations, then implement/replay one collection/route/retry family at a time; promotion follows M3. | Reproducible client replay and stored-result comparison, legacy defaults unchanged, paired retry/identity/response controls. Source inspection is not replay. |
+| C7: realtime recovery, M5 | Contract work can run independently: reconcile D6/D-EVENT durable checkpoints, commit coupling, replay/duplicates/deletes/config invalidation before wiring a consumer. | Approved ordering/retention/recovery contract, kill/restart replay equivalence, current socket authorization and tenant-local evaluator/cache state. No in-process bus or timer substitutes for durability. |
+| C8: operational preview, M6 | Join accepted M4/M5 with explicitly chosen owner capabilities; one backup/restore, upgrade/rollback, export/deletion or resource/egress packet at a time. | Synthetic failure/recovery evidence and final immutable-tree review; real-data/human identity, production traffic, serving-role enablement and publication remain separate explicit approvals. |
+| C9: records and publication | Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898. | Validate/generate records before main fast-forward. CRM local `c527fb7e` descends from published `81bc71e6`; use a non-force update of the existing branch, not a second PR or the dirty original worktree. Only the maintainer pushes; fresh remote CI/CodeQL and PR description must cover the new head before upstream readiness is claimed. |
+
+Packet ownership is local and resumable: the entries and provisioning lanes
+write `externals/work/HANDOFF-entries-patch-packet-20261104.md` and
+`externals/work/HANDOFF-provisioning-runtime-packet-20261104.md`, respectively.
+PATCH remains packet-only while fixture assumptions are corrected against shipping behavior.
+Provisioning packet review authorizes only test-owned import-seam fidelity,
+not a production importer or its activation/rerun policy. OIDC remains optional, deferred research;
+it is not a prerequisite for these checkpoints or for the 16.0.0 candidate.
 
 ## 1. Owner journeys and supported boundary
 

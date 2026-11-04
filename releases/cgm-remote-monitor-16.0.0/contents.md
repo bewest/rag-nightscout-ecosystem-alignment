@@ -22,6 +22,21 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: provisioning packet and PATCH characterization follow-up (2026-11-04)
+
+| Work / state | Evidence and next decision boundary |
+|---|---|
+| Provisioning/runtime-identity packet completed on accepted `c527fb7e`, without tracked source changes. | [R35](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r35---provisioning-runtime-packet-on-c527fb7e-2026-11-04) records two existing checks, a stale-readiness source control and restored checks. Read-derived inventory finds schema migration CLI and component preparation seams, but no tenant/credential provisioning-import command or multi-store activation ledger. Test-only operator import-seam fidelity is delegated in `workspace/operator-import-fidelity-20261104`; implementation results remain UNMEASURED. Production importer input/rerun/activation policy remains separate. |
+| PATCH packet stopped on fixture expectations, not production defects; fixture-only remeasurement authorized. | Allowed inert markup survives shipping purification, and the actual unaddressed API3 subapplication returns404. Correct those characterization assumptions, retain original red evidence and complete the update-permission source control before accepting the packet. No PATCH implementation, path-language broadening, atomic precondition guarantee or changed single/Mongo behavior is authorized. Attribution and representability policy remain explicit implementation decision boundaries. |
+
+### Update: records consolidation and publication assessment (2026-11-04)
+
+| Work / state | Evidence and remaining acceptance |
+|---|---|
+| Maintainer requested alignment records merged to main, updated todos/completion plan, and assessment of updating existing foundations PR #8898. | Queue notes and generated dashboard are brought through accepted cumulative `c527fb7e`; the [completion checkpoints](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#completion-checkpoints-and-publication-2026-11-04) define remaining method/import/resource, provisioning/trust/lifecycle, executable gate, client, realtime and operational exits. No M0-M6 promotion. PATCH and provisioning packets continue independently; their new results remain UNMEASURED until reported. |
+| Read-derived publication assessment: current local CRM `c527fb7e0d309b7fc567861a41e8f3862e0922df` is a descendant of published PR head `81bc71e634c0c2e60ac4e86cfba2e063501c9192`; a normal fast-forward update of `workspace/multitenant-20261102` can carry the accepted work. | Reproduced git range: eight commits, 26 changed files; source/tests/docs include shared parser/intent seams, accepted search/POST, real-provider fixtures and canonical resolver. R34 carries exact-head local validation; published-head CI/CodeQL are green but do not cover the new head. Preserve draft status and await fresh remote CI/review after maintainer publication. Do not touch the original PR worktree's unrelated dirty dependency test or push a new branch/PR. |
+| Alignment main fast-forward is authorized after validation; publication remains maintainer-operated. | Root main and origin/main were both `82826a22`; records branch descends from main. Two pre-existing untracked draft tenancy files remain untouched and must not be staged. No push, serving enablement, operator-visible default change or 16.0.0 candidate merge is performed by this consolidation. |
+
 ### Update: next entries and provisioning packets dispatched (2026-11-04)
 
 | Work / state | Evidence and next decision boundary |
