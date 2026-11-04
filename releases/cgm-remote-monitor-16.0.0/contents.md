@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: canonical ingress accepted locally; cumulative join dispatched (2026-11-04)
+
+| Work / state | Evidence and next gate |
+|---|---|
+| Approved opt-in canonical ingress fixed locally on `workspace/canonical-ingress-20261104`, `468c41dcab391f827a5bd1d9a581af9de2f0e10b`; unpushed, not merged to `dev`. | [R33](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r33---canonical-ingress-on-468c41dc-2026-11-04): agent-reproduced, parent log-read evidence; focused resolver/app 25 passing/0 pending/0 failing, full nonbrowser 6815/73 pending/0 failing, separate browser 684/0/0, four source-ablation controls red; lint/tier/final prcheck pass. Default direct-alias behavior remains; canonical Host alone selects after fresh explicit transport trust, and forwarded public names cannot select or rescue an unknown internal name. No production trust adapter, registry or operator-visible default change. |
+| Bounded cumulative join delegated in `workspace/canonical-preview-20261104`: accepted ingress `468c41dc` plus real-provider POST head `4621d5c4`. | Preserve both histories and extend only the existing runtime lab to measure canonical Host with real Vault exchange/PG POST, public-alias rotation, conflicting selectors, unknown canonical refusal and per-request trust loss. Combined-head behavior is UNMEASURED until enabled/full campaigns and composed negative controls pass. Static snapshots do not establish durable registry lifecycle or real production transport provenance. No M1/M2/M3 promotion, role enablement or push. |
+
 ### Update: real-provider POST composition accepted locally (2026-11-04)
 
 | Work / state | Evidence and next gate |
