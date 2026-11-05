@@ -40,6 +40,14 @@ Historical status/measurement sections below retain their dates.
 | Existing M0–M6 dependencies remain; partial compatibility work proceeds while M3/M4 promotion prerequisites are open. | Root `make queue-status` measured ST-PG's selected unit PASS with integrations skipped; TEN-LAB/T30-WIRING UNMEASURED and old-seam T30-SCHEMA-CONFIG FAIL. No milestone, release-readiness or all-client claim follows. Intended RC changes and existing quirks require explicit expected-result bases, never blanket normalization. |
 | Hypothetical celld/SQLite seam review remains read-derived and outside implementation scope. | [Architecture assessment](../../docs/30-design/tenancy/single-and-multitenant-architecture.md#hypothetical-third-backend-smell-test) identifies shared handlers/write rules and trusted ports, PG adapter/error-helper duplication and backend-specific isolation/control-plane obligations. No third-backend experiment or adoption. |
 
+### Update: architecture seams and #8891 lanes planned (2026-11-05)
+
+| Work / state | Basis and boundary |
+|---|---|
+| Maintainer prioritized seam improvements and integration of existing #8891; SQLite/celld experiments deferred at low priority. | [Execution plan](../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md) and additive queue cards define contracts/composition first, measured consolidation and refreshed single/nonresident profile next, shared frames then M5 recovery. Active REST/admin/compatibility work continues; coordinator informed through the existing chat. No implementation dispatched by this planning change. |
+| Read-derived source review anchors published #8898 `ded254b9` and #8891 `744d1968`; planning incorporates local R41 continuation `94c57f1f`. | Fresh GitHub metadata reports both PRs OPEN/draft; the plan links R41 without recapturing its measurements. New architecture/profile acceptance remains UNMEASURED. No operator-visible change, new RC tag gate, candidate admission, milestone promotion or production role enablement. Lane detail: `externals/work/HANDOFF-architecture-seams-2026-11-05.md` (local). |
+| Planning validation: queue schema/fidelity, generation, queue-check, docs-links and whitespace checks pass. | Selected new cards plus MT-RUNTIME-PLAN report UNMEASURED, with explicit no-gate acceptance/control requirements. Application suites, new controls and site-check were not run: no application, runnable gate or rich-page source changed. Initial worktree validation lacked the ignored external fixtures; local read-only fixture links restored them. Initial link checks hit sandbox `spawnSync git EPERM`; the authorized rerun passed. |
+
 ### Update: published visualization and PR CodeQL audit (2026-11-04)
 
 | Work / state | Basis and boundary |

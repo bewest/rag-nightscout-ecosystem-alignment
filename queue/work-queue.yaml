@@ -498,8 +498,14 @@ items:
           needs executable controls before distributed runtime wiring.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
-    notes: "M4-M6; no clinical notification delivery acceptance inferred."
+    notes: >
+      M4-M6; no clinical notification delivery acceptance inferred. Architecture plan
+      joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator
+      acceptance; contract design continues independently. Durable commit/checkpoint
+      replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current
+      authority after reconnect require paired controls. No SQLite dispatch.
 
   - id: MT-NEXTGEN-PLAN
     title: "Parallel registration, intent/command execution and delegation roadmap"
@@ -24928,3 +24934,197 @@ items:
       canonical merged source were inspected; the final head includes the
       intervening dev merge and still changes only two test files. Both
       integrated CI and CodeQL runs pass. Test hygiene, not a register defect.
+
+  - id: ARCH-SEAM-CONTRACT
+    title: 'First: portable storage and commit contract characterization'
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: PR8898@ded254b9; PR8891@744d1968
+    state: not-started
+    blast_radius: >
+      Storage identity/query/projection/result/error capabilities, tenant binding and
+      owned commit boundaries; preserve shipping handlers and approved quirks.
+    review: maintainer; architecture, storage and compatibility review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Planning only; implementation and release placement require their acceptance.
+    register: []
+    gates:
+      - no-gate: >
+          No current-head cross-backend contract instrument exists for this scope.
+          Build actual Mongo/PG parameterized tests and read-only gates; wrong
+          identity/projection, cross-bound handle and false write-outcome controls
+          must fail. Planning/source review is not acceptance.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
+    notes: >
+      First priority; architecture lane, alongside active REST and compatibility
+      lanes. Review before treating the preview seams as stable; no new RC tag
+      prerequisite. Characterize before extracting Mongo-shaped helpers.
+
+  - id: ARCH-SEAM-COMPOSE
+    title: 'First: separate domain definitions from backend and HTTP bindings'
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: PR8898@ded254b9; PR8891@744d1968
+    state: not-started
+    blast_radius: >
+      Tenant domain catalogue, PG factory/schema/readiness composition and storage
+      failure taxonomy versus version-specific HTTP rendering.
+    review: maintainer; architecture, storage and compatibility review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Planning only; implementation and release placement require their acceptance.
+    register: []
+    gates:
+      - no-gate: >
+          Composition refactor not implemented. Require actual default-single and
+          preview CLI/HTTP acceptance; incomplete ports, wrong catalogue and
+          unavailable-to-400 misclassification controls must fail. Preserve read-only
+          serving startup and explicit backend selection.
+    blocks_on:
+      - ARCH-SEAM-CONTRACT
+    evidence:
+      - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
+    notes: >
+      First priority after contract; composition owner reserves shared files with REST
+      coordinator. No fallback to Mongo for incomplete injection. Backend failure
+      classification belongs below the HTTP renderers; response semantics remain
+      version-specific.
+
+  - id: ARCH-SEAM-CONSOLIDATE
+    title: 'Next: consolidate proven common adapter mechanics'
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: PR8898@ded254b9; PR8891@744d1968
+    state: not-started
+    blast_radius: >
+      PG entries/general-collection projection/filter/transaction/event helpers and
+      incremental extraction of portable identity/result compatibility utilities.
+    review: maintainer; architecture, storage and compatibility review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Planning only; implementation and release placement require their acceptance.
+    register: []
+    gates:
+      - no-gate: >
+          No consolidation accepted. Consume the accepted direct and historical
+          compatibility corpus; preserve entries/source-specific natural order and
+          representation. Wrong ordering and pre-commit logical-event controls must
+          fail; restored full affected suites and final prcheck required.
+    blocks_on:
+      - ARCH-SEAM-CONTRACT
+      - ARCH-SEAM-COMPOSE
+    evidence:
+      - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
+    notes: >
+      Next priority; storage lane. Measure common behavior before extracting. Do not
+      change resend, batch atomicity, BSON compatibility or preconditions in a
+      refactor; compatibility expansion remains owned by TEN-LAB lanes.
+
+  - id: ST-VIEWS-PROFILE
+    title: 'Next: refresh and integrate PR 8891 single nonresident profile'
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: feat/views-profile
+    pr: [8891]
+    base: PR8898@ded254b9; PR8891@744d1968
+    state: not-started
+    blast_radius: >
+      Existing feat/views-profile prototype, explicit opt-in boot, evaluator
+      trigger/timer, retained properties, notification handoff and owned shutdown.
+    review: maintainer; architecture, storage and compatibility review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Planning only; implementation and release placement require their acceptance.
+    register: []
+    gates:
+      - no-gate: >
+          Current-head profile replay and alarm cohort acceptance remain unmeasured
+          here. Refresh actual PR 8891 head, replay actual triggers against resident
+          output, exercise resend modes and quiet alarms, rehearse revert.
+          Timer/write-trigger suppression, shortened window and
+          request-time-properties controls must fail; historical replay/cost is not
+          current evidence.
+    blocks_on:
+      - ST-WRITES
+    evidence:
+      - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
+    notes: >
+      Parallel preparation; execution-profile lane, not yet dispatched. Reuse PR 8891
+      rather than create a second evaluator. Evaluate logical intent subscriber
+      against D-EVENT; integration and release placement retain entry bar and
+      maintainer review. No automatic wiring into default single or multitenant; no
+      new RC tag gate.
+
+  - id: ARCH-DERIVED-FRAME
+    title: 'Next join: shared bounded frames and derived calculations'
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: PR8898@ded254b9; PR8891@744d1968
+    state: not-started
+    blast_radius: >
+      Shipping computed views, tenant snapshot/property composition and refreshed
+      nonresident evaluator; explicit freshness, consistency, plugin and side-effect
+      policies.
+    review: maintainer; architecture, storage and compatibility review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Planning only; implementation and release placement require their acceptance.
+    register: []
+    gates:
+      - no-gate: >
+          No shared-frame convergence accepted. Compare actual
+          resident/nonresident/tenant REST paths with current input corpus;
+          characterize concurrent writes without inventing snapshot consistency.
+          Cross-bound frame, partial read, incorrect clinical setter and read-egress
+          controls must each fail; restored actual derived HTTP and alarm replay
+          required.
+    blocks_on:
+      - ARCH-SEAM-CONTRACT
+      - ST-VIEWS-PROFILE
+    evidence:
+      - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
+    notes: >
+      Derived/evaluator lane joins refreshed profile with current preview. Contract
+      inventory may start before dependencies finish. Share
+      materialization/calculation while retaining REST all-or-error authorization and
+      evaluator retained-result/notification policies. Distributed recovery stays in
+      MT-RUNTIME-PLAN.
+
+  - id: ARCH-SQLITE-SPIKE
+    title: 'Deferred low priority: hypothetical SQLite and cell adapter probe'
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: PR8898@ded254b9; PR8891@744d1968
+    state: not-started
+    blast_radius: >
+      Future optional local SQLite entries/treatments conformance and trusted cell
+      transport experiment; no selected backend/runtime or deployment change.
+    review: maintainer; architecture, storage and compatibility review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Planning only; implementation and release placement require their acceptance.
+    register: []
+    gates:
+      - no-gate: >
+          Deferred and unassigned; no experiment dispatched or acceptance claimed. If
+          rescheduled, run identical semantic corpus with overlapping tenant
+          identities, commit failure and retry/ambiguous-response controls. New
+          isolation and recovery evidence required for any cell runtime.
+    blocks_on:
+      - ARCH-SEAM-CONSOLIDATE
+      - ARCH-DERIVED-FRAME
+    evidence:
+      - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
+    notes: >
+      Low priority, deferred by maintainer 2026-11-05. Preserve prior lab artifacts.
+      Revisit only after higher-priority seam/REST/evaluator work and an explicit
+      scheduling choice. Never a prerequisite for preview merge, RC tag or current
+      lanes.

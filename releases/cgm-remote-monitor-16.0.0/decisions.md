@@ -202,6 +202,12 @@ contracts; future schema upload does not waive current compatibility testing.
 |---|---|---|---|
 | Prioritize multitenant subject administration and remaining REST/client acceptance, with parallel single/multitenant cross-compatibility and backwards compatibility modulo intended RC bug corrections, defined edge cases and existing client quirks. | maintainer, 2026-11-05, this session | `MT-CONFIG-MIN`, `T30-WIRING`, `ST-PG`, `TEN-LAB`, `MT-RUNTIME-PLAN` | [Priority packets and direct comparison matrix](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#prioritized-rest-and-compatibility-execution-2026-11-05) are active from published ded254b9. No new RC merge-list admission, milestone promotion, client-quirk policy or credential/rate-limit disposition follows. Celld/SQLite remains a hypothetical seam review, outside delivery scope. |
 
+## Architecture seams and profile integration priority (2026-11-05)
+
+| decision | who, when | queue | as it stands |
+|---|---|---|---|
+| Prioritize architecture/seam contracts and composition, then measured consolidation and integration of existing PR #8891; defer SQLite/celld experiments at low priority. | maintainer, 2026-11-05, architecture-review chat | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE`, `ARCH-SEAM-CONSOLIDATE`, `ST-VIEWS-PROFILE`, `ARCH-DERIVED-FRAME`, `MT-RUNTIME-PLAN`, `ARCH-SQLITE-SPIKE` | [Execution plan](../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md) assigns work to current storage/composition, compatibility and execution-profile lanes. Implementation remains unmeasured; first packet characterizes existing behavior. #8891 stays opt-in single/nonresident until its replay/alarm entry bar and placement decision; distributed evaluation retains M5 recovery/authority gates. No new 16.0.0 tag gate, candidate admission, provider selection or production role enablement. |
+
 ## Query layer
 
 | decision | who, when | queue | as it stands |

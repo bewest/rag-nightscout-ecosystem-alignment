@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 358 |
+| items | 364 |
 | runnable gates | 419 |
-| explicit `no-gate:` markers | 369 |
+| explicit `no-gate:` markers | 375 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 788 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 794 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 74 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS |
+| `not-started` | 80 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, ARCH-SQLITE-SPIKE |
 | `in-progress` | 17 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
@@ -8380,7 +8380,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 58 items
+`parcel: tenancy` &mdash; 64 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8445,6 +8445,12 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `merged-upstream` | `feat/storage-filter` | patch | 1 run + 1 no-gate |
 | `ST-WRITES` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface | `merged-upstream` | `feat/storage-writes` | patch | 1 run + 1 no-gate |
 | `ST-COUNT-ONEPATH` | API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path | `merged-upstream` | `feat/storage-count-onepath` | patch | 2 run |
+| `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `not-started` | `feat/views-profile` | n/a | 0 run + 1 no-gate |
+| `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -8634,9 +8640,10 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** M4-M6; no clinical notification delivery acceptance inferred.
+**Notes.** M4-M6; no clinical notification delivery acceptance inferred. Architecture plan joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator acceptance; contract design continues independently. Durable commit/checkpoint replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current authority after reconnect require paired controls. No SQLite dispatch.
 
 ### `MT-IDENTITY-PLAN` &mdash; Human identity, tenant access grants and delegated consent plan
 
@@ -10247,6 +10254,179 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/platform/next-gen-platform-plan.md`
 
 **Notes.** 2026-10-27: MERGED to dev as 7abe1cf6 (21:33:44Z, by the maintainer; gh pr view 8870); 0955f25b is its only commit beyond 9668b179. In 16.0.0. 2026-10-27: opened as #8870 (base dev, head 0955f25b, not a draft; 13 checks passed at the time of the report, three still running), by the maintainer from session -2e's branch. Decided 2026-10-27 as a follow-up after the slices, done before the 16.0.0 tag. Session -2e (Node 22.23.4): npm test 4698 passing, 0 failing, 3 pending and test:all 5026/0/3 on MongoDB 7.0 (dev 4700 and 5028: three tests removed with the hook, one added); v1 HTTP differential against dev 9668b179 on MongoDB 5.0 700/700 identical (219 counts). The new construction test fails on dev's code, and fails alone when only the construction check is removed (53 pass, 1 fails).
+
+### `ARCH-SEAM-CONTRACT` &mdash; First: portable storage and commit contract characterization
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `PR8898@ded254b9; PR8891@744d1968` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture, storage and compatibility review |
+
+**Blast radius.** Storage identity/query/projection/result/error capabilities, tenant binding and owned commit boundaries; preserve shipping handlers and approved quirks.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+
+**Gates.**
+
+- **NO GATE** &mdash; No current-head cross-backend contract instrument exists for this scope. Build actual Mongo/PG parameterized tests and read-only gates; wrong identity/projection, cross-bound handle and false write-outcome controls must fail. Planning/source review is not acceptance.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
+
+**Notes.** First priority; architecture lane, alongside active REST and compatibility lanes. Review before treating the preview seams as stable; no new RC tag prerequisite. Characterize before extracting Mongo-shaped helpers.
+
+### `ARCH-SEAM-COMPOSE` &mdash; First: separate domain definitions from backend and HTTP bindings
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `PR8898@ded254b9; PR8891@744d1968` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture, storage and compatibility review |
+| blocks on | `ARCH-SEAM-CONTRACT` |
+
+**Blast radius.** Tenant domain catalogue, PG factory/schema/readiness composition and storage failure taxonomy versus version-specific HTTP rendering.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+
+**Gates.**
+
+- **NO GATE** &mdash; Composition refactor not implemented. Require actual default-single and preview CLI/HTTP acceptance; incomplete ports, wrong catalogue and unavailable-to-400 misclassification controls must fail. Preserve read-only serving startup and explicit backend selection.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
+
+**Notes.** First priority after contract; composition owner reserves shared files with REST coordinator. No fallback to Mongo for incomplete injection. Backend failure classification belongs below the HTTP renderers; response semantics remain version-specific.
+
+### `ARCH-SEAM-CONSOLIDATE` &mdash; Next: consolidate proven common adapter mechanics
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `PR8898@ded254b9; PR8891@744d1968` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture, storage and compatibility review |
+| blocks on | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
+
+**Blast radius.** PG entries/general-collection projection/filter/transaction/event helpers and incremental extraction of portable identity/result compatibility utilities.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+
+**Gates.**
+
+- **NO GATE** &mdash; No consolidation accepted. Consume the accepted direct and historical compatibility corpus; preserve entries/source-specific natural order and representation. Wrong ordering and pre-commit logical-event controls must fail; restored full affected suites and final prcheck required.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
+
+**Notes.** Next priority; storage lane. Measure common behavior before extracting. Do not change resend, batch atomicity, BSON compatibility or preconditions in a refactor; compatibility expansion remains owned by TEN-LAB lanes.
+
+### `ST-VIEWS-PROFILE` &mdash; Next: refresh and integrate PR 8891 single nonresident profile
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `feat/views-profile` |
+| base | `PR8898@ded254b9; PR8891@744d1968` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture, storage and compatibility review |
+| blocks on | `ST-WRITES` |
+
+**Blast radius.** Existing feat/views-profile prototype, explicit opt-in boot, evaluator trigger/timer, retained properties, notification handoff and owned shutdown.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+
+**Gates.**
+
+- **NO GATE** &mdash; Current-head profile replay and alarm cohort acceptance remain unmeasured here. Refresh actual PR 8891 head, replay actual triggers against resident output, exercise resend modes and quiet alarms, rehearse revert. Timer/write-trigger suppression, shortened window and request-time-properties controls must fail; historical replay/cost is not current evidence.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
+
+**Notes.** Parallel preparation; execution-profile lane, not yet dispatched. Reuse PR 8891 rather than create a second evaluator. Evaluate logical intent subscriber against D-EVENT; integration and release placement retain entry bar and maintainer review. No automatic wiring into default single or multitenant; no new RC tag gate.
+
+### `ARCH-DERIVED-FRAME` &mdash; Next join: shared bounded frames and derived calculations
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `PR8898@ded254b9; PR8891@744d1968` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture, storage and compatibility review |
+| blocks on | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
+
+**Blast radius.** Shipping computed views, tenant snapshot/property composition and refreshed nonresident evaluator; explicit freshness, consistency, plugin and side-effect policies.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+
+**Gates.**
+
+- **NO GATE** &mdash; No shared-frame convergence accepted. Compare actual resident/nonresident/tenant REST paths with current input corpus; characterize concurrent writes without inventing snapshot consistency. Cross-bound frame, partial read, incorrect clinical setter and read-egress controls must each fail; restored actual derived HTTP and alarm replay required.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
+
+**Notes.** Derived/evaluator lane joins refreshed profile with current preview. Contract inventory may start before dependencies finish. Share materialization/calculation while retaining REST all-or-error authorization and evaluator retained-result/notification policies. Distributed recovery stays in MT-RUNTIME-PLAN.
+
+### `ARCH-SQLITE-SPIKE` &mdash; Deferred low priority: hypothetical SQLite and cell adapter probe
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `PR8898@ded254b9; PR8891@744d1968` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture, storage and compatibility review |
+| blocks on | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
+
+**Blast radius.** Future optional local SQLite entries/treatments conformance and trusted cell transport experiment; no selected backend/runtime or deployment change.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+
+**Gates.**
+
+- **NO GATE** &mdash; Deferred and unassigned; no experiment dispatched or acceptance claimed. If rescheduled, run identical semantic corpus with overlapping tenant identities, commit failure and retry/ambiguous-response controls. New isolation and recovery evidence required for any cell runtime.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
+
+**Notes.** Low priority, deferred by maintainer 2026-11-05. Preserve prior lab artifacts. Revisit only after higher-priority seam/REST/evaluator work and an explicit scheduling choice. Never a prerequisite for preview merge, RC tag or current lanes.
 
 ---
 

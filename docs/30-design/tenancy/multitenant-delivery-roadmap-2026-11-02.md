@@ -42,6 +42,18 @@ or production readiness. The [latest accepted continuations](#accepted-post-prov
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
 
+### Architecture and execution-profile priority (2026-11-05)
+
+The maintainer requests seam improvements and PR #8891 integration alongside
+existing REST/compatibility lanes. The [architecture execution plan](architecture-seams-execution-plan-2026-11-05.md)
+owns packet scope, ordering and controls: portable contracts and backend/domain
+composition first; measured adapter consolidation and refreshed single/nonresident
+profile next; shared derived frames then join M5 durable evaluator/recovery.
+SQLite/celld experiments are deferred low priority, unassigned and not dispatched.
+Existing REST/admin/compatibility owners continue; integration stays with the
+REST coordinator. No new RC tag gate, preview-wide merge prerequisite or
+production role enablement is introduced by this schedule.
+
 ### Prioritized REST and compatibility execution (2026-11-05)
 
 **Maintainer direction:** prioritize subject administration and remaining REST/client
