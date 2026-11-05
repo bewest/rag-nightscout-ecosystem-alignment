@@ -2168,7 +2168,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>a41f09d58</code>.</em></p>
+<p><em>Living document, last changed 2026-11-04 at <code>3a2152dc8</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -2218,6 +2218,25 @@ and production/service environments work. The maintainer dispositions #8829
 <p>See the <a href="../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current ecosystem/acceptance record</a>,
 <a href="release-notes.html">draft release notes</a> and <a href="testing-notes.html">cohort collection guide</a>.
 Historical status/measurement sections below retain their dates.</p>
+<h3 id="update-crm-rest-continuation-published-for-draft-review-2026-11-04">Update: CRM REST continuation published for draft review (2026-11-04)<a class="headerlink" href="#update-crm-rest-continuation-published-for-draft-review-2026-11-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and remaining acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maintainer published <code>ded254b9acf5a94e3a4fd99c85b23e1413fa08b6</code> to existing <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8898">#8898</a>, still OPEN/draft against dev <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>.</td>
+<td>Read-derived live PR read-back confirms the tested R40 head, title “Add explicit multitenant REST API preview” and matching prepared description. The continuation is published, not merged to dev or released. R40 remains the immutable local acceptance record; no application tests were rerun for publication bookkeeping.</td>
+</tr>
+<tr>
+<td>Current-head <a href="https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417396">CodeQL</a> succeeded; <a href="https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417437">CI</a> remains in progress at read-back.</td>
+<td>No completed remote CI result is claimed yet. Full REST administration/side effects, client binary execution, import/resource and production lifecycle criteria remain open; no M0–M6 promotion. Next engineering remains the bounded subject-mutation/known-role assignment packet in the delivery roadmap.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="update-alignment-records-published-crm-continuation-awaits-publication-2026-11-04">Update: alignment records published; CRM continuation awaits publication (2026-11-04)<a class="headerlink" href="#update-alignment-records-published-crm-continuation-awaits-publication-2026-11-04" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -4618,7 +4637,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a41f09d58aa0f6a153d60f85fc9293f8be747207/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3a2152dc83e7be4441c033ff702030ede800c467/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
