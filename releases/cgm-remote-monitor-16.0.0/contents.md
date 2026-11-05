@@ -22,6 +22,31 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: full REST implementation wave dispatched (2026-11-04)
+
+The maintainer requested continued implementation toward a full headless
+v1-v3 REST preview. Five code-and-test lanes start from accepted `21145d0d`;
+the [REST delivery plan](../../docs/30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.md)
+defines their actual route families and compatibility exits. These are active
+implementation assignments, not accepted capabilities or new milestone claims.
+
+| Owned branch / package | Deliverable and integration boundary |
+|---|---|
+| `workspace/rest-shared-20261104` — shared seams and legacy entries | Own shared storage/intent/query injection, version-aware admission, runtime composition, test registrations and actual v1/inherited-v2 entries/helpers. Publish a clean minimal domain-port seam early so independent domains can consume it without shared-file contention. |
+| `workspace/rest-treatments-20261104` — treatments | Domain schema/adapter and actual legacy/v3 handlers, preserving same-time records, units, retries and batch outcomes; cross-version HTTP differentials and isolation/current-authority controls. |
+| `workspace/rest-device-20261104` — devicestatus/activity | Domain schemas/adapters and existing legacy methods plus v3 devicestatus; no invented v3 activity or legacy devicestatus PUT. Preserve prediction extensions, identity/date rules and latest-read semantics. |
+| `workspace/rest-profile-food-20261104` — profile/food | Domain schemas/adapters and actual routes across versions, retaining current-profile ordering/pruning, nested data and quickpick behavior. No owner-configuration conflation. |
+| `workspace/rest-context-20261104` — safe context/identity/settings | Version-aware credential extraction coordinated with shared admission, safe status/discovery, settings documents and tenant-local snapshot ports. Derived routes require completed domain reads before admission; no process-global context or secrets exposure. |
+
+Each lane owns implementation, focused real-PG/Mongo HTTP comparisons and
+semantic red controls together; cumulative runtime/provider/full/browser/client
+acceptance follows clean joins. New results remain UNMEASURED until run.
+Subject/role administration and notification/assistant side effects remain
+explicit unfinished full-REST work requiring their persisted authority/receipt/
+runtime contracts; initial exclusion is not completion. No production trust,
+owner/operator role, migration-on-start, global PG backend enablement, push or
+change to the shipping 16.0.0 candidate is authorized by this dispatch.
+
 ### Update: executable entries CRUD cumulative acceptance (2026-11-04)
 
 | Work / state | Evidence and delivery boundary |
