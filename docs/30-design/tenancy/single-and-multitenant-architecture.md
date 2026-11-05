@@ -207,6 +207,35 @@ retain the upgrade and safety caveats. They explicitly say no single setting
 restores every 15.0.9 behavior. API interoperability, stored-data fidelity and
 installation/rollback compatibility must be assessed separately.
 
+## Hypothetical third-backend smell test
+
+**Read-derived at `ded254b9`, 2026-11-05; no SQLite adapter, isolation or performance
+experiment was run.** A third backend has a clearer insertion point than the
+Mongo-only base: trusted `ctx.storagePorts.resolve` supplies storage and an
+intent factory (`lib/server/storage-reads.js:34–56`), and the PG adapters call
+the shared `write-intent.forCollectionResolved` rules. Existing shipping routers,
+validation and client quirks therefore need not be copied into another API.
+This improves reuse; it does not establish a backend-neutral runtime.
+
+There are concrete consolidation candidates:
+
+| Source at the pinned CRM head | Smell / bounded improvement |
+|---|---|
+| `lib/storage/postgres-entries-intent.js:16,30,84` and `postgres-collection-intent.js:24,47,142` | Related filter/projection helpers and transaction/event wrappers are repeated. Generalize only their measured common contract; entries-specific and legacy query/natural-order differences are intentional until disproved by tests. |
+| `lib/server/tenant-app/entries.js:20`, `treatments.js:18`, `profile-food-errors.js:13` | Repeated PG error classification and representation-refusal translation can drift. A shared adapter helper is plausible, guarded by existing HTTP error tests. |
+| `lib/server/tenant-app/domain-catalogue.js:7–13` | Domain factories are coupled to PG candidate migrations. A hypothetical additional backend needs trusted backend-specific factory/schema/readiness selection behind the same domain capabilities. |
+| `lib/storage/postgres-connection.js:26–50` and tenant authority/secrets persistence | PostgreSQL RLS, roles, tenant-bound transactions and control-plane persistence are a separate protection contract. A cell/file/container isolation primitive would need equivalent tested ownership, lifecycle, failure and authority boundaries; substituting the data adapter alone is insufficient. |
+
+For a hypothetical celld/SQLite design, keep the domain/write semantics above the
+backend; implement query/identity/document representation, atomic writes and
+commit hooks below it. Reuse the Mongo/PG differential corpus for a third adapter,
+including refusal cases. Isolation placement, concurrent writers, crash recovery,
+migration/backup and durable event delivery each need a new measured contract.
+This is **easier at the handler/write-rule layer, still substantial at the storage
+and runtime layers**. No claim of SQLite equivalence, operational advantage or
+celld adoption follows. The current REST/compatibility wave comes first; measured
+duplication can be consolidated without introducing a third backend.
+
 ## Remaining evidence gaps and next work
 
 The [milestone dashboard](multitenant-delivery-dashboard.md) deliberately does

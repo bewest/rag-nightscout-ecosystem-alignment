@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: prioritized REST completion and parallel compatibility (2026-11-05)
+
+| Work / state | Basis and next gate |
+|---|---|
+| Maintainer prioritizes subject administration and remaining REST/client acceptance, with parallel current and historical compatibility. | [Decision](decisions.md#rest-and-compatibility-priority-2026-11-05) and [bounded priority packets](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#prioritized-rest-and-compatibility-execution-2026-11-05). Fresh remote read-back remains OPEN/draft ded254b9 against dev 4a482627. Three lanes dispatched from that tree: persisted subject administration, mixed-version Mongo/PG differential tests, and repeated release/dev/PR-single write comparison. New lane acceptance is UNMEASURED at dispatch. |
+| Existing M0–M6 dependencies remain; partial compatibility work proceeds while M3/M4 promotion prerequisites are open. | Root `make queue-status` measured ST-PG's selected unit PASS with integrations skipped; TEN-LAB/T30-WIRING UNMEASURED and old-seam T30-SCHEMA-CONFIG FAIL. No milestone, release-readiness or all-client claim follows. Intended RC changes and existing quirks require explicit expected-result bases, never blanket normalization. |
+| Hypothetical celld/SQLite seam review remains read-derived and outside implementation scope. | [Architecture assessment](../../docs/30-design/tenancy/single-and-multitenant-architecture.md#hypothetical-third-backend-smell-test) identifies shared handlers/write rules and trusted ports, PG adapter/error-helper duplication and backend-specific isolation/control-plane obligations. No third-backend experiment or adoption. |
+
 ### Update: published visualization and PR CodeQL audit (2026-11-04)
 
 | Work / state | Basis and boundary |

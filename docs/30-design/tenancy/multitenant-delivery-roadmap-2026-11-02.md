@@ -11,7 +11,7 @@ in the [priorities assessment](../../10-domain/nightscout-multitenancy-prioritie
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.
 
-## Current status and parallel ownership (2026-11-04)
+## Current status and parallel ownership (2026-11-05)
 
 **Use the [working dashboard](multitenant-delivery-dashboard.md) for current
 milestone dependencies, parallel lanes, next gates and slice acceptance stages.**
@@ -39,6 +39,60 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Prioritized REST and compatibility execution (2026-11-05)
+
+**Maintainer direction:** prioritize subject administration and remaining REST/client
+acceptance, with parallel single/multitenant cross-compatibility and backwards
+compatibility modulo documented RC corrections, defined edge cases and existing
+client quirks. CodeQL mitigation remains tracked separately; it does not serialize
+this delivery wave. Celld remains outside implementation scope; a hypothetical
+third backend is an architectural smell test, not an adopted dependency.
+
+Fresh read-back: #8898 remains OPEN/draft at
+`ded254b9acf5a94e3a4fd99c85b23e1413fa08b6`; `official/dev` remains
+`4a482627bfdafb1fef8dcbe0ac6c484811cae563`. Alignment dispatch base is
+`2294a8944a0eac8e72da866cb70f0580fc7b0c18`. These anchors identify the
+starting trees, not new acceptance. Root `make queue-status` measures ST-PG's
+selected unit gate PASS with integrations skipped; TEN-LAB and T30-WIRING are
+UNMEASURED at that invocation; T30-SCHEMA-CONFIG's historical-seam predicate
+FAIL remains visible. No milestone is promoted by this dispatch.
+
+| Order / existing milestone | Concrete task and owner | Exit gate / next task |
+|---|---|---|
+| Now: M2 authority; MT-CONFIG-MIN / T30-WIRING | `codex/tenant-subject-admin-20261105`: persisted subject update/delete and known-role assignment, stable IDs, metadata/omission/rename semantics; separately authorized writer and append-only migration. | Actual PG persistence/rollback/isolation, shipping semantic characterization, same earlier credential denied on the next operation after deletion/grant removal; serving role cannot write authority. Paired controls, then cumulative integration. No HTTP management admission in this packet. |
+| Parallel: M1/M4 compatibility; ST-PG / TEN-LAB | `codex/tenant-cross-compat-20261105`: expand shared Mongo/PG HTTP corpus for mixed legacy/v3 treatment edits, omitted versus null fields, retries, replacement and tombstone/history. | Compare replies AND stored results, stable identity, exact retained/removed fields and tenant isolation. Only incidental time/opaque-ID normalization, with explicit refusal rows. Source-pinned client patterns remain distinct from client binaries. |
+| Parallel: RC backwards compatibility; TEN-LAB | `codex/rc-compat-refresh-20261105`: fresh same-corpus old release, current dev and PR-single comparison, with repeated runs and classified intended changes. | Preserve immutable prior captures; every semantic difference needs an existing decision/bugfix/client-contract basis or remains unexpected. A classifier control must detect a planted unapproved difference. No old-release-to-PG transitivity claim. |
+| Next: M2/M4 administration | Join the accepted subject service to a separately authenticated owner/management boundary; characterize stable role IDs and unresolved/default roles before full roles CRUD. | Actual owner requests and persisted effects, no management route on the data listener, permission ceilings/current grants and cross-worker revocation controls. Stop on an unselected management identity/policy contract while independent REST work continues. |
+| Next: M1/M4 remaining REST/client/import | Complete one missing route/domain workflow at a time, including notices/debug and notification/assistant receipts/egress; extend import/rerun fidelity and populated-data/query bounds. | Fake-provider no-egress/cross-tenant controls, supported-shape/refusal inventory, bounded failures/reruns; execute actual clients where tooling permits, otherwise keep binary acceptance UNMEASURED. Numeric bounds and new lifecycle semantics require explicit decisions. |
+| Integration: M3; TEN-LAB | Coordinator joins clean lanes into the existing PR continuation and reruns exact-head focused/provider/migration, full nonbrowser/browser campaigns and final prcheck after dev merge. | No unexplained compatibility deltas, meaningful restored controls, owned-service cleanup and current QMS/dashboard. M3 promotion still requires complete M1/M2; partial M4 work may proceed in parallel. |
+| Then: M5/M6 | Durable events/replay, realtime/evaluator and synthetic operational recovery on accepted authority/storage contracts. | Commit-coupled recovery, tenant-local caches/current socket authority, restart replay, backup/restore/upgrade/rollback and resource/egress evidence. No in-process event substitutes for durability. |
+
+Compatibility is a **direct comparison matrix**, not one blanket equivalence claim:
+
+| Comparison | Purpose / expected result |
+|---|---|
+| Release 15.0.9 vs current dev (single/Mongo) | Attribute intended RC fixes/defaults/edge-case definitions to the release decisions and register. Historical quirks remain supported where decided; fixing a defect may intentionally change output. |
+| Current dev vs PR single/Mongo | Detect regressions caused by shared seam/composition changes independently of PG differences. Same RC contract should hold unless an explicit PR change is approved. |
+| PR single/Mongo vs PR multitenant/PG | Directly exercise admitted HTTP routes, stored results, isolation and current authority. Representation/query refusals and JSONB equality limits are explicit capabilities, not hidden normalizations. |
+| Pinned client workflow vs each applicable endpoint | Verify retries, edits, defaults, identifiers, ordering, batch replies and delete/history behavior. New-client-to-old-server support needs tested fallback; synthetic pattern replay is not application execution. |
+
+Every corpus case names its source/client pin, endpoint and settings, expected
+observable behavior, allowed incidental normalization and intended-change basis.
+Compare logical contents, identity, status/headers, per-item reply and history;
+do not erase omitted/null/zero/false distinctions or failure categories. Classify
+as unchanged, intended RC correction, preserved client quirk, explicit unsupported
+capability, unexpected regression or unmeasured. An unclassified difference fails
+the compatibility acceptance; a broad allowlist is not a fix. Deliberate duplicate
+fixtures with the index disabled and default-index/race acceptance are separate
+campaigns. A historical green result never stands in for testing the final join.
+
+Lane implementation/testing uses GPT-6.1 Sol with high reasoning; the historical
+comparison/independent interpretation uses GPT-6 Astra with high reasoning.
+Each lane owns worktrees and unique disposable services. Parent review re-reads
+heads/results before records, integrates only completed contracts and preserves
+unexpected results. Local handoffs are under `externals/work/` and are not public
+evidence or publication authorization.
 
 ### REST continuation and QMS reconciliation (2026-11-04)
 

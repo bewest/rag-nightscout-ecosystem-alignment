@@ -9,6 +9,10 @@ framework, production registry, owner lifecycle or a chain of administrative pac
 
 Current delivery status lives in the [dashboard](multitenant-delivery-dashboard.md)
 and [release acceptance record](../remedial/rc-16.0.0-integration-record.md).
+The [November 5 priority packets and compatibility matrix](multitenant-delivery-roadmap-2026-11-02.md#prioritized-rest-and-compatibility-execution-2026-11-05)
+sequence current administration, wider REST and parallel historical/current
+compatibility execution. Their expected-change rules preserve intended RC fixes
+and measured client quirks; the historical source inventory is not current admission.
 The source inventory and initial package assignments below retain their captured
 baseline; already accepted domain implementations must not be rebuilt from those
 historical missing/pending labels. The [continuation lanes](multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04)

@@ -322,8 +322,12 @@ items:
       whole policy-aware rollback. Combined local acceptance: 36 passing,
       zero pending; ESLint and 465-file classification pass. Both commits
       are now incorporated at peer tip 011802ba; integrated testing is pending,
-      not accepted by ancestry alone. Next control-plane milestone:
-      persistent operator rules/grant ceilings and atomic policy/write fencing.
+      not accepted by ancestry alone. Current 2026-11-05 priority packet:
+      separately authorized persisted subject update/delete and known-role
+      assignment in codex/tenant-subject-admin-20261105 from ded254b9.
+      Omission/rename compatibility, next-operation revocation, isolation and
+      rollback controls precede HTTP management. Persistent operator rules,
+      grant ceilings and atomic policy/write fencing remain broader criteria.
       Operator policy and management authentication remain injected; timezone,
       token-lifetime policy, public API and runtime invalidation remain open.
       No owner/data/socket serving or end-to-end revocation acceptance implied.
@@ -469,10 +473,13 @@ items:
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
-      M3; R39 accepts selected REST domains at published draft ae471ac7,
-      not full preview. Derived reads and client replay are active alongside
-      independent authority review. Complete M1/M2 and repeatable cumulative
-      gate/control coverage before promotion; ancestry alone is insufficient.
+      M3; R40 accepts selected REST and source-pinned patterns at published
+      draft ded254b9, not full preview. Maintainer priority 2026-11-05:
+      subject administration and wider REST/client acceptance, with parallel
+      current Mongo/PG and historical release/dev/PR-single compatibility.
+      Existing RC corrections/client quirks need explicit expected-change
+      bases; unexplained differences fail acceptance. Complete M1/M2 and
+      repeatable cumulative gate/control coverage before promotion.
 
   - id: MT-RUNTIME-PLAN
     title: "Continuous v1/v3, realtime and evaluator integration contracts"
