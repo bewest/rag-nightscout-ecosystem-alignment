@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: multitenant progress and architecture visualizations reconciled (2026-11-04)
+
+| Work / state | Basis and boundary |
+|---|---|
+| Maintainer requested current progress visualizations and a single-versus-multitenant architecture/compatibility explanation. | The generated delivery dashboard already carried R40; the interactive next-gen overview still carried the older a19b549c baseline. Its source plan/data are reconciled with published `ded254b9`, the CLI namespace amendment and remaining acceptance. Component progress is distinct from M0–M6 promotion; blocked prerequisite markers retain accepted partial slices. |
+| Added [architecture and compatibility diagrams](../../docs/30-design/tenancy/single-and-multitenant-architecture.md). | Read-derived source audit confirms shared single-serving code changed while default Mongo paths were retained. R40 and the separate historical 15.0.9 comparison retain their recorded reproduction provenance; no new application/compatibility campaign was run for this explanation. Full parity, client binary execution and operational gaps remain explicit. |
+| Published preview [CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417437) and [CodeQL](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417396) both succeeded on `ded254b9`. | Read-derived fresh workflow read-back. This does not enable every opt-in lab or promote a milestone. Selected queue audit still reports T30-SCHEMA-CONFIG's old-seam D15 table predicate FAIL and broader skipped cards UNMEASURED; these are distinguished from accepted new-tree preview evidence. |
+
 ### Update: CRM REST continuation published for draft review (2026-11-04)
 
 | Work / state | Evidence and remaining acceptance |

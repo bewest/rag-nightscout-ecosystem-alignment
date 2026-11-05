@@ -1,6 +1,11 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing. Current at cgm-remote-monitor dev `497d08c9` (2026-11-01), after #8894 merged. Status: proposed; the decisions in §5 are open. Release placement is proposed in [release allocation](release-allocation-2026-10-27.md).*
+*Contributor-facing living plan. Tenancy progress reconciled 2026-11-04 against
+cgm-remote-monitor dev `4a482627` and published draft #8898 `ded254b9` (R40).
+Storage/identity/registration measurements below retain their named historical
+pins. Full M0–M6 completion remains open; component states are not milestone
+promotion or a fresh measurement of every queue gate. Release placement is in
+[release allocation](release-allocation-2026-10-27.md).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -15,12 +20,16 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-**Current integrated head, 2026-11-02: `61eb3733`.** The `497d08c9` labels
+**Current dev anchor, 2026-11-04: `4a482627`.** The published multitenant
+preview is `ded254b9` on draft #8898, not merged to dev. R40 records its
+accepted API/derived/client-pattern boundary; its current-head CI and CodeQL
+succeeded. See [single versus multitenant architecture and compatibility](../tenancy/single-and-multitenant-architecture.md)
+for the shared-code changes, diagrams and evidence limits. The `497d08c9` labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are
 also merged. ID-BATCH is implemented across #8889/#8894; no whole-branch
 rebase or new feature PR is owed absent a specific uncovered case.
-Public CI is green. Final private-security integration, live alerts, completed
+Published preview CI and CodeQL succeeded on `ded254b9`; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
 cohort/rollback evidence and release approval remain pre-tag work.
 Informal cohort/real-rig testing is underway (maintainer reports over 24-48 hours).
 Master's absent 4.4 check has been removed; retained required lanes are green.
@@ -30,12 +39,12 @@ and many DIY and production/service environments work; retain reporter-specific
 follow-up without declaring a general regression.
 See [current readiness and workstreams](../../10-domain/nightscout-v16-ecosystem-deep-dive.md).
 
-| | on dev `497d08c9` (ships in 16.0.0) | local next | not started |
+| | on dev (each merge names its pin) | preview / prototype | remaining acceptance |
 |---|---|---|---|
-| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (milestone M1). ST-V3-DECOUPLE (with #8865, 2026-10-30). `write(intent)` release 1, every write path through one step (#8874, `368e6c23`, 2026-10-31). `write(intent)` release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, `51d38f9f`, 2026-11-01) . ST-VIEWS, unwired (#8875, `1fc6d8be`, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, `f54941b5`, 2026-11-01) | ST-VIEWS-PROFILE prototype, draft #8891 (`744d1968`, with provisos) | PostgreSQL |
+| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (storage-interface stage). ST-V3-DECOUPLE (with #8865, 2026-10-30). `write(intent)` release 1, every write path through one step (#8874, `368e6c23`, 2026-10-31). `write(intent)` release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, `51d38f9f`, 2026-11-01) . ST-VIEWS, unwired (#8875, `1fc6d8be`, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, `f54941b5`, 2026-11-01) | ST-VIEWS-PROFILE prototype, draft #8891 (`744d1968`, with provisos); published PostgreSQL preview in #8898 / R40 | Complete PostgreSQL query/import/resource acceptance |
 | Identity | `identifier` is the client's, `_id` the server's; #8879/#8890 merged identifier-first matching and compatibility decisions A/B; #8888/#8890 fixed BF-225; #8889 added strict v1 validation and opt-in per-item batch replies; #8892 added site resend settings; #8894 added the unique index and Q-IDX retry, merged as `497d08c9`. SPEC-ID-AMEND is complete in this repository. | ID-BATCH reply and duplicate-key race behavior are implemented in #8889/#8894; no separate local integration PR is currently required. Full release compatibility and cohort verification remain. | PostgreSQL |
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | draft #8857: S0, S1, S2, S5, off by default (head `5f6c1275`, `BEHIND` latest `dev` `497d08c9`; rebase and retest before the entry bar) | typed writes (S3), projected views (S4) |
-| Tenancy | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`991b0654`; #8862 closed as superseded) | Local integration commits through `a19b549c`: one-time entries import/schema candidate, dormant provider-neutral tenant policy and HTTP boundaries, and a passing 10-case two-tenant HTTP lab. M1/M2/M3 milestones remain open; see the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md) for current gates and the [roadmap](../tenancy/multitenant-delivery-roadmap-2026-11-02.md) for evidence. | Full entries/API compatibility; deployment-owned tenant authority, data router and listener wiring; M3 promotion |
+| Tenancy | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`991b0654`; #8862 closed as superseded); #8899 current `multitenant` namespace (`4a482627`) | Published draft #8898 `ded254b9`: explicit API executable with selected legacy/API3 domains, tenant PostgreSQL/RLS, current authority/Vault, derived reads and pinned synthetic client patterns. R40 owns cumulative acceptance. M0–M6 remain incomplete; see the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md) for promotion gates and the [architecture comparison](../tenancy/single-and-multitenant-architecture.md) for diagrams/evidence. | Remaining REST administration/side effects; full route/client/import/resource coverage; production trust/lifecycle and M3 promotion |
 
 ## 1. 16.0.0 scope (maintainer, 2026-10-30)
 
@@ -51,7 +60,7 @@ miss rolls to 16.1.0, or to 17.0.0 if it changes a default.
   - The write rule (ID-Q5) still refuses to create a second record with a stored identifier.
   - `require` refuses to start until the index exists. `off` skips building it but leaves any existing index enforced; `drop` removes the index at boot, then runs as `off`.
   - An operator-run tool reports duplicate groups and resolves them by the P4 pick.
-- **Multitenant items may ship dormant, labelled alpha behind `serve`, or not ship.**
+- **Multitenant items may ship dormant, labelled alpha behind explicit `multitenant` configuration, or not ship.**
 
 Feasibility, from the 7 days to 2026-10-30: 53 PRs merged into `dev`, and 14 of this plan's 36 items went
 to done. Build speed is not the limit. Time on `dev`, cohort checks and review are, so items land in
@@ -146,12 +155,12 @@ Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRIT
 | item | builds | needs | check |
 |---|---|---|---|
 | WC-STEP-PATCH | release 1 merged as #8874 (`368e6c23`, no behaviour change); release 2 merged as #8886 (`51d38f9f`, 2026-11-01), resolves filter writes to ids and gives API v3 the same write shape (Q9, Q-U, Q-A); the reached ids come back in `WriteResult.removed` and `.updated`, and `items[]` stays one slot per input (maintainer, 2026-10-31): `write(intent)` -> WriteResult.items[] above the interface; matching, server dates, the null-removes rule and validation move into it; compare-and-set behind an adapter method | ST-WRITES | [write-contract spec](../tenancy/write-contract-spec-2026-10-07.md) G1 |
-| ST-V3-DECOUPLE | merged with #8865 (`991b0654`): API v3 without API v1's modules, the socket and the cache, so `serve api` serves it alone (M3) | ST-WRITES, PLAT-SERVE | `serve api` passes the API v3 suites (634 pass, 0 fail, 108 single-only pending, as reported at `9f7f84f8`); `single` unchanged |
+| ST-V3-DECOUPLE | merged with #8865 (`991b0654`): API v3 without API v1's modules, the socket and the cache, so `serve api` serves it alone (historical headless-API stage) | ST-WRITES, PLAT-SERVE | `serve api` passes the API v3 suites (634 pass, 0 fail, 108 single-only pending, as reported at `9f7f84f8`); `single` unchanged |
 | ST-EVENT | merged with #8886 (`51d38f9f`, 2026-11-01): one internal event per write, `storage-intent-committed`, carrying the write's records (`_id`, identifier, outcome, refusal problems) without document contents; the per-database-call `storage-write-committed` stays as instrumentation | WC-STEP-PATCH, D-EVENT (decided 2026-10-31) | each stored and refused record named once per write |
 | ST-HARNESS | **merged 2026-11-01** as #8881 (`f54941b5`, head `993275f3`): backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
 | ST-VIEWS | **merged 2026-11-01** as #8875 (`1fc6d8be`), not wired in; equal to the resident path on 126,092 replayed minutes per view (re-checked on `1fc6d8be`): computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
 | ST-VIEWS-PROFILE | draft PR #8891 (`744d1968`, `dev` `f54941b5` merged in; npm test 6043/0/3), opened with provisos, not in 16.0.0 unless it clears the bar: a single-tenant start profile with no resident `ddata`, opt-in by `NIGHTSCOUT_EXECUTION=nonresident` through its own script; after each write and on a timer it computes the alarms view, and it serves the properties view on request; `single` unchanged (D-EXEC-PROFILE). Provisos: replay through the profile's trigger re-run on this head (measured at `7b4b724c`, before #8886/#8889/#8890), the trigger event (counts-only `storage-write-committed` or D-EVENT's `storage-intent-committed`), release placement, cost re-measured on quiet hardware | ST-VIEWS | replay lab through the profile's trigger at 0 differing minutes; execution plan §7b; resident against computed cost and its break-even |
-| ST-PG | PostgreSQL with row-level security, entries first | ST-HARNESS | the backend-selectable suite on both stores |
+| ST-PG | Published selected-domain PostgreSQL/RLS API preview, R40; complete query/import/resource acceptance remains open | ST-HARNESS | actual HTTP/Mongo differentials and source controls; full M1 gates in the delivery dashboard |
 
 The September seam chain is kept as reference for ST-HARNESS, ST-PG and TEN-RESOLVE (commits named on each item); it is not merged as it stands.
 
@@ -213,19 +222,26 @@ S0, S1, S2 and S5 need no storage work and are one single-tenant PR, draft [#885
 
 ### 4.4 Tenancy
 
+The dependency map shows selected work items and their bounded component state.
+Its blocked markers preserve unmet acceptance prerequisites even where a useful
+preview already passes. The [M0–M6 dashboard](../tenancy/multitenant-delivery-dashboard.md)
+is authoritative for milestone gates; accepted slices are not completion percentages.
+The [architecture and compatibility comparison](../tenancy/single-and-multitenant-architecture.md)
+contains request-flow, isolation and historical-comparison diagrams.
+
 | item | builds | needs |
 |---|---|---|
 | PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT, and no image HEALTHCHECK so a boot-error page is not restarted away (D21) | dev |
-| PLAT-SERVE | `nightscout serve <roles>`: multitenant roles carved from `bootevent`, `api` first, each listener bound separately (D5, D7, D16) | PLAT-ENTRY, ST-READS |
+| PLAT-SERVE | Merged `multitenant` CLI namespace (#8899); explicit API preview on draft #8898, with separate operator preparation/readiness. Other roles remain unenabled | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface: 264 settings on dev, 12 contested | D-T30 |
-| T30-SCHEMA-CONFIG | the per-tenant settings table (D15) | T30-RESEARCH |
-| TEN-RESOLVE | tenant resolution and the platform admin interface (D7, D10, D16) | ST-HARNESS, T30-SCHEMA-CONFIG, PLAT-SERVE, ST-V3-DECOUPLE |
-| T30-WIRING | tenant-scoped API keys and per-tenant signing keys (D13, D14) | TEN-RESOLVE |
-| TEN-LAB | two tenants on PostgreSQL in a Docker Compose lab, isolation checked with a control | ST-PG, T30-WIRING, ST-VIEWS |
+| T30-SCHEMA-CONFIG | Full catalogue/owner API remains open; selected preview settings/current policy are accepted separately. Historical old-seam gate fails its D15 table predicate | T30-RESEARCH |
+| TEN-RESOLVE | Direct/canonical preview resolution accepted; full production trust, durable mapping and operator lifecycle still blocked | MT-CONFIG-MIN, MIG-RUNNER, PLAT-SERVE |
+| T30-WIRING | Current persisted authority and scoped provider compose with actual CLI/REST; administration and production identity/lifecycle remain | TEN-RESOLVE, MT-SECRETS-CONTRACT |
+| TEN-LAB | R40 cumulative two-tenant HTTP/provider/CLI accepted; complete M3 remains blocked on full M1/M2 | ST-PG, T30-WIRING, MIG-RUNNER |
 
-Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): `nightscout single` is single-tenant and every `nightscout serve` role is multitenant, so every tenancy item ships behind `serve` and `TENANCY_MODE` retires as an operator setting. Which listener and role owns each API is mapped in [interface ownership](interface-ownership-2026-10-27.md), with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D21 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
+Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): `nightscout single` is single-tenant and the `nightscout multitenant` namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and `TENANCY_MODE` retires as an operator setting. Which listener and role owns each API is mapped in [interface ownership](interface-ownership-2026-10-27.md), with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D21 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 
-Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. Today the two are coupled (`single` resident, `serve` computed). A third profile, one tenant computed on demand, is being prototyped as ST-VIEWS-PROFILE, and the execution mode is chosen by measured cost and equality, keeping the resident path wherever it is the cheaper one.
+Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. A third profile, one tenant computed on demand, is being prototyped as ST-VIEWS-PROFILE, and the execution mode is chosen by measured cost and equality, keeping the resident path wherever it is the cheaper one.
 
 ## 5. Open decisions
 
@@ -240,7 +256,7 @@ Select **Show on the map** on a card to see which items it holds up. Release que
 - **Red controls.** Every new test is shown failing against the code it guards before the change, with the original symptom.
 - **Conformance.** The registration and identity cases in `specs/sync/conformance/` run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.
 - **Agents.** Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.
-- **Releases.** #8865 (one executable, the image's start and stop, the boot split; `serve` reserved for a multitenant Nightscout, every role refused until it is multitenant) merged into 16.0.0 on 2026-10-30. Since 2026-10-30 every single-tenant item of this plan targets 16.0.0 through the entry bar (§1); a miss merges after the tag, one theme per minor; the 16.0.0 quiet period starts when its merge list is closed, not on a date. Components shipped before they are mature are labelled alpha; the label belongs to the multitenant bindings, not to code every single-tenant site runs.
+- **Releases.** #8865 (one executable, the image's start and stop, the boot split; `multitenant` is the current namespace after #8899; only the explicitly configured API preview is implemented in #8898) merged into 16.0.0 on 2026-10-30. Since 2026-10-30 every single-tenant item of this plan targets 16.0.0 through the entry bar (§1); a miss merges after the tag, one theme per minor; the 16.0.0 quiet period starts when its merge list is closed, not on a date. Components shipped before they are mature are labelled alpha; the label belongs to the multitenant bindings, not to code every single-tenant site runs.
 - **Records.** Each landed slice updates its queue item (`queue/work-queue.yaml`) and this plan's data file, and the page is re-rendered.
 
 ## 7. Sources

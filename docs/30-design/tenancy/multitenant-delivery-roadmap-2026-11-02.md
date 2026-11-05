@@ -26,8 +26,8 @@ existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
 promotion is recorded. The latest accepted cumulative head is `ded254b9`, now published on
-nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CodeQL
-succeeded; CI remains in progress at the publication read-back. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CI and
+CodeQL succeeded at the latest read-back. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
@@ -157,7 +157,7 @@ accepted CLI/entries CRUD boundary; actual HTTP/client acceptance determines sup
 | C6: client surface, M4 | R40 accepts source-pinned synthetic NightscoutKit/LoopFollow patterns for admitted domains. Extend route/client coverage one workflow at a time; client binary execution remains unmeasured and promotion follows M3. | Reproducible client replay and stored-result comparison, legacy defaults unchanged, paired retry/identity/response controls. Source inspection is not replay. |
 | C7: realtime recovery, M5 | Contract work can run independently: reconcile D6/D-EVENT durable checkpoints, commit coupling, replay/duplicates/deletes/config invalidation before wiring a consumer. | Approved ordering/retention/recovery contract, kill/restart replay equivalence, current socket authorization and tenant-local evaluator/cache state. No in-process bus or timer substitutes for durability. |
 | C8: operational preview, M6 | Join accepted M4/M5 with explicitly chosen owner capabilities; one backup/restore, upgrade/rollback, export/deletion or resource/egress packet at a time. | Synthetic failure/recovery evidence and final immutable-tree review; real-data/human identity, production traffic, serving-role enablement and publication remain separate explicit approvals. |
-| C9: records and publication | Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898. | Validate/generate records before main fast-forward. Published #8898 is OPEN/draft at accepted `ded254b9` with refreshed title/description. Current-head CodeQL succeeded and CI remains in progress at read-back; retain their exact run links in the release contents until a later measurement. Continue accepted slices on the existing PR through maintainer-operated non-force publication; do not use the dirty original worktree or open a duplicate PR. |
+| C9: records and publication | Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898. | Validate/generate records before main fast-forward. Published #8898 is OPEN/draft at accepted `ded254b9` with refreshed title/description. Current-head CI and CodeQL succeeded at read-back; retain their exact run links in the release contents until a later measurement. Continue accepted slices on the existing PR through maintainer-operated non-force publication; do not use the dirty original worktree or open a duplicate PR. |
 
 Packet ownership is local and resumable: the entries and provisioning lanes
 write `externals/work/HANDOFF-entries-patch-packet-20261104.md` and

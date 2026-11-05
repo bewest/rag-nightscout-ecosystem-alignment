@@ -225,7 +225,7 @@ def main():
 <div class="wrap">
 <header class="top">
 <h1>{esc(title)}</h1><div class="meta">{meta}</div>
-<p class="src">Living document, rendered from <a href="{site_href(posixpath.basename(SRC))}"><code>{SRC}</code></a> and its data file, last changed {date} at <code>{commit}</code>. Item states measured {esc(data["measured"])}.</p></header>
+<p class="src">Living document, rendered from <a href="{site_href(posixpath.basename(SRC))}"><code>{SRC}</code></a> and its data file, last changed {date} at <code>{commit}</code>. Evidence scope: {esc(data["measured"])}.</p></header>
 <div class="grid"><nav class="toc" aria-label="Sections"><div class="cap">On this page</div><ol>{toc}</ol></nav>
 <main class="doc">{content}</main></div></div>
 <script type="application/json" id="nextgen-data">{payload}</script>

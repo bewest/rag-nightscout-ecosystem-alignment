@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-02; cgm-remote-monitor dev 497d08c9; tenancy integration workspace through a19b549c; detailed milestone gates live in the multitenant delivery dashboard",
+ "measured": "tenancy reconciled 2026-11-04 against dev 4a482627 and published draft #8898 ded254b9 / R40; other tracks retain their named historical measurement pins. Map states summarize component claims; queue gates and M0\u2013M6 completion are separate",
  "tracks": [
   {
    "id": "storage",
@@ -45,35 +45,35 @@
   },
   {
    "id": "multi",
-   "label": "Multi mode"
+   "label": "Multitenant delivery"
   }
  ],
  "states": [
   {
    "id": "done",
    "label": "done",
-   "mark": "✓",
+   "mark": "\u2713",
    "style": "done",
-   "means": "merged to dev, or finished in this repository"
+   "means": "merged to dev or a completed component/research item; not full multitenant milestone acceptance"
   },
   {
    "id": "review",
    "label": "in review",
-   "mark": "◐",
+   "mark": "\u25d0",
    "style": "review",
    "means": "a pull request is open"
   },
   {
    "id": "ready",
    "label": "ready to push",
-   "mark": "▶",
+   "mark": "\u25b6",
    "style": "review",
    "means": "a branch is built and checked; the push and PR are the maintainer's"
   },
   {
    "id": "planned",
    "label": "planned",
-   "mark": "○",
+   "mark": "\u25cb",
    "style": "planned",
    "means": "scoped, not started"
   },
@@ -87,9 +87,16 @@
   {
    "id": "progress",
    "label": "in progress",
-   "mark": "▷",
+   "mark": "\u25b7",
    "style": "planned",
-   "means": "a branch exists and is being built"
+   "means": "partial implementation/evidence exists; remaining item acceptance is open"
+  },
+  {
+   "id": "blocked",
+   "label": "blocked",
+   "mark": "\u22a3",
+   "style": "planned",
+   "means": "full acceptance awaits prerequisites; a bounded preview slice may already pass"
   }
  ],
  "items": [
@@ -222,7 +229,7 @@
    "phase": "dev",
    "state": "done",
    "short": "v3 on its own",
-   "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own (milestone M3)",
+   "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own (historical headless-API stage, not multitenant M3)",
    "where": "lib/api3 (the cached collection and its cache hooks), bootevent's factory chain; about the fixtures the API v3 suites share with v1 and the socket",
    "check": "`serve api` passes the API v3 suites, with suites whose subject is single-only pending; `single` unchanged",
    "depends": [
@@ -274,9 +281,9 @@
    "phase": "intent",
    "state": "done",
    "short": "views without ddata",
-   "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded (milestone M4)",
+   "title": "Computed views without a resident ddata: what the page, the socket's dataUpdate, the plugins and the alarms compute comes from bounded queries (newest n of each type within a time bound), materialised, used and discarded (historical computed-view stage, not multitenant M4)",
    "where": "lib/data/dataloader.js and ddata.js, the socket's dataUpdate, the plugin sandbox, notifications",
-   "check": "each view's output equal to today's ddata-based output on the corpus fixtures; for alarms, the execution plan §7b measurement (32.7 KB and 1.94 ms per tenant per evaluation, the identical alarm, against 852 KB and 27.5 ms for all of ddata)",
+   "check": "each view's output equal to today's ddata-based output on the corpus fixtures; for alarms, the execution plan \u00a77b measurement (32.7 KB and 1.94 ms per tenant per evaluation, the identical alarm, against 852 KB and 27.5 ms for all of ddata)",
    "depends": [
     "ST-READS"
    ],
@@ -297,36 +304,41 @@
    "short": "one-tenant computed profile",
    "title": "A single-tenant start profile with no resident ddata: the api profile plus an in-process bus, plugins and notifications. After each write and on a timer at single's cadence it computes the alarms view, and it serves the properties view on request. single is unchanged (D-EXEC-PROFILE)",
    "where": "lib/server/bootevent.js profiles, lib/data/views/, notifications",
-   "check": "replay lab through the profile's trigger at 0 differing minutes per dataset, differences classified as defect or timing; the execution plan §7b cases; break-it controls (no timer tick, a 10-newest device-status window); resident against computed cost measurements and their break-even",
+   "check": "replay lab through the profile's trigger at 0 differing minutes per dataset, differences classified as defect or timing; the execution plan \u00a77b cases; break-it controls (no timer tick, a 10-newest device-status window); resident against computed cost measurements and their break-even",
    "depends": [
     "ST-VIEWS"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8891",
-   "ref": "Draft PR #8891 at 744d1968 (dev f54941b5 merged in; npm test 6043/0/3), opened with provisos (replay on this head, trigger event, release placement, quiet-hardware cost); measured on proto/views-nonresident 908351d4 on 7b4b724c (#8875 with dev 37b2280f). Properties are computed in the same pass as alarms and only the properties result is kept (maintainer, 2026-10-31, option A). Replay through the profile's trigger: alarms and properties each 0 differing minutes over 126,092 minutes (24 runs each, r2 noise floor 0); every upload minute fired a write event. Execution plan §7b cases 15/15. Controls red: tick off, device-status window at the 10 newest, tamper, shrink, properties computed on request (5 minutes, sensorState.notification). single with the opt-in set stays resident. Revert rehearsed. Cost, indicative (load 1.7-5.1 on 16 cores, MongoDB 7.0.43, Node 22.23.4): per evaluation the profile uses about 1.4-2x the CPU of resident and reads 60-1,360 KB against 0.02-20 KB; it keeps 6-11 KB of properties against 177-2,230 KB of resident heap; viewer reads cost the same. Break-even 1.2-2.4 CPU-seconds per MB-hour of memory: below that price ratio resident is cheaper. Both arms evaluate on a 60 s tick, so neither idles. The write trigger needed counts only."
+   "ref": "Draft PR #8891 at 744d1968 (dev f54941b5 merged in; npm test 6043/0/3), opened with provisos (replay on this head, trigger event, release placement, quiet-hardware cost); measured on proto/views-nonresident 908351d4 on 7b4b724c (#8875 with dev 37b2280f). Properties are computed in the same pass as alarms and only the properties result is kept (maintainer, 2026-10-31, option A). Replay through the profile's trigger: alarms and properties each 0 differing minutes over 126,092 minutes (24 runs each, r2 noise floor 0); every upload minute fired a write event. Execution plan \u00a77b cases 15/15. Controls red: tick off, device-status window at the 10 newest, tamper, shrink, properties computed on request (5 minutes, sensorState.notification). single with the opt-in set stays resident. Revert rehearsed. Cost, indicative (load 1.7-5.1 on 16 cores, MongoDB 7.0.43, Node 22.23.4): per evaluation the profile uses about 1.4-2x the CPU of resident and reads 60-1,360 KB against 0.02-20 KB; it keeps 6-11 KB of properties against 177-2,230 KB of resident heap; viewer reads cost the same. Break-even 1.2-2.4 CPU-seconds per MB-hour of memory: below that price ratio resident is cheaper. Both arms evaluate on a 60 s tick, so neither idles. The write trigger needed counts only."
   },
   {
    "id": "ST-PG",
    "track": "storage",
    "phase": "multi",
    "state": "progress",
-   "short": "Entries import and adapter",
-   "title": "Committed M1 slices: one-time API baseline plus best-effort srvModified catch-up, tenant-bound PostgreSQL target, entries schema candidate and forced-RLS proof. This is not a complete API/storage backend or snapshot import.",
-   "where": "lib/import/entries.js, lib/storage/postgres-entries-write.js, migrations/candidates/postgres-entries-v1.json",
-   "check": "bounded importer replay, tenant-bound target and candidate-schema/RLS gates pass; full backend compatibility and source-import guarantees remain open",
+   "short": "PG REST ports / import",
+   "title": "Published preview reuses shipping legacy and API3 handlers over tenant-bound PostgreSQL/RLS, shared intent rules and explicit domain catalogues. R40 adds derived reads and pinned client patterns; complete storage/import/resource parity remains open.",
+   "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
+   "check": "R40 actual HTTP/current-Mongo differentials, current authority, two tenants, rollback and restart; full query/resource bounds and populated import-order fidelity remain open",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Integration commits 327cbb1f and 025704cd; overall M1 remains open.",
+   "ref": "Published ded254b9 on draft #8898; R40 accepts the bounded preview, not full M1 or a universal PostgreSQL backend.",
    "spec": [
     {
-     "label": "multitenant delivery dashboard",
+     "label": "R40 acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+    },
+    {
+     "label": "milestone dashboard",
      "href": "../tenancy/multitenant-delivery-dashboard.md"
     },
     {
-     "label": "M1/M2 acceptance evidence",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02"
+     "label": "architecture and compatibility",
+     "href": "../tenancy/single-and-multitenant-architecture.md"
     }
-   ]
+   ],
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898"
   },
   {
    "id": "DEV-8845",
@@ -370,7 +382,7 @@
    "phase": "now",
    "state": "done",
    "short": "Identity spec after #8845",
-   "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and §6 state API v3's refusal of a client _id (BF-170)",
+   "title": "A conformance case for the mandatory identifier on registered instances; identity I2 and \u00a76 state API v3's refusal of a client _id (BF-170)",
    "spec": [
     {
      "label": "identity spec",
@@ -468,7 +480,7 @@
    "ref": "#8857 is draft at head 5f6c1275 and BEHIND dev 497d08c9. Its current-head PR checks are green, but it must be rebased and retested before the 16.0.0 entry bar.",
    "spec": [
     {
-     "label": "registration §4",
+     "label": "registration \u00a74",
      "href": "spec/registration.md#4-the-capability-document"
     }
    ],
@@ -487,7 +499,7 @@
    "title": "The product resource: submit, etag, retire; MongoDB collections; single mode with API_SECRET or a subject's token",
    "spec": [
     {
-     "label": "registration §5",
+     "label": "registration \u00a75",
      "href": "spec/registration.md#5-the-product-resource"
     }
    ],
@@ -507,7 +519,7 @@
    "title": "Content-addressed definitions and leased instances; channels, roles and provenance. Instances on one flat root: PUT and DELETE /api/v4/instances/:instanceId with the product named in the body, GET /api/v4/instances for the owner's listing",
    "spec": [
     {
-     "label": "registration §7–§9",
+     "label": "registration \u00a77\u2013\u00a79",
      "href": "spec/registration.md#7-definitions"
     }
    ],
@@ -527,7 +539,7 @@
    "title": "The owner's actions on a single-tenant site with API_SECRET: retire, block, release, transfer, free-namespaces, pins, transfer-role and the instance listing",
    "spec": [
     {
-     "label": "registration §15",
+     "label": "registration \u00a715",
      "href": "spec/registration.md#15-binding-credentials-and-the-owner"
     }
    ],
@@ -548,7 +560,7 @@
    "title": "Typed writes and read selection for accepted elements, applied by the write step",
    "spec": [
     {
-     "label": "registration §11–§12",
+     "label": "registration \u00a711\u2013\u00a712",
      "href": "spec/registration.md#11-typed-writes-and-attribution"
     }
    ],
@@ -568,7 +580,7 @@
    "title": "Hub-projected read-only views of typed records for older readers",
    "spec": [
     {
-     "label": "registration §13",
+     "label": "registration \u00a713",
      "href": "spec/registration.md#13-projected-views-for-older-readers"
     }
    ],
@@ -637,22 +649,26 @@
    "track": "tenancy",
    "phase": "dev",
    "state": "done",
-   "short": "serve <roles>",
-   "title": "`nightscout serve <role>[,<role>…]` for a multitenant Nightscout (D21): roles carved one at a time from bootevent's factory chain, `api` first; each listener on its own bind address so `admin` stays off the consumer interface (D5, D7, D16). The subcommand selects tenancy",
+   "short": "Multitenant CLI namespace",
+   "title": "D21 namespace and role split are merged to dev. #8899 renamed serve to multitenant; the explicit API preview is implemented separately on draft #8898. This component being done does not promote M2 or production roles.",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
-   "check": "`serve api` answers the API v3 suites with no bus or ddata; `admin` refuses the consumer listener's address; every docker run form that started a server on dev starts the same one (image start-forms lab)",
+   "check": "Merged namespace preserves single/legacy starts; preview API separately requires explicit configuration, prebind read-only readiness and owned shutdown. Owner/operator/realtime/evaluator remain unenabled.",
    "depends": [
     "PLAT-ENTRY",
     "ST-READS"
    ],
    "spec": [
     {
-     "label": "components doc",
-     "href": "../tenancy/nightscout-deployable-components-2026-09-14.md"
+     "label": "R40 API preview acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+    },
+    {
+     "label": "architecture and compatibility",
+     "href": "../tenancy/single-and-multitenant-architecture.md"
     }
    ],
-   "ref": "Merged to dev 2026-10-30 02:04Z as 991b0654 (#8865, head 1b2801f7), by the maintainer; in 16.0.0. In the 16.0.0 merge list (maintainer, 2026-10-27). #8865 head fcd305ae (b01b77c3 with dev e1f7ac41 merged in): the subcommand selects tenancy (`single` single-tenant, every `serve` role multitenant; TENANCY_MODE retires); `serve` refuses every role until it is multitenant; the single-tenant api code runs as scripts/headless-test-server.js for tests and development. Carries #8862's commits; image CMD `nightscout single`; SIGTERM and SIGINT exit 0 within 8 s on every start path; the healthcheck checks the server's own certificate (CodeQL alert 138 fixed). Image start forms unchanged against dev apart from stop and signals (tools/lab/image-start-forms); API v3 suites 751/0 under single, 643/0/108 pending under headless",
-   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8865"
+   "ref": "Merged namespace: #8865 / 991b0654, amended by #8899 / 4a482627. Preview: published #8898 ded254b9, R40. Default single/Mongo and global backend registry remain.",
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
    "id": "T30-RESEARCH",
@@ -676,28 +692,48 @@
    "id": "T30-SCHEMA-CONFIG",
    "track": "tenancy",
    "phase": "boundary",
-   "state": "planned",
+   "state": "progress",
    "short": "Per-tenant config table",
-   "title": "The per-tenant settings table, read by the multitenant entrypoints instead of the environment (D15)",
-   "ref": "Spec and PostgreSQL lab (docs/30-design/tenancy/tenant-config-schema-2026-10-27.md, tools/lab/tenant-config-schema). Maintainer, 2026-10-29: Q1 whole-row overrides; Q12 export carries the owner's tables, deletion removes all; Q18 dissolved: migrations rewritten (nothing merged), tenant_members renamed tenant_access_grants; Q5 audited through one audit approach shared across the code base, after an inventory of existing audit and history mechanisms. Also noted: single-tenant needs the same access-grant contract through a login plugin over auth_subjects. Q7 lower threshold bound 30 mg/dL (maintainer's reasoning recorded); Q8 the secrets component enforces ownership, format decided with it; Q9 keys outside the database by default, a separate schema and role allowed. Open: Q2, Q4, Q6, Q13-Q17, Q19, Q20.",
+   "title": "Full tenant configuration catalogue and owner API remain open. The selected display/current-policy services exist in the preview; that does not finish this historical catalogue/schema item.",
+   "ref": "Selected R40 services are separate from the older seam catalogue. Current T30-SCHEMA-CONFIG static gate fails its crm-seam D15 table predicate; see the architecture evidence gaps. No full-catalogue promotion.",
    "depends": [
     "T30-RESEARCH",
     "T30-DONE"
+   ],
+   "spec": [
+    {
+     "label": "current evidence gaps",
+     "href": "../tenancy/single-and-multitenant-architecture.md#remaining-evidence-gaps-and-next-work"
+    },
+    {
+     "label": "selected configuration work",
+     "href": "../tenancy/multitenant-delivery-dashboard.md#mt-config-min"
+    }
    ]
   },
   {
    "id": "TEN-RESOLVE",
    "track": "tenancy",
    "phase": "multi",
-   "state": "progress",
-   "short": "Provider-neutral tenant boundary",
-   "title": "Committed tenant alias resolution and dormant HTTP composition require injected trusted credential verification, current authorization and separate operator services; no default tenant or production authority fallback.",
-   "ref": "Integration commit c496d009; production tenant aliases, trusted transport and listener/data-router wiring remain open.",
+   "state": "blocked",
+   "short": "Resolution / lifecycle",
+   "title": "Direct-alias and explicitly trusted canonical resolution run in the accepted API preview. Full tenant lifecycle and production transport/service identity remain blocked on their prerequisites.",
+   "ref": "Published ded254b9 / R40: configured two-tenant CLI and current authority compose. Static maps are not durable provisioning/publication; private owner/operator lifecycle remains open.",
    "depends": [
-    "ST-HARNESS",
-    "T30-SCHEMA-CONFIG",
-    "PLAT-SERVE",
-    "ST-V3-DECOUPLE"
+    "MT-CONFIG-MIN",
+    "MIG-RUNNER",
+    "PLAT-SERVE"
+   ],
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
+   "spec": [
+    {
+     "label": "remaining M2 gates",
+     "href": "../tenancy/multitenant-delivery-dashboard.md#ten-resolve"
+    },
+    {
+     "label": "architecture",
+     "href": "../tenancy/single-and-multitenant-architecture.md"
+    }
    ]
   },
   {
@@ -706,24 +742,104 @@
    "phase": "multi",
    "state": "progress",
    "short": "Tenant-scoped auth",
-   "title": "Tenant-bound JWT verification and current-grant checks are proven through injected HTTP boundaries; production credential/authority adapters and runtime composition remain open.",
-   "ref": "Tenant JWT proof dc2c5fbf; dormant HTTP boundary c496d009. No serving role enabled.",
+   "title": "Current tenant credentials, grants and subject metadata compose with actual v1/v2/v3 and derived HTTP through the explicit CLI/PG/Vault preview. Production identity and administration/lifecycle remain incomplete.",
+   "ref": "Published ded254b9 / R40. Archived authority gate PASS with NON-VACUOUS controls; supported client patterns, current revocation and restart measured. This is bounded API serving, not every multitenant role.",
    "depends": [
-    "TEN-RESOLVE"
+    "TEN-RESOLVE",
+    "MT-SECRETS-CONTRACT"
+   ],
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
+   "spec": [
+    {
+     "label": "R40 evidence",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+    },
+    {
+     "label": "single vs multitenant",
+     "href": "../tenancy/single-and-multitenant-architecture.md"
+    }
    ]
   },
   {
    "id": "TEN-LAB",
    "track": "tenancy",
    "phase": "multi",
-   "state": "progress",
-   "short": "Two-tenant HTTP lab",
-   "title": "Committed opt-in PostgreSQL HTTP lab; 10 cases pass for tenant isolation, writes, revocation, startup refusal and data-plane separation. M3 remains blocked until M1/M2 production acceptance.",
-   "ref": "Integration commit a19b549c; see the multitenant delivery dashboard for promotion gates.",
+   "state": "blocked",
+   "short": "Full M3 acceptance",
+   "title": "R40 accepts the bounded cumulative real HTTP/provider/CLI composition. Full M3 remains blocked until complete M1/M2 criteria and cumulative instruments pass; successful lab cases alone do not promote the milestone.",
+   "ref": "Published ded254b9; R40 owns recorded reproduction and controls. Administration/side effects, full client/route/import/resource and production lifecycle acceptance remain open.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
-    "ST-VIEWS"
+    "MIG-RUNNER"
+   ],
+   "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
+   "spec": [
+    {
+     "label": "milestone promotion criteria",
+     "href": "../tenancy/multitenant-delivery-dashboard.md"
+    },
+    {
+     "label": "acceptance evidence",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+    }
+   ]
+  },
+  {
+   "id": "MIG-RUNNER",
+   "track": "storage",
+   "phase": "multi",
+   "state": "progress",
+   "short": "Operator migrations",
+   "title": "Explicit operator migration catalogues and read-only preview readiness exist; complete two-store runner, import/resource and operational acceptance remain open. Serving never migrates automatically.",
+   "ref": "R40 separately enables migration/two-tenant HTTP acceptance; full M0 is not promoted.",
+   "spec": [
+    {
+     "label": "runner gates",
+     "href": "../tenancy/multitenant-delivery-dashboard.md#mig-runner"
+    },
+    {
+     "label": "R40",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+    }
+   ]
+  },
+  {
+   "id": "MT-CONFIG-MIN",
+   "track": "tenancy",
+   "phase": "multi",
+   "state": "progress",
+   "short": "Current policy / settings",
+   "title": "Selected persisted current grants and typed tenant display settings compose in R40. Full owner settings catalogue and administration mutation/invalidation remain open.",
+   "ref": "Bounded API preview acceptance; no complete owner/configuration or production M2 claim.",
+   "spec": [
+    {
+     "label": "configuration gates",
+     "href": "../tenancy/multitenant-delivery-dashboard.md#mt-config-min"
+    },
+    {
+     "label": "architecture",
+     "href": "../tenancy/single-and-multitenant-architecture.md"
+    }
+   ]
+  },
+  {
+   "id": "MT-SECRETS-CONTRACT",
+   "track": "tenancy",
+   "phase": "multi",
+   "state": "progress",
+   "short": "Tenant secrets / Vault",
+   "title": "Vault Transit, encrypted PostgreSQL references and tenant-scoped exchange are exercised by the preview. Production token issuance/renewal, service identity, HA and operational recovery remain open.",
+   "ref": "Published ded254b9 / R40; real provider composition is not production deployment acceptance.",
+   "spec": [
+    {
+     "label": "provider gates",
+     "href": "../tenancy/multitenant-delivery-dashboard.md#mt-secrets-contract"
+    },
+    {
+     "label": "architecture",
+     "href": "../tenancy/single-and-multitenant-architecture.md"
+    }
    ]
   }
  ],
@@ -747,9 +863,9 @@
   },
   {
    "id": "D-EXEC-PROFILE",
-   "short": "Tenancy × execution: three profiles",
+   "short": "Tenancy \u00d7 execution: three profiles",
    "owner": "maintainer; framed 2026-10-31, evidence from the profile prototype",
-   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata, and serve is multitenant with no resident ddata. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. single keeps its resident path either way. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan §7b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
+   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata; the explicit multitenant API preview now builds request-local loader frames. Evaluator/realtime and the separate computed-profile prototype remain distinct work. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. single keeps its resident path either way. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan \u00a77b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
    "holds": [
     "ST-VIEWS-PROFILE"
    ],
@@ -776,7 +892,7 @@
    "id": "D-LOOP-ID",
    "short": "identity rules decided 2026-10-29; Loop's answers awaited",
    "owner": "maintainer (the reply's channel; the three rules after the Loop maintainers answer)",
-   "question": "The revised reply to the Loop maintainers was posted on the project site on 2026-10-27; their answers are awaited. The maintainer decided 2026-10-29 to proceed without waiting, revisable when Loop answers: (1) identifier format: 1 to 256 URL-safe characters, a UUID recommended, placeholders (invalid, undefined, null, NaN) refused; (2) _id: a client may still send an ObjectId _id over API v1 (legacy); going forward the server sets _id and the client sets identifier. (3) decided the same day after a client survey, and superseded on 2026-10-31 by compatibility B (a matched re-send replaces on every collection; WRITE_RESEND=merge is the opt-in way back): merge on match stays the default (Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by POST over v1 and rely on the update; a refusal makes them retry silently without end); API v3 keeps refusing a changed date, device or event type; PUT replaces; a site setting plus per-client D20 quirks may select keep-first or refuse for clients that opt in, and a default changes only in a major (16.0.0 if it clears the entry bar, otherwise 17.0.0). The published reply's case 2 is corrected and Loop's dropped carb edits (an _id cached for 24 h) raised. (Absent identifier, scope and re-send after delete were decided earlier, §4.2.)",
+   "question": "The revised reply to the Loop maintainers was posted on the project site on 2026-10-27; their answers are awaited. The maintainer decided 2026-10-29 to proceed without waiting, revisable when Loop answers: (1) identifier format: 1 to 256 URL-safe characters, a UUID recommended, placeholders (invalid, undefined, null, NaN) refused; (2) _id: a client may still send an ObjectId _id over API v1 (legacy); going forward the server sets _id and the client sets identifier. (3) decided the same day after a client survey, and superseded on 2026-10-31 by compatibility B (a matched re-send replaces on every collection; WRITE_RESEND=merge is the opt-in way back): merge on match stays the default (Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by POST over v1 and rely on the update; a refusal makes them retry silently without end); API v3 keeps refusing a changed date, device or event type; PUT replaces; a site setting plus per-client D20 quirks may select keep-first or refuse for clients that opt in, and a default changes only in a major (16.0.0 if it clears the entry bar, otherwise 17.0.0). The published reply's case 2 is corrected and Loop's dropped carb edits (an _id cached for 24 h) raised. (Absent identifier, scope and re-send after delete were decided earlier, \u00a74.2.)",
    "holds": [],
    "options": [
     {
