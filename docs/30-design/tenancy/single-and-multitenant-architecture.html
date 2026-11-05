@@ -3029,6 +3029,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hypothetical-third-backend-smell-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hypothetical third-backend smell test
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#remaining-evidence-gaps-and-next-work" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4349,6 +4360,8 @@
       
         
       
+        
+      
     
     
     
@@ -5066,6 +5079,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#hypothetical-third-backend-smell-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hypothetical third-backend smell test
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#remaining-evidence-gaps-and-next-work" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5094,14 +5118,16 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>cdc5ade5e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>e6f8ccea7</code>.</em></p>
 <p><em>Contributor-facing living explanation. Source inspection is </em><em>read-derived</em><em> at
 cgm-remote-monitor <code>ded254b9acf5a94e3a4fd99c85b23e1413fa08b6</code>, based on dev
 <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Test figures below are </em><em>recorded
 reproductions</em><em>, not new runs for this explanation. Current delivery and milestone
 claims live in the <a href="multitenant-delivery-dashboard.html">delivery dashboard</a>;
 <a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
-owns the preview acceptance. PR #8898 is open/draft, not merged or released.</em></p>
+owns the published preview acceptance; <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a>
+owns the later local subject-service/compatibility continuation. PR #8898 is
+open/draft, not merged or released.</em></p>
 <h2 id="what-the-write-seam-made-possible">What the write seam made possible<a class="headerlink" href="#what-the-write-seam-made-possible" title="Permanent link">&para;</a></h2>
 <p><strong>Shared single-tenant code did change.</strong> The storage/write seams let the
 multitenant preview reuse shipping domain rules and version-specific handlers
@@ -5230,6 +5256,11 @@ its wildcard read requirement. Those are inherited compatibility boundaries, not
 new declarations that every exposed field has an independent collection grant.</p>
 <h2 id="what-evidence-supports-compatibility">What evidence supports compatibility?<a class="headerlink" href="#what-evidence-supports-compatibility" title="Permanent link">&para;</a></h2>
 <h3 id="preview-versus-current-singlemongo-behavior">Preview versus current single/Mongo behavior<a class="headerlink" href="#preview-versus-current-singlemongo-behavior" title="Permanent link">&para;</a></h3>
+<p>The latest local <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41 continuation</a>
+adds dormant persisted subject mutation and strict mixed-version treatment /
+credential-rename comparisons, with full cumulative regression and mutation
+controls. It does not expose owner HTTP management or select grant ceilings.
+The table below retains the published R40 scope and pin.</p>
 <p><a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
 is <strong>recorded reproduced</strong> on <code>ded254b9</code>. This document audit did not rerun it.</p>
 <table>
@@ -5286,6 +5317,11 @@ and error mappings can differ from the single application. See the pinned
 <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/server/tenant-app/README.md">tenant-app boundaries</a>.
 Full query/resource acceptance and populated import-order fidelity remain open.</p>
 <h3 id="new-nightscout-versus-older-releases">New Nightscout versus older releases<a class="headerlink" href="#new-nightscout-versus-older-releases" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../../reports/compat-refresh-2026-11-05/index.html">November 5 bounded refresh</a>
+directly compares release/current-dev/published-PR-single with repeated runs and
+an explicit limited pass scope. It excludes identity/settings families, retains
+historical projection residuals and does not establish old-release-to-PG parity.
+The full-corpus experiment below retains its earlier source pins.</p>
 <p>This is a <strong>separate recorded experiment</strong>, not an automatic consequence of the
 write seam or a fresh historical comparison of the multitenant preview.</p>
 <pre class="mermaid"><code>flowchart LR
@@ -5299,8 +5335,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2294a8944a0eac8e72da866cb70f0580fc7b0c18/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2294a8944a0eac8e72da866cb70f0580fc7b0c18/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1551c3e019713901315238d2f67b075205247430/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1551c3e019713901315238d2f67b075205247430/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof
@@ -5344,6 +5380,54 @@ for directional guarantees.</p>
 retain the upgrade and safety caveats. They explicitly say no single setting
 restores every 15.0.9 behavior. API interoperability, stored-data fidelity and
 installation/rollback compatibility must be assessed separately.</p>
+<h2 id="hypothetical-third-backend-smell-test">Hypothetical third-backend smell test<a class="headerlink" href="#hypothetical-third-backend-smell-test" title="Permanent link">&para;</a></h2>
+<p><strong>Read-derived at <code>ded254b9</code>, 2026-11-05; no SQLite adapter, isolation or performance
+experiment was run.</strong> A third backend has a clearer insertion point than the
+Mongo-only base: trusted <code>ctx.storagePorts.resolve</code> supplies storage and an
+intent factory (<code>lib/server/storage-reads.js:34–56</code>), and the PG adapters call
+the shared <code>write-intent.forCollectionResolved</code> rules. Existing shipping routers,
+validation and client quirks therefore need not be copied into another API.
+This improves reuse; it does not establish a backend-neutral runtime.</p>
+<p>There are concrete consolidation candidates:</p>
+<table>
+<thead>
+<tr>
+<th>Source at the pinned CRM head</th>
+<th>Smell / bounded improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib/storage/postgres-entries-intent.js:16,30,84</code> and <code>postgres-collection-intent.js:24,47,142</code></td>
+<td>Related filter/projection helpers and transaction/event wrappers are repeated. Generalize only their measured common contract; entries-specific and legacy query/natural-order differences are intentional until disproved by tests.</td>
+</tr>
+<tr>
+<td><code>lib/server/tenant-app/entries.js:20</code>, <code>treatments.js:18</code>, <code>profile-food-errors.js:13</code></td>
+<td>Repeated PG error classification and representation-refusal translation can drift. A shared adapter helper is plausible, guarded by existing HTTP error tests.</td>
+</tr>
+<tr>
+<td><code>lib/server/tenant-app/domain-catalogue.js:7–13</code></td>
+<td>Domain factories are coupled to PG candidate migrations. A hypothetical additional backend needs trusted backend-specific factory/schema/readiness selection behind the same domain capabilities.</td>
+</tr>
+<tr>
+<td>PG intent adapters' <code>fromMongo</code>/<code>toMongo</code> dialect bridge and <code>api3/storage/mongoCollection/utils</code> import</td>
+<td>The boundary still carries Mongo-shaped legacy semantics and Mongo-named normalization helpers. Separate API/document semantics from backend query lowering before treating this as a neutral database plugin interface. Renaming alone proves nothing.</td>
+</tr>
+<tr>
+<td><code>lib/storage/postgres-connection.js:26–50</code> and tenant authority/secrets persistence</td>
+<td>PostgreSQL RLS, roles, tenant-bound transactions and control-plane persistence are a separate protection contract. A cell/file/container isolation primitive would need equivalent tested ownership, lifecycle, failure and authority boundaries; substituting the data adapter alone is insufficient.</td>
+</tr>
+</tbody>
+</table>
+<p>For a hypothetical celld/SQLite design, keep the domain/write semantics above the
+backend; implement query/identity/document representation, atomic writes and
+commit hooks below it. Reuse the Mongo/PG differential corpus for a third adapter,
+including refusal cases. Isolation placement, concurrent writers, crash recovery,
+migration/backup and durable event delivery each need a new measured contract.
+This is <strong>easier at the handler/write-rule layer, still substantial at the storage
+and runtime layers</strong>. No claim of SQLite equivalence, operational advantage or
+celld adoption follows. The current REST/compatibility wave comes first; measured
+duplication can be consolidated without introducing a third backend.</p>
 <h2 id="remaining-evidence-gaps-and-next-work">Remaining evidence gaps and next work<a class="headerlink" href="#remaining-evidence-gaps-and-next-work" title="Permanent link">&para;</a></h2>
 <p>The <a href="multitenant-delivery-dashboard.html">milestone dashboard</a> deliberately does
 not promote M0–M6 on component evidence alone. Full REST administration/side

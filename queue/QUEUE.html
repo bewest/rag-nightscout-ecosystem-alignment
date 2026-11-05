@@ -1852,6 +1852,8 @@
       
         
       
+        
+      
     
     
     
@@ -3213,7 +3215,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-04 at <code>a9413e217</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>e6f8ccea7</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3256,7 +3258,7 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>418</td>
+<td>419</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
@@ -3264,7 +3266,7 @@
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 787 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 788 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20179,7 +20181,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>in-progress</code></td>
 <td><code>records/multitenant-roadmap-20261102</code></td>
 <td>n/a</td>
-<td>0 run + 1 no-gate</td>
+<td>1 run + 1 no-gate</td>
 </tr>
 <tr>
 <td><code>MT-SECRETS-CONTRACT</code></td>
@@ -20281,7 +20283,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>T30-WIRING</code></td>
 <td>T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT</td>
 <td><code>in-progress</code></td>
-<td><code>codex/rest-integration-20261104</code></td>
+<td><code>codex/rest-integration-20261105</code></td>
 <td>n/a</td>
 <td>1 run + 1 no-gate</td>
 </tr>
@@ -20738,13 +20740,17 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Why <code>n/a</code>.</strong> design and lab contract</p>
 <p><strong>Gates.</strong></p>
 <ul>
+<li><code>[integration]</code> <code>node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3</code></li>
+<li>Archived bounded subject update/delete and known-role assignment: current grants, stable identity/metadata, tenant isolation, atomic rollback, concurrent replacements and separate writer privileges. Synthetic management/crypto; no owner HTTP or grant ceilings.</li>
 <li><strong>NO GATE</strong> &mdash; Roadmap decisions adopted; detailed names, paths, preconditions, errors and executable contract cases remain. Full T30 catalogue is not claimed complete by the selected subset.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
+<li><code>tools/lab/multitenant-subject-admin/README.md</code></li>
+<li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 <li><code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md</code></li>
 </ul>
-<p><strong>Notes.</strong> Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain. Further decision: grant removal/revocation applies at the next protected operation across workers; current authorization unavailable means refusal. JWT expiry/stale cache is not authority. Include protected socket delivery, subscriptions/writes/reconnect and explicit authorization race semantics. Local 1dd8990b implements dormant persistent subject authority; 011802ba adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and whole policy-aware rollback. Combined local acceptance: 36 passing, zero pending; ESLint and 465-file classification pass. Both commits are now incorporated at peer tip 011802ba; integrated testing is pending, not accepted by ancestry alone. Next control-plane milestone: persistent operator rules/grant ceilings and atomic policy/write fencing. Operator policy and management authentication remain injected; timezone, token-lifetime policy, public API and runtime invalidation remain open. No owner/data/socket serving or end-to-end revocation acceptance implied.</p>
+<p><strong>Notes.</strong> Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.</p>
 <h3 id="mt-secrets-contract--tenant-bound-secrets-contract-and-early-vault-transit-integration-proof"><code>MT-SECRETS-CONTRACT</code> &mdash; Tenant-bound secrets contract and early Vault Transit integration proof<a class="headerlink" href="#mt-secrets-contract--tenant-bound-secrets-contract-and-early-vault-transit-integration-proof" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -20911,7 +20917,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <ul>
 <li><code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md</code></li>
 </ul>
-<p><strong>Notes.</strong> M3; R39 accepts selected REST domains at published draft ae471ac7, not full preview. Derived reads and client replay are active alongside independent authority review. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion; ancestry alone is insufficient.</p>
+<p><strong>Notes.</strong> M3; R41 accepts local subject service and strict compatibility tests at 94c57f1f; published draft remains R40 ded254b9, not full preview. Maintainer priority 2026-11-05: management HTTP and wider REST, with parallel current Mongo/PG and historical release/dev/PR-single compatibility. Existing RC corrections/client quirks need explicit expected-change bases; unexplained differences fail acceptance. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion.</p>
 <h3 id="mt-runtime-plan--continuous-v1v3-realtime-and-evaluator-integration-contracts"><code>MT-RUNTIME-PLAN</code> &mdash; Continuous v1/v3, realtime and evaluator integration contracts<a class="headerlink" href="#mt-runtime-plan--continuous-v1v3-realtime-and-evaluator-integration-contracts" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -21436,7 +21442,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>codex/rest-integration-20261104</code></td>
+<td><code>codex/rest-integration-20261105</code></td>
 </tr>
 <tr>
 <td>base</td>
@@ -21444,7 +21450,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/work/crm-codex-rest-integration-20261104</code></td>
+<td><code>externals/work/crm-codex-rest-integration-20261105</code></td>
 </tr>
 <tr>
 <td>semver</td>

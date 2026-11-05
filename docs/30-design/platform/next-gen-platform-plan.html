@@ -4986,6 +4986,8 @@
       
         
       
+        
+      
     
     
     
@@ -5648,9 +5650,10 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>a9413e217</code>.</em></p>
-<p><em>Contributor-facing living plan. Tenancy progress reconciled 2026-11-04 against
-cgm-remote-monitor dev <code>4a482627</code> and published draft #8898 <code>ded254b9</code> (R40).
+<p><em>Living document, last changed 2026-11-05 at <code>e6f8ccea7</code>.</em></p>
+<p><em>Contributor-facing living plan. Tenancy progress reconciled 2026-11-05 against
+cgm-remote-monitor dev <code>4a482627</code>, published draft #8898 <code>ded254b9</code> (R40),
+and local accepted continuation <code>94c57f1f</code> (R41).
 Storage/identity/registration measurements below retain their named historical
 pins. Full M0–M6 completion remains open; component states are not milestone
 promotion or a fresh measurement of every queue gate. Release placement is in
@@ -5665,10 +5668,14 @@ promotion or a fresh measurement of every queue gate. Release placement is in
 </ul>
 <p>It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.</p>
 <h2 id="1-where-things-stand">1. Where things stand<a class="headerlink" href="#1-where-things-stand" title="Permanent link">&para;</a></h2>
-<p><strong>Current dev anchor, 2026-11-04: <code>4a482627</code>.</strong> The published multitenant
+<p><strong>Current dev anchor, 2026-11-05: <code>4a482627</code>.</strong> The published multitenant
 preview is <code>ded254b9</code> on draft #8898, not merged to dev. R40 records its
 accepted API/derived/client-pattern boundary; its current-head CI and CodeQL
-succeeded. See <a href="../tenancy/single-and-multitenant-architecture.html">single versus multitenant architecture and compatibility</a>
+succeeded. Local <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a>
+adds persisted subject management and strict compatibility tests with cumulative
+acceptance; it is unpushed and does not enable owner HTTP. The
+<a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-subject-administration-and-compatibility-continuation-2026-11-05">parallel compatibility plan</a>
+keeps historical/current comparisons and remaining milestone gates distinct. See <a href="../tenancy/single-and-multitenant-architecture.html">single versus multitenant architecture and compatibility</a>
 for the shared-code changes, diagrams and evidence limits. The <code>497d08c9</code> labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are

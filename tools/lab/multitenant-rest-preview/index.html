@@ -16,7 +16,7 @@
         <link rel="prev" href="../multitenant-rest-authority/index.html">
       
       
-        <link rel="next" href="../nocturne-parity/index.html">
+        <link rel="next" href="../multitenant-subject-admin/index.html">
       
       
         
@@ -1044,6 +1044,8 @@
       
         
       
+        
+      
     
     
     
@@ -1575,6 +1577,8 @@
       
         
           
+        
+      
         
       
         
@@ -2395,6 +2399,64 @@
             
           </ul>
         </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../multitenant-subject-admin/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    multitenant-subject-admin/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
       
     </li>
   
@@ -4420,7 +4482,7 @@
 
 
 <h1 id="reproducible-selected-domain-rest-preview-acceptance">Reproducible selected-domain REST preview acceptance<a class="headerlink" href="#reproducible-selected-domain-rest-preview-acceptance" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>3f003441c</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>8564567a0</code>.</em></p>
 <p>Contributor-facing synthetic lab. It runs committed CRM tests from an explicitly
 selected, clean worktree against uniquely named disposable PostgreSQL, MongoDB
 and development Vault services. It prints the CRM head and measured service
@@ -4438,7 +4500,10 @@ services. It refuses acceptance if the tracked tree or head changes during a run
 example <code>focused --require /absolute/path/to/control.cjs --grep &lt;case&gt;</code>. The hook
 must be omitted for restored acceptance; setup errors are not semantic controls.</p>
 <p><code>focused</code> enables actual legacy/API3 domain, derived-read, source-pinned client
-pattern, current-authority, storage and backend-census tests. Client replay uses
+pattern, current-authority, subject-administration, legacy credential rename,
+storage and backend-census tests. The subject-administration lab creates its own
+additional disposable PostgreSQL service and does not expose an HTTP owner API.
+Client replay uses
 the real CLI and real Vault/PG; the separate derived Mongo differential uses a
 synthetic signing provider. The executable composition test joins derived reads
 with actual Vault authority, revocation and restart. These are extracted client
@@ -4447,7 +4512,9 @@ patterns, not execution of Swift client binaries.</p>
 <code>browser</code> runs the complete browser tier on independent services. Disabled opt-in
 labs remain pending, never passing. <code>migration</code> separately enables existing
 migration and two-tenant HTTP suites. No mode promotes a milestone or establishes
-full REST, production trust, provisioning/lifecycle, HA or operational readiness.</p>
+full REST, production trust, provisioning/lifecycle, HA or operational readiness.
+The current corpus includes <code>subject-admin</code> tests; select a CRM continuation
+containing those files rather than the earlier published R40 head.</p>
 <p>Prerequisites: Node/Git/Docker, privately installed matching CRM dependencies,
 built browser assets, <code>postgres:16</code>, <code>mongo:8.0.34</code> and the exact Vault image digest
 in the runner. CI defaults load before the runner's random loopback connection

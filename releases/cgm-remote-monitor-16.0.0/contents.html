@@ -1525,6 +1525,8 @@
       
         
       
+        
+      
     
     
     
@@ -2168,7 +2170,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>2294a8944</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>1551c3e01</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -2218,6 +2220,60 @@ and production/service environments work. The maintainer dispositions #8829
 <p>See the <a href="../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current ecosystem/acceptance record</a>,
 <a href="release-notes.html">draft release notes</a> and <a href="testing-notes.html">cohort collection guide</a>.
 Historical status/measurement sections below retain their dates.</p>
+<h3 id="update-subject-administration-and-compatibility-continuation-accepted-locally-2026-11-05">Update: subject administration and compatibility continuation accepted locally (2026-11-05)<a class="headerlink" href="#update-subject-administration-and-compatibility-continuation-accepted-locally-2026-11-05" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and remaining gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local <code>codex/rest-integration-20261105</code> is clean at <code>94c57f1f37370215ef25b69691ef63918c876db3</code>; #8898 remains published at ded254b9.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a> accepts the joined dormant subject mutation/known-role service and strict mixed-version treatment/rename tests. Parent full nonbrowser6944/80pending/0failing, browser684, focused162, migration/HTTP30, affected authority/upgrade8 and archived subject gate13 pass; groups overlap. Parent semantic controls fail as intended; restored focused passes, changed-file lint/tier check and final prcheck pass. Nothing pushed to CRM, merged to dev or released.</td>
+</tr>
+<tr>
+<td>New archived read-only subject instrument is wired under MT-CONFIG-MIN.</td>
+<td>Queue integration PASS and control NON-VACUOUS measure only the bounded service. Separate management HTTP, owner ceilings, full role CRUD, remaining REST side effects/client binaries/import/resources and M0–M6 completion remain open. <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-subject-administration-and-compatibility-continuation-2026-11-05">Current next packets</a> supersede the delivered dispatch packets.</td>
+</tr>
+<tr>
+<td><a href="../../reports/compat-refresh-2026-11-05/index.html">Historical comparison</a> completed at old-release/current-dev/published-PR-single pins.</td>
+<td>Parent re-audited immutable results and negative controls. Repeated bounded corpus has no dev/PR-single semantic differences; release changes are separately described. Full-corpus projection residuals, omitted identity/settings families and the later R41 join are outside its pass scope; no transitive historical-to-PG parity claim.</td>
+</tr>
+<tr>
+<td>Lane handoff recorded locally; no private artifacts staged.</td>
+<td><code>externals/work/HANDOFF-codex-rest-integration-20261105.md</code> links subject-admin, cross-compat and historical-compat handoffs, heads, commands, failed hypotheses and publication commands. Synthetic public aggregate has no raw document bodies or database addresses. CodeQL147/148 remain open; no reviewer reply or dismissal.</td>
+</tr>
+<tr>
+<td>QMS/dashboard and rendered progress map validated.</td>
+<td><code>make queue-validate</code>, <code>make queue</code>, <code>make queue-check</code>, <code>make docs-links</code>, <code>make site-check</code> and diff checks pass. Plan source commit <code>e6f8ccea7af19bfc17edcba1f08e60658a2725ed</code> is recorded in pages.yaml; headless map interaction exposes R41/local acceptance, published R40 and remaining owner/milestone boundaries without page errors. Site publication follows the alignment main push.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update-prioritized-rest-completion-and-parallel-compatibility-2026-11-05">Update: prioritized REST completion and parallel compatibility (2026-11-05)<a class="headerlink" href="#update-prioritized-rest-completion-and-parallel-compatibility-2026-11-05" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Basis and next gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maintainer prioritizes subject administration and remaining REST/client acceptance, with parallel current and historical compatibility.</td>
+<td><a href="decisions.html#rest-and-compatibility-priority-2026-11-05">Decision</a> and <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#prioritized-rest-and-compatibility-execution-2026-11-05">bounded priority packets</a>. Fresh remote read-back remains OPEN/draft ded254b9 against dev 4a482627. Three lanes dispatched from that tree: persisted subject administration, mixed-version Mongo/PG differential tests, and repeated release/dev/PR-single write comparison. New lane acceptance is UNMEASURED at dispatch.</td>
+</tr>
+<tr>
+<td>Existing M0–M6 dependencies remain; partial compatibility work proceeds while M3/M4 promotion prerequisites are open.</td>
+<td>Root <code>make queue-status</code> measured ST-PG's selected unit PASS with integrations skipped; TEN-LAB/T30-WIRING UNMEASURED and old-seam T30-SCHEMA-CONFIG FAIL. No milestone, release-readiness or all-client claim follows. Intended RC changes and existing quirks require explicit expected-result bases, never blanket normalization.</td>
+</tr>
+<tr>
+<td>Hypothetical celld/SQLite seam review remains read-derived and outside implementation scope.</td>
+<td><a href="../../docs/30-design/tenancy/single-and-multitenant-architecture.html#hypothetical-third-backend-smell-test">Architecture assessment</a> identifies shared handlers/write rules and trusted ports, PG adapter/error-helper duplication and backend-specific isolation/control-plane obligations. No third-backend experiment or adoption.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="update-published-visualization-and-pr-codeql-audit-2026-11-04">Update: published visualization and PR CodeQL audit (2026-11-04)<a class="headerlink" href="#update-published-visualization-and-pr-codeql-audit-2026-11-04" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -4687,7 +4743,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2294a8944a0eac8e72da866cb70f0580fc7b0c18/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1551c3e019713901315238d2f67b075205247430/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>

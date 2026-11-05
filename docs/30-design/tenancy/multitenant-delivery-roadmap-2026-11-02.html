@@ -2694,16 +2694,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#current-status-and-parallel-ownership-2026-11-04" class="md-nav__link">
+  <a href="#current-status-and-parallel-ownership-2026-11-05" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current status and parallel ownership (2026-11-04)
+        Current status and parallel ownership (2026-11-05)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-04)">
+    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-05)">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prioritized-rest-and-compatibility-execution-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prioritized REST and compatibility execution (2026-11-05)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accepted-subject-administration-and-compatibility-continuation-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accepted subject administration and compatibility continuation (2026-11-05)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#rest-continuation-and-qms-reconciliation-2026-11-04" class="md-nav__link">
@@ -4791,6 +4813,8 @@
       
         
       
+        
+      
     
     
     
@@ -5425,16 +5449,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#current-status-and-parallel-ownership-2026-11-04" class="md-nav__link">
+  <a href="#current-status-and-parallel-ownership-2026-11-05" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current status and parallel ownership (2026-11-04)
+        Current status and parallel ownership (2026-11-05)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-04)">
+    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-05)">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prioritized-rest-and-compatibility-execution-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prioritized REST and compatibility execution (2026-11-05)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accepted-subject-administration-and-compatibility-continuation-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accepted subject administration and compatibility continuation (2026-11-05)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#rest-continuation-and-qms-reconciliation-2026-11-04" class="md-nav__link">
@@ -5991,7 +6037,7 @@ reviewable slices. Alignment records may be published separately.</p>
 in the <a href="../../10-domain/nightscout-multitenancy-priorities-deep-dive.html">priorities assessment</a>.
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.</p>
-<h2 id="current-status-and-parallel-ownership-2026-11-04">Current status and parallel ownership (2026-11-04)<a class="headerlink" href="#current-status-and-parallel-ownership-2026-11-04" title="Permanent link">&para;</a></h2>
+<h2 id="current-status-and-parallel-ownership-2026-11-05">Current status and parallel ownership (2026-11-05)<a class="headerlink" href="#current-status-and-parallel-ownership-2026-11-05" title="Permanent link">&para;</a></h2>
 <p><strong>Use the <a href="multitenant-delivery-dashboard.html">working dashboard</a> for current
 milestone dependencies, parallel lanes, next gates and slice acceptance stages.</strong>
 It is generated from queue claims plus dated acceptance metadata, not a live
@@ -6003,7 +6049,9 @@ enabled merely because a dormant slice passes.</p>
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted cumulative head is <code>ded254b9</code>, now published on
+promotion is recorded. The latest locally accepted cumulative head is <code>94c57f1f</code>
+(<a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a>);
+it remains unpushed. The latest published accepted head is <code>ded254b9</code>, on
 nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CI and
 CodeQL succeeded at the latest read-back. <a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
 accepts derived reads, pinned-pattern replay and independent authority probes
@@ -6017,6 +6065,145 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The <a href="#accepted-post-provider-and-canonical-continuations-2026-11-04">latest accepted continuations</a>
 and <a href="#completion-checkpoints-and-publication-2026-11-04">completion checkpoints</a>
 separate measured integration from complete storage, runtime and preview acceptance.</p>
+<h3 id="prioritized-rest-and-compatibility-execution-2026-11-05">Prioritized REST and compatibility execution (2026-11-05)<a class="headerlink" href="#prioritized-rest-and-compatibility-execution-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Maintainer direction:</strong> prioritize subject administration and remaining REST/client
+acceptance, with parallel single/multitenant cross-compatibility and backwards
+compatibility modulo documented RC corrections, defined edge cases and existing
+client quirks. CodeQL mitigation remains tracked separately; it does not serialize
+this delivery wave. Celld remains outside implementation scope; a hypothetical
+third backend is an architectural smell test, not an adopted dependency.</p>
+<p>Fresh read-back: #8898 remains OPEN/draft at
+<code>ded254b9acf5a94e3a4fd99c85b23e1413fa08b6</code>; <code>official/dev</code> remains
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Alignment dispatch base is
+<code>2294a8944a0eac8e72da866cb70f0580fc7b0c18</code>. These anchors identify the
+starting trees, not new acceptance. Root <code>make queue-status</code> measures ST-PG's
+selected unit gate PASS with integrations skipped; TEN-LAB and T30-WIRING are
+UNMEASURED at that invocation; T30-SCHEMA-CONFIG's historical-seam predicate
+FAIL remains visible. No milestone is promoted by this dispatch.</p>
+<table>
+<thead>
+<tr>
+<th>Order / existing milestone</th>
+<th>Concrete task and owner</th>
+<th>Exit gate / next task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Now: M2 authority; MT-CONFIG-MIN / T30-WIRING</td>
+<td><code>codex/tenant-subject-admin-20261105</code>: persisted subject update/delete and known-role assignment, stable IDs, metadata/omission/rename semantics; separately authorized writer and append-only migration.</td>
+<td>Actual PG persistence/rollback/isolation, shipping semantic characterization, same earlier credential denied on the next operation after deletion/grant removal; serving role cannot write authority. Paired controls, then cumulative integration. No HTTP management admission in this packet.</td>
+</tr>
+<tr>
+<td>Parallel: M1/M4 compatibility; ST-PG / TEN-LAB</td>
+<td><code>codex/tenant-cross-compat-20261105</code>: expand shared Mongo/PG HTTP corpus for mixed legacy/v3 treatment edits, omitted versus null fields, retries, replacement and tombstone/history.</td>
+<td>Compare replies AND stored results, stable identity, exact retained/removed fields and tenant isolation. Only incidental time/opaque-ID normalization, with explicit refusal rows. Source-pinned client patterns remain distinct from client binaries.</td>
+</tr>
+<tr>
+<td>Parallel: RC backwards compatibility; TEN-LAB</td>
+<td><code>codex/rc-compat-refresh-20261105</code>: fresh same-corpus old release, current dev and PR-single comparison, with repeated runs and classified intended changes.</td>
+<td>Preserve immutable prior captures; every semantic difference needs an existing decision/bugfix/client-contract basis or remains unexpected. A classifier control must detect a planted unapproved difference. No old-release-to-PG transitivity claim.</td>
+</tr>
+<tr>
+<td>Next: M2/M4 administration</td>
+<td>Join the accepted subject service to a separately authenticated owner/management boundary; characterize stable role IDs and unresolved/default roles before full roles CRUD.</td>
+<td>Actual owner requests and persisted effects, no management route on the data listener, permission ceilings/current grants and cross-worker revocation controls. Stop on an unselected management identity/policy contract while independent REST work continues.</td>
+</tr>
+<tr>
+<td>Next: M1/M4 remaining REST/client/import</td>
+<td>Complete one missing route/domain workflow at a time, including notices/debug and notification/assistant receipts/egress; extend import/rerun fidelity and populated-data/query bounds.</td>
+<td>Fake-provider no-egress/cross-tenant controls, supported-shape/refusal inventory, bounded failures/reruns; execute actual clients where tooling permits, otherwise keep binary acceptance UNMEASURED. Numeric bounds and new lifecycle semantics require explicit decisions.</td>
+</tr>
+<tr>
+<td>Integration: M3; TEN-LAB</td>
+<td>Coordinator joins clean lanes into the existing PR continuation and reruns exact-head focused/provider/migration, full nonbrowser/browser campaigns and final prcheck after dev merge.</td>
+<td>No unexplained compatibility deltas, meaningful restored controls, owned-service cleanup and current QMS/dashboard. M3 promotion still requires complete M1/M2; partial M4 work may proceed in parallel.</td>
+</tr>
+<tr>
+<td>Then: M5/M6</td>
+<td>Durable events/replay, realtime/evaluator and synthetic operational recovery on accepted authority/storage contracts.</td>
+<td>Commit-coupled recovery, tenant-local caches/current socket authority, restart replay, backup/restore/upgrade/rollback and resource/egress evidence. No in-process event substitutes for durability.</td>
+</tr>
+</tbody>
+</table>
+<p>Compatibility is a <strong>direct comparison matrix</strong>, not one blanket equivalence claim:</p>
+<table>
+<thead>
+<tr>
+<th>Comparison</th>
+<th>Purpose / expected result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Release 15.0.9 vs current dev (single/Mongo)</td>
+<td>Attribute intended RC fixes/defaults/edge-case definitions to the release decisions and register. Historical quirks remain supported where decided; fixing a defect may intentionally change output.</td>
+</tr>
+<tr>
+<td>Current dev vs PR single/Mongo</td>
+<td>Detect regressions caused by shared seam/composition changes independently of PG differences. Same RC contract should hold unless an explicit PR change is approved.</td>
+</tr>
+<tr>
+<td>PR single/Mongo vs PR multitenant/PG</td>
+<td>Directly exercise admitted HTTP routes, stored results, isolation and current authority. Representation/query refusals and JSONB equality limits are explicit capabilities, not hidden normalizations.</td>
+</tr>
+<tr>
+<td>Pinned client workflow vs each applicable endpoint</td>
+<td>Verify retries, edits, defaults, identifiers, ordering, batch replies and delete/history behavior. New-client-to-old-server support needs tested fallback; synthetic pattern replay is not application execution.</td>
+</tr>
+</tbody>
+</table>
+<p>Every corpus case names its source/client pin, endpoint and settings, expected
+observable behavior, allowed incidental normalization and intended-change basis.
+Compare logical contents, identity, status/headers, per-item reply and history;
+do not erase omitted/null/zero/false distinctions or failure categories. Classify
+as unchanged, intended RC correction, preserved client quirk, explicit unsupported
+capability, unexpected regression or unmeasured. An unclassified difference fails
+the compatibility acceptance; a broad allowlist is not a fix. Deliberate duplicate
+fixtures with the index disabled and default-index/race acceptance are separate
+campaigns. A historical green result never stands in for testing the final join.</p>
+<p>Lane implementation/testing uses GPT-6.1 Sol with high reasoning; the historical
+comparison/independent interpretation uses GPT-6 Astra with high reasoning.
+Each lane owns worktrees and unique disposable services. Parent review re-reads
+heads/results before records, integrates only completed contracts and preserves
+unexpected results. Local handoffs are under <code>externals/work/</code> and are not public
+evidence or publication authorization.</p>
+<h3 id="accepted-subject-administration-and-compatibility-continuation-2026-11-05">Accepted subject administration and compatibility continuation (2026-11-05)<a class="headerlink" href="#accepted-subject-administration-and-compatibility-continuation-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a>
+accepts local <code>94c57f1f37370215ef25b69691ef63918c876db3</code>, joining the persisted
+subject packet and test-only mixed-version/rename corpus. The three dispatch
+lanes above have delivered their bounded slices; their wider milestone gates
+remain open. Full nonbrowser/browser/enabled/provider/migration campaigns,
+parent semantic controls, restored acceptance and final prcheck pass. The
+<a href="../../../tools/lab/multitenant-subject-admin/index.html">archived subject instrument</a>
+is PASS with NON-VACUOUS control; this is not owner HTTP admission or policy.
+The separate <a href="../../../reports/compat-refresh-2026-11-05/index.html">historical refresh</a>
+is source-pinned to published <code>ded254b9</code>, not this new join; its diagnostic
+full-corpus residuals are outside the explicit pass scope. See those homes for
+figures and limitations rather than treating the comparison matrix as transitive.</p>
+<p><strong>Next executable packets, in priority order:</strong></p>
+<ol>
+<li>Compose subject management behind a separately authenticated management HTTP
+   boundary, preserving data-listener refusal. Reuse the accepted service;
+   characterize stable role IDs and unknown/default role behavior before full
+   roles CRUD. The trusted management callback is not a selected human identity
+   provider or owner grant-ceiling policy. Stop on that unselected policy slice
+   while other admitted REST/client work continues.</li>
+<li>Extend the remaining REST inventory one concrete workflow at a time: notices/
+   debug, then notification/assistant receipt and egress seams with fake-provider
+   controls. Preserve current authority and version-specific refusals.</li>
+<li>Extend shared compatibility fixtures into omitted identity/default-index/race
+   families and actual client execution where tooling permits; rerun affected
+   historical/current comparisons on the final joined tree. Keep intended RC
+   corrections and preserved quirks individually grounded in decisions/source.</li>
+<li>Finish supported import/rerun/populated-order/resource criteria for M1 and
+   remaining production authority/lifecycle M2 gates; then assess M3 promotion.
+   M4 work continues in parallel. M5/M6 retain durable replay and synthetic
+   operational acceptance; no completed service promotes them.</li>
+</ol>
+<p>The prepared continuation stays on existing draft #8898. Maintainer-operated
+publication sends only the new clean commits, followed by fresh remote CI;
+there is no automatic upstream push or alert dismissal.</p>
 <h3 id="rest-continuation-and-qms-reconciliation-2026-11-04">REST continuation and QMS reconciliation (2026-11-04)<a class="headerlink" href="#rest-continuation-and-qms-reconciliation-2026-11-04" title="Permanent link">&para;</a></h3>
 <p><strong>Current delivery wave, authorized by the maintainer.</strong> Continue from accepted
 and published <code>ae471ac7</code>, retaining the already incorporated domain deliveries.
@@ -6064,6 +6251,9 @@ realtime/evaluator and operations retain separate acceptance. No milestone or
 shipping candidate change follows from dispatch.</p>
 <h3 id="next-administration-and-side-effect-implementation-boundary-2026-11-04">Next administration and side-effect implementation boundary (2026-11-04)<a class="headerlink" href="#next-administration-and-side-effect-implementation-boundary-2026-11-04" title="Permanent link">&para;</a></h3>
 <p><strong>Read-derived next packet; new administration is not implemented by this wave.</strong>
+This is the captured November 4 packet: R41 now accepts its bounded persisted
+service. The <a href="#accepted-subject-administration-and-compatibility-continuation-2026-11-05">current continuation</a>
+owns remaining HTTP/policy/role and side-effect work.
 The independent authority review identifies subject update/delete and known-role
 assignment as the next bounded persisted service before enabling HTTP management.
 At CRM <code>ae471ac7</code>, shipping <code>lib/authorization/storage.js:100-125</code> preserves omitted
@@ -6970,7 +7160,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2294a8944a0eac8e72da866cb70f0580fc7b0c18/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1551c3e019713901315238d2f67b075205247430/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -7005,7 +7195,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2294a8944a0eac8e72da866cb70f0580fc7b0c18/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1551c3e019713901315238d2f67b075205247430/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
