@@ -4663,7 +4663,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>969dbc74e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-04 at <code>3f003441c</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -7312,6 +7312,126 @@ Imported populated PG insertion-order backfill and physical shared-index
 attribution are UNMEASURED. Realtime, evaluation, connector actors, provisioning,
 owner/operator lifecycle, HA and production readiness remain separate.
 No M1-M6 promotion or shipping operator release-note change follows.</p>
+<h3 id="r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40 - derived REST and pinned-pattern cumulative acceptance on ded254b9 (2026-11-04)<a class="headerlink" href="#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Parent-reproduced cumulative acceptance on clean local
+<code>codex/rest-integration-20261104</code> at
+<code>ded254b9acf5a94e3a4fd99c85b23e1413fa08b6</code>. Alignment base is
+<code>969dbc74ed8a050f80590732be35801073b9a494</code>; fetched <code>official/dev</code> is
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Live #8898 was checked OPEN/draft
+at published <code>ae471ac790455d6e81781f31b505e3c7b838831b</code>; the continuation
+is local and unpushed. No candidate merge, release or M0–M6 promotion.</p>
+<p><strong>Implemented boundary:</strong> actual API2 properties/current/as-of ddata/summary
+handlers reuse tenant-local loader frames and shipping sandbox property setters.
+Properties/ddata retain shipping entries-and-treatments read requirements,
+including inherited secondary-domain snapshot arrays; summary requires wildcard
+read. No request-global tenant switch, evaluator/notification lifecycle or new
+permission policy is introduced. Current authorization and snapshots remain
+request-bound; v1 derived paths and derived mutation methods refuse.</p>
+<p>Committed synthetic replay pins NightscoutKit
+<code>4ec9fd12a16b5d6c2de4f11870511361d42e1b7f</code> and LoopFollow
+<code>4a74b781ad6836dd77eccc03bb08a42749dd59a6</code>. Real CLI/PG/Vault tests exercise
+legacy uploader arrays/resends, follower query-token/window/format reads,
+response-sourced caller IDs, cross-version history and restart. Successful
+legacy resends may advance srvModified; they preserve logical rows, identity
+and srvCreated. Profile upload has no invented retry key. This is extracted
+client-pattern replay, not execution of Swift binaries; API3 history and derived
+composition are additional server acceptance. The parent-added executable case
+joins derived reads with real Vault authority, two tenants, revocation and restart.</p>
+<table>
+<thead>
+<tr>
+<th>Parent-reproduced campaign on this head</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complete nonbrowser <code>npm run test:all</code></td>
+<td style="text-align: right;">6926</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Complete browser tier</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Enabled cumulative REST/storage/authority/client focused</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Separate migration and two-tenant HTTP</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Archived authority queue instrument</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Nonbrowser tiers: unit 2152, DOM 205, dependency 368 / 2 pending, core 319,
+harness 93, integration 3771 / 78 pending, stress 18. Counts overlap across campaigns
+and must not be added. Remaining disabled labs are pending, not passes. The
+runner prints immutable head, Node22.23.4, PostgreSQL16.15, MongoDB8.0.34,
+Vault2.2.1, UTC and seed41574423920. Dependencies are installed privately from
+the CRM lockfile and assets rebuilt in the owned integration tree. Changed-file
+lint reports 0 errors / 9 warnings; tier map 494 files / 8 tiers passes. Final
+<code>tools/review/prcheck/prcheck.sh</code> reports OK and already contains refreshed
+<code>official/dev</code> <code>4a482627</code>; it runs after the restored focused campaign.</p>
+<p><strong>Controls and correction:</strong> parent-run memory controls on the final source
+cross-wire derived frames, bypass current read authority, corrupt computed IOB,
+change retry natural identity, route uploads to the other tenant, corrupt consumed
+response IDs and freeze persisted grants. Each failed a semantic assertion,
+not fixture setup. The executable boot-seam control at source-identical
+<code>c9804060</code> returns405 where the derived-success test requires200. Archived final
+head controls bypass current grant checks (revoked401/outage503 become200) or
+remove JWT audience refusal (foreign401 becomes200). The queue control is
+NON-VACUOUS. Restored unhooked focused acceptance passes; controls never modify a
+shipping checkout or source commit.</p>
+<p>The first joined full run on <code>c9804060</code> completed 6925 passing / 80 pending / 1 failing:
+its inherited process fixture still expected summary405 after the route was
+implemented. <code>ded254b9</code> verifies actual returned summary data while retaining
+v1 and wrong-method refusals; the final full campaign above is coherent on that
+commit. Original failure evidence remains under the local handoff. The independent
+review also strengthened caller update/delete tests to consume IDs from upload
+responses, with SQL only an independent stored-outcome oracle.</p>
+<p>Reproduction is committed in
+<a href="../../../tools/lab/multitenant-rest-preview/index.html">the owned-service runner</a>:
+<code>CRM_REST_WORKTREE=&lt;clean-tree&gt; node tools/lab/multitenant-rest-preview/owned.js</code>
+with modes <code>focused</code>, <code>all</code>, <code>browser</code> and <code>migration</code> after private dependency
+installation/build. CI defaults precede private random-loopback overrides;
+<code>TEST_ENV_FILE=/dev/null</code> is explicit. The
+<a href="../../../tools/lab/multitenant-rest-authority/index.html">archived authority instrument</a>
+uses <code>git archive</code> into scratch and has registered source controls; it is a
+bounded integration instrument, not full runtime or REST completeness.</p>
+<p>Exact logs/commands and owned cleanup:
+<code>externals/work/HANDOFF-codex-rest-integration-20261104.md</code>.
+Final parent logs are <code>/tmp/codex-rest-{full,browser,focused,migration}-final.log</code>,
+<code>/tmp/codex-rest-controls-final.log</code>, <code>/tmp/codex-rest-queue-integration.log</code> and
+<code>/tmp/codex-rest-vacuity-final.log</code>; restored focused output is
+<code>/tmp/codex-rest-focused-restored.log</code> and final publication check is
+<code>/tmp/codex-rest-prcheck-final.log</code>. Lane details remain in the derived, client
+and authority handoffs. Local service credentials, dependency trees, runners,
+scratch and log files are not publication artifacts. Parent supplies all final
+campaign figures above; earlier lane measurements retain their own provenance.</p>
+<p><strong>Still incomplete:</strong> subject/role administration, notices/debug, notifications/
+receipts/egress and assistant routes; full route coverage and client binary execution; arbitrary
+query/plugin/localization shapes; populated import ordering and resource bounds;
+production identity/trust, provisioning/lifecycle, durable events/realtime/
+evaluation, HA and operations. The
+<a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html#next-administration-and-side-effect-implementation-boundary-2026-11-04">next bounded administration packet</a>
+keeps authority writes separate from data-serving privileges. No shipping operator
+release-note change follows from this explicit preview continuation.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
