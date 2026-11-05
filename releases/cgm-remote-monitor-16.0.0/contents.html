@@ -2168,7 +2168,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>4714b1a74</code>.</em></p>
+<p><em>Living document, last changed 2026-11-04 at <code>969dbc74e</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -2218,6 +2218,161 @@ and production/service environments work. The maintainer dispositions #8829
 <p>See the <a href="../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current ecosystem/acceptance record</a>,
 <a href="release-notes.html">draft release notes</a> and <a href="testing-notes.html">cohort collection guide</a>.
 Historical status/measurement sections below retain their dates.</p>
+<h3 id="update-selected-rest-domains-joined-publication-checkpoint-2026-11-04">Update: selected REST domains joined; publication checkpoint (2026-11-04)<a class="headerlink" href="#update-selected-rest-domains-joined-publication-checkpoint-2026-11-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and delivery boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clean local <code>workspace/rest-shared-20261104</code> at <code>ae471ac790455d6e81781f31b505e3c7b838831b</code> joins all five implementation lanes.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04">R39</a>: reproduced actual legacy v1/inherited-v2 data handlers, six API3 collections, safe context/status/discovery and current authority through explicit tenant-domain composition. Default remains entries-only; broader selection requires prepared namespaces and explicit configuration.</td>
+</tr>
+<tr>
+<td>Cumulative nonbrowser6909/80pending, browser684, focused121, migration23, executable7; four semantic red controls restored green; final prcheck OK.</td>
+<td>Parent inspected the committed head and persisted agent measurements. Pending labs and remaining REST rows are incomplete, not programme readiness. Properties/ddata/summary, administration, notifications/assistants, complete route/client replay and operational/realtime work remain. No shipping candidate or operator release-note change.</td>
+</tr>
+<tr>
+<td>Maintainer requested alignment main consolidation and publication commands for the existing CRM draft.</td>
+<td>Alignment records are prepared for main fast-forward. CRM <code>ae471ac7</code> descends from the current published <code>c527fb7e</code>; use a non-force push to existing <code>workspace/multitenant-20261102</code>, updating nightscout/cgm-remote-monitor#8898 rather than opening another PR. Agents do not push. Fresh remote CI/CodeQL and PR-description refresh remain required after maintainer publication.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update-full-rest-implementation-wave-dispatched-2026-11-04">Update: full REST implementation wave dispatched (2026-11-04)<a class="headerlink" href="#update-full-rest-implementation-wave-dispatched-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>The maintainer requested continued implementation toward a full headless
+v1-v3 REST preview. Five code-and-test lanes start from accepted <code>21145d0d</code>;
+the <a href="../../docs/30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.html">REST delivery plan</a>
+defines their actual route families and compatibility exits. These are active
+implementation assignments, not accepted capabilities or new milestone claims.</p>
+<table>
+<thead>
+<tr>
+<th>Owned branch / package</th>
+<th>Deliverable and integration boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>workspace/rest-shared-20261104</code> — shared seams and legacy entries</td>
+<td>Own shared storage/intent/query injection, version-aware admission, runtime composition, test registrations and actual v1/inherited-v2 entries/helpers. Publish a clean minimal domain-port seam early so independent domains can consume it without shared-file contention.</td>
+</tr>
+<tr>
+<td><code>workspace/rest-treatments-20261104</code> — treatments</td>
+<td>Domain schema/adapter and actual legacy/v3 handlers, preserving same-time records, units, retries and batch outcomes; cross-version HTTP differentials and isolation/current-authority controls.</td>
+</tr>
+<tr>
+<td><code>workspace/rest-device-20261104</code> — devicestatus/activity</td>
+<td>Domain schemas/adapters and existing legacy methods plus v3 devicestatus; no invented v3 activity or legacy devicestatus PUT. Preserve prediction extensions, identity/date rules and latest-read semantics.</td>
+</tr>
+<tr>
+<td><code>workspace/rest-profile-food-20261104</code> — profile/food</td>
+<td>Domain schemas/adapters and actual routes across versions, retaining current-profile ordering/pruning, nested data and quickpick behavior. No owner-configuration conflation.</td>
+</tr>
+<tr>
+<td><code>workspace/rest-context-20261104</code> — safe context/identity/settings</td>
+<td>Version-aware credential extraction coordinated with shared admission, safe status/discovery, settings documents and tenant-local snapshot ports. Derived routes require completed domain reads before admission; no process-global context or secrets exposure.</td>
+</tr>
+</tbody>
+</table>
+<p>Each lane owns implementation, focused real-PG/Mongo HTTP comparisons and
+semantic red controls together; cumulative runtime/provider/full/browser/client
+acceptance follows clean joins. New results remain UNMEASURED until run.
+Subject/role administration and notification/assistant side effects remain
+explicit unfinished full-REST work requiring their persisted authority/receipt/
+runtime contracts; initial exclusion is not completion. No production trust,
+owner/operator role, migration-on-start, global PG backend enablement, push or
+change to the shipping 16.0.0 candidate is authorized by this dispatch.</p>
+<h3 id="update-executable-entries-crud-cumulative-acceptance-2026-11-04">Update: executable entries CRUD cumulative acceptance (2026-11-04)<a class="headerlink" href="#update-executable-entries-crud-cumulative-acceptance-2026-11-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and delivery boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local cumulative <code>workspace/runnable-crud-20261104</code> at <code>21145d0d3b396b744618d2e8158bc1b969f8dd0a</code> joins runnable API, entries CRUD and credential-fidelity histories.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04">R38</a>: reproduced full CRUD/history through the actual CLI with real Vault/PG, overlapping two-tenant identifiers, current grants/names, rollback controls and restart persistence. The stale inherited route expectations are corrected; unsupported-route checks remain.</td>
+</tr>
+<tr>
+<td>Combined acceptance: focused83; executable5; nonbrowser6834/80pending; browser684; affected3489/20pending; final prcheck OK.</td>
+<td>Measurements are on the joined head with all three relevant HTTP/process opt-ins enabled; pending labs are not passes and totals overlap. Parent inspected committed changes and persisted logs. Entries-only executable preview is accepted, not all REST, production readiness or M1-M6 completion.</td>
+</tr>
+<tr>
+<td>Unpublished; no change to shipping candidate or operator release notes.</td>
+<td>PR nightscout/cgm-remote-monitor#8898 remains OPEN/draft at <code>c527fb7e</code>; <code>official/dev</code> remains <code>4a482627</code>. Next implementation follows shared seams and domain packages in the <a href="../../docs/30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.html">REST delivery plan</a>; incomplete import/lifecycle/realtime work remains separate. Local reproduction: <code>externals/work/HANDOFF-runnable-crud-20261104.md</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update-runnable-cli-and-entries-crud-implemented-2026-11-04">Update: runnable CLI and entries CRUD implemented (2026-11-04)<a class="headerlink" href="#update-runnable-cli-and-entries-crud-implemented-2026-11-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and delivery boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runnable explicit <code>nightscout multitenant api</code>: local <code>workspace/runnable-multitenant-20261104</code> at <code>93c90520124ff4912d49d37e933ebfe4a5708075</code>.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r37---runnable-api-and-entries-crud-delivery-lanes-2026-11-04">R37</a>: reproduced actual CLI child-process acceptance with PG/RLS and real Vault, explicit credential-reference configuration, read-only startup checks, isolation/current authority, restart and owned shutdown. No single/Mongo boot or API_SECRET dependency in the multitenant process. Only API preview is enabled, not owner/operator or other roles.</td>
+</tr>
+<tr>
+<td>API3 entries CRUD/history: local <code>workspace/entries-crud-20261104</code> at <code>f57138f24d90eec0ff78e5bf2aba5edc46c7c165</code>.</td>
+<td>R37 records actual PUT/PATCH/DELETE/history implementation and lane campaigns, including the separately measured <strong>three failing stale inherited route expectations</strong>. The parent-owned cumulative join will update these after retaining the credential-fidelity test history; independent green suites are not cumulative acceptance.</td>
+</tr>
+<tr>
+<td>Runnable CRUD integration dispatched to new owned <code>workspace/runnable-crud-20261104</code>.</td>
+<td>Join both implementation histories and fidelity <code>9e97d073</code>, prove full CRUD/history through the actual executable with real providers, then run combined regression/browser/control checks. This join remains UNMEASURED. PR nightscout/cgm-remote-monitor#8898 remains draft at <code>c527fb7e</code>; candidate <code>official/dev</code> remains <code>4a482627</code>. No push, merge, all-REST claim or programme milestone promotion; no change to shipping operator release notes.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update-full-rest-delivery-design-integrated-2026-11-04">Update: full REST delivery design integrated (2026-11-04)<a class="headerlink" href="#update-full-rest-delivery-design-integrated-2026-11-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and delivery boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source-grounded <a href="../../docs/30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.html">REST v1-v3 delivery plan</a> committed as <code>34812ac028e47e9afaa6648c1a516f50b6241d4a</code> and integrated into records.</td>
+<td>Read-derived from CRM <code>c527fb7e</code>: actual mounted route families, inherited v1 surface under v2, API3 collections/specials and conditional integrations. Shared tenant service/storage ports retain version-specific parsing, credentials, query, batch/retry and response semantics. No application verification or new REST capability is asserted by this design; documentation/source-reference checks pass.</td>
+</tr>
+<tr>
+<td>Implementation packages have shared-file ownership and collection/domain boundaries across versions, with actual HTTP/client differentials and source controls as exits.</td>
+<td>Active runnable CLI and API3 entries CRUD continue independently. Follow-on shared seams and domain adapters can develop in parallel; touching active shared files waits for accepted clean-head integration or explicit ownership agreement. Management/notification/assistant exclusions remain incomplete until implemented or explicitly dispositioned, not proof of all-REST readiness. No new role enablement, push or candidate merge.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="update-implementation-first-cli-and-crud-dispatch-2026-11-04">Update: implementation-first CLI and CRUD dispatch (2026-11-04)<a class="headerlink" href="#update-implementation-first-cli-and-crud-dispatch-2026-11-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and delivery boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maintainer approved parallel full entries CRUD and runnable <code>nightscout multitenant api</code>, replacing interstitial packet chains with code/test/handoff deliverables.</td>
+<td>Fresh lanes <code>workspace/entries-crud-20261104</code> and <code>workspace/runnable-multitenant-20261104</code> start at accepted <code>c527fb7e</code>. <a href="decisions.html#runnable-preview-and-parallel-crud-delivery-2026-11-04">Decisions</a> approve POST-derived tenant CRUD attribution/refusal and explicit config/environment-bound preview API boot. New implementation/CLI acceptance is UNMEASURED; full-programme milestone criteria remain, but do not gate development of the bounded runtime on full CRUD/HA/registry/owner coverage.</td>
+</tr>
+<tr>
+<td>Test-only operator-prepared fidelity committed locally as <code>9e97d07338108f3b338f754c3a3466c7da8d29a8</code>; clean and unpushed.</td>
+<td>Agent-reproduced, parent handoff-read: credential HTTP33 passing; source-ID control expected200/got401 and missing-name control expected401/got200 go red; lint/syntax/whitespace/final prcheck pass. Full nonbrowser/browser are explicitly UNMEASURED; validate after joining the implementation lanes, not a separate readiness claim. No supported importer, idempotent multi-store rerun or atomic activation is asserted.</td>
+</tr>
+<tr>
+<td>Fresh GitHub read observes draft #8898 now published at accepted cumulative <code>c527fb7e</code>; maintainer publication, not an agent push.</td>
+<td>Its new remote CI/review is not yet asserted here. No new CRUD/runtime implementation has been published, no extra role enabled, and no CRM merge to the 16.0.0 candidate is implied.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="update-patch-packet-characterized-implementation-remains-scoped-2026-11-04">Update: PATCH packet characterized; implementation remains scoped (2026-11-04)<a class="headerlink" href="#update-patch-packet-characterized-implementation-remains-scoped-2026-11-04" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -4394,7 +4549,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4714b1a7409403c91ec2c0f812cd0a21611491f6/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/969dbc74ed8a050f80590732be35801073b9a494/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>

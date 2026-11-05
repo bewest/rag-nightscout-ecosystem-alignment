@@ -2764,6 +2764,8 @@
       
         
       
+        
+      
     
     
     
@@ -4661,7 +4663,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>4714b1a74</code>.</em></p>
+<p><em>Living document, last changed 2026-11-04 at <code>969dbc74e</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -7085,6 +7087,231 @@ random-loopback Mongo8/PG16 and removes helpers; source settings precede
 connection overrides, UTC/seed41574423920/<code>TEST_ENV_FILE=/dev/null</code>.
 Full suites/browser, production PATCH, remaining methods/history and
 M1/M2/M3 promotion remain outside this packet. No push or serving enablement.</p>
+<h3 id="r37---runnable-api-and-entries-crud-delivery-lanes-2026-11-04">R37 - runnable API and entries CRUD delivery lanes (2026-11-04)<a class="headerlink" href="#r37---runnable-api-and-entries-crud-delivery-lanes-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Two independent implementation heads descend from accepted <code>c527fb7e</code>.
+Both are committed locally, not pushed or merged to <code>dev</code>. Candidate
+<code>official/dev</code> was fetched as <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>;
+nightscout/cgm-remote-monitor#8898 remains OPEN/draft at
+<code>c527fb7e0d309b7fc567861a41e8f3862e0922df</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Lane / tree</th>
+<th>Reproduced on that lane</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>workspace/runnable-multitenant-20261104</code>, <code>93c90520124ff4912d49d37e933ebfe4a5708075</code></td>
+<td>Actual executable process suite 4 passing; targeted 45; full nonbrowser 6820 passing / 80 pending; browser 684; final affected 96; final prcheck OK.</td>
+<td><code>nightscout multitenant api</code> uses strict explicit environment-reference config, real PostgreSQL/Vault, read-only catalogue readiness, current authority and owned shutdown. Child-process tests run outside the checkout without Mongo/API_SECRET and cover two tenants, exchange, POST/read/search, restart, refusal/recovery and cleanup. Only the API preview role is enabled; this lane alone retains the older GET/search/POST admission.</td>
+</tr>
+<tr>
+<td><code>workspace/entries-crud-20261104</code>, <code>f57138f24d90eec0ff78e5bf2aba5edc46c7c165</code></td>
+<td>Actual CRUD HTTP 12 passing; focused 45; full nonbrowser 6795 passing / 112 pending; browser 684; final prcheck OK. Separately enabled inherited credential HTTP is <strong>29 passing / 3 failing</strong>.</td>
+<td>Actual API3 addressed PUT/PATCH/DELETE and incremental history use the shared trusted intent seam with real PG/RLS and persisted authority. Single/Mongo behavior is retained. The inherited credential test, deliberately untouched to preserve the separate fidelity lane, has stale 405 expectations for newly admitted routes; it was pending, not green, in this full campaign.</td>
+</tr>
+</tbody>
+</table>
+<p>These are lane-agent reproduced measurements; parent inspected committed heads,
+handoffs and persisted result logs, without independently rerunning the broad
+campaigns. Passing counts overlap and must not be added across campaigns.
+Runtime source controls are red when migration readiness is bypassed (a stale
+catalogue child binds its listener) and when requests are cross-bound (tenant B
+POST returns200/dedup instead of201). CRUD controls are red for stale authority,
+direct PATCH factories, missing owned transaction, wrong tenant and an inclusive
+URL-history boundary. Restored lane tests pass; no cumulative acceptance follows
+from those independent results.</p>
+<p>Parent integration is dispatched in a new owned
+<code>workspace/runnable-crud-20261104</code> lane: preserve both histories, join test-only
+credential fidelity <code>9e97d07338108f3b338f754c3a3466c7da8d29a8</code>, refresh the stale
+route assertions without weakening permissions, then measure full CRUD/history
+through the actual CLI with real Vault/PG and all three relevant opt-ins enabled.
+That join and its full/browser campaign remain <strong>UNMEASURED</strong> here. No all-REST,
+durable registry/importer, owner/operator role, HA or M1-M6 completion claim.</p>
+<p>Commands and exact controls:
+<code>externals/work/HANDOFF-runnable-multitenant-20261104.md</code> and
+<code>externals/work/HANDOFF-entries-crud-20261104.md</code>. Session log prefixes are
+<code>runnable-multitenant-</code> and <code>entries-crud-</code>; runners source <code>tests/ci.test.env</code>
+before connection overrides, use UTC/seed41574423920/<code>TEST_ENV_FILE=/dev/null</code>,
+owned random-loopback PG16/Mongo8 and pinned Vault, and clean their helpers.
+No effect on the shipping single-tenant candidate or its operator release notes.</p>
+<h3 id="r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04">R38 - executable entries CRUD cumulative acceptance on 21145d0d (2026-11-04)<a class="headerlink" href="#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Local <code>workspace/runnable-crud-20261104</code> is clean at
+<code>21145d0d3b396b744618d2e8158bc1b969f8dd0a</code>, preserving runtime <code>93c90520</code>,
+CRUD <code>f57138f2</code> and test-only credential fidelity <code>9e97d073</code> histories.
+Fetched <code>official/dev</code> remains <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>;
+nightscout/cgm-remote-monitor#8898 remains OPEN/draft at <code>c527fb7e</code>.
+No push, candidate merge or release occurred.</p>
+<p>The actual spawned <code>bin/nightscout.js multitenant api</code> now exercises shipping
+API3 POST, replace, PATCH, logical delete, incremental history and permanent
+delete with real Vault and operator-prepared PG/RLS. Two tenants share identifier
+spellings; current grants and exact subject names govern mutations, foreign and
+anonymous writes refuse, and persisted outcomes survive process restart.
+History exposes logical deletion but not a permanently removed document.
+Inherited credential tests now assert the admitted routes' actual outcomes;
+unaddressed POST and unsupported status retain 405. No production source,
+schema, dependency manifest or runtime default changed in this join.</p>
+<table>
+<thead>
+<tr>
+<th>Reproduced campaign on this head</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Focused cumulative HTTP</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Standalone actual executable/PG/Vault</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Complete nonbrowser <code>npm run test:all</code></td>
+<td style="text-align: right;">6834</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Separate complete browser tier</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Affected tiers after official/dev sync</td>
+<td style="text-align: right;">3489</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Backend census</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Nonbrowser tiers: unit2139, DOM205, dependency368/2pending, core319,
+harness93, integration3692/78pending, stress18. All three relevant opt-ins
+(<code>NS_ENTRIES_CRUD_HTTP_TEST</code>, <code>NS_TENANT_CREDENTIAL_HTTP_DOCKER_TEST</code>,
+<code>NS_MULTITENANT_PREVIEW_PROCESS_DOCKER_TEST</code>) were enabled. Other pending
+provider labs are not passes; campaign figures overlap and are not additive.
+Production lint reports0 errors/24 warnings; tier map481 files/8tiers passes;
+final prcheck reports OK and contains official/dev.</p>
+<p>Three in-memory request-path controls each yield0passing/1failing:
+bypassed current authority makes denied PUT return200 instead of403;
+cross-bound tenant B create returns200/dedup instead of201;
+bypassed intent transaction plus post-write failure returns500 but leaves the
+row changed, violating rollback. These are semantic assertion failures, not
+fixture setup failures. Unmutated cumulative campaigns pass.</p>
+<p>These are integration-agent reproduced measurements. Parent inspected the
+committed test changes, clean head, handoff and persisted campaign/control logs;
+it did not repeat the broad campaigns. Commands and owned-service cleanup are
+in <code>externals/work/HANDOFF-runnable-crud-20261104.md</code>; session artifacts have
+prefix <code>runnable-crud-</code>. Source CI defaults precede connection overrides;
+UTC/seed41574423920/<code>TEST_ENV_FILE=/dev/null</code>, owned random-loopback PG/Mongo
+and pinned Vault are used. No owned service remains.</p>
+<p><strong>Accepted boundary: executable API3 entries CRUD preview.</strong> This does not
+complete v1/v2, other collections, pinned client replay, a provisioning/import
+product, owner/operator roles, durable registry/events, HA, production readiness
+or M1-M6. Follow-on domain work is scoped by the
+<a href="../tenancy/multitenant-rest-api-delivery-plan-2026-11-04.html">REST delivery plan</a>.
+The shipping single-tenant candidate and operator release notes are unchanged.</p>
+<h3 id="r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04">R39 - explicitly selected REST domains on ae471ac7 (2026-11-04)<a class="headerlink" href="#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Clean local <code>workspace/rest-shared-20261104</code> at
+<code>ae471ac790455d6e81781f31b505e3c7b838831b</code> joins the bounded treatments,
+devicestatus/activity, profile/food and context/settings deliveries atop R38.
+Fetched <code>official/dev</code> remains <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>;
+nightscout/cgm-remote-monitor#8898 remains OPEN/draft at <code>c527fb7e</code>.
+No push, candidate merge or release occurred.</p>
+<p>The explicit full-domain configuration serves actual shipping v1/inherited-v2
+data handlers and API3 collection handlers with tenant-bound PG/RLS storage.
+Seven selected domains comprise entries, treatments, devicestatus, profile,
+food, activity and settings documents; activity has no invented v3 route.
+Legacy credential extraction, current authority, tenant-local loader/cache
+frames, safe status/discovery and status credential issuance are composed.
+Default executable configuration remains entries-only. Additional domains
+require explicit namespaces and operator preparation, checked read-only before
+listening. No generic PG backend registry switch or single/Mongo fallback.</p>
+<table>
+<thead>
+<tr>
+<th>Reproduced campaign on this head</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coherent full nonbrowser</td>
+<td style="text-align: right;">6909</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Full browser</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Cumulative real PG/Mongo/Vault focused</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Existing migration/M3 actual HTTP</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Actual executable PG/Vault process</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Nonbrowser tiers: unit2152, DOM205, dependency368/2pending, core319,
+harness93, integration3754/78pending, stress18. Pending opt-in labs are not
+passes; the migration/M3 selection was separately enabled above. Counts
+overlap. Lint reports0 errors/24 warnings; tier map491 files/8tiers passes;
+final prcheck reports OK and contains official/dev.</p>
+<p>Four in-memory controls each produce0passing/1failing: bypassed read seam
+returns an empty list rather than the Mongo reference record; cross-bound
+tenant B returns A's synthetic value; bypassed current authority allows revoked
+legacy POST; erased query predicate returns a record instead of an empty list.
+Restored focused121 and subsequent full/browser runs pass without the hooks.
+These are integration-agent reproduced measurements; parent inspected clean
+commits, handoff and persisted logs, without repeating the broad campaigns.</p>
+<p>Reproduction and exact logs: <code>externals/work/HANDOFF-rest-shared-20261104.md</code>;
+<code>rest-shared-full-2.log</code>, <code>rest-shared-browser-2.log</code>,
+<code>rest-shared-composed-restored.log</code>, <code>rest-shared-migration-affected.log</code>,
+<code>rest-shared-process-3.log</code> and <code>rest-shared-prcheck-final.log</code> under
+<code>externals/work/</code>. CI defaults precede connection overrides; owned random
+loopback PG16/Mongo8 and pinned Vault use UTC/seed41574423920 and
+<code>TEST_ENV_FILE=/dev/null</code>. Local runners, logs and dependency links are not
+publication artifacts.</p>
+<p><strong>Incomplete full-REST rows remain:</strong> properties/ddata/summary HTTP admission,
+subject/role administration, notices/debug management, notification receipts/
+egress and assistant integrations, plus complete route/client replay acceptance.
+Imported populated PG insertion-order backfill and physical shared-index
+attribution are UNMEASURED. Realtime, evaluation, connector actors, provisioning,
+owner/operator lifecycle, HA and production readiness remain separate.
+No M1-M6 promotion or shipping operator release-note change follows.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

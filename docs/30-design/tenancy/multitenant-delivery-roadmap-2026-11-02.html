@@ -16,7 +16,7 @@
         <link rel="prev" href="multitenant-delivery-dashboard.html">
       
       
-        <link rel="next" href="nightscout-configuration-and-delegation-2026-09-10.html">
+        <link rel="next" href="multitenant-rest-api-delivery-plan-2026-11-04.html">
       
       
         
@@ -2541,6 +2541,8 @@
       
         
       
+        
+      
     
     
     
@@ -3196,6 +3198,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-rest-api-delivery-plan-2026-11-04.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant REST v1–v3: design and parallel implementation plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5877,9 +5907,15 @@ enabled merely because a dormant slice passes.</p>
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted local cumulative head is <code>c527fb7e</code>;
+promotion is recorded. The latest accepted local cumulative head is <code>ae471ac7</code>;
 published foundations PR nightscout/cgm-remote-monitor#8898 contains
-<code>81bc71e6</code>. The <a href="#accepted-post-provider-and-canonical-continuations-2026-11-04">latest accepted continuations</a>
+<code>c527fb7e</code>. <a href="../remedial/rc-16.0.0-integration-record.html#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04">R39</a>
+joins actual legacy data handlers, API3 collections and safe context with explicit
+domain configuration. Remaining derived/admin/notification/assistant routes and
+client replay are incomplete. <a href="../remedial/rc-16.0.0-integration-record.html#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04">R38</a>
+accepts executable API3 entries CRUD/history with real Vault/PG, current
+authority, tenant isolation and restart persistence; it does not accept all REST
+or production readiness. The <a href="#accepted-post-provider-and-canonical-continuations-2026-11-04">latest accepted continuations</a>
 and <a href="#completion-checkpoints-and-publication-2026-11-04">completion checkpoints</a>
 separate measured integration from complete storage, runtime and preview acceptance.</p>
 <h3 id="accepted-post-provider-and-canonical-continuations-2026-11-04">Accepted POST provider and canonical continuations (2026-11-04)<a class="headerlink" href="#accepted-post-provider-and-canonical-continuations-2026-11-04" title="Permanent link">&para;</a></h3>
@@ -5900,10 +5936,32 @@ results. These local acceptances preserve direct aliases and single/Mongo;
 static maps and test-local loopback provenance do not establish registry
 durability or production transport/service identity.</p>
 <h3 id="completion-checkpoints-and-publication-2026-11-04">Completion checkpoints and publication (2026-11-04)<a class="headerlink" href="#completion-checkpoints-and-publication-2026-11-04" title="Permanent link">&para;</a></h3>
-<p><strong>Finish criteria, not additional completed work.</strong> Each implementation begins
-with a bounded accepted packet and stops on a new policy decision. Applicable
+<p><strong>Finish criteria, not additional completed work.</strong> Each implementation has a
+bounded contract and stops on a new policy decision. Applicable
 full suites, paired source controls and exact-head integration remain required.
 <code>UNMEASURED</code> and a passing historical foundation gate do not close a checkpoint.</p>
+<p><strong>Implementation-first delivery, maintainer direction 2026-11-04:</strong> two
+deliverables ran in parallel from accepted <code>c527fb7e</code>: actual entries CRUD
+in <code>workspace/entries-crud-20261104</code>, and runnable
+<code>nightscout multitenant api</code> in <code>workspace/runnable-multitenant-20261104</code>.
+Each delivered code, tests/controls and one handoff. The
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#runnable-preview-and-parallel-crud-delivery-2026-11-04">approved continuation contracts</a>
+settle current-name/refusal policy and explicit config/environment-bound API
+preview boot. A real child-process CLI test, not another injected-app-only
+fixture, is the runtime acceptance target. R38 joins both clean heads with the
+test-only credential fidelity slice <code>9e97d073</code> and validates the cumulative
+implementation. Do not make production HA, durable registry or all
+owner capabilities prerequisites for implementing the clearly bounded runtime.
+The checkpoints below retain full-programme completion criteria, not an
+instruction to create separate administrative tasks or block independent code.</p>
+<p>The <a href="multitenant-rest-api-delivery-plan-2026-11-04.html">REST v1-v3 delivery plan</a>
+inventories actual mounted routes and divides follow-on implementation by
+collection/domain across versions. Its shared-port owner coordinates legacy
+storage/auth/context injection; entries, treatments, devicestatus/activity,
+profile/food and status/identity/derived-read teams preserve version-specific
+behavior. Notification/assistant side effects remain explicitly tracked, not
+silently counted complete. This read-derived plan does not expand or block the
+accepted CLI/entries CRUD boundary; actual HTTP/client acceptance determines support.</p>
 <table>
 <thead>
 <tr>
@@ -5914,9 +5972,9 @@ full suites, paired source controls and exact-head integration remain required.
 </thead>
 <tbody>
 <tr>
-<td>C1: remaining entries methods, ST-PG</td>
-<td>R36 PATCH packet on <code>c527fb7e</code> is characterized; settle exact-name attribution and nonrepresentable-input status before bounded implementation. Accept one method family before PUT, DELETE and history.</td>
-<td>Actual Mongo/PG HTTP stored-result/response comparison, fresh branch-specific authority, preconditions, rollback/no-events and non-vacuous controls. Stop on changed client behavior, approximate storage semantics or new attribution/error policy.</td>
+<td>C1: entries methods, ST-PG</td>
+<td>R38 accepts API3 entries CRUD/history through the actual executable; retain those tests while adding legacy entries through the REST plan.</td>
+<td>Actual Mongo/PG HTTP comparisons, current authority, preconditions, rollback and controls are measured for API3. Legacy/client replay and resource/import bounds remain separate; this alone does not complete M1.</td>
 </tr>
 <tr>
 <td>C2: import and resource acceptance, ST-PG/MIG-RUNNER</td>
@@ -5929,9 +5987,9 @@ full suites, paired source controls and exact-head integration remain required.
 <td>Stable IDs, current exact names/grants, root-reference/secrets linkage and incomplete-state refusal through existing operator seams, with controls. Test choreography is not a supported importer, idempotent multi-store rerun or atomic activation. No invented authenticator, secret export or lifecycle defaults.</td>
 </tr>
 <tr>
-<td>C4: production trust and lifecycle, TEN-RESOLVE/MT-SECRETS-CONTRACT</td>
-<td>Use C3 inventory to separate runtime service identity, provider credentials/TLS/renewal, canonical mapping lifecycle and private operator/data/owner listener packets.</td>
-<td>Explicit approved trust/auth/recovery contracts, provision/suspend/export/delete boundaries, readonly readiness and shutdown/recovery. Durable allocation/nonreassignment/publication and real transport provenance remain open; a static resolver or development Vault is not acceptance. Completes M2 only with all its requirements.</td>
+<td>C4: runtime and production trust/lifecycle, TEN-RESOLVE/MT-SECRETS-CONTRACT</td>
+<td>R38 accepts explicit-config API boot, prebind readonly checks, owned shutdown and actual two-tenant CLI CRUD. Next extend only tested REST capabilities; production identity/provider renewal, durable mapping lifecycle and other roles remain separate.</td>
+<td>Full M2 still requires approved production trust/auth/recovery, provision/suspend/export/delete, durable allocation/publication and listener boundaries. Static operator config/development Vault is not production acceptance.</td>
 </tr>
 <tr>
 <td>C5: repeatable cumulative gates, TEN-LAB</td>
@@ -5956,7 +6014,7 @@ full suites, paired source controls and exact-head integration remain required.
 <tr>
 <td>C9: records and publication</td>
 <td>Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898.</td>
-<td>Validate/generate records before main fast-forward. CRM local <code>c527fb7e</code> descends from published <code>81bc71e6</code>; use a non-force update of the existing branch, not a second PR or the dirty original worktree. Only the maintainer pushes; fresh remote CI/CodeQL and PR description must cover the new head before upstream readiness is claimed.</td>
+<td>Validate/generate records before main fast-forward. CRM local <code>21145d0d</code> descends from published <code>c527fb7e</code>; use a non-force update of the existing branch, not a second PR or the dirty original worktree. Only the maintainer pushes; fresh remote CI/CodeQL and PR description must cover the new head before upstream readiness is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -5964,9 +6022,11 @@ full suites, paired source controls and exact-head integration remain required.
 write <code>externals/work/HANDOFF-entries-patch-packet-20261104.md</code> and
 <code>externals/work/HANDOFF-provisioning-runtime-packet-20261104.md</code>, respectively.
 PATCH characterization is complete, with original fixture-assumption failures retained;
-production implementation awaits the bounded attribution/refusal policy review.
-Provisioning packet review authorizes only test-owned import-seam fidelity,
-not a production importer or its activation/rerun policy. OIDC remains optional, deferred research;
+the bounded attribution/refusal policy is approved and R38 accepts CRUD implementation.
+Provisioning fidelity is committed as test-only <code>9e97d073</code>; focused33 and
+its controls pass; R38 measures the full/browser cumulative join retaining that
+test history. It is not a production importer or activation/rerun policy.
+OIDC remains optional, deferred research;
 it is not a prerequisite for these checkpoints or for the 16.0.0 candidate.</p>
 <h2 id="1-owner-journeys-and-supported-boundary">1. Owner journeys and supported boundary<a class="headerlink" href="#1-owner-journeys-and-supported-boundary" title="Permanent link">&para;</a></h2>
 <p>The supported deliverable is a <strong>headless, documented, versioned tenant-owner
@@ -6688,7 +6748,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4714b1a7409403c91ec2c0f812cd0a21611491f6/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/969dbc74ed8a050f80590732be35801073b9a494/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -6723,7 +6783,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4714b1a7409403c91ec2c0f812cd0a21611491f6/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/969dbc74ed8a050f80590732be35801073b9a494/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
