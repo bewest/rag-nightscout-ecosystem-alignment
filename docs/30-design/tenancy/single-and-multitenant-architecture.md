@@ -32,25 +32,29 @@ The same color marks shared handler/rule code; different stores and runtime stat
 remain separate. Arrows show request/data flow, not milestone completion.
 
 ```mermaid
-flowchart TB
-  subgraph Single["Existing default: nightscout single"]
-    SClient["Existing clients / browser"] --> SAuth["Site authorization and settings"]
-    SAuth --> SAPI["Shipping v1 / v2 / v3 handlers"]
-    SAPI --> SRules["Domain normalization + shared write-intent rules"]
-    SRules --> SMongo["Existing MongoDB storage and write boundary"]
-    SMongo --> SRuntime["Resident ddata, caches, sockets and alarms"]
-    SRuntime --> SClient
+flowchart LR
+  subgraph Single["Default: nightscout single"]
+    direction TB
+    SClient["Existing clients<br/>and browser"] --> SAuth["Site authorization<br/>and settings"]
+    SAuth --> SAPI["Shipping v1 / v2 / v3<br/>handlers"]
+    SAPI --> SRules["Domain normalization<br/>and write-intent rules"]
+    SRules --> SMongo["Existing MongoDB ports<br/>and write boundary"]
+    SMongo --> SRuntime["Resident ddata and caches<br/>sockets and alarms"]
+    SRuntime --> SReply["Existing client / browser<br/>responses and updates"]
   end
-  subgraph Multi["Explicit preview: nightscout multitenant api"]
-    MClient["Supported client request shapes"] --> Resolve["Host / trusted canonical mapping to stable tenant"]
-    Resolve --> MAuth["Tenant credential verification + current persisted grants"]
-    MAuth --> MAPI["Reused handlers through explicit route admission"]
-    MAPI --> MRules["Reused domain normalization + write-intent rules"]
-    MRules --> MPG["Injected PostgreSQL ports / tenant transaction / forced RLS"]
-    MPG --> Frame["Tenant-local request snapshot and property calculations"]
-    Frame --> MClient
-    MAuth -. "scoped provider operations" .-> Vault["Vault Transit + encrypted PG references"]
+  subgraph Multi["Preview: nightscout multitenant api"]
+    direction TB
+    MClient["Supported client<br/>request shapes"] --> Resolve["Configured Host / trusted edge<br/>to stable tenant identity"]
+    Resolve --> MAuth["Tenant credential verification<br/>current persisted grants"]
+    MAuth --> MAPI["Reused version handlers<br/>explicit route admission"]
+    MAPI --> MRules["Reused domain normalization<br/>and write-intent rules"]
+    MRules --> MPG["Injected PostgreSQL ports<br/>tenant transaction and RLS"]
+    MPG --> Frame["Request-local tenant snapshot<br/>and property calculations"]
+    Frame --> MReply["Version-specific<br/>client response"]
+    MAuth -. "scoped provider calls" .-> Vault["Vault Transit<br/>encrypted PG references"]
   end
+  %% Layout-only link between panels, not a data-flow edge
+  Single ~~~ Multi
   classDef shared fill:#e2eff0,stroke:#1d6b73,color:#17262a
   class SAPI,SRules,MAPI,MRules shared
 ```
@@ -92,25 +96,16 @@ one global backend flag that turns every existing Nightscout feature multitenant
 ## Isolation extends beyond the write boundary
 
 ```mermaid
-sequenceDiagram
-  participant C as Client
-  participant R as Tenant resolver
-  participant A as Credential / current authority
-  participant H as Reused handler + intent rules
-  participant P as PG tenant transaction / RLS
-  C->>R: Request on a configured tenant host
-  R->>A: Stable tenant + presented credential
-  A->>A: Verify tenant-bound credential and read current grants
-  alt invalid credential, missing grant or unavailable authority
-    A-->>C: Version-specific refusal, no handler mutation
-  else authorized operation
-    A->>H: Trusted request context and current subject metadata
-    H->>P: Resolved mutation with explicit tenant binding
-    P->>P: Transaction-local tenant setting and forced RLS
-    P-->>H: Commit or rollback outcome
-    H-->>C: Existing version-specific reply shape
-    Note over H: Local post-commit notification is not a durable interprocess feed
-  end
+flowchart TB
+  Request["Request with Host<br/>and selected credential"] --> Resolve["Resolve stable tenant<br/>verify tenant-bound credential"]
+  Resolve --> Grants{"Current authority<br/>allows operation?"}
+  Grants -->|"no / unavailable"| Deny["Version-specific refusal<br/>no handler mutation"]
+  Grants -->|"yes"| Handler["Reused handler and intent rules<br/>trusted request context"]
+  Handler --> Transaction["Owned PostgreSQL transaction<br/>tenant binding and forced RLS"]
+  Transaction --> Outcome{"Commit or<br/>rollback?"}
+  Outcome -->|"rollback"| Error["Version-specific error<br/>no committed row change"]
+  Outcome -->|"commit"| Reply["Version-specific reply<br/>local post-commit notification"]
+  Reply -.-> Local["A local event is not a<br/>durable interprocess feed"]
 ```
 
 Tenant identity must also bind reads, settings, history/lastModified clocks,
@@ -171,9 +166,16 @@ write seam or a fresh historical comparison of the multitenant preview.
 
 ```mermaid
 flowchart LR
-  Old["v15.0.9 / c6a0d8ed"] -->|"Recorded historical write matrix"| Historic["dev 497d08c9"]
-  Current["Current single/Mongo handlers on ded254b9"] <-->|"Preview HTTP/storage differentials"| Multi["Multitenant PG preview on ded254b9"]
-  Historic -. "Later development; not a fresh historical matrix" .-> Current
+  subgraph Historical["Recorded historical write matrix"]
+    direction TB
+    Old["Nightscout v15.0.9<br/>c6a0d8ed"] -->|"recorded comparison"| Historic["Historical dev<br/>497d08c9"]
+  end
+  subgraph Preview["Current HTTP / storage differential"]
+    direction TB
+    Current["Current single / Mongo handlers<br/>ded254b9"] <-->|"preview differential"| Multi["Multitenant PG preview<br/>ded254b9"]
+  end
+  %% Layout-only link, not a comparison between the experiments
+  Historical ~~~ Preview
 ```
 
 The [comparison contract](../../../releases/cgm-remote-monitor-16.0.0/compat/page.yaml)
