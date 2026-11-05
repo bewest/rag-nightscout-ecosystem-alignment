@@ -25,17 +25,76 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted local cumulative head is `ae471ac7`;
-published foundations PR nightscout/cgm-remote-monitor#8898 contains
-`c527fb7e`. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
+promotion is recorded. The latest accepted local cumulative head is `ded254b9`;
+published foundations PR nightscout/cgm-remote-monitor#8898 remains OPEN/draft
+at `ae471ac7`. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+accepts derived reads, pinned-pattern replay and independent authority probes
+with parent-run cumulative acceptance; this continuation is unpushed. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
 joins actual legacy data handlers, API3 collections and safe context with explicit
-domain configuration. Remaining derived/admin/notification/assistant routes and
-client replay are incomplete. [R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
+domain configuration. Administration, notification/assistant routes and complete route/client-binary
+acceptance remain incomplete. [R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
 accepts executable API3 entries CRUD/history with real Vault/PG, current
 authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### REST continuation and QMS reconciliation (2026-11-04)
+
+**Current delivery wave, authorized by the maintainer.** Continue from accepted
+and published `ae471ac7`, retaining the already incorporated domain deliveries.
+[R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
+and [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
+are the prior acceptance records; their historical publication observations retain
+capture-time meaning. Current-head CI and CodeQL succeeded. The PR body and
+older dashboard metadata require reconciliation with the published implementation.
+
+| Owned lane | Deliverable and acceptance |
+|---|---|
+| `codex/rest-derived-reads-20261104` | Actual properties/ddata/summary HTTP through tenant snapshots; shipping Mongo differential, current permissions for every exposed domain, two-tenant isolation and semantic red controls. |
+| `codex/rest-client-replay-20261104` | Source-pinned synthetic uploader/follower workflows against admitted routes, retry and cross-version history/stored-result checks. Distinguish pattern replay from execution of the client binary. |
+| `codex/rest-authority-review-20261104` | Independent adversarial review and reproduction of credential/current-authority, snapshot isolation and listener boundaries; findings are read-derived until reproduced. |
+| `codex/rest-integration-20261104` and `codex/rest-qms-20261104` | Clean cumulative joins, repeatable queue instruments, full enabled-provider/nonbrowser/browser acceptance, final prcheck, release records and generated views. |
+
+[R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+records acceptance of this bounded wave at local `ded254b9`; full REST and
+production milestone criteria remain open. Implementation/replay use
+GPT-6.1 Sol with high reasoning; independent review uses GPT-6 Astra. Each lane
+owns its worktree/services and preserves single/Mongo. Existing T/D/F/H histories
+and their cherry equivalents are incorporated; do not reapply them. Full REST
+still includes administration, notices/debug and notification/assistant side
+effects. These proceed only against their own persisted authority/receipt/egress
+contracts. Production provisioning, transport identity, lifecycle, durable events,
+realtime/evaluator and operations retain separate acceptance. No milestone or
+shipping candidate change follows from dispatch.
+
+### Next administration and side-effect implementation boundary (2026-11-04)
+
+**Read-derived next packet; new administration is not implemented by this wave.**
+The independent authority review identifies subject update/delete and known-role
+assignment as the next bounded persisted service before enabling HTTP management.
+At CRM `ae471ac7`, shipping `lib/authorization/storage.js:100-125` preserves omitted
+notes/created_at but treats omitted roles as removal of grants; the tenant schemas
+currently lack notes/created_at. An append-only candidate migration and a separately
+authorized writer must preserve stable subject IDs and atomically update display
+name, role links and legacy credential metadata. Serving credentials remain
+read-only for authority tables. Do not expose the existing data listener to operator
+or owner authority as a shortcut.
+
+Characterize prefix rename against existing credential suffix matching; rename is
+not assumed to revoke a stable subject. Verify deletion and grant removal against
+the same previously issued credential on the next protected operation. Known-role
+assignment can be bounded independently; full roles CRUD needs stable `_id` mapping
+because shipping management addresses roles by `_id` while the PG candidate keys
+roles by name. Shipping unresolved/default role semantics also require differential
+characterization before a compatibility facade. This is a concrete next coding/test
+packet, not a reason to rediscover the accepted data-domain graph.
+
+Notification/assistant routes follow their own tenant receipt/egress/runtime ports
+and fake-provider controls. Their explicit exclusions remain unfinished REST rows;
+no production delivery, token issuance/renewal, new authenticator or operator
+lifecycle policy is selected here. Durable events/realtime/evaluator and operational
+preview keep the existing M5/M6 gates.
 
 ### Accepted POST provider and canonical continuations (2026-11-04)
 
@@ -91,13 +150,13 @@ accepted CLI/entries CRUD boundary; actual HTTP/client acceptance determines sup
 |---|---|---|
 | C1: entries methods, ST-PG | R38 accepts API3 entries CRUD/history through the actual executable; retain those tests while adding legacy entries through the REST plan. | Actual Mongo/PG HTTP comparisons, current authority, preconditions, rollback and controls are measured for API3. Legacy/client replay and resource/import bounds remain separate; this alone does not complete M1. |
 | C2: import and resource acceptance, ST-PG/MIG-RUNNER | After identifying the supported source/target contract, measure import/rerun fidelity and bounded queries/writes. Do not equate one-time best-effort import with snapshot or hard-delete reconciliation. | Explicit supported/unsupported shapes, rerun and failure recovery, schema/RLS checks and measured bounds. Numeric limits, consistency/recovery guarantees and unsupported shape policy require decisions before implementation. Completes M1 only with all C1/M0 requirements. |
-| C3: provisioning fidelity, T30-WIRING/TEN-RESOLVE | R35 packet distinguishes existing operator tooling from test hand-seeding; test-only operator import-seam fidelity is delegated. No credential/tenant provisioning-import command exists at the accepted head. | Stable IDs, current exact names/grants, root-reference/secrets linkage and incomplete-state refusal through existing operator seams, with controls. Test choreography is not a supported importer, idempotent multi-store rerun or atomic activation. No invented authenticator, secret export or lifecycle defaults. |
+| C3: provisioning fidelity, T30-WIRING/TEN-RESOLVE | R35 distinguishes existing operator tooling from test hand-seeding; test-only fidelity is incorporated through R38. No credential/tenant provisioning-import command exists at the accepted head. | Stable IDs, current exact names/grants, root-reference/secrets linkage and incomplete-state refusal through existing operator seams, with controls. Test choreography is not a supported importer, idempotent multi-store rerun or atomic activation. No invented authenticator, secret export or lifecycle defaults. |
 | C4: runtime and production trust/lifecycle, TEN-RESOLVE/MT-SECRETS-CONTRACT | R38 accepts explicit-config API boot, prebind readonly checks, owned shutdown and actual two-tenant CLI CRUD. Next extend only tested REST capabilities; production identity/provider renewal, durable mapping lifecycle and other roles remain separate. | Full M2 still requires approved production trust/auth/recovery, provision/suspend/export/delete, durable allocation/publication and listener boundaries. Static operator config/development Vault is not production acceptance. |
 | C5: repeatable cumulative gates, TEN-LAB | Turn accepted combined fixtures into read-only queue instruments with paired controls; select the complete M1/M2 set after C1-C4. Existing no-gate markers remain until real instruments exist. | `make queue-status` with relevant integrations, non-vacuous controls, exact-head full suites and unsafe-schema/isolation/current-authority acceptance. Only then assess M3 promotion; adding a passing narrow gate alone is insufficient. |
-| C6: client surface, M4 | Inventory pinned uploader/follower versions and operations, then implement/replay one collection/route/retry family at a time; promotion follows M3. | Reproducible client replay and stored-result comparison, legacy defaults unchanged, paired retry/identity/response controls. Source inspection is not replay. |
+| C6: client surface, M4 | R40 accepts source-pinned synthetic NightscoutKit/LoopFollow patterns for admitted domains. Extend route/client coverage one workflow at a time; client binary execution remains unmeasured and promotion follows M3. | Reproducible client replay and stored-result comparison, legacy defaults unchanged, paired retry/identity/response controls. Source inspection is not replay. |
 | C7: realtime recovery, M5 | Contract work can run independently: reconcile D6/D-EVENT durable checkpoints, commit coupling, replay/duplicates/deletes/config invalidation before wiring a consumer. | Approved ordering/retention/recovery contract, kill/restart replay equivalence, current socket authorization and tenant-local evaluator/cache state. No in-process bus or timer substitutes for durability. |
 | C8: operational preview, M6 | Join accepted M4/M5 with explicitly chosen owner capabilities; one backup/restore, upgrade/rollback, export/deletion or resource/egress packet at a time. | Synthetic failure/recovery evidence and final immutable-tree review; real-data/human identity, production traffic, serving-role enablement and publication remain separate explicit approvals. |
-| C9: records and publication | Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898. | Validate/generate records before main fast-forward. CRM local `21145d0d` descends from published `c527fb7e`; use a non-force update of the existing branch, not a second PR or the dirty original worktree. Only the maintainer pushes; fresh remote CI/CodeQL and PR description must cover the new head before upstream readiness is claimed. |
+| C9: records and publication | Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898. | Validate/generate records before main fast-forward. Published #8898 is OPEN/draft at accepted `ae471ac7`, with successful current-head CI/CodeQL. Refresh its draft description and reconcile records. Continue accepted slices on the existing PR through maintainer-operated non-force publication; do not use the dirty original worktree or open a duplicate PR. |
 
 Packet ownership is local and resumable: the entries and provisioning lanes
 write `externals/work/HANDOFF-entries-patch-packet-20261104.md` and

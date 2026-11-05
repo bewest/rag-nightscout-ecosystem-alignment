@@ -2968,3 +2968,13 @@ controls:
     proves: >
       the same containment against official/master (v15.0.9), which does
       not carry #8870, exits 1 (measured 2026-10-27).
+
+  - gate: node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6
+    control: node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6 --control authority
+    positive-control: node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6
+    control-kind: integration
+    proves: >
+      Remove current persisted grant checks only in an archived scratch tree;
+      revoked POST and unavailable-authority GET incorrectly return success,
+      failing actual HTTP assertions. Audience ablation is independently
+      exercised and recorded as a second control. No shipping worktree writes.

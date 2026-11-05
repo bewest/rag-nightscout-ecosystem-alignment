@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 358 |
-| runnable gates | 417 |
+| runnable gates | 418 |
 | explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 786 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 787 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8401,7 +8401,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `done` | `-` | n/a | 0 run + 1 no-gate |
 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
-| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `workspace/canonical-preview-20261104` | n/a | 0 run + 1 no-gate |
+| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261104` | n/a | 1 run + 1 no-gate |
 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -8462,7 +8462,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **What an operator sees.** Dormant integration work; single and released behavior unchanged.
 
-**Why `n/a`.** local integration, no enabled hosted role
+**Why `n/a`.** explicit API preview, no production multitenant acceptance
 
 **Gates.**
 
@@ -8476,7 +8476,7 @@ alarm-readiness items, and the seam branch refresh.
   - Dormant read subset: 4 refusal/parameterization unit checks plus 6 real PG/MongoDB differential checks for supported AST, typed ids, count, sort/paging, findOne/normalization and tenant isolation.
 - `[integration]` `cd externals/work/crm-multitenant-20261102 && test -n "$NS_TEST_POSTGRES_ADMIN_URI" && test -n "$CUSTOMCONNSTR_mongo" && NODE_ENV=test node_modules/.bin/mocha --fail-zero --timeout 30000 --exit --require ./tests/hooks.js tests/postgres-entries-write.test.js`
   - Dormant write/v3 intent subset: 1 refusal plus 20 real checks for scalar writes, merge upserts, changing replacements, batch errors, every-form identities, savepoints, actual lock/identifier races, shared v3 rules and post-commit events. Order-only replacement counts follow JSONB equality; exact BSON-order parity is not required.
-- **NO GATE** &mdash; Binding/pooler, entries schema/RLS and one-time API importer slices are measured, not full M1 acceptance. Latest accepted local tip c527fb7e includes actual entries search/POST with real Vault/PG HTTP and canonical ingress (R29-R34). Existing commands above target the older foundation lane, not the whole latest composition. Full v3/history import coverage, complete bulk/replace/every-form and v1/socket intent acceptance, route validation/current grants, per-database/cache/socket events, remaining methods, cursor caps and full query parity remain. The offset-paginated import is not snapshot-isolated and hard deletes have no history tombstone. Unsupported shapes explicitly refuse. No PG availability flag or hosted role is enabled.
+- **NO GATE** &mdash; Binding/pooler, entries schema/RLS and one-time API importer slices are measured, not full M1 acceptance. Published accepted tip ae471ac7 joins executable API3 entries CRUD/history and explicitly selected legacy/API3 REST domains (R38/R39). Existing commands above target the older foundation lane, not the whole latest composition. Complete route/client replay, import/rerun fidelity and populated-table insertion-order backfill, supported query/resource bounds and durable cache/socket events remain. Derived HTTP reads are active in a separate lane; new results are UNMEASURED. The offset-paginated import is not snapshot-isolated and hard deletes have no history tombstone. Unsupported shapes explicitly refuse. The global backend registry remains MongoDB-only; the explicitly configured multitenant API preview is separate from production acceptance.
 
 **Evidence.**
 
@@ -8484,7 +8484,7 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/postgres-foundation/README.md`
 - `tools/lab/postgres-foundation/results.json`
 
-**Notes.** Current 2026-11-04: R29-R34 in the release integration record capture bounded entries POST and real-provider/canonical HTTP acceptance at c527fb7e. Fresh PATCH characterization packet uses that accepted head; PUT/DELETE/history, import and resource criteria remain open. Roadmap completion checkpoints scope each next slice and its controls. Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled-cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim. Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods: 158 passing, no pending across 11 focused files, with 8 real differential write checks and 1 refusal check. Actual two-backend lock contention guards disjoint patches and same-field restoration. Identity-kind, no-op-count and stale-snapshot mutations fail; restored implementation passes. ESLint, 462-file tier classification and existing write-boundary check pass. No full write-intent/event integration or backend promotion. Parallel session owns MIG-RUNNER, settings/subject policy and secrets. Integrated secrets commits through fec19ba5 via merge 6943dccb: 230 passing, no pending across 17 files; 465 test files classify. Existing unit/DOM/core/harness tiers pass after building local bundles. Dependency tier has 368 passing, 1 pending, 1 failure from unchanged har-validator resolving ancestor-installed AJV 6.12.6. No full-suite pass. Continuation 14ae16db plus a8dd162d pruning acceptance: 878 passing, no pending across 31 files including all shared write-intent suites and real PG/MongoDB/Vault. Changed entries/transaction checks pass 28/28 against MongoDB 5.0.32 and 8.3.9. Measured merge upsert/batch/every-form and changing replacement subsets; dormant v3 shared rules retain POST replacement and PATCH merge, with events only after an owned COMMIT. Actual unique-index wait/rematch and three implementation mutations pass their controls. JSON-equal replacements owing exact counts refuse without BSON field-order metadata. No catalogue change, upstream push or backend promotion. Recovery 78b915ab integrated via 0de90852; same combined command now passes 879 tests without pending, including all 34 secrets checks. Current local acceptance: the user-approved contract is JSONB logical equality; the inspected client corpus uses named fields and no known client depends on BSON key order. Order-only replacements may report modifiedCount 0 in PostgreSQL where Mongo reports 1; the API3 update response does not expose that count. M1 entries schema candidate passes 13 MIG-RUNNER integration checks; entries read/write/filter/identity/ connection suites pass 45. Import, full API/runtime compatibility and promotion remain open.
+**Notes.** Current 2026-11-04: R38/R39 capture executable entries CRUD/history and selected legacy/API3 domains at published draft head ae471ac7. Derived-read implementation and pinned-client replay proceed from that clean head; import, complete compatibility and resource criteria remain open. No M1-M6 promotion follows from these bounded slices. Roadmap completion checkpoints scope each next slice and its controls. Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session-scoped made the pooled-cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim. Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods: 158 passing, no pending across 11 focused files, with 8 real differential write checks and 1 refusal check. Actual two-backend lock contention guards disjoint patches and same-field restoration. Identity-kind, no-op-count and stale-snapshot mutations fail; restored implementation passes. ESLint, 462-file tier classification and existing write-boundary check pass. No full write-intent/event integration or backend promotion. Parallel session owns MIG-RUNNER, settings/subject policy and secrets. Integrated secrets commits through fec19ba5 via merge 6943dccb: 230 passing, no pending across 17 files; 465 test files classify. Existing unit/DOM/core/harness tiers pass after building local bundles. Dependency tier has 368 passing, 1 pending, 1 failure from unchanged har-validator resolving ancestor-installed AJV 6.12.6. No full-suite pass. Continuation 14ae16db plus a8dd162d pruning acceptance: 878 passing, no pending across 31 files including all shared write-intent suites and real PG/MongoDB/Vault. Changed entries/transaction checks pass 28/28 against MongoDB 5.0.32 and 8.3.9. Measured merge upsert/batch/every-form and changing replacement subsets; dormant v3 shared rules retain POST replacement and PATCH merge, with events only after an owned COMMIT. Actual unique-index wait/rematch and three implementation mutations pass their controls. JSON-equal replacements owing exact counts refuse without BSON field-order metadata. No catalogue change, upstream push or backend promotion. Recovery 78b915ab integrated via 0de90852; same combined command now passes 879 tests without pending, including all 34 secrets checks. Current local acceptance: the user-approved contract is JSONB logical equality; the inspected client corpus uses named fields and no known client depends on BSON key order. Order-only replacements may report modifiedCount 0 in PostgreSQL where Mongo reports 1; the API3 update response does not expose that count. M1 entries schema candidate passes 13 MIG-RUNNER integration checks; entries read/write/filter/identity/ connection suites pass 45. Import, full API/runtime compatibility and promotion remain open.
 
 ### `MT-CONFIG-MIN` &mdash; Reviewed initial tenant configuration and headless owner API contract
 
@@ -8563,19 +8563,19 @@ alarm-readiness items, and the seam branch refresh.
 
 **Blast radius.** Host-to-tenant resolution, scoped configuration and private operator provision/suspend/export/delete. No public signup or human IdP required.
 
-**What an operator sees.** Hosted synthetic lab only; single unchanged.
+**What an operator sees.** Explicit multitenant API preview; single unchanged.
 
 **Why `n/a`.** local integration
 
 **Gates.**
 
-- **NO GATE** &mdash; Provider-neutral resolution and current-authority data/exchange slices are measured through R34 at c527fb7e, including canonical Host with real-provider HTTP, not complete M2 lifecycle acceptance. Static maps and test-local trust do not provide durable allocation, production transport identity or versioned publication. Deployment provisioning, suspension and listener composition remain. Required controls: unknown/suspended tenants refuse, untrusted forwarded hosts cannot select tenants, private operator routes never answer on the data/owner plane.
+- **NO GATE** &mdash; Provider-neutral resolution and current-authority data/exchange slices are measured through R39 at ae471ac7, including canonical Host and explicit API executable with real-provider HTTP; complete M2 lifecycle acceptance remains open. Static maps and test-local trust do not provide durable allocation, production transport identity or versioned publication. Deployment provisioning, suspension and listener composition remain. Required controls: unknown/suspended tenants refuse, untrusted forwarded hosts cannot select tenants, private operator routes never answer on the data/owner plane.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** M2; canonical resolver at 468c41dc and cumulative provider/POST at c527fb7e are bounded accepted slices. Provisioning/runtime-identity packet inventories the next operator import/fidelity and identity boundaries; test-only fidelity is delegated. Dependencies remain open; operator-only lifecycle, single unchanged.
+**Notes.** M2; canonical resolver, real-provider HTTP and explicit API runtime compose at published draft ae471ac7 (R38/R39). Test-only credential fidelity is incorporated; supported provisioning/import, production identity and lifecycle remain open. Dependencies remain open; operator-only lifecycle, single unchanged.
 
 ### `TEN-LAB` &mdash; Two-tenant entries HTTP lab on PostgreSQL
 
@@ -8590,7 +8590,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer |
 | blocks on | `ST-PG`, `T30-WIRING`, `MIG-RUNNER` |
 
-**Blast radius.** Disposable synthetic two-tenant HTTP deployment with pinned server and data/configuration/credential checks. Not full hosted preview acceptance.
+**Blast radius.** Disposable synthetic two-tenant HTTP deployment with pinned server and data/configuration/credential checks. Not full multitenant preview acceptance.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8598,13 +8598,13 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Requires M1 entries adapter and M2 tenant control-plane integration. Real HTTP v3 writes/reads and stored outcomes, same IDs across tenants, own-tenant positives and cross-tenant negatives, stale-schema refusal. v1, sockets and evaluator are later cumulative acceptance milestones.
+- **NO GATE** &mdash; Requires M1 entries adapter and M2 tenant control-plane integration. Real HTTP v3 writes/reads and stored outcomes, same IDs across tenants, own-tenant positives and cross-tenant negatives, stale-schema refusal. R39 accepts selected legacy/v3 domains; complete route/client replay, sockets and evaluator remain separate acceptance milestones.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** M3; R34 accepts bounded canonical/provider/POST composition at c527fb7e, not full preview. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion. Local accepted ancestry alone is insufficient.
+**Notes.** M3; R39 accepts selected REST domains at published draft ae471ac7, not full preview. Derived reads and client replay are active alongside independent authority review. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion; ancestry alone is insufficient.
 
 ### `MT-RUNTIME-PLAN` &mdash; Continuous v1/v3, realtime and evaluator integration contracts
 
@@ -8904,15 +8904,15 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `workspace/canonical-preview-20261104` |
+| branch | `codex/rest-integration-20261104` |
 | base | `official/dev@4a482627` |
-| worktree | `externals/work/crm-canonical-preview-20261104` |
+| worktree | `externals/work/crm-codex-rest-integration-20261104` |
 | semver | `n/a` |
 | review | SECURITY |
 | register | `BF-25` |
 | blocks on | `TEN-RESOLVE`, `MT-SECRETS-CONTRACT` |
 
-**Blast radius.** Dormant tenant-app credential/exchange composition, private API3 authentication binding, secrets legacy verification and persisted tenant authority. Single-site authorization remains unchanged.
+**Blast radius.** Explicit API preview credential/exchange composition, version-aware authentication, secrets legacy verification, persisted current authority and tenant-local REST snapshots. Single-site authorization remains unchanged.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -8920,15 +8920,18 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Bounded agent-run R25-R34 campaigns measure current legacy verification, exchange and entries GET/search/POST, including real Vault/PG HTTP and canonical ingress at c527fb7e. No complete production runtime gate is wired into the queue; loopback test-local trust is not production transport provenance. Required D14 property: A's token presented against tenant B's host fails as a SIGNATURE failure, not a claim check - with a control where the same token against A's own host succeeds, so the failure is known to come from the key and not from everything failing.
+- `[integration]` `node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6`
+  - Archived immutable CRM current-authority HTTP probe on owned PG: cross-tenant audience, same-token committed grant revocation, outage/no-handler-effects, credential precedence and unsafe mutation privilege refusal. Synthetic crypto; not full REST, Vault, production runtime or milestone acceptance.
+- **NO GATE** &mdash; R40 parent-run campaigns accept derived REST and pinned-pattern replay atop R38/R39 at local ded254b9, including actual CLI/PG/Vault current-authority composition. The bounded archived authority probe is wired separately; no complete production runtime gate exists; loopback test-local trust is not production transport provenance. Required D14 property: A's token presented against tenant B's host fails as a SIGNATURE failure, not a claim check - with a control where the same token against A's own host succeeds, so the failure is known to come from the key and not from everything failing.
 
 **Evidence.**
 
+- `tools/lab/multitenant-rest-authority/README.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** Current 2026-11-04: partial implementation at c527fb7e, R25-R34. Real- provider/canonical HTTP join is accepted; R35 inventories existing operator provisioning/import and production runtime identity. Test-only import-seam fidelity is delegated; no supported credential importer exists. This in- progress claim does not complete TEN-RESOLVE dependencies or promote M2/M3; production provisioning, runtime identity and listeners remain open. No OIDC, client protocol or role enablement is inferred. 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS- CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA- CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current- dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
+**Notes.** Current 2026-11-04: R40 accepts derived reads and source-pinned client patterns with parent-run cumulative evidence at local ded254b9; published draft remains ae471ac7. Archived authority probe is a bounded PASS with NON- VACUOUS control; complete production runtime is open. Test-only credential fidelity is incorporated; no supported credential importer or atomic tenant activation is implied. This in-progress claim does not complete TEN-RESOLVE dependencies or promote M2/M3; production provisioning, runtime identity and listeners remain open. No OIDC, client protocol or role enablement is inferred. 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS-CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current-dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant- context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
 
 ### `T30-TENANT-ADMIN` &mdash; cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)
 

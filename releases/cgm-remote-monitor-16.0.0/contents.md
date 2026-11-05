@@ -22,6 +22,23 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: derived reads and pinned-pattern integration (2026-11-04)
+
+| Work / state | Evidence and next acceptance |
+|---|---|
+| Local `codex/rest-integration-20261104` at `ded254b9acf5a94e3a4fd99c85b23e1413fa08b6` joins derived reads, pinned client patterns and independent authority probes. | [R40](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04) owns parent-reproduced full/browser/focused/migration and semantic control figures. Actual CLI/PG/Vault composition includes derived reads, current revocation, two tenants and restart. Extracted client replay is not client binary execution. |
+| Added a read-only archived authority queue instrument with registered controls and reusable owned-service acceptance runner. | `T30-WIRING` has a bounded integration PASS and NON-VACUOUS control; its complete production-runtime no-gate remains. Parent corrected an inherited process summary-exclusion assertion after retaining its failing campaign, and strengthened response-ID consumption. Milestone claims remain unchanged. |
+| Reproduced QMS validation passes: queue validation/generation, queue-check, docs-links and site-check. | Selected archived authority integration and NON-VACUOUS controls pass separately. App final prcheck reports OK and contains refreshed official/dev; owned service cleanup is complete. QMS commit remains local for maintainer review. |
+| Local/unpushed continuation of existing OPEN/draft #8898; published head remains `ae471ac7`. | [Draft description update](../../reports/pr8898-rest-update.draft.md) and [draft QMS PR body](../../reports/rest-qms-update.draft.md) are prepared, not sent. Main's pre-existing draft files are untouched. Only the maintainer publishes; fresh remote checks must cover a subsequent CRM head. No candidate merge, production lifecycle or operator release-note change. Local handoff: `externals/work/HANDOFF-codex-rest-integration-20261104.md`. |
+
+### Update: published REST head and continuation lanes (2026-11-04)
+
+| Work / state | Evidence and next acceptance |
+|---|---|
+| Live #8898 is OPEN/draft at `ae471ac790455d6e81781f31b505e3c7b838831b`; it is not merged to `official/dev` or released. | Read-derived live GitHub metadata; this is the R39 accepted cumulative implementation. Prior local-only publication observations below retain their capture-time meaning. Current-head CI and CodeQL succeeded; default CI is not every opt-in provider campaign. |
+| Maintainer authorized derived reads, pinned-client replay and independent authority review in parallel, coordinated by isolated integration/QMS lanes. | [Lane ownership and acceptance](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04). New delivery results are UNMEASURED; already incorporated domain/cherry histories must not be applied twice. No operator-visible default, candidate or milestone change. |
+| Reproduced targeted queue status: ST-PG unit gate passes; remaining selected configuration/secrets/runner/resolution/wiring/lab cards are UNMEASURED. | Command: `python3 tools/queue/status.py --id ST-PG --id MT-CONFIG-MIN --id MT-SECRETS-CONTRACT --id MIG-RUNNER --id TEN-RESOLVE --id T30-WIRING --id TEN-LAB`. Integration gates skipped explicitly. Update bounded instruments and evidence without claiming full M1/M2 or M3 promotion. |
+
 ### Update: selected REST domains joined; publication checkpoint (2026-11-04)
 
 | Work / state | Evidence and delivery boundary |

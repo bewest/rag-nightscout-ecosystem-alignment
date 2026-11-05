@@ -7,6 +7,13 @@ surfaces below. Implement by **collection/domain across versions**, reusing ship
 query construction and write rules. Do not build three new APIs or wait for a universal
 framework, production registry, owner lifecycle or a chain of administrative packets.
 
+Current delivery status lives in the [dashboard](multitenant-delivery-dashboard.md)
+and [release acceptance record](../remedial/rc-16.0.0-integration-record.md).
+The source inventory and initial package assignments below retain their captured
+baseline; already accepted domain implementations must not be rebuilt from those
+historical missing/pending labels. The [continuation lanes](multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04)
+carry derived reads, pinned-pattern replay and independent authority review.
+
 ## 1. Basis and boundaries
 
 All source findings in this document are **read-derived** from
