@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: published visualization and PR CodeQL audit (2026-11-04)
+
+| Work / state | Basis and boundary |
+|---|---|
+| Alignment architecture/visualization changes published on main `cdc5ade5e14fd06d3e60194243575652c9033264`; CI run 41960570913 succeeded. | Read-derived gh-pages read-back: build commit `8d5d98d56a703edb6d494bb41bcbca8baacfee63` names that source and build time `2026-11-05T03:18:41Z`. No application release or milestone promotion. |
+| Reviewed current PR CodeQL comments and merge-ref alerts. | [The bounded audit and proposed follow-up](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#published-rest-checkpoint-codeql-review-2026-11-04) records open production alerts 147 and 148, inherited compatibility constraints, and proposed tenant referrer-header parity. No application patch, dismissal, comment or risk acceptance was performed. Isolated status checks pass 8; the initial mixed boot-fixture invocation fails as recorded there. |
+| Audit document checks pass: `make queue-check`, `make docs-links`, `git diff --check`. | Initial sandbox execution prevented the link gate spawning git (`EPERM`); the authorized rerun passes. No rich-page source or generated view changed in this audit, so no new site-build or full application-suite result is claimed. |
+
 ### Update: multitenant progress and architecture visualizations reconciled (2026-11-04)
 
 | Work / state | Basis and boundary |

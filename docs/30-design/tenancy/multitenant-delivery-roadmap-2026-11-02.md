@@ -609,6 +609,49 @@ algorithm change or rate-limiting acceptance follows. API read-back confirms
 all three dismissed; subsequent PR check read-back reports CodeQL and Tests
 pass SUCCESS. This is disposition of the existing analysis, not a new scan.
 
+### Published REST checkpoint CodeQL review (2026-11-04)
+
+Read-derived live review of [#8898](https://github.com/nightscout/cgm-remote-monitor/pull/8898)
+at `ded254b9acf5a94e3a4fd99c85b23e1413fa08b6`, against `official/dev`
+`4a482627bfdafb1fef8dcbe0ac6c484811cae563`: CodeQL workflow success is
+completion of analysis, not disposition of its findings. The PR review has one
+unresolved inline production thread, for alert 147. Querying open alerts on
+`refs/pull/8898/merge` additionally finds 148; the branch-ref query is empty
+because these instances belong to the PR merge analysis, not that branch ref.
+Both instances are open on merge commit
+`c6174f6037137c6e119713996cb6dc4dd99f30f1`. No dismissal, review reply or risk
+acceptance was performed in this review.
+
+| Finding | Source assessment (read-derived) | Recommended PR follow-up |
+|---|---|---|
+| [147: sensitive GET query](https://github.com/nightscout/cgm-remote-monitor/security/code-scanning/147), `lib/api/status.js:34` | The extraction expression is inherited from base `status.js:29`; tag 15.0.9 also accepted query credentials at `:22`. The tenant status callback deliberately preserves issuance compatibility. Removing only this fallback changes issuance while leaving other query authentication paths. URL credentials can still reach history and upstream logs despite `no-store`. | Keep the finding open pending explicit compatibility/security disposition. Coordinate extraction, issuance, client/shared-link migration and tests before retiring query carriers. Inheritance does not make this a false positive. |
+| [148: missing rate limiting](https://github.com/nightscout/cgm-remote-monitor/security/code-scanning/148), `lib/api/status.js:22` | Failed-authentication delay in `lib/authorization/index.js` is not aggregate request limiting. Token extraction precedes that delay; valid traffic and tenant exchange have no demonstrated request-rate protection. This is source review, not a reproduced load or deployment claim. | Establish trusted client identification, tenant separation, pre-verification limits and distributed-worker behavior; measure normal polling/bursts before choosing limits. An arbitrary status-only limiter is not acceptance of the broader authentication surface. |
+
+A bounded compatibility-preserving adjustment is recommended: set
+`Referrer-Policy: no-referrer` in tenant `base()`
+(`lib/server/tenant-app/index.js:83–92`), matching the single app's
+`lib/server/app.js:66`. Verify tenant/operator success, refusal, error and
+status-redirect responses; removing the header must make the header check fail,
+then restore and rerun. This is a proposed patch, **UNMEASURED**, not implemented
+or ready for publication. It reduces referrer exposure but resolves neither
+147's residual URL exposure nor 148. The factories remain an explicit preview;
+this observation is not evidence of an exposed deployment.
+
+Reproduced on unchanged `ded254b9`: isolated
+`mocha --exit tests/status-headers.test.js` passes **8 / 0 failing**, including
+header/query compatibility and non-cacheable refusals. These existing checks
+were not ablated in this audit and do not establish rate-limit or referrer
+protection. An initial direct combined invocation with `tests/api.status.test.js`
+gave **8 passing / 1 failing**: its boot hook raised
+`TypeError: Cannot read properties of undefined (reading 'sendJSONStatus')`
+in `lib/api/experiments/index.js:9`. That invocation was stopped; it is not a
+replacement for the owned-service R40 campaign and is not reported green.
+No application source changed and no new full-suite result is claimed.
+
+The [CodeQL query guidance](https://codeql.github.com/codeql-query-help/javascript/js-sensitive-get-query/)
+explains why URL credentials remain sensitive. Existing fixture dismissals in
+the earlier checkpoint above do not disposition these production findings.
+
 #### First dispatch packets (historical 2026-11-03)
 
 Use **two implementation lanes at most initially**, plus the coordinator.
