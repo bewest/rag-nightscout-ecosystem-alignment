@@ -2985,7 +2985,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Published exchange checkpoint CodeQL disposition (2026-11-04)">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#published-rest-checkpoint-codeql-review-2026-11-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Published REST checkpoint CodeQL review (2026-11-04)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Published REST checkpoint CodeQL review (2026-11-04)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -5705,7 +5716,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Published exchange checkpoint CodeQL disposition (2026-11-04)">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#published-rest-checkpoint-codeql-review-2026-11-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Published REST checkpoint CodeQL review (2026-11-04)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Published REST checkpoint CodeQL review (2026-11-04)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -6666,6 +6688,60 @@ keys, not the reference hash. No query/path exclusion, production suppression,
 algorithm change or rate-limiting acceptance follows. API read-back confirms
 all three dismissed; subsequent PR check read-back reports CodeQL and Tests
 pass SUCCESS. This is disposition of the existing analysis, not a new scan.</p>
+<h3 id="published-rest-checkpoint-codeql-review-2026-11-04">Published REST checkpoint CodeQL review (2026-11-04)<a class="headerlink" href="#published-rest-checkpoint-codeql-review-2026-11-04" title="Permanent link">&para;</a></h3>
+<p>Read-derived live review of <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8898">#8898</a>
+at <code>ded254b9acf5a94e3a4fd99c85b23e1413fa08b6</code>, against <code>official/dev</code>
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>: CodeQL workflow success is
+completion of analysis, not disposition of its findings. The PR review has one
+unresolved inline production thread, for alert 147. Querying open alerts on
+<code>refs/pull/8898/merge</code> additionally finds 148; the branch-ref query is empty
+because these instances belong to the PR merge analysis, not that branch ref.
+Both instances are open on merge commit
+<code>c6174f6037137c6e119713996cb6dc4dd99f30f1</code>. No dismissal, review reply or risk
+acceptance was performed in this review.</p>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Source assessment (read-derived)</th>
+<th>Recommended PR follow-up</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/nightscout/cgm-remote-monitor/security/code-scanning/147">147: sensitive GET query</a>, <code>lib/api/status.js:34</code></td>
+<td>The extraction expression is inherited from base <code>status.js:29</code>; tag 15.0.9 also accepted query credentials at <code>:22</code>. The tenant status callback deliberately preserves issuance compatibility. Removing only this fallback changes issuance while leaving other query authentication paths. URL credentials can still reach history and upstream logs despite <code>no-store</code>.</td>
+<td>Keep the finding open pending explicit compatibility/security disposition. Coordinate extraction, issuance, client/shared-link migration and tests before retiring query carriers. Inheritance does not make this a false positive.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nightscout/cgm-remote-monitor/security/code-scanning/148">148: missing rate limiting</a>, <code>lib/api/status.js:22</code></td>
+<td>Failed-authentication delay in <code>lib/authorization/index.js</code> is not aggregate request limiting. Token extraction precedes that delay; valid traffic and tenant exchange have no demonstrated request-rate protection. This is source review, not a reproduced load or deployment claim.</td>
+<td>Establish trusted client identification, tenant separation, pre-verification limits and distributed-worker behavior; measure normal polling/bursts before choosing limits. An arbitrary status-only limiter is not acceptance of the broader authentication surface.</td>
+</tr>
+</tbody>
+</table>
+<p>A bounded compatibility-preserving adjustment is recommended: set
+<code>Referrer-Policy: no-referrer</code> in tenant <code>base()</code>
+(<code>lib/server/tenant-app/index.js:83–92</code>), matching the single app's
+<code>lib/server/app.js:66</code>. Verify tenant/operator success, refusal, error and
+status-redirect responses; removing the header must make the header check fail,
+then restore and rerun. This is a proposed patch, <strong>UNMEASURED</strong>, not implemented
+or ready for publication. It reduces referrer exposure but resolves neither
+147's residual URL exposure nor 148. The factories remain an explicit preview;
+this observation is not evidence of an exposed deployment.</p>
+<p>Reproduced on unchanged <code>ded254b9</code>: isolated
+<code>mocha --exit tests/status-headers.test.js</code> passes <strong>8 / 0 failing</strong>, including
+header/query compatibility and non-cacheable refusals. These existing checks
+were not ablated in this audit and do not establish rate-limit or referrer
+protection. An initial direct combined invocation with <code>tests/api.status.test.js</code>
+gave <strong>8 passing / 1 failing</strong>: its boot hook raised
+<code>TypeError: Cannot read properties of undefined (reading 'sendJSONStatus')</code>
+in <code>lib/api/experiments/index.js:9</code>. That invocation was stopped; it is not a
+replacement for the owned-service R40 campaign and is not reported green.
+No application source changed and no new full-suite result is claimed.</p>
+<p>The <a href="https://codeql.github.com/codeql-query-help/javascript/js-sensitive-get-query/">CodeQL query guidance</a>
+explains why URL credentials remain sensitive. Existing fixture dismissals in
+the earlier checkpoint above do not disposition these production findings.</p>
 <h4 id="first-dispatch-packets-historical-2026-11-03">First dispatch packets (historical 2026-11-03)<a class="headerlink" href="#first-dispatch-packets-historical-2026-11-03" title="Permanent link">&para;</a></h4>
 <p>Use <strong>two implementation lanes at most initially</strong>, plus the coordinator.
 P1 is the first bounded task in each lane; P2 is dispatched only after its
@@ -6894,7 +6970,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cdc5ade5e14fd06d3e60194243575652c9033264/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2294a8944a0eac8e72da866cb70f0580fc7b0c18/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -6929,7 +7005,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cdc5ade5e14fd06d3e60194243575652c9033264/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/2294a8944a0eac8e72da866cb70f0580fc7b0c18/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
