@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: executable entries CRUD cumulative acceptance (2026-11-04)
+
+| Work / state | Evidence and delivery boundary |
+|---|---|
+| Local cumulative `workspace/runnable-crud-20261104` at `21145d0d3b396b744618d2e8158bc1b969f8dd0a` joins runnable API, entries CRUD and credential-fidelity histories. | [R38](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04): reproduced full CRUD/history through the actual CLI with real Vault/PG, overlapping two-tenant identifiers, current grants/names, rollback controls and restart persistence. The stale inherited route expectations are corrected; unsupported-route checks remain. |
+| Combined acceptance: focused83; executable5; nonbrowser6834/80pending; browser684; affected3489/20pending; final prcheck OK. | Measurements are on the joined head with all three relevant HTTP/process opt-ins enabled; pending labs are not passes and totals overlap. Parent inspected committed changes and persisted logs. Entries-only executable preview is accepted, not all REST, production readiness or M1-M6 completion. |
+| Unpublished; no change to shipping candidate or operator release notes. | PR nightscout/cgm-remote-monitor#8898 remains OPEN/draft at `c527fb7e`; `official/dev` remains `4a482627`. Next implementation follows shared seams and domain packages in the [REST delivery plan](../../docs/30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.md); incomplete import/lifecycle/realtime work remains separate. Local reproduction: `externals/work/HANDOFF-runnable-crud-20261104.md`. |
+
 ### Update: runnable CLI and entries CRUD implemented (2026-11-04)
 
 | Work / state | Evidence and delivery boundary |

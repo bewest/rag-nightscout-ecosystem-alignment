@@ -25,9 +25,12 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted local cumulative head is `c527fb7e`;
+promotion is recorded. The latest accepted local cumulative head is `21145d0d`;
 published foundations PR nightscout/cgm-remote-monitor#8898 contains
-`81bc71e6`. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
+`c527fb7e`. [R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
+accepts executable API3 entries CRUD/history with real Vault/PG, current
+authority, tenant isolation and restart persistence; it does not accept all REST
+or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
 
@@ -52,22 +55,22 @@ durability or production transport/service identity.
 
 ### Completion checkpoints and publication (2026-11-04)
 
-**Finish criteria, not additional completed work.** Each implementation begins
-with a bounded accepted packet and stops on a new policy decision. Applicable
+**Finish criteria, not additional completed work.** Each implementation has a
+bounded contract and stops on a new policy decision. Applicable
 full suites, paired source controls and exact-head integration remain required.
 `UNMEASURED` and a passing historical foundation gate do not close a checkpoint.
 
-**Implementation-first dispatch, maintainer direction 2026-11-04:** the next
-two deliverables run in parallel from accepted `c527fb7e`: actual entries CRUD
+**Implementation-first delivery, maintainer direction 2026-11-04:** two
+deliverables ran in parallel from accepted `c527fb7e`: actual entries CRUD
 in `workspace/entries-crud-20261104`, and runnable
 `nightscout multitenant api` in `workspace/runnable-multitenant-20261104`.
-Each owns code, tests/controls and one handoff. The
+Each delivered code, tests/controls and one handoff. The
 [approved continuation contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#runnable-preview-and-parallel-crud-delivery-2026-11-04)
 settle current-name/refusal policy and explicit config/environment-bound API
 preview boot. A real child-process CLI test, not another injected-app-only
-fixture, is the runtime acceptance target. Integrate clean heads with the
-test-only credential fidelity slice `9e97d073`, then validate the cumulative
-implementation. Do not make full CRUD, production HA, durable registry or all
+fixture, is the runtime acceptance target. R38 joins both clean heads with the
+test-only credential fidelity slice `9e97d073` and validates the cumulative
+implementation. Do not make production HA, durable registry or all
 owner capabilities prerequisites for implementing the clearly bounded runtime.
 The checkpoints below retain full-programme completion criteria, not an
 instruction to create separate administrative tasks or block independent code.
@@ -79,28 +82,28 @@ storage/auth/context injection; entries, treatments, devicestatus/activity,
 profile/food and status/identity/derived-read teams preserve version-specific
 behavior. Notification/assistant side effects remain explicitly tracked, not
 silently counted complete. This read-derived plan does not expand or block the
-active CLI/entries CRUD lanes; actual HTTP/client acceptance determines support.
+accepted CLI/entries CRUD boundary; actual HTTP/client acceptance determines support.
 
 | Checkpoint / queue home | Next bounded action and prerequisite | Completion evidence / decision stop |
 |---|---|---|
-| C1: remaining entries methods, ST-PG | R36 PATCH is characterized; attribution/refusal policy is approved. Implement remaining shipping entries CRUD/history families in the CRUD lane while runtime progresses independently; do not invent an absent method contract. | Actual Mongo/PG HTTP stored-result/response comparison, fresh branch-specific authority, preconditions, rollback/no-events and non-vacuous controls. Stop on changed client behavior, approximate storage semantics or genuinely new policy. |
+| C1: entries methods, ST-PG | R38 accepts API3 entries CRUD/history through the actual executable; retain those tests while adding legacy entries through the REST plan. | Actual Mongo/PG HTTP comparisons, current authority, preconditions, rollback and controls are measured for API3. Legacy/client replay and resource/import bounds remain separate; this alone does not complete M1. |
 | C2: import and resource acceptance, ST-PG/MIG-RUNNER | After identifying the supported source/target contract, measure import/rerun fidelity and bounded queries/writes. Do not equate one-time best-effort import with snapshot or hard-delete reconciliation. | Explicit supported/unsupported shapes, rerun and failure recovery, schema/RLS checks and measured bounds. Numeric limits, consistency/recovery guarantees and unsupported shape policy require decisions before implementation. Completes M1 only with all C1/M0 requirements. |
 | C3: provisioning fidelity, T30-WIRING/TEN-RESOLVE | R35 packet distinguishes existing operator tooling from test hand-seeding; test-only operator import-seam fidelity is delegated. No credential/tenant provisioning-import command exists at the accepted head. | Stable IDs, current exact names/grants, root-reference/secrets linkage and incomplete-state refusal through existing operator seams, with controls. Test choreography is not a supported importer, idempotent multi-store rerun or atomic activation. No invented authenticator, secret export or lifecycle defaults. |
-| C4: runtime and production trust/lifecycle, TEN-RESOLVE/MT-SECRETS-CONTRACT | Implement approved explicit-config preview API boot, prebind readonly checks, resources/shutdown and actual CLI acceptance now. Separately complete production identity/provider renewal, durable mapping lifecycle and other role boundaries without blocking that bounded implementation. | A real two-tenant CLI process must exchange/read/write and refuse unsafe setup/current access failures. Full M2 still requires approved production trust/auth/recovery, provision/suspend/export/delete, durable allocation/publication and listener boundaries. Static operator config/development Vault is not production acceptance. |
+| C4: runtime and production trust/lifecycle, TEN-RESOLVE/MT-SECRETS-CONTRACT | R38 accepts explicit-config API boot, prebind readonly checks, owned shutdown and actual two-tenant CLI CRUD. Next extend only tested REST capabilities; production identity/provider renewal, durable mapping lifecycle and other roles remain separate. | Full M2 still requires approved production trust/auth/recovery, provision/suspend/export/delete, durable allocation/publication and listener boundaries. Static operator config/development Vault is not production acceptance. |
 | C5: repeatable cumulative gates, TEN-LAB | Turn accepted combined fixtures into read-only queue instruments with paired controls; select the complete M1/M2 set after C1-C4. Existing no-gate markers remain until real instruments exist. | `make queue-status` with relevant integrations, non-vacuous controls, exact-head full suites and unsafe-schema/isolation/current-authority acceptance. Only then assess M3 promotion; adding a passing narrow gate alone is insufficient. |
 | C6: client surface, M4 | Inventory pinned uploader/follower versions and operations, then implement/replay one collection/route/retry family at a time; promotion follows M3. | Reproducible client replay and stored-result comparison, legacy defaults unchanged, paired retry/identity/response controls. Source inspection is not replay. |
 | C7: realtime recovery, M5 | Contract work can run independently: reconcile D6/D-EVENT durable checkpoints, commit coupling, replay/duplicates/deletes/config invalidation before wiring a consumer. | Approved ordering/retention/recovery contract, kill/restart replay equivalence, current socket authorization and tenant-local evaluator/cache state. No in-process bus or timer substitutes for durability. |
 | C8: operational preview, M6 | Join accepted M4/M5 with explicitly chosen owner capabilities; one backup/restore, upgrade/rollback, export/deletion or resource/egress packet at a time. | Synthetic failure/recovery evidence and final immutable-tree review; real-data/human identity, production traffic, serving-role enablement and publication remain separate explicit approvals. |
-| C9: records and publication | Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898. | Validate/generate records before main fast-forward. CRM local `c527fb7e` descends from published `81bc71e6`; use a non-force update of the existing branch, not a second PR or the dirty original worktree. Only the maintainer pushes; fresh remote CI/CodeQL and PR description must cover the new head before upstream readiness is claimed. |
+| C9: records and publication | Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898. | Validate/generate records before main fast-forward. CRM local `21145d0d` descends from published `c527fb7e`; use a non-force update of the existing branch, not a second PR or the dirty original worktree. Only the maintainer pushes; fresh remote CI/CodeQL and PR description must cover the new head before upstream readiness is claimed. |
 
 Packet ownership is local and resumable: the entries and provisioning lanes
 write `externals/work/HANDOFF-entries-patch-packet-20261104.md` and
 `externals/work/HANDOFF-provisioning-runtime-packet-20261104.md`, respectively.
 PATCH characterization is complete, with original fixture-assumption failures retained;
-the bounded attribution/refusal policy is approved and CRUD implementation is dispatched.
+the bounded attribution/refusal policy is approved and R38 accepts CRUD implementation.
 Provisioning fidelity is committed as test-only `9e97d073`; focused33 and
-its controls pass, but full/browser validation is UNMEASURED until the
-cumulative join. It is not a production importer or activation/rerun policy.
+its controls pass; R38 measures the full/browser cumulative join retaining that
+test history. It is not a production importer or activation/rerun policy.
 OIDC remains optional, deferred research;
 it is not a prerequisite for these checkpoints or for the 16.0.0 candidate.
 
