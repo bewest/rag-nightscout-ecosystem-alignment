@@ -6,7 +6,9 @@ cgm-remote-monitor `ded254b9acf5a94e3a4fd99c85b23e1413fa08b6`, based on dev
 reproductions**, not new runs for this explanation. Current delivery and milestone
 claims live in the [delivery dashboard](multitenant-delivery-dashboard.md);
 [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
-owns the preview acceptance. PR #8898 is open/draft, not merged or released.*
+owns the published preview acceptance; [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
+owns the later local subject-service/compatibility continuation. PR #8898 is
+open/draft, not merged or released.*
 
 ## What the write seam made possible
 
@@ -128,6 +130,12 @@ new declarations that every exposed field has an independent collection grant.
 
 ### Preview versus current single/Mongo behavior
 
+The latest local [R41 continuation](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
+adds dormant persisted subject mutation and strict mixed-version treatment /
+credential-rename comparisons, with full cumulative regression and mutation
+controls. It does not expose owner HTTP management or select grant ceilings.
+The table below retains the published R40 scope and pin.
+
 [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 is **recorded reproduced** on `ded254b9`. This document audit did not rerun it.
 
@@ -160,6 +168,12 @@ and error mappings can differ from the single application. See the pinned
 Full query/resource acceptance and populated import-order fidelity remain open.
 
 ### New Nightscout versus older releases
+
+The [November 5 bounded refresh](../../../reports/compat-refresh-2026-11-05/README.md)
+directly compares release/current-dev/published-PR-single with repeated runs and
+an explicit limited pass scope. It excludes identity/settings families, retains
+historical projection residuals and does not establish old-release-to-PG parity.
+The full-corpus experiment below retains its earlier source pins.
 
 This is a **separate recorded experiment**, not an automatic consequence of the
 write seam or a fresh historical comparison of the multitenant preview.

@@ -22,6 +22,15 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: subject administration and compatibility continuation accepted locally (2026-11-05)
+
+| Work / state | Evidence and remaining gate |
+|---|---|
+| Local `codex/rest-integration-20261105` is clean at `94c57f1f37370215ef25b69691ef63918c876db3`; #8898 remains published at ded254b9. | [R41](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05) accepts the joined dormant subject mutation/known-role service and strict mixed-version treatment/rename tests. Parent full nonbrowser6944/80pending/0failing, browser684, focused162, migration/HTTP30, affected authority/upgrade8 and archived subject gate13 pass; groups overlap. Parent semantic controls fail as intended; restored focused passes, changed-file lint/tier check and final prcheck pass. Nothing pushed to CRM, merged to dev or released. |
+| New archived read-only subject instrument is wired under MT-CONFIG-MIN. | Queue integration PASS and control NON-VACUOUS measure only the bounded service. Separate management HTTP, owner ceilings, full role CRUD, remaining REST side effects/client binaries/import/resources and M0–M6 completion remain open. [Current next packets](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-subject-administration-and-compatibility-continuation-2026-11-05) supersede the delivered dispatch packets. |
+| [Historical comparison](../../reports/compat-refresh-2026-11-05/README.md) completed at old-release/current-dev/published-PR-single pins. | Parent re-audited immutable results and negative controls. Repeated bounded corpus has no dev/PR-single semantic differences; release changes are separately described. Full-corpus projection residuals, omitted identity/settings families and the later R41 join are outside its pass scope; no transitive historical-to-PG parity claim. |
+| Lane handoff recorded locally; no private artifacts staged. | `externals/work/HANDOFF-codex-rest-integration-20261105.md` links subject-admin, cross-compat and historical-compat handoffs, heads, commands, failed hypotheses and publication commands. Synthetic public aggregate has no raw document bodies or database addresses. CodeQL147/148 remain open; no reviewer reply or dismissal. |
+
 ### Update: prioritized REST completion and parallel compatibility (2026-11-05)
 
 | Work / state | Basis and next gate |

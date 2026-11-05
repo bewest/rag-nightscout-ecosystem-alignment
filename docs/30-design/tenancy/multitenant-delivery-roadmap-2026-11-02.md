@@ -25,7 +25,9 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted cumulative head is `ded254b9`, now published on
+promotion is recorded. The latest locally accepted cumulative head is `94c57f1f`
+([R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05));
+it remains unpushed. The latest published accepted head is `ded254b9`, on
 nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CI and
 CodeQL succeeded at the latest read-back. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
@@ -94,6 +96,45 @@ heads/results before records, integrates only completed contracts and preserves
 unexpected results. Local handoffs are under `externals/work/` and are not public
 evidence or publication authorization.
 
+### Accepted subject administration and compatibility continuation (2026-11-05)
+
+[R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
+accepts local `94c57f1f37370215ef25b69691ef63918c876db3`, joining the persisted
+subject packet and test-only mixed-version/rename corpus. The three dispatch
+lanes above have delivered their bounded slices; their wider milestone gates
+remain open. Full nonbrowser/browser/enabled/provider/migration campaigns,
+parent semantic controls, restored acceptance and final prcheck pass. The
+[archived subject instrument](../../../tools/lab/multitenant-subject-admin/README.md)
+is PASS with NON-VACUOUS control; this is not owner HTTP admission or policy.
+The separate [historical refresh](../../../reports/compat-refresh-2026-11-05/README.md)
+is source-pinned to published `ded254b9`, not this new join; its diagnostic
+full-corpus residuals are outside the explicit pass scope. See those homes for
+figures and limitations rather than treating the comparison matrix as transitive.
+
+**Next executable packets, in priority order:**
+
+1. Compose subject management behind a separately authenticated management HTTP
+   boundary, preserving data-listener refusal. Reuse the accepted service;
+   characterize stable role IDs and unknown/default role behavior before full
+   roles CRUD. The trusted management callback is not a selected human identity
+   provider or owner grant-ceiling policy. Stop on that unselected policy slice
+   while other admitted REST/client work continues.
+2. Extend the remaining REST inventory one concrete workflow at a time: notices/
+   debug, then notification/assistant receipt and egress seams with fake-provider
+   controls. Preserve current authority and version-specific refusals.
+3. Extend shared compatibility fixtures into omitted identity/default-index/race
+   families and actual client execution where tooling permits; rerun affected
+   historical/current comparisons on the final joined tree. Keep intended RC
+   corrections and preserved quirks individually grounded in decisions/source.
+4. Finish supported import/rerun/populated-order/resource criteria for M1 and
+   remaining production authority/lifecycle M2 gates; then assess M3 promotion.
+   M4 work continues in parallel. M5/M6 retain durable replay and synthetic
+   operational acceptance; no completed service promotes them.
+
+The prepared continuation stays on existing draft #8898. Maintainer-operated
+publication sends only the new clean commits, followed by fresh remote CI;
+there is no automatic upstream push or alert dismissal.
+
 ### REST continuation and QMS reconciliation (2026-11-04)
 
 **Current delivery wave, authorized by the maintainer.** Continue from accepted
@@ -126,6 +167,9 @@ shipping candidate change follows from dispatch.
 ### Next administration and side-effect implementation boundary (2026-11-04)
 
 **Read-derived next packet; new administration is not implemented by this wave.**
+This is the captured November 4 packet: R41 now accepts its bounded persisted
+service. The [current continuation](#accepted-subject-administration-and-compatibility-continuation-2026-11-05)
+owns remaining HTTP/policy/role and side-effect work.
 The independent authority review identifies subject update/delete and known-role
 assignment as the next bounded persisted service before enabling HTTP management.
 At CRM `ae471ac7`, shipping `lib/authorization/storage.js:100-125` preserves omitted

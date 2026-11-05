@@ -1,5 +1,5 @@
 {
- "measured": "tenancy reconciled 2026-11-04 against dev 4a482627 and published draft #8898 ded254b9 / R40; other tracks retain their named historical measurement pins. Map states summarize component claims; queue gates and M0\u2013M6 completion are separate",
+ "measured": "tenancy reconciled 2026-11-05: local 94c57f1f/R41 accepted, published draft #8898 ded254b9/R40; historical compatibility has its own source pins. Other tracks retain their historical measurements; component claims and M0\u2013M6 promotion remain separate",
  "tracks": [
   {
    "id": "storage",
@@ -319,12 +319,16 @@
    "short": "PG REST ports / import",
    "title": "Published preview reuses shipping legacy and API3 handlers over tenant-bound PostgreSQL/RLS, shared intent rules and explicit domain catalogues. R40 adds derived reads and pinned client patterns; complete storage/import/resource parity remains open.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
-   "check": "R40 actual HTTP/current-Mongo differentials, current authority, two tenants, rollback and restart; full query/resource bounds and populated import-order fidelity remain open",
+   "check": "R41 strict mixed-version edit/retry/conditional/delete-history differentials and cumulative full tests; historical release/dev/PR-single experiment separately pins ded254b9. Full import/resource/identity-family acceptance remains open",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Published ded254b9 on draft #8898; R40 accepts the bounded preview, not full M1 or a universal PostgreSQL backend.",
+   "ref": "Local 94c57f1f/R41 extends published ded254b9/R40; current compatibility, historical comparison and milestone promotion have distinct scopes.",
    "spec": [
+    {
+     "label": "R41 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+    },
     {
      "label": "R40 acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
@@ -743,13 +747,17 @@
    "state": "progress",
    "short": "Tenant-scoped auth",
    "title": "Current tenant credentials, grants and subject metadata compose with actual v1/v2/v3 and derived HTTP through the explicit CLI/PG/Vault preview. Production identity and administration/lifecycle remain incomplete.",
-   "ref": "Published ded254b9 / R40. Archived authority gate PASS with NON-VACUOUS controls; supported client patterns, current revocation and restart measured. This is bounded API serving, not every multitenant role.",
+   "ref": "R41 local 94c57f1f adds subject mutations and same-credential next-operation revocation; published preview remains ded254b9. Management HTTP/policy and production trust remain open.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R41 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+    },
     {
      "label": "R40 evidence",
      "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
@@ -766,8 +774,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "R40 accepts the bounded cumulative real HTTP/provider/CLI composition. Full M3 remains blocked until complete M1/M2 criteria and cumulative instruments pass; successful lab cases alone do not promote the milestone.",
-   "ref": "Published ded254b9; R40 owns recorded reproduction and controls. Administration/side effects, full client/route/import/resource and production lifecycle acceptance remain open.",
+   "title": "R41 accepts the local cumulative subject/compatibility continuation; separate historical comparison has explicit bounded scope. Full M3 remains blocked on complete M1/M2; passing narrow campaigns do not promote it.",
+   "ref": "Local 94c57f1f/R41, published ded254b9/R40. Owner HTTP, remaining side effects/client binaries/import/resources/lifecycle remain open.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -775,6 +783,10 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R41 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+    },
     {
      "label": "milestone promotion criteria",
      "href": "../tenancy/multitenant-delivery-dashboard.md"
@@ -810,9 +822,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current policy / settings",
-   "title": "Selected persisted current grants and typed tenant display settings compose in R40. Full owner settings catalogue and administration mutation/invalidation remain open.",
-   "ref": "Bounded API preview acceptance; no complete owner/configuration or production M2 claim.",
+   "title": "R41 accepts dormant persisted subject update/delete and known-role assignment alongside selected current grants/settings. Next management HTTP, ceilings, stable role-ID semantics and full owner catalogue; no owner route is enabled.",
+   "ref": "Local 94c57f1f; archived subject gate PASS/NON-VACUOUS. No production M2 or full administration claim.",
    "spec": [
+    {
+     "label": "R41 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
+    },
     {
      "label": "configuration gates",
      "href": "../tenancy/multitenant-delivery-dashboard.md#mt-config-min"

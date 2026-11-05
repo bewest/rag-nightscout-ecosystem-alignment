@@ -1,7 +1,8 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing living plan. Tenancy progress reconciled 2026-11-04 against
-cgm-remote-monitor dev `4a482627` and published draft #8898 `ded254b9` (R40).
+*Contributor-facing living plan. Tenancy progress reconciled 2026-11-05 against
+cgm-remote-monitor dev `4a482627`, published draft #8898 `ded254b9` (R40),
+and local accepted continuation `94c57f1f` (R41).
 Storage/identity/registration measurements below retain their named historical
 pins. Full M0–M6 completion remains open; component states are not milestone
 promotion or a fresh measurement of every queue gate. Release placement is in
@@ -20,10 +21,14 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-**Current dev anchor, 2026-11-04: `4a482627`.** The published multitenant
+**Current dev anchor, 2026-11-05: `4a482627`.** The published multitenant
 preview is `ded254b9` on draft #8898, not merged to dev. R40 records its
 accepted API/derived/client-pattern boundary; its current-head CI and CodeQL
-succeeded. See [single versus multitenant architecture and compatibility](../tenancy/single-and-multitenant-architecture.md)
+succeeded. Local [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
+adds persisted subject management and strict compatibility tests with cumulative
+acceptance; it is unpushed and does not enable owner HTTP. The
+[parallel compatibility plan](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-subject-administration-and-compatibility-continuation-2026-11-05)
+keeps historical/current comparisons and remaining milestone gates distinct. See [single versus multitenant architecture and compatibility](../tenancy/single-and-multitenant-architecture.md)
 for the shared-code changes, diagrams and evidence limits. The `497d08c9` labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are

@@ -8401,7 +8401,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `done` | `-` | n/a | 0 run + 1 no-gate |
 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
-| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261104` | n/a | 1 run + 1 no-gate |
+| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261105` | n/a | 1 run + 1 no-gate |
 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -8512,9 +8512,11 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `tools/lab/multitenant-subject-admin/README.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** Maintainer 2026-11-02: retain D22 with a small reviewed catalogue. Unsupported names explicitly refuse; alarms and integrations remain unavailable until consuming runtimes pass. Operator-only lifecycle. Continuation decision: authorization policy is included in the initial slice, covering tenant-local subject grants and bounded token lifetimes. Required authentication, tenant isolation and operator access stay pinned. Exact permissions, limits, concurrency and invalidation cases remain. Further decision: grant removal/revocation applies at the next protected operation across workers; current authorization unavailable means refusal. JWT expiry/stale cache is not authority. Include protected socket delivery, subscriptions/writes/reconnect and explicit authorization race semantics. Local 1dd8990b implements dormant persistent subject authority; 011802ba adds typed DISPLAY_UNITS/SHOW_SECONDS, provenance, versioned history and whole policy-aware rollback. Combined local acceptance: 36 passing, zero pending; ESLint and 465-file classification pass. Both commits are now incorporated at peer tip 011802ba; integrated testing is pending, not accepted by ancestry alone. Current 2026-11-05 priority packet: separately authorized persisted subject update/delete and known-role assignment in codex/tenant-subject-admin-20261105 from ded254b9. Omission/rename compatibility, next-operation revocation, isolation and rollback controls precede HTTP management. Persistent operator rules, grant ceilings and atomic policy/write fencing remain broader criteria. Operator policy and management authentication remain injected; timezone, token-lifetime policy, public API and runtime invalidation remain open. No owner/data/socket serving or end-to-end revocation acceptance implied.
+**Notes.** Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.
 
 ### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
 
@@ -8606,7 +8608,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** M3; R40 accepts selected REST and source-pinned patterns at published draft ded254b9, not full preview. Maintainer priority 2026-11-05: subject administration and wider REST/client acceptance, with parallel current Mongo/PG and historical release/dev/PR-single compatibility. Existing RC corrections/client quirks need explicit expected-change bases; unexplained differences fail acceptance. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion.
+**Notes.** M3; R41 accepts local subject service and strict compatibility tests at 94c57f1f; published draft remains R40 ded254b9, not full preview. Maintainer priority 2026-11-05: management HTTP and wider REST, with parallel current Mongo/PG and historical release/dev/PR-single compatibility. Existing RC corrections/client quirks need explicit expected-change bases; unexplained differences fail acceptance. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion.
 
 ### `MT-RUNTIME-PLAN` &mdash; Continuous v1/v3, realtime and evaluator integration contracts
 
@@ -8906,9 +8908,9 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/rest-integration-20261104` |
+| branch | `codex/rest-integration-20261105` |
 | base | `official/dev@4a482627` |
-| worktree | `externals/work/crm-codex-rest-integration-20261104` |
+| worktree | `externals/work/crm-codex-rest-integration-20261105` |
 | semver | `n/a` |
 | review | SECURITY |
 | register | `BF-25` |
