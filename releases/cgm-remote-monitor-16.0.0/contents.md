@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: CRM REST continuation published for draft review (2026-11-04)
+
+| Work / state | Evidence and remaining acceptance |
+|---|---|
+| Maintainer published `ded254b9acf5a94e3a4fd99c85b23e1413fa08b6` to existing [#8898](https://github.com/nightscout/cgm-remote-monitor/pull/8898), still OPEN/draft against dev `4a482627bfdafb1fef8dcbe0ac6c484811cae563`. | Read-derived live PR read-back confirms the tested R40 head, title “Add explicit multitenant REST API preview” and matching prepared description. The continuation is published, not merged to dev or released. R40 remains the immutable local acceptance record; no application tests were rerun for publication bookkeeping. |
+| Current-head [CodeQL](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417396) succeeded; [CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417437) remains in progress at read-back. | No completed remote CI result is claimed yet. Full REST administration/side effects, client binary execution, import/resource and production lifecycle criteria remain open; no M0–M6 promotion. Next engineering remains the bounded subject-mutation/known-role assignment packet in the delivery roadmap. |
+
 ### Update: alignment records published; CRM continuation awaits publication (2026-11-04)
 
 | Work / state | Evidence and next action |

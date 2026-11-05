@@ -205,7 +205,7 @@ items:
           follow JSONB equality; exact BSON-order parity is not required.
       - no-gate: >
           Binding/pooler, entries schema/RLS and one-time API importer slices
-          are measured, not full M1 acceptance. Published accepted tip ae471ac7 joins executable API3 entries
+          are measured, not full M1 acceptance. Published R40 tip ded254b9 retains executable API3 entries
           CRUD/history and explicitly selected legacy/API3 REST domains (R38/R39). Existing commands above target the older
           foundation lane, not the whole latest composition.
           Complete route/client replay, import/rerun fidelity and populated-table
@@ -223,10 +223,9 @@ items:
       - tools/lab/postgres-foundation/results.json
     notes: >
       Current 2026-11-04: R38/R39 capture executable entries CRUD/history
-      and selected legacy/API3 domains at published draft head ae471ac7.
-      Derived-read implementation and pinned-client replay proceed from
-      that clean head; import, complete compatibility and resource criteria
-      remain open. No M1-M6 promotion follows from these bounded slices.
+      and selected legacy/API3 domains; R40 adds derived reads and pinned
+      client patterns at published draft ded254b9. Import, complete
+      compatibility and resource criteria remain open. No M1-M6 promotion follows from these bounded slices.
       Roadmap completion checkpoints scope each next slice and its controls.
       Maintainer 2026-11-02: storage first, one integration branch, no upstream
       push. ST-HARNESS is already merged as #8881; the September seam is
@@ -6712,7 +6711,7 @@ items:
           Vault, production runtime or milestone acceptance.
       - no-gate: >
           R40 parent-run campaigns accept derived REST and pinned-pattern
-          replay atop R38/R39 at local ded254b9, including actual CLI/PG/Vault
+          replay atop R38/R39 at published ded254b9, including actual CLI/PG/Vault
           current-authority composition. The bounded archived
           authority probe is wired separately; no complete production runtime
           gate exists; loopback test-local
@@ -6730,8 +6729,9 @@ items:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
       Current 2026-11-04: R40 accepts derived reads and source-pinned
-      client patterns with parent-run cumulative evidence at local ded254b9;
-      published draft remains ae471ac7. Archived authority probe is a bounded
+      client patterns with parent-run cumulative evidence at published ded254b9;
+      PR title/description read back correctly; current-head CodeQL
+      succeeded and CI was in progress at capture. Archived authority probe is a bounded
       PASS with NON-VACUOUS control; complete production runtime is open. Test-only
       credential fidelity is incorporated; no supported credential importer
       or atomic tenant activation is implied.

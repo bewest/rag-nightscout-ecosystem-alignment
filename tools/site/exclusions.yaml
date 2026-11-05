@@ -37,7 +37,7 @@ exclusions:
   # ---- correspondence ----
   - pattern: "reports/*rest*.draft.md"
     axis: correspondence
-    reason: "Prepared REST continuation PR descriptions; not sent."
+    reason: "REST PR correspondence and draft publication proposals, excluded from the documentation site."
     decided_by: "maintainer-authorized REST continuation, 2026-11-04"
   - pattern: "docs/30-design/platform/upstream-asks-device-simulators/*.body.md"
     axis: correspondence
