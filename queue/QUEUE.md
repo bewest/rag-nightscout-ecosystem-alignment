@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 358 |
-| runnable gates | 418 |
+| runnable gates | 419 |
 | explicit `no-gate:` markers | 369 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 787 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 369 of the 788 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8388,7 +8388,7 @@ alarm-readiness items, and the seam branch refresh.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 5 run + 1 no-gate |
-| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
@@ -8506,6 +8506,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[integration]` `node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3`
+  - Archived bounded subject update/delete and known-role assignment: current grants, stable identity/metadata, tenant isolation, atomic rollback, concurrent replacements and separate writer privileges. Synthetic management/crypto; no owner HTTP or grant ceilings.
 - **NO GATE** &mdash; Roadmap decisions adopted; detailed names, paths, preconditions, errors and executable contract cases remain. Full T30 catalogue is not claimed complete by the selected subset.
 
 **Evidence.**

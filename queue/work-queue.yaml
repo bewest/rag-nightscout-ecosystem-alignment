@@ -298,6 +298,13 @@ items:
     semver_reason: design and lab contract
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3
+        kind: integration
+        describe: >
+          Archived bounded subject update/delete and known-role assignment:
+          current grants, stable identity/metadata, tenant isolation, atomic
+          rollback, concurrent replacements and separate writer privileges.
+          Synthetic management/crypto; no owner HTTP or grant ceilings.
       - no-gate: >
           Roadmap decisions adopted; detailed names, paths, preconditions,
           errors and executable contract cases remain. Full T30 catalogue is
