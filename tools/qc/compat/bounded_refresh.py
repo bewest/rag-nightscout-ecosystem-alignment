@@ -18,6 +18,14 @@ from wcdiff import diff
 
 ROOT = Path(__file__).resolve().parents[3]
 HIST = ROOT / 'tools/qc/results/write-contract-matrix/compat-16.0.0-refresh-2026-11-01/run1'
+EXPECTED_HEADS = {
+    'v1509': 'c6a0d8ed65637bc90d3090e6e7a0f752041c57fd',
+    'dev': '4a482627bfdafb1fef8dcbe0ac6c484811cae563',
+    'pr8898': 'ded254b9acf5a94e3a4fd99c85b23e1413fa08b6',
+}
+EXPECTED_RUNTIME = {'node': 'v22.23.4', 'mongod': '7.0.43',
+                    'write_identifier': '(unset)', 'uuid_handling': True}
+INDEX_COLLECTIONS = {'devicestatus', 'entries', 'food', 'profile', 'settings', 'treatments', 'activity'}
 SET_ASIDE = {f'{c} ws idread-fail' for c in
              ('entries', 'treatments', 'devicestatus', 'profile', 'food', 'activity')}
 
@@ -117,6 +125,30 @@ def audit(directory):
                           'no_write_good_store': good['store'], 'no_write_bad_store': bad['store'],
                           'no_write_reply': bad['st']}
     failures = []
+    reference_keys = set(a['cells'])
+    for key, pair in pins.items():
+        for number, pin in enumerate(pair, 1):
+            if pin['head'] != EXPECTED_HEADS[key]:
+                failures.append(f'{key} run {number}: wrong endpoint head')
+            for field, expected in EXPECTED_RUNTIME.items():
+                if pin.get(field) != expected:
+                    failures.append(f'{key} run {number}: unexpected {field}')
+            expected_validation = '(not read by this build)' if key == 'v1509' else 'off'
+            if pin.get('write_validation') != expected_validation:
+                failures.append(f'{key} run {number}: unexpected write_validation')
+            expected_index = ({'(not read by this build)'} if key == 'v1509'
+                              else {c + ':off' for c in INDEX_COLLECTIONS})
+            if set(pin.get('identifier_index', '').split(',')) != expected_index:
+                failures.append(f'{key} run {number}: unexpected identifier_index')
+            if set(pin['cells']) != reference_keys:
+                failures.append(f'{key} run {number}: endpoint corpus keys differ')
+    for filename in ('control-no-write.json', 'control-restored.json'):
+        pin = load(directory / filename)
+        if pin['head'] != EXPECTED_HEADS['pr8898']:
+            failures.append(f'{filename}: wrong control head')
+        for field in ('node', 'mongod'):
+            if pin.get(field) != EXPECTED_RUNTIME[field]:
+                failures.append(f'{filename}: unexpected {field}')
     for key, info in result['endpoints'].items():
         if info['head'] != info['repeat_head']: failures.append(f'{key}: endpoint changed between runs')
         if info['cells_per_run'] != [768, 768]: failures.append(f'{key}: bounded corpus is incomplete')

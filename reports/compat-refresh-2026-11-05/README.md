@@ -60,7 +60,11 @@ instead of `n=1 OID`. The auditor rejects that result. Restoring the original fi
 restored semantic equality with the candidate's create cell. Separate comparator
 controls add an unexpected field, change a successful reply to 500, and remove a
 cell; each is rejected. A deliberately corrupted candidate repeat also made the
-command exit 1 with `pr8898: nonrepeatable semantic cells`. These controls establish detection of the stated breaks,
+command exit 1 with `pr8898: nonrepeatable semantic cells`. Giving both candidate
+repeat pins the same wrong head also exits 1, reporting a wrong endpoint head for
+each run. The auditor binds this dated capture to its exact source/runtime/settings;
+driver versions are read-installed metadata because the original pins do not emit
+a driver-version field. These controls establish detection of the stated breaks,
 not completeness against every possible regression.
 
 ## Historical attribution boundary
@@ -115,7 +119,8 @@ python3 tools/qc/compat/bounded_refresh.py --pins "$PINS" \
 ```
 
 The auditor fails on incomplete corpus, nonrepeatable semantic cells, dirty source,
-changed heads, invalid liveness, any fresh development/candidate semantic difference,
+heads other than the dated endpoint pins, unexpected Node/MongoDB or recorded write
+settings, unequal endpoint cell sets, invalid liveness, any fresh development/candidate semantic difference,
 or an ineffective control. Historical projection residuals stay diagnostic and are
 outside its explicit pass scope. Full pins and diagnostics remain local; the public
 aggregate carries their hashes without document bodies or database addresses.
