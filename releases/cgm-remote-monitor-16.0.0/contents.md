@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: runnable CLI and entries CRUD implemented (2026-11-04)
+
+| Work / state | Evidence and delivery boundary |
+|---|---|
+| Runnable explicit `nightscout multitenant api`: local `workspace/runnable-multitenant-20261104` at `93c90520124ff4912d49d37e933ebfe4a5708075`. | [R37](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r37---runnable-api-and-entries-crud-delivery-lanes-2026-11-04): reproduced actual CLI child-process acceptance with PG/RLS and real Vault, explicit credential-reference configuration, read-only startup checks, isolation/current authority, restart and owned shutdown. No single/Mongo boot or API_SECRET dependency in the multitenant process. Only API preview is enabled, not owner/operator or other roles. |
+| API3 entries CRUD/history: local `workspace/entries-crud-20261104` at `f57138f24d90eec0ff78e5bf2aba5edc46c7c165`. | R37 records actual PUT/PATCH/DELETE/history implementation and lane campaigns, including the separately measured **three failing stale inherited route expectations**. The parent-owned cumulative join will update these after retaining the credential-fidelity test history; independent green suites are not cumulative acceptance. |
+| Runnable CRUD integration dispatched to new owned `workspace/runnable-crud-20261104`. | Join both implementation histories and fidelity `9e97d073`, prove full CRUD/history through the actual executable with real providers, then run combined regression/browser/control checks. This join remains UNMEASURED. PR nightscout/cgm-remote-monitor#8898 remains draft at `c527fb7e`; candidate `official/dev` remains `4a482627`. No push, merge, all-REST claim or programme milestone promotion; no change to shipping operator release notes. |
+
 ### Update: full REST delivery design integrated (2026-11-04)
 
 | Work / state | Evidence and delivery boundary |
