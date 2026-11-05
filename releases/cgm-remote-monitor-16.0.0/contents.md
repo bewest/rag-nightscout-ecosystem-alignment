@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: alignment records published; CRM continuation awaits publication (2026-11-04)
+
+| Work / state | Evidence and next action |
+|---|---|
+| Maintainer explicitly authorized merging the REST/QMS continuation to alignment main and pushing main. | Reproduced: main fast-forwarded from `969dbc74ed8a050f80590732be35801073b9a494` to `3f003441c75ae2d4284454f90c94c023e104c899`; GitHub accepted the normal push and local main/origin-main read back at that commit. Queue-check, docs-links and site-check pass on the merged tree. The two pre-existing untracked tenancy drafts remain untouched. |
+| CRM `ded254b9acf5a94e3a4fd99c85b23e1413fa08b6` remains local; no CRM push or remote PR edit was performed. | Publish the exact tested commit to existing `workspace/multitenant-20261102`, then update draft #8898 with [the prepared description](../../reports/pr8898-rest-update.draft.md). R40 owns its acceptance figures. Fresh remote CI/CodeQL must cover the continuation before upstream readiness is claimed. |
+
 ### Update: derived reads and pinned-pattern integration (2026-11-04)
 
 | Work / state | Evidence and next acceptance |
