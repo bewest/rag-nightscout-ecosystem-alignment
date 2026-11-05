@@ -22,6 +22,14 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: selected REST domains joined; publication checkpoint (2026-11-04)
+
+| Work / state | Evidence and delivery boundary |
+|---|---|
+| Clean local `workspace/rest-shared-20261104` at `ae471ac790455d6e81781f31b505e3c7b838831b` joins all five implementation lanes. | [R39](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04): reproduced actual legacy v1/inherited-v2 data handlers, six API3 collections, safe context/status/discovery and current authority through explicit tenant-domain composition. Default remains entries-only; broader selection requires prepared namespaces and explicit configuration. |
+| Cumulative nonbrowser6909/80pending, browser684, focused121, migration23, executable7; four semantic red controls restored green; final prcheck OK. | Parent inspected the committed head and persisted agent measurements. Pending labs and remaining REST rows are incomplete, not programme readiness. Properties/ddata/summary, administration, notifications/assistants, complete route/client replay and operational/realtime work remain. No shipping candidate or operator release-note change. |
+| Maintainer requested alignment main consolidation and publication commands for the existing CRM draft. | Alignment records are prepared for main fast-forward. CRM `ae471ac7` descends from the current published `c527fb7e`; use a non-force push to existing `workspace/multitenant-20261102`, updating nightscout/cgm-remote-monitor#8898 rather than opening another PR. Agents do not push. Fresh remote CI/CodeQL and PR-description refresh remain required after maintainer publication. |
+
 ### Update: full REST implementation wave dispatched (2026-11-04)
 
 The maintainer requested continued implementation toward a full headless

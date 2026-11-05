@@ -25,9 +25,12 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted local cumulative head is `21145d0d`;
+promotion is recorded. The latest accepted local cumulative head is `ae471ac7`;
 published foundations PR nightscout/cgm-remote-monitor#8898 contains
-`c527fb7e`. [R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
+`c527fb7e`. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
+joins actual legacy data handlers, API3 collections and safe context with explicit
+domain configuration. Remaining derived/admin/notification/assistant routes and
+client replay are incomplete. [R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
 accepts executable API3 entries CRUD/history with real Vault/PG, current
 authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
