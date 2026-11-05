@@ -2543,6 +2543,8 @@
       
         
       
+        
+      
     
     
     
@@ -3436,6 +3438,34 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single and multitenant Nightscout: architecture and compatibility
   
 
     
@@ -5952,8 +5982,8 @@ existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
 promotion is recorded. The latest accepted cumulative head is <code>ded254b9</code>, now published on
-nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CodeQL
-succeeded; CI remains in progress at the publication read-back. <a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
+nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CI and
+CodeQL succeeded at the latest read-back. <a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. <a href="../remedial/rc-16.0.0-integration-record.html#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04">R39</a>
@@ -6130,7 +6160,7 @@ accepted CLI/entries CRUD boundary; actual HTTP/client acceptance determines sup
 <tr>
 <td>C9: records and publication</td>
 <td>Keep release records, queue claims and generated dashboard current after each accepted slice. Maintainer requested alignment records merged to main and assessment of updating existing draft PR #8898.</td>
-<td>Validate/generate records before main fast-forward. Published #8898 is OPEN/draft at accepted <code>ded254b9</code> with refreshed title/description. Current-head CodeQL succeeded and CI remains in progress at read-back; retain their exact run links in the release contents until a later measurement. Continue accepted slices on the existing PR through maintainer-operated non-force publication; do not use the dirty original worktree or open a duplicate PR.</td>
+<td>Validate/generate records before main fast-forward. Published #8898 is OPEN/draft at accepted <code>ded254b9</code> with refreshed title/description. Current-head CI and CodeQL succeeded at read-back; retain their exact run links in the release contents until a later measurement. Continue accepted slices on the existing PR through maintainer-operated non-force publication; do not use the dirty original worktree or open a duplicate PR.</td>
 </tr>
 </tbody>
 </table>
@@ -6864,7 +6894,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3a2152dc83e7be4441c033ff702030ede800c467/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cdc5ade5e14fd06d3e60194243575652c9033264/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -6899,7 +6929,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3a2152dc83e7be4441c033ff702030ede800c467/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cdc5ade5e14fd06d3e60194243575652c9033264/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
