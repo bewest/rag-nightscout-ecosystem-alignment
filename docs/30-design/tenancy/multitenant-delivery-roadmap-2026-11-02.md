@@ -72,6 +72,15 @@ owner capabilities prerequisites for implementing the clearly bounded runtime.
 The checkpoints below retain full-programme completion criteria, not an
 instruction to create separate administrative tasks or block independent code.
 
+The [REST v1-v3 delivery plan](multitenant-rest-api-delivery-plan-2026-11-04.md)
+inventories actual mounted routes and divides follow-on implementation by
+collection/domain across versions. Its shared-port owner coordinates legacy
+storage/auth/context injection; entries, treatments, devicestatus/activity,
+profile/food and status/identity/derived-read teams preserve version-specific
+behavior. Notification/assistant side effects remain explicitly tracked, not
+silently counted complete. This read-derived plan does not expand or block the
+active CLI/entries CRUD lanes; actual HTTP/client acceptance determines support.
+
 | Checkpoint / queue home | Next bounded action and prerequisite | Completion evidence / decision stop |
 |---|---|---|
 | C1: remaining entries methods, ST-PG | R36 PATCH is characterized; attribution/refusal policy is approved. Implement remaining shipping entries CRUD/history families in the CRUD lane while runtime progresses independently; do not invent an absent method contract. | Actual Mongo/PG HTTP stored-result/response comparison, fresh branch-specific authority, preconditions, rollback/no-events and non-vacuous controls. Stop on changed client behavior, approximate storage semantics or genuinely new policy. |

@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: full REST delivery design integrated (2026-11-04)
+
+| Work / state | Evidence and delivery boundary |
+|---|---|
+| Source-grounded [REST v1-v3 delivery plan](../../docs/30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.md) committed as `34812ac028e47e9afaa6648c1a516f50b6241d4a` and integrated into records. | Read-derived from CRM `c527fb7e`: actual mounted route families, inherited v1 surface under v2, API3 collections/specials and conditional integrations. Shared tenant service/storage ports retain version-specific parsing, credentials, query, batch/retry and response semantics. No application verification or new REST capability is asserted by this design; documentation/source-reference checks pass. |
+| Implementation packages have shared-file ownership and collection/domain boundaries across versions, with actual HTTP/client differentials and source controls as exits. | Active runnable CLI and API3 entries CRUD continue independently. Follow-on shared seams and domain adapters can develop in parallel; touching active shared files waits for accepted clean-head integration or explicit ownership agreement. Management/notification/assistant exclusions remain incomplete until implemented or explicitly dispositioned, not proof of all-REST readiness. No new role enablement, push or candidate merge. |
+
 ### Update: implementation-first CLI and CRUD dispatch (2026-11-04)
 
 | Work / state | Evidence and delivery boundary |
