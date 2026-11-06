@@ -2,7 +2,7 @@
 
 *Contributor- and maintainer-facing.*
 
-**Status: living document — the decision record.** Decisions D1–D21 are the maintainer's
+**Status: living document — the decision record.** Decisions D1–D23 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03, D23 on 2026-11-06) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
 gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
