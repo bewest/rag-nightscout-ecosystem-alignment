@@ -6,10 +6,12 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 const { REPO_ROOT, CRM } = require('./_gate');
+const bounded = require('./_control-recovery');
 const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const suite = option('--suite'), ref = option('--ref'), control = option('--control');
 const cases = {
+  ...bounded.cases,
   'owner-policy': {
     file: 'tests/owner-subject-policy.integration.test.js', flag: 'NS_OWNER_SUBJECT_POLICY_DOCKER_TEST',
     controls: {
@@ -143,9 +145,13 @@ const cases = {
     }
   }
 };
-let scratch;
+let scratch, auditFile;
 const containers = [];
 try {
+  if (args.includes('--help')) {
+    console.log('Usage: --suite ' + Object.keys(cases).join('|') + ' --ref <commit> [--control <declared case>]');
+    process.exit(0);
+  }
   if (!Object.hasOwn(cases, suite) || !ref || (control && !Object.hasOwn(cases[suite].controls, control))) {
     throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race|frame-acquisition|frame-concurrency|settings|owner-policy --ref <commit> [--control <declared case>]');
   }
@@ -169,6 +175,31 @@ try {
   fs.symlinkSync(dependencies, path.join(scratch, 'node_modules'), 'dir');
   const runtime = { ...process.env, NODE_ENV: 'test', NODE_PATH: dependencies,
     ...(selected.flag ? { [selected.flag]: '1' } : {}), TEST_ENV_FILE: '/dev/null', TZ: 'UTC' };
+  if (bounded.cases[suite]) {
+    auditFile = path.join(scratch, '.docker-audit.json');
+    runtime.NS_GATE_DOCKER_AUDIT = auditFile;
+    if (suite === 'durable-replay') {
+      const container = 'ns-replay-gate-' + require('node:crypto').randomBytes(8).toString('hex');
+      const password = require('node:crypto').randomBytes(24).toString('hex');
+      containers.push(container);
+      execFileSync('docker', ['run', '--pull=never', '--name', container, '-d', '-p', '127.0.0.1::5432',
+        '-e', 'POSTGRES_USER=operator', '-e', 'POSTGRES_PASSWORD', '-e', 'POSTGRES_DB=nightscout_multitenant_test',
+        'postgres:16'], { env: { ...process.env, POSTGRES_PASSWORD: password }, stdio: 'pipe', timeout: 30000 });
+      const port = execFileSync('docker', ['port', container, '5432/tcp'], { encoding: 'utf8' }).trim().split(':').pop();
+      const deadline = Date.now() + 30000;
+      for (;;) {
+        const ready = spawnSync('docker', ['exec', container, 'pg_isready', '-U', 'operator', '-d', 'nightscout_multitenant_test'], { stdio: 'pipe' });
+        if (ready.status === 0) break;
+        if (Date.now() >= deadline) throw new Error('Owned replay PostgreSQL startup failed');
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
+      }
+      runtime.NS_TEST_POSTGRES_ADMIN_URI = 'postgres://operator:' + password + '@127.0.0.1:' + port + '/nightscout_multitenant_test';
+      const file = path.join(scratch, selected.file);
+      fs.writeFileSync(file, bounded.mutate(fs.readFileSync(file, 'utf8'),
+        "      const consumer = await lab.provision('evaluator', lab.A, null, modified);",
+        "      const stored = await lab.typedRows();\n      assert.equal(stored.length, 2);\n      assert.equal(new Set(stored.map(row => row.id_kind)).size, 2);\n      const consumer = await lab.provision('evaluator', lab.A, null, modified);"));
+    }
+  }
   if (suite === 'profile' || suite === 'identity' || suite === 'race' || suite === 'frame-concurrency' || suite === 'settings') {
     const docker = values => execFileSync('docker', values,
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }).trim();
@@ -262,7 +293,8 @@ try {
   const ownerResult = path.join(scratch, '.owner-policy-result.json');
   const result = spawnSync(process.execPath, [mocha, '--fail-zero', '--exit', '--timeout', '120000',
     ...((suite === 'profile' || suite === 'settings') ? ['--require', './tests/hooks.js'] : []),
-    ...(suite === 'owner-policy'
+    ...(bounded.cases[suite] ? ['--require', path.join(__dirname, '_owned-docker-audit.js')] : []),
+    ...((suite === 'owner-policy' || bounded.cases[suite])
       ? ['--no-config', '--no-package', '--reporter', 'json', '--reporter-option', 'output=' + ownerResult] : []),
     ...[selected.file].flat(), ...(control ? ['--grep', selected.controls[control][3]] : [])], {
     cwd: scratch, encoding: 'utf8', timeout: 240000, maxBuffer: 8 * 1024 * 1024,
@@ -272,7 +304,21 @@ try {
   process.stderr.write(result.stderr || '');
   if (result.error) throw result.error;
   const output = (result.stdout || '') + (result.stderr || '');
-  if (suite === 'owner-policy') {
+  if (bounded.cases[suite]) {
+    const directory = path.join(REPO_ROOT, 'externals/work/control-recovery-gate-artifacts');
+    fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+    const artifacts = fs.mkdtempSync(path.join(directory, suite + '-'));
+    fs.writeFileSync(path.join(artifacts, 'run.json'), JSON.stringify({ suite, head, control: control || null,
+      status: result.status, signal: result.signal, stdout: result.stdout, stderr: result.stderr }, null, 2), { mode: 0o600 });
+    if (fs.existsSync(ownerResult)) fs.writeFileSync(path.join(artifacts, 'mocha.json'), fs.readFileSync(ownerResult), { mode: 0o600 });
+    console.log('Private bounded artifacts: ' + artifacts);
+    if (!fs.existsSync(ownerResult)) throw new Error('Missing native Mocha result; setup failure is not evidence');
+    const report = JSON.parse(fs.readFileSync(ownerResult, 'utf8'));
+    console.log(JSON.stringify(report.stats));
+    bounded.verify(suite, report, result.status, control);
+    if (control) process.exitCode = 1;
+    else console.log('PASS bounded ' + suite + '; activation, management and milestone acceptance remain separate');
+  } else if (suite === 'owner-policy') {
     // This fixture owns PostgreSQL itself. Require the entire admitted cohort,
     // and distinguish intended unauthorized persistence from setup failures.
     if (!fs.existsSync(ownerResult)) throw new Error('No owner-policy Mocha JSON result; setup failure is not evidence');
@@ -307,7 +353,8 @@ try {
   process.exitCode = 1;
 } finally {
   let cleanupFailed = false;
-  const cleanup = [...containers].reverse().map(container => ({ container, volumeIds: null, containerRemoved: false }));
+  const captured = auditFile && fs.existsSync(auditFile) ? JSON.parse(fs.readFileSync(auditFile, 'utf8')) : [];
+  const cleanup = [...containers].reverse().map(container => ({ container, volumeIds: null, containerRemoved: false })).concat(captured);
   let diagnostic;
   try {
     if (cleanup.length) {
@@ -319,6 +366,7 @@ try {
   // Inspect only Mounts: never persist container configuration, credentials or host paths.
   for (const entry of cleanup) {
     try {
+      if (entry.containerRemoved) continue;
       const mounts = JSON.parse(execFileSync('docker', ['inspect', '--format', '{{json .Mounts}}', entry.container],
         { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }));
       entry.volumeIds = mounts.filter(mount => mount.Type === 'volume').map(mount => mount.Name);
@@ -333,11 +381,19 @@ try {
   recordCleanup(); // Persist volume identities before removing any owned container.
   for (const entry of cleanup) {
     try {
-      execFileSync('docker', ['rm', '-f', '-v', entry.container], { stdio: 'pipe', timeout: 30000 });
+      if (!entry.containerRemoved) execFileSync('docker', ['rm', '-f', '-v', entry.container], { stdio: 'pipe', timeout: 30000 });
       entry.containerRemoved = true;
     } catch { cleanupFailed = true; console.error('Owned gate service cleanup failed: ' + entry.container); }
+    for (const [kind, id] of [['container', entry.container], ...(entry.volumeIds || []).map(id => ['volume', id])]) {
+      const probe = spawnSync('docker', [kind, 'inspect', id], { encoding: 'utf8' });
+      const absent = probe.status === 1 && /No such (object|container|volume)/i.test(probe.stderr || '');
+      if (!entry.absence) entry.absence = [];
+      entry.absence.push({ kind, id, absent });
+      if (!absent) cleanupFailed = true;
+    }
     recordCleanup();
   }
+  if (diagnostic) console.log('Owned cleanup diagnostics: ' + diagnostic);
   if (cleanupFailed) {
     process.exitCode = 1;
     console.error('Owned cleanup diagnostics: ' + (diagnostic || 'unavailable'));
