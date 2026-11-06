@@ -10,6 +10,19 @@ const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const suite = option('--suite'), ref = option('--ref'), control = option('--control');
 const cases = {
+  'owner-policy': {
+    file: 'tests/owner-subject-policy.integration.test.js', flag: 'NS_OWNER_SUBJECT_POLICY_DOCKER_TEST',
+    controls: {
+      catalogue: ['lib/subject-admin/owner-policy.js', 'if (!project.has(permission)) forbidden();', '',
+        'rejects the code-catalogue intersection'],
+      ceiling: ['lib/subject-admin/owner-policy.js', 'if (!ceiling.has(permission)) forbidden();', '',
+        'rejects the current operator-ceiling intersection'],
+      delegation: ['lib/subject-admin/owner-policy.js', 'if (!delegation.has(permission)) forbidden();', '',
+        'rejects the current actor-delegation intersection'],
+      actor: ['lib/subject-admin/owner-policy.js', 'currentActor.active !== true || currentActor.can_update !== true ||', '',
+        'refuses inactive or non-management actors']
+    }
+  },
   settings: {
     file: 'tests/tenant-rest-settings-differential.integration.test.js', flag: 'NS_SETTINGS_DIFFERENTIAL_TEST',
     controls: {
@@ -134,7 +147,7 @@ let scratch;
 const containers = [];
 try {
   if (!Object.hasOwn(cases, suite) || !ref || (control && !Object.hasOwn(cases[suite].controls, control))) {
-    throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race|frame-acquisition|frame-concurrency|settings --ref <commit> [--control <declared case>]');
+    throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race|frame-acquisition|frame-concurrency|settings|owner-policy --ref <commit> [--control <declared case>]');
   }
   const selected = cases[suite];
   const repository = process.env.NS_REST_GATE_REPO || CRM;
@@ -246,8 +259,11 @@ try {
     console.log('Scratch-only control: ' + suite + '/' + control);
   }
   console.log('gate: next-slice ' + suite + '\n  tree ' + head);
+  const ownerResult = path.join(scratch, '.owner-policy-result.json');
   const result = spawnSync(process.execPath, [mocha, '--fail-zero', '--exit', '--timeout', '120000',
     ...((suite === 'profile' || suite === 'settings') ? ['--require', './tests/hooks.js'] : []),
+    ...(suite === 'owner-policy'
+      ? ['--no-config', '--no-package', '--reporter', 'json', '--reporter-option', 'output=' + ownerResult] : []),
     ...[selected.file].flat(), ...(control ? ['--grep', selected.controls[control][3]] : [])], {
     cwd: scratch, encoding: 'utf8', timeout: 240000, maxBuffer: 8 * 1024 * 1024,
     env: runtime
@@ -256,10 +272,36 @@ try {
   process.stderr.write(result.stderr || '');
   if (result.error) throw result.error;
   const output = (result.stdout || '') + (result.stderr || '');
-  const count = output.match(/(\d+) passing/);
-  if (result.status !== 0 || !count || Number(count[1]) === 0 || /[1-9]\d* pending/.test(output)) {
-    process.exitCode = 1;
-  } else console.log('PASS bounded ' + suite + '; full listener/runtime and milestone acceptance remain separate');
+  if (suite === 'owner-policy') {
+    // This fixture owns PostgreSQL itself. Require the entire admitted cohort,
+    // and distinguish intended unauthorized persistence from setup failures.
+    if (!fs.existsSync(ownerResult)) throw new Error('No owner-policy Mocha JSON result; setup failure is not evidence');
+    const report = JSON.parse(fs.readFileSync(ownerResult, 'utf8'));
+    console.log('Owner-policy result: ' + report.stats.passes + ' passing, ' +
+      report.stats.failures + ' failing, ' + report.stats.pending + ' pending');
+    if (control) {
+      const failure = report.failures[0];
+      if (result.status !== 1 || report.stats.tests !== 1 || report.stats.passes !== 0 ||
+          report.stats.failures !== 1 || report.stats.pending !== 0 ||
+          failure?.err.code !== 'ERR_ASSERTION' || Number(failure.err.actual) !== 200 ||
+          Number(failure.err.expected) !== 403 || !/persistent effects changed: true/.test(failure.err.message)) {
+        throw new Error('CONTROL-INVALID: expected unauthorized HTTP 200 versus 403 with persisted effects');
+      }
+      console.log('CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects');
+      process.exitCode = 1;
+    } else {
+      if (result.status !== 0 || report.stats.tests !== 22 || report.stats.passes !== 22 ||
+          report.stats.failures !== 0 || report.stats.pending !== 0) {
+        throw new Error('Expected exactly 22 owner-policy passes without pending or failures');
+      }
+      console.log('PASS bounded owner-policy; full listener/runtime and milestone acceptance remain separate');
+    }
+  } else {
+    const count = output.match(/(\d+) passing/);
+    if (result.status !== 0 || !count || Number(count[1]) === 0 || /[1-9]\d* pending/.test(output)) {
+      process.exitCode = 1;
+    } else console.log('PASS bounded ' + suite + '; full listener/runtime and milestone acceptance remain separate');
+  }
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;
