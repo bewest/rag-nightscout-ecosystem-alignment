@@ -159,7 +159,7 @@ preference.
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
 | **D21** | **One executable; `single` and `multitenant` name the tenancy profiles.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands. `nightscout single` remains today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). The multitenant roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are invoked as `nightscout multitenant <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7). `serve` describes an HTTP operation, not a tenancy mode, and is not the selected CLI namespace. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer and test tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's configuration split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed invocation of every multitenant role is part of the target or only a small-operator convenience | maintainer, 2026-10-26, amended 2026-11-03 — §2.12 |
 | **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them. The [owner authority amendment](owner-authority.md) governs delegation, management sessions and local public-key verification; private keys stay in the secrets component | maintainer, 2026-10-27; amended 2026-11-05 — §2.13 |
-| **D23** | **`realtime` is a reader: fan-out from the change feed, socket rooms and one `LISTEN` per held tenant, with no storage write authority. The socket's write messages (`dbAdd`, `dbUpdate`, `dbUpdateUnset`, `dbRemove`) and the alarm ack and snooze are writes, and under `multitenant` they go to `api` over REST; `realtime` refuses them with a reply that names the route. `single` is unchanged.** Roles stay arguments of one subcommand (D21); the database feed is the only path between roles (D6), and a direct `api` → `realtime` stream is not adopted (§2.14, revisit triggers from {C} §3.5.3.1). The alarm `ack` stays on the `/alarm` socket and `realtime` forwards it to `api` | maintainer, 2026-11-06, via session -8c ("websocket forwarding to the API, as it simplifies the matrix and maintenance and architecture") — §2.14 |
+| **D23** | **`realtime` is a reader: fan-out from the change feed, socket rooms and one `LISTEN` per held tenant, with no storage write authority. The socket's write messages (`dbAdd`, `dbUpdate`, `dbUpdateUnset`, `dbRemove`) and the alarm ack and snooze are writes: under `multitenant`, `realtime` forwards every one of them unchanged, with the socket's own authorization, to an internal write endpoint on `api` that runs the same write step with the same `socket` source label, and relays the result into the socket's acknowledgement. No client changes. `single` is unchanged.** Roles stay arguments of one subcommand (D21); the database feed is the only path between roles for data (D6); the forward is a request from a reader to the writer, not a second path between roles, and a direct `api` → `realtime` stream is not adopted (§2.14, revisit triggers from {C} §3.5.3.1) | maintainer, 2026-11-06, via session -8c ("websocket forwarding to the API, as it simplifies the matrix and maintenance and architecture"); amended the same day to forward all socket writes, not only the ack ("amend D23 to forward all socket writes to the API") — §2.14 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -930,7 +930,7 @@ launcher.
 | `nightscout single` | today's server: one process, `ctx.ddata`, the cache, every listener | the process environment |
 | `nightscout multitenant api` | express and storage; no bus, no `ddata` | per-tenant, from the database |
 | `nightscout multitenant evaluator` | change feed, plugins, notifications; no express | per-tenant, from the database |
-| `nightscout multitenant realtime` | socket.io and the change feed; no storage writes: socket write messages are refused with the REST route and the alarm `ack` is forwarded to `api` (D23) | per-tenant, from the database |
+| `nightscout multitenant realtime` | socket.io and the change feed; no storage writes: every socket write message and the alarm `ack` are forwarded, with the socket's authorization, to `api`'s internal write endpoint (D23) | per-tenant, from the database |
 | `nightscout multitenant vcpool` | connector actors and the egress proxy | per-tenant, from the database |
 | `nightscout multitenant tenant-admin` | the tenant owner's configuration listener (D16) | per-tenant, from the database |
 | `nightscout multitenant admin` | the platform operator's listener, on its own interface (D7) | the deployment's own settings |
@@ -1120,11 +1120,13 @@ secret. Vault transit and a cloud key service are the production adapters, behin
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
 day: the strict settings read (`API3_SETTINGS_STRICT_READ_ENABLED`) is a floor, always on under `multi`.
 
-### 2.14 D23 — `realtime` is a reader; socket writes and acks are writes (maintainer, 2026-11-06)
+### 2.14 D23 — `realtime` is a reader; socket writes and acks are forwarded to `api` (maintainer, 2026-11-06, amended the same day)
 
 *Drafted by session -8c on 2026-11-06 at alignment `main` `7f461bfb`; **adopted by the maintainer the same
 day** with option (a) and the ack forwarded to `api`: "websocket forwarding to the API, as it simplifies the
-matrix and maintenance and architecture". Multitenant profile only; `single` is unchanged. Figures are quoted from the documents named;
+matrix and maintenance and architecture"; **amended the same day to option (c) for every socket write**
+("amend D23 to forward all socket writes to the API"), after the corpus search below showed AndroidAPS
+3.4.2.3's NSClient (v1) plugin uploads over the socket. Multitenant profile only; `single` is unchanged.* Figures are quoted from the documents named;
 code lines are read from CRM `35903069`.*
 
 **What the decisions already say.** D5 names `realtime` "fan-out". D21's subcommand table says
@@ -1157,20 +1159,19 @@ for any socket.io client. The server's v3 sockets accept no data writes: `/stora
 | LoopFollow v7.1.0 (`NightscoutSocketManager.swift:167, 194`) | v1 socket, `authorize`, `dataUpdate` | none (read only) |
 | xDrip 2026.07.15, xdripswift 6.3.1, Trio v0.8.4, nightscout-librelink-up v3.3.0, nightguard, LoopCaregiver, NightscoutKit | no socket.io client found | none |
 
-Two consequences for the options below. The AndroidAPS NSClient (v1) plugin shipped in 3.4.2.3 is a
-third-party socket writer; under option (a) a user on that plugin must move to NSClient V3, which
-AndroidAPS `dev` already made the only plugin. And the alarm `ack` over `/alarm` is what AndroidAPS V3,
-`dev` and the multiplatform tree all send, so (a) cannot move the ack to REST without breaking them:
-`realtime` must keep accepting `ack` on the socket. Who persists it is a maintenance and scalability
-choice, not a compatibility one, and the recommendation is **forward it to `api`** over an internal
-request carrying the socket's own tenant token. The alternative, `realtime` writing the ack row itself,
-is narrow only in schema: a replayable ack row needs the tenant write binding, the commit clock fence and
-the commit event, which is the write step, so `realtime` would carry the write machinery and a
-write-capable database role for one message type. Forwarding keeps one writer surface, a read-only role
-for `realtime` (a compromised reader cannot write), direct `LISTEN` connections without a write pool, and
-every write-side control in one place; its cost is one internal request per ack (human-rate, latency
-UNMEASURED) and acks waiting out an `api` outage while alarms keep arriving from the feed. Nocturne is a server with its own hubs, not a
-client of this socket.
+Two consequences. The AndroidAPS NSClient (v1) plugin shipped in 3.4.2.3 is a third-party socket
+writer whose whole upload path is `dbAdd` and `dbUpdate` with a socket acknowledgement (it reads `_id`
+from an add's reply and a `result` string from an update's; no ack means it retries). Refusing those
+messages under `multitenant` would cut that plugin off until its users moved to NSClient V3, which
+AndroidAPS `dev` has already made the only plugin. And the alarm `ack` over `/alarm` is what AndroidAPS
+V3, `dev`, the multiplatform tree and the web client all send. The amendment therefore forwards every
+socket write the same way: `realtime` passes the message unchanged, with the socket's own
+authorization, to an internal write endpoint on `api` that runs the write step with the `socket`
+source label (today `lib/server/websocket.js:54-56`), and relays the write result into the
+acknowledgement. The rules the socket's writes depend on (the treatments preflight, the similar-record
+window, the reply shape) stay in the one write step, so nothing is re-implemented and no client
+changes. `realtime` holds no write grant: a replayable row needs the tenant write binding, the commit
+clock fence and the commit event, and all of that stays in `api`.
 
 **The conflation.** If the write messages stay on `realtime`, it is not a reader: it needs the
 write step, the tenant's storage write authority, the commit event and every write-side control
@@ -1183,9 +1184,9 @@ the socket's writes to leave `realtime`.
 
 | option | what changes | long-term direction | compatibility | maintenance | reliability | performance |
 |---|---|---|---|---|---|---|
-| **(a) `realtime` is a reader** *(recommended)* | the browser's reports editor moves to REST on `api`; the alarm ack stays on the `/alarm` socket; `realtime` forwards it to `api`, which writes the tenant-keyed ack row the evaluator consumes from the feed (contract §7); under `multitenant` the socket refuses `dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove` with a reply naming the route; `single` keeps today's socket writes | matches D5, D21 and {C}: one writer surface, readers stateless beyond connections | the web client's reports editor moves to REST; AndroidAPS 3.4.2.3's NSClient (v1) plugin stops working under `multitenant` and its users move to NSClient V3 (the only plugin on AndroidAPS `dev`); the alarm `ack` stays on `/alarm` for AndroidAPS V3 and LoopFollow-class clients | one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in `single` only | a stuck `realtime` can only make realtime stale ({C} §3.5.3); writes never wait on fan-out | fan-out cost unchanged; acks add one REST write per ack |
+| **(a) `realtime` is a reader, socket writes refused** *(adopted first, then superseded by (c) the same day)* | the browser's reports editor moves to REST on `api`; the alarm ack stays on the `/alarm` socket; `realtime` forwards it to `api`, which writes the tenant-keyed ack row the evaluator consumes from the feed (contract §7); under `multitenant` the socket refuses `dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove` with a reply naming the route; `single` keeps today's socket writes | matches D5, D21 and {C}: one writer surface, readers stateless beyond connections | the web client's reports editor moves to REST; AndroidAPS 3.4.2.3's NSClient (v1) plugin stops working under `multitenant` and its users move to NSClient V3 (the only plugin on AndroidAPS `dev`); the alarm `ack` stays on `/alarm` for AndroidAPS V3 and LoopFollow-class clients | one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in `single` only | a stuck `realtime` can only make realtime stale ({C} §3.5.3); writes never wait on fan-out | fan-out cost unchanged; acks add one REST write per ack |
 | **(b) `realtime` keeps the write path** | `realtime` embeds the write step and holds write authority; the commit event is emitted from two roles | contradicts D21's "no storage writes" and the matrix's r/o | client protocol unchanged | two writers to keep equal; every write-side control runs twice | socket connection and write availability coupled | none |
-| **(c) `realtime` brokers writes to `api`** | socket write messages are forwarded to `api` over an internal HTTP hop carrying the socket's tenant credential; the reply is relayed | keeps the reader/writer split; adds an internal role-to-role trust boundary (D7 planes) | client protocol unchanged | an internal client in `realtime`, its credential forwarding and its failure mapping to maintain | one more hop on the write path; an `api` outage is visible as socket write failures | one extra request per socket write |
+| **(c) `realtime` forwards every socket write to `api`** *(adopted)* | every socket write message and the alarm `ack` are forwarded unchanged, with the socket's own authorization, to an internal write endpoint on `api` that runs the write step with the `socket` source label; the result is relayed into the socket acknowledgement; a failed forward is no acknowledgement, never a success reply | keeps the reader/writer split and one writer surface; adds an internal reader-to-writer request on an address only `realtime` reaches (D7 planes) | client protocol unchanged for every client in the corpus, including AndroidAPS 3.4.2.3 NSClient (v1) and the browser | one internal endpoint and one forwarder, against four refusal paths plus two client changes; the forwarder carries messages rather than interpreting them | an `api` outage fails socket writes as it fails REST writes, and the client's no-ack retry behaves as today; a stuck `realtime` still only makes realtime stale | one internal request per socket write (uploader rates are a devicestatus every few minutes per site); hop latency and its effect on ack timing UNMEASURED |
 
 **Is all role-to-role traffic through PostgreSQL, and was a direct `api` → `realtime` stream
 considered?** Yes to both, already decided and measured. D6 makes the change feed the spine
@@ -1203,18 +1204,22 @@ than about 100 listening processes, a change rate near 10⁴/s, storage leaving 
 requirement that fan-out survive database unavailability ({C} §3.5.3.1). D23 does not reopen that;
 it only settles which role writes.
 
-**What users and operators notice.** Under (a), browser edits in reports and alarm acks arrive
-over REST; nothing changes for uploaders, followers or `single` operators. A multitenant operator
+**What users and operators notice.** Nothing changes for any client: socket writes and acks are
+acknowledged as today, and `single` operators see no change. A multitenant operator
 can scale `api` and `realtime` independently and can run `realtime` through a direct PostgreSQL
 connection ({C} §3.5.3.1's pooler trap) without giving it write grants.
 
-**Entry conditions before (a) is wired** (each with a control that must go red):
+**Entry conditions before the forward is wired** (each with a control that must go red):
 
 1. The pinned client corpus is searched for socket writers: **done 2026-11-06**, the table above; rerun when `workspace.lock.json` moves a client pin.
-2. A socket `dbAdd` under `multitenant` is refused with the named route; control: remove the
-   refusal and the write must reach storage without `api`'s authority path, red.
-3. The alarm ack by REST writes the ack row and the evaluator honours it across a restart;
-   control: drop the ack row's tenant key, red (the contract's §8 shape).
+2. A replay of the pinned AndroidAPS 3.4.2.3 NSClient (v1) upload sequence against `api` plus a
+   forwarding `realtime` stores the same results and returns the same acknowledgements as the
+   single-tenant baseline, including a retried `dbAdd`; control: acknowledge before `api` confirms,
+   and a lost-write assertion must go red. The M4 client-binary lab packet is the home for this.
+3. The forward carries the socket's credential and `api` authorizes as if the client had called;
+   control: forward with a role credential instead, and a cross-tenant write must be refused, red.
+   The alarm ack row written by `api` is honoured by the evaluator across a restart; control: drop
+   the ack row's tenant key, red (the contract's §8 shape).
 4. The role table in `lib/server/serve/roles.js` states each role's inputs and outputs (listener,
    storage write authority, feed consumer, egress) as fields, not prose, so a composed process can
    be checked against them; `realtime` declares no write authority.
