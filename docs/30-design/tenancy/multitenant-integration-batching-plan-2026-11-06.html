@@ -5265,7 +5265,7 @@
 <p><em>Contributor-facing execution plan, 2026-11-06, living. It says how work on the
 multitenant preview is batched, what verification runs at each stage, and which
 batches sit on the critical path to the M3 and M4 gates. Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5ecdc0cf2be37da54d047a87b092721f164dd466/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7bb7453a925aaf156bceb12cf062a55d114465c0/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap-2026-11-02.html">REST delivery roadmap</a>
@@ -5440,10 +5440,10 @@ dispatched by the coordinating session that wrote this plan.</p>
 <td><strong>Done 2026-11-06:</strong> #8898 head is <code>35903069</code>, body refreshed from R54. Remaining: read back CI and CodeQL on that head and record the result; no PG suite executes in CI until B5 lands.</td>
 </tr>
 <tr>
-<td><strong>B2: clock batch → next R number</strong></td>
-<td>lane D (HTTP, done), root compatibility (lower port), coordinator (join)</td>
-<td>D head <code>3532c1a4</code> with product fix <code>11770146</code>; lower-port fixture <code>887c4aad</code>; cumulative <code>35903069</code></td>
-<td><strong>Focused HTTP part done</strong> (tenant-clock-http-fixed-recovery report: functional 7 / 1 pending / 0 failing; listener-removal control 0 / 2 with ECONNRESET and worker exit 1; restored 1 / 0). Remaining: lower-port eight cases on <code>887c4aad</code>; freeze clock plus connection repair on 359; one full/browser/prcheck; serialization, readiness and rollback source ablations that the focused slot did not run. Predicted: full passing count rises by the new cases, 0 failing; opt-in default off; contention and latency stay UNMEASURED until the opt-in benchmark runs in the slot.</td>
+<td><strong>B2: clock batch → R56</strong></td>
+<td>peer session (join, done), coordinator (publication)</td>
+<td>R54 <code>35903069</code> + clock lane <code>11770146</code> + clock HTTP lane <code>3532c1a4</code></td>
+<td><strong>Done, recorded as R56</strong> on frozen join head <code>65bb8456</code>, local and unpushed: clock mode 28 / 1 pending (benchmark opt-in) / 0; full 7,187 / 81 / 0; browser 684 / 0 / 0; prcheck OK. Three ablations red and restored: serialization 0/3, readiness 0/2, rollback 0/3. Passing rises by 43 over R54, five of them test-only cases of the unaccepted replica candidate <code>714f6c8b</code> that the HTTP fixture requires. Remaining: the opt-in benchmark, Mongo comparison, mixed writers, bulk ties and SIGKILL cleanup bound stay UNMEASURED; six pre-existing lint errors in the clock HTTP lane's test files; publication of <code>65bb8456</code> to #8898 is the maintainer's.</td>
 </tr>
 <tr>
 <td><strong>B3: profile 2ee acceptance</strong></td>
@@ -5460,8 +5460,8 @@ dispatched by the coordinating session that wrote this plan.</p>
 <tr>
 <td><strong>B4a: controls on the cumulative head</strong></td>
 <td>root coordinator, next runtime slot</td>
-<td>the registered archived suites and their <code>--control</code> variants; <code>35903069</code></td>
-<td>queue gates for every multitenant item run against <code>35903069</code> with the admin URI set, positives and controls, recorded as one R entry; item <code>--ref</code> values then move to <code>35903069</code>. Predicted: all positives green, every control red with its recorded symptom. A green control is a vacuous gate, not a pass.</td>
+<td>the registered archived suites and their <code>--control</code> variants; the current frozen head, <code>65bb8456</code> since R56</td>
+<td>queue gates for every multitenant item run against the frozen head with the admin URI set, positives and controls, recorded as one R entry; item <code>--ref</code> values then move to that head. Predicted: all positives green, every control red with its recorded symptom. A green control is a vacuous gate, not a pass.</td>
 </tr>
 <tr>
 <td><strong>B5: corpus command and CI job</strong></td>
@@ -5485,8 +5485,8 @@ dispatched by the coordinating session that wrote this plan.</p>
 </table>
 <p>Draft #8891 head at read-back on 2026-11-06 is <code>dff9a8d4</code> (R45), so the R55
 head <code>2ee8b493</code> is not yet published; that is a maintainer push, not a lane task.</p>
-<p>Order of dependence: B1 and B3 are done except for publication read-backs. B2
-feeds B7. B4 tells the maintainer which milestone can be promoted first; it does
+<p>Order of dependence: B1, B2 and B3 are done; B2's join head awaits publication.
+B2 fed B7, whose first recovery slice can now be scheduled against <code>65bb8456</code>. B4 tells the maintainer which milestone can be promoted first; it does
 not block B5 or B6. B5 removes the slot bottleneck for every later batch, so it
 is started now rather than after B2.</p>
 <h2 id="5-lane-ownership-and-coordination">5. Lane ownership and coordination<a class="headerlink" href="#5-lane-ownership-and-coordination" title="Permanent link">&para;</a></h2>

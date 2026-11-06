@@ -3223,7 +3223,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-06 at <code>e268c181c</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>2a9ed5705</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3266,15 +3266,15 @@
 </tr>
 <tr>
 <td>runnable gates</td>
-<td>433</td>
+<td>423</td>
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>375</td>
+<td>385</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 808 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 385 of the 808 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3494,7 +3494,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/alarms</code></td>
 <td>minor</td>
-<td>5 run + 4 no-gate</td>
+<td>4 run + 5 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-B</code></td>
@@ -3502,7 +3502,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/cache</code></td>
 <td>patch</td>
-<td>6 run + 2 no-gate</td>
+<td>5 run + 3 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-C</code></td>
@@ -3510,7 +3510,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/auth</code></td>
 <td>major</td>
-<td>3 run + 4 no-gate</td>
+<td>2 run + 5 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-J</code></td>
@@ -3518,7 +3518,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/throttle</code></td>
 <td>patch</td>
-<td>5 run + 3 no-gate</td>
+<td>3 run + 5 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-C-REMEDIATE</code></td>
@@ -3534,7 +3534,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/coercion</code></td>
 <td>minor</td>
-<td>5 run + 2 no-gate</td>
+<td>4 run + 3 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-E</code></td>
@@ -3542,7 +3542,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/reads</code></td>
 <td>major</td>
-<td>6 run + 6 no-gate</td>
+<td>5 run + 7 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-F</code></td>
@@ -3558,7 +3558,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/food</code></td>
 <td>minor</td>
-<td>5 run + 2 no-gate</td>
+<td>4 run + 3 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-H</code></td>
@@ -3566,7 +3566,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/merge</code></td>
 <td>patch</td>
-<td>5 run + 3 no-gate</td>
+<td>4 run + 4 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-I</code></td>
@@ -3574,7 +3574,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <td><code>released</code></td>
 <td><code>bf/parms</code></td>
 <td>patch</td>
-<td>5 run + 2 no-gate</td>
+<td>4 run + 3 no-gate</td>
 </tr>
 <tr>
 <td><code>P0-K</code></td>
@@ -3714,16 +3714,15 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>minor</code>.</strong> Maintainer ruling 2026-09-17: the per-request locale handling on POST /api/v1/alexa and POST /api/v1/googlehome is a defect, not a capability. ctx.language.set and moment.locale are process-global, so a request carrying request.locale re-languaged every later request for every other user - which was never the intent. Removing it is a correction, and the branch needs an ordinary review, not an explicit capability-removal yes.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8739, merged 2026-09-20) and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/alarms</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains 7a5561f4 (#8739's merge). Red if master is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-alarms were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; <code>npm run test:unit</code> is not a gate here because it asserts less than it looks like. It resolves to a 44-file brace list, it needs MongoDB (verifyauth x4 and API_SECRET x2 fail without it even on pristine dev), and tests/api.alexa.test.js and tests/api.googlehome.test.js - two of the four files this branch adds - are in neither local script. CI's <code>test-ci</code> runs all 159 files and does cover them; a gate that mirrors the local script is weaker than CI, not equal to it.</li>
 <li><strong>NO GATE</strong> &mdash; Nothing exercises the ENABLE warning through a booted plugin registry. GT4 had to hand-reconstruct the plugin-name list to test it, and a reconstructed registry is not the registry. Needs a boot-level test.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5dcf783fdbb20188c378d79121dcbe860425eede origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5dcf783fdbb20188c378d79121dcbe860425eede official/dev</code></li>
 <li>containment: the measured tip of bf/alarms is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8739 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
 <li><code>[network]</code> <code>node tools/queue/gates/pr-body-parity.js --only 8739</code></li>
@@ -3784,16 +3783,15 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> performance only; no declared surface moves.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8740, merged 2026-09-20) and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/cache</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[integration]</code> <code>node tools/queue/gates/t02-read-ratio.js</code></li>
 <li>T0.2's stated gate, run live, and it is MET - an untyped /api/v1/entries read must come within 2x of a typed one at count=10, and it is 0.7x. It sits beside the T0.3 gate on purpose: that one is red and this one is green, and showing only one would misrepresent the branch. Non-vacuity is structural: the harness reads lib/api/entries/index.js out of the worktree and names the shape it found - clone-then-slice on dev, slice-then-clone on the branch. Measured 2026-09-16: dev FAILS at 42.3x, the branch PASSES at 0.7x. SKIPS when the worktree has no node_modules.</li>
 <li><code>[integration]</code> <code>node tools/queue/gates/t03-cycle-clone-budget.js</code></li>
 <li>T0.3's stated gate, run live, and red by design - the budget is under 1 ms and the three cycle calls are 2.66. The workload is recorded in docs/60-research/remedial/t02-t03-cache-clone-2026-09-15.md: §2 names the harness (tools/mt-bench/apitier.js, arm <code>cycle</code>) and the fixture - 576 entries, 600 treatments of which 361 survive retention, 576 device statuses with 72-point prediction arrays, DEVICESTATUS_DAYS=2 - and §10 gives the command. Measured 2026-09-16 on Node v24.15.0: branch 2.656 ms (recorded 2.657), origin/dev 3.929 ms (recorded 3.747) - ordinary variance on a timing bench, same direction and magnitude. Non-vacuity is structural: the harness reads the live call sites out of the worktree and prints them (dev entries=insertData, branch entries=insertDataRef) and throws on a tree it cannot recognise, so it cannot report the branch's number for dev's code. Positive control: --budget 5 passes. SKIPS when the worktree has no node_modules.</li>
 <li><strong>NO GATE</strong> &mdash; The 98% of the remaining cost is devicestatus, whose caller rewrites fields in place. Taking it needs proof that nothing in the plugin tier writes to a device-status document. A grep is not that proof when the failure mode is a field silently vanishing from every API read served out of the cache. There is no test that would catch it.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 4f86bab1637e926502c9b02af008cbba4f424c28 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 4f86bab1637e926502c9b02af008cbba4f424c28 official/dev</code></li>
 <li>containment: the measured tip of bf/cache is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><code>[network]</code> <code>node tools/queue/gates/pr-body-parity.js --only 8740</code></li>
 <li>the live body of PR #8740 still matches the file it was posted from. It does NOT measure whether the body is true; parity with a wrong file is still parity.</li>
@@ -3854,10 +3852,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>major</code>.</strong> GT4: beyond the two fixes, the branch narrows lib/authorization/storage.js to write only an allow-list of fields (name, roles, notes, created_at), so any field a third-party admin tool has stored is dropped on the next edit with NO error. It also adds <code>notes</code> to the GET /api/v1/subjects response. The throttle change alone would be minor - the sleep moved to the failure path, so no request that authenticates is delayed by another client's failures behind a shared proxy.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth official/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth official/dev</code></li>
 <li>bf/auth ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once #8754 merges. Needs <code>git -C externals/cgm-remote-monitor-official fetch origin</code> first.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/auth</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains ce82f0cd (bf/auth's content commit, shipped through #8754). Red if master is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-auth were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
@@ -3918,12 +3915,10 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> no declared surface moves and no default changes. For any given request the delay only ever SHRINKS - a successful authentication is no longer delayed at all - so nothing that worked stops working. An added log line is not a surface. The secure default is a later and deliberate bump.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle official/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle official/dev</code></li>
 <li>bf/throttle ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once #8754 merges. Needs <code>git -C externals/cgm-remote-monitor-official fetch origin</code> first.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle origin/chore/nightscout-modernization &gt;/dev/null</code></li>
-<li>The property this branch exists for - it merges clean with PR #8605. With the peer-address plumbing included it conflicted in five files (index.js, storage.js, alarmSocket.js, security.js, websocket.js). Non-vacuity, reproduced 2026-09-16: the identical command against bf/auth, which narrows storage.js, CONFLICTS - so this is not passing because merge-tree always passes.</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/throttle</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge against the modernization branch (<code>merge-tree --write-tree bf/throttle official/chore/nightscout-modernization</code>) measured the property this branch existed for: that it would merge clean with PR #8605 (with the peer-address plumbing included it had conflicted in five files; its 2026-09-16 control was the same command against bf/auth, which conflicted). That question is settled: #8605 merged into dev on 2026-10-26 (47723cda) and bf/throttle is contained in official/dev and, through 15.0.9, in official/master. The gate had no control entry and could not fail any more.</li>
 <li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official grep -qI peer-address bf/throttle &amp;&amp; exit 1 || exit 0'</code></li>
 <li>lib/server/peer-address.js is NOT on this branch and nothing references it. A tracking gate against the obvious regression - re-adding that module re-creates the four-file conflict with #8605, and it would look like a harmless improvement to anyone who had not measured it.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 435419ce official/master</code></li>
@@ -4050,14 +4045,13 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>minor</code>.</strong> GT4 measured the change in answers: find[duration][$gte]=30 goes from {"$gte":"30"} (matched nothing) to {"$gte":30}; find[insulin][$gte]=1.5 from {"$gte":1} to {"$gte":1.5}. $exists operands are no longer coerced as field values: the old walker produced {"$exists":NaN}, which MongoDB reads as true, so $exists=true answered correctly by accident; the branch reads the operand as a boolean (BOOLEAN_OPERANDS / readBooleanOperand in lib/server/query.js), which is what makes $exists=false correct (BF-40). No request that worked stops working.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8737, merged 2026-09-18) and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/coercion</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains b7234753 (the fix commit merged by #8737). Red if master is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-coercion were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 official/dev</code></li>
 <li>containment: the measured tip of bf/coercion is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8737 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
 <li><code>[network]</code> <code>node tools/queue/gates/pr-body-parity.js --only 8737</code></li>
@@ -4117,10 +4111,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>major</code>.</strong> GT4: six previously-accepted ?count= spellings now return 400, and the validator is app.use'd on the WHOLE v1 app before every router - so it covers /treatments, /profile, /devicestatus, /notifications, /activity, /food, /status, /alexa, /googlehome, and WRITES as well as reads. A POST /api/v1/treatments?count=0 now returns 400 where it previously succeeded. The branch CHANGELOG lists read routes only.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8738, merged 2026-09-18) and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/reads &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/reads</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[static]</code> <code>node tools/queue/gates/bf-reads-read-contract.js</code></li>
 <li>The database-free half of the branch's behaviour, driven through the four pure modules the six fixes live in: parseCount/hasCount/applyCount, the dotted-?fields= projector, the _id tiebreak in the v3 sort chain, and the count path's use of query_for with nothing printed. 8 assertions. Built-in negative control: <code>--rev origin/dev</code> runs the identical assertions against dev materialised from the object database and gives 4 failing. (A branch-has-a-commit check is not a substitute: it passes for origin/dev, origin/master and bf/alarms too.)</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53 official/master</code></li>
@@ -4129,7 +4122,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <li><strong>NO GATE</strong> &mdash; <code>npm run test:unit</code> is not a gate here: not one of the five test files this branch adds is in its 44-file brace list - all five are api<em>/api3</em> and match test:integration's glob - so the suite could pass in full with every fix reverted.</li>
 <li><strong>NO GATE</strong> &mdash; The ordering constraint inside the branch (BF-05's commit must follow BF-01's) is not machine-checked. The two commits are 3b588098 and 4772b983 on the current tip; any gate quoting other SHAs is stale. A real gate would assert the relative order of the two by subject line, and nobody has written it.</li>
 <li><strong>NO GATE</strong> &mdash; The CHANGELOG on this branch lists read routes only, while the ?count= validator covers writes too. Nothing checks a release note against the code it describes.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa official/dev</code></li>
 <li>containment: the measured tip of bf/reads is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8738 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
 <li><strong>NO GATE</strong> &mdash; The two-path behaviour of ?count=0 is measured but not asserted. tools/probes/count0-two-paths.js reproduces it - 0 rows from the cache and all 24 from the database on dev, 400 on both after this branch, with two controls that stay sane on each tree - but it PRINTS rather than exits non-zero, so it is a probe and not a gate. Making it one means deciding what the contract IS, and that is a reviewer's call, not this queue's. It also needs two worktrees and a mongod.</li>
@@ -4254,14 +4247,13 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>minor</code>.</strong> GT4: it changes an HTTP API v1 response. /api/v1/food/quickpicks goes from filtering on the literal string {hidden:'false'} to {hidden:{$nin:[true,'true']}}, so quick picks written by any JSON client, and any record saved before the field existed, start appearing. Position ordering moves from lexicographic (in-query) to numeric (in-process). Records appear that did not; none disappears.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8735, merged 2026-09-20) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/food</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains 73495331 (the fix commit merged by #8735). Red if master is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-food were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 official/dev</code></li>
 <li>containment: the measured tip of bf/food is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8735 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
 <li><code>[network]</code> <code>node tools/queue/gates/pr-body-parity.js --only 8735</code></li>
@@ -4320,15 +4312,14 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> availability fix in client code; no declared surface moves</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8734, merged 2026-09-18) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/merge</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains b06c6faf (the fix commit merged by #8734). Red if master is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-merge were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
 <li><strong>NO GATE</strong> &mdash; <code>dataUpdate</code> still has no try/catch, so the NEXT throw from anywhere in the merge path has the same effect. This branch fixes one throw, not the missing boundary. No test asserts the boundary exists because it does not.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf882ebd84d627468c75dade0fe1fd01a1 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf882ebd84d627468c75dade0fe1fd01a1 official/dev</code></li>
 <li>containment: the measured tip of bf/merge is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8734 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
 <li><code>[network]</code> <code>node tools/queue/gates/pr-body-parity.js --only 8734</code></li>
@@ -4387,14 +4378,13 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> all three are bug fixes with no declared-surface movement. BF-38 is latent - no shipped catalogue uses more than %3.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8736, merged 2026-09-20) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms &gt;/dev/null</code></li>
-<li>trial-merge into origin/dev is conflict-free</li>
+<li><strong>NO GATE</strong> &mdash; Retired 2026-11-06. The trial merge into dev (<code>merge-tree --write-tree official/dev bf/parms</code>) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains eb0bc918 (the fix commit merged by #8736). Red if master is rewritten without it.</li>
 <li><strong>NO GATE</strong> &mdash; The branch-level test gates that ran in externals/work/crm-bf-parms were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 official/dev</code></li>
 <li>containment: the measured tip of bf/parms is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; Review and merge state of PR #8736 is upstream's, and cannot be gated from here without a GitHub API call. Tracked, not driven.</li>
 <li><code>[network]</code> <code>node tools/queue/gates/pr-body-parity.js --only 8736</code></li>
@@ -4453,7 +4443,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>minor</code>.</strong> It removes reachable behaviour - $expr on /profiles/ and the undocumented pipeline parameter - so it is not a patch by the project's own reading. It is not major either: no route is removed, no required input is added, no documented contract breaks, and the census of 14 client projects found zero senders of anything now refused. $type is ALLOWED. PR #8737 put readTypeOperand() on dev because find[sgv][$type]=2 must arrive as the number 2 or the request becomes an HTTP 500, measured against mongod 3.6.8 and 7.0.43. Refusing $type would regress that fix to gain nothing - it executes nothing and reads nothing outside the document. It is the one departure from the storage seam's set, and the cost is known: when the seam lands its AST needs a $type node or v1 narrows by one operator then. $not and $text stay refused - both were fixtures in #8737's tests rather than subjects, and their assertions are rewritten, not deleted.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix (PR #8743, merged 2026-09-18) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1a36f023 official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains 1a36f023 (#8743's merge). Red if master is rewritten without it.</li>
@@ -4649,9 +4639,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> a dependency pin move; the behaviour change is the connector's and is classified at P0-F.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:package.json | grep -q '"nightscout-connect": "0.1.0"'</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:package.json | grep -q '"nightscout-connect": "0.1.0"'</code></li>
 <li>origin/dev pins the exact published 0.1.0 from npm (#8762, merged 2026-09-24 as 153e5658).</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f61870f0 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f61870f0 official/dev</code></li>
 <li>The prerelease pin is on origin/dev: #8759's head f61870f0 (exact 0.1.0-dev.3, after #8752's 0.1.0-dev.2) is contained in dev.</li>
 <li><strong>NO GATE</strong> &mdash; A cgm-remote-monitor dev branch can pin a prerelease (for example "0.1.0-dev.1") to test it; a cgm-remote-monitor release pins only a full connector release.</li>
 </ul>
@@ -4708,7 +4698,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>n/a</code>.</strong> lockfile only</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:package-lock.json | python3 -c "import json,sys; e=json.load(sys.stdin)['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)"</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:package-lock.json | python3 -c "import json,sys; e=json.load(sys.stdin)['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)"</code></li>
 <li>the lockfile resolves nightscout-connect 0.1.0 from the npm registry.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 153e5658 official/master</code></li>
 <li>official/master (the released 15.0.9 and later) contains 153e5658 (#8762's merge). Red if master is rewritten without it.</li>
@@ -4820,7 +4810,7 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> performance only</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dfe2753d origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dfe2753d official/dev</code></li>
 <li>containment: the measured tip of bewest/wip/optimize-treatment-processing is in origin/dev, so the merge carried it. Holds after the branch moves or is deleted; reads local remote-tracking refs, so fetch origin first.</li>
 <li><strong>NO GATE</strong> &mdash; PR merge state is upstream's and cannot be gated from here without a GitHub API call. This item is tracked, not driven.</li>
 </ul>
@@ -4877,9 +4867,9 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> Unifying two implementations of one rule that already agree. If it changes an answer, the change belongs to whichever fix moved, not to this.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2&gt;/dev/null &amp;&amp; git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" &amp;&amp; exit 1 || exit 0</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e official/dev:lib/server/count.js 2&gt;/dev/null &amp;&amp; git -C externals/cgm-remote-monitor-official show official/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" &amp;&amp; exit 1 || exit 0</code></li>
 <li>FAILS while the count rule is written twice on origin/dev: in lib/server/count.js (from P0-E, #8738) and in API v3's parseLimit (lib/api3/generic/collection.js). Goes green when one reading of the rule remains.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e origin/master:lib/server/count.js 2&gt;/dev/null &amp;&amp; git -C externals/cgm-remote-monitor-official show origin/master:lib/api3/generic/collection.js | grep -q "self.parseLimit" &amp;&amp; exit 1 || exit 0</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e official/master:lib/server/count.js 2&gt;/dev/null &amp;&amp; git -C externals/cgm-remote-monitor-official show official/master:lib/api3/generic/collection.js | grep -q "self.parseLimit" &amp;&amp; exit 1 || exit 0</code></li>
 <li>CONTROL, PASSES: the identical command against origin/master (15.0.8), which has parseLimit but no count.js, exits 0. So a red on the gate above is the duplication, not the command.</li>
 <li><strong>NO GATE</strong> &mdash; Nothing asserts that the two implementations AGREE while they both exist. A differential test - the same limit value through both paths, including 0, a negative, a non-numeric and a value above the maximum - is what would make the duplication safe until it is removed, and it does not exist. Two readings of one rule is the root cause of this whole family, so leaving it duplicated is a debt with a name.</li>
 </ul>
@@ -4932,11 +4922,11 @@ with 15.0.9. None of these needs a tenancy decision.</p>
 <p><strong>Why <code>patch</code>.</strong> Three bug fixes. None moves a declared surface. The alexa change adds a response where there is currently none, which is a repair of a hang rather than a new capability.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:lib/plugins/index.js | grep -q "return (p !== null)" &amp;&amp; exit 1 || exit 0</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:lib/plugins/index.js | grep -q "return (p !== null)" &amp;&amp; exit 1 || exit 0</code></li>
 <li>Follow-up 3. FAILS today - plugins.isPluginEnabled compares find()'s result with !== null, and find() returns UNDEFINED when it misses, so the function always returns true. No caller today, which is why it has no register id, but it is what the next instrument will reach for.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:lib/authorization/storage.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" &amp;&amp; exit 1 || exit 0</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:lib/authorization/storage.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" &amp;&amp; exit 1 || exit 0</code></li>
 <li>Follow-up 4. FAILS today. BF-05's unfixed sibling - the same shape, a different file. The shipping source is console.log('Loading',opts) with NO SPACE after the comma, and several documents quote it with a space; a pattern copied from them matches nothing and passes while the defect is present. This pattern is space-tolerant, shared with P0-C's gate so the two cannot diverge. The line is storage.js:82 on origin/dev 74fc6619; line numbers quoted elsewhere may refer to bf/auth. This gate measures origin/dev, which is where the fix has to land.</li>
-<li><code>[static]</code> <code>bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'</code></li>
+<li><code>[static]</code> <code>bash -c 's=$(git -C externals/cgm-remote-monitor-official show official/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'</code></li>
 <li>Follow-up 7. FAILS today. The switch on request.type has no default, so an unrecognised type calls neither res.json nor next() and the request hangs until the client times out. The first clause is the control - it asserts the switch is still there, so a red result cannot come from the file having been restructured. Measured: 0 occurrences of "default:" in the file. googlehome has no switch at all, so this is alexa-only.</li>
 <li><strong>NO GATE</strong> &mdash; Reachability of follow-up 7 is not measured. It needs an Alexa request type outside SessionEndedRequest, LaunchRequest and IntentRequest, and nothing here enumerates what Amazon can send.</li>
 </ul>
@@ -5565,7 +5555,7 @@ that costs.</p>
 <p><strong>Why <code>minor</code>.</strong> GT4: D3 5.16 -&gt; 7.9 by itself moves NO declared surface, so it forces neither minor nor major. 15.0.9 is a minor for reasons independent of D3 - lib/server/env.js gains DEBUG_LOGGING and CONNECT_DEBUG, debug logging flips to off by default, and a new lib/api2/loop-notification-errors.js appears.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[unit]</code> <code>sh -c 'd=$(mktemp -d) &amp;&amp; git -C externals/cgm-remote-monitor-official archive origin/dev | tar -x -C "$d" &amp;&amp; ln -s "$PWD/externals/cgm-remote-monitor-official/node_modules" "$d/node_modules" &amp;&amp; cd "$d" &amp;&amp; NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --require ./tests/hooks.js --exit tests/dependency-d3.test.js; r=$?; rm -rf "$d"; exit $r'</code></li>
+<li><code>[unit]</code> <code>sh -c 'd=$(mktemp -d) &amp;&amp; git -C externals/cgm-remote-monitor-official archive official/dev | tar -x -C "$d" &amp;&amp; ln -s "$PWD/externals/cgm-remote-monitor-official/node_modules" "$d/node_modules" &amp;&amp; cd "$d" &amp;&amp; NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --require ./tests/hooks.js --exit tests/dependency-d3.test.js; r=$?; rm -rf "$d"; exit $r'</code></li>
 <li>Runs origin/dev's own tree (git archive), not the checkout's working tree, which is not kept at dev. 24 passing (GT2), driving the real renderer and chart against the D3 7 browser bundle. Non-vacuous: it catches reverting mouseover handlers to the D3-5 signature and catches breaking d3.pointer.</li>
 <li><strong>NO GATE</strong> &mdash; lib/plugins/cob.js +49/-73 is filed under the D3 heading in release-readiness §2 and is NOT D3 work - it is 34e9b2da, "fix(cob): use the COB reported by the uploading system". It is more than twice the size of the entire D3 migration, it changes what a user reads when deciding about food and correction, and it has no line of its own in the 15.0.9 release decision. Nothing gates it because nobody has decided what it is.</li>
 </ul>
@@ -5730,7 +5720,7 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> narrows #8738's new refusal before any release has shipped it</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/count-zero-empty &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/count-zero-empty &gt;/dev/null</code></li>
 <li>Merges into origin/dev with no conflict.</li>
 <li><code>[integration]</code> <code>cd externals/work/crm-count-zero &amp;&amp; TEST=api.count-parameter npm run test-single</code></li>
 <li>36 cases at ce9503ac (the env file expects mongo on 127.0.0.1:27087, which must be started first). Break-its, re-run 2026-09-23 at ce9503ac - zero back to unbounded (applyCount only) fails 8, zero back to 400 on reads fails 11, deletes skipping the check (the first commit) fails 6, deletes letting zero through fails 3, deletes refusing every count fails 1. The 8 delete cases pass on dev by design; they pin dev's rule.</li>
@@ -5786,7 +5776,7 @@ that costs.</p>
 <ul>
 <li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official show docs/mongodb-floor:README.md | grep -q "MongoDB 4.4 is \*deprecated\*"'</code></li>
 <li>the prepared branch carries the deprecation wording</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev docs/mongodb-floor &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev docs/mongodb-floor &gt;/dev/null</code></li>
 <li>the branch merges into dev without conflict</li>
 </ul>
 <p><strong>Evidence.</strong></p>
@@ -5893,11 +5883,11 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> Behaviour-neutral refactor: in production both routes already end in the same compiled function (measured 2026-09-24 at e549e1a6).</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" origin/dev -- lib</code></li>
+<li><code>[static]</code> <code>! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" official/dev -- lib</code></li>
 <li>One source, on dev: nothing under lib/ compiles env.trustProxy itself or reads Express's 'trust proxy fn'; app.js, the consumers, the delay list and api3/security.js go through trustFor(env) / clientIPFor(env). At e549e1a6 the same grep matches 10 lines.</li>
-<li><code>[static]</code> <code>! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" origin/dev -- lib tests ':!lib/server/client-ip.js'</code></li>
+<li><code>[static]</code> <code>! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" official/dev -- lib tests ':!lib/server/client-ip.js'</code></li>
 <li>One way to do it, on dev: outside client-ip.js no code or test names the old entry points; client-ip.js exports trustFor and clientIPFor only, and a test pins that. At d0a3d628 the same grep matches 36 lines.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 official/dev</code></li>
 <li>Containment: both commits are in dev, through #8763 into #8754 and #8754 into dev as 4f705217 (2026-09-25T01:33Z). Against rt/cut4 and origin/chore/nightscout-modernization the change conflicts in six files more than e549e1a6 did: the one-line consumer changes in app.js, websocket.js, authorization/index.js, api3/security.js, alarmSocket.js and storageSocket.js (RT-REBASE).</li>
 <li><strong>NO GATE</strong> &mdash; Tests, measured and recorded rather than re-run here: the branch worktree was removed after the merge. client-ip: 62 passing at e3354218 (60 at e549e1a6). Break-it, each reverted, 2026-09-24: security.js ignoring env -&gt; 3 failing; no per-env cache, app.js building its own policy, and a cache ignoring env.trustProxy changes -&gt; the one-policy test; a third export -&gt; the export test. On dev 4f705217, 2026-09-25: 2577 passing, 3 pending, 0 failing on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs (Node 20/22/24 x MongoDB 4.4/5.0/6.0). The pre-merge full-suite runs (2571 at d0a3d628, 2572 at e3354218) were on MongoDB 3.6.8, not MongoDB 7 as their commit messages say.</li>
 </ul>
@@ -5955,9 +5945,9 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> Changes the value of a label in the Loop push payload and in treatments Loop uploads; no API shape changes, and the key Loop requires is kept.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" origin/dev -- lib/api2</code></li>
+<li><code>[static]</code> <code>! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" official/dev -- lib/api2</code></li>
 <li>On dev, lib/api2 no longer reads the connection's peer as the sender's address; notifications-v2.js uses clientIPFor(env). At e3354218 the same grep matches notifications-v2.js:34.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 official/dev</code></li>
 <li>Containment: in dev through #8764 (into rt/trust-one-source), #8765 (into bf2/auth-hardening, 2026-09-25T01:26Z) and #8754 (into dev as 4f705217, 01:33Z). dev's tree is identical to 71987bb4's.</li>
 <li><strong>NO GATE</strong> &mdash; Tests, measured and recorded rather than re-run here: the branch worktree was removed after the merge. notifications-v2: 48 passing at 71987bb4 (43 at e3354218): the address Loop receives for TRUST_PROXY unset, 1, a proxy list and false, and through the real lib/api2 app. Break-it, each reverted: the peer address again -&gt; 3 failing; lib/api2 not passing env -&gt; the wiring test. On dev 4f705217: 2577/3/0 on Node 20.20.0, 22.22.0 and 24.15.0 against MongoDB 7.0.43, and in all nine CI jobs. The pre-merge run at 71987bb4 (2577) was on MongoDB 3.6.8, not MongoDB 7 as its commit message says.</li>
 <li><strong>NO GATE</strong> &mdash; Decided 2026-09-24 (maintainer): option 2 of the three recorded here - route the label through clientIPFor(env) so it follows TRUST_PROXY. Not chosen: (1) leave the proxy's address; (3) send a fixed label and no address. The accepted cost: the caregiver's public address is stored on remote overrides in the treatments collection, readable by anyone with read access, including anonymous visitors where AUTH_DEFAULT_ROLES grants reading. With TRUST_PROXY unset it is the forwarded-header address the caller sent (the endpoint requires notifications:loop:push). Loop decodes remote-address as a required String; the value is still a string whenever the request has a socket peer, as before.</li>
@@ -6778,7 +6768,7 @@ that costs.</p>
 <ul>
 <li><code>[static]</code> <code>node tools/queue/gates/client-unchanged-since-hand-check.js</code></li>
 <li>The 15.0.9 browser checks were done by hand (ec70aab0, and the drag again on #8760's head 8d797ba4). This rebuilds the candidate, origin/dev merged with the open 15.0.9 PR heads, and fails if any browser-side file, or any package outside a server-only list, differs from 8d797ba4. RED means the manual checks need repeating for what it names. Its control, #8760's own client change, is seen in the same run. Edit the --with list as 15.0.9 PRs open or merge.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/master origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/master official/dev</code></li>
 <li>dev descends from master with no divergence to reconcile</li>
 <li><strong>NO GATE</strong> &mdash; CI at dev's tip is not re-run here. Release PR #8598's checks (Node 20/22/24 x Mongo 4.4/5/6, CodeQL, Docker build and publish) were all green on 2026-09-22, read from GitHub. Re-running them needs the full matrix with replica sets, and dev has no real-browser test job, so the D3 chart behaviour is not covered by that green.</li>
 <li><strong>NO GATE</strong> &mdash; This release ships the D3 7 charts with the drag checked in a real browser, not by Nightscout's own mocha suite, which cannot see the drag clamps (RT-D3 answered 2026-09-24; the suite gap is RT-D3-SUITE on cut 1). Recording it as a no-gate keeps it from reading as covered.</li>
@@ -7446,11 +7436,11 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> A crash fix in an error renderer. No declared surface moves. The call-site half on cut 4 is part of that cut's own classification.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review</code></li>
+<li><code>[static]</code> <code>node tools/queue/gates/booterror-shape-coverage.js --ref official/chore/mime-exposure-review</code></li>
 <li>FAILS on cut 4: its booterror.js lacks dev's null-err guard (cut 4 is behind dev), and its bootevent.js has err-less push sites that produce the failing shape. Goes green when cut 4 carries the guard (a dev merge or rebase); the register asks for err at the call sites as well. The gate runs the map callback lifted from the ref's own file, with three control shapes that must render.</li>
-<li><code>[static]</code> <code>node tools/queue/gates/booterror-shape-coverage.js --ref origin/dev</code></li>
+<li><code>[static]</code> <code>node tools/queue/gates/booterror-shape-coverage.js --ref official/dev</code></li>
 <li>PASSES: origin/dev's renderer shows a desc-only boot error instead of throwing (e6a50e9a, merged with #8753).</li>
-<li><code>[static]</code> <code>node tools/queue/gates/booterror-shape-coverage.js --ref origin/master &gt;/dev/null &amp;&amp; exit 1 || exit 0</code></li>
+<li><code>[static]</code> <code>node tools/queue/gates/booterror-shape-coverage.js --ref official/master &gt;/dev/null &amp;&amp; exit 1 || exit 0</code></li>
 <li>CONTROL, PASSES because the gate FAILS on origin/master (15.0.8), whose renderer has no guard and throws on both err-less shapes. It shows the gate distinguishes a guarded renderer from an unguarded one.</li>
 <li><strong>NO GATE</strong> &mdash; Nothing renders the actual error.html template. The gate exercises the map that builds each error line, which is where the TypeError is thrown, but a full render needs EJS, express and a views path. The fix must be BOTH halves - pass err at both call sites AND make the renderer defensive - with a regression test asserting a desc-only boot error renders as HTML. Fixing only the call sites leaves the next caller to rediscover it.</li>
 </ul>
@@ -7509,7 +7499,7 @@ that costs.</p>
 <ul>
 <li><code>[static]</code> <code>grep -q "^## Verdicts" docs/60-research/remedial/modernization-backport-triage-2026-09-22.md</code></li>
 <li>The triage exists. It must carry, per commit, a reproduction on dev and a control.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/backports &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf2/backports &gt;/dev/null</code></li>
 <li>The two backports merge into origin/dev with no conflict.</li>
 <li><strong>NO GATE</strong> &mdash; Whether each commit fixes a live defect is established by running a probe on dev, not by reading the diff. The probes live with the triage.</li>
 </ul>
@@ -7562,7 +7552,7 @@ that costs.</p>
 <p><strong>Why <code>n/a</code>.</strong> tests only</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 96a2c948 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 96a2c948 official/dev</code></li>
 <li>
 <h1 id="8419s-merge-96a2c948-2026-09-25-is-contained-in-origindev">8419's merge 96a2c948 (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8419s-merge-96a2c948-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -7617,7 +7607,7 @@ that costs.</p>
 <p><strong>Why <code>minor</code>.</strong> An added option. The versioning policy classes a new user-visible option as minor; 15.0.9 carries it under a patch number by the maintainer's decision (2026-09-25), which the policy records as a departure.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3d42d4e origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3d42d4e official/dev</code></li>
 <li>
 <h1 id="8530s-merge-c3d42d4e-2026-09-25-is-contained-in-origindev">8530's merge c3d42d4e (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8530s-merge-c3d42d4e-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -7740,11 +7730,11 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> a delete that answered 404 for a record the API lists now deletes it; nothing else changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor aa1111b2 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor aa1111b2 official/dev</code></li>
 <li>
 <h1 id="8778s-merge-aa1111b2-2026-09-26-is-contained-in-origindev">8778's merge aa1111b2 (2026-09-26) is contained in origin/dev.<a class="headerlink" href="#8778s-merge-aa1111b2-2026-09-26-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF emptyIdentifier origin/dev -- lib/api3/storage/mongoCollection/utils.js</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF emptyIdentifier official/dev -- lib/api3/storage/mongoCollection/utils.js</code></li>
 <li>origin/dev's filterForEveryForm takes its _id fallback through emptyIdentifier (null or "", not an array; dev 750801a9 has none and fails this). A presence check; tests/api3.delete-every-form.test.js decides.</li>
 <li><strong>NO GATE</strong> &mdash; The behaviour is measured by tools/lab/triage-2026-09/api3-empty-identifier-delete.js, which boots a server and needs MongoDB, so it is not a queue gate. 2026-09-26 (Node 22.23.2, MongoDB 7.0.43): exit 1 on dev 750801a9 (null and "": v3 GET 200, soft and permanent DELETE 404, COB 30 g before and after), exit 0 on v15.0.8 92d08342, aa1111b2 and ff93fa94. #8778's test file on 750801a9 without the fix: 17 passing, 14 failing.</li>
 </ul>
@@ -7806,7 +7796,7 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> a report draws what it already loads; no API, setting or stored value changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbc6e75e origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbc6e75e official/dev</code></li>
 <li>
 <h1 id="8788s-head-bbc6e75e-is-contained-in-origindev-merged-2026-09-30-as-3014f883-red-before-that">8788's head bbc6e75e is contained in origin/dev (merged 2026-09-30 as 3014f883; RED before that).<a class="headerlink" href="#8788s-head-bbc6e75e-is-contained-in-origindev-merged-2026-09-30-as-3014f883-red-before-that" title="Permanent link">&para;</a></h1>
 </li>
@@ -7870,7 +7860,7 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> a page that could not be scrolled on touch screens now can; nothing else changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1298c9ed origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1298c9ed official/dev</code></li>
 <li>
 <h1 id="8790s-head-1298c9ed-is-contained-in-origindev-merged-2026-10-01-as-73c9528b">8790's head 1298c9ed is contained in origin/dev (merged 2026-10-01 as 73c9528b).<a class="headerlink" href="#8790s-head-1298c9ed-is-contained-in-origindev-merged-2026-10-01-as-73c9528b" title="Permanent link">&para;</a></h1>
 </li>
@@ -8164,17 +8154,17 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> repairs three regressions that exist only on dev (none is on 15.0.8); no setting or migration</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce7d754a origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce7d754a official/dev</code></li>
 <li>
 <h1 id="8781s-merge-ce7d754a-2026-09-26-is-contained-in-origindev">8781's merge ce7d754a (2026-09-26) is contained in origin/dev.<a class="headerlink" href="#8781s-merge-ce7d754a-2026-09-26-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a28fcecb origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a28fcecb official/dev</code></li>
 <li>
 <h1 id="8781s-fix-commit-a28fcecb-is-contained-in-origindev">8781's fix commit a28fcecb is contained in origin/dev.<a class="headerlink" href="#8781s-fix-commit-a28fcecb-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF restoreHistoryClock origin/dev -- lib/server/bootevent.js</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF restoreHistoryClock official/dev -- lib/server/bootevent.js</code></li>
 <li>origin/dev's boot restores the history clock (BF-144; ff93fa94 has no restoreHistoryClock and fails this). A presence check; tests/api3.history-restart.test.js decides.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF "b === null &amp;&amp; a === undefined" origin/dev -- lib/server/srv-dates.js</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF "b === null &amp;&amp; a === undefined" official/dev -- lib/server/srv-dates.js</code></li>
 <li>origin/dev's in-memory pre-read treats a wanted null as matching an absent field (BF-143; ff93fa94 fails this). A presence check; tests/api.same-time-treatments.test.js decides.</li>
 <li><strong>NO GATE</strong> &mdash; The behaviour is measured by booted-server probes that need MongoDB, so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB 7.0.43: tools/lab/triage-2026-09/retry-keeps-srvcreated.js (BF-143) exit 1 - srvCreated moves 30-41 ms on the four no-identity v1 re-POST arms on ff93fa94 only; kept on aa1111b2 and ce7d754a; v15.0.8 writes none. tools/lab/triage-2026-09/history-clock-restart.js (BF-144, 30,000 v1 entries) exit 1 - clock lead 25-26 s; after a restart the v3 and v1 writes land 23.5-24.8 s below the cursor and history returns 0 records on aa1111b2 and ff93fa94; on ce7d754a they land at cursor +1/+2 and both are returned; v15.0.8 has no lead (v1 entries carry no srvModified).</li>
 </ul>
@@ -8402,7 +8392,7 @@ that costs.</p>
 <p><strong>Why <code>patch</code>.</strong> an edit of a record stored twice leaves one record instead of two</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/api3/storage/mongoCollection/modify.js'</code></li>
+<li><code>[static]</code> <code>sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" official/dev -- lib/api3/storage/mongoCollection/modify.js'</code></li>
 <li>Holds while v3 replaceOne/updateOne remove no other stored form (the helper the v1 writes use for it is staleStringForms). A presence check only, inverted: it goes RED when the merge lands and must then be replaced by a behaviour gate.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour needs a booted server and a MongoDB. Measured 2026-09-25 by the #8758 freeze review on ab7b22d6: v3 PATCH edits one copy and PUT replaces one, each leaving two records; on 63dd716c (BF-117 sort) both write the ObjectId copy (tests/api3.delete-every-form.test.js, PATCH in both storage orders) and still leave the string copy. Re-measured 2026-09-25 on origin/dev e3adc91d and 15.0.8 (mongod 7.0.43, both insertion orders): still open. v3 PATCH and PUT edit the ObjectId copy and leave n=2. Websocket dbUpdate edits both copies and leaves n=2 (15.0.8: ObjectId copy only, n=2). v1 PUT is the only write that merges (n=1 on e3adc91d, n=2 on 15.0.8). Separately, on both builds a v3 PUT to a v1-born record without app is refused 400.</li>
 </ul>
@@ -10310,7 +10300,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a configuration file the project ships</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:docker-compose.yml | grep -q 'nofile'</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:docker-compose.yml | grep -q 'nofile'</code></li>
 <li>origin/dev's docker-compose.yml gives the mongo service a nofile ulimit (03fba725, merged with #8753). Reads origin/dev, not the clone's working tree. master (15.0.8) has no ulimits block.</li>
 <li><strong>NO GATE</strong> &mdash; REPRODUCED 2026-09-21: one branch's full suite (~2200 tests) against a plain <code>docker run -d mongo:7</code> with no ulimits killed the server. Startup warning <code>Soft rlimits for open file descriptors too low</code> (currentValue 1024, recommendedMinimum 64000), then during index creation <code>__posix_directory_sync</code> / <code>Too many open files</code> / error_code 24, then <code>Fatal assertion 23089 msgid 50853</code> at wiredtiger_util.cpp:772, then abort; container exit 14. Control: the same image with <code>--ulimit nofile=64000:64000</code> logs that warning ZERO times against TWO on the default. It is not a gate because reaching it takes a full suite against a deliberately under-provisioned mongod, and the side effect is a DEAD server - sibling worktrees sharing that mongod then fail their own suites with a <code>before all</code> timeout, which reads like a code regression. A gate whose failure mode breaks other items' gates does not belong in a shared runner. Evidence is in the register's BF-10 detail. The reproduction also shows it is not specific to the 5.0.32 image the shipped compose files pin - 7.0.43 does it too - and it does not need tenant scale: EXP-MT-040b reached it at 50 tenant databases; one ordinary test run is enough.</li>
 </ul>
@@ -11094,7 +11084,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> Restores a documented feature that is inert. No API or configuration surface changes.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf3/quickpick-rebuild &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf3/quickpick-rebuild &gt;/dev/null</code></li>
 <li>Merges into origin/dev with no conflict.</li>
 <li><code>[unit]</code> <code>cd externals/work/crm-bf3-quickpick &amp;&amp; n exec 20.20.0 npx mocha --timeout 30000 --exit tests/boluscalc.quickpick-rebuild.test.js tests/boluscalc.quickpick.test.js</code></li>
 <li>The 8 new tests and #8735's quick-pick tests, no database; 19 passing. These require lib/client/boluscalc.js directly, not the bundle. Control, run 2026-09-23 with tools/queue/gates/ablate.sh (boluscalc.js put back to origin/dev) - the new test file exits 6, the chooser offering only (none). The evidence's break-its B1 (the register's one-line candidate, handler stacked 4 times), B2 (rebuild removed) and B3 (BF-35's loop put back, wrong carbs) are each red.</li>
@@ -11165,7 +11155,7 @@ distinction is the only thing that makes the register mean anything - widening
 <ul>
 <li><code>[static]</code> <code>node tools/queue/gates/bf71-date-window-presence-check.js</code></li>
 <li>Reads the shipping lib/server/query.js out of the object database and asserts the dateString arm is not a bare presence check. FAILS today, by design. Non-vacuity proven both directions on 2026-09-21: against the scratch ref tmp/bf71-vacuity-probe (a date-constraint test spliced into an isolated copy) the gate goes green with its control still green, and against an empty QUEUE_GATE_ROOT it fails rather than passing by absence. The in-file control - the configured date field is tested by value - distinguishes "the matcher sees nothing" from "the defect is present".</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators official/dev</code></li>
 <li>A dependency check, not a claim about BF-71. The measurement that establishes this entry's severity was taken on a dev tip that already contained #8743; if the allowlist ever left dev the reproduction would need retaking before the <code>low</code> severity could be quoted. Green today.</li>
 <li><strong>NO GATE</strong> &mdash; The severity measurement is not in this repository and must not be read off the static gate. What set this entry to <code>low</code> was a booted v1 app against mongod 7.0.43 running the allowlisted control and both role settings in one process - five requests, two configurations. A static gate over one function cannot express that. The probe is externals/work/crm-advisory/tmp/bf71-date-window-default.js, gitignored in both repositories, and it carries its own control.</li>
 <li><strong>NO GATE</strong> &mdash; Nothing here gates the fix shape. One was verified on a scratch ref, not prescribed: testing dateString for a date constraint instead of for existence restored the 4-day window (3 records instead of 10) while the allowlisted wide bound still reached 10. The register does not choose between "test it like the other field" and "bound on whichever date field the query names".</li>
@@ -11413,11 +11403,11 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a dependency override moves; no declared surface changes unless the parser's behaviour does, which the suite must show it does not</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"</code></li>
 <li>FAILS if origin/dev overrides qs to 6.15.1 at the root or under request. Green since #8749 merged (2026-09-23).</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show bf/qs-6.16:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(0 if o.get(\"qs\")==\"6.16.0\" and o.get(\"request\",{}).get(\"qs\")==\"6.16.0\" else 1)"</code></li>
 <li>The prepared branch sets both qs overrides to 6.16.0.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/qs-6.16 &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/qs-6.16 &gt;/dev/null</code></li>
 <li>Merges into origin/dev with no conflict.</li>
 <li><strong>NO GATE</strong> &mdash; Exploitability through Nightscout's routes is not measured, and the remedy (6.16.0) changes the parser every request passes through; the full suite plus Nightscout's documented query shapes are the evidence it needs, and neither is a static gate.</li>
 </ul>
@@ -11482,7 +11472,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> A dependency pin moves to a newer patch of the same package. No declared surface of cgm-remote-monitor moves. It nonetheless needs a security note, which is a different obligation from a version number.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>node tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev</code></li>
+<li><code>[static]</code> <code>node tools/queue/gates/connector-pin-exposure.js --refs official/master,official/dev</code></li>
 <li>FAILS on origin/master for both arms - the v0.0.13 tag tarball (112 live console.* sites, 101 passing a non-literal argument, no debug guard anywhere) and an axios override of 1.16.0 against the connector's declared ^1.18.1. origin/dev is the control and passes both, which proves the gate reads the pins and not the command: dev pins the released nightscout-connect 0.1.0 exactly (#8762), whose tree deletes the leaking call sites (so "dev only makes the logging opt-in" is inaccurate), and its axios override 1.20.0 satisfies ^1.18.1.</li>
 <li><strong>NO GATE</strong> &mdash; No live run and no vendor account. The census is a source census of a git archive extraction, and rule 0 forbids creating an account or contacting a vendor. It is non-vacuous in the way that matters - the same scanner returns 112/101 on the leaking tree, 22/20 on the redacted ones, and correctly reports cut 4's commented-out MiniMed block as 47 calls with zero dynamic arguments, so it distinguishes deletion from commenting-out.</li>
 <li><strong>NO GATE</strong> &mdash; No runtime failure is claimed for the axios override, and no axios API was identified that the connector uses and 1.16.0 lacks. The defect is the silent constraint violation - <code>overrides</code> exists precisely to suppress the ERESOLVE that would report it - and nothing gates "a constraint was overridden into violation" in general.</li>
@@ -11673,7 +11663,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>major</code>.</strong> The repair on bf/auth narrows the loss rather than introducing it, but it also introduces an allow-list, so a third-party tool can no longer preserve its own fields by sending them in its own PUT - which it can do today, because save() writes the caller's object as given. That is a capability removal on an HTTP surface.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 official/dev</code></li>
 <li>The fix is in origin/dev. Fails while it is not.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields</code></li>
 <li>Built on bf2/auth-hardening, whose allow-list is the declared schema.</li>
@@ -11814,7 +11804,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> A bug fix to an opt-in notification, matching the maintainer's 2026-09-23 decision. Nothing that fires today stops firing; a missed request is made once. No setting, API or on-screen level changes.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf3/age-push-once &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf3/age-push-once &gt;/dev/null</code></li>
 <li>Merges into origin/dev with no conflict.</li>
 <li><code>[unit]</code> <code>cd externals/work/crm-bf3-agepush &amp;&amp; n exec 20.20.0 npx mocha --timeout 10000 --exit tests/age-notify-once.test.js tests/sensorage.test.js</code></li>
 <li>The sequence tests (24, each plugin driven the way bootevent.js does, missed windows included) and the changed sensorage test, no database; 32 passing. Control, run 2026-09-23 with tools/queue/gates/ablate.sh (the four plugins put back to origin/dev, agenotify.js removed) - the new test file exits 16, the missed-window tests failing with the original symptom. The evidence's full-tree break-it gives 17 red.</li>
@@ -11878,7 +11868,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a client-side bug fix; what is shown and sounded is unchanged with or without data</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf3/alarm-no-reading &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf3/alarm-no-reading &gt;/dev/null</code></li>
 <li>Merges into origin/dev with no conflict.</li>
 <li><strong>NO GATE</strong> &mdash; The branch's own test, tests/client.alarm-no-reading.test.js (4 passing), runs against the PRODUCTION BUNDLE in node_modules/.cache, not against lib/client/index.js. Measured 2026-09-23 - tools/queue/gates/ablate.sh with the fix reverted stays green (exit 0), because the ablated worktree borrows the donor's already-built bundle. So as a queue gate it would be vacuous. A gate needs the bundle rebuilt inside the ablated tree (npm run bundle). The evidence records the break-its run by hand with the bundle rebuilt - A (log lines back) 2 of 4 red, B (chart guard back) 2 of 4 red, C and D showing the invariants can fail - and a browser run on 15.0.8, dev and the branch.</li>
 <li><strong>NO GATE</strong> &mdash; The full suite (2390/0/3 on Node 20.20.0 and 22.23.2, +4 exactly) needs MongoDB and a rebuilt bundle, and is recorded in the evidence.</li>
@@ -12371,7 +12361,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> No route removed, no input added, no documented contract changed. The only behaviour that disappears is behaviour nobody was entitled to: on a <code>readable</code> instance an anonymous client still receives retroUpdate, which was confirmed as a live positive control on the fixed build.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev; an upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>test -f externals/work/crm-adv-retro/tests/websocket.loadretro-authorization.test.js</code></li>
 <li>The regression test exists in the worktree. Deliberately a file- existence check rather than a suite run - see the no-gate below.</li>
@@ -12437,7 +12427,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>minor</code>.</strong> It removes reachable behaviour that undocumented third-party clients may depend on - receiving alarms without subscribing - so it is not a patch by the project's own reading, whichever variant of the fix is chosen. Not major: no route removed, no required input added, and the shipped web client is unaffected because it subscribes.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope official/dev</code></li>
 <li>Containment: this tip is an ancestor of origin/dev, so the fix is in dev; an upstream revert or force-push turns it red.</li>
 <li><code>[static]</code> <code>test -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.security.test.js -a -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.ack.test.js</code></li>
 <li>Both regression test files exist in the worktree.</li>
@@ -12693,7 +12683,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> restores a 15.0.8 read behaviour that the coercion change removed</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab9c96e6 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab9c96e6 official/dev</code></li>
 <li>
 <h1 id="8771s-merge-ab9c96e6-2026-09-26-is-contained-in-origindev-it-carries-bfactivity-date-coercion-20c197bb">8771's merge ab9c96e6 (2026-09-26) is contained in origin/dev. It carries bf/activity-date-coercion 20c197bb.<a class="headerlink" href="#8771s-merge-ab9c96e6-2026-09-26-is-contained-in-origindev-it-carries-bfactivity-date-coercion-20c197bb" title="Permanent link">&para;</a></h1>
 </li>
@@ -12759,7 +12749,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a crash fix</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0ab266a3 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0ab266a3 official/dev</code></li>
 <li>
 <h1 id="8697s-merge-0ab266a3-is-contained-in-origindev">8697's merge 0ab266a3 is contained in origin/dev.<a class="headerlink" href="#8697s-merge-0ab266a3-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -13185,7 +13175,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> Bug fixes; no API or setting moves.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 official/dev</code></li>
 <li>Containment: 5581c5e4 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13248,7 +13238,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a defect in an unmerged fix; no API or setting moves</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 official/dev</code></li>
 <li>Containment: a2c7eb39 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13310,7 +13300,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a defect in an unmerged fix, and release-note wording</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b official/dev</code></li>
 <li>Containment: f1e8398b is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The corrected #8758 body (edit either copy only through v1; deleting either copy deletes both) is on the merged head's PR; the behaviour was kept by decision. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13372,7 +13362,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix; the request answers 200 and misses records</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd official/dev</code></li>
 <li>Containment: 1c2d1afd is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13434,7 +13424,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix; admin-only</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 official/dev</code></li>
 <li>Containment: ab7b22d6 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13496,7 +13486,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a defect in an unmerged fix, reachable only in-process</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 official/dev</code></li>
 <li>Containment: dd2cf8f1 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13557,7 +13547,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a crash fix; a request that stored an unusable id now stores a server id</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b official/dev</code></li>
 <li>Containment: 17add44b is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13619,7 +13609,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a defect in an unmerged fix</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac official/dev</code></li>
 <li>Containment: c3a34bac is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13681,7 +13671,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix in deletes and in which stored copy is read</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c official/dev</code></li>
 <li>Containment: 63dd716c is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -13743,7 +13733,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix in how existing records are read; nothing stored changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 99689bf9 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 99689bf9 official/dev</code></li>
 <li>
 <h1 id="8568s-merge-99689bf9-2026-09-25-is-contained-in-origindev">8568's merge 99689bf9 (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8568s-merge-99689bf9-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -13808,7 +13798,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix in how documented settings are read; a site that set all four values sees no change</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e812a68c origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e812a68c official/dev</code></li>
 <li>
 <h1 id="8766s-merge-e812a68c-2026-09-25-is-contained-in-origindev">8766's merge e812a68c (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8766s-merge-e812a68c-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -13873,7 +13863,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a documented setting starts doing what it says; no stored data or API changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ecb63223 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ecb63223 official/dev</code></li>
 <li>
 <h1 id="8767s-merge-ecb63223-2026-09-25-is-contained-in-origindev">8767's merge ecb63223 (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8767s-merge-ecb63223-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -13937,7 +13927,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix in how the clock page draws data it already has</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e2bbeb66 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e2bbeb66 official/dev</code></li>
 <li>
 <h1 id="8768s-merge-e2bbeb66-2026-09-25-is-contained-in-origindev">8768's merge e2bbeb66 (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8768s-merge-e2bbeb66-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -14005,7 +13995,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>minor</code>.</strong> changes which v1 treatment writes update and which insert</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ff93fa94 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ff93fa94 official/dev</code></li>
 <li>
 <h1 id="8780s-merge-ff93fa94-2026-09-26-is-contained-in-origindev-it-carries-bfsame-time-treatments-fc821024">8780's merge ff93fa94 (2026-09-26) is contained in origin/dev. It carries bf/same-time-treatments fc821024.<a class="headerlink" href="#8780s-merge-ff93fa94-2026-09-26-is-contained-in-origindev-it-carries-bfsame-time-treatments-fc821024" title="Permanent link">&para;</a></h1>
 </li>
@@ -14073,11 +14063,11 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>minor</code>.</strong> v1-written records gain srvModified/srvCreated and v3 history returns more records</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1157a8de origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1157a8de official/dev</code></li>
 <li>
 <h1 id="8775s-merge-1157a8de-2026-09-26-is-contained-in-origindev-it-carries-bfv1-writes-v3-history-dbc4c5fc-bf-122-and-bf-135">8775's merge 1157a8de (2026-09-26) is contained in origin/dev. It carries bf/v1-writes-v3-history dbc4c5fc (BF-122 and BF-135).<a class="headerlink" href="#8775s-merge-1157a8de-2026-09-26-is-contained-in-origindev-it-carries-bfv1-writes-v3-history-dbc4c5fc-bf-122-and-bf-135" title="Permanent link">&para;</a></h1>
 </li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" origin/dev -- tests/api3.v1-writes-history.test.js</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" official/dev -- tests/api3.v1-writes-history.test.js</code></li>
 <li>The maintainer's v1 DELETE decision (2026-09-26, keep hard delete) is pinned by a test in origin/dev: "a v1 DELETE still removes the record, and history does not report it". A presence check; the test itself decides, and it passes in the full suite on ff93fa94 (3396/0/3).</li>
 <li><strong>NO GATE</strong> &mdash; The behaviour is measured by tools/lab/triage-2026-09/v1-writes-v3-history.js, which boots a server and needs MongoDB, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342, dev 4f705217 and #8758 ab7b22d6 (5 v1 arms absent from history; 5 controls present). 2026-09-25 on the branch 718efddc: the treatments, entries and devicestatus v1 arms and the v1 PUT arm are present; exit 1 only on the v1 DELETE arm. Since the 2026-09-26 decision that arm measures the decided behaviour (a v1 hard delete is not in history), not a pending defect, so the expected result on the candidate is exit 1 with every other arm present; exit 1 on any other arm is a regression. 2026-09-26 in the combined run lab/round1-combined bda225e4: exit 1 on the v1 DELETE arm only.</li>
 <li><strong>NO GATE</strong> &mdash; The AndroidAPS side (LoadTreatmentsRunner.kt, LoadBgRunner.kt) is read, not run. A run of AndroidAPS NSClientV3 against a site with a careportal entry made after its first load is the missing confirmation.</li>
@@ -14140,7 +14130,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix in how an existing record is read; nothing stored changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f0174d05 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f0174d05 official/dev</code></li>
 <li>
 <h1 id="8774s-merge-f0174d05-2026-09-26-is-contained-in-origindev-it-carries-bfprofile-switch-percentage-5a895b49">8774's merge f0174d05 (2026-09-26) is contained in origin/dev. It carries bf/profile-switch-percentage 5a895b49.<a class="headerlink" href="#8774s-merge-f0174d05-2026-09-26-is-contained-in-origindev-it-carries-bfprofile-switch-percentage-5a895b49" title="Permanent link">&para;</a></h1>
 </li>
@@ -14205,7 +14195,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a display fix in the browser; no stored data or API changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/client/renderer.js &amp;&amp; ! git -C externals/cgm-remote-monitor-official grep -qF "if (client.settings.units != client.ddata.profile.getUnits())" origin/dev -- lib/client/renderer.js'</code></li>
+<li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e official/dev:lib/client/renderer.js &amp;&amp; ! git -C externals/cgm-remote-monitor-official grep -qF "if (client.settings.units != client.ddata.profile.getUnits())" official/dev -- lib/client/renderer.js'</code></li>
 <li>FAILS today: origin/dev's treatmentTooltip still decides the conversion from the profile's units alone. A presence check only; it goes green when that line changes, and the probe below is what says whether the tooltip is then right.</li>
 <li><strong>NO GATE</strong> &mdash; The behaviour is measured by tools/lab/triage-2026-09/tooltip-bg-units.js, which needs a cgm-remote-monitor tree with node_modules (jsdom, d3) and so is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (tooltip BG 0.3, 1621 and 90 where 5, 90 and 5 were entered); the four controls behave. Exit 0 on a scratch copy of dev with the fix sketch. The fix is done when the probe exits 0 on the candidate.</li>
 </ul>
@@ -14267,7 +14257,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> restores the documented IFTTT event names; a site that renamed its applets to the translated names needs a release note</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e759a989 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e759a989 official/dev</code></li>
 <li>
 <h1 id="8773s-merge-e759a989-2026-09-26-is-contained-in-origindev-it-carries-bfmaker-level-names-2f50ada9">8773's merge e759a989 (2026-09-26) is contained in origin/dev. It carries bf/maker-level-names 2f50ada9.<a class="headerlink" href="#8773s-merge-e759a989-2026-09-26-is-contained-in-origindev-it-carries-bfmaker-level-names-2f50ada9" title="Permanent link">&para;</a></h1>
 </li>
@@ -14331,7 +14321,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a malformed admin write is refused with a 400 instead of stored; valid requests are unchanged</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fbaa4a2a origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fbaa4a2a official/dev</code></li>
 <li>
 <h1 id="8769s-merge-fbaa4a2a-2026-09-25-is-contained-in-origindev">8769's merge fbaa4a2a (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8769s-merge-fbaa4a2a-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -14395,7 +14385,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a bug fix; the menu links do not work today for token viewers</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -q -E "clockcolorlink|bgclocklink|clocklink" origin/dev -- lib/client</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -q -E "clockcolorlink|bgclocklink|clocklink" official/dev -- lib/client</code></li>
 <li>FAILS today: nothing in origin/dev's lib/client touches the Clock menu links, which is where a token would be carried into them. A presence check only; a fix made elsewhere (for example in the clock page itself) would leave it red, so the probe below decides.</li>
 <li><strong>NO GATE</strong> &mdash; The behaviour is measured by tools/lab/triage-2026-09/clock-token-link.js, which needs a cgm-remote-monitor tree with node_modules, and for its server arm a booted server with AUTH_DEFAULT_ROLES=denied and a readable token, so it is not a queue gate. 2026-09-25: exit 1 on v15.0.8 92d08342 and dev 4f705217 (menu-opened clock draws nothing; with the token in its own URL it draws the value; server 401 without a token and 200 with one). Done when the probe exits 0 on the candidate.</li>
 </ul>
@@ -14457,7 +14447,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> the delta and the Bolus Wizard Preview are returned in the units the request asked for; other responses are unchanged</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d613c35f origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d613c35f official/dev</code></li>
 <li>
 <h1 id="8777s-merge-d613c35f-2026-09-26-is-contained-in-origindev-it-carries-aa224c69-bf-128-b58b937c-bf-139-and-b3db0f36-bf-138-the-local-branch-bfpebble-delta-units-is-at-bd8f383b-a-local-only-merge-that-is-not-in-dev-so-no-gate-names-the-branch">8777's merge d613c35f (2026-09-26) is contained in origin/dev. It carries aa224c69 (BF-128), b58b937c (BF-139) and b3db0f36 (BF-138). The local branch bf/pebble-delta-units is at bd8f383b, a local-only merge that is not in dev, so no gate names the branch.<a class="headerlink" href="#8777s-merge-d613c35f-2026-09-26-is-contained-in-origindev-it-carries-aa224c69-bf-128-b58b937c-bf-139-and-b3db0f36-bf-138-the-local-branch-bfpebble-delta-units-is-at-bd8f383b-a-local-only-merge-that-is-not-in-dev-so-no-gate-names-the-branch" title="Permanent link">&para;</a></h1>
 </li>
@@ -14524,7 +14514,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a v3 write that was refused with 400 is accepted; nothing that was accepted changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 13f235e9 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 13f235e9 official/dev</code></li>
 <li>
 <h1 id="8776s-merge-13f235e9-2026-09-26-is-contained-in-origindev-it-carries-bfapi3-app-field-v1-records-df6c04bc">8776's merge 13f235e9 (2026-09-26) is contained in origin/dev. It carries bf/api3-app-field-v1-records df6c04bc.<a class="headerlink" href="#8776s-merge-13f235e9-2026-09-26-is-contained-in-origindev-it-carries-bfapi3-app-field-v1-records-df6c04bc" title="Permanent link">&para;</a></h1>
 </li>
@@ -14587,7 +14577,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> an anonymous /alarm subscribe is answered without the failed-login delay; every credentialed path is unchanged</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 750801a9 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 750801a9 official/dev</code></li>
 <li>
 <h1 id="8779s-merge-750801a9-2026-09-26-is-contained-in-origindev-it-carries-8e295769-and-cd2dfb1f">8779's merge 750801a9 (2026-09-26) is contained in origin/dev. It carries 8e295769 and cd2dfb1f.<a class="headerlink" href="#8779s-merge-750801a9-2026-09-26-is-contained-in-origindev-it-carries-8e295769-and-cd2dfb1f" title="Permanent link">&para;</a></h1>
 </li>
@@ -14832,7 +14822,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a report band ends where the main chart already ends it</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/report/reportclient.js | grep -Eq "processDurations\((datastorage\.)?treatments"'</code></li>
+<li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official show official/dev:lib/report/reportclient.js | grep -Eq "processDurations\((datastorage\.)?treatments"'</code></li>
 <li>FAILS while the report passes only tempbasalTreatments through processDurations (RED on dev 7000eb18, 2026-09-30). A presence check for one possible fix; a test that cancels a target decides.</li>
 <li><strong>NO GATE</strong> &mdash; Measured 2026-09-30 with #8788's jsdom harness (externals/work, Node 22.23.2): a Temporary Target at 20:00 for 60 min cancelled at 20:30 is drawn 20:00-21:00 on 92d08342, 7000eb18 and bbc6e75e; with bbc6e75e one at 22:00 for 240 min cancelled at 22:30 is also drawn 00:00-02:00 on the next day. The override half is read from Loop's uploader, not run.</li>
 </ul>
@@ -14893,7 +14883,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> an unbounded request is refused; every request within the limit answers as before</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fdf88f4e origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fdf88f4e official/dev</code></li>
 <li>
 <h1 id="8795s-head-fdf88f4e-is-contained-in-origindev-merged-2026-10-02-as-25fc41d9">8795's head fdf88f4e is contained in origin/dev (merged 2026-10-02 as 25fc41d9).<a class="headerlink" href="#8795s-head-fdf88f4e-is-contained-in-origindev-merged-2026-10-02-as-25fc41d9" title="Permanent link">&para;</a></h1>
 </li>
@@ -14956,7 +14946,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> error replies keep their status and message and lose the stack trace</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dc64e82d origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dc64e82d official/dev</code></li>
 <li>
 <h1 id="8793s-head-dc64e82d-is-contained-in-origindev-merged-2026-10-02-as-839a1565">8793's head dc64e82d is contained in origin/dev (merged 2026-10-02 as 839a1565).<a class="headerlink" href="#8793s-head-dc64e82d-is-contained-in-origindev-merged-2026-10-02-as-839a1565" title="Permanent link">&para;</a></h1>
 </li>
@@ -15019,7 +15009,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> patch and minor dependency versions; no behaviour change intended</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show origin/dev:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show official/dev:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'</code></li>
 <li>origin/dev's overrides carry the fixed ip-address (merged 2026-10-02 as a143d507; a presence check, tests/dependency-overrides.test.js on the installed tree decides).</li>
 <li><strong>NO GATE</strong> &mdash; npm audit depends on the advisory database on the day it runs, so it is a measurement, not a gate. 2026-10-01, npm 11.12.1, --package-lock-only (a count of packages with a finding, parents counted again): dev 50bc1084 20 (4 high), the branch 8 (0 high); --omit=dev 16 -&gt; 6. The 8 left are the 2026-09-27 set of 7 plus moment, held by decision. Measured on 22d82889 in externals/work/crm-bf153 (Node 22.23.2, MongoDB 7.0.43): full suite 3512/0/4 (dev 3489/0/3; the added pending is the connector's own axios 1.20.0 copy, outside the advisory range, which the new floor check skips); the 27 new or raised dependency checks fail on dev's installed tree and pass here; test:dependencies 345/0/1; npm ci on Node 20.20.0, 22.23.2, 24.20.0 and the npm 12 job; production bundle byte-identical (7 files); IMPORT_CONFIG fetched and applied as on dev with axios 0.34.0.</li>
 </ul>
@@ -15141,7 +15131,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>n/a</code>.</strong> repository configuration</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:.github/dependabot.yml'</code></li>
+<li><code>[static]</code> <code>sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e official/dev:.github/dependabot.yml'</code></li>
 <li>PASSES while dev has no .github/dependabot.yml (measured 2026-10-01); it goes red once a configuration is added, at which point this item is done or replaced by a gate on its contents.</li>
 <li><strong>NO GATE</strong> &mdash; Measured 2026-10-01 with gh api: Dependabot security updates enabled, no dependabot.yml on dev or master, default branch master. Of the Dependabot PRs: 45 closed unmerged and 1 merged against master, 21 merged and 1 closed against dev, 2 open against master (#8787, #8789). 85 open alerts, all measured against master (15.0.8): 61 in runtime scope and 23 in development scope by Dependabot's own classification, which records where a package is declared, not whether its vulnerable code is reached.</li>
 </ul>
@@ -15261,7 +15251,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a failed read answers an error instead of ending the process</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e20b66ba origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e20b66ba official/dev</code></li>
 <li>
 <h1 id="8796s-head-e20b66ba-is-contained-in-origindev-merged-2026-10-02-as-ca6fcfaf">8796's head e20b66ba is contained in origin/dev (merged 2026-10-02 as ca6fcfaf).<a class="headerlink" href="#8796s-head-e20b66ba-is-contained-in-origindev-merged-2026-10-02-as-ca6fcfaf" title="Permanent link">&para;</a></h1>
 </li>
@@ -15385,7 +15375,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> documentation and a deploy template parameter</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e42144ff origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e42144ff official/dev</code></li>
 <li>
 <h1 id="8799s-head-e42144ff-is-contained-in-origindev-merged-2026-10-02-as-f105f688-the-config-surface-census-gates-readme-bf-50-and-azure-bf-51-arms-decide-its-api3-webhook-and-hsts-arms-stay-red-until-the-code-half-bfq-46-bfq-env-is-done">8799's head e42144ff is contained in origin/dev (merged 2026-10-02 as f105f688). The config-surface-census gate's readme (BF-50) and azure (BF-51) arms decide; its api3, webhook and hsts arms stay red until the code half (BFQ-46, BFQ-ENV) is done.<a class="headerlink" href="#8799s-head-e42144ff-is-contained-in-origindev-merged-2026-10-02-as-f105f688-the-config-surface-census-gates-readme-bf-50-and-azure-bf-51-arms-decide-its-api3-webhook-and-hsts-arms-stay-red-until-the-code-half-bfq-46-bfq-env-is-done" title="Permanent link">&para;</a></h1>
 </li>
@@ -19135,7 +19125,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a resource leak fix; no API or setting changes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3adc91d origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3adc91d official/dev</code></li>
 <li>
 <h1 id="8770s-merge-e3adc91d-2026-09-25-is-contained-in-origindev">8770's merge e3adc91d (2026-09-25) is contained in origin/dev.<a class="headerlink" href="#8770s-merge-e3adc91d-2026-09-25-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -19363,7 +19353,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> an error status for a read that finds nothing becomes 200 [], the answer every other v1 read gives</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1151832 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1151832 official/dev</code></li>
 <li>
 <h1 id="8772s-merge-f1151832-2026-09-26-is-contained-in-origindev-it-carries-bfentries-unknown-id-f79dc732">8772's merge f1151832 (2026-09-26) is contained in origin/dev. It carries bf/entries-unknown-id f79dc732.<a class="headerlink" href="#8772s-merge-f1151832-2026-09-26-is-contained-in-origindev-it-carries-bfentries-unknown-id-f79dc732" title="Permanent link">&para;</a></h1>
 </li>
@@ -19594,7 +19584,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a defect in an unmerged fix</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 official/dev</code></li>
 <li>Containment: 6c3ccce6 is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -19820,7 +19810,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a defect in an unmerged fix</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/dev</code></li>
 <li>Containment: e9dbb1fb is in origin/dev since #8758 merged as 4d9ecc3b (2026-09-25, head f1e8398b). The fix is contained in origin/dev. It stays green; the control (origin/master, 15.0.8) goes stale when 15.0.9 is released.</li>
 <li><strong>NO GATE</strong> &mdash; Behaviour is held by #8758's tests in dev (CI 13 of 13 green on f1e8398b; the last local six-cell run, e9dbb1fb, 3106/0/3). It reaches operators with 15.0.9 (RT-0).</li>
 </ul>
@@ -19886,7 +19876,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a display detail names the newest carb entry</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce30a94d origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce30a94d official/dev</code></li>
 <li>
 <h1 id="8784s-merge-ce30a94d-2026-09-26-which-carries-the-fix-db99bba4-is-contained-in-origindev">8784's merge ce30a94d (2026-09-26), which carries the fix db99bba4, is contained in origin/dev.<a class="headerlink" href="#8784s-merge-ce30a94d-2026-09-26-which-carries-the-fix-db99bba4-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -19952,7 +19942,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> restores 15.0.8's single record for a re-sent v1 treatment with an empty identity</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF "[null, ''], \$not" origin/dev -- lib/server/treatment-fallback-key.js</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official grep -qF "[null, ''], \$not" official/dev -- lib/server/treatment-fallback-key.js</code></li>
 <li>origin/dev's no-identity clause is #8781's {$in: [null, ""], $not: {$type: 'array'}}, which matches null, "" and absent (ff93fa94 matches null only and fails this). A presence check only; #8782's tests/api.same-time-treatments.test.js, 89/0 on ce7d754a, decides.</li>
 <li><strong>NO GATE</strong> &mdash; The behaviour is measured by booted-server probes that need MongoDB, so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB 7.0.43: tools/lab/triage-2026-09/api3-empty-identifier-delete.js re-send arm, identifier "" stored 2 on ff93fa94 and 1 on aaf67785 and v15.0.8 92d08342 (no other line differs between ff93fa94 and aaf67785); same-time-resend-shapes.js and same-time-carbs.js give the same table on ff93fa94 and aaf67785, exit 0.</li>
 </ul>
@@ -20016,7 +20006,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> a v3 delete reaches a record whose _id v3 reads show as its identifier, as on 15.0.8</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 699eb5fa origin/dev</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 699eb5fa official/dev</code></li>
 <li>
 <h1 id="8783s-merge-699eb5fa-2026-09-26-is-contained-in-origindev">8783's merge 699eb5fa (2026-09-26) is contained in origin/dev.<a class="headerlink" href="#8783s-merge-699eb5fa-2026-09-26-is-contained-in-origindev" title="Permanent link">&para;</a></h1>
 </li>
@@ -20081,7 +20071,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Why <code>patch</code>.</strong> treatments and device status written through API v3 are held with the same derived time fields as v1 writes</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" origin/dev -- lib/api3/storage/mongoCachedCollection/index.js'</code></li>
+<li><code>[static]</code> <code>sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" official/dev -- lib/api3/storage/mongoCachedCollection/index.js'</code></li>
 <li>origin/dev's v3 cache wrapper derives the v1 fields (#8784, merge ce30a94d; 699eb5fa and v15.0.8 92d08342 do not mention the helper there and fail this). A presence check only; the 15 tests in tests/api3.cache-derived-fields.test.js and tools/lab/rc-soak/probe-v3-late-mills.js decide.</li>
 <li><strong>NO GATE</strong> &mdash; The behaviour is measured by booted-server tests that need MongoDB, so they are not queue gates. 2026-09-26, Node 22.23.2, MongoDB 7.0.43, fresh databases: on 92d08342 and 699eb5fa a late v3 bolus gives treatment IOB 0 and late v3 carbs COB 0 (also in the socket page data and after v3 PATCH/PUT), mixed v1/v3 writes load in reverse time order, "last carbs" names the older entry, and COB is 34.5 g where time order gives 10 g; a late v3 device status is missing from the default GET /api/v1/devicestatus served from memory (last instead of first in the whole held set, also with DENORMALIZE_DATES); all 15 pass on d235bdf6. Controls (v1 bolus of the same age, v3 bolus dated now, v1 status of the same age, v3 status dated now, the page's device status) pass on all three. Suite 3473/0/3 (699eb5fa 3458/0/3, db99bba4 3467/0/3). Treatment probes unchanged on 699eb5fa, db99bba4 and d235bdf6.</li>
 <li><strong>NO GATE</strong> &mdash; RC run 020 (2026-09-27) on origin/dev ce30a94d: 3473/0/3 in six cells, the 15 new titles the only difference from 699eb5fa. tools/lab/rc-soak/probe-v3-late-mills.js (booted server, MongoDB 7.0.43) exits 0 on ce30a94d and 1 on 699eb5fa and 92d08342: a late v3 bolus leaves IOB at 0, late v3 carbs leave COB at 0, a late v3 status is missing from the default v1 device status read; all present after a restart; its v1 and v3-now controls pass on all three. Break-its on ce30a94d: the device status hunk reverted (db99bba4's file) gives the 3 device status tests and the probe's ds-v3-late arm red; the whole lib change reverted gives 10 of 15 red and all three probe arms red.</li>
@@ -22173,14 +22163,14 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li>official/dev contains #8861's merge 84fac457 (ST-FILTER-READS: the filter AST, interface methods and API v1 reads, re-cut on dev from the seam chain; merged 2026-10-27). This is how the chain reached dev instead of by a refresh. Red if dev is rewritten without it.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/dev</code></li>
 <li>official/dev contains #8863's merge 9668b179 (ST-WRITES: API v1, authorization and socket writes through the storage interface, labelled by source; merged 2026-10-27). Red if dev is rewritten without it.</li>
-<li><strong>NO GATE</strong> &mdash; Closed 2026-11-06 as superseded, not done. The chain was never refreshed: measured 2026-11-06, seam/t1-2-storage-interface 81a1f6ce is 1010 behind and 50 ahead of official/dev 4a482627 (<code>git rev-list --left-right --count official/dev...seam/t1-2-storage-interface</code>) and its trial merge conflicts across the tests and storage modules; the branch this item's two former gates named, origin/chore/nightscout-modernization, no longer exists in the checkout (cut 5 merged into dev as #8605 on 2026-10-26 and the branch was retired), so both gates were red for a missing ref, not for the property they described. Nothing is left to refresh: the seam's single-tenant content went to dev as slices re-cut on dev (#8861, #8863, then the write step #8874 and #8886 under WC-STEP-PATCH), decided by the maintainer on 2026-10-27 (release allocation Q12 and section 3.5; 16.0.0 decisions.md row "The storage seam slices ... go into 16.0.0 if feasible"), and the multitenant remainder continues on dev under ST-PG, T30-<em> and the ARCH-SEAM-</em> items. The chain at 81a1f6ce stays as reference for the bulkUpsert modes and the T3.0/T4.4a prototypes; the rehearsal record and the 19/50-conflict classification below are historical. What the 19 conflicts cost to resolve is unmeasured: the conflict COUNT is measured, the resolution is not, and RT-REBASE shows that conflict counts grow quickly while nobody re-runs them. Three of the nineteen are known supersessions (upstream's BF-04 extraction wins); the remaining sixteen touch the v1 API and storage modules the seam exists to replace, so some may be "delete ours, take theirs" and some may be genuine re-work. None has been opened. Also ungated: whether the seam should rebase onto the modernization branch at all, rather than onto dev. The seam was cut against modernization because that was where the work was; dev has since taken the thirteen backfix PRs, including the allowlist the seam duplicates, and cut 5 is 9 behind dev and 498 ahead (measured 2026-09-22, <code>git rev-list --left-right --count origin/dev...origin/chore/nightscout-modernization</code>). That is a re-basing decision, not a merge-conflict question. Now RT-PROPAGATION (2026-09-27).</li>
+<li><strong>NO GATE</strong> &mdash; Closed 2026-11-06 as superseded, not done. The chain was never refreshed: measured 2026-11-06, seam/t1-2-storage-interface 81a1f6ce is 1010 behind and 50 ahead of official/dev 4a482627 (<code>git rev-list --left-right --count official/dev...seam/t1-2-storage-interface</code>) and its trial merge conflicts across the tests and storage modules. Against the base its two former gates named, chore/nightscout-modernization (now a77cb146, itself wholly contained in dev and 333 commits behind it), the seam is 677 behind and 50 ahead with 30 conflicting paths, so both gates were red for the property they described, and would stay red: the base is a dead end. (A first reading on 2026-11-06 reported the ref as missing; that was <code>git rev-parse --short</code> given two refs, which implies --verify and refuses, not a missing ref. Corrected the same day.) Nothing is left to refresh: the seam's single-tenant content went to dev as slices re-cut on dev (#8861, #8863, then the write step #8874 and #8886 under WC-STEP-PATCH), decided by the maintainer on 2026-10-27 (release allocation Q12 and section 3.5; 16.0.0 decisions.md row "The storage seam slices ... go into 16.0.0 if feasible"), and the multitenant remainder continues on dev under ST-PG, T30-<em> and the ARCH-SEAM-</em> items. The chain at 81a1f6ce stays as reference for the bulkUpsert modes and the T3.0/T4.4a prototypes; the rehearsal record and the 19/50-conflict classification below are historical. What the 19 conflicts cost to resolve is unmeasured: the conflict COUNT is measured, the resolution is not, and RT-REBASE shows that conflict counts grow quickly while nobody re-runs them. Three of the nineteen are known supersessions (upstream's BF-04 extraction wins); the remaining sixteen touch the v1 API and storage modules the seam exists to replace, so some may be "delete ours, take theirs" and some may be genuine re-work. None has been opened. Also ungated: whether the seam should rebase onto the modernization branch at all, rather than onto dev. The seam was cut against modernization because that was where the work was; dev has since taken the thirteen backfix PRs, including the allowlist the seam duplicates, and cut 5 is 9 behind dev and 498 ahead (measured 2026-09-22, <code>git rev-list --left-right --count origin/dev...origin/chore/nightscout-modernization</code>). That is a re-basing decision, not a merge-conflict question. Now RT-PROPAGATION (2026-09-27).</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md</code></li>
 <li><code>docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-11-06: closed, superseded. RT-REBASE (its only blocker) has been merged- upstream since 2026-10-26, and the refresh it waited for was overtaken by the maintainer's 2026-10-27 decision to carry the seam into 16.0.0 as slices re- cut on dev rather than by rebasing the 16-branch chain; see the no-gate above for the measurement and the records. Items that still blocked on this one (WRITE-CONTRACT, BFQ-66, HUB-REG-CRM-SEAM) had the edge removed the same day; their real prerequisites are on dev. The crm-seam and crm-seam-replay worktrees are left in place (rule 5). 2026-10-26: cut 5 merged into dev (#8605, 47723cda; RT-3), and RT-REBASE, which this item is blocked on, is merged-upstream. The base named here, chore/nightscout-modernization b1bdaca0, is therefore an ancestor of dev, and the seam's refresh base is now official/dev. Not re-measured or re-run: the distance from the seam to dev 47723cda and its conflicts are the next session's to measure. The state is left for that session. 2026-10-21, later: RT-REBASE's cut 1 part is done (#8828), and that part is not what the seam waits on. The seam's base is chore/nightscout-modernization (cut 5, b1bdaca0, 252 behind official/dev 04d435eb and 498 ahead, 28 conflicting paths), which takes dev through the cut chain under RT-PROPAGATION's merge order, so the refresh still waits on RT- REBASE's cut 5 part. blocks_on is unchanged. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. By the 2026-09-27 timing (refresh once, after the 15.0.9 freeze and the release train's next propagation), it now waits on RT-REBASE, which merges dev into the cuts and chore/nightscout- modernization (RT-PROPAGATION, decided merge); the seam's base is the modernization branch, not yet re-measured against dev 04d435eb. GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid-chain commit of seam/t1-2-storage- interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain. 2026-10-07 rehearsal (docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md): a refresh by rebase must use --rebase-merges --onto <old modernization base>. Open before the real refresh, on either path: (1) the conf.pipeline hook, which BF-70 keeps and the seam's count() refuses, needs a decision; (2) 3 to 5 tests that stub or spy on the raw collection need re-expressing; (3) $exists with an empty operand: dev passes it to MongoDB, the seam's fromMongo reads it as false; (4) bulkUpsert cannot express $setOnInsert/$unset or interleaved deletes (entries create, BF-130), and the AST lacks $not/$type (treatment- fallback-key), all WRITE-CONTRACT inputs. The prefix alone (a2690bd4) inverts $exists, and its suite (2213/0) does not see it; the fix e0564167 is in seam/t2-4-allowlist, so the prefix must not ship without e0564167 or dev's normalizeOperands. Conflict cost: measured for the prefix (rehearsal §5); the full chain is classified only (§4: 19 against the modernization branch = 3 BF-04 supersessions, 2 test, 14 other lib, 0 write-rule; 50 against dev = 11 write-rule, 21 of them the modernization branch's own). Decided by the maintainer 2026-10-12: the conf.pipeline hook on the v1 count path is removed. count() takes a filter only, and a supplied pipeline is an error, as the seam already does. The modernization test "keeps the server-side conf.pipeline hook working" (tests/api-v1-count-pipeline.test.js) is rewritten to assert the refusal. Nothing in the tree supplies one (all three construction sites pass {}); BF-70 kept it as a minimal change, not for a user.</p>
+<p><strong>Notes.</strong> 2026-11-06: closed, superseded. RT-REBASE (its only blocker) has been merged- upstream since 2026-10-26, and the refresh it waited for was overtaken by the maintainer's 2026-10-27 decision to carry the seam into 16.0.0 as slices re- cut on dev rather than by rebasing the 16-branch chain; see the no-gate above for the measurement and the records (the old gates were red for the measured property, not a missing ref; the earlier sentence saying otherwise was corrected the same day). Items that still blocked on this one (WRITE-CONTRACT, BFQ-66, HUB-REG-CRM-SEAM) had the edge removed the same day; their real prerequisites are on dev. The crm-seam and crm-seam-replay worktrees are left in place (rule 5). 2026-10-26: cut 5 merged into dev (#8605, 47723cda; RT-3), and RT-REBASE, which this item is blocked on, is merged-upstream. The base named here, chore/nightscout-modernization b1bdaca0, is therefore an ancestor of dev, and the seam's refresh base is now official/dev. Not re-measured or re-run: the distance from the seam to dev 47723cda and its conflicts are the next session's to measure. The state is left for that session. 2026-10-21, later: RT-REBASE's cut 1 part is done (#8828), and that part is not what the seam waits on. The seam's base is chore/nightscout-modernization (cut 5, b1bdaca0, 252 behind official/dev 04d435eb and 498 ahead, 28 conflicting paths), which takes dev through the cut chain under RT-PROPAGATION's merge order, so the refresh still waits on RT-REBASE's cut 5 part. blocks_on is unchanged. 2026-10-21: 15.0.9 is released and RT-0 is removed from blocks_on. By the 2026-09-27 timing (refresh once, after the 15.0.9 freeze and the release train's next propagation), it now waits on RT-REBASE, which merges dev into the cuts and chore/nightscout-modernization (RT-PROPAGATION, decided merge); the seam's base is the modernization branch, not yet re-measured against dev 04d435eb. GT1 also found that crm-pool, crm-tenant and crm-write are three separate worktrees all detached at the SAME commit 239f8c25, a mid- chain commit of seam/t1-2-storage-interface, with no branch of their own. Rule 5 - do not repoint a worktree you did not create - so they are recorded, not touched. Timing (maintainer, 2026-09-27; execution plan section 5.1): refresh once, after the 15.0.9 freeze and the release train's next propagation, as the first step of WRITE-CONTRACT. Not now: nothing builds on the seam, and nine of the 19 conflicting paths are files that now call a 15.0.9 write rule (lib/api/entries/index.js, lib/authorization/storage.js, lib/server/{activity, devicestatus, entries, food, profile, query, treatments}.js), so resolving them is re-expressing those rules through the storage interface. Measured 2026-09-27 against dev 295f1177: since dev 59430336 (the dev side of e3b22034) dev has taken 206 commits, 77 in lib/server, lib/api or lib/api3, and 30 files the seam changes have also changed on dev. The chain's first 16 commits (seam/t1-2-e, T1.2 and T1.3, 38 files +1962/-242) carry no tenancy behaviour and trial-merge onto b1bdaca0 with 8 conflicting paths, against 19 for the whole chain. 2026-10-07 rehearsal (docs/60-research/tenancy/seam-propagation- rehearsal-2026-10-07.md): a refresh by rebase must use --rebase-merges --onto <old modernization base>. Open before the real refresh, on either path: (1) the conf.pipeline hook, which BF-70 keeps and the seam's count() refuses, needs a decision; (2) 3 to 5 tests that stub or spy on the raw collection need re-expressing; (3) $exists with an empty operand: dev passes it to MongoDB, the seam's fromMongo reads it as false; (4) bulkUpsert cannot express $setOnInsert/$unset or interleaved deletes (entries create, BF-130), and the AST lacks $not/$type (treatment-fallback-key), all WRITE-CONTRACT inputs. The prefix alone (a2690bd4) inverts $exists, and its suite (2213/0) does not see it; the fix e0564167 is in seam/t2-4-allowlist, so the prefix must not ship without e0564167 or dev's normalizeOperands. Conflict cost: measured for the prefix (rehearsal §5); the full chain is classified only (§4: 19 against the modernization branch = 3 BF-04 supersessions, 2 test, 14 other lib, 0 write- rule; 50 against dev = 11 write-rule, 21 of them the modernization branch's own). Decided by the maintainer 2026-10-12: the conf.pipeline hook on the v1 count path is removed. count() takes a filter only, and a supplied pipeline is an error, as the seam already does. The modernization test "keeps the server- side conf.pipeline hook working" (tests/api-v1-count-pipeline.test.js) is rewritten to assert the refusal. Nothing in the tree supplies one (all three construction sites pass {}); BF-70 kept it as a minimal change, not for a user.</p>
 <h3 id="write-contract--one-write-step-behind-the-storage-interface-_id-form-srv-dates-soft-delete-re-send-identity-one-change-event"><code>WRITE-CONTRACT</code> &mdash; One write step behind the storage interface: _id form, srv dates, soft delete, re-send identity, one change event<a class="headerlink" href="#write-contract--one-write-step-behind-the-storage-interface-_id-form-srv-dates-soft-delete-re-send-identity-one-change-event" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -25638,7 +25628,7 @@ flag rule: versioning policy section 5.7.</p>
 <ul>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth bf2/auth-hardening &amp;&amp; git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle bf2/auth-hardening</code></li>
 <li>Contains both source branches by ancestry, not re-implementation.</li>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/auth-hardening &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf2/auth-hardening &gt;/dev/null</code></li>
 <li>Merges into origin/dev with no conflict.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official cat-file -e bf2/auth-hardening:lib/server/client-ip.js</code></li>
 <li>The client-address module is present. Its default being today's behaviour is asserted by the branch's own tests, not here.</li>
@@ -25701,7 +25691,7 @@ flag rule: versioning policy section 5.7.</p>
 <p><strong>Why <code>patch</code>.</strong> bug fixes and a shipped configuration file; no declared surface moves</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/ops &gt;/dev/null</code></li>
+<li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf2/ops &gt;/dev/null</code></li>
 <li>Merges into origin/dev with no conflict.</li>
 <li><code>[static]</code> <code>git -C externals/cgm-remote-monitor-official show bf2/ops:docker-compose.yml | grep -q nofile</code></li>
 <li>BF-10 - the compose file raises the open-file limit.</li>

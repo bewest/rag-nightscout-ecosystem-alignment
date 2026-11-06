@@ -3382,6 +3382,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#214-d23-proposed--realtime-is-a-reader-socket-writes-and-acks-are-writes-draft-2026-11-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.14 D23 (proposed) — realtime is a reader; socket writes and acks are writes (draft, 2026-11-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5936,6 +5947,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#214-d23-proposed--realtime-is-a-reader-socket-writes-and-acks-are-writes-draft-2026-11-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.14 D23 (proposed) — realtime is a reader; socket writes and acks are writes (draft, 2026-11-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -6048,14 +6070,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>8d3be758e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>c89ccf19e</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D21 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03) and are all <strong>adopted</strong> (D23 is a <strong>proposed draft</strong>, §2.14, not adopted), except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5ecdc0cf2be37da54d047a87b092721f164dd466/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7bb7453a925aaf156bceb12cf062a55d114465c0/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -6375,6 +6397,11 @@ preference.</p>
 <td><strong>D22</strong></td>
 <td><strong>Tenant configuration is a per-setting policy over owner values, under project floors.</strong> The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of <strong>project floors</strong> is enforced in code under <code>multi</code>, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them. The <a href="owner-authority.html">owner authority amendment</a> governs delegation, management sessions and local public-key verification; private keys stay in the secrets component</td>
 <td>maintainer, 2026-10-27; amended 2026-11-05 — §2.13</td>
+</tr>
+<tr>
+<td><strong>D23</strong> <em>(proposed 2026-11-06, not adopted)</em></td>
+<td><strong><code>realtime</code> is a reader: fan-out from the change feed, socket rooms and one <code>LISTEN</code> per held tenant, with no storage write authority. The socket's write messages (<code>dbAdd</code>, <code>dbUpdate</code>, <code>dbUpdateUnset</code>, <code>dbRemove</code>) and the alarm ack and snooze are writes, and under <code>multitenant</code> they go to <code>api</code> over REST; <code>realtime</code> refuses them with a reply that names the route. <code>single</code> is unchanged.</strong> Roles stay arguments of one subcommand (D21); the database feed is the only path between roles (D6), and a direct <code>api</code> → <code>realtime</code> stream is not adopted (§2.14, revisit triggers from {C} §3.5.3.1)</td>
+<td>drafted by session -8c for the maintainer, 2026-11-06 — §2.14</td>
 </tr>
 </tbody>
 </table>
@@ -7573,7 +7600,7 @@ launcher.</p>
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
 change) and PLAT-SERVE (the multitenant roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5ecdc0cf2be37da54d047a87b092721f164dd466/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7bb7453a925aaf156bceb12cf062a55d114465c0/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
 <p><strong>Amended 2026-10-27 (maintainer; CLI name amended 2026-11-03): the subcommand selects
 tenancy.</strong> <code>nightscout single</code> is single-tenant and every <code>nightscout multitenant</code> role is
@@ -7726,6 +7753,161 @@ secret. Vault transit and a cloud key service are the production adapters, behin
 <p><strong>Not decided.</strong> The twelve contested settings re-stated under D22 are drafted for
 review in <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">census §3a</a>; row 7 decided the same
 day: the strict settings read (<code>API3_SETTINGS_STRICT_READ_ENABLED</code>) is a floor, always on under <code>multi</code>.</p>
+<h3 id="214-d23-proposed--realtime-is-a-reader-socket-writes-and-acks-are-writes-draft-2026-11-06">2.14 D23 (proposed) — <code>realtime</code> is a reader; socket writes and acks are writes (draft, 2026-11-06)<a class="headerlink" href="#214-d23-proposed--realtime-is-a-reader-socket-writes-and-acks-are-writes-draft-2026-11-06" title="Permanent link">&para;</a></h3>
+<p><em>Draft for the maintainer, written by session -8c on 2026-11-06 at alignment <code>main</code> <code>7f461bfb</code>. Not
+adopted. Multitenant profile only; <code>single</code> is unchanged. Figures are quoted from the documents named;
+code lines are read from CRM <code>35903069</code>.</em></p>
+<p><strong>What the decisions already say.</strong> D5 names <code>realtime</code> "fan-out". D21's subcommand table says
+<code>nightscout multitenant realtime</code> runs "socket.io and the change feed; no storage writes". The
+components document says it "holds connections", is "stateful only in connections", and its
+entrypoint matrix gives it storage <strong>r/o</strong> ({C} §2.3, the matrix in §3). None of them says what
+becomes of the socket's write messages.</p>
+<p><strong>What the code does today.</strong> <code>lib/server/websocket.js</code> on <code>35903069</code> carries two duties:</p>
+<ul>
+<li>fan-out: <code>emitData</code> sends <code>dataUpdate</code> to the <code>DataReceivers</code> room (<code>websocket.js:151-159</code>), and
+  <code>lib/api3/alarmSocket.js</code> fans alarms out on the <code>/alarm</code> namespace (<code>alarmSocket.js:21,79</code>);</li>
+<li>writes: the messages <code>dbAdd</code>, <code>dbUpdate</code>, <code>dbUpdateUnset</code> and <code>dbRemove</code> (<code>websocket.js:394-417,
+  470, 552, 662</code>), each through the write step via <code>socketStep</code> (<code>websocket.js:54-56</code>), and the alarm
+  <code>ack</code> on the <code>/alarm</code> namespace (<code>alarmSocket.js:168, 239</code>), which reaches <code>notifications.ack</code>
+  (<code>lib/notifications.js:166-184</code>, per the <a href="durable-event-delivery-contract-2026-11-06.html">durable-delivery contract</a> §7).</li>
+</ul>
+<p><strong>Socket writers in the pinned client corpus (searched 2026-11-06, read-derived).</strong> Every checkout
+under <code>externals/</code> outside the server's own trees was searched for the four write message names and
+for any socket.io client. The server's v3 sockets accept no data writes: <code>/storage</code> takes only
+<code>subscribe</code> (<code>lib/api3/storageSocket.js:40</code>) and <code>/alarm</code> takes <code>subscribe</code>, <code>ack</code> and <code>resubscribe</code>
+(<code>lib/api3/alarmSocket.js:93, 168, 239, 254</code>).</p>
+<table>
+<thead>
+<tr>
+<th>client, pinned</th>
+<th>socket use</th>
+<th>writes over the socket</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the web client (CRM <code>35903069</code>)</td>
+<td>v1 socket, <code>authorize</code>, <code>dataUpdate</code></td>
+<td><code>dbAdd</code>, <code>dbUpdate</code>, <code>dbUpdateUnset</code>, <code>dbRemove</code> from the reports editor (<code>lib/client/renderer.js:942-1067</code>); alarm <code>ack</code></td>
+</tr>
+<tr>
+<td>AndroidAPS 3.4.2.3, <strong>NSClient</strong> plugin (<code>plugins/sync/.../nsclient/services/NSClientService.kt:374, 603, 621, 630</code>)</td>
+<td>v1 socket, <code>authorize</code></td>
+<td><strong><code>dbAdd</code>, <code>dbUpdate</code> and <code>ack</code></strong>: this plugin's whole upload path is the socket</td>
+</tr>
+<tr>
+<td>AndroidAPS 3.4.2.3, <strong>NSClient V3</strong> plugin (<code>.../nsclientV3/services/NSClientV3Service.kt:166, 193, 344</code>)</td>
+<td>v3 <code>/storage</code> and <code>/alarm</code> sockets</td>
+<td><code>subscribe</code> and alarm <code>ack</code> only; data writes are REST v3</td>
+</tr>
+<tr>
+<td>AndroidAPS <code>dev</code> (<code>aa9cc88df2</code>, 3.4.2.2-1520) and the multiplatform tree (<code>7e1d537d49</code>, with the iOS <code>NsSocketBridge.swift:75</code>)</td>
+<td>v3 sockets; the <code>nsclient</code> (v1) plugin directory is gone</td>
+<td><code>subscribe</code> and <code>ack</code> only</td>
+</tr>
+<tr>
+<td>LoopFollow v7.1.0 (<code>NightscoutSocketManager.swift:167, 194</code>)</td>
+<td>v1 socket, <code>authorize</code>, <code>dataUpdate</code></td>
+<td>none (read only)</td>
+</tr>
+<tr>
+<td>xDrip 2026.07.15, xdripswift 6.3.1, Trio v0.8.4, nightscout-librelink-up v3.3.0, nightguard, LoopCaregiver, NightscoutKit</td>
+<td>no socket.io client found</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>Two consequences for the options below. The AndroidAPS NSClient (v1) plugin shipped in 3.4.2.3 is a
+third-party socket writer; under option (a) a user on that plugin must move to NSClient V3, which
+AndroidAPS <code>dev</code> already made the only plugin. And the alarm <code>ack</code> over <code>/alarm</code> is what AndroidAPS V3,
+<code>dev</code> and the multiplatform tree all send, so (a) cannot move the ack to REST without breaking them:
+<code>realtime</code> must keep accepting <code>ack</code> on the socket, and the sub-question is whether it records the ack
+itself through one narrow tenant-keyed write (the only write authority it would hold) or forwards it to
+<code>api</code> internally (option (c)'s hop, for the ack alone). Nocturne is a server with its own hubs, not a
+client of this socket.</p>
+<p><strong>The conflation.</strong> If the write messages stay on <code>realtime</code>, it is not a reader: it needs the
+write step, the tenant's storage write authority, the commit event and every write-side control
+that <code>api</code> already carries. That makes two writers with one surface duplicated, and ties socket
+availability to the write path. The reader/writer split that gives availability under load (writers
+scale with ingest and are stateless; readers scale with sockets and hold only connections) needs
+the socket's writes to leave <code>realtime</code>.</p>
+<p><strong>The question.</strong> Under <code>multitenant</code>, what do the socket's write messages and the alarm ack become?</p>
+<table>
+<thead>
+<tr>
+<th>option</th>
+<th>what changes</th>
+<th>long-term direction</th>
+<th>compatibility</th>
+<th>maintenance</th>
+<th>reliability</th>
+<th>performance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>(a) <code>realtime</code> is a reader</strong> <em>(recommended)</em></td>
+<td>the browser's reports editor moves to REST on <code>api</code>; the alarm ack stays on the <code>/alarm</code> socket and becomes a tenant-keyed ack row (written by <code>realtime</code> as its one narrow write, or forwarded to <code>api</code>; sub-question above), which the evaluator consumes from the feed (contract §7); under <code>multitenant</code> the socket refuses <code>dbAdd</code>/<code>dbUpdate</code>/<code>dbUpdateUnset</code>/<code>dbRemove</code> with a reply naming the route; <code>single</code> keeps today's socket writes</td>
+<td>matches D5, D21 and {C}: one writer surface, readers stateless beyond connections</td>
+<td>the web client's reports editor moves to REST; AndroidAPS 3.4.2.3's NSClient (v1) plugin stops working under <code>multitenant</code> and its users move to NSClient V3 (the only plugin on AndroidAPS <code>dev</code>); the alarm <code>ack</code> stays on <code>/alarm</code> for AndroidAPS V3 and LoopFollow-class clients</td>
+<td>one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in <code>single</code> only</td>
+<td>a stuck <code>realtime</code> can only make realtime stale ({C} §3.5.3); writes never wait on fan-out</td>
+<td>fan-out cost unchanged; acks add one REST write per ack</td>
+</tr>
+<tr>
+<td><strong>(b) <code>realtime</code> keeps the write path</strong></td>
+<td><code>realtime</code> embeds the write step and holds write authority; the commit event is emitted from two roles</td>
+<td>contradicts D21's "no storage writes" and the matrix's r/o</td>
+<td>client protocol unchanged</td>
+<td>two writers to keep equal; every write-side control runs twice</td>
+<td>socket connection and write availability coupled</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>(c) <code>realtime</code> brokers writes to <code>api</code></strong></td>
+<td>socket write messages are forwarded to <code>api</code> over an internal HTTP hop carrying the socket's tenant credential; the reply is relayed</td>
+<td>keeps the reader/writer split; adds an internal role-to-role trust boundary (D7 planes)</td>
+<td>client protocol unchanged</td>
+<td>an internal client in <code>realtime</code>, its credential forwarding and its failure mapping to maintain</td>
+<td>one more hop on the write path; an <code>api</code> outage is visible as socket write failures</td>
+<td>one extra request per socket write</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Is all role-to-role traffic through PostgreSQL, and was a direct <code>api</code> → <code>realtime</code> stream
+considered?</strong> Yes to both, already decided and measured. D6 makes the change feed the spine
+(replication slot) plus <code>NOTIFY</code> for latency plus a bounded poll as backstop, with <code>NOTIFY</code> emitted
+by the slot reader. The components document took up the direct chain and set it aside: the
+evaluator does not call the socket engine for data updates ({C} §3.5.2), alarms reach <code>realtime</code>
+as rows through the same feed, and <code>realtime</code> is exactly the bridge from the feed to sockets that a
+broker would be. The reasons it gives: the WAL is already the durable ordered log, a second log
+(Kafka, or a stream from <code>api</code> replicas) would add durability and replay where the fan-out hop
+deliberately wants none, and a reconnecting client can query what it missed from rows. Its
+measurements, quoted: <code>NOTIFY</code> degrades in listener count, not message rate (7,873/s at one
+listener to 495/s at 256, EXP-MT-059), and 32 listeners received 6,400 of 6,400 deliveries; the
+design holds because processes listen, not sockets. It names the triggers for revisiting: more
+than about 100 listening processes, a change rate near 10⁴/s, storage leaving PostgreSQL, or a
+requirement that fan-out survive database unavailability ({C} §3.5.3.1). D23 does not reopen that;
+it only settles which role writes.</p>
+<p><strong>What users and operators notice.</strong> Under (a), browser edits in reports and alarm acks arrive
+over REST; nothing changes for uploaders, followers or <code>single</code> operators. A multitenant operator
+can scale <code>api</code> and <code>realtime</code> independently and can run <code>realtime</code> through a direct PostgreSQL
+connection ({C} §3.5.3.1's pooler trap) without giving it write grants.</p>
+<p><strong>Entry conditions before (a) is wired</strong> (each with a control that must go red):</p>
+<ol>
+<li>The pinned client corpus is searched for socket writers: <strong>done 2026-11-06</strong>, the table above; rerun when <code>workspace.lock.json</code> moves a client pin.</li>
+<li>A socket <code>dbAdd</code> under <code>multitenant</code> is refused with the named route; control: remove the
+   refusal and the write must reach storage without <code>api</code>'s authority path, red.</li>
+<li>The alarm ack by REST writes the ack row and the evaluator honours it across a restart;
+   control: drop the ack row's tenant key, red (the contract's §8 shape).</li>
+<li>The role table in <code>lib/server/serve/roles.js</code> states each role's inputs and outputs (listener,
+   storage write authority, feed consumer, egress) as fields, not prose, so a composed process can
+   be checked against them; <code>realtime</code> declares no write authority.</li>
+</ol>
+<p><strong>What this does not decide.</strong> Provider selection for the feed (deferred, research continuing),
+multi-node leasing, performance budgets, and whether <code>vcpool</code>'s egress and the evaluator's
+notification egress are one role or two. Those keep their own rows.</p>
+<hr />
 <h2 id="3-d8--the-query-surface">3. D8 — the query surface<a class="headerlink" href="#3-d8--the-query-surface" title="Permanent link">&para;</a></h2>
 <h3 id="31-v3-is-closed-v1-is-open">3.1 v3 is closed, v1 is open<a class="headerlink" href="#31-v3-is-closed-v1-is-open" title="Permanent link">&para;</a></h3>
 <table>
