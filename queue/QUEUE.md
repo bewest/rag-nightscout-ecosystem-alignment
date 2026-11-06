@@ -8975,7 +8975,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Current 2026-11-05: separately authenticated subject facade characterization and implementation dispatched. No CLI binding, new identity provider or owner grant-ceiling policy is selected; factory acceptance is not full D16 listener completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
+**Notes.** Current 2026-11-05: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. No CLI binding, new identity provider or owner grant-ceiling policy is selected; factory acceptance is not full D16 listener completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
 
 ### `T31-REM` &mdash; T3.1 remainder - per-tenant signing key replaces the install-wide one
 
@@ -10289,7 +10289,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** Dispatched 2026-11-05 from R41; new parameterized contract tests and module- facing documentation only, no production refactor. First priority alongside REST and compatibility lanes. Review before treating the preview seams as stable; no new RC tag prerequisite. Characterize before extracting Mongo- shaped helpers.
+**Notes.** R42 accepts the bounded real Mongo/PG lower/preview corpus on d4570e58, with archived projection/binding/outcome controls. Current interface and write- contract amendments preserve dated captures and distinguish actual capabilities. Full portability/schema/error/retry review remains open; production composition/consolidation is next, not implemented by this slice.
 
 ### `ARCH-SEAM-COMPOSE` &mdash; First: separate domain definitions from backend and HTTP bindings
 
@@ -10380,7 +10380,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** Dispatched 2026-11-05 in an owned refresh/replay lane, separate from the R41 REST integration. New acceptance remains unmeasured. Reuse PR 8891 rather than create a second evaluator. Evaluate logical intent subscriber against D-EVENT; integration and release placement retain entry bar and maintainer review. No automatic wiring into default single or multitenant; no new RC tag gate.
+**Notes.** R43 independently accepts local 925c9527 after current-dev refresh, full/default-browser regression and selected actual-trigger replay. Physical subscriber retained; logical no-op/refusal admission and full writer/alarm coverage remain open. Runtime cost and live stats freshness are unmeasured. No automatic join into #8898, release placement or multitenant evaluator enablement; no new RC tag gate.
 
 ### `ARCH-DERIVED-FRAME` &mdash; Next join: shared bounded frames and derived calculations
 
