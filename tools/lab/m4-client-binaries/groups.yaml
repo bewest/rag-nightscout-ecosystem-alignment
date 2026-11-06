@@ -1,0 +1,39 @@
+# Classification metadata for the M4 client-binary lab (tools/lab/m4-client-binaries).
+#
+# `groups` are the mechanical effect letters of tools/qc/compat/classify_compat.py,
+# copied from releases/cgm-remote-monitor-16.0.0/compat/groups.yaml so a row's
+# `group` reads the same way on the compatibility page. Their verdicts there are
+# decisions about the 15.0.9 -> 16.0.0 tree change, not about the single-site
+# versus multitenant comparison this lab makes, so they are informational here.
+#
+# `explanations` decide the lab's verdict: a cell whose value differs between the
+# single-site baseline and the preview is explained only when an entry matches
+# its key (regex) and, when `fields` is given, every differing field is listed.
+# Verdict vocabulary: Defect | Decided | Bug fix | No value change. A cell no
+# entry matches is unexplained and the run exits 1.
+groups:
+  f: { name: Identifier format, verdict: Decided }
+  b: { name: Duplicate avoided, verdict: Decided }
+  c1: { name: Replace becomes merge, verdict: Decided }
+  c2: { name: Kept becomes written, verdict: Decided }
+  c3: { name: Merge becomes replace, verdict: Decided }
+  c4: { name: Written becomes kept, verdict: Decided }
+  d1: { name: Revived stays deleted, verdict: Decided }
+  d2: { name: New beside deleted stays deleted, verdict: Decided }
+  d3: { name: Revived becomes new beside deleted, verdict: Decided }
+  g: { name: Shared identifier pick, verdict: Decided }
+  n: { name: Second record now stored, verdict: Decided }
+  p: { name: New profile, identifier dropped, verdict: Decided }
+  r: { name: Refused where it was stored, verdict: Decided }
+  r0: { name: Refused, was an error, verdict: Bug fix }
+  e: { name: Error becomes answered, verdict: Bug fix }
+  q: { name: Reply only, verdict: No value change }
+  tt: { name: Temporary Target units stamped, verdict: Decided }
+  bt: { name: Batch items stored differently, verdict: Decided }
+  s: { name: Seed refused, verdict: Decided }
+  a: { name: No visible change, verdict: No value change }
+  h: { name: Other, verdict: Defect }
+
+explanations: []
+# Entries are added after a run measures a difference and a README or decision gives
+# its basis; none is written before the measurement that it explains.

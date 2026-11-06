@@ -3164,3 +3164,12 @@ controls:
     control-kind: integration
     proves: >
       Remove current active/update actor guard; actual forbidden proposal completesHTTP200not403 with persisted effects.
+
+  - gate: node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c994fb2562bc3
+    control: node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c994fb2562bc3 --control oracle
+    positive-control: node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c994fb2562bc3
+    control-kind: integration
+    proves: >
+      Read the PostgreSQL oracle from tenant B instead of A: every stored-outcome
+      check sees zero rows and the lab exits 1, so a gate that passes is reading
+      the rows the clients actually wrote.

@@ -1586,3 +1586,13 @@ owns commands and limits. Local detail:
 `externals/work/HANDOFF-codex-completion-coordination-20261106.md` (untracked).
 Owner-clamping and populated-import proofs continue independently; production
 decisions are deferred, research continuing.
+
+
+### Update — actual M4 clients, bounded measurement (2026-11-06)
+
+| Scope | Reproduced measurement | Remaining boundary |
+|---|---|---|
+| `M4-CLIENT-LAB`, archived CRM `35903069` | Actual cgmsim, oref0 and connector programs executed with synthetic data against single-site Mongo and the explicit two-tenant PostgreSQL preview. The [dated evidence](../../reports/m4-client-binaries/2026-11-06/README.md) holds versions, captures, classifications and controls. | Default compatibility gate is not met. Unapproved stored-identity and lookup differences remain; no application repair or milestone promotion. |
+| Local lane | Isolated branch `codex/m4-client-lab-20261106`; paused main/index snapshot preserved. | Lane detail: `externals/work/HANDOFF-codex-m4-20261106.md` (local, untracked). No push; B5 full/browser/corpus acceptance remains separate. |
+
+This measurement changes no release placement, operator-visible behavior or policy decision.

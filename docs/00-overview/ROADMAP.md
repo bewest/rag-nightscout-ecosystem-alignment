@@ -178,6 +178,7 @@ process change ([execution plan §7a](../30-design/tenancy/nightscout-multitenan
 | 1 | `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or r | `not-started` | &mdash; |
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
+| 1 | `M4-CLIENT-LAB` | M4 client-binary lab: real pinned clients against the multitenant preview and si | `gate-not-met` | &mdash; |
 | 1 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and Mongo | `in-progress` | &mdash; |
 | 1 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | &mdash; |
 | 1 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | &mdash; |

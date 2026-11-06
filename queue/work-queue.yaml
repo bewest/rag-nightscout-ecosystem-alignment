@@ -25435,3 +25435,50 @@ items:
       Revisit only after higher-priority seam/REST/evaluator work and an explicit
       scheduling choice. Never a prerequisite for preview merge, RC tag or current
       lanes.
+
+  - id: M4-CLIENT-LAB
+    title: 'M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo'
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: codex/m4-client-lab-20261106
+    base: main@88902eba2532c42bf83a91a8104f9ea64da2ca18
+    worktree: externals/work/alignment-codex-m4-20261106
+    state: gate-not-met
+    blast_radius: >
+      Lab code under tools/lab/m4-client-binaries, one queue gate and its control,
+      a run record. No cgm-remote-monitor or client file changes. Measures the M4
+      criterion "actual client execution distinguished from source-pattern replay"
+      for the three headless Linux clients; promotes nothing.
+    review: maintainer; compatibility and tenancy review of the classified cells
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Measurement only; no shipped surface moves.
+    register: []
+    gates:
+      - run: node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c994fb2562bc3
+        kind: integration
+        describe: >
+          Archives the cumulative head, boots the preview and single-site Mongo from it,
+          runs the pinned cgmsim-lib and oref0 binaries in host-network containers
+          against both, reads stored rows from PostgreSQL and MongoDB oracles, and
+          classifies every differing cell with the compat vocabulary; red on any failed
+          positive or negative check or any unexplained cell.
+      - no-gate: >
+          Connector scenarios are opt-in and separate from the default gate. Fixed-data
+          Share upload/restart and preview-to-single-site entries-only source execution
+          are measured in the dated report. Connector-specific refusal controls,
+          incremental new-reading polling, baseline-as-source differential, mobile/v3
+          binaries, socket forwarding and TLS remain UNMEASURED. D23 entry condition 2
+          has no forwarding-realtime implementation on the selected head.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/m4-client-binary-lab-packet-2026-11-06.md
+      - reports/m4-client-binaries/2026-11-06/README.md
+    notes: >
+      Paused Claude lane taken over with maintainer authorization, in an isolated
+      alignment worktree; shared main and its staged snapshot untouched. Actual
+      clients were executed against the same archived app head and independent
+      Mongo/PostgreSQL oracles. The dated report records the measured differences,
+      controls and remaining limits; no compatibility exception, application fix,
+      milestone promotion or release gate is adopted. Root coordination allocates
+      the integration-record R entry after combining the B4a records.

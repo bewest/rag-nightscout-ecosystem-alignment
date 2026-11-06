@@ -1,0 +1,101 @@
+{
+ "rows": [
+  {
+   "cell": "entries v1 oref0-batch-badid",
+   "collection": "entries",
+   "seed_path": "v1",
+   "resend_path": "v1",
+   "form": "oref0-batch-badid",
+   "results": false,
+   "diff_fields": [
+    "documents",
+    "ident",
+    "shape"
+   ],
+   "before": {
+    "documents": [
+     "{\"date\":1793995851698,\"dateString\":\"2026-11-06T20:10:51.698Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T20:10:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+     "{\"date\":1793996151698,\"dateString\":\"2026-11-06T20:15:51.698Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"identifier\":\"not-a-hex-identifier\",\"sgv\":100,\"sysTime\":\"2026-11-06T20:15:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+     "{\"date\":1793996451698,\"dateString\":\"2026-11-06T20:20:51.698Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T20:20:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+     "{\"date\":1793996751698,\"dateString\":\"2026-11-06T20:25:51.698Z\",\"direction\":\"Flat\",\"sgv\":118,\"sysTime\":\"2026-11-06T20:25:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+    ],
+    "ident": "STR+absent",
+    "shape": "date,dateString,device,direction,identifier,sgv,sysTime,type,utcOffset"
+   },
+   "after": {
+    "documents": [
+     "{\"date\":1793995851698,\"dateString\":\"2026-11-06T20:10:51.698Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T20:10:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+     "{\"date\":1793996151698,\"dateString\":\"2026-11-06T20:15:51.698Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T20:15:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+     "{\"date\":1793996451698,\"dateString\":\"2026-11-06T20:20:51.698Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T20:20:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+     "{\"date\":1793996751698,\"dateString\":\"2026-11-06T20:25:51.698Z\",\"direction\":\"Flat\",\"sgv\":118,\"sysTime\":\"2026-11-06T20:25:51.698Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+    ],
+    "ident": "absent",
+    "shape": "date,dateString,device,direction,sgv,sysTime,type,utcOffset"
+   },
+   "group": "h",
+   "group_label": "(h) other",
+   "data_effect": "other",
+   "explained": null,
+   "group_verdict": "Defect"
+  },
+  {
+   "cell": "treatments v1 oref0-latest-header",
+   "collection": "treatments",
+   "seed_path": "v1",
+   "resend_path": "v1",
+   "form": "oref0-latest-header",
+   "results": false,
+   "diff_fields": [
+    "exit",
+    "jq",
+    "st"
+   ],
+   "before": {
+    "exit": 0,
+    "jq": "{\"carbs\":null,\"created_at\":\"2026-11-06T20:20:51.698Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temporary Target\",\"insulin\":null,\"reason\":\"synthetic order control\",\"targetBottom\":150,\"targetTop\":100,\"units\":\"mg/dl\",\"utcOffset\":0}",
+    "st": "200 [1]"
+   },
+   "after": {
+    "exit": 5,
+    "jq": "",
+    "st": "500 {description,message,status}"
+   },
+   "group": "h",
+   "group_label": "(h) other",
+   "data_effect": "other",
+   "explained": null,
+   "group_verdict": "Defect"
+  },
+  {
+   "cell": "treatments v1 oref0-latest-token",
+   "collection": "treatments",
+   "seed_path": "v1",
+   "resend_path": "v1",
+   "form": "oref0-latest-token",
+   "results": false,
+   "diff_fields": [
+    "st"
+   ],
+   "before": {
+    "st": "401 {description,message,status}"
+   },
+   "after": {
+    "st": "401 {error}"
+   },
+   "group": "q",
+   "group_label": "(q) reply only",
+   "data_effect": "reply-only",
+   "explained": null,
+   "group_verdict": "No value change"
+  }
+ ],
+ "unexplained": [
+  "entries v1 oref0-batch-badid",
+  "treatments v1 oref0-latest-header",
+  "treatments v1 oref0-latest-token"
+ ],
+ "missing_in_preview": [],
+ "missing_in_baseline": [],
+ "cells_baseline": 19,
+ "cells_preview": 19
+}

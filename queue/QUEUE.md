@@ -31,11 +31,11 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 364 |
-| runnable gates | 423 |
-| explicit `no-gate:` markers | 385 |
+| items | 365 |
+| runnable gates | 424 |
+| explicit `no-gate:` markers | 386 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 385 of the 808 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 810 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -43,7 +43,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 74 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE |
 | `in-progress` | 23 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
-| `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
+| `gate-not-met` | 4 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR, M4-CLIENT-LAB |
 | `ready-to-push` | 2 | T30-AUTH, WS-LAB |
 | `blocked` | 14 | TEN-RESOLVE, TEN-LAB, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 4 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 64 items
+`parcel: tenancy` &mdash; 65 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8441,6 +8441,7 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/private-acquisition-profile-prep-20261106` | n/a | 1 run + 1 no-gate |
 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/serial-integration-20261106` | n/a | 2 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `M4-CLIENT-LAB` | M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo | `gate-not-met` | `codex/m4-client-lab-20261106` | n/a | 1 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -10460,6 +10461,37 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
 **Notes.** Low priority, deferred by maintainer 2026-11-05. Preserve prior lab artifacts. Revisit only after higher-priority seam/REST/evaluator work and an explicit scheduling choice. Never a prerequisite for preview merge, RC tag or current lanes.
+
+### `M4-CLIENT-LAB` &mdash; M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo
+
+| | |
+|---|---|
+| state (claimed) | `gate-not-met` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `codex/m4-client-lab-20261106` |
+| base | `main@88902eba2532c42bf83a91a8104f9ea64da2ca18` |
+| worktree | `externals/work/alignment-codex-m4-20261106` |
+| semver | `n/a` |
+| review | maintainer; compatibility and tenancy review of the classified cells |
+
+**Blast radius.** Lab code under tools/lab/m4-client-binaries, one queue gate and its control, a run record. No cgm-remote-monitor or client file changes. Measures the M4 criterion "actual client execution distinguished from source-pattern replay" for the three headless Linux clients; promotes nothing.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Measurement only; no shipped surface moves.
+
+**Gates.**
+
+- `[integration]` `node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c994fb2562bc3`
+  - Archives the cumulative head, boots the preview and single-site Mongo from it, runs the pinned cgmsim-lib and oref0 binaries in host-network containers against both, reads stored rows from PostgreSQL and MongoDB oracles, and classifies every differing cell with the compat vocabulary; red on any failed positive or negative check or any unexplained cell.
+- **NO GATE** &mdash; Connector scenarios are opt-in and separate from the default gate. Fixed-data Share upload/restart and preview-to-single-site entries-only source execution are measured in the dated report. Connector-specific refusal controls, incremental new-reading polling, baseline-as-source differential, mobile/v3 binaries, socket forwarding and TLS remain UNMEASURED. D23 entry condition 2 has no forwarding-realtime implementation on the selected head.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/m4-client-binary-lab-packet-2026-11-06.md`
+- `reports/m4-client-binaries/2026-11-06/README.md`
+
+**Notes.** Paused Claude lane taken over with maintainer authorization, in an isolated alignment worktree; shared main and its staged snapshot untouched. Actual clients were executed against the same archived app head and independent Mongo/PostgreSQL oracles. The dated report records the measured differences, controls and remaining limits; no compatibility exception, application fix, milestone promotion or release gate is adopted. Root coordination allocates the integration-record R entry after combining the B4a records.
 
 ---
 
