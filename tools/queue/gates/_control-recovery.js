@@ -44,4 +44,12 @@ function verify (suite, report, status, control) {
   console.log('CONTROL-SEMANTIC: ' + (owner ? 'fresh tightened ceiling allowed all three protected operations' :
     'typed projection collapsed to one row while two stored identities remain'));
 }
-module.exports = { cases, mutate, verify };
+function validateAudit (suite, captured) {
+  if (suite !== 'owner-reader') return;
+  if (!Array.isArray(captured) || captured.length !== 1 ||
+      !/^ns-tenant-authority-pg-[0-9a-f]{16}$/.test(captured[0].container) ||
+      (captured[0].containerRemoved && !Array.isArray(captured[0].volumeIds))) {
+    throw new Error('Owned owner-reader lifecycle audit missing or incomplete');
+  }
+}
+module.exports = { cases, mutate, verify, validateAudit };

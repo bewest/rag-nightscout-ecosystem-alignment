@@ -354,10 +354,12 @@ try {
 } finally {
   let cleanupFailed = false;
   const captured = auditFile && fs.existsSync(auditFile) ? JSON.parse(fs.readFileSync(auditFile, 'utf8')) : [];
+  try { bounded.validateAudit(suite, captured); }
+  catch (error) { console.error(error.message); cleanupFailed = true; }
   const cleanup = [...containers].reverse().map(container => ({ container, volumeIds: null, containerRemoved: false })).concat(captured);
   let diagnostic;
   try {
-    if (cleanup.length) {
+    if (cleanup.length || suite === 'owner-reader') {
       const directory = path.join(REPO_ROOT, 'externals/work/cleanup-diagnostics');
       fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
       diagnostic = path.join(fs.mkdtempSync(path.join(directory, 'next-slice-')), 'containers.json');
@@ -384,7 +386,8 @@ try {
       if (!entry.containerRemoved) execFileSync('docker', ['rm', '-f', '-v', entry.container], { stdio: 'pipe', timeout: 30000 });
       entry.containerRemoved = true;
     } catch { cleanupFailed = true; console.error('Owned gate service cleanup failed: ' + entry.container); }
-    for (const [kind, id] of [['container', entry.container], ...(entry.volumeIds || []).map(id => ['volume', id])]) {
+    for (const [kind, id] of bounded.cases[suite] ?
+      [['container', entry.container], ...(entry.volumeIds || []).map(id => ['volume', id])] : []) {
       const probe = spawnSync('docker', [kind, 'inspect', id], { encoding: 'utf8' });
       const absent = probe.status === 1 && /No such (object|container|volume)/i.test(probe.stderr || '');
       if (!entry.absence) entry.absence = [];

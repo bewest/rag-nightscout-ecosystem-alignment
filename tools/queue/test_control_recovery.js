@@ -3,10 +3,14 @@
 // Instrument/parser checks only; these are not application runtime evidence.
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
-const { cases, mutate, verify } = require('./gates/_control-recovery');
+const { cases, mutate, verify, validateAudit } = require('./gates/_control-recovery');
 const repository = process.argv[2];
 const ref = process.argv[3];
 assert.ok(repository && ref, 'Pass the frozen application repository and commit');
+assert.throws(() => validateAudit('owner-reader', []), /missing or incomplete/);
+const owned = { container: 'ns-tenant-authority-pg-0123456789abcdef', containerRemoved: true, volumeIds: null };
+assert.throws(() => validateAudit('owner-reader', [owned]), /missing or incomplete/);
+validateAudit('owner-reader', [{ ...owned, volumeIds: ['synthetic-volume'] }]);
 for (const [suite, item] of Object.entries(cases)) {
   for (const [file, before, after] of Object.values(item.controls)) {
     const source = execFileSync('git', ['-C', repository, 'show', ref + ':' + file], { encoding: 'utf8' });
