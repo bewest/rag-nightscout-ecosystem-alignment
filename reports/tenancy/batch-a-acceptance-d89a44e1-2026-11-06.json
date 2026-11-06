@@ -1,0 +1,117 @@
+{
+  "date": "2026-11-06",
+  "classification": "delegated bounded Batch A application acceptance complete; coordinator owns combined R60 and publication",
+  "acceptedHead": "d89a44e182e771ef84aa99190ec166e6ff0d9772",
+  "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "sourceEquivalence": {
+    "base": "c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6",
+    "head": "d89a44e182e771ef84aa99190ec166e6ff0d9772",
+    "changedPaths": [
+      "docs/multitenant-test-corpus.md",
+      "scripts/test-multitenant.js"
+    ],
+    "identicalTreesOrBlobs": {
+      "lib": "a4a09e6cd29239ef541e528f28693270086dba45",
+      "tests": "d8203774184cafb51623da1aa6b057f6288c84c0",
+      "bin": "a0afba03b03b47e1e21f68a9b5638e19995a31df",
+      "package.json": "051cb0fb137d68d60006fd77a87d7474276d0ad1",
+      "package-lock.json": "b1e43282911354e0c5dcf8f0c62bc4402f7b6346"
+    },
+    "clean": true,
+    "fullBrowserClientFoundationExecutedOn": "c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6",
+    "reuseBasis": "Only corpus runner and its documentation changed; product, assertions and dependencies byte-identical."
+  },
+  "reusedCampaigns": {
+    "executedOn": "c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6",
+    "full": {
+      "passing": 7207,
+      "pending": 81,
+      "failing": 0,
+      "exit": 0
+    },
+    "browser": {
+      "files": 41,
+      "passing": 684,
+      "pending": 0,
+      "failing": 0,
+      "exit": 0
+    },
+    "foundation": {
+      "connectionRlsChecks": 9,
+      "identityChecks": 4,
+      "passing": true,
+      "report": "batch-a-foundation-c0e8ad3c-2026-11-06.json"
+    }
+  },
+  "finalCorpus": {
+    "executedOn": "d89a44e182e771ef84aa99190ec166e6ff0d9772",
+    "selectedSuites": 34,
+    "startedAt": "2026-11-06T21:07:13.446Z",
+    "finishedAt": "2026-11-06T21:10:55.134Z",
+    "status": 0,
+    "signal": null,
+    "passing": 441,
+    "pending": 1,
+    "failing": 0,
+    "scriptExit": 0,
+    "remaining": [],
+    "pendingReason": "explicitly disabled HTTP performance benchmark"
+  },
+  "finalSourceChecks": {
+    "syntax": "PASS",
+    "tierFiles": 512,
+    "tiers": 8,
+    "inventorySuites": 34,
+    "whitespace": "PASS"
+  },
+  "finalPrcheck": {
+    "exit": 0,
+    "result": "OK",
+    "lastApplicationGate": true,
+    "headChanged": false,
+    "officialDevAlreadyContained": true
+  },
+  "cleanup": {
+    "observedContainersVerifiedAbsent": 34,
+    "observedMountedVolumesVerifiedAbsent": 51,
+    "attributedUnattachedVolumesRemoved": 39,
+    "volumeBefore": 462,
+    "volumeAfter": 462,
+    "unknownVolumesPreserved": true
+  },
+  "runtimeReleased": "2026-11-06T21:11:56Z",
+  "priorFailurePreserved": "batch-a-acceptance-attempt-c0e8ad3c-2026-11-06.json",
+  "separateEvidence": "M4 actual-client and B4a parent controls retain their own reports; this lane neither reran nor relabelled them.",
+  "limits": [
+    "No Node 26 CI result measured here; coordinator verifies after publication.",
+    "Pending benchmark is not a pass; no performance claim.",
+    "No milestone, operator release, default enablement, arbitrary BSON import, mixed writer, HA or operational acceptance inferred.",
+    "Campaign totals overlap and must not be summed."
+  ],
+  "localArtifacts": {
+    "corpus-d89a44e1.log": {
+      "sha256": "4d4f0f16da39e3a82aef30e2cc3de8b18b6f9176dff3dd8ac88d432e39c9cc13",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/corpus-d89a44e1.log"
+    },
+    "prcheck-d89a44e1.log": {
+      "sha256": "94f3895673a828cefbbf566c47e8b7e7bd2b6aa5ff544f14bfad24475ea9fd4d",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/prcheck-d89a44e1.log"
+    },
+    "resources-corpus-d89a44e1.json": {
+      "sha256": "32bf96799aa26fdbe1d39c8fa508cb3a6d35b96d634fc96ab57f1acf15083fe1",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-corpus-d89a44e1.json"
+    },
+    "resources-corpus-d89a44e1-audit.json": {
+      "sha256": "c71a12ca9623f006550ca1795bd5f8bbbc844e94fcd71d4dc7e515033e16f3c9",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-corpus-d89a44e1-audit.json"
+    },
+    "source-equivalence-d89a44e1.json": {
+      "sha256": "b2bacf8b31ebc24a85d12c6c7d25de2e02cd7283d77b887fe0d33320822ba02d",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/source-equivalence-d89a44e1.json"
+    },
+    "corpus-d89a44e1.json": {
+      "sha256": "a8cc3f27f68327e225b3c21ecceaa4fc4deeb1c270f1644b2772c0ed7d0e83ba",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/corpus-d89a44e1.json"
+    }
+  }
+}
