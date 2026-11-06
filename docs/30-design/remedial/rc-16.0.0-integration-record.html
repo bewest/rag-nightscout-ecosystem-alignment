@@ -4677,7 +4677,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>79bdac61f</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>f5676296a</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -8120,7 +8120,7 @@ parent consolidation handoff.</p>
 <code>3d5eac196256e447859373beadf7abf2efbfb2ce</code>, branch
 <code>codex/owner-local-auth-20261105</code>, a clean descendant of R46 <code>44331668</code>.
 The <a href="../tenancy/owner-authority.html">owner authority contract</a> owns the adopted
-policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
+policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e739c46673bb7d908180dcabfa12ef5c8462a195/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
 retain the campaign summary. This is locally fixed code, not merged/released or
 published on #8898 by this lane. The coordinator has incorporated this clean
 application commit into its separate frame-integration tree, pending its own
@@ -8196,10 +8196,10 @@ invalid token's actual POST answer201 instead of401. Removing session-active
 checking makes a revoked session's GET answer200 instead of403. Reusing an earlier
 snapshot makes committed grant removal's next GET answer200 instead of403. Every
 mutant fails at the intended HTTP assertion; setup failure is not accepted as red.
-See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
+See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e739c46673bb7d908180dcabfa12ef5c8462a195/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
 <p><strong>Repeated authorization-pipeline lab using the actual application verifier:</strong>
 16 semantic checks, 4 non-vacuous verifier/state controls, 24 timing cases/2880
-operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
+operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e739c46673bb7d908180dcabfa12ef5c8462a195/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
 pins instrument <code>f814f967c</code>, application <code>ab09297b</code> and application-module SHA256.
 A direct git comparison confirms unchanged verifier bytes at final <code>3d5eac19</code>;
 this carries the component measurement forward without relabeling its source head. At concurrency8, current
@@ -8477,6 +8477,93 @@ all listed artifact hashes independently verified. Lane handoffs:
 <code>HANDOFF-settings-verification-20261106.md</code> and
 <code>HANDOFF-cleanup-settings-runtime-20261106.md</code>. B slot released, A now active;
 no service campaign or deletion performed by this records lane. No push.</p>
+<h3 id="r52---native-private-acquisition-extraction-on-e5fe0b5e-2026-11-06">R52 - native private acquisition extraction on e5fe0b5e (2026-11-06)<a class="headerlink" href="#r52---native-private-acquisition-extraction-on-e5fe0b5e-2026-11-06" title="Permanent link">&para;</a></h3>
+<p><strong>Native tree:</strong> <code>codex/private-acquisition-extract-20261105</code>
+<code>e5fe0b5ed2e5cdc1c7841320d898128673095e9f</code>, over historical accepted R49
+<code>1c55098a3d4bcf3d871bcd345f159ce444d6e458</code>; contains official/dev
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Production extractionee480a96,
+independent tests9c39e819, unit registratione5fe0b5e. Native acceptance below is
+separate from root B+A composition <code>c77784360076f9cd3e7a8b41700b0b9468378c7b</code>,
+whose combined full verification is PENDING. R51 and preceding records are unchanged.</p>
+<table>
+<thead>
+<tr>
+<th>Reproduced measurement, independently read from local captured logs</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fresh owned <code>npm run test:all</code>, <code>full-recovery-20261106.log</code></td>
+<td>7080passing /80pending /0failing, exit0; tiers2161/205/368/319/93/3916/18</td>
+</tr>
+<tr>
+<td>Prior same-native-head default <code>npm run test:browser</code></td>
+<td>684passing /0failing, exit0; not rerun after capacity recovery</td>
+</tr>
+<tr>
+<td>Final <code>tools/review/prcheck/prcheck.sh</code>, <code>final-prcheck-20261106.log</code></td>
+<td>OK; fetched current dev contained, source clean/frozen</td>
+</tr>
+<tr>
+<td>Archived <code>node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f</code></td>
+<td>14passing; restored14</td>
+</tr>
+<tr>
+<td>Same instrument <code>--suite frame-concurrency</code></td>
+<td>4passing; restored4</td>
+</tr>
+<tr>
+<td>Acquisition <code>--control tenant</code>, <code>bound</code>, <code>clinical</code>, <code>cache</code>; concurrency <code>--control partial</code>, <code>egress</code></td>
+<td>Each0passing/1semantic failing, exit1; restored14/4</td>
+</tr>
+<tr>
+<td>Actual loader caller ownership/error unit tests</td>
+<td>4passing; scratch reused-target mutant0passing/2ownership assertion failures; restored4</td>
+</tr>
+<tr>
+<td>Updated instrument on historical1c55098a cache control</td>
+<td>0passing/1semantic untouched resident-cache failure; restored14</td>
+</tr>
+<tr>
+<td>Root B338+A tier registration, not native full acceptance</td>
+<td>504files/8tiers PASS; combined full PENDING</td>
+</tr>
+</tbody>
+</table>
+<p>Native environment: Node22.23.4, PG16.15, Mongo8.0.34, Vault2.2.1, UTC,
+seed41574423920. Groups overlap and are not additive. Updated cache instrument
+alignment334dc571 selects historical cache reuse or extracted acquired-SGV leakage
+with exact non-ambiguous anchors; neither silently skips missing anchors. No
+accepted worktree is modified by its scratch controls.</p>
+<p>The26-line helper owns fresh context/helper-data/bus, private cache and loader
+target, preserving existing loader invocation. Views/snapshot retain queries,
+bounds, frame/future/statistics policy, string-key typed union, authority and
+complete-error/lifecycle differences. The actual loader unit proof is not database
+consistency proof. No common revision, stronger snapshot or default single/Mongo/
+evaluator behavioral admission is inferred.</p>
+<p>Earlier ENOSPC/NUL/truncated exit7 full attempt remains unaccepted historical
+evidence; the fresh completed recovery log contains all seven tier summaries and
+cleanup marker. A supplemental no-NUL assertion found the intentional unsupported
+nul-key fixture diagnostic; exact byte inspection distinguishes this from earlier
+truncation. The campaign itself exited0 without source/expectation changes.
+Outer audit independently verifies3owned containers/5recorded anonymous volumes
+absent; nested old fixture ownership was not audited, unknown/orphan volumes were
+not deleted and no zero-leak guarantee follows.</p>
+<p>Independent evaluator helper preparation
+<code>2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35</code> descends from accepted
+<code>5173864da1835da7aecf1f73121b28463f6a6a70</code>. Helper blob
+<code>3a97307af1e749e98b99f2955182e6844c331441</code> matches native REST exactly;
+views-only integration preserves evaluateCycle. All new-head runtime38/controls/
+full/browser/prcheck are UNMEASURED, pending separate slot. No REST join,
+subscriber/notification or production role admission.</p>
+<p>Local evidence home: <code>externals/work/private-acquisition-evidence-20261105/</code>,
+including recovery summary/log, final prcheck and owned cleanup audit. Exact
+commands, scoped controls and ownership:
+<code>externals/work/HANDOFF-private-acquisition-extraction-20261105.md</code>.
+Native A step finished. D/clock lower proof active with HTTP/full/bench acceptance
+pending, Cqueued; no new clock acceptance allocation. No M0–M6 promotion,
+application push or combined full acceptance.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
