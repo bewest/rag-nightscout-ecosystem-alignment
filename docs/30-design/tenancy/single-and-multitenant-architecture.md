@@ -6,7 +6,7 @@ cgm-remote-monitor `ded254b9acf5a94e3a4fd99c85b23e1413fa08b6`, based on dev
 reproductions**, not new runs for this explanation. Current delivery and milestone
 claims live in the [delivery dashboard](multitenant-delivery-dashboard.md);
 [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
-owns the published preview acceptance; [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
+owns the historical R40 preview acceptance; [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
 owns its local subject-service/compatibility continuation. Later local
 [R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
 and independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)

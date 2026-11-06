@@ -1,16 +1,11 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing living plan. Tenancy progress reconciled 2026-11-06 against
-cgm-remote-monitor dev `4a482627`, published draft #8898 `bc4ee1a9` (R44),
-local cumulative `35903069` (B338+A+C17f, R54 full/browser accepted),
-accepted settings `33870764` (R51) and native acquisition `e5fe0b5e` (R52),
-preceded by frame `1c55098a` (R49), published independent #8891 `dff9a8d4` (R45) and local evaluator acquisition
-`2ee8b493` (R55; prior5173864d/R50 retained). R46/R47 remain the accepted preceding baseline. Actual frame
-acquisition/concurrent reads are characterized; shared implementation remains open.
-Storage/identity/registration measurements below retain their named historical
-pins. Full M0–M6 completion remains open; component states are not milestone
-promotion or a fresh measurement of every queue gate. Release placement is in
-[release allocation](release-allocation-2026-10-27.md).*
+*Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
+[R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06)
+and draft #8898 `d89a44e1`, based on dev `4a482627`. Earlier storage,
+identity and registration measurements retain their named pins. Current milestone
+claims live in the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md);
+release placement lives in [release allocation](release-allocation-2026-10-27.md).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -25,179 +20,27 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-### Independent profile accepted; clock recovery remains focused (2026-11-06)
+The [tenancy reading guide](../tenancy/README.md) identifies the current plan,
+decision owners and historical evidence. Start with the dashboard for sequencing;
+use this map to see how the platform tracks meet.
 
-R55 PROFILE2ee independently passes full6690/3pending/0failure/browser684,
-archive38/three semantic `http`/clinical/retention controls/restored38 and final
-prcheckOK. REST359/PROFILE2ee remain separate, helper-identical with evaluateCycle
-retained; no merge/runtime-role/subscriber/notification promotion. The fourth
-declared notification-close control is UNMEASURED at2ee/prior517 historical.
-R50–R54 captures and all milestone states remain unchanged.
-[Profile report](../../../reports/private-acquisition-profile-2026-11-06/README.md)
-and [artifact index](../../../reports/private-acquisition-profile-2026-11-06/artifact-index.json)
-retain verified22artifact hashes and bounded11container/20volume cleanup.
-
-[Focused clock repair](../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md)
-separately measures3532/117: actual7passing/1benchmarkpending, negative0/2
-(primary lostHTTP, secondary strict workerexit1), restored1 with503 and same-worker
-GET200/POST201/strict0. Original [fatal diagnostic](../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.md)
-is retained. No full clock acceptance/readiness/join/default enablement; assembled
-single/Mongo/full/browser/prcheck, broader controls and performance UNMEASURED.
-See the [R55 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-private-acquisition-profile-2026-11-06).
-
-### Cumulative B+A+C accepted with existing scope limits (2026-11-06)
-
-R54 local35903069 accepts cumulative B338+A e5+C17f:
-full7144/80pending/0failure, browser684, settings12 and fresh finalprcheckOK.
-Final359 only removes unused bindings in settings-test normalization. R51–R53
-native captures and all milestone states are unchanged. Successful captured
-settings3/5/full18/26/browser3/5 resources are absent;219preserved volumes remain,
-with private0700/0600 audit. No global leak-freedom claim.
-
-Selected explicit ownerPolicy REST37 is not full owner/listener enablement;
-human issuer/refresh, full wildcard/default catalogue and existing-grant clamping
-remain open. Acquisition adds no stronger snapshot/common revision. Clock and
-independent profile2ee are not joined; clock HTTP/full/bench acceptance pending.
-No milestone promotion or application push. See the
-[R54 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06)
-and [public cumulative record](../../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.md).
-Earlier pending sections retain their dated capture scope.
-
-### Selected owner policy accepted; combined verification pending (2026-11-06)
-
-R53 native C17f9a457 passes full7127/80pending/0failure/browser684/finalprcheckOK,
-actual22/affected26/static32. Parent archived22/four semantic controls/restored22
-pass. Explicit ownerPolicy proposed-grant transaction covers selected REST37:
-catalogue∩operator ceiling∩current actor delegation with row fencing. DELETE
-refuses/mgmtAuth injected; no full wildcard/default catalogue, human issuer/refresh,
-existing-grant clamping or production listener. R48 readers unchanged.
-
-Root4a15802c now incorporates B+A+C; tier506/8 passes but combined full is
-**PENDING**, not accepted. R51/R52 native captures unchanged. No clock or independent
-profile2ee join. [Clock lower proof](../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.md)
-records original8/controls, old all-domain SQL42703/corrected9; corrected HTTP retry
-active, HTTP/full/bench acceptance pending. Canonical clock flags source-only for
-future combined correctness, benchmark off. No milestone promotion.
-See [R53 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-selected-owner-policy-and-pending-composition-2026-11-06)
-and [public C acceptance](../../../reports/owner-subject-policy-acceptance-2026-11-06.md).
-Earlier sections retain their dated scopes.
-
-### Native private acquisition accepted; combined verification pending (2026-11-06)
-
-R52 accepts native A `e5fe0b5e`: fresh full7080/80pending/0failure, same-head
-prior browser684 and final prcheckOK. Acquisition14/concurrency4 and six semantic
-controls restore14/4; caller4/reused-target2fail/restored4 pass. The26-line helper
-owns fresh private allocation only; caller policies and consistency differences
-remain explicit. No common revision or stronger snapshot guarantee follows.
-
-Observed root `c7778436` incorporates B338+A; tier504/8 passes but **combined full
-is PENDING**, so composition is not accepted. Historical R49/R50 and accepted
-R51 settings remain immutable. Independent profile helper prep `2ee8b493` matches
-REST helper bytes and preserves evaluateCycle, but all new runtime38/controls/
-full/browser/prcheck are UNMEASURED. D/clock lower proof active; HTTP/full/bench
-acceptance pending, C queued. No production clock fix or milestone promotion.
-See the [R52 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06).
-The R51 and HOLD sections below are historical captures.
-
-### Accepted settings and remaining serial proof (2026-11-06)
-
-R51 `33870764` is incorporated as the exact root integration tree: full7089/
-80pending/0failure, browser684 and final prcheckOK. Parent archived12 and three
-semantic controls/restored12 pass. The only product change is global PG sort
-cap4→5; six-key sorts refuse and broader settings/client/resource proof remains
-open. Earlier Vault-mount setup failure is recorded, not accepted. R49 and
-independent R50 remain their historical accepted captures; no profile join.
-
-Authorized inventory cleanup completed3779/3779 with0errors/no outside-inventory
-loss. Selected cleanup smoke4 and settings gate audits15containers/25volumes verify
-bounded removal;40unknown nested volumes remain preserved. B slot released;
-A fresh full active, D/C/clock queued. A/C/D/clock are unaccepted; D's measured
-history gap remains unfixed. The [adopted clock proof plan](../tenancy/postgres-tenant-clock-proof.md)
-is source preparation, with commit-boundary proof, contention and fresh-ingestion
-latency unmeasured. No milestone promotion or full combined acceptance follows.
-See the [R51 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-settings-differential-and-serial-recovery-2026-11-06).
-The prior HOLD table below is explicitly its2026-11-05 historical capture.
-
-### NEXT lanes under shared capacity HOLD (2026-11-05)
-
-Accepted REST `1c55098a` (R49: full7076/80pending/0failure, browser684) and
-independent profile `5173864d` (R50: full6690/3pending/0failure, browser684) stay
-frozen. The [dated continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05)
-records separate proposals; **none is a new accepted integration or milestone**.
-
-| NEXT lane | Bounded evidence | Remaining acceptance |
+| Scope | Current recorded acceptance | What remains |
 |---|---|---|
-| A — proposed private acquisition | CRM `e5fe0b5e`: acquisition14/concurrency4, semantic controls and browser684; separate alignment control `334dc571` **NOT JOINED** | Full exit7/ENOSPC/NUL/truncated campaign **UNACCEPTED**; individual failures need isolation. Final prcheck and independent evaluator adaptation **NOT RUN** |
-| B — settings | `0a4a7d59`: focused12 plus predicate/projection controls; global PG sort cap4→5 is the sole product edit | Full/browser, cross-binding and cap-restoration controls, prcheck **PENDING capacity** |
-| C — new owner proposed-grant enforcement | Accepted R48 baseline retained; new enforcement has no accepted head | **UNMEASURED**, source/runtime preparation on HOLD; no human issuer/refresh or full ceiling/catalogue completion |
-| D — replica history | [Five actual HTTP characterization assertions](../../../reports/tenancy/rest-replica-history-characterization-2026-11-05.md) at `2a6eaf73` confirm a **FAILED history contract**; latest test/cleanup candidate `714f6c8b` supersedes `d93b7fca` | Corrected controls/cleanup runtime, full/browser and prcheck PENDING. No general replica interchangeability or production clock fix |
+| Multitenant foundations | **M0 promoted** in R60; draft #8898 is `d89a44e1`. Restricted-role/RLS, isolation, rollback, pool reuse and startup refusal have bounded acceptance. | No default or production role enabled; the PR is open/draft, not merged or released. |
+| Data, authority and clients | R60 joins the tenant clock and selected client compatibility repairs. The bounded `M4-CLIENT-LAB` card is complete. | M1–M4 still need complete admitted backend/import/resource, deployable control-plane and wider client criteria. M3 depends on complete M1/M2. |
+| Durable runtime | B7 design direction is adopted; implementation and recovery experiments proceed separately. | M5/M6 need runtime consumers, replay/recovery, lifecycle and operational acceptance. The clock performance benchmark remains pending. |
+| Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | Separate from #8898; no common read revision, stronger snapshot or distributed evaluator acceptance. |
 
-Root has zero available space in the captured host check; all new DB/full/browser
-campaigns remain on global HOLD. Use /home scratch for records and static checks.
-Unknown anonymous volumes are not owned merely because an earlier runner removed
-its containers; the separately inventoried3779 unattached anonymous volumes await
-user approval, with no deletion recorded here. Unique allocation alone is
-read-derived insufficient for commit ordering; the clock/fencing design remains
-under investigation. This update neither classifies every incomplete-run failure
-as environmental nor reruns an application campaign.
+R60 and its [final capsule](../../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.md)
+own the measured figures and executed heads. Earlier full/browser/client/pooler
+campaigns are reused only after exact relevant source identity; they are not
+relabelled as final-head executions. Remote CI is separate from local acceptance.
+See the [release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--coherent-compatibility-batch-accepted-m0-promoted-2026-11-06)
+for the programme disposition.
 
-**Current dev anchor, 2026-11-05: `4a482627`.** Published multitenant preview
-#8898 is `bc4ee1a9` (R44), OPEN/draft and not merged to dev at the prior capture;
-its CI/CodeQL success belongs to that captured head, not a fresh check. Local
-[R46](../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05)
-accepts bounded identical PG projection, identifying-read and owned-commit/event
-mechanics plus real index-on Mongo/PG race compatibility. Full regression,
-expanded baseline/current port checks and semantic controls pass; source-specific
-translation/natural order and write policy remain explicit. Broader portable
-helper relocation and capabilities remain open.
-
-Independent published #8891 `dff9a8d4` (R45) retains the prior captured CI/CodeQL
-success. Local
-[R47](../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05)
-adds shipping v1 configurators in a test-only app over the actual nonresident
-context, with batch/resend/hard-delete and live handoff checks. Production source,
-executable routes and physical subscriber are unchanged; no REST join follows.
-The [reproduced frame characterization](../tenancy/architecture-seams-execution-plan-2026-11-05.md#reproduced-frame-acquisition-and-concurrent-reads)
-now distinguishes actual acquisition bounds, frame/future records, statistics,
-typed-identity union and private cache behavior. The local
-[R49 REST continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05)
-at `1c55098a` observes old entries/new treatments across held reads even
-when the independent writer commits both domains atomically; full/browser regression passes. Independent
-[R50](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05)
-at `5173864d` measures evaluator A/B acquisition, a real-trigger B/B refresh, prior
-cycle/time retention after a callback fault and subsequent recovery. Teardown
-proves no late fake-provider delivery only. Shared materialization, a common
-atomic revision, logical no-op admission and durable recovery remain open.
-
-The [owner-authority contract](../tenancy/owner-authority.md) is adopted:
-explicit ownership/delegation, project/operator ceilings and a separate management
-issuer govern the target. Optional new-format data tokens locally verify Ed25519
-signatures with current PostgreSQL session/key/grants on each protected operation;
-[R48](../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05) accepts the bounded local data-token path. Human management issuance/refresh,
-transactional ceiling enforcement, full catalogue and listener enablement remain
-unimplemented. Legacy issuance and single-tenant MongoDB compatibility are retained.
-SQLite stays deferred. Historical/current comparisons retain their own scope. See [single versus multitenant architecture and compatibility](../tenancy/single-and-multitenant-architecture.md)
-for the shared-code changes, diagrams and evidence limits. The `497d08c9` labels
-below pin the storage/identity implementation and matrix measurements, not
-the latest dev head. #8895's callback repair and #8896's test hygiene are
-also merged. ID-BATCH is implemented across #8889/#8894; no whole-branch
-rebase or new feature PR is owed absent a specific uncovered case.
-Published preview CI and CodeQL succeeded at the prior `bc4ee1a9` capture; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
-cohort/rollback evidence and release approval remain pre-tag work.
-Informal cohort/real-rig testing is underway (maintainer reports over 24-48 hours).
-Master's absent 4.4 check has been removed; retained required lanes are green.
-The aggregate-check policy and approving review are ongoing staging work.
-#8829 is **nonblocking by maintainer decision**: neither maintainer reproduced it
-and many DIY and production/service environments work; retain reporter-specific
-follow-up without declaring a general regression.
-See [current readiness and workstreams](../../10-domain/nightscout-v16-ecosystem-deep-dive.md).
-
-| | on dev (each merge names its pin) | preview / prototype | remaining acceptance |
-|---|---|---|---|
-| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (storage-interface stage). ST-V3-DECOUPLE (with #8865, 2026-10-30). `write(intent)` release 1, every write path through one step (#8874, `368e6c23`, 2026-10-31). `write(intent)` release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, `51d38f9f`, 2026-11-01) . ST-VIEWS, unwired (#8875, `1fc6d8be`, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, `f54941b5`, 2026-11-01) | Published heads retain #8891dff9a8d4/R45 and RESTbc4ee1a9/R44. R46/R47 baseline extended by local R49 frame characterization (full/browser accepted) and independent evaluator5173864d/R50 | Shared acquisition extraction; complete PostgreSQL query/import/resource acceptance |
-| Identity | `identifier` is the client's, `_id` the server's; #8879/#8890 merged identifier-first matching and compatibility decisions A/B; #8888/#8890 fixed BF-225; #8889 added strict v1 validation and opt-in per-item batch replies; #8892 added site resend settings; #8894 added the unique index and Q-IDX retry, merged as `497d08c9`. SPEC-ID-AMEND is complete in this repository. | ID-BATCH reply and duplicate-key race behavior are implemented in #8889/#8894; no separate local integration PR is currently required. Full release compatibility and cohort verification remain. | PostgreSQL |
-| Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | draft #8857: S0, S1, S2, S5, off by default (head `5f6c1275`, `BEHIND` latest `dev` `497d08c9`; rebase and retest before the entry bar) | typed writes (S3), projected views (S4) |
-| Tenancy | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`991b0654`; #8862 closed as superseded); #8899 current `multitenant` namespace (`4a482627`) | Published draft #8898 `bc4ee1a9` retains R44 acceptance; local R49 extends R46 with frame acquisition and concurrent REST reads, full/browser accepted. Owner-authority policy is adopted; optional local data-token verification does not implement human management issuance/ceilings. M0–M6 remain incomplete; see the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md) and [architecture comparison](../tenancy/single-and-multitenant-architecture.md). | Remaining REST administration/side effects; owner issuer/catalogue/ceiling enforcement; full clients/import/resources, production trust/lifecycle and M3 promotion |
+| Earlier overview | Retained evidence |
+|---|---|
+| [R49–R55 platform checkpoints at the prior revision](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed18a7bceb096fc52e155fc5a005106f7e91263d/docs/30-design/platform/next-gen-platform-plan.md#1-where-things-stand) | Native and cumulative campaigns, capacity HOLD and cleanup captures, original replica failure and focused clock repair. Their named reports remain authoritative for those runs. |
 
 ## 1. 16.0.0 scope (maintainer, 2026-10-30)
 
@@ -387,14 +230,14 @@ contains request-flow, isolation and historical-comparison diagrams.
 | PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT, and no image HEALTHCHECK so a boot-error page is not restarted away (D21) | dev |
 | PLAT-SERVE | Merged `multitenant` CLI namespace (#8899); explicit API preview on draft #8898, with separate operator preparation/readiness. Other roles remain unenabled | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface: 264 settings on dev, 12 contested | D-T30 |
-| T30-SCHEMA-CONFIG | Adopted owner-authority policy still needs full permission/settings catalogue, transactional ceiling enforcement and owner API implementation. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate | T30-RESEARCH |
+| T30-SCHEMA-CONFIG | Adopted owner-authority policy and selected transactional proposed-grant fencing are accepted; full permission/settings catalogue and deployable owner API remain open. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate | T30-RESEARCH |
 | TEN-RESOLVE | Direct/canonical preview resolution accepted; full production trust, durable mapping and operator lifecycle still blocked | MT-CONFIG-MIN, MIG-RUNNER, PLAT-SERVE |
-| T30-WIRING | Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; management issuer/ceiling enforcement and production lifecycle remain unimplemented | TEN-RESOLVE, MT-SECRETS-CONTRACT |
-| TEN-LAB | R46 accepted baseline plus R49 actual frame/concurrent REST characterization, full/browser accepted; complete M3 remains blocked on full M1/M2 | ST-PG, T30-WIRING, MIG-RUNNER |
+| T30-WIRING | Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; selected proposed-grant fencing is accepted; management issuer/refresh, wider ceilings and production lifecycle remain open | TEN-RESOLVE, MT-SECRETS-CONTRACT |
+| TEN-LAB | R60 accepts the coherent CI/client/clock batch and promotes M0; complete M3 remains blocked on full M1/M2 | ST-PG, T30-WIRING, MIG-RUNNER |
 
-Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): `nightscout single` is single-tenant and the `nightscout multitenant` namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and `TENANCY_MODE` retires as an operator setting. Which listener and role owns each API is mapped in [interface ownership](interface-ownership-2026-10-27.md), with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D21 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
+Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): `nightscout single` is single-tenant and the `nightscout multitenant` namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and `TENANCY_MODE` retires as an operator setting. Which listener and role owns each API is mapped in [interface ownership](interface-ownership-2026-10-27.md), with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D23 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 
-Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. Extracting a common private acquisition primitive must preserve those policies; no shared implementation or atomic revision is accepted.
+Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R60 retains the REST side; the independent profile branch remains separate. No common atomic revision is accepted.
 
 ## 5. Open decisions
 

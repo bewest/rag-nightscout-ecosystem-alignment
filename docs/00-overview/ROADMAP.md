@@ -150,7 +150,9 @@ Self-hosted single-tenant Nightscout stays first-class permanently (D1, D4).
 Multitenant is an additional deployment target.
 
 The [multitenant delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
-owns the current implementation sequence and milestone acceptance criteria. Use the
+owns milestone acceptance criteria; the [batching plan §5](../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
+owns the current completion sequence. Start with the
+[tenancy reading guide](../30-design/tenancy/README.md). Use the
 [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md) for bounded
 accepted evidence and remaining gates, and the
 [next-generation platform map](../../site/pages/nightscout-next-gen-platform.html)

@@ -73,6 +73,7 @@ PRs, so every merge to `dev` raises the rebase cost of the train. Whether the tr
 by merge or by rebase is open (`RT-PROPAGATION`); so far every propagation has been a merge.
 
 **Multitenant** — adding tenant isolation alongside first-class single-tenant Nightscout.
+Use the [tenancy reading guide](../30-design/tenancy/README.md) to select a document.
 Current delivery progress, accepted evidence and remaining gates live in the
 [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md) and
 [delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md).

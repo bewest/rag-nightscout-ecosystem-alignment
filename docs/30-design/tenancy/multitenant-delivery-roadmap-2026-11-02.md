@@ -27,23 +27,23 @@ This page retains the adopted decisions and promotion criteria below. The
 [execution evidence](#execution-evidence-2026-11-02) is collapsed under section 6;
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
-ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The locally accepted cumulative integration head is `35903069` (B338+A+C17f),
-measured in R54 with full7144/80pending/0failure/browser684/settings12/prcheckOK.
-R51–R53 native acceptance and R49/R50 historical captures remain unchanged.
-Published #8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain prior captures;
-no candidate CI or application push is claimed. Independent profile2ee is accepted in R55 on its separate branch; clock code remains unjoined. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
-accepts derived reads, pinned-pattern replay and independent authority probes
-with parent-run cumulative acceptance; publication does not imply merge, release
-or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
-joins actual legacy data handlers, API3 collections and safe context with explicit
-domain configuration. Administration, notification/assistant routes and complete route/client-binary
-acceptance remain incomplete. [R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
-accepts executable API3 entries CRUD/history with real Vault/PG, current
-authority, tenant isolation and restart persistence; it does not accept all REST
-or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
-and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
-separate measured integration from complete storage, runtime and preview acceptance.
+ownership. The dashboard supersedes them for coordination.
+
+**Current acceptance:** [R60](#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06)
+accepts `d89a44e1`, now published on open/draft #8898. **M0 foundations is promoted**
+and the bounded `M4-CLIENT-LAB` card is complete. The tenant clock is joined with
+bounded correctness acceptance; its performance benchmark remains pending.
+M1–M6 retain their own remaining criteria. Independent R55 profile `2ee8b493`
+and later dormant owner/replay/operations branches remain separate.
+
+Use the [reading guide](README.md) to select a current contract or a dated record.
+The detailed checkpoints below retain their captured heads and remaining work at
+that time. Read them as evidence, rather than as current dispatch instructions.
+Current PR publication and remote checks are separate from local acceptance and
+belong in the release record.
+
+<details markdown="1">
+<summary>Historical R51–R55 checkpoints and earlier lane instructions</summary>
 
 ### Accepted independent private acquisition profile (2026-11-06)
 
@@ -630,6 +630,8 @@ test history. It is not a production importer or activation/rerun policy.
 OIDC remains optional, deferred research;
 it is not a prerequisite for these checkpoints or for the 16.0.0 candidate.
 
+</details>
+
 ## 1. Owner journeys and supported boundary
 
 The supported deliverable is a **headless, documented, versioned tenant-owner
@@ -747,10 +749,10 @@ to plaintext, another tenant's key or an unapproved local signer.
 | M0: foundations | Current-dev integration worktree; PG connection/transaction binding and real RLS proof; migration and secrets contracts can proceed independently | Non-bypass application role, overlapping IDs, unbound reader, read/write isolation, rollback/error cleanup, demonstrated pool reuse and paired breaks. No multitenant default or production role enabled; explicit D21 lab preview is permitted. |
 | M1: entries adapter | ST-PG, on the M0 binding; current filter/read/write/identity contracts; reviewed DDL managed through MIG-RUNNER before deployment | Applicable backend tests execute against both stores; no pending-as-pass. Explicit unsupported collections/operations. Include null, ordering/pagination, resend/delete and batch outcomes; preserve source labels/events. |
 | M2: tenant control plane | MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MIG-RUNNER, TEN-RESOLVE, T30-WIRING | Tenant-local effective config and versioned writes; unknown tenant refuses; A token works on A and fails on B by signature; no environment/root/key leakage; separate owner/data/operator routes. |
-| M3: two-tenant HTTP lab | M1 + M2, TEN-LAB | Real authorized entries v3 requests and stored outcomes for both tenants, positive and negative controls; startup refuses stale/unsafe schema. Not yet a complete hosted preview. |
+| M3: two-tenant HTTP lab | M1 + M2, TEN-LAB | Real authorized entries v3 requests and stored outcomes for both tenants, positive and negative controls; startup refuses stale/unsafe schema. Not yet a complete multitenant preview. |
 | M4: existing-client surface | M3; further collections and v1/storage wiring; v2 exchange; tenant-local history and indexes | v1 and v3 uploader/follower shapes exercised on pinned versions; no coordinated app upgrade requirement; tenant-local identity and correct batch/retry/refusal semantics. |
 | M5: realtime and evaluator | MT-RUNTIME-PLAN; computed views; durable interprocess event delivery/recovery; settings/secrets consumer integration | Socket authorization/reconnect/write compatibility, tenant-local rooms and caches, replay-equivalent views, durable ack/snooze, restart/double-delivery checks; live notification gate remains separate. |
-| M6: hosted preview | M4 + M5 + chosen owner capabilities and hosted operations | Export/deletion, import fidelity, backup/restore, upgrade/rollback, bounded resource/egress policies and final-tree review. Real-data/identity acceptance is explicit, never inferred from lab success. |
+| M6: multitenant preview | M4 + M5 + chosen owner capabilities and multitenant operations | Export/deletion, import fidelity, backup/restore, upgrade/rollback, bounded resource/egress policies and final-tree review. Real-data/identity acceptance is explicit, never inferred from lab success. |
 
 CI is cumulative, not a calendar: keep default MongoDB/single tests green,
 add explicit PG jobs only as their applicable suites execute, and preserve a

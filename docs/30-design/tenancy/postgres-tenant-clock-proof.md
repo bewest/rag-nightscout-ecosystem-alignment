@@ -1,5 +1,7 @@
 # Transactional PostgreSQL tenant clock: proof plan
 
+*Current-use guide, 2026-11-06: R60 now accepts the joined clock with bounded correctness evidence; the performance benchmark remains pending. This page retains the original proof plan and invariants. Use the [current dashboard](multitenant-delivery-dashboard.md) and [R60 disposition](multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06) for implementation acceptance.*
+
 *Contributor-facing design/proof plan, 2026-11-06. The maintainer selects this
 proof direction; implementation and performance acceptance remain UNMEASURED.
 This is an additive lane proposal for central reconciliation, not a change to

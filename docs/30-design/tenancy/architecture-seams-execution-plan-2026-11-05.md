@@ -1,5 +1,7 @@
 # Architecture seams and execution-profile integration
 
+*Current-use guide, 2026-11-06: Current coordination is in the [batching plan §5](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) and [dashboard](multitenant-delivery-dashboard.md). This page retains the bounded seam plans and dated checkpoints; its earlier pending/dispatch statements are historical. R60 accepts the later cumulative REST batch; R55 profile remains separate.*
+
 *Contributor-facing execution plan, 2026-11-05. Authorized priority work;
 bounded R42 contract/management, R43 profile and R44 current-domain composition
 evidence is recorded; broader consolidation/frame acceptance remains UNMEASURED.

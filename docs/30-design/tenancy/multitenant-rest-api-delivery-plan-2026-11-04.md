@@ -1,5 +1,7 @@
 # Multitenant REST v1–v3: design and parallel implementation plan
 
+*Current-use guide, 2026-11-06: Use the [dashboard](multitenant-delivery-dashboard.md) for acceptance and the [batching plan §5](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) for current sequencing. This page retains the route/domain design and original implementation packets; its original heads and next steps describe that dispatch.*
+
 **2026-11-04 · Contributor-facing proposal · implementation delivery, not REST readiness.**
 
 Deliver one runnable API listener with tenant-safe versions of the actual v1, v2 and v3
