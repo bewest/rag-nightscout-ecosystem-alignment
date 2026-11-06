@@ -25,12 +25,13 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest locally accepted cumulative REST head is
-`bc4ee1a9` ([R44](../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05));
-it is local and unpushed. The published accepted head is R42 `d4570e58`, on
-nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. The independent
-published #8891 is R43 `925c9527`, also OPEN/draft. Head CI and CodeQL succeed
-for both at the November 5 read-back. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+promotion is recorded. The latest local cumulative REST head is `44331668`
+([R46](../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05));
+it remains unpushed. Published #8898 is OPEN/draft at R44 `bc4ee1a9`;
+independent #8891 is OPEN/draft at R45 `dff9a8d4`. Both published heads have
+successful CI and CodeQL at fresh read-back. Independent local R47 `0c98ad06`
+extends evaluator writer replay without joining REST or enabling a role.
+[R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
@@ -42,6 +43,42 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted adapter consolidation and index race continuation (2026-11-05)
+
+[R46](../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05)
+accepts local cumulative `44331668038dca5bc23af24c4125052b9c8e5612`:
+identical PG projection, identifying-read and owned-commit/event mechanics are
+shared while source-specific translation/natural-order policy remains explicit.
+Actual index-on Mongo/PG races cover all entries resend modes, stored outcomes,
+current grants and foreign-tenant invariance. Full nonbrowser, default-browser
+on application-identical source, real-port/baseline comparison and semantic
+controls pass; R46 owns exact figures and diagnostic fixture corrections.
+Broader helper relocation and backend capability review remain open.
+
+**Next:** characterize common loader-to-private-frame materialization under
+explicit acquisition bounds, frame flags, tenant/error/statistics policy and
+concurrent writes before sharing implementation. Continue settings/identity/index
+families, actual clients, remaining receipt/egress routes, import/resources and
+production lifecycle. Preserve existing behavior during any further PG helper
+extraction. Owner identity/ceilings and logical no-op admission remain separate
+decisions; durable events/recovery remain M5/M6. No milestone or RC promotion.
+
+### Accepted independent v1 evaluator continuation (2026-11-05)
+
+[R47](../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05)
+accepts independent local test-only `0c98ad06f8e01114639d58e1bc0724499af97f1f`:
+shipping v1 configurators over the real nonresident context now exercise batches,
+resends, hard deletes, retained properties, request signatures and selected live
+notification handoff. Whole/full/default-browser and trigger/closed-service
+controls pass. Production source, subscriber and executable routes are unchanged;
+no socket admission, REST join or durable multitenant evaluator follows.
+
+The [source-pinned frame inventory](architecture-seams-execution-plan-2026-11-05.md#shared-frame-inventory-and-next-characterization)
+prepares `ARCH-DERIVED-FRAME` with read-derived policy/lifecycle boundaries.
+Runtime convergence and cross-collection consistency remain UNMEASURED. Broaden
+remaining writer/alarm cohorts alongside direct frame characterization; retained
+freshness and request-local HTTP semantics keep their own policies.
 
 ### Accepted composition and direct identity continuation (2026-11-05)
 

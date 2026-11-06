@@ -204,13 +204,13 @@ Until then, the order below is the order of development, not of release.
 | 1 | `WC-R2-QE` | Release 2: Answer an identical re-send as unchanged (nothing written, no srvModi | `not-started` | &mdash; |
 | 1 | `WC-R2-QF` | Release 2: Move the lower half of write validation into the step, or decide it s | `not-started` | &mdash; |
 | 1 | `WC-R2-QH` | Release 2: Decide whether v1 create keeps replace-on-match or follows merge-on-m | `not-started` | &mdash; |
-| 2 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `not-started` | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
+| 2 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
 | 2 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `in-progress` | `ARCH-SEAM-CONTRACT` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `T30-RESEARCH` |
 | 2 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `MT-CONFIG-MIN`, `MIG-RUNNER` |
 | 2 | `WRITE-CONTRACT` | One write step behind the storage interface: _id form, srv dates, soft delete, r | `blocked` | `SEAM-REFRESH` |
-| 3 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `not-started` | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
+| 3 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `in-progress` | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
 | 3 | `BFQ-CAP02` | CAP-02 - no importer, and no Mongo to PostgreSQL loader | `not-started` | `T30-SCHEMA-CONFIG`, `WRITE-CONTRACT` |
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `TEN-RESOLVE`, `MT-SECRETS-CONTRACT` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |

@@ -1,10 +1,10 @@
 # Next-gen platform: one write path, four tracks
 
 *Contributor-facing living plan. Tenancy progress reconciled 2026-11-05 against
-cgm-remote-monitor dev `4a482627`, published draft #8898 `d4570e58` (R42),
-local accepted REST composition `bc4ee1a9` (R44), and independent published
-single/nonresident refresh `925c9527` (R43), extended locally by test-only
-HTTP-writer replay `dff9a8d4` (R45).
+cgm-remote-monitor dev `4a482627`, published draft #8898 `bc4ee1a9` (R44),
+local bounded PG consolidation/indexed races `44331668` (R46), published
+independent #8891 `dff9a8d4` (R45) and local test-only v1 evaluator replay
+`0c98ad06` (R47). Shared-frame inventory is read-derived preparation.
 Storage/identity/registration measurements below retain their named historical
 pins. Full M0–M6 completion remains open; component states are not milestone
 promotion or a fresh measurement of every queue gate. Release placement is in
@@ -23,27 +23,31 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
-**Current dev anchor, 2026-11-05: `4a482627`.** The published multitenant
-preview is `d4570e58` on draft #8898, not merged to dev. Its head CI and CodeQL
-succeeded. [R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
-adds measured port contracts and standalone subject-management HTTP; no management
-listener is enabled. Local [R44](../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05)
-accepts the current-domain/backend and failure/HTTP split with direct imported-identity
-Mongo/PG compatibility, full/default-browser regression and semantic controls. Independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)
-refreshes #8891 with current-head regression and selected trigger/freshness replay;
-it is not joined into #8898 and retains the current physical subscriber. Local
-[R45](../remedial/rc-16.0.0-integration-record.md#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05)
-adds actual HTTP writer/resend evidence and corrects notification fixture ownership,
-with selected live handoff and semantic controls. The
-[architecture execution plan](../tenancy/architecture-seams-execution-plan-2026-11-05.md)
-sequences remaining contract review, proven adapter consolidation and shared frames;
+**Current dev anchor, 2026-11-05: `4a482627`.** Published multitenant preview
+#8898 is `bc4ee1a9` (R44), OPEN/draft and not merged to dev; its head CI and
+CodeQL succeed. Local [R46](../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05)
+accepts bounded identical PG projection, identifying-read and owned-commit/event
+mechanics plus real index-on Mongo/PG race compatibility. Full regression,
+expanded baseline/current port checks and semantic controls pass; source-specific
+translation/natural order and write policy remain explicit. Broader portable
+helper relocation and capabilities remain open.
+
+Independent published #8891 `dff9a8d4` (R45) has successful CI/CodeQL. Local
+[R47](../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05)
+adds shipping v1 configurators in a test-only app over the actual nonresident
+context, with batch/resend/hard-delete and live handoff checks. Production source,
+executable routes and physical subscriber are unchanged; no REST join follows.
+The [architecture plan's frame inventory](../tenancy/architecture-seams-execution-plan-2026-11-05.md#shared-frame-inventory-and-next-characterization)
+is read-derived. Next characterize bounded acquisition, tenant/error/statistics
+policy, retained versus request-local lifecycle and concurrent reads before
+sharing materialization. No database revision/snapshot guarantee is inferred.
 SQLite stays deferred. Historical/current comparisons retain their own scope. See [single versus multitenant architecture and compatibility](../tenancy/single-and-multitenant-architecture.md)
 for the shared-code changes, diagrams and evidence limits. The `497d08c9` labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are
 also merged. ID-BATCH is implemented across #8889/#8894; no whole-branch
 rebase or new feature PR is owed absent a specific uncovered case.
-Published preview CI and CodeQL succeeded on `d4570e58`; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
+Published preview CI and CodeQL succeeded on `bc4ee1a9`; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
 cohort/rollback evidence and release approval remain pre-tag work.
 Informal cohort/real-rig testing is underway (maintainer reports over 24-48 hours).
 Master's absent 4.4 check has been removed; retained required lanes are green.
@@ -55,10 +59,10 @@ See [current readiness and workstreams](../../10-domain/nightscout-v16-ecosystem
 
 | | on dev (each merge names its pin) | preview / prototype | remaining acceptance |
 |---|---|---|---|
-| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (storage-interface stage). ST-V3-DECOUPLE (with #8865, 2026-10-30). `write(intent)` release 1, every write path through one step (#8874, `368e6c23`, 2026-10-31). `write(intent)` release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, `51d38f9f`, 2026-11-01) . ST-VIEWS, unwired (#8875, `1fc6d8be`, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, `f54941b5`, 2026-11-01) | Published #8891 refresh925c9527/R43; published REST/port/management d4570e58/R42; local composition/direct identity bc4ee1a9/R44 | Complete PostgreSQL query/import/resource acceptance |
+| Storage | `WRITE_VALIDATION` (#8841); the write boundary `lib/storage/write-step.js` (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (storage-interface stage). ST-V3-DECOUPLE (with #8865, 2026-10-30). `write(intent)` release 1, every write path through one step (#8874, `368e6c23`, 2026-10-31). `write(intent)` release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, `51d38f9f`, 2026-11-01) . ST-VIEWS, unwired (#8875, `1fc6d8be`, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, `f54941b5`, 2026-11-01) | Published #8891dff9a8d4/R45 and local v1 evaluator0c98ad06/R47; published RESTbc4ee1a9/R44 and local bounded PG mechanics/races44331668/R46 | Complete PostgreSQL query/import/resource acceptance |
 | Identity | `identifier` is the client's, `_id` the server's; #8879/#8890 merged identifier-first matching and compatibility decisions A/B; #8888/#8890 fixed BF-225; #8889 added strict v1 validation and opt-in per-item batch replies; #8892 added site resend settings; #8894 added the unique index and Q-IDX retry, merged as `497d08c9`. SPEC-ID-AMEND is complete in this repository. | ID-BATCH reply and duplicate-key race behavior are implemented in #8889/#8894; no separate local integration PR is currently required. Full release compatibility and cohort verification remain. | PostgreSQL |
 | Registration | specifications only; dev also carries an older proposal schema, `docs/proposals/schemas/controller-instance-registration.schema.json` | draft #8857: S0, S1, S2, S5, off by default (head `5f6c1275`, `BEHIND` latest `dev` `497d08c9`; rebase and retest before the entry bar) | typed writes (S3), projected views (S4) |
-| Tenancy | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`991b0654`; #8862 closed as superseded); #8899 current `multitenant` namespace (`4a482627`) | Published draft #8898 `d4570e58`: explicit API executable with selected legacy/API3 domains, tenant PostgreSQL/RLS, current authority/Vault, derived reads and pinned synthetic client patterns. R42 owns published acceptance; local R44 adds composition/direct identity. M0–M6 remain incomplete; see the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md) for promotion gates and the [architecture comparison](../tenancy/single-and-multitenant-architecture.md) for diagrams/evidence. | Remaining REST administration/side effects; full route/client/import/resource coverage; production trust/lifecycle and M3 promotion |
+| Tenancy | #8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (`991b0654`; #8862 closed as superseded); #8899 current `multitenant` namespace (`4a482627`) | Published draft #8898 `bc4ee1a9`: explicit API executable with selected legacy/API3 domains, tenant PostgreSQL/RLS, current authority/Vault, derived reads and pinned synthetic client patterns. R44 owns published composition/direct identity acceptance; local R46 adds common PG mechanics and indexed races. M0–M6 remain incomplete; see the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md) for promotion gates and the [architecture comparison](../tenancy/single-and-multitenant-architecture.md) for diagrams/evidence. | Remaining REST administration/side effects; full route/client/import/resource coverage; production trust/lifecycle and M3 promotion |
 
 ## 1. 16.0.0 scope (maintainer, 2026-10-30)
 

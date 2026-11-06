@@ -457,6 +457,11 @@ items:
     semver_reason: experiment
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite race --ref 44331668038dca5bc23af24c4125052b9c8e5612
+        kind: integration
+        describe: >
+          Actual Mongo/PG API3 unique-identifier races: two empty matches and held
+          real INSERTs, duplicate errors, resend outcomes, current grants/isolation.
       - run: node tools/queue/gates/multitenant-next-slices.js --suite identity --ref bc4ee1a91b84a657012dbb77ee835fdeb78ef707
         kind: integration
         describe: >
@@ -25037,41 +25042,49 @@ items:
     title: 'Next: consolidate proven common adapter mechanics'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: PR8898@ded254b9; PR8891@744d1968
-    state: not-started
+    branch: codex/pg-consolidation-integration-20261105
+    base: PR8898@bc4ee1a9
+    worktree: externals/work/crm-codex-pg-consolidation-integration-20261105
+    state: in-progress
     blast_radius: >
       PG entries/general-collection projection/filter/transaction/event helpers and
       incremental extraction of portable identity/result compatibility utilities.
     review: maintainer; architecture, storage and compatibility review
     operator_visible: ''
     semver: n/a
-    semver_reason: Planning only; implementation and release placement require their acceptance.
+    semver_reason: Dormant preview mechanics consolidation preserves admitted behavior; release placement remains separate.
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite consolidation --ref 44331668038dca5bc23af24c4125052b9c8e5612
+        kind: integration
+        describe: >
+          Actual PG entries/general/legacy common projection, identifying order,
+          owned commit/rollback event timing and synchronous settled outcomes.
       - no-gate: >
-          No consolidation accepted. Consume the accepted direct and historical
-          compatibility corpus; preserve entries/source-specific natural order and
-          representation. Wrong ordering and pre-commit logical-event controls must
-          fail; restored full affected suites and final prcheck required.
+          This bounded shared-mechanics extraction does not complete portable
+          query/identity/result helper relocation, all backend capabilities or wider
+          consolidation. Preserve source-specific translation/natural-order policy.
     blocks_on:
       - ARCH-SEAM-CONTRACT
       - ARCH-SEAM-COMPOSE
     evidence:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      Next priority; storage lane. Measure common behavior before extracting. Do not
-      change resend, batch atomicity, BSON compatibility or preconditions in a
-      refactor; compatibility expansion remains owned by TEN-LAB lanes.
+      Local cumulative extraction shares only identical projection, findOneFilter
+      and after-owned-transaction event/settle mechanics. Expanded real-port corpus
+      also runs on the unchanged baseline; shared ordering, projection and false
+      pre-commit event controls fail semantically. Explicit UTC fixtures preserve
+      source-specific IDs and the existing negative-zero capability boundary.
+      Independent translators, natural order and query/write policy remain explicit.
 
   - id: ST-VIEWS-PROFILE
     title: 'Next: refresh and integrate PR 8891 single nonresident profile'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/profile-writers-20261105
+    branch: codex/evaluator-next-20261105
     pr: [8891]
-    base: official/dev@4a482627; PR8891@925c9527
-    worktree: externals/work/crm-codex-profile-writers-20261105
+    base: official/dev@4a482627; PR8891@dff9a8d4
+    worktree: externals/work/crm-codex-evaluator-next-20261105
     state: in-progress
     blast_radius: >
       Existing feat/views-profile prototype, explicit opt-in boot, evaluator
@@ -25082,12 +25095,12 @@ items:
     semver_reason: Bounded dormant characterization; full composition and release placement remain separate.
     register: []
     gates:
-      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref dff9a8d42860be09c7f187f5e3d0527d6eb31d80
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f
         kind: integration
         describe: >
           Independent refreshed nonresident single replay: actual write/timer
-          triggers, actual API3 HTTP mutations/resends, retained properties and
-          selected live notification handoff with owned fixtures; no subscriber switch.
+          triggers, actual API3 and test-composed v1 HTTP mutations/resends, retained
+          properties and selected live handoff; no executable v1 admission or subscriber switch.
       - no-gate: >
           The selected current-head replay is measured by the bounded gate.
           Complete alarm/writer cohorts, logical no-op subscriber policy, live
@@ -25102,9 +25115,10 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      R43 published 925c9527 retains independent profile acceptance. The local
-      test-only dff9a8d4 continuation extends actual API3 writer/no-op coverage and
-      corrects live notification fixture ownership; its acceptance is separately recorded.
+      Published R45 dff9a8d4 retains independent profile acceptance. Local test-only
+      0c98ad06 adds actual shipping v1 configurators over the real nonresident context,
+      batch/resend/hard-delete and live handoff characterization; no production v1
+      or socket route enablement. Shared-frame inventory is read-derived, not extraction.
       Physical subscriber retained; logical no-op/refusal admission and full
       writer/alarm coverage remain open. Runtime cost and live stats freshness
       are unmeasured. No automatic join into #8898, release placement or
@@ -25114,9 +25128,10 @@ items:
     title: 'Next join: shared bounded frames and derived calculations'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: PR8898@ded254b9; PR8891@744d1968
-    state: not-started
+    branch: codex/evaluator-next-20261105
+    base: REST-R44@bc4ee1a9; PROFILE-R47@0c98ad06
+    worktree: externals/work/crm-codex-evaluator-next-20261105
+    state: in-progress
     blast_radius: >
       Shipping computed views, tenant snapshot/property composition and refreshed
       nonresident evaluator; explicit freshness, consistency, plugin and side-effect
@@ -25124,11 +25139,12 @@ items:
     review: maintainer; architecture, storage and compatibility review
     operator_visible: ''
     semver: n/a
-    semver_reason: Planning only; implementation and release placement require their acceptance.
+    semver_reason: Source-pinned read-derived inventory only; extraction and release placement remain unmeasured.
     register: []
     gates:
       - no-gate: >
-          No shared-frame convergence accepted. Compare actual
+          Source-pinned policy/lifecycle inventory is read-derived; no shared-frame
+          convergence or concurrent-write characterization is accepted. Compare actual
           resident/nonresident/tenant REST paths with current input corpus;
           characterize concurrent writes without inventing snapshot consistency.
           Cross-bound frame, partial read, incorrect clinical setter and read-egress
@@ -25140,8 +25156,9 @@ items:
     evidence:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      Derived/evaluator lane joins refreshed profile with current preview. Contract
-      inventory may start before dependencies finish. Share
+      R47 records a read-derived inventory of acquisition bounds/frame flags,
+      failure/tenant/statistics policy and retained versus request-local lifecycle.
+      Next characterize actual cross-path materialization before extraction. Share
       materialization/calculation while retaining REST all-or-error authorization and
       evaluator retained-result/notification policies. Distributed recovery stays in
       MT-RUNTIME-PLAN.

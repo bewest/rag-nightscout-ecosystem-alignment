@@ -3005,9 +3005,9 @@ controls:
       Scratch-only credential bypass permits a management mutation where
       the actual HTTP assertion requires 401; persisted effects are observed.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref dff9a8d42860be09c7f187f5e3d0527d6eb31d80
-    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref dff9a8d42860be09c7f187f5e3d0527d6eb31d80 --control closed
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref dff9a8d42860be09c7f187f5e3d0527d6eb31d80
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f --control v1-closed
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f
     control-kind: integration
     proves: >
       Close only the new HTTP cohort notification service after its request
@@ -3028,3 +3028,17 @@ controls:
     control-kind: integration
     proves: >
       Scratch-only removed imported raw-ID lookup makes actual PG HTTP GET404 after the Mongo oracle succeeds200; raw identity and foreign tenant outcomes remain asserted.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite consolidation --ref 44331668038dca5bc23af24c4125052b9c8e5612
+    control: node tools/queue/gates/multitenant-next-slices.js --suite consolidation --ref 44331668038dca5bc23af24c4125052b9c8e5612 --control commit
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite consolidation --ref 44331668038dca5bc23af24c4125052b9c8e5612
+    control-kind: integration
+    proves: >
+      Move logical publication before a forced transaction failure after a verified SQL mutation; the actual legacy common wrapper assertion detects one false event despite rollback.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite race --ref 44331668038dca5bc23af24c4125052b9c8e5612
+    control: node tools/queue/gates/multitenant-next-slices.js --suite race --ref 44331668038dca5bc23af24c4125052b9c8e5612 --control retry
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite race --ref 44331668038dca5bc23af24c4125052b9c8e5612
+    control-kind: integration
+    proves: >
+      Disable the single duplicate-identifier retry in scratch: after two empty matches and a real indexed INSERT loser, actual HTTP500 replaces the required resend200.

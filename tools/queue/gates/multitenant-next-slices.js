@@ -10,6 +10,26 @@ const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const suite = option('--suite'), ref = option('--ref'), control = option('--control');
 const cases = {
+  consolidation: {
+    file: ['tests/storage-port-contract.integration.test.js', 'tests/postgres-collection-intent.test.js'],
+    flag: 'NS_STORAGE_PORT_CONTRACT_DOCKER_TEST',
+    controls: {
+      order: ['lib/storage/postgres-intent-common.js', 'sort: { identifier: -1, _id: -1 },',
+        'sort: { identifier: 1, _id: 1 },', 'collection-legacy shared identifying read'],
+      projection: ['lib/storage/postgres-intent-common.js', "if (projection._id !== 0) keep.add('_id');",
+        '', 'collection-legacy shared projection'],
+      commit: ['lib/storage/postgres-intent-common.js',
+        'const written = await connection.transaction(() => step.write(planned));',
+        "const written = await connection.transaction(async () => { const premature = await step.write(planned); intent.emitIntentEvent(bus, premature, { name: logical, source, op: planned && planned.op }); return premature; });",
+        'collection-legacy common commit wrapper emits nothing']
+    }
+  },
+  race: {
+    file: 'tests/tenant-rest-identifier-race.integration.test.js', flag: 'NS_ENTRIES_CRUD_HTTP_TEST',
+    controls: {
+      retry: ['lib/storage/write-intent.js', '  retries: 1,', '  retries: 0,', 'index-on replace']
+    }
+  },
   compose: {
     file: ['tests/storage-trusted-ports.test.js', 'tests/multitenant-preview-process.integration.test.js'],
     flag: 'NS_MULTITENANT_PREVIEW_PROCESS_DOCKER_TEST',
@@ -61,8 +81,11 @@ const cases = {
       tick: ['env', 'VIEWS_PROFILE_NO_TICK', '1', 'stale data with no writes'],
       write: ['env', 'VIEWS_PROFILE_NO_WRITE', '1', 'a treatment 4 minutes'],
       http: ['env', 'VIEWS_PROFILE_NO_WRITE', '1', 'entries POST, PATCH and DELETE'],
+      v1: ['env', 'VIEWS_PROFILE_NO_WRITE', '1', 'entries batch, identity resend and hard delete'],
       closed: ['tests/views-profile.test.js', '\n      ctx.notifications = notifications;\n    }\n',
         '\n      ctx.notifications = notifications; closeNotifications();\n    }\n', 'entries POST, PATCH and DELETE'],
+      'v1-closed': ['tests/views-profile.test.js', '\n      ctx.notifications = notifications;\n    }\n',
+        '\n      ctx.notifications = notifications; closeNotifications();\n    }\n', 'entries batch, identity resend and hard delete'],
       window: ['env', 'VIEWS_PROFILE_DS_NEWEST', '10', 'a second uploader'],
       freshness: ['env', 'VIEWS_PROFILE_ON_REQUEST', '1', 'retains cycle properties']
     }
@@ -72,7 +95,7 @@ let scratch;
 const containers = [];
 try {
   if (!Object.hasOwn(cases, suite) || !ref || (control && !Object.hasOwn(cases[suite].controls, control))) {
-    throw new Error('Usage: --suite port|management|profile|compose|identity --ref <commit> [--control <declared case>]');
+    throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race --ref <commit> [--control <declared case>]');
   }
   const selected = cases[suite];
   const repository = process.env.NS_REST_GATE_REPO || CRM;
@@ -94,7 +117,7 @@ try {
   fs.symlinkSync(dependencies, path.join(scratch, 'node_modules'), 'dir');
   const runtime = { ...process.env, NODE_ENV: 'test', NODE_PATH: dependencies,
     ...(selected.flag ? { [selected.flag]: '1' } : {}), TEST_ENV_FILE: '/dev/null', TZ: 'UTC' };
-  if (suite === 'profile' || suite === 'identity') {
+  if (suite === 'profile' || suite === 'identity' || suite === 'race') {
     const docker = values => execFileSync('docker', values,
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }).trim();
     const container = 'ns-profile-gate-' + require('node:crypto').randomBytes(8).toString('hex');
@@ -106,7 +129,7 @@ try {
     for (;;) {
       try {
         const version = docker(['exec', container, 'mongosh', '--quiet', '--eval', 'db.version()']);
-    console.log('Owned MongoDB: ' + version);
+        console.log('Owned MongoDB: ' + version);
         break;
       } catch (error) {
         if (Date.now() >= deadline) throw error;
@@ -116,7 +139,7 @@ try {
     Object.assign(runtime, require('node:util').parseEnv(fs.readFileSync(path.join(scratch, 'tests/ci.test.env'), 'utf8')),
       { NODE_ENV: 'test', NODE_PATH: dependencies, TEST_ENV_FILE: '/dev/null', TZ: 'UTC',
         CUSTOMCONNSTR_mongo: 'mongodb://127.0.0.1:' + port + '/' + suite + '_gate_test' });
-    if (suite === 'identity') {
+    if (suite === 'identity' || suite === 'race') {
       const postgres = 'ns-identity-pg-' + require('node:crypto').randomBytes(8).toString('hex');
       const password = require('node:crypto').randomBytes(24).toString('hex');
       containers.push(postgres);

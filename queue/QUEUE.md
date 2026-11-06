@@ -32,17 +32,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 364 |
-| runnable gates | 424 |
+| runnable gates | 426 |
 | explicit `no-gate:` markers | 375 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 799 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 801 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 76 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SEAM-CONSOLIDATE, ARCH-DERIVED-FRAME, ARCH-SQLITE-SPIKE |
-| `in-progress` | 21 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ST-VIEWS-PROFILE |
+| `not-started` | 74 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE |
+| `in-progress` | 23 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | TEN-RESOLVE, TEN-LAB, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8391,7 +8391,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
-| `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
+| `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
 | `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
@@ -8447,9 +8447,9 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-COUNT-ONEPATH` | API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path | `merged-upstream` | `feat/storage-count-onepath` | patch | 2 run |
 | `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `in-progress` | `codex/seam-contract-20261105` | n/a | 1 run + 1 no-gate |
 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `in-progress` | `codex/rest-compose-integration-20261105` | n/a | 1 run + 1 no-gate |
-| `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/profile-writers-20261105` | n/a | 1 run + 1 no-gate |
-| `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `in-progress` | `codex/pg-consolidation-integration-20261105` | n/a | 1 run + 1 no-gate |
+| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/evaluator-next-20261105` | n/a | 1 run + 1 no-gate |
+| `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/evaluator-next-20261105` | n/a | 0 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
@@ -8608,6 +8608,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite race --ref 44331668038dca5bc23af24c4125052b9c8e5612`
+  - Actual Mongo/PG API3 unique-identifier races: two empty matches and held real INSERTs, duplicate errors, resend outcomes, current grants/isolation.
 - `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite identity --ref bc4ee1a91b84a657012dbb77ee835fdeb78ef707`
   - Direct actual API3 Mongo/PG imported-identity differential: typed raw IDs, absent/falsy identifier fallback, mutation/deletion and foreign-tenant state.
 - **NO GATE** &mdash; Requires M1 entries adapter and M2 tenant control-plane integration. Real HTTP v3 writes/reads and stored outcomes, same IDs across tenants, own-tenant positives and cross-tenant negatives, stale-schema refusal. R39 accepts selected legacy/v3 domains; complete route/client replay, sockets and evaluator remain separate acceptance milestones.
@@ -10328,11 +10330,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `PR8898@ded254b9; PR8891@744d1968` |
-| worktree | `-` |
+| branch | `codex/pg-consolidation-integration-20261105` |
+| base | `PR8898@bc4ee1a9` |
+| worktree | `externals/work/crm-codex-pg-consolidation-integration-20261105` |
 | semver | `n/a` |
 | review | maintainer; architecture, storage and compatibility review |
 | blocks on | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
@@ -10341,17 +10343,19 @@ alarm-readiness items, and the seam branch refresh.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+**Why `n/a`.** Dormant preview mechanics consolidation preserves admitted behavior; release placement remains separate.
 
 **Gates.**
 
-- **NO GATE** &mdash; No consolidation accepted. Consume the accepted direct and historical compatibility corpus; preserve entries/source-specific natural order and representation. Wrong ordering and pre-commit logical-event controls must fail; restored full affected suites and final prcheck required.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite consolidation --ref 44331668038dca5bc23af24c4125052b9c8e5612`
+  - Actual PG entries/general/legacy common projection, identifying order, owned commit/rollback event timing and synchronous settled outcomes.
+- **NO GATE** &mdash; This bounded shared-mechanics extraction does not complete portable query/identity/result helper relocation, all backend capabilities or wider consolidation. Preserve source-specific translation/natural-order policy.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** Next priority; storage lane. Measure common behavior before extracting. Do not change resend, batch atomicity, BSON compatibility or preconditions in a refactor; compatibility expansion remains owned by TEN-LAB lanes.
+**Notes.** Local cumulative extraction shares only identical projection, findOneFilter and after-owned-transaction event/settle mechanics. Expanded real-port corpus also runs on the unchanged baseline; shared ordering, projection and false pre-commit event controls fail semantically. Explicit UTC fixtures preserve source-specific IDs and the existing negative-zero capability boundary. Independent translators, natural order and query/write policy remain explicit.
 
 ### `ST-VIEWS-PROFILE` &mdash; Next: refresh and integrate PR 8891 single nonresident profile
 
@@ -10359,9 +10363,9 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/profile-writers-20261105` |
-| base | `official/dev@4a482627; PR8891@925c9527` |
-| worktree | `externals/work/crm-codex-profile-writers-20261105` |
+| branch | `codex/evaluator-next-20261105` |
+| base | `official/dev@4a482627; PR8891@dff9a8d4` |
+| worktree | `externals/work/crm-codex-evaluator-next-20261105` |
 | semver | `n/a` |
 | review | maintainer; architecture, storage and compatibility review |
 | blocks on | `ST-WRITES` |
@@ -10374,8 +10378,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite profile --ref dff9a8d42860be09c7f187f5e3d0527d6eb31d80`
-  - Independent refreshed nonresident single replay: actual write/timer triggers, actual API3 HTTP mutations/resends, retained properties and selected live notification handoff with owned fixtures; no subscriber switch.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f`
+  - Independent refreshed nonresident single replay: actual write/timer triggers, actual API3 and test-composed v1 HTTP mutations/resends, retained properties and selected live handoff; no executable v1 admission or subscriber switch.
 - **NO GATE** &mdash; The selected current-head replay is measured by the bounded gate. Complete alarm/writer cohorts, logical no-op subscriber policy, live database-stat freshness and final integration/release placement remain open. Timer/write-trigger suppression, shortened window and request-time-properties controls must fail; historical replay/cost is not current evidence.
 
 **Evidence.**
@@ -10384,17 +10388,17 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** R43 published 925c9527 retains independent profile acceptance. The local test- only dff9a8d4 continuation extends actual API3 writer/no-op coverage and corrects live notification fixture ownership; its acceptance is separately recorded. Physical subscriber retained; logical no-op/refusal admission and full writer/alarm coverage remain open. Runtime cost and live stats freshness are unmeasured. No automatic join into #8898, release placement or multitenant evaluator enablement; no new RC tag gate.
+**Notes.** Published R45 dff9a8d4 retains independent profile acceptance. Local test-only 0c98ad06 adds actual shipping v1 configurators over the real nonresident context, batch/resend/hard-delete and live handoff characterization; no production v1 or socket route enablement. Shared-frame inventory is read- derived, not extraction. Physical subscriber retained; logical no-op/refusal admission and full writer/alarm coverage remain open. Runtime cost and live stats freshness are unmeasured. No automatic join into #8898, release placement or multitenant evaluator enablement; no new RC tag gate.
 
 ### `ARCH-DERIVED-FRAME` &mdash; Next join: shared bounded frames and derived calculations
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `PR8898@ded254b9; PR8891@744d1968` |
-| worktree | `-` |
+| branch | `codex/evaluator-next-20261105` |
+| base | `REST-R44@bc4ee1a9; PROFILE-R47@0c98ad06` |
+| worktree | `externals/work/crm-codex-evaluator-next-20261105` |
 | semver | `n/a` |
 | review | maintainer; architecture, storage and compatibility review |
 | blocks on | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
@@ -10403,17 +10407,17 @@ alarm-readiness items, and the seam branch refresh.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+**Why `n/a`.** Source-pinned read-derived inventory only; extraction and release placement remain unmeasured.
 
 **Gates.**
 
-- **NO GATE** &mdash; No shared-frame convergence accepted. Compare actual resident/nonresident/tenant REST paths with current input corpus; characterize concurrent writes without inventing snapshot consistency. Cross-bound frame, partial read, incorrect clinical setter and read-egress controls must each fail; restored actual derived HTTP and alarm replay required.
+- **NO GATE** &mdash; Source-pinned policy/lifecycle inventory is read-derived; no shared-frame convergence or concurrent-write characterization is accepted. Compare actual resident/nonresident/tenant REST paths with current input corpus; characterize concurrent writes without inventing snapshot consistency. Cross-bound frame, partial read, incorrect clinical setter and read-egress controls must each fail; restored actual derived HTTP and alarm replay required.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** Derived/evaluator lane joins refreshed profile with current preview. Contract inventory may start before dependencies finish. Share materialization/calculation while retaining REST all-or-error authorization and evaluator retained-result/notification policies. Distributed recovery stays in MT-RUNTIME-PLAN.
+**Notes.** R47 records a read-derived inventory of acquisition bounds/frame flags, failure/tenant/statistics policy and retained versus request-local lifecycle. Next characterize actual cross-path materialization before extraction. Share materialization/calculation while retaining REST all-or-error authorization and evaluator retained-result/notification policies. Distributed recovery stays in MT-RUNTIME-PLAN.
 
 ### `ARCH-SQLITE-SPIKE` &mdash; Deferred low priority: hypothetical SQLite and cell adapter probe
 
