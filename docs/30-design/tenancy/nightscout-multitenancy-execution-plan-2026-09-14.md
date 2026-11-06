@@ -3,7 +3,7 @@
 *Contributor- and maintainer-facing.*
 
 **Status: living document — the decision record.** Decisions D1–D21 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03) and are all **adopted** (D23 is a **proposed draft**, §2.14, not adopted), except **D17 row 2**
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03, D23 on 2026-11-06) and are all **adopted**, except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
 gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
@@ -159,7 +159,7 @@ preference.
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
 | **D21** | **One executable; `single` and `multitenant` name the tenancy profiles.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands. `nightscout single` remains today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). The multitenant roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are invoked as `nightscout multitenant <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7). `serve` describes an HTTP operation, not a tenancy mode, and is not the selected CLI namespace. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer and test tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's configuration split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed invocation of every multitenant role is part of the target or only a small-operator convenience | maintainer, 2026-10-26, amended 2026-11-03 — §2.12 |
 | **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them. The [owner authority amendment](owner-authority.md) governs delegation, management sessions and local public-key verification; private keys stay in the secrets component | maintainer, 2026-10-27; amended 2026-11-05 — §2.13 |
-| **D23** *(proposed 2026-11-06, not adopted)* | **`realtime` is a reader: fan-out from the change feed, socket rooms and one `LISTEN` per held tenant, with no storage write authority. The socket's write messages (`dbAdd`, `dbUpdate`, `dbUpdateUnset`, `dbRemove`) and the alarm ack and snooze are writes, and under `multitenant` they go to `api` over REST; `realtime` refuses them with a reply that names the route. `single` is unchanged.** Roles stay arguments of one subcommand (D21); the database feed is the only path between roles (D6), and a direct `api` → `realtime` stream is not adopted (§2.14, revisit triggers from {C} §3.5.3.1) | drafted by session -8c for the maintainer, 2026-11-06 — §2.14 |
+| **D23** | **`realtime` is a reader: fan-out from the change feed, socket rooms and one `LISTEN` per held tenant, with no storage write authority. The socket's write messages (`dbAdd`, `dbUpdate`, `dbUpdateUnset`, `dbRemove`) and the alarm ack and snooze are writes, and under `multitenant` they go to `api` over REST; `realtime` refuses them with a reply that names the route. `single` is unchanged.** Roles stay arguments of one subcommand (D21); the database feed is the only path between roles (D6), and a direct `api` → `realtime` stream is not adopted (§2.14, revisit triggers from {C} §3.5.3.1). The alarm `ack` stays on the `/alarm` socket and `realtime` forwards it to `api` | maintainer, 2026-11-06, via session -8c ("websocket forwarding to the API, as it simplifies the matrix and maintenance and architecture") — §2.14 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -930,7 +930,7 @@ launcher.
 | `nightscout single` | today's server: one process, `ctx.ddata`, the cache, every listener | the process environment |
 | `nightscout multitenant api` | express and storage; no bus, no `ddata` | per-tenant, from the database |
 | `nightscout multitenant evaluator` | change feed, plugins, notifications; no express | per-tenant, from the database |
-| `nightscout multitenant realtime` | socket.io and the change feed; no storage writes | per-tenant, from the database |
+| `nightscout multitenant realtime` | socket.io and the change feed; no storage writes: socket write messages are refused with the REST route and the alarm `ack` is forwarded to `api` (D23) | per-tenant, from the database |
 | `nightscout multitenant vcpool` | connector actors and the egress proxy | per-tenant, from the database |
 | `nightscout multitenant tenant-admin` | the tenant owner's configuration listener (D16) | per-tenant, from the database |
 | `nightscout multitenant admin` | the platform operator's listener, on its own interface (D7) | the deployment's own settings |
@@ -1120,10 +1120,11 @@ secret. Vault transit and a cloud key service are the production adapters, behin
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
 day: the strict settings read (`API3_SETTINGS_STRICT_READ_ENABLED`) is a floor, always on under `multi`.
 
-### 2.14 D23 (proposed) — `realtime` is a reader; socket writes and acks are writes (draft, 2026-11-06)
+### 2.14 D23 — `realtime` is a reader; socket writes and acks are writes (maintainer, 2026-11-06)
 
-*Draft for the maintainer, written by session -8c on 2026-11-06 at alignment `main` `7f461bfb`. Not
-adopted. Multitenant profile only; `single` is unchanged. Figures are quoted from the documents named;
+*Drafted by session -8c on 2026-11-06 at alignment `main` `7f461bfb`; **adopted by the maintainer the same
+day** with option (a) and the ack forwarded to `api`: "websocket forwarding to the API, as it simplifies the
+matrix and maintenance and architecture". Multitenant profile only; `single` is unchanged. Figures are quoted from the documents named;
 code lines are read from CRM `35903069`.*
 
 **What the decisions already say.** D5 names `realtime` "fan-out". D21's subcommand table says
