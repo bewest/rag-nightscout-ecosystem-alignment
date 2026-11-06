@@ -149,8 +149,18 @@ consumer, and no batch changes release placement or enables a serving default.
 | Completion batch | Deliverable and owner | Work that may proceed now | Freeze and acceptance boundary |
 |---|---|---|---|
 | **A — data, control and clients (M0–M4)** | Coordinator joins storage/authority/config/migration/runtime-readiness completion with the client lane's compatible v1/v2/v3 surface. | Active: M4 lab findings and application repairs; integrate B4a evidence/instrument repair and the B5 corpus inventory correction; inventory remaining M0–M3 criteria as implementation, measurement or decision gaps. Populated-import and authority/lifecycle proofs run before dependent assumptions spread. | Freeze a coherent candidate after targeted lane checks. Run both-store applicable contracts, actual two-tenant HTTP and stored oracles, pooled/concurrent authority/outage/schema controls, actual pinned-client labs, full/browser/enabled corpus, then final prcheck. All semantic differences require an approved basis; unknown differences remain failures. |
-| **B — durable runtime (M5)** | Runtime owner joins one proven durable producer/consumer path, realtime forwarding/fan-out, evaluator state and durable ack/snooze. | Active early proof: commit-stamp meaning and crash/replay correctness. Implementation may proceed in parallel against established interfaces after the proof and required contract approval; role-table and event-payload lanes remain separate until their gates pass. | First reference is separate roles on one machine. Freeze the assembled runtime, then exercise real process death/restart, duplicate/lost delivery, cohort pagination, current socket authorization, forwarding acknowledgements, replay-equivalent tenant views and retained evaluator results. Run batch regression and final prcheck once on that candidate. |
+| **B — durable runtime (M5)** | Runtime owner joins one proven durable producer/consumer path, realtime forwarding/fan-out, evaluator state and durable ack/snooze. | Active early proof: commit-stamp meaning and crash/replay correctness. Implementation proceeds under the adopted B7 direction, with early recovery experiments resolving concrete semantics before dependent consumer wiring; role-table and event-payload lanes retain their own gates. | First reference is separate roles on one machine. Freeze the assembled runtime, then exercise real process death/restart, duplicate/lost delivery, cohort pagination, current socket authorization, forwarding acknowledgements, replay-equivalent tenant views and retained evaluator results. Run batch regression and final prcheck once on that candidate. |
 | **C — synthetic operational preview (M6)** | Operations owner joins import/export/deletion, ciphertext/key recovery, backup/restore, upgrade/rollback, bounded resources/egress and final-tree review. | Prepare tools and populated synthetic fixtures in parallel with A/B. Run one representative populated restore/import and contention experiment early; broader acceptance waits for stable data/runtime contracts and approved bounds. | Freeze the complete preview after A/B criteria and chosen owner capabilities are satisfied. Run populated failure/recovery and lifecycle campaigns, isolation/security/client/runtime regression, explicit capacity/latency workloads and the complete criterion matrix. Production identity/traffic, real data, role enablement and publication retain their separate approvals. |
+
+The first coherent CI/client sub-batch is accepted in
+[R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06):
+M0 foundations is promoted and the bounded actual-client lab card is complete.
+This does not close all of A. A runner/docs-only correction retained the exact
+serving/test/dependency trees: prior campaigns remain attributed to their executed
+head, while the changed runner's whole corpus and final prcheck ran on the final
+head. Byte identity and an explicit affected-input analysis permit that reuse;
+ancestry alone does not. A product, assertion, dependency or relevant environment
+change requires reassessing and rerunning affected acceptance.
 
 A–C are completion stages, not three indivisible code changes. A lane continues
 through a coherent family of fixes without demanding a full suite after every
@@ -169,7 +179,7 @@ cannot substitute for that mapping.
 |---|---|---|
 | M0 binding, RLS, pool reuse, rollback and unsafe schema | A: real restricted-role PG/pooler positives plus paired tenant/RLS/transaction failures and actual startup refusal | Existing implementation/evidence foundation; final-tree deployment/schema/pool coverage remains measurement work. |
 | M1 backend semantics, identities, queries, history, batches and imports | A: applicable Mongo/PG differential contracts, populated import/replay oracle and query/lock/materialization bounds | Bounded compatibility gaps require implementation; broad populated/resource acceptance remains measurement; new numeric limits require a maintainer decision. |
-| M2 settings/current authority/secrets and listener separation | A: actual provider + PG + HTTP config/versioning/revocation and owner/data/operator boundary controls | Remaining issuer/refresh, existing-grant clamping and production lifecycle/listener composition are implementation gaps; authenticator, recovery or capability-policy choices stay decisions. |
+| M2 settings/current authority/secrets and listener separation | A: actual provider + PG + HTTP config/versioning/revocation and owner/data/operator boundary controls | Deployable management/listener composition and current-policy enforcement remain implementation gaps. Human issuer/refresh and full owner lifecycle retain the roadmap's M6 gates; authenticator, recovery or capability-policy choices stay decisions. |
 | M3 cumulative two-tenant HTTP | A: actual executable, overlapping identities, independent stored-state oracle, grants/outages/concurrency/schema and restored controls | Combined acceptance must execute after source joins; earlier positives and controls remain historical evidence on their own heads. |
 | M4 pinned client workflows | A: actual executable clients and independent responses/stored values, retries/refusals/revocation, followed by explained differential cells | Reproduced lab differences need focused diagnosis and implementation. Mobile/v3 binary feasibility and source-pattern replay coverage remain explicit; no all-client claim follows from a headless subset. |
 | M5 durable feed/recovery | B: persisted checkpoint and complete-cohort oracle under commit-before-publish death, duplicates, missed notifications, soft deletion and cross-tenant checkpoint refusal | Architectural proof first. Hard-delete recovery, replay horizon, transport/provider and multi-node ownership guarantees cannot be inferred; unresolved choices stay scoped/deferred. |
@@ -217,9 +227,13 @@ not completion of A.
 Current ownership: root coordinator owns Batch A integration and acceptance;
 the existing M4 chat owns the independent client lab; the M4 application-repair
 agent owns diagnosed UUID-default and literal-regexp compatibility work; the M5
-agent owns an executable recovery research prototype. The durable-delivery
-contract remains draft and checkpoint bookkeeping authority remains unresolved,
-so this prototype cannot establish adopted production runtime semantics. A separate
+agent owns the executable recovery prototype and first dormant durable replay
+implementation. B7 direction is adopted in the
+[contract acceptance](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments);
+its approval record has been reconciled from the separate decision lane.
+Recovery semantics and checkpoint bookkeeping require explicit implementation
+and executable proof, rather than another direction approval. The source-only
+prototype does not establish production recovery. A separate
 owner-clamping characterization and populated-import preflight are active early
 proofs; neither selects a new authority policy or establishes real database restore.
 Owner session/issuer lifecycle and the wider operational implementation are **unassigned**;

@@ -744,7 +744,7 @@ to plaintext, another tenant's key or an unapproved local signer.
 
 | Milestone | Build / dependencies | Acceptance before promotion |
 |---|---|---|
-| M0: foundations | Current-dev integration worktree; PG connection/transaction binding and real RLS proof; migration and secrets contracts can proceed independently | Non-bypass application role, overlapping IDs, unbound reader, read/write isolation, rollback/error cleanup, demonstrated pool reuse and paired breaks. No hosted role enabled. |
+| M0: foundations | Current-dev integration worktree; PG connection/transaction binding and real RLS proof; migration and secrets contracts can proceed independently | Non-bypass application role, overlapping IDs, unbound reader, read/write isolation, rollback/error cleanup, demonstrated pool reuse and paired breaks. No multitenant default or production role enabled; explicit D21 lab preview is permitted. |
 | M1: entries adapter | ST-PG, on the M0 binding; current filter/read/write/identity contracts; reviewed DDL managed through MIG-RUNNER before deployment | Applicable backend tests execute against both stores; no pending-as-pass. Explicit unsupported collections/operations. Include null, ordering/pagination, resend/delete and batch outcomes; preserve source labels/events. |
 | M2: tenant control plane | MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MIG-RUNNER, TEN-RESOLVE, T30-WIRING | Tenant-local effective config and versioned writes; unknown tenant refuses; A token works on A and fails on B by signature; no environment/root/key leakage; separate owner/data/operator routes. |
 | M3: two-tenant HTTP lab | M1 + M2, TEN-LAB | Real authorized entries v3 requests and stored outcomes for both tenants, positive and negative controls; startup refuses stale/unsafe schema. Not yet a complete hosted preview. |
@@ -2348,3 +2348,49 @@ operation and same-state legacy compatibility. The signature, audience, session
 and stale-snapshot controls fail semantically. Human issuer/refresh, full
 individual-setting catalogue and proposed-grant/delegation ceiling enforcement,
 production provider/key distribution and protected streams remain incomplete.
+
+
+### Accepted coherent CI client batch and M0 foundations (2026-11-06)
+
+[R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06)
+accepts the coherent compatibility/CI batch at `d89a44e1`. Its
+[final capsule](../../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.md)
+records the final corpus/prcheck and the exact product/test/dependency identity
+supporting reuse of the earlier full/browser/client/pooler captures. The failed
+provisioner attempt remains immutable; its test-database safety guard was retained.
+No classifier waiver or relaxed credential policy was used.
+
+**M0 foundations is promoted.** Current restricted-role binding, overlapping
+identities, unbound refusal, read/write isolation, rollback/error cleanup,
+physical pool reuse and paired breaks are measured. The expanded corpus supplies
+current migration/catalogue and executable schema/privilege refusal; the separate
+pooler proof supplies transaction-pooling behavior without substituting its
+historical DDL for the current migration catalogue. D21's explicit lab preview
+is permitted; this promotion enables no default or production role.
+
+The bounded `M4-CLIENT-LAB` measurement card is complete after canonical
+integration. It establishes the selected actual cgmsim/oref0 payload, stored-value
+and refusal workflows, with independent oracle/classifier controls. Connector
+observations retain their own ancestor scope. M4 as a milestone still needs its
+broader client/onboarding/v3 surface and M3 prerequisite.
+
+M1 remains open for complete admitted backend/import semantics, populated
+identity/order fidelity and broader resource behavior. Existing write-set/import
+caps are implemented and must not be described as absent; capacity, wider read
+work and scaling remain unmeasured. M2 still needs deployable owner/control-plane
+composition and current authority/lifecycle completion; human management
+issuer/refresh and full owner capabilities retain the roadmap's M6 gates.
+M3 retains complete M1/M2 dependencies even though its bounded HTTP lab passes.
+
+B7 direction approval is recorded in the
+[adopted contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments).
+The first dormant replay implementation and recovery experiments proceed under
+that approval. Dormant owner-ceiling readers and populated PostgreSQL recovery
+labs also proceed on separate branches; their source tests are not runtime
+acceptance or activation. M5/M6 remain open. Work continues in larger completion
+packages under the [batching plan](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06).
+
+Programme figures live in R60 and its linked immutable captures. Current milestone
+claims live in the [dashboard source](multitenant-delivery-status.json), and queue
+claims remain in the manifest. Publication/remote CI is recorded after execution;
+local acceptance does not imply release or production enablement.

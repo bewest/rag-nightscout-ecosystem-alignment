@@ -3166,10 +3166,11 @@ controls:
       Remove current active/update actor guard; actual forbidden proposal completesHTTP200not403 with persisted effects.
 
   - gate: node tools/queue/gates/m4-client-binaries.js --ref c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6
-    control: node tools/queue/gates/m4-client-binaries.js --ref c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6 --control oracle
+    control: node tools/queue/gates/m4-client-binaries.js --ref c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6 --control oracle --clients oref0
     positive-control: node tools/queue/gates/m4-client-binaries.js --ref c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6
     control-kind: integration
     proves: >
-      Read the PostgreSQL oracle from tenant B instead of A: every stored-outcome
-      check sees zero rows and the lab exits 1, so a gate that passes is reading
-      the rows the clients actually wrote.
+      Read the PostgreSQL oracle from tenant B instead of A in the measured oref0
+      control: six stored-value assertions fail with zero B rows while HTTP still
+      reaches A. The registered positive retains both default clients; the focused
+      control proves the independent oracle notices the wrong tenant.

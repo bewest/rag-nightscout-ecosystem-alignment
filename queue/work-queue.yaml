@@ -25440,10 +25440,9 @@ items:
     title: 'M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo'
     parcel: tenancy
     repo: rag-nightscout-ecosystem-alignment
-    branch: codex/m4-client-lab-20261106
+    branch: main
     base: main@88902eba2532c42bf83a91a8104f9ea64da2ca18
-    worktree: externals/work/alignment-codex-m4-20261106
-    state: ready-to-push
+    state: done
     blast_radius: >
       Lab code under tools/lab/m4-client-binaries, one queue gate and its control,
       a run record. No cgm-remote-monitor or client file changes. Measures the M4
@@ -25477,11 +25476,12 @@ items:
       - reports/m4-client-binaries/2026-11-06-batch-a/README.md
       - reports/m4-client-binaries/2026-11-06-revised-freeze/README.md
     notes: >
-      Locally accepted bounded lab; proposed ready-to-push claim on this isolated
-      branch, pending coordinator integration before canonical promotion/publication.
+      Complete bounded measurement, canonically integrated by the coordinator in
+      R60; final client gate and semantic controls are directly measured on c0e8.
       Exact registered default gate passed on c0e8 with zero differences after
       focused semantic controls and restoration. Prior failed captures and the
       combined 863 connector scope remain immutable. Current reports hold counts,
       client provenance, limitations and source ancestry. No general M4 promotion.
-      Shared main/index draft is archived; only root retires the exact unchanged
-      old draft after integrating the committed replacement. No application push.
+      The takeover owner confirmed replacement of the exact archived draft; root
+      retired only verified matching paths and preserved the original archive.
+      Broader M4 milestone and connector limits remain open.

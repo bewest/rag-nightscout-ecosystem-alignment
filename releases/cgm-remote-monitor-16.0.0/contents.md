@@ -1624,3 +1624,18 @@ allocation and publication. Local transfer: `externals/work/HANDOFF-codex-m4-202
 | Scope | Decision and evidence | Remaining boundary |
 |---|---|---|
 | B7 / `MT-RUNTIME-PLAN` | Maintainer adopted the [durable delivery design direction](decisions.md#b7-durable-multitenant-delivery-2026-11-06), with scalability/performance experiments informing implementation. The [contract](../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) defines correctness and capacity questions. This is a decision record, not a new runtime measurement. | Distributed recovery and capacity remain UNMEASURED; queue state stays in-progress/no-gate. No operator-visible behavior, default, milestone or release admission changes. Batching-plan and queue edits remain with their active session owners. |
+
+
+### Update — coherent compatibility batch accepted; M0 promoted (2026-11-06)
+
+| Scope | Measured disposition | Remaining boundary |
+|---|---|---|
+| Final application `d89a44e1` | [R60](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06) accepts the corrected corpus/final prcheck, actual-client gate and product-identical full/browser/foundation captures. | Every campaign retains its actual executed head; failed corpus capture and original safety guard preserved. Performance benchmark pending, not passed. |
+| M0 foundations | Promoted against the existing isolation, binding, rollback, reuse, paired-control and schema/startup criteria. | D21 lab preview only; no default, production role or release enabled. M1–M6 retain their own criteria. |
+| `M4-CLIENT-LAB` | Bounded measurement complete and canonically integrated; direct default gate and meaningful oracle/classifier controls accepted. | Broader M4/v3/mobile/onboarding/connector criteria remain open. |
+| B7 and later implementation | Existing maintainer approval reconciled from its separate decision branch; dormant replay, owner-clamping acceptance and populated recovery labs continue independently. | Earlier draft wording was stale documentation. These later source branches are not included in this compatibility candidate or admitted to runtime. |
+
+The [final acceptance capsule](../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.md)
+and [client capture](../../reports/m4-client-binaries/2026-11-06-revised-freeze/README.md)
+own figures and limits. Publication and remote checks follow separately.
+Lane detail: `externals/work/HANDOFF-codex-completion-coordination-20261106.md` (local, untracked).
