@@ -211,7 +211,7 @@ Where that state lives **today** at `35903069`, **read-derived**:
 | State | Home today | Scope today |
 |---|---|---|
 | alarm levels and `lastEmitTime` per group; the per-cycle `requests = { notifies, snoozes }` | `lib/notifications.js:23-74`, reset by `initRequests` each cycle | one process-global `ctx.notifications` |
-| ack and snooze | `notifications.ack` at `lib/notifications.js:166-184` deletes `lastEmitTime`; `requestSnooze` at `:118-127` | same object; the web client's ack arrives over the socket. Under D23 (adopted 2026-11-06) the `/alarm` socket stays, `realtime` forwards the ack to `api`, and `api` writes the tenant-keyed ack row that the evaluator consumes from the feed |
+| ack and snooze | `notifications.ack` at `lib/notifications.js:166-184` deletes `lastEmitTime`; `requestSnooze` at `:118-127` | same object; the web client's ack arrives over the socket. Under D23 (adopted and amended 2026-11-06) the socket protocol is unchanged: `realtime` forwards every socket write and the alarm ack, with the socket's own authorization, to an internal write endpoint on `api`, which runs the write step with the `socket` source label and writes the tenant-keyed ack row that the evaluator consumes from the feed; the result is relayed into the socket acknowledgement, and a failed forward is no acknowledgement |
 | the data the cycle evaluates | `ctx.ddata` (`lib/data/ddata.js`), loaded by `lib/data/dataloader.js` from `ddata.lastUpdated`; the cycle runs on `data-loaded` → plugins → `data-processed` → socket `dataUpdate` (`lib/server/bootevent.js:514-551`, `lib/server/websocket.js:122,159`) | one process, one site |
 | the write-driven trigger | `data-received` from the socket write paths (`websocket.js:285,538,598,...`) and the timer `tick` (`bootevent.js:526`) | in-process bus |
 | private, bounded acquisition that leaves the caller's `ddata` untouched | `lib/data/views/index.js:121-219` and `lib/server/tenant-app/snapshot.js:15-75` (per the seams plan's inventory, R49 **reproduced** the caller-cache-untouched control) | per call |
@@ -233,10 +233,12 @@ and the seams plan's identity rule:
    performs no notification handoff; the next real trigger recovers (R50, R55
    `frame-retention` control: null replacing the kept properties is the red).
 3. Ack and snooze are **per tenant** writes. D23 names their writer: the
-   client acks on the `/alarm` socket, `realtime` forwards to `api`, and `api`
-   persists a tenant-keyed ack row that the evaluator reads from the feed like
-   any other committed row, so an ack survives a consumer restart by replay and
-   `realtime` holds no storage write authority. The roadmap keeps "owner
+   client acks on the `/alarm` socket as today, `realtime` forwards the ack,
+   like every other socket write, unchanged to `api`'s internal write endpoint,
+   and `api` persists a tenant-keyed ack row that the evaluator reads from the
+   feed like any other committed row, so an ack survives a consumer restart by
+   replay and `realtime` holds no storage write authority. A forward that fails
+   yields no acknowledgement, so the client's existing no-ack retry applies. The roadmap keeps "owner
    ack/snooze and actual notification delivery" on their separate gates, so the
    row's shape and retention are not decided here, only its key and its writer.
 4. The retained cycle's inputs are the tenant's rows at or below the

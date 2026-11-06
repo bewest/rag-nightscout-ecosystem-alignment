@@ -137,6 +137,7 @@ toolchain and device or simulator; out of scope for an automated Linux lab);
 | 8 | **minimed-connect-to-nightscout** (`minimed-connect`) | B | Node; CareLink upstream, which the programme treats as dead (BF-61 hard stop) | v1 POST entries/devicestatus | `api-secret` = SHA-1 (`nightscout.js:15-18` per survey) | lock `57bb042c` |
 | 9 | **xDrip+** (`xdrip`) | D | Android app; `NightscoutUploader.java` is in the app module | v1 POST/PUT/DELETE by its own 24-hex `_id`; follower polls | `api-secret` = SHA-1 | lock `1ed76004` |
 | 10 | **AndroidAPS application** (`aaps`) | D | the plugins that schedule, retry and accept | as rank 7 plus the app's accept rules | as rank 7 | lock `7e1d537d` |
+| 10a | **AndroidAPS 3.4.2.3 NSClient (v1) socket upload sequence** (`aaps` at the 3.4.2.3 tag; `plugins/sync/.../nsclient/services/NSClientService.kt`) | A as a **driven sequence**, D as the plugin itself | a Node socket.io client replays the plugin's `authorize`, `dbAdd`, `dbUpdate` and `ack` message sequence as read from the pinned source, including a retried `dbAdd` after a withheld ack; this is source-pinned pattern replay, not execution of the Kotlin plugin | v1 socket writes; the whole upload path of this plugin is the socket (execution plan §2.14 corpus table) | socket `authorize` with the site's secret hash | lock `7e1d537d` is `dev`, where the v1 plugin directory is gone; the 3.4.2.3 tag must be read by `gh api` or a pinned checkout, never a stale clone |
 | 11 | **Loop via NightscoutKit / NightscoutService** (`nightscoutkit`, `loop`) | E | Swift package declaring iOS/macOS/watchOS platforms; six source files `import HealthKit`, so it does not build on a Linux toolchain | v1 array POST entries/treatments/devicestatus/profile; PUT/DELETE by cached `_id`; `experiments/test` setup check | `api-secret` = SHA-1 | lock `4ec9fd12` / LoopWorkspace `548b3324` |
 | 12 | **Trio** (`trio`) | E | iOS app; the `trio-test-harness` pin (`tth`) drives it on the iOS Simulator, which needs macOS | v1 object POST, GET `sgv.json?count=1600`, DELETE by `created_at`+`eventType` | `api-secret` = SHA-1 only; any `?token=` in the configured URL is dropped (survey S5) | lock `0b29cd53` |
 | 13 | **LoopFollow** (`loopfollow`) | E | iOS | v1 follower GETs with `token` in the query; socket `authorize {secret: <token>}`; **creates a subject** via `POST /api/v2/authorization/subjects` at setup | token in the query | lock `4a74b781` |
@@ -260,11 +261,45 @@ classification and vocabulary, with one adapter the pipeline does not have today
   the archived head with `git show`/`git archive`, never a checkout. The id is allocated
   when the item is written, not here.
 
+### 4.6 D23 entry condition 2: the NSClient v1 socket sequence against a forwarding `realtime`
+
+D23, adopted and amended on 2026-11-06 (execution plan §2.14), makes `realtime` a
+reader that forwards every socket write message and the alarm `ack` unchanged, with
+the socket's own authorization, to an internal write endpoint on `api`, which runs the
+write step with the `socket` source label and relays the result into the socket
+acknowledgement. Its entry condition 2 names this packet as the home for the proof,
+because AndroidAPS 3.4.2.3's NSClient (v1) plugin is the one corpus client whose whole
+upload path is the socket.
+
+**Server under test:** the explicit multitenant executable serving `api` and a
+forwarding `realtime` for two tenants, as in §4.1, plus the single-site Mongo baseline
+of §4.2 on the same head.
+
+**Driver:** a Node socket.io client replaying the plugin's message sequence as read from
+the pinned 3.4.2.3 source: `authorize`, a `dbAdd` for a treatment and a devicestatus,
+a `dbUpdate` by the id returned in the add's acknowledgement, the alarm `ack`, and a
+retried `dbAdd` after the driver withholds its own acknowledgement handling, which is
+what the plugin does when no ack arrives. The driver is pattern replay (R40's caveat
+applies: not execution of the plugin) and carries no payload from any real site.
+
+| Check | Predicted green | Exact red symptom |
+|---|---|---|
+| each forwarded write is stored once on tenant A with source label `socket`, and the acknowledgement carries the same id or result string the single-site baseline returns | stored rows and ack bodies equal across baseline and preview, per the compat verdict vocabulary | a differing ack shape, a missing source label, or a row on tenant B |
+| the retried `dbAdd` after a withheld ack stores no duplicate | one row, one ack on the retry | two rows for one logical add |
+| **control: acknowledge before `api` confirms** (patch the forwarder in a scratch copy to reply before the forward resolves, then make the forward fail) | the lost-write assertion goes red: an acknowledged add with no stored row | if it stays green the assertion is vacuous; restore and rerun |
+| **control: `api` unavailable** | the socket write receives no acknowledgement and the driver's retry fires; nothing is stored until `api` returns | a success reply during the outage |
+| **control: tenant A's socket credential on tenant B's alias** | `authorize` refused; no write reaches `api` | any stored row on B |
+| `single` unchanged | the baseline's socket writes go directly to storage as today; no forwarder in the path | a forwarded write observed in single-site mode |
+
+Hop latency and its effect on the plugin's ack timeout are UNMEASURED and stay so
+until a quiet-hardware run; the control list above proves correctness of the forward,
+not its cost.
+
 ## 5. What M4 still leaves unmeasured after this lab
 
 | Area | Why the lab does not reach it |
 |---|---|
-| **Socket transport** | None of the three clients speaks socket.io. AAPS v3 `/storage` and `/alarm` namespaces, LoopFollow's `authorize {secret: <token>}`, and AAPS v1 `dbAdd`/`dbUpdate` (only on the unpinned 3.4.x master) are M5's gate (socket authorization, reconnect, tenant-local rooms), not M4's |
+| **Socket transport** | None of the three clients speaks socket.io. AAPS v3 `/storage` and `/alarm` namespaces, LoopFollow's `authorize {secret: <token>}`, and AAPS v1 `dbAdd`/`dbUpdate` (only on the unpinned 3.4.x master) are M5's gate (socket authorization, reconnect, tenant-local rooms), not M4's The NSClient v1 forward path alone is covered by §4.6 under D23; the v3 `/storage` and `/alarm` subscribe paths and LoopFollow's socket `authorize` remain outside this lab. |
 | **Mobile binaries** | Every iOS client (Loop/NightscoutKit, Trio, LoopFollow, LoopCaregiver, nightguard, xDrip4iOS, DiaBLE) needs an Apple toolchain; xDrip+ and the AndroidAPS app need an emulator. The journey lab's `REAL-APPS.md` track is manual, needs HTTPS the phone trusts and a simulated pump, and proves app-side decisions the lab only predicts. Their request shapes remain source-pattern replay |
 | **Retry semantics under outage** | R48 measured the **server** answering 503 with Vault or PostgreSQL paused; the clients' schedulers (NightscoutKit's 24-hour `_id` cache and completion-handler hang on DELETE error, AAPS WorkManager, xDrip retry-forever) are not executed. The connector's backoff is observable but not under a paused backend at soak scale |
 | **Subject creation by clients** | LoopFollow and the connector's source mode create a subject through `POST /api/v2/authorization/subjects`; the preview's data plane mounts no such route (subject administration is the separate management app, R42). "No coordinated app upgrade" is unproven for any client whose onboarding creates a subject |
