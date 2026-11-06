@@ -2545,6 +2545,8 @@
       
         
       
+        
+      
     
     
     
@@ -2597,6 +2599,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -3335,6 +3365,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-current-admitted-ports-and-independent-scopes-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Current admitted ports and independent scopes (2026-11-05)
+      
+    </span>
+  </a>
   
 </li>
       
@@ -4678,6 +4719,8 @@
       
         
       
+        
+      
     
     
     
@@ -5732,6 +5775,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#11-current-admitted-ports-and-independent-scopes-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Current admitted ports and independent scopes (2026-11-05)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -5754,13 +5808,15 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-14. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot, 2026-09-14 (§8–§10 later). Current: the only statement of the storage seam's interface.</strong>
+<p><em>Contributor-facing living interface definition. Sections 1–10 retain their dated
+historical census and implementation captures; §11 records current admitted ports.</em>
 Task T1.1 of the <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>; decisions it rests on: D3, D4, D8, D9 — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">plan §1</a>.
 §1–§7 were measured 2026-09-14 against <code>origin/chore/nightscout-modernization</code> @ <code>0a4109f6</code>;
 §8–§10 describe what was built on the <code>seam/*</code> branch chain (tip <code>seam/t1-2-storage-interface</code>
 @ <code>81a1f6ce</code>, <code>externals/work/crm-seam</code>), which is <strong>unpublished</strong>. That base has since moved
 (to <code>b1bdaca0</code> on 2026-09-21, a merge of <code>dev</code>); the seam is 68 behind it and trial-merges with 19
-conflicting paths — queue item <code>SEAM-REFRESH</code>. Nothing here is in <code>dev</code> or any release.</p>
+conflicting paths — queue item <code>SEAM-REFRESH</code>. Those branch/status observations
+describe that historical capture, not current dev or preview; see §11.</p>
 <p><strong>Deliverables</strong>: this document, plus
 <code>reports/storage-seam/t1-1-call-site-classification.tsv</code> (every site, classified) and the two
 scripts that produce it, so the count can be re-derived rather than trusted.</p>
@@ -6626,6 +6682,78 @@ profile deleted between the lookup and the write — a user removes a profile, a
 message recreates it.</p>
 <p>It returns <code>matchedCount</code> so a caller can distinguish "replaced" from "was already gone". That
 distinction is the reason the method exists, so it is tested directly rather than inferred.</p>
+<h2 id="11-current-admitted-ports-and-independent-scopes-2026-11-05">11. Current admitted ports and independent scopes (2026-11-05)<a class="headerlink" href="#11-current-admitted-ports-and-independent-scopes-2026-11-05" title="Permanent link">&para;</a></h2>
+<p>Current-source amendment at local CRM
+<code>d4570e585d0e12e46386ed26772790b269b2b736</code>, based on dev <code>4a482627</code> and
+R41. The archived <code>port</code> instrument runs the committed parameterized corpus
+against real MongoDB and PostgreSQL. The interface is a set of explicit
+capabilities, not a promise that every backend implements historical §4.1.
+Historical counts and measurements above are unchanged.</p>
+<table>
+<thead>
+<tr>
+<th>Actual object</th>
+<th>Contract and admitted boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>api3/storage/mongoCollection</code></td>
+<td>Driver-backed reads/writes/results, strict/v1 AST and broader BSON. Tenant assertion does not filter a shared collection or add a transaction.</td>
+</tr>
+<tr>
+<td><code>postgres-entries-read</code> / <code>postgres-entries-write</code></td>
+<td>Typed string/ObjectId identity, JSON-safe representation, strict query/sort/projection subset, real persistence outcomes and partial duplicate-key batches. Unsupported shapes refuse.</td>
+</tr>
+<tr>
+<td><code>postgres-entries-intent</code></td>
+<td>Shared v3 intent rules, a fresh owned transaction and logical post-commit events. An existing caller transaction refuses.</td>
+</tr>
+<tr>
+<td><code>postgres-collection-intent</code></td>
+<td>Trusted logical collection/source composition; bounded legacy predicate translation and top-level projection helpers. Its projection capabilities differ from the lower reader.</td>
+</tr>
+<tr>
+<td><code>storage-reads.resolve</code> / API3 Collection injection</td>
+<td>Trusted capability acquisition by logical collection/source. Partial ports refuse; default single constructs Mongo when no replacement is supplied.</td>
+</tr>
+</tbody>
+</table>
+<p>Measured distinctions a future backend must preserve or explicitly refuse:</p>
+<ul>
+<li>Raw ObjectId and same-spelling string IDs remain distinct. Identifying reads
+  prefer an explicit identifier, then ObjectId, then string. Normalized shown
+  documents supply the stored ID when identifier is falsy; raw absent/null/false/
+  zero identifiers remain distinguishable.</li>
+<li>Mongo's driver generates an ObjectId for submitted <code>_id: null</code>; Mongo admits
+  numeric/boolean IDs. PG refuses those submitted identity kinds. Silent stored-
+  kind coercion is not a supported adaptation.</li>
+<li>Lower PG admits dotted inclusion projections but refuses exclusion and
+  <code>_id: 0</code>; preview projection admits top-level 0/1 and refuses dotted projection.
+  There is no single universal projection capability yet.</li>
+<li>Supported null/missing AST comparisons, existence and false/zero/string-zero
+  operands retain their characterized distinctions. Bounded unsorted PG reads
+  and unsupported query/representation shapes refuse. Natural order requires its
+  ordinal/schema/import capability; these tests do not prove imports.</li>
+<li>PG acquires the current UUID at operation time, uses RLS inside a transaction,
+  reuses only the same scope and rejects cross-tenant rebinding. Mongo scope
+  leaves the explicitly selected collection handle unchanged; its composition
+  must supply physical isolation. Caller failure does not roll back an already
+  completed standalone Mongo write.</li>
+<li>Persistence counts describe real writes. Duplicate-key batches retain their
+  successful ordered prefix or unordered continuation; PG savepoints leave the
+  outer transaction usable. Representation validation may refuse before a batch.</li>
+</ul>
+<p>The corpus distinguishes logical intent events from backend instrumentation and
+checks PG commit failure without false publication. It does not measure durable
+delivery/restart, every renderer/collection, event collapse, lost-reply retry
+ambiguity or arbitrary Mongo emulation. Domain/write policy remains in the
+<a href="write-contract-spec-2026-10-07.html#9-current-shared-intent-and-backend-capabilities-2026-11-05">write-contract current amendment</a>
+and linked platform specifications. Executable details live in CRM
+<code>lib/storage/PORT-CONTRACT.md</code> and <code>tests/storage-port-contract.integration.test.js</code>;
+the <a href="architecture-seams-execution-plan-2026-11-05.html">architecture execution plan</a>
+owns consolidation sequencing. New adapters consume measured capabilities,
+rather than inherit unsupported methods from the historical proposal.</p>
 
 
 

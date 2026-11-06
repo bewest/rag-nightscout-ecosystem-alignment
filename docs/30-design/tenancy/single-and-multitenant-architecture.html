@@ -2545,6 +2545,8 @@
       
         
       
+        
+      
     
     
     
@@ -2597,6 +2599,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -4362,6 +4392,8 @@
       
         
       
+        
+      
     
     
     
@@ -5118,7 +5150,7 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>e6f8ccea7</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>e3f913ba3</code>.</em></p>
 <p><em>Contributor-facing living explanation. Source inspection is </em><em>read-derived</em><em> at
 cgm-remote-monitor <code>ded254b9acf5a94e3a4fd99c85b23e1413fa08b6</code>, based on dev
 <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Test figures below are </em><em>recorded
@@ -5126,7 +5158,11 @@ reproductions</em><em>, not new runs for this explanation. Current delivery and 
 claims live in the <a href="multitenant-delivery-dashboard.html">delivery dashboard</a>;
 <a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
 owns the published preview acceptance; <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a>
-owns the later local subject-service/compatibility continuation. PR #8898 is
+owns its local subject-service/compatibility continuation. Later local
+<a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
+and independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>
+add measured port contracts, a separate management factory and nonresident replay.
+The diagrams retain their published R40 source scope. PR #8898 is
 open/draft, not merged or released.</em></p>
 <h2 id="what-the-write-seam-made-possible">What the write seam made possible<a class="headerlink" href="#what-the-write-seam-made-possible" title="Permanent link">&para;</a></h2>
 <p><strong>Shared single-tenant code did change.</strong> The storage/write seams let the
@@ -5256,7 +5292,12 @@ its wildcard read requirement. Those are inherited compatibility boundaries, not
 new declarations that every exposed field has an independent collection grant.</p>
 <h2 id="what-evidence-supports-compatibility">What evidence supports compatibility?<a class="headerlink" href="#what-evidence-supports-compatibility" title="Permanent link">&para;</a></h2>
 <h3 id="preview-versus-current-singlemongo-behavior">Preview versus current single/Mongo behavior<a class="headerlink" href="#preview-versus-current-singlemongo-behavior" title="Permanent link">&para;</a></h3>
-<p>The latest local <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41 continuation</a>
+<p>Latest local <a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
+adds real lower/preview/Mongo port characterization and a separate authenticated
+management factory, with current-head cumulative/control evidence. Independent
+R43 measures the opt-in single/nonresident prototype; it is not joined into the
+multitenant preview and does not establish tenant evaluator recovery.</p>
+<p>The earlier local <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41 continuation</a>
 adds dormant persisted subject mutation and strict mixed-version treatment /
 credential-rename comparisons, with full cumulative regression and mutation
 controls. It does not expose owner HTTP management or select grant ceilings.
@@ -5317,6 +5358,10 @@ and error mappings can differ from the single application. See the pinned
 <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/server/tenant-app/README.md">tenant-app boundaries</a>.
 Full query/resource acceptance and populated import-order fidelity remain open.</p>
 <h3 id="new-nightscout-versus-older-releases">New Nightscout versus older releases<a class="headerlink" href="#new-nightscout-versus-older-releases" title="Permanent link">&para;</a></h3>
+<p>The <a href="../../../reports/compat-rest-next-2026-11-05/index.html">R42 final-head capture</a>
+extends the bounded direct comparison to the final REST candidate with verified
+driver/dependency provenance. Its explicit omitted families and diagnostic
+residuals still limit the claim; it is not a universal old-release/PG equivalence.</p>
 <p>The <a href="../../../reports/compat-refresh-2026-11-05/index.html">November 5 bounded refresh</a>
 directly compares release/current-dev/published-PR-single with repeated runs and
 an explicit limited pass scope. It excludes identity/settings families, retains
@@ -5335,8 +5380,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1551c3e019713901315238d2f67b075205247430/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/1551c3e019713901315238d2f67b075205247430/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e5ba3b1c19ae07ea36b80a610930ab87414a5d/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c5e5ba3b1c19ae07ea36b80a610930ab87414a5d/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof

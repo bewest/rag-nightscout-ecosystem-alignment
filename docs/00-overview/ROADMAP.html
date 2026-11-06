@@ -1679,6 +1679,8 @@
       
         
       
+        
+      
     
     
     
@@ -2396,7 +2398,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-04 at <code>1f12fd08c</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>f06d67ef1</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2751,6 +2753,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>ARCH-SEAM-CONTRACT</code></td>
+<td>First: portable storage and commit contract characterization</td>
+<td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>DISPLAY-MEAL-GROUP</code></td>
 <td>Show a bolus and its carbs as one meal in the display layer; storage de-duplicat</td>
 <td><code>not-started</code></td>
@@ -2849,6 +2858,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>ST-VIEWS-PROFILE</code></td>
+<td>Next: refresh and integrate PR 8891 single nonresident profile</td>
+<td><code>in-progress</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>T30-AUTH</code></td>
 <td>The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i</td>
 <td><code>ready-to-push</code></td>
@@ -2933,6 +2949,20 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>ARCH-DERIVED-FRAME</code></td>
+<td>Next join: shared bounded frames and derived calculations</td>
+<td><code>not-started</code></td>
+<td><code>ARCH-SEAM-CONTRACT</code>, <code>ST-VIEWS-PROFILE</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>ARCH-SEAM-COMPOSE</code></td>
+<td>First: separate domain definitions from backend and HTTP bindings</td>
+<td><code>not-started</code></td>
+<td><code>ARCH-SEAM-CONTRACT</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>ID-UNIQUE-INDEX</code></td>
 <td>Partial unique index on identifier, retry-as-update on duplicate key, start-up s</td>
 <td><code>in-progress</code></td>
@@ -2961,6 +2991,13 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
+<td><code>ARCH-SEAM-CONSOLIDATE</code></td>
+<td>Next: consolidate proven common adapter mechanics</td>
+<td><code>not-started</code></td>
+<td><code>ARCH-SEAM-CONTRACT</code>, <code>ARCH-SEAM-COMPOSE</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
 <td><code>BFQ-CAP02</code></td>
 <td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
 <td><code>not-started</code></td>
@@ -2982,9 +3019,16 @@ Until then, the order below is the order of development, not of release.</p>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
+<td><code>ARCH-SQLITE-SPIKE</code></td>
+<td>Deferred low priority: hypothetical SQLite and cell adapter probe</td>
+<td><code>not-started</code></td>
+<td><code>ARCH-SEAM-CONSOLIDATE</code>, <code>ARCH-DERIVED-FRAME</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
 <td><code>T30-TENANT-ADMIN</code></td>
 <td>cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td><code>T30-WIRING</code></td>
 </tr>
 <tr>

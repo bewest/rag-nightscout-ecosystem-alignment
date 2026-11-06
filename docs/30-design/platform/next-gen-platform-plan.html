@@ -3732,6 +3732,8 @@
       
         
       
+        
+      
     
     
     
@@ -4988,6 +4990,8 @@
       
         
       
+        
+      
     
     
     
@@ -5650,10 +5654,11 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>e6f8ccea7</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>e3f913ba3</code>.</em></p>
 <p><em>Contributor-facing living plan. Tenancy progress reconciled 2026-11-05 against
 cgm-remote-monitor dev <code>4a482627</code>, published draft #8898 <code>ded254b9</code> (R40),
-and local accepted continuation <code>94c57f1f</code> (R41).
+local accepted REST continuation <code>d4570e58</code> (R42), and independent single/nonresident
+refresh <code>925c9527</code> (R43).
 Storage/identity/registration measurements below retain their named historical
 pins. Full M0–M6 completion remains open; component states are not milestone
 promotion or a fresh measurement of every queue gate. Release placement is in
@@ -5671,11 +5676,14 @@ promotion or a fresh measurement of every queue gate. Release placement is in
 <p><strong>Current dev anchor, 2026-11-05: <code>4a482627</code>.</strong> The published multitenant
 preview is <code>ded254b9</code> on draft #8898, not merged to dev. R40 records its
 accepted API/derived/client-pattern boundary; its current-head CI and CodeQL
-succeeded. Local <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a>
-adds persisted subject management and strict compatibility tests with cumulative
-acceptance; it is unpushed and does not enable owner HTTP. The
-<a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-subject-administration-and-compatibility-continuation-2026-11-05">parallel compatibility plan</a>
-keeps historical/current comparisons and remaining milestone gates distinct. See <a href="../tenancy/single-and-multitenant-architecture.html">single versus multitenant architecture and compatibility</a>
+succeeded. Local <a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
+adds measured port contracts and standalone subject-management HTTP; no management
+listener is enabled. Independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>
+refreshes #8891 with current-head regression and selected trigger/freshness replay;
+it is not joined into #8898 and retains the current physical subscriber. The
+<a href="../tenancy/architecture-seams-execution-plan-2026-11-05.html">architecture execution plan</a>
+sequences contract review, backend/domain composition and proven consolidation;
+SQLite stays deferred. Historical/current comparisons retain their own scope. See <a href="../tenancy/single-and-multitenant-architecture.html">single versus multitenant architecture and compatibility</a>
 for the shared-code changes, diagrams and evidence limits. The <code>497d08c9</code> labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are
@@ -5703,7 +5711,7 @@ See <a href="../../10-domain/nightscout-v16-ecosystem-deep-dive.html">current re
 <tr>
 <td>Storage</td>
 <td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (storage-interface stage). ST-V3-DECOUPLE (with #8865, 2026-10-30). <code>write(intent)</code> release 1, every write path through one step (#8874, <code>368e6c23</code>, 2026-10-31). <code>write(intent)</code> release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, <code>51d38f9f</code>, 2026-11-01) . ST-VIEWS, unwired (#8875, <code>1fc6d8be</code>, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, <code>f54941b5</code>, 2026-11-01)</td>
-<td>ST-VIEWS-PROFILE prototype, draft #8891 (<code>744d1968</code>, with provisos); published PostgreSQL preview in #8898 / R40</td>
+<td>Independent #8891 local refresh925c9527/R43 (published744d1968); local REST/port/management acceptance d4570e58/R42 (published #8898/R40)</td>
 <td>Complete PostgreSQL query/import/resource acceptance</td>
 </tr>
 <tr>
@@ -6016,9 +6024,9 @@ overview intentionally summarizes rather than duplicates those tenancy gates.</p
 </tr>
 <tr>
 <td>ST-VIEWS-PROFILE</td>
-<td>draft PR #8891 (<code>744d1968</code>, <code>dev</code> <code>f54941b5</code> merged in; npm test 6043/0/3), opened with provisos, not in 16.0.0 unless it clears the bar: a single-tenant start profile with no resident <code>ddata</code>, opt-in by <code>NIGHTSCOUT_EXECUTION=nonresident</code> through its own script; after each write and on a timer it computes the alarms view, and it serves the properties view on request; <code>single</code> unchanged (D-EXEC-PROFILE). Provisos: replay through the profile's trigger re-run on this head (measured at <code>7b4b724c</code>, before #8886/#8889/#8890), the trigger event (counts-only <code>storage-write-committed</code> or D-EVENT's <code>storage-intent-committed</code>), release placement, cost re-measured on quiet hardware</td>
+<td>Published draft #8891 remains <code>744d1968</code>; independent local refresh <code>925c9527</code> / R43 contains current dev and bounded full/replay acceptance. Explicit single/nonresident launcher computes bounded alarms/properties after admitted physical writes and heartbeat, retaining the last cycle properties; default single stays resident. Logical no-op/refusal admission, full alarm/writer coverage, live stats freshness, quiet-hardware cost and placement remain open. It is not joined into #8898.</td>
 <td>ST-VIEWS</td>
-<td>replay lab through the profile's trigger at 0 differing minutes; execution plan §7b; resident against computed cost and its break-even</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>: actual trigger/timer/freshness and teardown controls; remaining entry bar is explicit</td>
 </tr>
 <tr>
 <td>ST-PG</td>
@@ -6212,7 +6220,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tbody>
 </table>
 <p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. Which listener and role owns each API is mapped in <a href="interface-ownership-2026-10-27.html">interface ownership</a>, with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D21 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>.</p>
-<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. A third profile, one tenant computed on demand, is being prototyped as ST-VIEWS-PROFILE, and the execution mode is chosen by measured cost and equality, keeping the resident path wherever it is the cheaper one.</p>
+<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The explicit single/nonresident ST-VIEWS-PROFILE prototype materializes bounded views per evaluation and retains properties between cycles (R43). Its current cost is unmeasured; default single retains the resident path. A shared frame join must preserve each path's authorization and freshness policy.</p>
 <h2 id="5-open-decisions">5. Open decisions<a class="headerlink" href="#5-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up. Release questions (the 16.0.0 quiet period, cohort requests, when dev reopens) are Q13–Q16 in the <a href="release-allocation-2026-10-27.html#5-open-decisions">release allocation</a>.</p>
 <!-- chart: decisions -->

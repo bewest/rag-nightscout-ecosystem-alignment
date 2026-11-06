@@ -2768,6 +2768,8 @@
       
         
       
+        
+      
     
     
     
@@ -4024,6 +4026,8 @@
       
         
       
+        
+      
     
     
     
@@ -4667,7 +4671,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>e6f8ccea7</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>e3f913ba3</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -7567,6 +7571,197 @@ unresolved-role characterization; remaining REST side effects and client binary
 acceptance; import/resources, production lifecycle and M5/M6 durability/operations.
 CodeQL147/148 remain open. This closes the bounded persisted-subject packet,
 not full administration, full REST or multitenant readiness.</p>
+<h3 id="r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42 - storage contracts and separate management HTTP on d4570e58 (2026-11-05)<a class="headerlink" href="#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Parent-reproduced local cumulative acceptance</strong>, not publication or milestone
+promotion. Final REST head is <code>d4570e585d0e12e46386ed26772790b269b2b736</code>,
+branch <code>codex/rest-integration-next-20261105</code>; fetched dev remains
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Alignment dispatch base was
+<code>fc8c4010ee786b7e3453624c6427709a766b7c02</code>. Published draft #8898 remains
+<code>ded254b9</code>; R41 and this continuation remain local. No new role/listener or RC
+merge-list admission is inferred.</p>
+<p><strong>Implemented boundary:</strong> a standalone subject-management Express factory over
+the R41 persisted service. Resolver selection must match authenticated management
+identity; body/query fields cannot grant identity. The service still separately
+authorizes the entire bounded action. PUT/DELETE use shipping API2-style paths
+and stable string IDs, but this is a JSON-only facade with explicit request/error
+mapping, not full legacy UI/form/BSON coercion parity. Headers are no-store and
+no-referrer; resolver outages, parser failures, unknown roles, incomplete metadata
+and persistence failure have bounded sanitized replies. Malformed encoded paths
+return400 while callback failures remain503. Subject validation is shared by
+HTTP and service, preserving omitted-role revocation and note/date behavior.</p>
+<p>Actual PG/HTTP tests observe committed metadata/grants, same earlier raw/JWT
+credential refusal across independent serving pools, tenant twins, rollback and
+concurrent replacements. Data applications do not mount these management routes;
+no CLI binding, human identity provider, delegated grant ceilings or role CRUD is
+enabled. This does not cancel an already-authorized operation or add atomic
+policy/write fencing. Independent source review found no blocking issue in the
+dormant boundary and prompted the encoded-path characterization/fix.</p>
+<p><strong>Contract characterization:</strong> real MongoCollection, lower PG reader/writer and
+PG preview storage objects expose typed/raw/shown identity, missing/null/false/
+zero comparisons, projection/sort/refusal, partial duplicate batches and actual
+result counts. Mongo scope asserts binding without manufacturing row isolation
+or rollback; PG binds current UUID through RLS/transactions and refuses to claim
+an outer commit. Lower versus preview projections differ explicitly. Shared
+logical events include settled no-ops, distinct from physical instrumentation;
+mutating PG writes publish after commit and failed commits do not publish.
+The <a href="../tenancy/nightscout-storage-seam-interface-2026-09-14.html#11-current-admitted-ports-and-independent-scopes-2026-11-05">interface amendment</a>
+and <a href="../tenancy/write-contract-spec-2026-10-07.html#9-current-shared-intent-and-backend-capabilities-2026-11-05">write-contract amendment</a>
+reconcile current capabilities without rewriting historical measurements.</p>
+<table>
+<thead>
+<tr>
+<th>Parent-reproduced campaign</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Final complete nonbrowser on d4570e58</td>
+<td style="text-align: right;">7015</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Browser on precursor d1d8c520, application source identical to final</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Final restored enabled focused</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Archived current port corpus</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Archived current management HTTP</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Campaigns overlap; do not sum them. Final tiers: unit2157, DOM205,
+dependency368/2pending, core319, harness93, integration3855/78pending, stress18.
+Runner versions: Node22.23.4, PG16.15, Mongo8.0.34, Vault2.2.1, UTC,
+seed41574423920. The separate port fixture measures PG16.15/Mongo7.0.43.
+Private dependencies/build are owned; tier classification498files/8tiers and
+changed-file lint pass. Full d1d8 precursor first gave7014/80pending/1failing:
+the existing no-subscriber guard counted an event name in new Markdown as code.
+The final test limits scanning to executable JS/CJS/MJS and fails closed on Git
+errors. Its real-subscriber control fails with a source reference; unavailable
+Git also fails rather than silently passing; restored guard passes. Only that
+test and PORT-CONTRACT.md changed between precursor/final; runtime source identity
+was independently checked. Browser was not repeated for that test/doc-only fix.</p>
+<p><strong>Controls:</strong> projection corruption, foreign PG binding and false changed-count
+each fail a real-port assertion; credential bypass and actor/host mismatch each
+turn required401 into200; deliberate management-before-data fixture composition
+exposes a forbidden mutation. These are separate 0passing/1failing controls,
+not setup failures. Representative controls on final source are NON-VACUOUS.
+Updated MT-CONFIG-MIN/T30-WIRING gates also pass at final source. Five selected
+gates, including the independent profile gate below, report PASS and five
+NON-VACUOUS controls; broad catalogue failures/unmeasured cards are not green.
+Final unhooked focused233 and final prcheckOK follow the controls; source remains
+clean and contains current dev.</p>
+<p><strong>Direct historical comparison:</strong> <a href="../../../reports/compat-rest-next-2026-11-05/index.html">new bounded capture</a>
+uses actual final d457 candidate twice with this campaign's fresh repeated
+release/dev endpoints,768cells/run,0semantic repeat differences,0dev/candidate
+semantic differences; release comparisons retain227changed cells. Parent reran
+the hardened auditor and reproduced the public aggregate byte-for-byte. Actual
+no-write/restored source controls, wrong-head, corrupted-repeat and dependency-
+change checks reject their breaks. Exact driver/lock/manifest provenance is
+captured; the prior unverified7.6.0 driver statement is corrected without
+rewriting old aggregate/pins. Omitted identity/settings families, index-on races
+and old-full-corpus residuals remain outside this bounded pass scope. No
+old-release-to-PG transitivity or universal client parity is claimed.</p>
+<p>Local commands/logs/controls are indexed by
+<code>externals/work/HANDOFF-rest-next-20261105.md</code> and the owner-http, seam-contract
+and compat-rest-next handoffs. First fixture hypotheses (selector overreach and
+Mongo-generated null ID) and the malformed-path red-before-fix are retained.
+No third backend, production management identity, durable events, full REST or
+M0–M6 completion is accepted. Next: backend/domain composition and failure
+classification, wider roles/client/import/resource and lifecycle acceptance.</p>
+<h3 id="r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43 - independent nonresident profile refresh on 925c9527 (2026-11-05)<a class="headerlink" href="#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Parent-reproduced independent branch acceptance</strong> at
+<code>925c95278ed04954d1181201da79ae5d6c48c095</code>,
+<code>codex/profile-refresh-20261105</code>. This refreshes existing draft #8891
+<code>744d1968</code> with dev <code>4a482627</code> and bounded replay tests; it is not joined into</p>
+<h1 id="8898-merged-to-dev-released-or-selected-for-the-rc-the-boot-stage-merge">8898, merged to dev, released or selected for the RC. The boot-stage merge<a class="headerlink" href="#8898-merged-to-dev-released-or-selected-for-the-rc-the-boot-stage-merge" title="Permanent link">&para;</a></h1>
+<p>retains dev's identifier-index prerequisite and the explicit views stages.
+Default single remains resident; nonresident is an explicit prototype launcher.</p>
+<table>
+<thead>
+<tr>
+<th>Parent-reproduced campaign on this head</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complete nonbrowser</td>
+<td style="text-align: right;">6676</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Complete browser, default single</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Archived actual-trigger profile replay</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>These are separate branch results, not additional R42 coverage. Tiers:
+unit2081, DOM205, dependency368/2pending, core319, harness92,
+integration3593/1pending, stress18. Node22.23.4/Mongo8.0.34, private matching
+dependencies and rebuilt assets; final prcheckOK contains current dev. Browser
+results preserve default resident behavior, not a new nonresident UI claim.</p>
+<p>Measured cohorts include treatment/BWP snooze, device IOB properties, crowded
+device-kind acquisition, selected Loop/AAPS failure history, pump repost clocks,
+quiet no-upload stale alarm, retained-properties freshness, four resend modes,
+mixed batches, default/revert and teardown including delayed read completion.
+Resident/nonresident derived-property comparison uses identical synthetic DB-size
+input because independent live Mongo stats fluctuate. Live stats freshness,
+every alarm producer/writer and cross-collection snapshot consistency are not
+proved. Fake delivery and socket rejection measure notification requests/handoff;
+actual provider delivery, multitenant evaluation/recovery and runtime cost remain
+UNMEASURED. Pinned-clock reporter durations are not performance measurements.</p>
+<p>Current production code still subscribes to physical write instrumentation plus
+a timer. The test harness also drives the same evaluator from logical events:
+replace/merge resends yield one cycle in both; acknowledge/refuse yield zero
+physical/current cycles but one logical-candidate cycle. Mixed two-record entries
+batch coalesces to one cycle. No-op/refusal outcome admission and complete writer
+coverage remain an open subscriber decision; no policy switch was made.</p>
+<p>Parent archived controls suppress the timer, suppress the write trigger, narrow
+device acquisition, or substitute request-time properties. Each produces
+0passing/1semantic failure, followed by restored24. The registered timer control
+is NON-VACUOUS. Initial archived attempts omitted translations and failed setup
+0passing/2failing; those are not semantic controls. Including required fixtures
+restored the measured gate. The lane's earlier exploratory full run was
+inconclusive after owned Mongo error24/WT_PANIC under an insufficient descriptor
+limit; parent full/browser used fresh owned services with explicit limits and
+passed. Original failures remain local, not relabeled as green.</p>
+<p>Reproduction: <a href="../../../tools/lab/multitenant-next-slices/index.html">archived suites</a>
+and <code>externals/work/HANDOFF-profile-replay-next-20261105.md</code>; parent logs are
+<code>/tmp/codex-next-profile-{all,browser,prcheck}.log</code> and final profile gate/control
+logs. Full alarm/writer entry bar, logical subscriber decision, shared derived
+frame join, release placement and durable tenant recovery remain open.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
