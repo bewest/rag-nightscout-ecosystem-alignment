@@ -1860,6 +1860,8 @@
       
         
       
+        
+      
     
     
     
@@ -3221,7 +3223,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-06 at <code>2cac29fad</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>83e24821d</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -20665,7 +20667,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>ST-VIEWS-PROFILE</code></td>
 <td>Next: refresh and integrate PR 8891 single nonresident profile</td>
 <td><code>in-progress</code></td>
-<td><code>codex/evaluator-frame-20261105</code></td>
+<td><code>codex/private-acquisition-profile-prep-20261106</code></td>
 <td>n/a</td>
 <td>1 run + 1 no-gate</td>
 </tr>
@@ -20673,7 +20675,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td><code>ARCH-DERIVED-FRAME</code></td>
 <td>Next join: shared bounded frames and derived calculations</td>
 <td><code>in-progress</code></td>
-<td><code>codex/frame-integration-20261105</code></td>
+<td><code>codex/serial-integration-20261106</code></td>
 <td>n/a</td>
 <td>2 run + 1 no-gate</td>
 </tr>
@@ -24189,15 +24191,15 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>codex/evaluator-frame-20261105</code></td>
+<td><code>codex/private-acquisition-profile-prep-20261106</code></td>
 </tr>
 <tr>
 <td>base</td>
-<td><code>official/dev@4a482627; PR8891@dff9a8d4</code></td>
+<td><code>official/dev@4a482627; PROFILE-R50@5173864d; REST-R54@35903069 separate</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/work/crm-codex-evaluator-frame-20261105</code></td>
+<td><code>externals/work/crm-codex-private-acquisition-profile-prep-20261106</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -24218,7 +24220,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Why <code>n/a</code>.</strong> Bounded dormant characterization; full composition and release placement remain separate.</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><code>[integration]</code> <code>node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70</code></li>
+<li><code>[integration]</code> <code>node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35</code></li>
 <li>Independent refreshed nonresident single replay: actual write/timer triggers, actual API3 and test-composed v1 HTTP mutations/resends, retained properties, actual concurrent-read schedule, callback-error retention/recovery and selected live handoff; no executable v1 admission or subscriber switch.</li>
 <li><strong>NO GATE</strong> &mdash; The selected current-head replay is measured by the bounded gate. Complete alarm/writer cohorts, logical no-op subscriber policy, live database-stat freshness and final integration/release placement remain open. Timer/write-trigger suppression, shortened window and request-time-properties controls must fail; historical replay/cost is not current evidence.</li>
 </ul>
@@ -24228,7 +24230,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 <li><code>docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md</code></li>
 </ul>
-<p><strong>Notes.</strong> R50 independent5173864d adds actual Mongo read barriers and raw concurrent writes: retained A/B then next actual trigger B/B; callback fault after real rows preserves the prior cycle and the next trigger recovers. Teardown proves no late fake-provider delivery, not DB cancellation or absent internal handoff. Physical subscriber, executable routes, full writers/alarms, live stats/cost and release placement remain open; no automatic REST join or new RC tag gate.</p>
+<p><strong>Notes.</strong> R55 independent2ee8b493 accepts private acquisition helper integration; full6690/3pending/0failure, browser684, archive38/http+clinical+retention semantic controls/restored38 and finalprcheckOK. Fourth declaredv1-closed control on2ee UNMEASURED/prior517historical. REST359 separate, not merged. R50 independent5173864d adds actual Mongo read barriers and raw concurrent writes: retained A/B then next actual trigger B/B; callback fault after real rows preserves the prior cycle and the next trigger recovers. Teardown proves no late fake-provider delivery, not DB cancellation or absent internal handoff. Physical subscriber, executable routes, full writers/alarms, live stats/cost and release placement remain open; no automatic REST join or new RC tag gate.</p>
 <h3 id="arch-derived-frame--next-join-shared-bounded-frames-and-derived-calculations"><code>ARCH-DERIVED-FRAME</code> &mdash; Next join: shared bounded frames and derived calculations<a class="headerlink" href="#arch-derived-frame--next-join-shared-bounded-frames-and-derived-calculations" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -24248,15 +24250,15 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>codex/frame-integration-20261105</code></td>
+<td><code>codex/serial-integration-20261106</code></td>
 </tr>
 <tr>
 <td>base</td>
-<td><code>REST-R49@1c55098a; PROFILE-R50@5173864d</code></td>
+<td><code>REST-R54@35903069; PROFILE-R55@2ee8b493 (separate branches)</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/work/crm-codex-frame-integration-20261105</code></td>
+<td><code>externals/work/crm-codex-serial-integration-20261106</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -24281,14 +24283,14 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li>Real Mongo/PG cross-path acquisition, tenant binding, private cache and selected derived-value bounds/policy differences.</li>
 <li><code>[integration]</code> <code>node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f</code></li>
 <li>Actual PG concurrent HTTP mixed-frame observation, whole-response real read-error refusal and owned-port read-egress guard.</li>
-<li><strong>NO GATE</strong> &mdash; R52 accepts private allocation only on native REST; no common database revision, settings/plugin version key or stronger snapshot consistency is implemented. Independent profile adaptation remains UNMEASURED. Full alarm/writer cohorts, live statistics/cost, distributed recovery and final release placement remain open.</li>
+<li><strong>NO GATE</strong> &mdash; R52 accepts private allocation only on native REST; no common database revision, settings/plugin version key or stronger snapshot consistency is implemented. R55 accepts independent profile allocation separately; no REST/profile merge or full runtime admission follows. Full alarm/writer cohorts, live statistics/cost, distributed recovery and final release placement remain open.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md</code></li>
 <li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
 </ul>
-<p><strong>Notes.</strong> R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R52 nativee5fe0b5e accepted full7080/80pending/0failure, prior browser684, final prcheckOK; acquisition14/concurrency4+six semantic controls/restorations. R54 cumulative35903069 accepts B+A+C composition. Independent profile2ee8b493 source-only, new runtime/full/browser/prcheck UNMEASURED. Actual tenant HTTP reads observe old entries/new treatments across an atomic independent writer commit; tenant B stays unchanged. Bounds, future-record, typed-union and statistics/error differences remain explicit. Private materialization now sits behind those policies while keeping HTTP all-or-error and evaluator retained- result/notification ownership separate. No M5/M6 promotion.</p>
+<p><strong>Notes.</strong> R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R52 nativee5fe0b5e accepted full7080/80pending/0failure, prior browser684, final prcheckOK; acquisition14/concurrency4+six semantic controls/restorations. R54 cumulative35903069 accepts B+A+C composition. Independent profile2ee8b493 accepted in R55 on its own branch; no REST/profile merge. Actual tenant HTTP reads observe old entries/new treatments across an atomic independent writer commit; tenant B stays unchanged. Bounds, future-record, typed-union and statistics/error differences remain explicit. Private materialization now sits behind those policies while keeping HTTP all-or-error and evaluator retained- result/notification ownership separate. No M5/M6 promotion.</p>
 <h3 id="arch-sqlite-spike--deferred-low-priority-hypothetical-sqlite-and-cell-adapter-probe"><code>ARCH-SQLITE-SPIKE</code> &mdash; Deferred low priority: hypothetical SQLite and cell adapter probe<a class="headerlink" href="#arch-sqlite-spike--deferred-low-priority-hypothetical-sqlite-and-cell-adapter-probe" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

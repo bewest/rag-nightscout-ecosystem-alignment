@@ -1533,6 +1533,8 @@
       
         
       
+        
+      
     
     
     
@@ -2176,7 +2178,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>2cac29fad</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>c57589e9b</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -4896,7 +4898,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/60776e0859527c248ff24d041d65c56805f0a7bc/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -5478,6 +5480,34 @@ No M0–M6 promotion or application push.</p>
 and <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06">R54 continuation</a>
 retain exact commands/hashes/limits. No application push, RC/deployment admission or
 new policy decision is made by this measurement.</p>
+<h3 id="update--independent-profile-acceptance-and-focused-clock-repair-2026-11-06">Update — independent profile acceptance and focused clock repair (2026-11-06)<a class="headerlink" href="#update--independent-profile-acceptance-and-focused-clock-repair-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Reproduced capture, independently read/hash-verified</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R55 independentPROFILE2ee</td>
+<td>Full6690/3pending/0failure/browser684, archive38/http-clinical-retention each0/1semantic/restored38/finalprcheckOK. All22artifact lengths/hash verified;11containers/20volumes recorded absent across7serialcampaigns.</td>
+<td>Separate accepted REST359 and PROFILE2ee, no merge/runtime-role/subscriber/notification promotion. Fourthdeclaredv1closed2eeUNMEASURED/prior517historical. R50–R54 immutable.</td>
+</tr>
+<tr>
+<td>Focused clock repair3532/117</td>
+<td>Actual7passing/1benchmarkpending; negative0/2(primaryECONNRESET/lostHTTP, secondary strict workerexit1); restored1/503/same-workerGET200/POST201/strict0. Raw3/source5/preparer/monitor hashes verified;6containers/9volumes absent per capture.</td>
+<td>Focused branch evidence only, not clockready/fullacceptance. Clock unjoined/default-off; assembledsingle/Mongo/full/browser/prcheck/broadercontrols/performance UNMEASURED. Original fatal diagnostic retained.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="../../reports/private-acquisition-profile-2026-11-06/index.html">Canonical profile report</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
+and <a href="../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.html">focused recovery record</a>
+retain exact scopes. No new numbered clock acceptance, milestone/RC promotion,
+production enablement or application push; no policy decision changed.</p>
+<p>Local continuation and next frozen clock batch: <code>externals/work/HANDOFF-serial-verification-20261106.md</code> (local, untracked).</p>
 
 
 

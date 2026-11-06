@@ -4036,6 +4036,8 @@
       
         
       
+        
+      
     
     
     
@@ -4679,7 +4681,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>2cac29fad</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>83e24821d</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -8122,7 +8124,7 @@ parent consolidation handoff.</p>
 <code>3d5eac196256e447859373beadf7abf2efbfb2ce</code>, branch
 <code>codex/owner-local-auth-20261105</code>, a clean descendant of R46 <code>44331668</code>.
 The <a href="../tenancy/owner-authority.html">owner authority contract</a> owns the adopted
-policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/60776e0859527c248ff24d041d65c56805f0a7bc/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
+policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
 retain the campaign summary. This is locally fixed code, not merged/released or
 published on #8898 by this lane. The coordinator has incorporated this clean
 application commit into its separate frame-integration tree, pending its own
@@ -8198,10 +8200,10 @@ invalid token's actual POST answer201 instead of401. Removing session-active
 checking makes a revoked session's GET answer200 instead of403. Reusing an earlier
 snapshot makes committed grant removal's next GET answer200 instead of403. Every
 mutant fails at the intended HTTP assertion; setup failure is not accepted as red.
-See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/60776e0859527c248ff24d041d65c56805f0a7bc/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
+See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
 <p><strong>Repeated authorization-pipeline lab using the actual application verifier:</strong>
 16 semantic checks, 4 non-vacuous verifier/state controls, 24 timing cases/2880
-operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/60776e0859527c248ff24d041d65c56805f0a7bc/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
+operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
 pins instrument <code>f814f967c</code>, application <code>ab09297b</code> and application-module SHA256.
 A direct git comparison confirms unchanged verifier bytes at final <code>3d5eac19</code>;
 this carries the component measurement forward without relabeling its source head. At concurrency8, current
@@ -8635,7 +8637,7 @@ arbitrary lock-order guarantees. Native full records18containers/26volume
 references, browser3/5, final database1/1 and affected2/2, all recorded absent.
 Unknown unrelated resources remain untouched; no global cleanup guarantee.</p>
 <p>Public <a href="../../../reports/owner-subject-policy-acceptance-2026-11-06.html">native acceptance</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/60776e0859527c248ff24d041d65c56805f0a7bc/tools/lab/owner-subject-policy/results/17f9a457-acceptance.json">machine capture</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/tools/lab/owner-subject-policy/results/17f9a457-acceptance.json">machine capture</a>
 record original output hashes/environment/controls. This records lane acceptance;
 root combined full and clock/profile work remain pending. Clock lower report8+
 controls/oldSQL42703/corrected9 is separate; no clock HTTP/full/bench acceptance
@@ -8698,12 +8700,84 @@ files0600. Bounded successful-campaign audit, not global leak freedom. Clock and
 independent profile2ee not joined; clockHTTP/full/bench acceptance separately
 pending. No new Dresult, M0–M6/RC promotion, defaultproduction enablement or push.</p>
 <p><a href="../../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.html">Public record</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/60776e0859527c248ff24d041d65c56805f0a7bc/reports/tenancy/serial-cumulative-acceptance-2026-11-06.json">machine capture</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/tenancy/serial-cumulative-acceptance-2026-11-06.json">machine capture</a>
 contain exact inputpins/counts/hash-only original-output index and sanitized
 cleanup aggregates. Local source manifestSHA256
 <code>348c35f65831664479e6b0b263453206091a0c783d6e0675cf17bed71056a9c2</code>;
 all six listed artifacts independently verified. No services or cleanup run by
 records lane.</p>
+<h3 id="r55---independent-private-acquisition-profile-on-2ee8b493-2026-11-06">R55 - independent private acquisition profile on 2ee8b493 (2026-11-06)<a class="headerlink" href="#r55---independent-private-acquisition-profile-on-2ee8b493-2026-11-06" title="Permanent link">&para;</a></h3>
+<p><strong>Independent tree:</strong> <code>codex/private-acquisition-profile-prep-20261106</code>
+<code>2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35</code>, over accepted R50
+<code>5173864da1835da7aecf1f73121b28463f6a6a70</code>. Current official/dev
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code> contained; fresh finalprcheckOK,
+HEAD unchanged/clean. REST359 and PROFILE2ee remain separate accepted branches,
+not merged. R50–R54 captures are unchanged.</p>
+<table>
+<thead>
+<tr>
+<th>Reproduced result, independently read and original-output hash verified</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Owned fresh <code>npm run test:all</code></td>
+<td>6690passing/3pending/0failing; tiers2081/205/368/319/92/3607/18</td>
+</tr>
+<tr>
+<td>Owned fresh default <code>npm run test:browser</code></td>
+<td>684passing/0pending/0failing</td>
+</tr>
+<tr>
+<td>Canonical <code>node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35</code></td>
+<td>38passing/0failing; restored38</td>
+</tr>
+<tr>
+<td>Same gate <code>--control http</code></td>
+<td>0passing/1semantic: suppressed actual HTTP physical-write trigger does not refresh retained cycle</td>
+</tr>
+<tr>
+<td>Same gate <code>--control frame-clinical</code></td>
+<td>0/1semantic: actual next-trigger currentreading differs</td>
+</tr>
+<tr>
+<td>Same gate <code>--control frame-retention</code></td>
+<td>0/1semantic: failed materialization loses prior successful timestamp/properties</td>
+</tr>
+<tr>
+<td>Final <code>tools/review/prcheck/prcheck.sh</code></td>
+<td>OK, currentdev contained/sourceclean; changed ESLint/tier/writeboundary checks pass</td>
+</tr>
+</tbody>
+</table>
+<p>Notification-close <code>v1-closed</code> is a distinct fourth declared current-ref control:
+its2ee runtime is UNMEASURED, prior517 measurement is historicalR50. It was not
+one of the three measured R55 reds. The38positive suite retains fresh notification
+service/live-handoff assertions. Teardown proves no late fake-provider delivery,
+not DB cancellation, absent internal handoff or immutable closed evaluator state.</p>
+<p>Only helperlib/data/private-acquisition.js and views allocation/loader hunks change
+from517; helperblob3a97307af1e749e98b99f2955182e6844c331441 matches REST exactly,
+evaluateCycle retained. Caller policies for bounds/future/statistics/typedunion/
+retainedcycle remain; selected mixedA/B then realtriggerB/B and selected callback
+failure retain their bounded meaning. No commonrevision, stronger snapshot, full
+writer/clinical/alarm/recovery/cost acceptance or defaultsubscriber/runtime-role
+change. Outer PG/Vault services supplied by broad runner do not establish PG
+evaluator behavior. Captured7serial campaigns/11containers/20volumes all recorded
+absent; unknown/named/attached resources and failed creates without IDs outside audit.</p>
+<p><a href="../../../reports/private-acquisition-profile-2026-11-06/index.html">Canonical profile report</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/private-acquisition-profile-2026-11-06/acceptance.json">acceptance capture</a>
+and additive <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
+were adopted without altering original capture/README. All22indexed artifact
+lengths/hash verified. AcceptanceSHA256
+<code>9645a8d630f874877466e46186f55b75db97714a195cb2d726e89b0ca2eb73c4</code>;
+indexSHA256<code>b30cddb2184d214b2ffa04b90063ea4674b14a6dc5cca19fe455e2dd7bbe2f75</code>.</p>
+<p>Separate <a href="../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.html">focused clock recovery</a>
+is not numbered clock acceptance:3532/117 functional7/1benchmarkpending,
+negative0/2(primarylostHTTP/ECONNRESET, secondarystrict workerexit1), restored1
+with503/same-workerGET200/POST201/strict0. Originalfataldiagnostic retained;
+clockcode notjoined/default-off, assembledsingle/Mongo/full/browser/prcheck,
+broadercontrols/performance UNMEASURED. No M0–M6/RC promotion or application push.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
