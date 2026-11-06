@@ -4,6 +4,8 @@
 Run with --pins DIR containing {v1509,dev,pr8898}-run{1,2}.json and
 control-no-write.json. Full pins remain local; --out retains synthetic aggregates.
 Historical pins inform classification, never substitute for fresh repeats.
+--expected-config explicitly binds another capture to its heads and dependency
+sidecar; omitting it preserves the original dated audit and aggregate format.
 """
 import argparse
 import collections
@@ -57,7 +59,8 @@ def semantic_equal(a, b):
     return set(a['cells']) == set(b['cells']) and not diff(a, b)[0]
 
 
-def audit(directory):
+def audit(directory, expected_heads=None, expected_dependencies=None):
+    expected_heads = EXPECTED_HEADS if expected_heads is None else expected_heads
     pins = {key: [load(directory / f'{key}-run{i}.json') for i in (1, 2)]
             for key in ('v1509', 'dev', 'pr8898')}
     result = {'grade': 'reproduced', 'scope': '--batch --no-idf --no-idfmt',
@@ -125,10 +128,20 @@ def audit(directory):
                           'no_write_good_store': good['store'], 'no_write_bad_store': bad['store'],
                           'no_write_reply': bad['st']}
     failures = []
+    if expected_dependencies is not None:
+        sidecar_path = directory / 'environment.json'
+        sidecar = load(sidecar_path) if sidecar_path.exists() else {}
+        stable = sidecar.get('initial') == expected_dependencies == sidecar.get('final')
+        result['dependency_provenance'] = {
+            'observed': sidecar.get('final'), 'initial_matches_final_and_expected': stable,
+            'scope': sidecar.get('initial_snapshot_scope'),
+            'sidecar_sha256': hashlib.sha256(sidecar_path.read_bytes()).hexdigest() if sidecar_path.exists() else None}
+        if not stable:
+            failures.append('dependency sidecar absent, changed, or does not match expected configuration')
     reference_keys = set(a['cells'])
     for key, pair in pins.items():
         for number, pin in enumerate(pair, 1):
-            if pin['head'] != EXPECTED_HEADS[key]:
+            if pin['head'] != expected_heads[key]:
                 failures.append(f'{key} run {number}: wrong endpoint head')
             for field, expected in EXPECTED_RUNTIME.items():
                 if pin.get(field) != expected:
@@ -144,7 +157,7 @@ def audit(directory):
                 failures.append(f'{key} run {number}: endpoint corpus keys differ')
     for filename in ('control-no-write.json', 'control-restored.json'):
         pin = load(directory / filename)
-        if pin['head'] != EXPECTED_HEADS['pr8898']:
+        if pin['head'] != expected_heads['pr8898']:
             failures.append(f'{filename}: wrong control head')
         for field in ('node', 'mongod'):
             if pin.get(field) != EXPECTED_RUNTIME[field]:
@@ -168,8 +181,26 @@ if __name__ == '__main__':
     parser.add_argument('--pins', required=True, type=Path)
     parser.add_argument('--out', required=True, type=Path)
     parser.add_argument('--detail', type=Path, help='Optional local per-cell diagnostics')
+    parser.add_argument('--expected-config', type=Path, help='JSON with exact expected_heads and expected_dependencies')
     args = parser.parse_args()
-    result = audit(args.pins)
+    config = None
+    if args.expected_config:
+        config = load(args.expected_config)
+        if set(config) != {'expected_heads', 'expected_dependencies'}:
+            parser.error('expected config requires exactly expected_heads and expected_dependencies')
+        if set(config['expected_heads']) != set(EXPECTED_HEADS) or any(
+                not isinstance(head, str) or not re.fullmatch(r'[0-9a-f]{40}', head)
+                for head in config['expected_heads'].values()):
+            parser.error('expected_heads must name all three endpoints with full lowercase commit hashes')
+        fields = {'driver_version', 'lock_driver_version', 'lock_sha256', 'installed_driver_manifest_sha256'}
+        dependencies = config['expected_dependencies']
+        if set(dependencies) != set(EXPECTED_HEADS) or any(
+                set(dep) != fields or dep['driver_version'] != dep['lock_driver_version']
+                or not all(isinstance(dep[k], str) and re.fullmatch(r'[0-9a-f]{64}', dep[k])
+                           for k in ('lock_sha256', 'installed_driver_manifest_sha256'))
+                for dep in dependencies.values()):
+            parser.error('expected_dependencies requires matching locked/installed drivers and SHA256 hashes for each endpoint')
+    result = audit(args.pins, **config) if config else audit(args.pins)
     if args.detail:
         args.detail.write_text(json.dumps(result, indent=2) + '\n')
     # Public output is aggregate only. The exact local cell maps remain

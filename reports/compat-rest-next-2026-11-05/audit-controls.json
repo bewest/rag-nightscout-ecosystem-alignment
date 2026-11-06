@@ -1,0 +1,28 @@
+{
+  "grade": "reproduced",
+  "controls": {
+    "corrupt-repeat": {
+      "exit_code": 1,
+      "failures": [
+        "pr8898: nonrepeatable semantic cells"
+      ]
+    },
+    "wrong-head": {
+      "exit_code": 1,
+      "failures": [
+        "pr8898 run 1: wrong endpoint head",
+        "pr8898 run 2: wrong endpoint head"
+      ]
+    },
+    "dependency-change": {
+      "exit_code": 1,
+      "failures": [
+        "dependency sidecar absent, changed, or does not match expected configuration"
+      ]
+    },
+    "old-default": {
+      "exit_code": 0,
+      "retained_aggregate_byte_identical": true
+    }
+  }
+}

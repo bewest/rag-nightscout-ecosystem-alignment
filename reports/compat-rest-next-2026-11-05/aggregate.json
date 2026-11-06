@@ -1,0 +1,210 @@
+{
+  "grade": "reproduced",
+  "scope": "--batch --no-idf --no-idfmt",
+  "excluded_semantic_fields": [
+    "cache",
+    "wire"
+  ],
+  "normalization": "Exact wcm_test_<8 hex> random database token only; other error text retained",
+  "pass_scope": "fresh dev/candidate equality, all fresh repeatability and controls; historical projection is diagnostic only",
+  "old_release_incomparable_cells": [
+    "activity ws idread-fail",
+    "devicestatus ws idread-fail",
+    "entries ws idread-fail",
+    "food ws idread-fail",
+    "profile ws idread-fail",
+    "treatments ws idread-fail"
+  ],
+  "endpoints": {
+    "v1509": {
+      "head": "c6a0d8ed65637bc90d3090e6e7a0f752041c57fd",
+      "repeat_head": "c6a0d8ed65637bc90d3090e6e7a0f752041c57fd",
+      "node": "v22.23.4",
+      "mongod": "7.0.43",
+      "cells_per_run": [
+        768,
+        768
+      ],
+      "dirty_lib": [
+        false,
+        false
+      ],
+      "invalid_per_run": [
+        0,
+        0
+      ],
+      "repeat": {
+        "semantic": 0,
+        "cache_wire_only": 4,
+        "groups": {}
+      },
+      "pin_sha256": [
+        "65734cfbe5c9fe1c9af86cbfec816789dcb3940c76fe31e44527ee6758f7ab90",
+        "cce31c6dc6a8b67d01af77c5774cf6a364920bc12e3d54768f4e265169f70867"
+      ]
+    },
+    "dev": {
+      "head": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+      "repeat_head": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+      "node": "v22.23.4",
+      "mongod": "7.0.43",
+      "cells_per_run": [
+        768,
+        768
+      ],
+      "dirty_lib": [
+        false,
+        false
+      ],
+      "invalid_per_run": [
+        0,
+        0
+      ],
+      "repeat": {
+        "semantic": 0,
+        "cache_wire_only": 1,
+        "groups": {}
+      },
+      "pin_sha256": [
+        "b3d2b61c4250c1d9e5b4779f6d8f8aaaeee35706c01a7a09a0e658678d211901",
+        "d7272cfa462be32c5174ebef7e787696220ff9a311b59f2b8bc83af2725e72f7"
+      ]
+    },
+    "pr8898": {
+      "head": "d4570e585d0e12e46386ed26772790b269b2b736",
+      "repeat_head": "d4570e585d0e12e46386ed26772790b269b2b736",
+      "node": "v22.23.4",
+      "mongod": "7.0.43",
+      "cells_per_run": [
+        768,
+        768
+      ],
+      "dirty_lib": [
+        false,
+        false
+      ],
+      "invalid_per_run": [
+        0,
+        0
+      ],
+      "repeat": {
+        "semantic": 0,
+        "cache_wire_only": 0,
+        "groups": {}
+      },
+      "pin_sha256": [
+        "74b087e69da3bbe394e843d0f97ea1554c2536cc0edbd90b796cd3605d067c4f",
+        "0e46a61ae74acd0801be71bd53c0b30290f91b83e7cb1a5fc44631b1bf8fa7f4"
+      ]
+    }
+  },
+  "comparisons": {
+    "release_to_dev": {
+      "semantic": 227,
+      "cache_wire_only": 2,
+      "groups": {
+        "a": 49,
+        "b": 56,
+        "bt": 9,
+        "e": 24,
+        "f": 24,
+        "q": 27,
+        "r": 5,
+        "r0": 11,
+        "s": 10,
+        "tt": 12
+      },
+      "changed_cells_sha256": "61e0b6624ca80c025c5bf9b28e2e9b7b6f4fd6bf1cd390a8ac6ded42911c0241"
+    },
+    "release_to_candidate": {
+      "semantic": 227,
+      "cache_wire_only": 2,
+      "groups": {
+        "a": 49,
+        "b": 56,
+        "bt": 9,
+        "e": 24,
+        "f": 24,
+        "q": 27,
+        "r": 5,
+        "r0": 11,
+        "s": 10,
+        "tt": 12
+      },
+      "changed_cells_sha256": "61e0b6624ca80c025c5bf9b28e2e9b7b6f4fd6bf1cd390a8ac6ded42911c0241"
+    },
+    "dev_to_candidate": {
+      "semantic": 0,
+      "cache_wire_only": 0,
+      "groups": {},
+      "changed_cells_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  },
+  "historical_reference_residuals": {
+    "v1509": {
+      "semantic": 35,
+      "cache_wire_only": 2,
+      "groups": {
+        "a": 26,
+        "f": 1,
+        "q": 8
+      },
+      "changed_cells_sha256": "da95291b26b010f93ffc8350819601afbd18b97486e045d546eebc1f084714a7"
+    },
+    "dev": {
+      "semantic": 26,
+      "cache_wire_only": 0,
+      "groups": {
+        "a": 26
+      },
+      "changed_cells_sha256": "52618a357d802a3a0b726922d02abcdc204c13c4d1a7ad3321e7e4d9cdf9bb14"
+    }
+  },
+  "historical_classification_shape": {
+    "same_changed_cell_set": true,
+    "same_group_per_changed_cell": true,
+    "meaning": "Descriptive classification only; old full corpus is not a fresh bounded repeat"
+  },
+  "controls": {
+    "unexpected_field_rejected": true,
+    "restored_source_green": true,
+    "no_write_rejected": true,
+    "no_write_changed_fields": [
+      "ev",
+      "hist",
+      "srv",
+      "store",
+      "v1read"
+    ],
+    "no_write_good_store": "n=1 OID",
+    "no_write_bad_store": "none",
+    "no_write_reply": "201 {identifier,lastModified}"
+  },
+  "dependency_provenance": {
+    "observed": {
+      "v1509": {
+        "driver_version": "5.9.2",
+        "lock_driver_version": "5.9.2",
+        "lock_sha256": "9a5f616c4bc150217c21b8e6a83ab12bc80864c31dc78d8ac6ce16f850923caa",
+        "installed_driver_manifest_sha256": "e7b724dfeb47cccd0b2d2540ddd6595c87dc25265b0da0b555c874807fa976cd"
+      },
+      "dev": {
+        "driver_version": "7.7.0",
+        "lock_driver_version": "7.7.0",
+        "lock_sha256": "74c52ff603dc82e45717bd2b8618e515c76486f49ca4373db420911ad0641119",
+        "installed_driver_manifest_sha256": "cdec16393bff9ef35900c99e9461e8e71c516b6eeb64476f29c4dcc5f7a90750"
+      },
+      "pr8898": {
+        "driver_version": "7.7.0",
+        "lock_driver_version": "7.7.0",
+        "lock_sha256": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+        "installed_driver_manifest_sha256": "cdec16393bff9ef35900c99e9461e8e71c516b6eeb64476f29c4dcc5f7a90750"
+      }
+    },
+    "initial_matches_final_and_expected": true,
+    "scope": "Before final-candidate launches; release/dev captures reused from fresh earlier campaign runs with dependency metadata checked before final-candidate launches and after all runs",
+    "sidecar_sha256": "a1e4e843adc1b542c74eee117de096bb59477c19872d7a4d7833e8d7ed84fed6"
+  },
+  "failures": [],
+  "passed": true
+}
