@@ -3131,3 +3131,31 @@ controls:
     control-kind: integration
     proves: >
       Bypass actual storage projection; synthetic private sibling leaks into raw result.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875 --control catalogue
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control-kind: integration
+    proves: >
+      Remove reviewed code-catalogue membership; actual forbidden proposal completesHTTP200not403 with persisted effects.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875 --control ceiling
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control-kind: integration
+    proves: >
+      Remove current operator-ceiling check; actual forbidden proposal completesHTTP200not403 with persisted effects.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875 --control delegation
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control-kind: integration
+    proves: >
+      Remove current matching actor-delegation check; actual forbidden proposal completesHTTP200not403 with persisted effects.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875 --control actor
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+    control-kind: integration
+    proves: >
+      Remove current active/update actor guard; actual forbidden proposal completesHTTP200not403 with persisted effects.

@@ -61,6 +61,22 @@ The existing operation/target-only callback is insufficient for this ceiling.
 Permission spellings and complete role catalogue remain design outputs; the adopted
 capability groups do not pretend those implementation details are complete.
 
+## Selected current proposed-grant wiring (R53)
+
+Accepted native17f9a457 explicitly selects ownerPolicy on the existing subject
+store transaction. Proposed grants must fit reviewed catalogue ∩ locked operator
+ceiling ∩ current matching management actor delegation, with current actor and
+authority row fencing before subject/credential mutation and audit commit.
+This implements only the selected REST37 operation subset. DELETE refuses and
+managementAuth remains injected; human issuer/refresh, full wildcard/default
+catalogue, existing-grant clamping and production owner listener remain
+unimplemented. R48 data-token readers are unchanged.
+
+Bounded native acceptance and parent semantic controls are recorded in
+[R53](../remedial/rc-16.0.0-integration-record.md#r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06).
+This selected transaction does not make an operation/target-only management
+callback sufficient for general proposed-grant enforcement.
+
 ## Management authentication and lifetime policy
 
 The owner listener stays separate from data/private-operator listeners. Human

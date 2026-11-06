@@ -25,7 +25,7 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The observed local integration head is `c7778436` (B338+A),
+promotion is recorded. The observed local integration head is `4a15802c` (B338+A+C17f),
 with combined full verification **PENDING**. R51 settings `33870764` remains its
 accepted exact-tree capture; R52 accepts native A `e5fe0b5e` separately. Published
 #8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain their prior draft/open
@@ -43,6 +43,46 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted selected owner policy and pending composition (2026-11-06)
+
+R53 accepts native C `17f9a457`: full7127/80pending/0failure, browser684,
+final prcheckOK/source clean with current dev contained. Actual owner22 and
+existing affected26 pass at17f. Static catalogue29 plus subjectunit3 are32
+positive cases, not36; four guards are separate negative evidence. Parent
+archived22 and each catalogue/ceiling/delegation/actor mutation fails0/1 with
+actual HTTP200vs403 and persisted effects; restored22 pass. Six owned gate
+containers/volumes are independently absent with private0700/0600 audit.
+
+Root `codex/serial-integration-20261106` now `4a15802c` incorporates B+A+C;
+tier506files/8tiers passes, but **combined full is PENDING, not accepted**.
+R51/R52 remain unchanged native acceptance captures, R49/R50 unchanged historical
+scopes. Neither clock code nor independent profile2ee is joined.
+
+Explicitly selected ownerPolicy bounds proposed grants inside the existing
+subject transaction: reviewed catalogue ∩ locked operator ceiling ∩ current
+matching management actor delegation. Actor/authority row fencing precedes
+subject/credential mutation and final audit. This is selected REST37, not a full
+permission catalogue. DELETE refuses and managementAuth remains injected. Human
+issuer/refresh, wildcard/default catalogue, existing-grant clamping and production
+listener are unimplemented. R48 data-token readers remain unchanged.
+
+Prior3106 product-identical DB22 twice/restored22 and guards remain qualified.
+Initial affected25/1 exposed stale migration003-only expectation; fixture-only17f
+expects003+004, applies prior3 then004 and preserves all prior3 stored checksums.
+Affected26 then pass; no production guard was weakened. See the immutable
+[public C record](../../../reports/owner-subject-policy-acceptance-2026-11-06.md)
+and [R53](../remedial/rc-16.0.0-integration-record.md#r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06).
+
+The [sanitized clock lower record](../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.md)
+separates originalPG8/controls from corrected all-domain9. Restoring old readiness
+SQL fails42703 on catalogues without generated srvModified; portable JSONB
+readiness fixes this selected SQL incompatibility. Corrected DHTTP retry is active;
+HTTP/full/bench acceptance remains pending. No clock code joined or default enabled,
+no contention/latency result or universal history guarantee accepted. Canonical
+correctness clock flags are registered source-only for future combined execution;
+benchmark remains off. No milestone promotion or application push follows.
+The R51/R52 sections below retain their dated capture, not current slot ownership.
 
 ### Accepted private acquisition and pending composition (2026-11-06)
 

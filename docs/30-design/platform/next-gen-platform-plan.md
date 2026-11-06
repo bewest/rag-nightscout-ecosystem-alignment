@@ -2,7 +2,7 @@
 
 *Contributor-facing living plan. Tenancy progress reconciled 2026-11-06 against
 cgm-remote-monitor dev `4a482627`, published draft #8898 `bc4ee1a9` (R44),
-local integration `c7778436` (B338+A, combined full PENDING),
+local integration `4a15802c` (B338+A+C17f, combined full PENDING),
 accepted settings `33870764` (R51) and native acquisition `e5fe0b5e` (R52),
 preceded by frame `1c55098a` (R49), published independent #8891 `dff9a8d4` (R45) and local evaluator acquisition
 `5173864d` (R50). R46/R47 remain the accepted preceding baseline. Actual frame
@@ -24,6 +24,25 @@ This plan covers the work that follows the 16.0.0 modernization:
 It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.
 
 ## 1. Where things stand
+
+### Selected owner policy accepted; combined verification pending (2026-11-06)
+
+R53 native C17f9a457 passes full7127/80pending/0failure/browser684/finalprcheckOK,
+actual22/affected26/static32. Parent archived22/four semantic controls/restored22
+pass. Explicit ownerPolicy proposed-grant transaction covers selected REST37:
+catalogue∩operator ceiling∩current actor delegation with row fencing. DELETE
+refuses/mgmtAuth injected; no full wildcard/default catalogue, human issuer/refresh,
+existing-grant clamping or production listener. R48 readers unchanged.
+
+Root4a15802c now incorporates B+A+C; tier506/8 passes but combined full is
+**PENDING**, not accepted. R51/R52 native captures unchanged. No clock or independent
+profile2ee join. [Clock lower proof](../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.md)
+records original8/controls, old all-domain SQL42703/corrected9; corrected HTTP retry
+active, HTTP/full/bench acceptance pending. Canonical clock flags source-only for
+future combined correctness, benchmark off. No milestone promotion.
+See [R53 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-selected-owner-policy-and-pending-composition-2026-11-06)
+and [public C acceptance](../../../reports/owner-subject-policy-acceptance-2026-11-06.md).
+Earlier sections retain their dated scopes.
 
 ### Native private acquisition accepted; combined verification pending (2026-11-06)
 

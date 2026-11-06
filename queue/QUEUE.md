@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 364 |
-| runnable gates | 430 |
+| runnable gates | 431 |
 | explicit `no-gate:` markers | 375 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 805 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 806 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8388,7 +8388,7 @@ alarm-readiness items, and the seam branch refresh.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 6 run + 1 no-gate |
-| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
+| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
@@ -8514,6 +8514,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875`
+  - R53 selected ownerPolicy proposed-grant transaction:22 real PostgreSQL checks, catalogue/ceiling/current actor delegation and row fencing. Selected REST37 only; no issuer/listener/full catalogue acceptance.
 - `[integration]` `node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736`
   - Archived bounded subject update/delete and known-role assignment: current grants, stable identity/metadata, tenant isolation, atomic rollback, concurrent replacements and separate writer privileges. Synthetic management/crypto; no owner HTTP or grant ceilings.
 - **NO GATE** &mdash; Roadmap decisions adopted; detailed names, paths, preconditions, errors and executable contract cases remain. Full T30 catalogue is not claimed complete by the selected subset.
@@ -8526,7 +8528,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.
+**Notes.** R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK; parent archived22/four semantic guards/restored22. RootB+A+C4a15802c incorporated, combined fullPENDING. T30-TENANT-ADMIN uses this canonical bounded gate; full owner lifecycle/listener/issuer remain open. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.
 
 ### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
 
@@ -8993,7 +8995,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Current 2026-11-05: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. No CLI binding, new identity provider or owner grant-ceiling policy is selected; factory acceptance is not full D16 listener completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
+**Notes.** R53 selected ownerPolicy accepted native17f9a457; canonical bounded owner- policy runtime gate and four controls live on MT-CONFIG-MIN. RootB+A+C4a15802c combined fullPENDING; no complete owner/listener admission. Current 2026-11-05: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. No CLI binding, new identity provider or owner grant-ceiling policy is selected; factory acceptance is not full D16 listener completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
 
 ### `T31-REM` &mdash; T3.1 remainder - per-tenant signing key replaces the install-wide one
 

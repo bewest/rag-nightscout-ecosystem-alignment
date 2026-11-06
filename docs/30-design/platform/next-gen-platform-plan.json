@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R52 native private acquisitione5fe0b5e accepted fresh full7080/80pending/0failure, same-head prior browser684/prcheckOK, acquisition14/concurrency4+six semantic controls/restorations/caller4. Rootc7778436 incorporates B338+A but combined fullPENDING, not accepted. R51/R49/R50 captures unchanged. Independent profile2ee8b493 helper-identical source only; new runtime38/controls/full/browser/prcheckUNMEASURED. D/clock lower proof active, HTTP/full/bench pending, Cqueued. No stronger snapshot, atomicrevision, milestone or productionclock acceptance.",
+ "measured": "2026-11-06: R53 native C17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK, actual22/affected26/static32 and parent archived22/four semantic controls/restored22. Root4a15802c=B+A+C with tier506/8 but combinedfullPENDING. R51/R52/R49/R50 captures unchanged; profile2ee/clock not joined. Selected explicit ownerPolicy REST37 only; no human issuer/refresh/full wildcard-default catalogue/existing-grant clamping/production listener, R48readers unchanged. Clock lower8+controls/all-domain oldSQL42703/new9 recorded; correctedHTTPretry active, HTTP/full/bench pending. No milestone promotion/applicationpush.",
  "tracks": [
   {
    "id": "storage",
@@ -349,7 +349,7 @@
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "R51 settings33870764 native accepted. Observed rootc7778436 adds accepted native A but combined fullPENDING. Six-key refusal, full client parity and resource performance remain explicit.",
+   "ref": "R51 settings33870764 native accepted. Observed root4a15802c adds accepted native A but combined fullPENDING. Six-key refusal, full client parity and resource performance remain explicit.",
    "spec": [
     {
      "label": "Native acquisition / pending composition",
@@ -837,7 +837,7 @@
    "state": "blocked",
    "short": "Full M3 acceptance",
    "title": "Accepted R49 bounded HTTP/frame proof remains. NEXT settings/replica lanes are not accepted; actual replica characterization confirms a FAILED exclusive-history guarantee. Full M3 still awaits complete M1/M2.",
-   "ref": "Observed rootc7778436=B338+A, combined fullPENDING; native R51/R52 accepted separately. Historical R49/R50 unchanged, profile separate. D measured history gap unfixed; C/clock/runtime acceptance not joined.",
+   "ref": "Observed root4a15802c=B338+A+C17f, combined fullPENDING; native R51/R52/R53 accepted separately. Historical R49/R50 unchanged, profile separate. D measured history gap unfixed; Clock/profile/runtime acceptance not joined.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -913,7 +913,7 @@
    "state": "progress",
    "short": "Current policy / settings",
    "title": "R42 persisted subject service and standalone authenticated HTTP remain bounded acceptance. Adopted explicit ownership/delegation/ceiling policy still needs human management issuer/refresh, transactional enforcement, full roles/settings catalogue and listener implementation.",
-   "ref": "Accepted R48 data-token/subject baseline retained. New C3106f14d enforcement has source/static-control preparation only, exact report pending; new database/full/browser/prcheck queued after D. No accepted enforcement head or human issuer/refresh/full lifecycle completion.",
+   "ref": "R53 native17f9a457 full7127/80pending/0failure/browser684/prcheckOK, actual22/affected26/static32; parent archived22/four0-1semantic/restored22. Explicit ownerPolicy catalogue\u2229ceiling\u2229current actor delegation/row fencing, REST37only. DELETE refuses/mgmtAuth injected; human issuer/refresh/full wildcard-default catalogue/existing-grant clamping/listener unimplemented. R48readers unchanged. Root4a15802c combinedfullPENDING.",
    "spec": [
     {
      "label": "Native acquisition / pending composition",
@@ -1034,13 +1034,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "Private allocation accepted / join pending",
-   "title": "R52 accepts native shared private acquisition allocation behind unchanged caller policies. RootB+A composition awaits full verification; no common revision, stronger snapshot or multitenant evaluator guarantee.",
+   "title": "R52 accepts native shared private acquisition allocation behind unchanged caller policies. RootB+A+C composition awaits full verification; no common revision, stronger snapshot or multitenant evaluator guarantee.",
    "check": "Nativee5fe0b5e full7080/80pending/0failure, prior same-head browser684/prcheckOK; acquisition14/concurrency4, six controls/restored14/4 and caller4/reused-target2fail/restored4.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "Observed rootc7778436 is B338+A with combined fullPENDING. R52 local acceptance and historical R49/R50 scopes distinct. Independent profile2ee8b493 source-only, new runtime38/full/browser/prcheckUNMEASURED.",
+   "ref": "Observed root4a15802c is B338+A+C17f with combined fullPENDING. R52 local acceptance and historical R49/R50 scopes distinct. Independent profile2ee8b493 source-only, new runtime38/full/browser/prcheckUNMEASURED.",
    "spec": [
     {
      "label": "Native acquisition / pending composition",

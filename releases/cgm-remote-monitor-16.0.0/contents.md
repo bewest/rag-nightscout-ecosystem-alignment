@@ -1489,3 +1489,19 @@ No operator runtime deployment, release admission, candidate CI or application p
 and the R52 integration record retain exact native acceptance commands/limits.
 Local evidence: `HANDOFF-private-acquisition-extraction-20261105.md` and its
 home recovery logs/audits. Original incomplete ENOSPC campaign remains preserved.
+
+
+### Update — selected owner policy acceptance and pending B+A+C full (2026-11-06)
+
+| Scope | Reproduced evidence independently read from captured logs | Remaining boundary |
+|---|---|---|
+| R53 native17f9a457 | Full7127/80pending/0failure/browser684/finalprcheckOK; actual22/affected26/static32. Parent archived22, four0/1semantic guards with persisted effects, restored22. | Explicit ownerPolicy transaction REST37 only; R48readers unchanged. No listener/full owner completion. |
+| Root4a15802c | B+A+C incorporated; tier506files/8tiers PASS. R51/R52 captures unchanged. | **Combined fullPENDING**, not accepted; clock/profile2ee not joined. |
+| Fixture correction and cleanup | Prior3106 affected25/1 retained;17f migration003+004/prior3checksums correction gives26. Native full18containers/26volumereferences and browser3/5 verified absent; parentgate6/6 absent/private0700/0600. | No global leak-freedom claim, unknown resources untouched. No guard weakening or policy change after3106. |
+| Clock readiness | Sanitized lower8+controls; all-domain oldSQL42703/corrected9. Corrected DHTTP retry active. | HTTP/full/bench acceptance pending; no clock joined/default enabled. New correctness flags source registered, future combined runtime unmeasured; benchmark off. |
+
+[R53 continuation](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-selected-owner-policy-and-pending-composition-2026-11-06)
+and [public C record](../../reports/owner-subject-policy-acceptance-2026-11-06.md)
+retain exact scope. Human issuer/refresh, full wildcard/default catalogue,
+existing-grant clamping, DELETE policy and production listener remain unimplemented.
+No M0–M6 promotion or application push.

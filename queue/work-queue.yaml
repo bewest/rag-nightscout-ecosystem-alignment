@@ -308,6 +308,12 @@ items:
     semver_reason: design and lab contract
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
+        kind: integration
+        describe: >
+          R53 selected ownerPolicy proposed-grant transaction:22 real PostgreSQL
+          checks, catalogue/ceiling/current actor delegation and row fencing.
+          Selected REST37 only; no issuer/listener/full catalogue acceptance.
       - run: node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736
         kind: integration
         describe: >
@@ -327,6 +333,10 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK;
+      parent archived22/four semantic guards/restored22. RootB+A+C4a15802c
+      incorporated, combined fullPENDING. T30-TENANT-ADMIN uses this canonical
+      bounded gate; full owner lifecycle/listener/issuer remain open.
       2026-11-05 maintainer adopted owner authority and the D22 local-public-key
       verification amendment; owner-authority.md owns permission/delegation
       ceilings, separate management authentication, human token/session limits
@@ -6872,6 +6882,9 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      R53 selected ownerPolicy accepted native17f9a457; canonical bounded
+      owner-policy runtime gate and four controls live on MT-CONFIG-MIN.
+      RootB+A+C4a15802c combined fullPENDING; no complete owner/listener admission.
       Current 2026-11-05: R42 accepts the separately authenticated standalone
       subject facade and real persistence/current-authority HTTP tests. No CLI binding, new identity provider or
       owner grant-ceiling policy is selected; factory acceptance is not full
