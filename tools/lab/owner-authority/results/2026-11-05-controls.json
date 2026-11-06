@@ -1,0 +1,22 @@
+[
+  {
+    "control": "signature",
+    "nonVacuous": true,
+    "symptom": "tampered signature refuses before PostgreSQL"
+  },
+  {
+    "control": "audience",
+    "nonVacuous": true,
+    "symptom": "signed wrong issuer/audience/purpose/tenant and invalid times refuse"
+  },
+  {
+    "control": "session",
+    "nonVacuous": true,
+    "symptom": "individual session revocation refuses across pools"
+  },
+  {
+    "control": "stale-authority",
+    "nonVacuous": true,
+    "symptom": "same earlier tokens lose grants on the next operation across both pools"
+  }
+]

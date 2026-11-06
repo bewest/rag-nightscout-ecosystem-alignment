@@ -132,3 +132,7 @@ snapshot. Required controls cover signatures/audience/tenant, committed revocati
 across pools, expired sessions, key retirement and stopped dependencies. Performance
 results are synthetic authorization-pipeline measurements, not API-handler throughput,
 production capacity, full owner-ceiling acceptance or milestone promotion.
+
+The [November 5 measurement](../../60-research/tenancy/owner-authority-local-verification-2026-11-05.md)
+records the reproduced prototype results and their controls; production behavior
+remains unimplemented by this alignment-only prototype.

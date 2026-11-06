@@ -383,6 +383,16 @@ their runtime is already implemented.
 
 ## 2. Configuration and authentication decisions
 
+**Owner authority amendment, November 5:** the maintainer adopted the
+[owner authority contract](owner-authority.md): explicit management authority and
+delegation ceilings, initial human session limits, recent reauthentication for
+sensitive operations, local public-key verification for new tokens and one current
+PostgreSQL authority snapshot per operation. Private signing keys and recoverable
+vendor/APNs/connect secrets remain protected by the secrets component. The
+[synthetic measurement](../../60-research/tenancy/owner-authority-local-verification-2026-11-05.md)
+records local prototype timing, revocation and settled-outage behavior; it does
+not enable listeners, complete management ceilings/sessions or promote a milestone.
+
 Retain D22: code floors > operator default/bounds/pins > permitted owner values.
 Initially offer only a reviewed catalogue; refuse unsupported names explicitly.
 Start with units, timezone, display preferences and authorization policy.

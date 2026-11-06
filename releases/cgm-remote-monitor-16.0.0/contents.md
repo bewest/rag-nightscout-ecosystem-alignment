@@ -1375,3 +1375,23 @@ candidate is named.
 
 *Draft, 2026-10-26. Prepared locally; nothing pushed, tagged, merged or published by this programme.
 Requires maintainer review before anything here is relied upon.*
+
+
+## Update — owner authority and local verification, 2026-11-05
+
+| Scope / queue | Recorded result | Remaining boundary |
+|---|---|---|
+| Maintainer decisions: `MT-CONFIG-MIN`, `MT-IDENTITY-PLAN`, `T30-WIRING`, `MT-SECRETS-CONTRACT` | [Owner authority](../../docs/30-design/tenancy/owner-authority.md) and [decision rows](decisions.md#owner-authority-and-local-verification-2026-11-05) adopt bounded delegation, separate management authentication, human lifetime/freshness limits and the D22 local-verification amendment. | Policy adopted; complete role/ceiling/session/transfer implementation and production interoperability remain open. No candidate admission, listener enablement or release change. |
+| Alignment-only prototype on committed instrument `e8c3c01ed`; actual CRM baseline `d4570e58` | [Reproduced measurement](../../docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md): 16 semantic checks, four non-vacuous controls, 24 cases / 2,880 timed operations. Current Vault-dependent and two local paths compared; same-token revocation across pools, tenant key isolation and settled outages exercised. | Synthetic authorization pipeline only. New ordinary-token operations use zero Vault calls; full HTTP/client performance, production capacity, full ceilings/session issuer and in-flight shutdown races remain UNMEASURED. Local alignment branch only; no CRM source changed. |
+
+Verification: `make queue-validate && make queue`, `make queue-check`,
+`make docs-links` and `git diff --check` passed for this lane. The broader
+`make queue-status` baseline on main remains failing (for example
+`P0-C-REMEDIATE ... 0/1 FAIL`, `T30-SCHEMA-CONFIG ... 0/1 FAIL`);
+MT-CONFIG-MIN/MT-SECRETS-CONTRACT/T30-WIRING remain UNMEASURED in that run because
+integration gates are skipped. Those existing measurements do not promote this
+prototype. CRM full regression and site-check were skipped: no CRM application
+source, rich site page or pages.yaml changed.
+
+Lane worktree, anchors, next steps and peer ownership are in the local untracked
+[owner-authority handoff](../../externals/work/HANDOFF-owner-authority-2026-11-05.md).

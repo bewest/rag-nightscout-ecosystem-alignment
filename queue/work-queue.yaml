@@ -311,10 +311,17 @@ items:
           not claimed complete by the selected subset.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/owner-authority.md
+      - docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md
       - tools/lab/multitenant-subject-admin/README.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      2026-11-05 maintainer adopted owner authority and the D22 local-public-key
+      verification amendment; owner-authority.md owns permission/delegation
+      ceilings, separate management authentication, human token/session limits
+      and failure semantics. Synthetic prototype evidence is bounded; no
+      production wiring, full ceiling/session implementation or milestone promotion.
       Maintainer D22 minimum catalogue remains: unsupported names refuse;
       alarms/integrations wait for consuming runtimes. Current grants and
       revocation apply at the next protected operation; unavailable authority
@@ -373,10 +380,17 @@ items:
           current-grant policy service and minimum owner API remain unwired.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/owner-authority.md
+      - docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
       - tools/lab/vault-transit/README.md
       - tools/lab/vault-transit/results.json
     notes: >
+      2026-11-05 maintainer adopted owner authority and the D22 local-public-key
+      verification amendment; owner-authority.md owns permission/delegation
+      ceilings, separate management authentication, human token/session limits
+      and failure semantics. Synthetic prototype evidence is bounded; no
+      production wiring, full ceiling/session implementation or milestone promotion.
       Maintainer 2026-11-02: try Vault early if feasible; measure integration
       before deciding whether it is more efficient than the built-in signer.
       Never export signing keys or fall back silently on provider failure.
@@ -564,8 +578,15 @@ items:
           session and revocation tests. No custom password/recovery system.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/owner-authority.md
+      - docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      2026-11-05 maintainer adopted owner authority and the D22 local-public-key
+      verification amendment; owner-authority.md owns permission/delegation
+      ceilings, separate management authentication, human token/session limits
+      and failure semantics. Synthetic prototype evidence is bounded; no
+      production wiring, full ceiling/session implementation or milestone promotion.
       Maintainer 2026-11-02: device/token/API-secret first; identity needs
       additional planning. Prior Ory/edge proofs remain dated evidence,
       not production approval. Planning can proceed without blocking ST-PG.
@@ -6737,11 +6758,18 @@ items:
           everything failing.
     blocks_on: [TEN-RESOLVE, MT-SECRETS-CONTRACT]
     evidence:
+      - docs/30-design/tenancy/owner-authority.md
+      - docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md
       - tools/lab/multitenant-rest-authority/README.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      2026-11-05 maintainer adopted owner authority and the D22 local-public-key
+      verification amendment; owner-authority.md owns permission/delegation
+      ceilings, separate management authentication, human token/session limits
+      and failure semantics. Synthetic prototype evidence is bounded; no
+      production wiring, full ceiling/session implementation or milestone promotion.
       Current 2026-11-04: R40 accepts derived reads and source-pinned
       client patterns with parent-run cumulative evidence at published ded254b9;
       PR title/description read back correctly; current-head CI and
