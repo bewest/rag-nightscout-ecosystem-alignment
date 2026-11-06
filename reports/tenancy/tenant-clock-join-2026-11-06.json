@@ -1,0 +1,195 @@
+{
+ "classification": "reproduced frozen-head integration acceptance of the clock join (batch B2)",
+ "date": "2026-11-06",
+ "applicationHead": "65bb8456618df9816106692a32f0dd5c76e216d1",
+ "branch": "codex/clock-join-20261106",
+ "base": "35903069b46974cfbaddd8dce00c994fb2562bc3",
+ "inputs": {
+  "clockLowerPort": "11770146b420a2aa1ccad587030bfee50a8ea0b3",
+  "clockHttp": "3532c1a46d6fc3fb2100ed7704544d278f29357b",
+  "mergeBase": "1c55098a3d4bcf3d871bcd345f159ce444d6e458",
+  "replicaCandidateRideAlong": "714f6c8b229fbea171db4e75cbf8179edd7d2d57"
+ },
+ "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+ "officialDevContained": true,
+ "prcheck": "OK",
+ "runner": {
+  "path": "tools/lab/multitenant-rest-preview/owned.js",
+  "sha256": "08e83d8e71b46d8088d604861fe18a4cc8073fede47869ce16deeabc2665fae4"
+ },
+ "versions": {
+  "node": "v22.23.4",
+  "postgres": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2)",
+  "mongo": "8.0.34",
+  "vault": "2.2.1"
+ },
+ "tiers": {
+  "unit": {
+   "passing": 2213,
+   "pending": 0,
+   "failing": 0
+  },
+  "dom": {
+   "passing": 205,
+   "pending": 0,
+   "failing": 0
+  },
+  "dependency": {
+   "passing": 368,
+   "pending": 2,
+   "failing": 0
+  },
+  "core": {
+   "passing": 319,
+   "pending": 0,
+   "failing": 0
+  },
+  "harness": {
+   "passing": 93,
+   "pending": 0,
+   "failing": 0
+  },
+  "integration": {
+   "passing": 3971,
+   "pending": 79,
+   "failing": 0
+  },
+  "stress": {
+   "passing": 18,
+   "pending": 0,
+   "failing": 0
+  }
+ },
+ "runs": [
+  {
+   "run": "clock",
+   "log": "clock-65bb8456.log",
+   "sha256": "b16bdfb7565e28aac241e177c20b0035d1e997f6dac86d9739a04ab70fb02bca",
+   "passing": 28,
+   "pending": 1,
+   "failing": 0
+  },
+  {
+   "run": "all",
+   "log": "all-65bb8456.log",
+   "sha256": "ea02fae5900949a918750439eda0a12caf22677c49beb31a0b705402ff510bc4",
+   "passing": 7187,
+   "pending": 81,
+   "failing": 0
+  },
+  {
+   "run": "browser",
+   "log": "browser-65bb8456.log",
+   "sha256": "a8c7b8ad552ec80ec9ce051daf9b9d499ab6c022446e12c5e0e534d66464a955",
+   "passing": 684,
+   "pending": 0,
+   "failing": 0
+  },
+  {
+   "run": "control serialization red",
+   "log": "control-serialization-red.log",
+   "sha256": "6099141483ac6ae612ee2e8255ee032112b0309af7f00b15926b1fc42d63237e",
+   "passing": 0,
+   "pending": 0,
+   "failing": 3,
+   "grep": "holds"
+  },
+  {
+   "run": "control serialization restored",
+   "log": "control-serialization-restored.log",
+   "sha256": "6772be9c61750c9bfc807f636c4e335d91c02b13bd2defce157ae3f050ae5f00",
+   "passing": 3,
+   "pending": 0,
+   "failing": 0,
+   "grep": "holds"
+  },
+  {
+   "run": "control startup red",
+   "log": "control-startup-red.log",
+   "sha256": "d4e0d6cdad1fb81dfd79eee0e07cc46a90af71ad62afbef2a1d940ffedc92b50",
+   "passing": 0,
+   "pending": 0,
+   "failing": 2,
+   "grep": "provision"
+  },
+  {
+   "run": "control startup restored",
+   "log": "control-startup-restored.log",
+   "sha256": "ac0cd9badef1cdb0d0b6b4b0ac26f30cbbbc4b068231c0b7bb5babeb24d2e271",
+   "passing": 2,
+   "pending": 0,
+   "failing": 0,
+   "grep": "provision"
+  },
+  {
+   "run": "control rollback red",
+   "log": "control-rollback-red.log",
+   "sha256": "18af2256c4e2dcab5d225cdaa6a3cd1aeedb2c1ab6bb75a2deef52d6c452e623",
+   "passing": 0,
+   "pending": 0,
+   "failing": 3,
+   "grep": "rolls back"
+  },
+  {
+   "run": "control rollback restored",
+   "log": "control-rollback-restored.log",
+   "sha256": "87cf7861fc2b7e8006ed40dcfdbcd75200059eafd2f152ed55591ea73c367974",
+   "passing": 3,
+   "pending": 0,
+   "failing": 0,
+   "grep": "rolls back"
+  }
+ ],
+ "sources": [
+  {
+   "path": "lib/storage/postgres-write-clock.js",
+   "sha256": "7a71bca4c38dcbc1b27369494324c6e8710ad31a800c978fc715c1c4ee0adf8b"
+  },
+  {
+   "path": "lib/server/serve/postgres-domains.js",
+   "sha256": "ccc61d96deb4445cea2485193990c423e4cbfa66343d047ad687c4ca37ab8fd0"
+  },
+  {
+   "path": "lib/storage/postgres-connection.js",
+   "sha256": "72b22da585c0e50180542b84cd5fba67d2cd78740496766bdf15b224940d92f5"
+  },
+  {
+   "path": "lib/storage/postgres-intent-common.js",
+   "sha256": "73725206de0c3594f2a001680d383ba9bd20592d7dd8d1afae3a5a46585eb667"
+  },
+  {
+   "path": "tests/tenant-commit-clock-http.integration.test.js",
+   "sha256": "5881a84fc082f1907aa62b121dea90076e33c5266cb8bfd94ce4ae62e887743d"
+  },
+  {
+   "path": "tests/tenant-commit-clock-port.integration.test.js",
+   "sha256": "8f260056a4908dda24cb73a669905661fd1509fc8905c1f9d2f1cb07dd561c93"
+  },
+  {
+   "path": "tests/tiers.json",
+   "sha256": "20389aa2473b893347870034c90995b8306c46bfa1efd9b44edcfef4ce42398e"
+  }
+ ],
+ "lint": {
+  "libErrors": 0,
+  "preexistingTestFileErrors": 6,
+  "note": "all six on 3532c1a4 test files (AggregateError no-undef, unused net); project lint script covers lib only"
+ },
+ "cleanup": {
+  "independentlyAudited": true,
+  "allAbsent": true,
+  "runnerRuns": 9,
+  "containers": 27,
+  "volumes": 45,
+  "note": "per-run private audit JSON in the lane scratch; identities not published"
+ },
+ "unmeasured": [
+  "clock benchmark: contention and ingestion latency (NS_TENANT_COMMIT_CLOCK_BENCHMARK stayed 0)",
+  "Mongo comparison of clock history behaviour",
+  "mixed old writers and raw imports",
+  "bulk soft-delete ties",
+  "PostgreSQL backend cleanup bound after Node SIGKILL",
+  "replica candidate 714f6c8b own controls",
+  "CI on 65bb8456 (not published)"
+ ]
+}
