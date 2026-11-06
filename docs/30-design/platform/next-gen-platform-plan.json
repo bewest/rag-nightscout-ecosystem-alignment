@@ -744,7 +744,7 @@
    "phase": "boundary",
    "state": "progress",
    "short": "Per-tenant config table",
-   "title": "Owner-authority policy is adopted. Full permission/settings catalogue, transactional delegation-ceiling enforcement and owner API remain unimplemented; selected display/current-policy services do not finish this historical item.",
+   "title": "Owner-authority policy is adopted; R53 accepts explicitly selected transactional proposed-grant delegation/ceiling enforcement within REST37. Full permission/settings/default catalogue, existing-grant clamping and production owner API/listener remain unimplemented; this historical item is not complete.",
    "ref": "Selected R40 services are separate from the older seam catalogue. Current T30-SCHEMA-CONFIG static gate fails its crm-seam D15 table predicate; see the architecture evidence gaps. No full-catalogue promotion.",
    "depends": [
     "T30-RESEARCH",
@@ -796,7 +796,7 @@
    "phase": "multi",
    "state": "progress",
    "short": "Tenant-scoped auth",
-   "title": "Current tenant credentials/grants compose with actual CLI/REST. The adopted contract permits optional new-format Ed25519 data-token verification locally with current PG session/key/grants per operation; human management issuer/refresh, ceilings and lifecycle remain unimplemented.",
+   "title": "Current tenant credentials/grants compose with actual CLI/REST. The adopted contract permits optional new-format Ed25519 data-token verification locally with current PG session/key/grants per operation; R53 separately accepts selected proposed-grant ceiling/delegation enforcement. Human management issuer/refresh, existing-grant clamping, full catalogue and production lifecycle remain unimplemented.",
    "ref": "R48 accepts bounded local data-token verification at3d5eac19; this optional data-token path does not enable the management issuer/listener or export private signing keys. Legacy compatibility and R42 management separation remain; published #8898bc4ee1a9 is a prior capture.",
    "depends": [
     "TEN-RESOLVE",
@@ -912,7 +912,7 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current policy / settings",
-   "title": "R42 persisted subject service and standalone authenticated HTTP remain bounded acceptance. Adopted explicit ownership/delegation/ceiling policy still needs human management issuer/refresh, transactional enforcement, full roles/settings catalogue and listener implementation.",
+   "title": "R42 persisted subject service/standalone HTTP and R53 explicitly selected transactional proposed-grant enforcement are accepted within REST37. Human management issuer/refresh, full wildcard/default catalogue, existing-grant clamping, DELETE policy and production owner listener remain unimplemented.",
    "ref": "R53 native17f9a457 full7127/80pending/0failure/browser684/prcheckOK, actual22/affected26/static32; parent archived22/four0-1semantic/restored22. Explicit ownerPolicy catalogue\u2229ceiling\u2229current actor delegation/row fencing, REST37only. DELETE refuses/mgmtAuth injected; human issuer/refresh/full wildcard-default catalogue/existing-grant clamping/listener unimplemented. R48readers unchanged. Root4a15802c combinedfullPENDING.",
    "spec": [
     {

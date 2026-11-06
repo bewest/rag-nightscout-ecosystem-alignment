@@ -6885,10 +6885,11 @@ items:
       R53 selected ownerPolicy accepted native17f9a457; canonical bounded
       owner-policy runtime gate and four controls live on MT-CONFIG-MIN.
       RootB+A+C4a15802c combined fullPENDING; no complete owner/listener admission.
-      Current 2026-11-05: R42 accepts the separately authenticated standalone
-      subject facade and real persistence/current-authority HTTP tests. No CLI binding, new identity provider or
-      owner grant-ceiling policy is selected; factory acceptance is not full
-      D16 listener completion.
+      Current 2026-11-06: R42 accepts the separately authenticated standalone
+      subject facade and real persistence/current-authority HTTP tests. R53 adds
+      explicitly selected ownerPolicy proposed-grant enforcement for REST37.
+      CLI binding, new identity provider and production owner listener remain
+      unimplemented; selected store/factory acceptance is not full D16 completion.
       D16 (maintainer, 2026-09-16) set three listeners; the topology was
       decided 2026-10-16 (maintainer): a second bound socket inside ns-api,
       movable to its own process later without changing the contract
@@ -25232,7 +25233,7 @@ items:
     notes: >
       R52 nativee5fe0b5e accepted full7080/80pending/0failure, prior browser684,
       final prcheckOK; acquisition14/concurrency4+six semantic controls/restorations.
-      Rootc7778436 incorporates B+A with combined full PENDING. Independent
+      Root4a15802c incorporates B+A+C with combined full PENDING. Independent
       profile2ee8b493 source-only, new runtime/full/browser/prcheck UNMEASURED.
       Actual tenant HTTP reads observe old entries/new treatments across an atomic
       independent writer commit; tenant B stays unchanged. Bounds, future-record,
