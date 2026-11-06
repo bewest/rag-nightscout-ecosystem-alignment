@@ -1065,8 +1065,13 @@ first two adapters. Both can sign without exporting a key.
 **Keys stay inside the secrets component, from the start (maintainer, 2026-10-27).** The secrets
 component signs and verifies per-tenant owner tokens itself; a signing key is used only inside it and is
 never exported, so "decrypted only by the consuming process" means, for a signing key, that the secrets
-component is its only consumer. It sets each token's lifetime. The tenant-owner listener verifies every
-token through it. Evidence: the call-path lab's keys-stay arm
+component is its only consumer. It sets each token's lifetime. **Amended 2026-11-05:**
+new-format tokens use local public-key verification in serving workers, with current
+PostgreSQL authority on each protected operation; private keys stay inside the secrets
+component. The [owner authority contract](owner-authority.md) owns permissions, grant
+ceilings, token/session limits, management authentication and outage semantics. Existing
+HS256/legacy paths remain compatible until separately measured migration. Evidence for
+the earlier remote-verification design: the call-path lab's keys-stay arm
 ([`tools/lab/tenant-config-callpath/`](../../../tools/lab/tenant-config-callpath/README.md), 46 controls):
 during a listener compromise the reach is the same as A's, but no key leaves, and once the compromise ends
 and tokens expire the attacker can neither write nor reveal, where under A the stolen keys keep minting
