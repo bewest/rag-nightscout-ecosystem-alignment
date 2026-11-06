@@ -1,0 +1,281 @@
+{
+ "head": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+ "node": "v22.23.4",
+ "date": "2026-11-06T21:47:32.899Z",
+ "stack": "baseline",
+ "cells": {
+  "entries v1 cgmsim-upload-entry": {
+   "st": "200 [1]",
+   "store": "n=1 OID",
+   "shape": "date,dateString,direction,sgv,sysTime,type,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"date\":1794001632983,\"dateString\":\"2026-11-06T21:47:12.983Z\",\"direction\":\"Flat\",\"sgv\":118,\"sysTime\":\"2026-11-06T21:47:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/entries/",
+   "carrier": "api-secret",
+   "len": null,
+   "exit": 0
+  },
+  "devicestatus v1 cgmsim-upload-devicestatus": {
+   "st": "200 [1]",
+   "store": "n=1 OID",
+   "shape": "created_at,device,openaps,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"created_at\":\"2026-11-05T21:47:12.983Z\",\"device\":\"cgmsim\",\"openaps\":{\"openaps\":{\"basaliob\":0.1,\"iob\":0.5,\"time\":\"2026-11-05T21:47:12.983Z\"}},\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/devicestatus/",
+   "carrier": "api-secret",
+   "len": null,
+   "exit": 0
+  },
+  "entries v1 cgmsim-read-entries": {
+   "st": "200 [1]",
+   "store": "n=1 OID",
+   "shape": "date,dateString,direction,sgv,sysTime,type,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"date\":1794001632983,\"dateString\":\"2026-11-06T21:47:12.983Z\",\"direction\":\"Flat\",\"sgv\":118,\"sysTime\":\"2026-11-06T21:47:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+   ],
+   "method": "GET",
+   "path": "/api/v1/entries/sgv.json?count=…",
+   "carrier": "api-secret",
+   "len": 1,
+   "exit": 0
+  },
+  "profile v1 cgmsim-read-profiles": {
+   "st": "200 [0]",
+   "store": "n=0",
+   "shape": "",
+   "ident": "none",
+   "documents": [],
+   "method": "GET",
+   "path": "/api/v1/profile.json",
+   "carrier": "api-secret",
+   "len": 0,
+   "exit": 0
+  },
+  "activity v1 cgmsim-read-activity": {
+   "st": "200 [0]",
+   "store": "n=0",
+   "shape": "",
+   "ident": "none",
+   "documents": [],
+   "method": "GET",
+   "path": "/api/v1/activity/?find[created_at][$gte]=…",
+   "carrier": "api-secret",
+   "len": 0,
+   "exit": 0
+  },
+  "devicestatus v1 cgmsim-filter-delete": {
+   "st": "200 {acknowledged,deletedCount,n}",
+   "store": "n=0",
+   "shape": "",
+   "ident": "none",
+   "documents": [],
+   "method": "DELETE",
+   "path": "/api/v1/devicestatus/?find[created_at][$lte]=…",
+   "carrier": "api-secret",
+   "len": null,
+   "exit": 0
+  },
+  "entries v1 oref0-header-upload": {
+   "st": "200 [3]",
+   "store": "n=4 OID",
+   "shape": "date,dateString,device,direction,sgv,sysTime,type,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"date\":1794000732983,\"dateString\":\"2026-11-06T21:32:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T21:32:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001032983,\"dateString\":\"2026-11-06T21:37:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T21:37:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001332983,\"dateString\":\"2026-11-06T21:42:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"sysTime\":\"2026-11-06T21:42:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001632983,\"dateString\":\"2026-11-06T21:47:12.983Z\",\"direction\":\"Flat\",\"sgv\":118,\"sysTime\":\"2026-11-06T21:47:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/entries.json",
+   "carrier": "api-secret",
+   "exit": 0
+  },
+  "treatments v1 oref0-header-upload": {
+   "st": "200 [2]",
+   "store": "n=2 OID",
+   "shape": "absolute,created_at,duration,enteredBy,eventType,insulin,rate,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"absolute\":0.85,\"created_at\":\"2026-11-06T21:27:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:37:12.983Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/treatments.json",
+   "carrier": "api-secret",
+   "exit": 0
+  },
+  "devicestatus v1 oref0-header-upload": {
+   "st": "200 [1]",
+   "store": "n=1 OID",
+   "shape": "created_at,device,openaps,pump,uploader,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"created_at\":\"2026-11-06T21:42:12.983Z\",\"device\":\"openaps://rig\",\"openaps\":{\"iob\":{\"basaliob\":0.1,\"iob\":0.6,\"time\":\"2026-11-06T21:42:12.983Z\"},\"suggested\":{\"bg\":121,\"duration\":30,\"rate\":0.85,\"reason\":\"synthetic\",\"temp\":\"absolute\"}},\"pump\":{\"battery\":{\"percent\":75},\"clock\":\"2026-11-06T21:42:12.983Z\",\"reservoir\":120},\"uploader\":{\"battery\":80},\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/devicestatus.json",
+   "carrier": "api-secret",
+   "exit": 0
+  },
+  "entries v1 oref0-token-upload": {
+   "st": "200 [3]",
+   "store": "n=4 OID",
+   "shape": "date,dateString,device,direction,sgv,sysTime,type,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"date\":1794000732983,\"dateString\":\"2026-11-06T21:32:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T21:32:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001032983,\"dateString\":\"2026-11-06T21:37:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T21:37:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001332983,\"dateString\":\"2026-11-06T21:42:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"sysTime\":\"2026-11-06T21:42:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001632983,\"dateString\":\"2026-11-06T21:47:12.983Z\",\"direction\":\"Flat\",\"sgv\":118,\"sysTime\":\"2026-11-06T21:47:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/entries.json?token=…",
+   "carrier": "query-token",
+   "exit": 0
+  },
+  "treatments v1 oref0-token-upload": {
+   "st": "200 [2]",
+   "store": "n=2 OID",
+   "shape": "absolute,created_at,duration,enteredBy,eventType,insulin,rate,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"absolute\":0.85,\"created_at\":\"2026-11-06T21:27:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:37:12.983Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/treatments.json?token=…",
+   "carrier": "query-token",
+   "exit": 0
+  },
+  "devicestatus v1 oref0-token-upload": {
+   "st": "200 [1]",
+   "store": "n=2 OID",
+   "shape": "created_at,device,openaps,pump,uploader,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"created_at\":\"2026-11-06T21:42:12.983Z\",\"device\":\"openaps://rig\",\"openaps\":{\"iob\":{\"basaliob\":0.1,\"iob\":0.6,\"time\":\"2026-11-06T21:42:12.983Z\"},\"suggested\":{\"bg\":121,\"duration\":30,\"rate\":0.85,\"reason\":\"synthetic\",\"temp\":\"absolute\"}},\"pump\":{\"battery\":{\"percent\":75},\"clock\":\"2026-11-06T21:42:12.983Z\",\"reservoir\":120},\"uploader\":{\"battery\":80},\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:42:12.983Z\",\"device\":\"openaps://rig\",\"openaps\":{\"iob\":{\"basaliob\":0.1,\"iob\":0.6,\"time\":\"2026-11-06T21:42:12.983Z\"},\"suggested\":{\"bg\":121,\"duration\":30,\"rate\":0.85,\"reason\":\"synthetic\",\"temp\":\"absolute\"}},\"pump\":{\"battery\":{\"percent\":75},\"clock\":\"2026-11-06T21:42:12.983Z\",\"reservoir\":120},\"uploader\":{\"battery\":80},\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/devicestatus.json?token=…",
+   "carrier": "query-token",
+   "exit": 0
+  },
+  "entries v1 oref0-batch-badid": {
+   "st": "200 [2]",
+   "store": "n=4 OID",
+   "shape": "date,dateString,device,direction,identifier,sgv,sysTime,type,utcOffset",
+   "ident": "STR+absent",
+   "documents": [
+    "{\"date\":1794000732983,\"dateString\":\"2026-11-06T21:32:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T21:32:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001032983,\"dateString\":\"2026-11-06T21:37:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"identifier\":\"not-a-hex-identifier\",\"sgv\":100,\"sysTime\":\"2026-11-06T21:37:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001332983,\"dateString\":\"2026-11-06T21:42:12.983Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T21:42:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+    "{\"date\":1794001632983,\"dateString\":\"2026-11-06T21:47:12.983Z\",\"direction\":\"Flat\",\"sgv\":118,\"sysTime\":\"2026-11-06T21:47:12.983Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/entries.json",
+   "carrier": "api-secret",
+   "exit": 0
+  },
+  "treatments v1 oref0-batch-tt-order": {
+   "st": "200 [1]",
+   "store": "n=3 OID",
+   "shape": "absolute,created_at,duration,enteredBy,eventType,insulin,rate,reason,targetBottom,targetTop,units,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"absolute\":0.85,\"created_at\":\"2026-11-06T21:27:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:37:12.983Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:42:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temporary Target\",\"reason\":\"synthetic order control\",\"targetBottom\":150,\"targetTop\":100,\"units\":\"mg/dl\",\"utcOffset\":0}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/treatments.json",
+   "carrier": "api-secret",
+   "exit": 0
+  },
+  "treatments v1 oref0-latest-header": {
+   "st": "200 [1]",
+   "store": "n=3 OID",
+   "shape": "absolute,created_at,duration,enteredBy,eventType,insulin,rate,reason,targetBottom,targetTop,units,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"absolute\":0.85,\"created_at\":\"2026-11-06T21:27:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:37:12.983Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:42:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temporary Target\",\"reason\":\"synthetic order control\",\"targetBottom\":150,\"targetTop\":100,\"units\":\"mg/dl\",\"utcOffset\":0}"
+   ],
+   "method": "GET",
+   "path": "/api/v1/treatments.json?find[enteredBy]=…&count=…",
+   "carrier": "api-secret",
+   "exit": 0,
+   "jq": "{\"carbs\":null,\"created_at\":\"2026-11-06T21:42:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temporary Target\",\"insulin\":null,\"reason\":\"synthetic order control\",\"targetBottom\":150,\"targetTop\":100,\"units\":\"mg/dl\",\"utcOffset\":0}"
+  },
+  "treatments v1 oref0-latest-token": {
+   "st": "401 {description,message,status}",
+   "store": "n=3 OID",
+   "shape": "absolute,created_at,duration,enteredBy,eventType,insulin,rate,reason,targetBottom,targetTop,units,utcOffset",
+   "ident": "absent",
+   "documents": [
+    "{\"absolute\":0.85,\"created_at\":\"2026-11-06T21:27:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:37:12.983Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"utcOffset\":0}",
+    "{\"created_at\":\"2026-11-06T21:42:12.983Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temporary Target\",\"reason\":\"synthetic order control\",\"targetBottom\":150,\"targetTop\":100,\"units\":\"mg/dl\",\"utcOffset\":0}"
+   ],
+   "method": "GET",
+   "path": "/api/v1/treatments.json?find[enteredBy]=…&count=…",
+   "carrier": "query-token",
+   "exit": 5,
+   "jq": ""
+  },
+  "profile v1 lab-seed": {
+   "st": "200 [1]",
+   "store": "n=1 OID",
+   "shape": "created_at,defaultProfile,mills,startDate,store,units",
+   "ident": "absent",
+   "documents": [
+    "{\"created_at\":\"2026-11-05T21:47:12.983Z\",\"defaultProfile\":\"Default\",\"mills\":1793915232983,\"startDate\":\"2026-11-05T21:47:12.983Z\",\"store\":{\"Default\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":0.7}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":12}],\"carbs_hr\":20,\"delay\":20,\"dia\":4,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":50}],\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":115}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":95}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"}},\"units\":\"mg/dl\"}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/profile",
+   "carrier": "api-secret"
+  },
+  "profile v1 oref0-profile-header": {
+   "st": "200 [1]",
+   "store": "n=2 OID",
+   "shape": "created_at,defaultProfile,mills,startDate,store,units",
+   "ident": "absent",
+   "documents": [
+    "{\"created_at\":\"2026-11-05T21:47:12.983Z\",\"defaultProfile\":\"Default\",\"mills\":1793915232983,\"startDate\":\"2026-11-05T21:47:12.983Z\",\"store\":{\"Default\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":0.7}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":12}],\"carbs_hr\":20,\"delay\":20,\"dia\":4,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":50}],\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":115}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":95}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"}},\"units\":\"mg/dl\"}",
+    "{\"created_at\":\"2026-11-06T21:47:12.983Z\",\"defaultProfile\":\"OpenAPS Autosync\",\"mills\":1794001632983,\"startDate\":\"2026-11-06T21:47:12.983Z\",\"store\":{\"Default\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":0.7}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":12}],\"carbs_hr\":20,\"delay\":20,\"dia\":4,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":50}],\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":115}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":95}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"},\"OpenAPS Autosync\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"0.8\"},{\"time\":\"06:00\",\"timeAsSeconds\":\"21600\",\"value\":\"1\"}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"10\"}],\"carbs_hr\":20,\"delay\":20,\"dia\":5,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"45\"}],\"startDate\":\"2026-11-06T21:47:12.983Z\",\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"110\"}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"100\"}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"}},\"units\":\"mg/dl\"}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/profile",
+   "carrier": "api-secret",
+   "exit": 0,
+   "read": "200 {_id,created_at,defaultProfile,mills,srvCreated,srvModified,startDate,store,units}",
+   "wrote": "POST"
+  },
+  "profile v1 oref0-profile-token": {
+   "st": "200 [1]",
+   "store": "n=3 OID",
+   "shape": "created_at,defaultProfile,mills,startDate,store,units",
+   "ident": "absent",
+   "documents": [
+    "{\"created_at\":\"2026-11-05T21:47:12.983Z\",\"defaultProfile\":\"Default\",\"mills\":1793915232983,\"startDate\":\"2026-11-05T21:47:12.983Z\",\"store\":{\"Default\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":0.7}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":12}],\"carbs_hr\":20,\"delay\":20,\"dia\":4,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":50}],\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":115}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":95}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"}},\"units\":\"mg/dl\"}",
+    "{\"created_at\":\"2026-11-06T21:47:12.983Z\",\"defaultProfile\":\"OpenAPS Autosync\",\"mills\":1794001632983,\"startDate\":\"2026-11-06T21:47:12.983Z\",\"store\":{\"Default\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":0.7}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":12}],\"carbs_hr\":20,\"delay\":20,\"dia\":4,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":50}],\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":115}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":95}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"},\"OpenAPS Autosync\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"0.8\"},{\"time\":\"06:00\",\"timeAsSeconds\":\"21600\",\"value\":\"1\"}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"10\"}],\"carbs_hr\":20,\"delay\":20,\"dia\":5,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"45\"}],\"startDate\":\"2026-11-06T21:47:12.983Z\",\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"110\"}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"100\"}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"}},\"units\":\"mg/dl\"}",
+    "{\"created_at\":\"2026-11-06T21:47:12.983Z\",\"defaultProfile\":\"OpenAPS Autosync\",\"mills\":1794001632983,\"startDate\":\"2026-11-06T21:47:12.983Z\",\"store\":{\"Default\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":0.7}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":12}],\"carbs_hr\":20,\"delay\":20,\"dia\":4,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":50}],\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":115}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":0,\"value\":95}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"},\"OpenAPS Autosync\":{\"basal\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"0.8\"},{\"time\":\"06:00\",\"timeAsSeconds\":\"21600\",\"value\":\"1\"}],\"carbratio\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"10\"}],\"carbs_hr\":20,\"delay\":20,\"dia\":6,\"sens\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"45\"}],\"startDate\":\"2026-11-06T21:47:12.983Z\",\"target_high\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"110\"}],\"target_low\":[{\"time\":\"00:00\",\"timeAsSeconds\":\"0\",\"value\":\"100\"}],\"timezone\":\"UTC\",\"units\":\"mg/dl\"}},\"units\":\"mg/dl\"}"
+   ],
+   "method": "POST",
+   "path": "/api/v1/profile?token=…",
+   "carrier": "query-token",
+   "exit": 0,
+   "read": "200 {_id,created_at,defaultProfile,mills,srvCreated,srvModified,startDate,store,units}",
+   "wrote": "POST"
+  }
+ }
+}
