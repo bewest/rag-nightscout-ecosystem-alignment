@@ -1534,3 +1534,5 @@ new policy decision is made by this measurement.
 and [focused recovery record](../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md)
 retain exact scopes. No new numbered clock acceptance, milestone/RC promotion,
 production enablement or application push; no policy decision changed.
+
+Local continuation and next frozen clock batch: `externals/work/HANDOFF-serial-verification-20261106.md` (local, untracked).
