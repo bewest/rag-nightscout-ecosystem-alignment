@@ -7,7 +7,11 @@ reproductions**, not new runs for this explanation. Current delivery and milesto
 claims live in the [delivery dashboard](multitenant-delivery-dashboard.md);
 [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 owns the published preview acceptance; [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
-owns the later local subject-service/compatibility continuation. PR #8898 is
+owns its local subject-service/compatibility continuation. Later local
+[R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
+and independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)
+add measured port contracts, a separate management factory and nonresident replay.
+The diagrams retain their published R40 source scope. PR #8898 is
 open/draft, not merged or released.*
 
 ## What the write seam made possible
@@ -130,7 +134,13 @@ new declarations that every exposed field has an independent collection grant.
 
 ### Preview versus current single/Mongo behavior
 
-The latest local [R41 continuation](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
+Latest local [R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
+adds real lower/preview/Mongo port characterization and a separate authenticated
+management factory, with current-head cumulative/control evidence. Independent
+R43 measures the opt-in single/nonresident prototype; it is not joined into the
+multitenant preview and does not establish tenant evaluator recovery.
+
+The earlier local [R41 continuation](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
 adds dormant persisted subject mutation and strict mixed-version treatment /
 credential-rename comparisons, with full cumulative regression and mutation
 controls. It does not expose owner HTTP management or select grant ceilings.
@@ -168,6 +178,11 @@ and error mappings can differ from the single application. See the pinned
 Full query/resource acceptance and populated import-order fidelity remain open.
 
 ### New Nightscout versus older releases
+
+The [R42 final-head capture](../../../reports/compat-rest-next-2026-11-05/README.md)
+extends the bounded direct comparison to the final REST candidate with verified
+driver/dependency provenance. Its explicit omitted families and diagnostic
+residuals still limit the claim; it is not a universal old-release/PG equivalence.
 
 The [November 5 bounded refresh](../../../reports/compat-refresh-2026-11-05/README.md)
 directly compares release/current-dev/published-PR-single with repeated runs and

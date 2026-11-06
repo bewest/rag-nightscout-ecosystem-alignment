@@ -1,12 +1,14 @@
 # T1.1 — the storage seam: interface definition and call-site classification
 
-*Contributor-facing.* **Snapshot, 2026-09-14 (§8–§10 later). Current: the only statement of the storage seam's interface.**
+*Contributor-facing living interface definition. Sections 1–10 retain their dated
+historical census and implementation captures; §11 records current admitted ports.*
 Task T1.1 of the [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md); decisions it rests on: D3, D4, D8, D9 — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
 §1–§7 were measured 2026-09-14 against `origin/chore/nightscout-modernization` @ `0a4109f6`;
 §8–§10 describe what was built on the `seam/*` branch chain (tip `seam/t1-2-storage-interface`
 @ `81a1f6ce`, `externals/work/crm-seam`), which is **unpublished**. That base has since moved
 (to `b1bdaca0` on 2026-09-21, a merge of `dev`); the seam is 68 behind it and trial-merges with 19
-conflicting paths — queue item `SEAM-REFRESH`. Nothing here is in `dev` or any release.
+conflicting paths — queue item `SEAM-REFRESH`. Those branch/status observations
+describe that historical capture, not current dev or preview; see §11.
 
 **Deliverables**: this document, plus
 `reports/storage-seam/t1-1-call-site-classification.tsv` (every site, classified) and the two
@@ -662,3 +664,56 @@ message recreates it.
 
 It returns `matchedCount` so a caller can distinguish "replaced" from "was already gone". That
 distinction is the reason the method exists, so it is tested directly rather than inferred.
+
+## 11. Current admitted ports and independent scopes (2026-11-05)
+
+Current-source amendment at local CRM
+`d4570e585d0e12e46386ed26772790b269b2b736`, based on dev `4a482627` and
+R41. The archived `port` instrument runs the committed parameterized corpus
+against real MongoDB and PostgreSQL. The interface is a set of explicit
+capabilities, not a promise that every backend implements historical §4.1.
+Historical counts and measurements above are unchanged.
+
+| Actual object | Contract and admitted boundary |
+|---|---|
+| `api3/storage/mongoCollection` | Driver-backed reads/writes/results, strict/v1 AST and broader BSON. Tenant assertion does not filter a shared collection or add a transaction. |
+| `postgres-entries-read` / `postgres-entries-write` | Typed string/ObjectId identity, JSON-safe representation, strict query/sort/projection subset, real persistence outcomes and partial duplicate-key batches. Unsupported shapes refuse. |
+| `postgres-entries-intent` | Shared v3 intent rules, a fresh owned transaction and logical post-commit events. An existing caller transaction refuses. |
+| `postgres-collection-intent` | Trusted logical collection/source composition; bounded legacy predicate translation and top-level projection helpers. Its projection capabilities differ from the lower reader. |
+| `storage-reads.resolve` / API3 Collection injection | Trusted capability acquisition by logical collection/source. Partial ports refuse; default single constructs Mongo when no replacement is supplied. |
+
+Measured distinctions a future backend must preserve or explicitly refuse:
+
+- Raw ObjectId and same-spelling string IDs remain distinct. Identifying reads
+  prefer an explicit identifier, then ObjectId, then string. Normalized shown
+  documents supply the stored ID when identifier is falsy; raw absent/null/false/
+  zero identifiers remain distinguishable.
+- Mongo's driver generates an ObjectId for submitted `_id: null`; Mongo admits
+  numeric/boolean IDs. PG refuses those submitted identity kinds. Silent stored-
+  kind coercion is not a supported adaptation.
+- Lower PG admits dotted inclusion projections but refuses exclusion and
+  `_id: 0`; preview projection admits top-level 0/1 and refuses dotted projection.
+  There is no single universal projection capability yet.
+- Supported null/missing AST comparisons, existence and false/zero/string-zero
+  operands retain their characterized distinctions. Bounded unsorted PG reads
+  and unsupported query/representation shapes refuse. Natural order requires its
+  ordinal/schema/import capability; these tests do not prove imports.
+- PG acquires the current UUID at operation time, uses RLS inside a transaction,
+  reuses only the same scope and rejects cross-tenant rebinding. Mongo scope
+  leaves the explicitly selected collection handle unchanged; its composition
+  must supply physical isolation. Caller failure does not roll back an already
+  completed standalone Mongo write.
+- Persistence counts describe real writes. Duplicate-key batches retain their
+  successful ordered prefix or unordered continuation; PG savepoints leave the
+  outer transaction usable. Representation validation may refuse before a batch.
+
+The corpus distinguishes logical intent events from backend instrumentation and
+checks PG commit failure without false publication. It does not measure durable
+delivery/restart, every renderer/collection, event collapse, lost-reply retry
+ambiguity or arbitrary Mongo emulation. Domain/write policy remains in the
+[write-contract current amendment](write-contract-spec-2026-10-07.md#9-current-shared-intent-and-backend-capabilities-2026-11-05)
+and linked platform specifications. Executable details live in CRM
+`lib/storage/PORT-CONTRACT.md` and `tests/storage-port-contract.integration.test.js`;
+the [architecture execution plan](architecture-seams-execution-plan-2026-11-05.md)
+owns consolidation sequencing. New adapters consume measured capabilities,
+rather than inherit unsupported methods from the historical proposal.

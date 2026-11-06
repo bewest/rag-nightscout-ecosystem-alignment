@@ -21,7 +21,8 @@ example `focused --require /absolute/path/to/control.cjs --grep <case>`. The hoo
 must be omitted for restored acceptance; setup errors are not semantic controls.
 
 `focused` enables actual legacy/API3 domain, derived-read, source-pinned client
-pattern, current-authority, subject-administration, legacy credential rename,
+pattern, current-authority, subject-administration, separate management HTTP,
+actual Mongo/PG port-contract, legacy credential rename,
 storage and backend-census tests. The subject-administration lab creates its own
 additional disposable PostgreSQL service and does not expose an HTTP owner API.
 Client replay uses
@@ -35,8 +36,11 @@ patterns, not execution of Swift client binaries.
 labs remain pending, never passing. `migration` separately enables existing
 migration and two-tenant HTTP suites. No mode promotes a milestone or establishes
 full REST, production trust, provisioning/lifecycle, HA or operational readiness.
-The current corpus includes `subject-admin` tests; select a CRM continuation
-containing those files rather than the earlier published R40 head.
+The current focused corpus includes the new management and port-contract tests;
+select a CRM continuation containing those files rather than earlier R40/R41.
+`all` and `browser` may also measure the separate refreshed execution-profile
+branch with its own matching dependencies and assets; that is not a combined
+REST/profile acceptance. The focused file list does not apply to that branch.
 
 Prerequisites: Node/Git/Docker, privately installed matching CRM dependencies,
 built browser assets, `postgres:16`, `mongo:8.0.34` and the exact Vault image digest

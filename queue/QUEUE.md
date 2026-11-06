@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 364 |
-| runnable gates | 419 |
+| runnable gates | 422 |
 | explicit `no-gate:` markers | 375 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 794 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 797 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8402,7 +8402,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261105` | n/a | 1 run + 1 no-gate |
-| `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `in-progress` | `codex/owner-subject-http-20261105` | minor | 0 run + 1 no-gate |
+| `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `in-progress` | `codex/owner-subject-http-20261105` | minor | 1 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 2 no-gate |
@@ -8445,10 +8445,10 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `merged-upstream` | `feat/storage-filter` | patch | 1 run + 1 no-gate |
 | `ST-WRITES` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface | `merged-upstream` | `feat/storage-writes` | patch | 1 run + 1 no-gate |
 | `ST-COUNT-ONEPATH` | API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path | `merged-upstream` | `feat/storage-count-onepath` | patch | 2 run |
-| `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `in-progress` | `codex/seam-contract-20261105` | n/a | 0 run + 1 no-gate |
+| `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `in-progress` | `codex/seam-contract-20261105` | n/a | 1 run + 1 no-gate |
 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/profile-refresh-20261105` | n/a | 0 run + 1 no-gate |
+| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/profile-refresh-20261105` | n/a | 1 run + 1 no-gate |
 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 
@@ -8512,7 +8512,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3`
+- `[integration]` `node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736`
   - Archived bounded subject update/delete and known-role assignment: current grants, stable identity/metadata, tenant isolation, atomic rollback, concurrent replacements and separate writer privileges. Synthetic management/crypto; no owner HTTP or grant ceilings.
 - **NO GATE** &mdash; Roadmap decisions adopted; detailed names, paths, preconditions, errors and executable contract cases remain. Full T30 catalogue is not claimed complete by the selected subset.
 
@@ -8931,7 +8931,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6`
+- `[integration]` `node tools/queue/gates/multitenant-rest-authority.js --ref d4570e585d0e12e46386ed26772790b269b2b736`
   - Archived immutable CRM current-authority HTTP probe on owned PG: cross-tenant audience, same-token committed grant revocation, outage/no-handler-effects, credential precedence and unsafe mutation privilege refusal. Synthetic crypto; not full REST, Vault, production runtime or milestone acceptance.
 - **NO GATE** &mdash; R40 parent-run campaigns accept derived REST and pinned-pattern replay atop R38/R39 at published ded254b9, including actual CLI/PG/Vault current-authority composition. The bounded archived authority probe is wired separately; no complete production runtime gate exists; loopback test-local trust is not production transport provenance. Required D14 property: A's token presented against tenant B's host fails as a SIGNATURE failure, not a claim check - with a control where the same token against A's own host succeeds, so the failure is known to come from the key and not from everything failing.
 
@@ -8965,10 +8965,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite management --ref d4570e585d0e12e46386ed26772790b269b2b736`
+  - Standalone trusted management HTTP: persisted subject updates/deletes, current grants, matching tenant, request/error/header bounds and data-plane refusal. Not a bound owner listener or identity policy.
 - **NO GATE** &mdash; Full listener admission remains unmeasured. The gate must show owner routes answer on the second socket and not on the data socket (red when a route answers on both; control: the same request on its own socket), that a request resolves only its own tenant (red across tenants; control: the owner's own tenant), and that single mode's listeners are byte-identical to before.
 
 **Evidence.**
 
+- `tools/lab/multitenant-next-slices/README.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** Current 2026-11-05: separately authenticated subject facade characterization and implementation dispatched. No CLI binding, new identity provider or owner grant-ceiling policy is selected; factory acceptance is not full D16 listener completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
@@ -10271,14 +10275,18 @@ alarm-readiness items, and the seam branch refresh.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+**Why `n/a`.** Bounded dormant characterization; full composition and release placement remain separate.
 
 **Gates.**
 
-- **NO GATE** &mdash; No current-head cross-backend contract instrument exists for this scope. Build actual Mongo/PG parameterized tests and read-only gates; wrong identity/projection, cross-bound handle and false write-outcome controls must fail. Planning/source review is not acceptance.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite port --ref d4570e585d0e12e46386ed26772790b269b2b736`
+  - Actual Mongo/PG lower and preview ports: identity, query/projection/refusal, persistence results, independent scope/transactions and logical events.
+- **NO GATE** &mdash; The bounded current-port corpus is measured separately. Full portable schema/readiness, every domain/query/error/retry capability, import order and stable backend composition remain unfinished; the historical proposal is not a universal implemented interface.
 
 **Evidence.**
 
+- `tools/lab/multitenant-next-slices/README.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
 **Notes.** Dispatched 2026-11-05 from R41; new parameterized contract tests and module- facing documentation only, no production refactor. First priority alongside REST and compatibility lanes. Review before treating the preview seams as stable; no new RC tag prerequisite. Characterize before extracting Mongo- shaped helpers.
@@ -10358,14 +10366,18 @@ alarm-readiness items, and the seam branch refresh.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `n/a`.** Planning only; implementation and release placement require their acceptance.
+**Why `n/a`.** Bounded dormant characterization; full composition and release placement remain separate.
 
 **Gates.**
 
-- **NO GATE** &mdash; Current-head profile replay and alarm cohort acceptance remain unmeasured here. Refresh actual PR 8891 head, replay actual triggers against resident output, exercise resend modes and quiet alarms, rehearse revert. Timer/write-trigger suppression, shortened window and request-time-properties controls must fail; historical replay/cost is not current evidence.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 925c95278ed04954d1181201da79ae5d6c48c095`
+  - Independent refreshed nonresident single replay: actual write/timer triggers, selected alarm/properties cohorts, resend cadence, fake delivery/no-egress and teardown; no production subscriber switch.
+- **NO GATE** &mdash; The selected current-head replay is measured by the bounded gate. Complete alarm/writer cohorts, logical no-op subscriber policy, live database-stat freshness and final integration/release placement remain open. Timer/write-trigger suppression, shortened window and request-time-properties controls must fail; historical replay/cost is not current evidence.
 
 **Evidence.**
 
+- `tools/lab/multitenant-next-slices/README.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
 **Notes.** Dispatched 2026-11-05 in an owned refresh/replay lane, separate from the R41 REST integration. New acceptance remains unmeasured. Reuse PR 8891 rather than create a second evaluator. Evaluate logical intent subscriber against D-EVENT; integration and release placement retain entry bar and maintainer review. No automatic wiring into default single or multitenant; no new RC tag gate.

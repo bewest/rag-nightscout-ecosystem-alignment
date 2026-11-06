@@ -25,8 +25,8 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest locally accepted cumulative head is `94c57f1f`
-([R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05));
+promotion is recorded. The latest locally accepted cumulative REST head is `d4570e58`
+([R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05));
 it remains unpushed. The latest published accepted head is `ded254b9`, on
 nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CI and
 CodeQL succeeded at the latest read-back. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
@@ -107,6 +107,32 @@ Each lane owns worktrees and unique disposable services. Parent review re-reads
 heads/results before records, integrates only completed contracts and preserves
 unexpected results. Local handoffs are under `externals/work/` and are not public
 evidence or publication authorization.
+
+### Accepted contract management and independent profile wave (2026-11-05)
+
+[R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
+accepts local REST `d4570e585d0e12e46386ed26772790b269b2b736`: actual
+Mongo/PG lower/preview port contracts, shared subject validation and a standalone
+authenticated JSON management facade. Full/focused acceptance, direct bounded
+historical comparison and semantic controls pass. This is a factory, not an
+enabled owner listener or selected management identity/grant-ceiling policy.
+
+Independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)
+accepts local #8891 refresh `925c95278ed04954d1181201da79ae5d6c48c095`
+with full/default-browser regression and selected actual-trigger/timer/property
+replay. It stays separate from #8898. Current physical subscriber remains;
+logical no-op/refusal cadence, full writers/cohorts and placement remain open.
+No multitenant evaluator, actual provider delivery or runtime-cost claim follows.
+
+**Next:** begin the architecture plan's bounded domain/backend and storage-error/
+HTTP composition packet using the measured contract; extract common helpers only
+after its runtime/refusal controls pass. Continue owner ceilings/role-ID and
+identity characterization, remaining REST receipts/egress, identity/index/race
+and actual clients, import/rerun/resource bounds, then M1/M2 completion and M3
+promotion review. Broaden #8891 writer/outcome replay before selecting logical
+event admission or joining shared derived frames. Durable M5/M6 acceptance and
+SQLite deferral remain unchanged. Current [dashboard](multitenant-delivery-dashboard.md)
+and the R42/R43 records supersede the delivered dispatch instructions below.
 
 ### Accepted subject administration and compatibility continuation (2026-11-05)
 

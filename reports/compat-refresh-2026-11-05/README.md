@@ -15,8 +15,11 @@ The machine-readable [aggregate](aggregate.json) is the result record.
 
 Source trees were archived into private scratch checkouts with their original Git
 heads. The application source was clean for every endpoint run. Dependencies were
-read-only links to matching local installs: MongoDB driver 5.9.2 for the release,
-and 7.6.0 for current development and the candidate. No browser assets were built
+read-only links to matching local installs. Original pins did not capture
+installed driver versions. **Correction, 2026-11-05:** the capture-time claim of
+driver 7.6.0 for development/candidate was unverified; later inspection finds
+their matching lock/install at 7.7.0. This does not retroactively measure the old
+runtime driver. Original aggregate/pins are unchanged. No browser assets were built
 or borrowed for this server-only matrix. Runtime: Node 22.23.4, MongoDB 7.0.43;
 an owned container exposed a random loopback port, with a separate random test
 database for each run. The harness drops its database after completion.

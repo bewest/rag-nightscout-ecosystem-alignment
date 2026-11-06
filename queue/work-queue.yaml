@@ -298,7 +298,7 @@ items:
     semver_reason: design and lab contract
     register: []
     gates:
-      - run: node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3
+      - run: node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736
         kind: integration
         describe: >
           Archived bounded subject update/delete and known-role assignment:
@@ -6708,7 +6708,7 @@ items:
     semver_reason: pre-release
     register: [BF-25]
     gates:
-      - run: node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6
+      - run: node tools/queue/gates/multitenant-rest-authority.js --ref d4570e585d0e12e46386ed26772790b269b2b736
         kind: integration
         describe: >
           Archived immutable CRM current-authority HTTP probe on owned PG:
@@ -6783,6 +6783,12 @@ items:
     semver_reason: a new listener in multi mode, which is developer-only; single unchanged
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite management --ref d4570e585d0e12e46386ed26772790b269b2b736
+        kind: integration
+        describe: >
+          Standalone trusted management HTTP: persisted subject updates/deletes,
+          current grants, matching tenant, request/error/header bounds and
+          data-plane refusal. Not a bound owner listener or identity policy.
       - no-gate: >
           Full listener admission remains unmeasured. The gate must show owner routes answer
           on the second socket and not on the data socket (red when a route
@@ -6792,6 +6798,8 @@ items:
           listeners are byte-identical to before.
     blocks_on: [T30-WIRING]
     evidence:
+      - tools/lab/multitenant-next-slices/README.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
       Current 2026-11-05: separately authenticated subject facade characterization
@@ -24955,16 +24963,23 @@ items:
     review: maintainer; architecture, storage and compatibility review
     operator_visible: ''
     semver: n/a
-    semver_reason: Planning only; implementation and release placement require their acceptance.
+    semver_reason: Bounded dormant characterization; full composition and release placement remain separate.
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite port --ref d4570e585d0e12e46386ed26772790b269b2b736
+        kind: integration
+        describe: >
+          Actual Mongo/PG lower and preview ports: identity, query/projection/refusal,
+          persistence results, independent scope/transactions and logical events.
       - no-gate: >
-          No current-head cross-backend contract instrument exists for this scope.
-          Build actual Mongo/PG parameterized tests and read-only gates; wrong
-          identity/projection, cross-bound handle and false write-outcome controls
-          must fail. Planning/source review is not acceptance.
+          The bounded current-port corpus is measured separately. Full portable
+          schema/readiness, every domain/query/error/retry capability, import
+          order and stable backend composition remain unfinished; the historical
+          proposal is not a universal implemented interface.
     blocks_on: []
     evidence:
+      - tools/lab/multitenant-next-slices/README.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
       Dispatched 2026-11-05 from R41; new parameterized contract tests and module-facing
@@ -25049,19 +25064,27 @@ items:
     review: maintainer; architecture, storage and compatibility review
     operator_visible: ''
     semver: n/a
-    semver_reason: Planning only; implementation and release placement require their acceptance.
+    semver_reason: Bounded dormant characterization; full composition and release placement remain separate.
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 925c95278ed04954d1181201da79ae5d6c48c095
+        kind: integration
+        describe: >
+          Independent refreshed nonresident single replay: actual write/timer
+          triggers, selected alarm/properties cohorts, resend cadence, fake
+          delivery/no-egress and teardown; no production subscriber switch.
       - no-gate: >
-          Current-head profile replay and alarm cohort acceptance remain unmeasured
-          here. Refresh actual PR 8891 head, replay actual triggers against resident
-          output, exercise resend modes and quiet alarms, rehearse revert.
+          The selected current-head replay is measured by the bounded gate.
+          Complete alarm/writer cohorts, logical no-op subscriber policy, live
+          database-stat freshness and final integration/release placement remain open.
           Timer/write-trigger suppression, shortened window and
           request-time-properties controls must fail; historical replay/cost is not
           current evidence.
     blocks_on:
       - ST-WRITES
     evidence:
+      - tools/lab/multitenant-next-slices/README.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
       Dispatched 2026-11-05 in an owned refresh/replay lane, separate from the

@@ -1,5 +1,5 @@
 {
- "measured": "tenancy reconciled 2026-11-05: local 94c57f1f/R41 accepted, published draft #8898 ded254b9/R40; historical compatibility has its own source pins. Other tracks retain their historical measurements; component claims and M0\u2013M6 promotion remain separate",
+ "measured": "2026-11-05: local REST d4570e58/R42 and independent single nonresident 925c9527/R43; published draft #8898 remains ded254b9/R40. Other tracks retain historical pins; bounded component evidence does not promote M0\u2013M6",
  "tracks": [
   {
    "id": "storage",
@@ -302,14 +302,24 @@
    "phase": "intent",
    "state": "progress",
    "short": "one-tenant computed profile",
-   "title": "A single-tenant start profile with no resident ddata: the api profile plus an in-process bus, plugins and notifications. After each write and on a timer at single's cadence it computes the alarms view, and it serves the properties view on request. single is unchanged (D-EXEC-PROFILE)",
-   "where": "lib/server/bootevent.js profiles, lib/data/views/, notifications",
-   "check": "replay lab through the profile's trigger at 0 differing minutes per dataset, differences classified as defect or timing; the execution plan \u00a77b cases; break-it controls (no timer tick, a 10-newest device-status window); resident against computed cost measurements and their break-even",
+   "title": "Explicit single/nonresident prototype: actual physical-write and heartbeat evaluation, retained cycle properties and fake delivery handoff; default single remains resident. No multitenant evaluator or production subscriber change.",
+   "where": "scripts/views-profile-server.js, lib/server/bootevent.js and nonresident.js, tests/views-profile.test.js",
+   "check": "R43 current-head full/default-browser plus selected alarm/properties/trigger/resend/teardown replay and timer/write/window/freshness controls. Full cohorts/writers, live DB-stat freshness and runtime cost remain unmeasured.",
    "depends": [
     "ST-VIEWS"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8891",
-   "ref": "Draft PR #8891 at 744d1968 (dev f54941b5 merged in; npm test 6043/0/3), opened with provisos (replay on this head, trigger event, release placement, quiet-hardware cost); measured on proto/views-nonresident 908351d4 on 7b4b724c (#8875 with dev 37b2280f). Properties are computed in the same pass as alarms and only the properties result is kept (maintainer, 2026-10-31, option A). Replay through the profile's trigger: alarms and properties each 0 differing minutes over 126,092 minutes (24 runs each, r2 noise floor 0); every upload minute fired a write event. Execution plan \u00a77b cases 15/15. Controls red: tick off, device-status window at the 10 newest, tamper, shrink, properties computed on request (5 minutes, sensorState.notification). single with the opt-in set stays resident. Revert rehearsed. Cost, indicative (load 1.7-5.1 on 16 cores, MongoDB 7.0.43, Node 22.23.4): per evaluation the profile uses about 1.4-2x the CPU of resident and reads 60-1,360 KB against 0.02-20 KB; it keeps 6-11 KB of properties against 177-2,230 KB of resident heap; viewer reads cost the same. Break-even 1.2-2.4 CPU-seconds per MB-hour of memory: below that price ratio resident is cheaper. Both arms evaluate on a 60 s tick, so neither idles. The write trigger needed counts only."
+   "ref": "Independent local 925c9527/R43 refreshes draft #8891 against dev 4a482627. Physical subscriber retained; logical acknowledge/refuse-only intent cadence remains open. Not joined into #8898 or admitted to the RC.",
+   "spec": [
+    {
+     "label": "R43 independent acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05"
+    },
+    {
+     "label": "architecture execution plan",
+     "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
+    }
+   ]
   },
   {
    "id": "ST-PG",
@@ -319,12 +329,16 @@
    "short": "PG REST ports / import",
    "title": "Published preview reuses shipping legacy and API3 handlers over tenant-bound PostgreSQL/RLS, shared intent rules and explicit domain catalogues. R40 adds derived reads and pinned client patterns; complete storage/import/resource parity remains open.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
-   "check": "R41 strict mixed-version edit/retry/conditional/delete-history differentials and cumulative full tests; historical release/dev/PR-single experiment separately pins ded254b9. Full import/resource/identity-family acceptance remains open",
+   "check": "R42 current Mongo/PG lower and preview port contracts, strict HTTP/client differentials and full regression. Explicit refusals and typed identity retained; natural/import ordering and all resource bounds remain open.",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Local 94c57f1f/R41 extends published ded254b9/R40; current compatibility, historical comparison and milestone promotion have distinct scopes.",
+   "ref": "Local d4570e58/R42 extends published ded254b9/R40. Actual port capabilities and direct bounded historical comparison measured; full storage/import/resource acceptance remains open.",
    "spec": [
+    {
+     "label": "R42 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+    },
     {
      "label": "R41 local acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
@@ -747,13 +761,17 @@
    "state": "progress",
    "short": "Tenant-scoped auth",
    "title": "Current tenant credentials, grants and subject metadata compose with actual v1/v2/v3 and derived HTTP through the explicit CLI/PG/Vault preview. Production identity and administration/lifecycle remain incomplete.",
-   "ref": "R41 local 94c57f1f adds subject mutations and same-credential next-operation revocation; published preview remains ded254b9. Management HTTP/policy and production trust remain open.",
+   "ref": "Current-source authority and separate management acceptance in R42 at local d4570e58. Published preview remains ded254b9; production identity/owner ceilings/lifecycle remain open.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R42 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+    },
     {
      "label": "R41 local acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
@@ -774,8 +792,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "R41 accepts the local cumulative subject/compatibility continuation; separate historical comparison has explicit bounded scope. Full M3 remains blocked on complete M1/M2; passing narrow campaigns do not promote it.",
-   "ref": "Local 94c57f1f/R41, published ded254b9/R40. Owner HTTP, remaining side effects/client binaries/import/resources/lifecycle remain open.",
+   "title": "R42 bounded cumulative REST/management/contract acceptance and independent R43 profile evidence are recorded separately. Full M3 remains blocked on complete M1/M2.",
+   "ref": "Local R42 d4570e58; independent profile 925c9527/R43 is not joined. Remaining side effects/client binaries/import/resources/lifecycle and full listener acceptance remain open.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -783,6 +801,10 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R42 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+    },
     {
      "label": "R41 local acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
@@ -822,9 +844,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current policy / settings",
-   "title": "R41 accepts dormant persisted subject update/delete and known-role assignment alongside selected current grants/settings. Next management HTTP, ceilings, stable role-ID semantics and full owner catalogue; no owner route is enabled.",
-   "ref": "Local 94c57f1f; archived subject gate PASS/NON-VACUOUS. No production M2 or full administration claim.",
+   "title": "R42 preserves persisted subject update/delete and known-role service semantics using shared validation, with a separate authenticated HTTP factory. Human identity, owner ceilings, full roles/settings and listener enablement remain open.",
+   "ref": "Local d4570e58/R42; subject and management gates PASS/NON-VACUOUS. No production M2 or full administration claim.",
    "spec": [
+    {
+     "label": "R42 local acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
+    },
     {
      "label": "R41 local acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05"
@@ -855,6 +881,77 @@
     {
      "label": "architecture",
      "href": "../tenancy/single-and-multitenant-architecture.md"
+    }
+   ]
+  },
+  {
+   "id": "ARCH-SEAM-CONTRACT",
+   "track": "storage",
+   "phase": "intent",
+   "state": "progress",
+   "short": "Measured port contract",
+   "title": "Actual Mongo/PG port contract characterized; full portable schema/error/retry capability review continues.",
+   "depends": [],
+   "ref": "R42/R43 own the current bounded evidence; no SQLite dispatch or new RC gate.",
+   "spec": [
+    {
+     "label": "architecture execution plan",
+     "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
+    }
+   ]
+  },
+  {
+   "id": "ARCH-SEAM-COMPOSE",
+   "track": "storage",
+   "phase": "multi",
+   "state": "planned",
+   "short": "Domain/backend composition",
+   "title": "Next: split domain metadata from PG factories/catalogues/readiness and classify storage failures independently of HTTP rendering. Preserve measured refusals.",
+   "depends": [
+    "ARCH-SEAM-CONTRACT"
+   ],
+   "ref": "R42/R43 own the current bounded evidence; no SQLite dispatch or new RC gate.",
+   "spec": [
+    {
+     "label": "architecture execution plan",
+     "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
+    }
+   ]
+  },
+  {
+   "id": "ARCH-SEAM-CONSOLIDATE",
+   "track": "storage",
+   "phase": "multi",
+   "state": "planned",
+   "short": "Proven helper consolidation",
+   "title": "Extract only measured common projection/filter/transaction/event/error mechanics; retain source-specific ordering and representation differences.",
+   "depends": [
+    "ARCH-SEAM-COMPOSE"
+   ],
+   "ref": "R42/R43 own the current bounded evidence; no SQLite dispatch or new RC gate.",
+   "spec": [
+    {
+     "label": "architecture execution plan",
+     "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
+    }
+   ]
+  },
+  {
+   "id": "ARCH-DERIVED-FRAME",
+   "track": "tenancy",
+   "phase": "multi",
+   "state": "planned",
+   "short": "Shared frame / policies",
+   "title": "Future join: share bounded materialization/calculation primitives while retaining REST authorization, evaluator freshness and no-egress policies. Durable recovery remains M5.",
+   "depends": [
+    "ST-VIEWS-PROFILE",
+    "ARCH-SEAM-COMPOSE"
+   ],
+   "ref": "R42/R43 own the current bounded evidence; no SQLite dispatch or new RC gate.",
+   "spec": [
+    {
+     "label": "architecture execution plan",
+     "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
     }
    ]
   }

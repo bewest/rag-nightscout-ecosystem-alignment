@@ -10,7 +10,7 @@ const { execFileSync, spawnSync } = require('node:child_process');
 const { setTimeout: delay } = require('node:timers/promises');
 const alignment = path.resolve(__dirname, '../../..');
 const root = path.resolve(process.env.CRM_REST_WORKTREE ||
-  path.join(alignment, 'externals/work/crm-codex-rest-integration-20261105'));
+  path.join(alignment, 'externals/work/crm-codex-rest-integration-next-20261105'));
 const mode = process.argv[2] || 'focused';
 const modes = new Set(['focused', 'all', 'browser', 'migration']);
 const docker = args => execFileSync('docker', args, {
@@ -23,6 +23,7 @@ const focused = [
   'tenant-rest-client-replay.integration.test.js', 'tenant-rest-authority-review.test.js',
   'credential-extraction.test.js', 'tenant-rest-authority.test.js', 'storage-trusted-ports.test.js',
   'tenant-write-clock.test.js', 'subject-admin.test.js', 'subject-admin-postgres.integration.test.js',
+  'subject-management-http.integration.test.js', 'storage-port-contract.integration.test.js',
   'tenant-legacy-credentials.test.js', 'postgres-collection-intent.test.js', 'postgres-filter.test.js',
   'postgres-entries-read.test.js', 'postgres-entries-write.test.js', 'test-backends.test.js'
 ].map(name => 'tests/' + name);
@@ -86,6 +87,7 @@ const focused = [
       NS_REST_DEVICE_ACTIVITY_TEST: '1', NS_REST_CONTEXT_HTTP_TEST: '1', NS_REST_DERIVED_HTTP_TEST: '1',
       NS_REST_AUTHORITY_REVIEW_TEST: '1', NS_REST_CLIENT_REPLAY_TEST: '1',
       NS_SUBJECT_ADMIN_POSTGRES_DOCKER_TEST: '1',
+      NS_SUBJECT_MANAGEMENT_HTTP_DOCKER_TEST: '1', NS_STORAGE_PORT_CONTRACT_DOCKER_TEST: '1',
       NS_MULTITENANT_PREVIEW_PROCESS_DOCKER_TEST: '1', NS_TENANT_CREDENTIAL_HTTP_DOCKER_TEST: '1',
       NS_TEST_POSTGRES_ADMIN_URI: 'postgres://operator:' + password + '@127.0.0.1:' + pgPort + '/rest_preview_test',
       CUSTOMCONNSTR_mongo: mongoURI, NS_PROFILE_FOOD_VAULT_ADDRESS: address, NS_PROFILE_FOOD_VAULT_TOKEN: token };

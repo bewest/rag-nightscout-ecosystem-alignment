@@ -22,6 +22,16 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: contract and management HTTP accepted; profile independently refreshed (2026-11-05)
+
+| Work / state | Evidence and remaining boundary |
+|---|---|
+| Local REST `d4570e585d0e12e46386ed26772790b269b2b736` accepts storage-port characterization and separate management HTTP over R41. | [R42](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05): parent full7015/80pending/0failing, restored focused233 and default browser684 on application-identical precursor pass. Real lower/preview/Mongo capabilities and management persistence/current-grant tests have semantic controls. Full-run subscriber guard's Markdown false positive was corrected and real-listener/fail-closed controls verified. No management listener/identity/ceilings or full REST claim. |
+| Independent #8891 refresh `925c95278ed04954d1181201da79ae5d6c48c095` is locally accepted for its bounded prototype scope. | [R43](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05): full6676/3pending/0failing, default browser684 and actual-trigger replay24 pass; timer/write/window/freshness controls red then restored. Physical subscriber retained; logical no-op policy, all writers/cohorts, live stats, runtime cost and placement remain open. Not joined into #8898. |
+| Five selected current-source queue gates PASS with five NON-VACUOUS controls. | Updated authority/subject gates plus bounded port, management and independent profile instruments. Each card's broader no-gate acceptance remains open. Current interface/write-contract amendments retain old captures while defining measured capabilities. [Current next work](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-contract-management-and-independent-profile-wave-2026-11-05) is backend/domain and error/HTTP composition, then proven consolidation and wider acceptance. |
+| [Direct final-head bounded historical capture](../../reports/compat-rest-next-2026-11-05/README.md) accepted in its stated scope. | Parent re-audit reproduces aggregate byte-for-byte; actual final candidate repeated against this campaign's fresh release/dev repeats, dependency provenance and mutation controls. Prior unverified driver prose corrected, old pins/aggregate preserved. Omitted families and historical residuals remain explicit; no transitive old-release-to-PG claim. |
+| Final CRM prchecks OK; both source trees clean and local/unpushed. | Published PRs remain #8898 ded254b9 and #8891 744d1968; fresh remote CI is required after maintainer publication. Local `externals/work/HANDOFF-rest-next-20261105.md` indexes lane artifacts, controls, heads and copy/paste commands. No new RC scope, role enablement, milestone promotion, upstream comment/dismissal or SQLite dispatch. |
+
 ### Update: next bounded REST, storage-contract and profile lanes dispatched (2026-11-05)
 
 | Work / state | Basis and boundary |

@@ -2,7 +2,9 @@
 
 *Contributor-facing.* **Snapshot, 2026-10-07. Status: draft specification for queue `WRITE-CONTRACT`;
 the maintainer decided §6 on 2026-10-12 (§6.1), with Q3 to be confirmed by measurement; Q1b, the
-`null` rule, is decided with its scope as of 2026-10-26 (§6.1) and ships in 16.0.0.** Nothing here is implemented. Measured against
+`null` rule, is decided with its scope as of 2026-10-26 (§6.1) and ships in 16.0.0.**
+The original proposal/implementation statements describe that captured baseline;
+§9 records current admitted implementation without changing old measurements. Measured against
 `cgm-remote-monitor` `official/dev` `43289dde` (the merge of #8806) and `official/master` `92d08342`
 (tag `15.0.8`); the as-built storage interface is `seam/t1-2-storage-interface` `81a1f6ce`. The
 decisions this builds on are in the
@@ -744,6 +746,39 @@ The harness writes; it must never be pointed at a real site. It stores no creden
 secret is generated per run.
 
 ---
+
+## 9. Current shared intent and backend capabilities (2026-11-05)
+
+Current-source amendment at local CRM
+`d4570e585d0e12e46386ed26772790b269b2b736`. Historical proposed signatures,
+policy tables and September/October adapter limitations above do not define
+today's defaults. The maintained [identity](../platform/spec/identity.md) and
+[sync-transport](../platform/spec/sync-transport.md) specifications, release
+decisions and actual `lib/storage/write-intent.js` own those rules.
+
+Trusted PG adapters use `forCollectionResolved(storage, logical, source, {env})`,
+reusing shipping intent rules. Persistence operations return real counts; the
+intent layer resolves per-item outcomes, IDs and source/version behavior.
+Physical `write-step.js` and logical `write-intent.js` remain distinct. Logical
+events describe a resolved intent, including no-op results; per-driver events
+remain backend instrumentation. A mutating PG `write` publishes after its owned
+commit, with no event after failed commit. A resolved no-op `settle` can publish
+without a database write/commit; the logical event does not itself prove a
+physical mutation. This is not durable interprocess recovery.
+
+The [current port amendment](nightscout-storage-seam-interface-2026-09-14.md#11-current-admitted-ports-and-independent-scopes-2026-11-05)
+separates typed/raw versus shown identity, query/projection capabilities and
+tenant binding versus transaction ownership. Similarly named methods do not
+give MongoCollection and PG ports identical guarantees: Mongo scope does not
+add row filtering or multi-operation rollback; a PG intent refuses to claim an
+outer caller's uncommitted transaction.
+
+Archived real-port tests and projection/binding/outcome controls characterize
+the bounded common surface. Actual HTTP/client-pattern tests retain independent
+reply/stored-result expectations, intentional RC corrections and legacy quirks.
+They do not establish every collection, partial-write, collapsed-event,
+network-loss retry or historical compatibility property. Helper consolidation
+must not widen queries, strengthen preconditions or change resend defaults.
 
 ## Appendix: divergence by group, `dev` `43289dde`
 

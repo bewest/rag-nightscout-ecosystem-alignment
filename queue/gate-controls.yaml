@@ -2969,9 +2969,9 @@ controls:
       the same containment against official/master (v15.0.9), which does
       not carry #8870, exits 1 (measured 2026-10-27).
 
-  - gate: node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3
-    control: node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3 --control current
-    positive-control: node tools/queue/gates/multitenant-subject-admin.js --ref 94c57f1f37370215ef25b69691ef63918c876db3
+  - gate: node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736
+    control: node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736 --control current
+    positive-control: node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736
     control-kind: integration
     proves: >
       Scratch-only current-grants bypass accepts the earlier JWT after
@@ -2979,12 +2979,36 @@ controls:
       fails true versus false. Tenant-binding and transaction controls
       are independently measured by the same gate; no shipping tree changes.
 
-  - gate: node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6
-    control: node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6 --control authority
-    positive-control: node tools/queue/gates/multitenant-rest-authority.js --ref ded254b9acf5a94e3a4fd99c85b23e1413fa08b6
+  - gate: node tools/queue/gates/multitenant-rest-authority.js --ref d4570e585d0e12e46386ed26772790b269b2b736
+    control: node tools/queue/gates/multitenant-rest-authority.js --ref d4570e585d0e12e46386ed26772790b269b2b736 --control authority
+    positive-control: node tools/queue/gates/multitenant-rest-authority.js --ref d4570e585d0e12e46386ed26772790b269b2b736
     control-kind: integration
     proves: >
       Remove current persisted grant checks only in an archived scratch tree;
       revoked POST and unavailable-authority GET incorrectly return success,
       failing actual HTTP assertions. Audience ablation is independently
       exercised and recorded as a second control. No shipping worktree writes.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite port --ref d4570e585d0e12e46386ed26772790b269b2b736
+    control: node tools/queue/gates/multitenant-next-slices.js --suite port --ref d4570e585d0e12e46386ed26772790b269b2b736 --control projection
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite port --ref d4570e585d0e12e46386ed26772790b269b2b736
+    control-kind: integration
+    proves: >
+      Scratch-only wrong PG projection returns null for a retained label;
+      the actual port assertion detects the value mismatch.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite management --ref d4570e585d0e12e46386ed26772790b269b2b736
+    control: node tools/queue/gates/multitenant-next-slices.js --suite management --ref d4570e585d0e12e46386ed26772790b269b2b736 --control auth
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite management --ref d4570e585d0e12e46386ed26772790b269b2b736
+    control-kind: integration
+    proves: >
+      Scratch-only credential bypass permits a management mutation where
+      the actual HTTP assertion requires 401; persisted effects are observed.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 925c95278ed04954d1181201da79ae5d6c48c095
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 925c95278ed04954d1181201da79ae5d6c48c095 --control tick
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 925c95278ed04954d1181201da79ae5d6c48c095
+    control-kind: integration
+    proves: >
+      Suppress the actual evaluator fixture timer: the quiet stale-data
+      cohort misses its required evaluation. Not a production subscriber switch.

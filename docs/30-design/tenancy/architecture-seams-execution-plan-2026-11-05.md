@@ -1,7 +1,9 @@
 # Architecture seams and execution-profile integration
 
 *Contributor-facing execution plan, 2026-11-05. Authorized priority work;
-implementation and acceptance remain UNMEASURED. Item states, gates and blockers
+bounded R42 contract/management and independent R43 profile evidence is now
+recorded; broader composition/consolidation/frame acceptance remains UNMEASURED.
+Item states, gates and blockers
 live in [the work queue](../../../queue/work-queue.yaml). This plan supplements
 the [REST delivery roadmap](multitenant-delivery-roadmap-2026-11-02.md), without
 changing release placement or promoting M0–M6.*
@@ -58,6 +60,22 @@ error wrappers and migration/tier registration. No composition/consolidation
 agent is dispatched yet. New lanes own new files or profile-specific source;
 owned services and private dependencies remain separate. Stop and report source
 or policy mismatches; partial instrumentation never promotes a milestone.
+
+## Accepted checkpoint and next ownership
+
+The dispatch slices above delivered local REST `d4570e58` (R42) and independent
+profile `925c9527` (R43). The [integration record](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
+owns measurements, corrections and limits. Three archived suite instruments
+measure the bounded port, separate management and profile scopes; current
+authority/subject gates also run against the new REST head. Five representative
+controls are NON-VACUOUS. This does not complete their broader cards or M0–M6.
+
+Next composition work reserves domain-catalogue, backend factory/schema/readiness
+and storage-error classification boundaries with the coordinator. Preserve the
+measured lower/preview projection differences and independent transaction scope;
+do not combine extraction with new query or write policy. #8891 keeps its current
+physical subscriber while logical no-op/outcome and full-writer replay continue.
+Its branch remains separate from REST and release placement. SQLite stays deferred.
 
 ## Contract packet: ARCH-SEAM-CONTRACT
 
