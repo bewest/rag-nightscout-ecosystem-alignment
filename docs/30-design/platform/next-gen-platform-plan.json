@@ -1131,7 +1131,7 @@
    "state": "progress",
    "short": "Durable runtime / replay",
    "title": "B7 direction is adopted. R62 accepts dormant typed current-row replay/recovery; R67 clinical and R68 fresh-schema DATA controls are bounded local evidence. M5/M6 remain open.",
-   "ref": "Local joined owner/clinical/DATA candidate is in verification. No live scheduling/current stream authority, ack/notification/provider/lease/capacity or rollout accepted. Fresh-schema prototype rejects populated migration; no downmigration or imported past ordering.",
+   "ref": "Local joined owner/clinical/DATA candidate is in verification. No live scheduling/current stream authority, ack/notification/provider/lease/capacity or rollout accepted. Fresh-schema prototype rejects populated migration; no downmigration or imported past ordering. Transaction final-floor event stamps are adopted; local separate payload implementation awaits broader verification.",
    "spec": [
     {
      "label": "R62/R64 published acceptance and verification",
