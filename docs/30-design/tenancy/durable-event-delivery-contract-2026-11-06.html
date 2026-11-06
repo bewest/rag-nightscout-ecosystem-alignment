@@ -5585,7 +5585,14 @@ to the table above; they are not line references into the joined source.</p>
    of the write it describes before it is an interprocess message. At
    <code>35903069</code> it carries neither (<code>write-intent.js:4676-4677</code>); D-EVENT question
    3 already reserved "later the tenant". A consumer that receives an event
-   without a stamp treats it as a wake-up only and reads from its checkpoint.</li>
+   without a stamp treats it as a wake-up only and reads from its checkpoint.
+   <strong>Built</strong> on lane <code>codex/event-payload-20261106</code> (head <code>4b5edf02</code>, three commits
+   over <code>65bb8456</code>, unpushed): <code>withCommitEvents.write</code> captures the tenant from the
+   bound scope and the stamp from a new <code>connection.currentStamp()</code> on the clock
+   decorator when the nested write resolves; settle, Mongo and clock-off carry null.
+   Unit 9 passing, controls red for a null stamp (7 / 2) and a remembered tenant (6 / 3),
+   focused <code>clock</code> run 28 / 1 / 0; the Mongo-gated case is UNMEASURED. The figures are
+   the lane's own (<code>HANDOFF-event-payload-20261106.md</code>), not re-run here.</li>
 <li>Commit coupling: the stamp is allocated inside the data transaction and held
    to <code>COMMIT</code> (clock proof plan "Proposed invariant"; <code>postgres-write-clock.js:52</code>
    per the HTTP report, <strong>read-derived</strong> at the clock head); publication
@@ -5954,6 +5961,10 @@ that goes red for a setup reason is not evidence (clock proof plan). All are
 <tr>
 <td>the storage shape and retention of per-tenant ack/snooze rows</td>
 <td>separate gate per the roadmap; the writer is settled by D23 (<code>api</code>, via the <code>realtime</code> forward)</td>
+</tr>
+<tr>
+<td>which floor the event carries when an outer transaction allocates more stamps after a nested write resolved: the write's own floor (as built, at most the final floor) or the transaction's final floor (readable from the clock state in the after-commit callback)</td>
+<td><strong>open for the contract owner</strong>; the built behavior is the write's own floor, flagged by the payload lane and not changed. Either choice keeps §3 ordering, because both floors commit together; the difference is only which stamp names the event</td>
 </tr>
 <tr>
 <td>anything about single-tenant MongoDB</td>
