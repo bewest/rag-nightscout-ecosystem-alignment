@@ -203,6 +203,13 @@ items:
           every-form identities, savepoints, actual lock/identifier races,
           shared v3 rules and post-commit events. Order-only replacement counts
           follow JSONB equality; exact BSON-order parity is not required.
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c
+        kind: integration
+        describe: >
+          R51 bounded actual settings differential:12checks on exact33870764,
+          current authority, scalar predicates, projection and five-key sort;
+          six-key and unsupported regex/dotted shapes refuse. No full ST-PG,
+          client binary, performance or replica-history acceptance.
       - no-gate: >
           Binding/pooler, entries schema/RLS and one-time API importer slices
           are measured, not full M1 acceptance. Published R40 tip ded254b9 retains executable API3 entries
@@ -222,6 +229,9 @@ items:
       - tools/lab/postgres-foundation/README.md
       - tools/lab/postgres-foundation/results.json
     notes: >
+      R51 2026-11-06:33870764 bounded settings accepted and exact root FF;
+      full7089/80pending/0failure/browser684/prcheckOK. Archived12 and semantic
+      sortcap/predicate/projection controls restored12. Broader ST-PG remains open.
       Current 2026-11-04: R38/R39 capture executable entries CRUD/history
       and selected legacy/API3 domains; R40 adds derived reads and pinned
       client patterns at published draft ded254b9. Import, complete

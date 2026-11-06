@@ -1,8 +1,9 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing living plan. Tenancy progress reconciled 2026-11-05 against
+*Contributor-facing living plan. Tenancy progress reconciled 2026-11-06 against
 cgm-remote-monitor dev `4a482627`, published draft #8898 `bc4ee1a9` (R44),
-local frame continuation `1c55098a` (R49, full/browser regression accepted), published independent #8891 `dff9a8d4` (R45) and local evaluator acquisition
+local settings continuation `33870764` (R51, exact root integration tree, full/browser accepted),
+preceded by frame `1c55098a` (R49), published independent #8891 `dff9a8d4` (R45) and local evaluator acquisition
 `5173864d` (R50). R46/R47 remain the accepted preceding baseline. Actual frame
 acquisition/concurrent reads are characterized; shared implementation remains open.
 Storage/identity/registration measurements below retain their named historical
@@ -22,6 +23,25 @@ This plan covers the work that follows the 16.0.0 modernization:
 It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.
 
 ## 1. Where things stand
+
+### Accepted settings and remaining serial proof (2026-11-06)
+
+R51 `33870764` is incorporated as the exact root integration tree: full7089/
+80pending/0failure, browser684 and final prcheckOK. Parent archived12 and three
+semantic controls/restored12 pass. The only product change is global PG sort
+cap4→5; six-key sorts refuse and broader settings/client/resource proof remains
+open. Earlier Vault-mount setup failure is recorded, not accepted. R49 and
+independent R50 remain their historical accepted captures; no profile join.
+
+Authorized inventory cleanup completed3779/3779 with0errors/no outside-inventory
+loss. Selected cleanup smoke4 and settings gate audits15containers/25volumes verify
+bounded removal;40unknown nested volumes remain preserved. B slot released;
+A fresh full active, D/C/clock queued. A/C/D/clock are unaccepted; D's measured
+history gap remains unfixed. The [adopted clock proof plan](../tenancy/postgres-tenant-clock-proof.md)
+is source preparation, with commit-boundary proof, contention and fresh-ingestion
+latency unmeasured. No milestone promotion or full combined acceptance follows.
+See the [R51 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-settings-differential-and-serial-recovery-2026-11-06).
+The prior HOLD table below is explicitly its2026-11-05 historical capture.
 
 ### NEXT lanes under shared capacity HOLD (2026-11-05)
 

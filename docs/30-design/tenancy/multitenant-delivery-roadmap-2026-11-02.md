@@ -11,7 +11,7 @@ in the [priorities assessment](../../10-domain/nightscout-multitenancy-prioritie
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.
 
-## Current status and parallel ownership (2026-11-05)
+## Current status and parallel ownership (2026-11-06)
 
 **Use the [working dashboard](multitenant-delivery-dashboard.md) for current
 milestone dependencies, parallel lanes, next gates and slice acceptance stages.**
@@ -25,13 +25,13 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted local cumulative REST head is `1c55098a`
-([R49](../remedial/rc-16.0.0-integration-record.md#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05));
-it remains unpushed. Published #8898 is OPEN/draft at R44 `bc4ee1a9`;
-independent #8891 is OPEN/draft at R45 `dff9a8d4`. Both published heads retain successful CI/CodeQL at the prior capture; this
-capacity-hold update makes no fresh remote-check claim. Independent local R50 `5173864d`
-extends actual evaluator acquisition/retention characterization without joining REST or enabling a role.
-[R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+promotion is recorded. The latest accepted local cumulative REST head is `33870764`
+([R51](../remedial/rc-16.0.0-integration-record.md#r51---bounded-settings-differential-on-33870764-2026-11-06));
+root integration fast-forwarded the exact tested tree. R49 remains its historical
+capture. Published #8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain draft/open
+at the coordinator's2026-11-06 capture; no candidate CI is claimed. Independent
+R50 `5173864d` extends actual evaluator acquisition/retention without joining REST
+or enabling a role. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
@@ -43,6 +43,56 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted settings differential and serial recovery (2026-11-06)
+
+R51 accepts bounded settings at `33870764`: full7089/80pending/0failure,
+default browser684, tier registration503files/8tiers and final prcheckOK. Root
+`codex/serial-integration-20261106` fast-forwarded the exact tested application
+head. R49 REST `1c55098a` and independent R50 profile `5173864d` remain their
+unchanged historical captures; profile is not joined. Published drafts #8898
+`bc4ee1a9`/#8891 `dff9a8d4` remain open on `4a482627` at the2026-11-06 remote
+capture; candidate CI is not claimed.
+
+The only product edit raises global PG sort cap4→5 for requested scalar plus
+four stable tie breakers; six-key sorts refuse. Actual settings focused12 and
+parent archived12/restored12 pass. Sortcap control fails0/1 with HTTP500vs200;
+predicate control0/1 exposes a distractor; projection control0/1 leaks raw private
+fields. Regex/dotted predicates retain explicit sanitized PG500 capability
+refusals. Synthetic single-process patterns are not client binaries, complete
+backend parity, replica history/revision or measured performance.
+
+The earlier full attempt at `0a4a7d59` failed actual fixture setup: duplicate
+Vault transit mount400, reproduced by the settings+profile/food pair12passes+
+setup failure. Unique owned mount naming and owned-only cleanup fix the fixture;
+final pair25/0 and two focused12 repeats pass at338. This was not ENOSPC; failed
+full attempts remain unaccepted. Application source after0a is unchanged.
+
+Authorized cleanup audit records3779inventoried/deleted,0missing/preserved/errors
+and no outside-inventory loss. Four actual cleanup-block cases cover success and
+controlled removal failure, continued attempts, private0700/0600 diagnostics and
+six owned anonymous volumes independently absent. Five settings gate audits
+verify15owned containers and25recorded volumes absent. B's75recorded volumes are
+absent and219preserved volumes remain;40unknown nested volumes stay inventoried
+and untouched. These are bounded infrastructure results, not complete leak freedom.
+New canonical all flags await a future combined campaign.
+
+B released its slot; **A fresh full active → D → C → clock queued**. A `e5fe0b5e`
+is unaccepted after its incomplete ENOSPC/NUL/truncated exit7 campaign; prior
+bounded14/4/browser684 stays scoped and alignment `334dc571` is NOT JOINED.
+D `714f6c8b` remains unaccepted and its [measured history gap](../../../reports/tenancy/rest-replica-history-characterization-2026-11-05.md)
+at `2a6eaf73` is unfixed. C `3106f14d` has static preparation only, with new
+DB/full/browser/prcheck pending. Existing accepted R48 is retained.
+
+The maintainer adopted the [transactional tenant-clock proof direction](postgres-tenant-clock-proof.md).
+Separate source prototypes, independent HTTP proof and contention/fresh-ingestion
+latency measurements are unmeasured; no clock implementation is production enabled.
+Root owns joins and final cumulative acceptance. R51 and its bounded ST-PG gate
+promote no milestone; wider M0–M6 and all remaining lanes remain open.
+Local evidence is in `HANDOFF-settings-verification-20261106.md`,
+`HANDOFF-cleanup-settings-runtime-20261106.md` and their home scratch logs;
+counts above are reproduced in those logs and independently read for this record.
+The2026-11-05 HOLD table below is a historical capture, not current slot status.
 
 ### Next lanes and shared capacity hold (2026-11-05)
 

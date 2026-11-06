@@ -3110,3 +3110,24 @@ controls:
       the actual configured-executable HTTP assertion. Audience, session and
       stale-snapshot controls are independently recorded in R48; production
       sources remain unchanged.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c
+    control: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c --control sortcap
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c
+    control-kind: integration
+    proves: >
+      Restore cap4 in actual PG compiler; five-key actual API search returns500instead of200.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c
+    control: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c --control predicate
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c
+    control-kind: integration
+    proves: >
+      Bypass actual predicate compilation; exact-row assertion exposes distractor.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c
+    control: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c --control projection
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c
+    control-kind: integration
+    proves: >
+      Bypass actual storage projection; synthetic private sibling leaks into raw result.

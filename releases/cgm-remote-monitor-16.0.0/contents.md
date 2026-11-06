@@ -1459,3 +1459,18 @@ Machine-local untracked references: `externals/work/HANDOFF-next-lanes-20261105.
 `externals/work/HANDOFF-private-acquisition-extraction-20261105.md`,
 `externals/work/HANDOFF-settings-differential-20261105.md`,
 `externals/work/HANDOFF-rest-replicas-20261105.md`.
+
+
+### Update — accepted settings and serialized recovery (2026-11-06)
+
+| Scope | Reproduced evidence, independently read from owned logs | Remaining work |
+|---|---|---|
+| R51 settings `33870764` | Root integration FF exact tested tree; full7089/80pending/0failure, browser684, tier503files/8tiers, final prcheckOK. Parent archived12/three semantic controls/restored12. | Only global PG sort cap4→5 product change. Six-key refusal, regex/dotted PG500 limits, performance/client/replica scope remain explicit. No milestone promotion. |
+| Failure and correction | Earlier0a full Vault duplicate-mount400; ordered pair12+setupfailure. Fixture-only unique owned mount/cleanup correction gives25/0 and final full acceptance. | Failed campaign not accepted or classified ENOSPC. R49/R50 historical captures unchanged; independent profile not joined. |
+| Bounded cleanup | Authorized inventory3779deleted/0errors/no outside-inventory loss; smoke4realcases/sixvolumesabsent; gate audit15containers/25volumesabsent/private0700/0600. B75recordedvolumes absent,219preserved remain. | Unknown40nested volumes preserved; no complete leak-freedom claim. Canonical new all flags await future combined execution. |
+| Next serial lanes | B released; A fresh full active; D/C/clock queued. | A/C/D/clock unaccepted. D history gap unfixed; adopted clock proof/source preparation and contention/latency unmeasured. Root owns cumulative joins/acceptance. |
+
+[R51 and serial continuation](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-settings-differential-and-serial-recovery-2026-11-06)
+links the adopted proof plan and scope. Local evidence: `HANDOFF-settings-verification-20261106.md`
+and `HANDOFF-cleanup-settings-runtime-20261106.md`; raw Docker identifiers remain local.
+No operator runtime deployment, release admission, candidate CI or application push claimed.
