@@ -224,6 +224,17 @@ try {
         NS_SETTINGS_VAULT_ADDRESS: 'http://127.0.0.1:' + vaultPort, NS_SETTINGS_VAULT_TOKEN: token });
     }
   }
+  // The extraction moves cache allocation into a private helper. Keep the old
+  // shared-cache mutation for historical trees; on extracted trees leak actual
+  // acquired SGVs into the caller cache at completion. The common exact-match
+  // check below refuses a missing/ambiguous mutation instead of skipping it.
+  if (suite === 'frame-acquisition' && control === 'cache' &&
+      fs.existsSync(path.join(scratch, 'lib/data/private-acquisition.js'))) {
+    selected.controls.cache = ['lib/data/views/index.js',
+      '      done(null, { name, now, ddata, queries });',
+      "      ctx.cache.insertDataRef('entries', ddata.sgvs);\n      done(null, { name, now, ddata, queries });",
+      'pg retains raw typed identity'];
+  }
   if (control) {
     const [file, before, after] = selected.controls[control];
     if (file === 'env') runtime[before] = after;
