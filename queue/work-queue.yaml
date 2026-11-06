@@ -25195,19 +25195,20 @@ items:
     review: maintainer; architecture, storage and compatibility review
     operator_visible: ''
     semver: n/a
-    semver_reason: Bounded runtime characterization; shared extraction and release placement remain open.
+    semver_reason: Narrow private allocation accepted; stronger consistency, independent runtime and release placement remain open.
     register: []
     gates:
-      - run: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
         kind: integration
         describe: Real Mongo/PG cross-path acquisition, tenant binding, private cache and selected derived-value bounds/policy differences.
-      - run: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
         kind: integration
         describe: Actual PG concurrent HTTP mixed-frame observation, whole-response real read-error refusal and owned-port read-egress guard.
       - no-gate: >
-          R49/R50 characterize existing paths; no production shared primitive,
-          common database revision, settings/plugin version key or stronger snapshot
-          consistency is implemented. Full alarm/writer cohorts, live statistics/cost,
+          R52 accepts private allocation only on native REST; no common database
+          revision, settings/plugin version key or stronger snapshot consistency
+          is implemented. Independent profile adaptation remains UNMEASURED.
+          Full alarm/writer cohorts, live statistics/cost,
           distributed recovery and final release placement remain open.
     blocks_on:
       - ARCH-SEAM-CONTRACT
@@ -25216,10 +25217,14 @@ items:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      R52 nativee5fe0b5e accepted full7080/80pending/0failure, prior browser684,
+      final prcheckOK; acquisition14/concurrency4+six semantic controls/restorations.
+      Rootc7778436 incorporates B+A with combined full PENDING. Independent
+      profile2ee8b493 source-only, new runtime/full/browser/prcheck UNMEASURED.
       Actual tenant HTTP reads observe old entries/new treatments across an atomic
       independent writer commit; tenant B stays unchanged. Bounds, future-record,
-      typed-union and statistics/error differences remain explicit. Next extract
-      private materialization behind those policies while keeping HTTP all-or-error
+      typed-union and statistics/error differences remain explicit. Private
+      materialization now sits behind those policies while keeping HTTP all-or-error
       and evaluator retained-result/notification ownership separate. No M5/M6 promotion.
 
   - id: ARCH-SQLITE-SPIKE

@@ -25,13 +25,13 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest accepted local cumulative REST head is `33870764`
-([R51](../remedial/rc-16.0.0-integration-record.md#r51---bounded-settings-differential-on-33870764-2026-11-06));
-root integration fast-forwarded the exact tested tree. R49 remains its historical
-capture. Published #8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain draft/open
-at the coordinator's2026-11-06 capture; no candidate CI is claimed. Independent
-R50 `5173864d` extends actual evaluator acquisition/retention without joining REST
-or enabling a role. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+promotion is recorded. The observed local integration head is `c7778436` (B338+A),
+with combined full verification **PENDING**. R51 settings `33870764` remains its
+accepted exact-tree capture; R52 accepts native A `e5fe0b5e` separately. Published
+#8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain their prior draft/open
+captures; no candidate CI or application push is claimed. Independent accepted
+R50 `5173864d` stays separate; helper-only descendant `2ee8b493` has no runtime
+acceptance. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
@@ -43,6 +43,45 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted private acquisition and pending composition (2026-11-06)
+
+R52 accepts the native REST extraction `e5fe0b5e`: a fresh post-recovery full run
+passes7080/80pending/0failure, its same-head prior browser684 remains valid and
+final prcheckOK confirms current dev contained/source clean. Acquisition14 and
+concurrency4 pass; six semantic controls fail0/1 each and restore14/4. Caller
+ownership/error4 pass; reused-target scratch control fails2 ownership assertions,
+then restored4 pass. This supersedes the earlier incomplete ENOSPC campaign for
+native acceptance; failed-run evidence stays preserved.
+
+The26-line private helper allocates fresh context/helper-data/bus and private
+cache/materialization target, invoking the existing loader. Callers retain bounds,
+query/frame/future policy, typed union, statistics, errors, tenant authority and
+lifecycle. No common database revision, full consistency or atomic snapshot follows.
+Adaptive alignment cache control `334dc571` now covers historical and extracted
+trees without changing accepted worktrees or silently skipping missing anchors.
+
+Root `codex/serial-integration-20261106` at `c7778436` incorporates B338 plus A,
+with tier registration504files/8tiers. **Combined full is PENDING; this composition
+is not accepted.** R51 settings338 and R49/R50 remain unchanged scoped captures.
+A's owned outer audit verifies3containers/5recorded anonymous volumes absent;
+nested old fixtures were not audited and unknown volumes were not deleted.
+
+Independent evaluator descendant `2ee8b493` of accepted `5173864d` is SOURCE ONLY:
+helper blob matches REST exactly and views integration preserves evaluateCycle.
+New-head profile38/controls/full/browser/prcheck are **UNMEASURED**, pending a
+separate slot. It is not joined into REST and changes no subscriber/notification
+or production runtime admission. A step is finished; D/clock lower PG proof and
+controls are active, HTTP/full/bench acceptance pending, C queued. The adopted
+[clock proof direction](postgres-tenant-clock-proof.md) has no production clock fix
+or accepted contention/fresh-ingestion latency result yet.
+
+Exact native commands/counts/limits are in [R52](../remedial/rc-16.0.0-integration-record.md#r52---native-private-acquisition-extraction-on-e5fe0b5e-2026-11-06).
+Evidence was independently read from the local updated
+`HANDOFF-private-acquisition-extraction-20261105.md` and
+`private-acquisition-evidence-20261105/full-recovery-summary-20261106.json`.
+No M0–M6 promotion, full combined proof or application push is claimed.
+The R51 and earlier sections below are dated captures, not current slot ownership.
 
 ### Accepted settings differential and serial recovery (2026-11-06)
 

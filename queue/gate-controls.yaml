@@ -3057,44 +3057,44 @@ controls:
     proves: >
       Erase kept on a callback error after real rows; exact prior-cycle/timestamp retention fails.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
-    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control tenant
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f --control tenant
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
     control-kind: integration
     proves: >
       Cross-bind real tenant acquisition; selected tenant100 becomes foreign200.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
-    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control bound
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f --control bound
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
     control-kind: integration
     proves: >
       Shrink actual SGV alarm acquisition from twelve to one; bounds assertion fails.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
-    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control clinical
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f --control clinical
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
     control-kind: integration
     proves: >
       Alter the actual BG setter; current clinical property invariant fails.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
-    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control cache
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f --control cache
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
     control-kind: integration
     proves: >
       Reuse caller cache during real materialization; exact unchanged caller contents assertion fails.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
-    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control partial
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f --control partial
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
     control-kind: integration
     proves: >
       Ignore collected read errors; real42501 returns HTTP200 instead of503.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
-    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control egress
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f --control egress
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref e5fe0b5ed2e5cdc1c7841320d898128673095e9f
     control-kind: integration
     proves: >
       Attempt provider connection during actual derived read; owned-port guard denies an additional connection.

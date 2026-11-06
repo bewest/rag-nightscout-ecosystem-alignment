@@ -1474,3 +1474,18 @@ Machine-local untracked references: `externals/work/HANDOFF-next-lanes-20261105.
 links the adopted proof plan and scope. Local evidence: `HANDOFF-settings-verification-20261106.md`
 and `HANDOFF-cleanup-settings-runtime-20261106.md`; raw Docker identifiers remain local.
 No operator runtime deployment, release admission, candidate CI or application push claimed.
+
+
+### Update — native acquisition acceptance and pending B+A composition (2026-11-06)
+
+| Scope | Reproduced evidence independently read from owned logs | Remaining boundary |
+|---|---|---|
+| R52 native REST `e5fe0b5e` | Fresh full7080/80pending/0failure; same-head prior browser684; final prcheckOK. Acquisition14/concurrency4 +six semantic controls/restored14/4; caller4/reused-target2fail/restored4. |26-line private allocation helper only; callers retain policy/lifecycle. No atomic revision, common snapshot, full consistency or milestone promotion. |
+| Root incorporation `c7778436` | B338+A incorporated; tier504files/8tiers passes. R51/R49/R50 remain unchanged captures. | **Combined full PENDING**, not accepted. No application push. |
+| Independent profile preparation `2ee8b493` | Source-only descendant of5173864d; identical helper blob, views-only integration, evaluateCycle retained. | New runtime38/controls/full/browser/prcheck **UNMEASURED**; separate lane, no REST join. |
+| Ownership and next slots | A finished; D/clock lower proof active, HTTP/full/bench pending, Cqueued. A outer3containers/5recordedvolumes verified absent. | Nested old fixtures unaudited/unknown volumes preserved; no new leak-freedom claim. D history gap unfixed, no production clock fix. |
+
+[R52 continuation](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06)
+and the R52 integration record retain exact native acceptance commands/limits.
+Local evidence: `HANDOFF-private-acquisition-extraction-20261105.md` and its
+home recovery logs/audits. Original incomplete ENOSPC campaign remains preserved.

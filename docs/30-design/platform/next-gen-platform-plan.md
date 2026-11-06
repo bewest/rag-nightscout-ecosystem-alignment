@@ -2,7 +2,8 @@
 
 *Contributor-facing living plan. Tenancy progress reconciled 2026-11-06 against
 cgm-remote-monitor dev `4a482627`, published draft #8898 `bc4ee1a9` (R44),
-local settings continuation `33870764` (R51, exact root integration tree, full/browser accepted),
+local integration `c7778436` (B338+A, combined full PENDING),
+accepted settings `33870764` (R51) and native acquisition `e5fe0b5e` (R52),
 preceded by frame `1c55098a` (R49), published independent #8891 `dff9a8d4` (R45) and local evaluator acquisition
 `5173864d` (R50). R46/R47 remain the accepted preceding baseline. Actual frame
 acquisition/concurrent reads are characterized; shared implementation remains open.
@@ -23,6 +24,23 @@ This plan covers the work that follows the 16.0.0 modernization:
 It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.
 
 ## 1. Where things stand
+
+### Native private acquisition accepted; combined verification pending (2026-11-06)
+
+R52 accepts native A `e5fe0b5e`: fresh full7080/80pending/0failure, same-head
+prior browser684 and final prcheckOK. Acquisition14/concurrency4 and six semantic
+controls restore14/4; caller4/reused-target2fail/restored4 pass. The26-line helper
+owns fresh private allocation only; caller policies and consistency differences
+remain explicit. No common revision or stronger snapshot guarantee follows.
+
+Observed root `c7778436` incorporates B338+A; tier504/8 passes but **combined full
+is PENDING**, so composition is not accepted. Historical R49/R50 and accepted
+R51 settings remain immutable. Independent profile helper prep `2ee8b493` matches
+REST helper bytes and preserves evaluateCycle, but all new runtime38/controls/
+full/browser/prcheck are UNMEASURED. D/clock lower proof active; HTTP/full/bench
+acceptance pending, C queued. No production clock fix or milestone promotion.
+See the [R52 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06).
+The R51 and HOLD sections below are historical captures.
 
 ### Accepted settings and remaining serial proof (2026-11-06)
 
