@@ -5654,11 +5654,12 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>e3f913ba3</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>cdc41a331</code>.</em></p>
 <p><em>Contributor-facing living plan. Tenancy progress reconciled 2026-11-05 against
-cgm-remote-monitor dev <code>4a482627</code>, published draft #8898 <code>ded254b9</code> (R40),
-local accepted REST continuation <code>d4570e58</code> (R42), and independent single/nonresident
-refresh <code>925c9527</code> (R43).
+cgm-remote-monitor dev <code>4a482627</code>, published draft #8898 <code>d4570e58</code> (R42),
+local accepted REST composition <code>bc4ee1a9</code> (R44), and independent published
+single/nonresident refresh <code>925c9527</code> (R43), extended locally by test-only
+HTTP-writer replay <code>dff9a8d4</code> (R45).
 Storage/identity/registration measurements below retain their named historical
 pins. Full M0–M6 completion remains open; component states are not milestone
 promotion or a fresh measurement of every queue gate. Release placement is in
@@ -5674,22 +5675,26 @@ promotion or a fresh measurement of every queue gate. Release placement is in
 <p>It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.</p>
 <h2 id="1-where-things-stand">1. Where things stand<a class="headerlink" href="#1-where-things-stand" title="Permanent link">&para;</a></h2>
 <p><strong>Current dev anchor, 2026-11-05: <code>4a482627</code>.</strong> The published multitenant
-preview is <code>ded254b9</code> on draft #8898, not merged to dev. R40 records its
-accepted API/derived/client-pattern boundary; its current-head CI and CodeQL
-succeeded. Local <a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
+preview is <code>d4570e58</code> on draft #8898, not merged to dev. Its head CI and CodeQL
+succeeded. <a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
 adds measured port contracts and standalone subject-management HTTP; no management
-listener is enabled. Independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>
+listener is enabled. Local <a href="../remedial/rc-16.0.0-integration-record.html#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05">R44</a>
+accepts the current-domain/backend and failure/HTTP split with direct imported-identity
+Mongo/PG compatibility, full/default-browser regression and semantic controls. Independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>
 refreshes #8891 with current-head regression and selected trigger/freshness replay;
-it is not joined into #8898 and retains the current physical subscriber. The
+it is not joined into #8898 and retains the current physical subscriber. Local
+<a href="../remedial/rc-16.0.0-integration-record.html#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05">R45</a>
+adds actual HTTP writer/resend evidence and corrects notification fixture ownership,
+with selected live handoff and semantic controls. The
 <a href="../tenancy/architecture-seams-execution-plan-2026-11-05.html">architecture execution plan</a>
-sequences contract review, backend/domain composition and proven consolidation;
+sequences remaining contract review, proven adapter consolidation and shared frames;
 SQLite stays deferred. Historical/current comparisons retain their own scope. See <a href="../tenancy/single-and-multitenant-architecture.html">single versus multitenant architecture and compatibility</a>
 for the shared-code changes, diagrams and evidence limits. The <code>497d08c9</code> labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are
 also merged. ID-BATCH is implemented across #8889/#8894; no whole-branch
 rebase or new feature PR is owed absent a specific uncovered case.
-Published preview CI and CodeQL succeeded on <code>ded254b9</code>; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
+Published preview CI and CodeQL succeeded on <code>d4570e58</code>; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
 cohort/rollback evidence and release approval remain pre-tag work.
 Informal cohort/real-rig testing is underway (maintainer reports over 24-48 hours).
 Master's absent 4.4 check has been removed; retained required lanes are green.
@@ -5711,7 +5716,7 @@ See <a href="../../10-domain/nightscout-v16-ecosystem-deep-dive.html">current re
 <tr>
 <td>Storage</td>
 <td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (storage-interface stage). ST-V3-DECOUPLE (with #8865, 2026-10-30). <code>write(intent)</code> release 1, every write path through one step (#8874, <code>368e6c23</code>, 2026-10-31). <code>write(intent)</code> release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, <code>51d38f9f</code>, 2026-11-01) . ST-VIEWS, unwired (#8875, <code>1fc6d8be</code>, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, <code>f54941b5</code>, 2026-11-01)</td>
-<td>Independent #8891 local refresh925c9527/R43 (published744d1968); local REST/port/management acceptance d4570e58/R42 (published #8898/R40)</td>
+<td>Published #8891 refresh925c9527/R43; published REST/port/management d4570e58/R42; local composition/direct identity bc4ee1a9/R44</td>
 <td>Complete PostgreSQL query/import/resource acceptance</td>
 </tr>
 <tr>
@@ -5729,7 +5734,7 @@ See <a href="../../10-domain/nightscout-v16-ecosystem-deep-dive.html">current re
 <tr>
 <td>Tenancy</td>
 <td>#8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (<code>991b0654</code>; #8862 closed as superseded); #8899 current <code>multitenant</code> namespace (<code>4a482627</code>)</td>
-<td>Published draft #8898 <code>ded254b9</code>: explicit API executable with selected legacy/API3 domains, tenant PostgreSQL/RLS, current authority/Vault, derived reads and pinned synthetic client patterns. R40 owns cumulative acceptance. M0–M6 remain incomplete; see the <a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> for promotion gates and the <a href="../tenancy/single-and-multitenant-architecture.html">architecture comparison</a> for diagrams/evidence.</td>
+<td>Published draft #8898 <code>d4570e58</code>: explicit API executable with selected legacy/API3 domains, tenant PostgreSQL/RLS, current authority/Vault, derived reads and pinned synthetic client patterns. R42 owns published acceptance; local R44 adds composition/direct identity. M0–M6 remain incomplete; see the <a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> for promotion gates and the <a href="../tenancy/single-and-multitenant-architecture.html">architecture comparison</a> for diagrams/evidence.</td>
 <td>Remaining REST administration/side effects; full route/client/import/resource coverage; production trust/lifecycle and M3 promotion</td>
 </tr>
 </tbody>

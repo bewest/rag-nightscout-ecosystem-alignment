@@ -4671,7 +4671,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>e3f913ba3</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>cdc41a331</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -7762,6 +7762,178 @@ and <code>externals/work/HANDOFF-profile-replay-next-20261105.md</code>; parent 
 <code>/tmp/codex-next-profile-{all,browser,prcheck}.log</code> and final profile gate/control
 logs. Full alarm/writer entry bar, logical subscriber decision, shared derived
 frame join, release placement and durable tenant recovery remain open.</p>
+<h3 id="r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05">R44 - explicit backend composition and imported identity on bc4ee1a9 (2026-11-05)<a class="headerlink" href="#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Parent-reproduced local cumulative acceptance</strong> on
+<code>bc4ee1a91b84a657012dbb77ee835fdeb78ef707</code>,
+<code>codex/rest-compose-integration-20261105</code>, from R42 <code>d4570e58</code>.
+Fetched <code>official/dev</code> remains <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>.
+Fresh GitHub read-back reports draft #8898 at R42 <code>d4570e58</code> and draft</p>
+<h1 id="8891-at-r43-925c9527-both-open-with-successful-head-ci-and-codeql">8891 at R43 <code>925c9527</code>, both OPEN with successful head CI and CodeQL.<a class="headerlink" href="#8891-at-r43-925c9527-both-open-with-successful-head-ci-and-codeql" title="Permanent link">&para;</a></h1>
+<p>This new continuation is local, not merged, released or a milestone promotion.</p>
+<p><strong>Implemented boundary:</strong> domain-catalogue now holds logical domain metadata;
+explicit <code>serve/postgres-domains</code> owns PG factories/catalogues, read-only
+readiness and serving-privilege checks. The preview keeps its current startup,
+pool cleanup, forced-RLS and refusal rules. <code>storage/failures</code> recognizes the
+same dependency codes, wrapped causes and cycles below the HTTP wrappers.
+Submitted-validation provenance and version-specific response bodies/statuses
+remain with the adapters. Default single/Mongo, query/write policies, projections
+and tenant binding versus commit ownership retain their existing contracts.
+This is current preview composition, not a universal backend API or helper
+consolidation.</p>
+<p><strong>Direct identity expansion:</strong> actual API3 Mongo/PG HTTP compares imported
+ObjectId, hex-string and custom-string raw identities with absent/null/empty/
+false/zero stored identifiers. Each case observes GET, PATCH, replace, soft and
+permanent deletion; raw typed identities, retained/removed fields, independently
+allocated clocks against persisted outcomes, and unchanged foreign-tenant data
+are asserted. Only allocated clock values are excluded from cross-backend
+comparison. This fills a bounded current-backend gap; it does not rerun the
+historical release corpus, settings families, index races or client binaries.</p>
+<table>
+<thead>
+<tr>
+<th>Parent-reproduced campaign</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complete nonbrowser on bc4ee1a9</td>
+<td style="text-align: right;">7035</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Complete default browser on bc4ee1a9</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Archived composition: real process/startup and storage/HTTP boundaries</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Archived direct imported-identity differential</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Scopes overlap; do not sum them. Full nonbrowser tiers: unit2157, DOM205,
+dependency368/2pending, core319, harness93, integration3875/78pending,
+stress18. Node22.23.4, PostgreSQL16.15, Mongo8.0.34, Vault2.2.1, UTC and
+seed41574423920; owned services cleaned. Classification499files/8tiers and
+changed-file ESLint pass with zero errors and five path/import warnings. Final
+prcheck is OK, with the tested branch clean and current official/dev contained.</p>
+<p><strong>Parent-reproduced controls:</strong> removing the injected intent guard makes a
+partially injected real child bind; bypassing the migration catalogue check
+makes the wrong-catalogue child bind. Each fails the required no-bind assertion,
+0passing/1failing. Removing dependency recognition makes actual HTTP503 become500,
+0passing/1failing. Removing PG imported raw-ID fallback makes the actual PG GET
+return404 after the Mongo oracle returned200, 0passing/1failing. These are semantic
+failures, not setup errors. Restored archived positives pass; the two declared
+queue instruments are PASS with NON-VACUOUS controls. Independent read-derived
+source review found no blocking extraction issue; actual guard-bypass controls
+resolve its concern that generic refusal alone could mask initialization errors.</p>
+<p>Initial sandbox invocations of Git child processes failed with <code>spawnSync git
+EPERM</code>; granted process access allowed measurement. A first archive attempt used
+an unqualified HEAD and was refused by the dependency-lock check, without running
+the corpus; final gates pin the explicit commit. Neither setup failure is a
+product defect or a semantic control.</p>
+<p>Commands/logs are indexed by local
+<code>externals/work/HANDOFF-compose-integration-20261105.md</code> and the compose and
+compat-compose lane handoffs. The <a href="../../../tools/lab/multitenant-next-slices/index.html">archived instruments</a>
+read committed sources into scratch with matching private dependencies and owned
+services. Full portable capability review, consolidation, remaining REST/clients,
+owner policy, import/resources and production lifecycle/recovery remain open.
+The independent profile continuation is measured separately.</p>
+<h3 id="r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05">R45 - independent actual HTTP profile writers on dff9a8d4 (2026-11-05)<a class="headerlink" href="#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Independent test-only branch acceptance</strong>, not a REST join, subscriber choice,
+release admission or multitenant evaluator acceptance. Source is
+<code>dff9a8d42860be09c7f187f5e3d0527d6eb31d80</code>,
+<code>codex/profile-writers-20261105</code>, extending published draft #8891 R43
+<code>925c9527</code>. Production <code>lib</code>, <code>scripts</code>, <code>bin</code> and <code>migrations</code> are unchanged;
+current dev <code>4a482627</code> remains contained. Default single stays resident and the
+prototype keeps its physical-write subscriber and heartbeat.</p>
+<p><strong>Measured scope:</strong> six new cases drive actual authenticated API3 entries and
+treatments POST/PATCH/soft DELETE plus all four entries resend modes through the
+prototype's real application. Stored values and tombstones, actual physical and
+logical events, coalesced evaluator cycles and retained properties are observed.
+Resident comparison deep-compares retained property JSON and alarm-request
+signatures (kind/level/group/plugin/event/title/message); it does not compare all
+notification fields. Selected high-alarm and treatment notifications must reach
+actual live service emission. Provider delivery remains fake/guarded. No-op
+acknowledge/refuse preserves zero physical events/evaluator cycles, one logical
+intent and unchanged retained cycle; this characterizes existing behavior without
+adopting a logical-event admission policy.</p>
+<table>
+<thead>
+<tr>
+<th>Campaign / evidence owner</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent-reproduced complete nonbrowser, parent audited source anchor and tier aggregate</td>
+<td style="text-align: right;">6682</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Agent-reproduced complete default browser, parent audited source anchor and aggregate</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Parent-reproduced archived whole profile file</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Full campaigns were not independently repeated by the parent. Their immutable
+runner output anchors the same final head and records cleanup; parent reproduced
+the bounded replay and controls. Nonbrowser tiers: unit2081, DOM205,
+dependency368/2pending, core319, harness92, integration3599/1pending, stress18.
+Node22.23.4/Mongo8.0.34, UTC, seed41574423920; the shared owned runner also
+records unused PG16.15/Vault2.2.1 services, not evidence of tenant-PG evaluation.
+Groups overlap. Selected new-only replay6 and changed-file lint pass. Final
+independent prcheck is OK and the tested branch remains clean/current.</p>
+<p><strong>Independent review found a fixture defect</strong>, reproduced before correction:
+the preceding alarm cohort closed its notification service; new request wrappers
+still recorded signatures around that closed service. Live emission assertions
+made whole-file execution28passing/2failing while new-only execution6passed.
+The final test owns a fresh live notification service and scoped teardown
+listeners per cohort, restores previous context and retains both live assertions.
+Whole30/new-only6 then pass. No production defect or policy change is inferred.
+Earlier aec5496f broad runs were stopped and are incomplete/superseded, not green
+acceptance. Independent read-derived final review resolves the lifecycle finding.</p>
+<p><strong>Parent-reproduced controls:</strong> suppressing the actual write trigger fails the
+required post-write coalesced cycle (0 versus1) after persistence/event checks;
+closing only the new real notification service leaves request recording in place
+but fails the required committed high-alarm emission. Each is0passing/1semantic
+failure; restored whole30passes. The declared profile gate is PASS/NON-VACUOUS.
+The first close-service mutation attempt matched two source sites and correctly
+reported CONTROL-INVALID; the unique-boundary retry is the semantic control.
+A missing generated JWT-key cache and incomplete synthetic API3 fixture first
+failed setup; they are not product defects or negative-control evidence.</p>
+<p>Commands, superseded logs, final logs and controls are indexed by local
+<code>externals/work/HANDOFF-profile-writers-20261105.md</code> and the parent handoff.
+Remaining scope includes every alarm/writer and emitted/provider path, complete
+alarm-field equality, live DB-stat freshness, concurrent-read consistency,
+quiet-hardware cost, logical subscriber policy, shared frames, release placement
+and durable multitenant recovery. Reporter durations under pinned clocks are not
+performance measurements.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
