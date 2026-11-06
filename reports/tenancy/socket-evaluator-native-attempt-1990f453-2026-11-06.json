@@ -1,0 +1,78 @@
+{
+  "source": "1990f453e09303d9dcf3394f0f50a42c3ce4052b",
+  "measurement": "reproduced",
+  "acceptedBatch": false,
+  "node": "v22.23.4",
+  "runtimeReleased": "2026-11-06T22:38:45Z",
+  "invocations": 1,
+  "passing": 9,
+  "pending": 0,
+  "failing": 2,
+  "breakdown": {
+    "tenant-socket-data-forwarding": {
+      "passing": 2,
+      "pending": 0,
+      "failing": 2,
+      "limitations": [
+        "postwrite rollback green did not establish intended boundary; read refused before write",
+        "held-commit timeout is not semantic control evidence",
+        "pinned pattern is not actual Android binary"
+      ]
+    },
+    "tenant-projection-evaluator": {
+      "passing": 7,
+      "pending": 0,
+      "failing": 0,
+      "limitations": [
+        "positive only; authored native controls not run",
+        "no provider handoff, notification recovery or fullM5 completion claim"
+      ]
+    }
+  },
+  "firstMismatch": "PG read rejects limit1 without sort on socket exact-match findOne; downstream add acknowledgement invalid",
+  "secondFailure": "held-commit test times out before entered barrier after same PG read refusal",
+  "resources": {
+    "ownedContainers": 2,
+    "ownedMountedVolumes": 3,
+    "allAbsent": true,
+    "hostVolumesBefore": 462,
+    "hostVolumesAfter": 462,
+    "unknownBaselinePreserved": true
+  },
+  "furtherAction": "Stopped; no repair/retry/control/source mutation; root selects next scope",
+  "rawArtifactIndex": [
+    {
+      "file": "cleanup-audit.json",
+      "bytes": 884,
+      "sha256": "733d06de98db2871115ced6ad822480deadf35cd9a7681fe7301d7a48d0fedb2"
+    },
+    {
+      "file": "observe-resources.py",
+      "bytes": 1395,
+      "sha256": "b6fdac6eca192b0b92e8147e1857de831541929a43c27d77f0440d152c3cc2a3"
+    },
+    {
+      "file": "resources-observed.json",
+      "bytes": 12100,
+      "sha256": "2011f875d3c27594e3bb1310a7c5d48b094dce36f21f5e7e22b9ee5e0ccab815"
+    },
+    {
+      "file": "run.json",
+      "bytes": 1689,
+      "sha256": "7b2caa5c1f1a32637e2d997bf1f2be78e207fe5d33e1d9227dd53fb30ce51353"
+    },
+    {
+      "file": "run.log",
+      "bytes": 20794,
+      "sha256": "9c3bd32caeb37984ef5dc6b832bd29dff2a233dd5ba0711fd1e5210e3bc0de13"
+    },
+    {
+      "file": "summary.json",
+      "bytes": 1420,
+      "sha256": "6981386fe49d28ea80d0a7c442c5d34f0919aa9979bc6d5f8f565641e91f7c20"
+    }
+  ],
+  "mochaExit": 2,
+  "runnerExit": 1,
+  "subsequentReadDerivedFinding": "Existing natural insertion-order capability requires insertion_ordinal; treatments and devicestatus catalogues do not provide it. A flag-only repair would fail. Optional successor capability and rollout characterization remain separate unmeasured prototype."
+}

@@ -561,6 +561,20 @@ items:
     semver_reason: design
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+        kind: integration
+        describe: >
+          R68 experimental fresh-successor-schema DATA forwarding:four native
+          canonical Mongo/PG pattern, current subject authority, held-COMMIT and
+          reached post-write rollback cases. Actual early-ack and role controls
+          expose independent physical state. No binary/transport/rollout claim.
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
+        kind: integration
+        describe: >
+          R67 seven actual PG clinical projection cases plus native typed-identity
+          and advanced-empty-bootstrap controls:independent physical inputs,
+          current clinical values, A/B retained state, read failure/retry,
+          explicit later-time computation and producer-death recovery.
       - run: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
         kind: integration
         describe: >
@@ -570,16 +584,30 @@ items:
           collapses independently stored twins; fresh restoration passes.
       - no-gate: >
           Dormant current-row convergence is measured; actual realtime/evaluator
-          consumer composition, current socket authority, ack/snooze persistence,
-          clinical view recovery, quiet wakes and notification handoff remain.
+          role composition/scheduling, current socket authority, ack/snooze
+          persistence, wider clinical cohorts, quiet wakes and notification
+          handoff remain. R67 measures the dormant clinical constructor only.
           Every intermediate transition and exactly-once external effects are
           outside this component. Provider/lease/capacity remain unmeasured.
     blocks_on: []
     evidence:
+      - reports/tenancy/socket-data-controls-12919f55-2026-11-06/README.md
+      - reports/tenancy/socket-order-prototype-native-2026-11-06.md
+      - reports/projection-evaluator-gates/2026-11-06/README.md
       - reports/control-recovery-gates/2026-11-06/README.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      R68 native DATA prototype controls/restored4 measured on12919; matrix3
+      retains0d628 attribution by product/schema identity. Old-catalogue checker
+      rejects upgraded ledger; populated/import order and downgrade unsupported.
+      Experimental selection only; original failures preserved and no rollout,
+      production transport/current stream or alarm ack semantics inferred.
+      R67 measures dormant clinical projection recovery on unpublished1990:
+      native7 positive, identity111vs222 and missing123 explicit assertion reds,
+      restored7. Scratch-only optional-chain oracle keeps expected123 and
+      physical inputs precede clinical assertions. No full-batch/role promotion;
+      R66's independent socket ordering failure is preserved, not waived.
       R62 accepts dormant persisted replay in83582e87; real871 native7/typed-key
       semantic red/restored7 plus full/browser/enabled-corpus acceptance.
       Source-control-runner-only continuation retains exact execution attribution.

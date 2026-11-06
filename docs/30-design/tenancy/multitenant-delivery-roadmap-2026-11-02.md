@@ -2406,3 +2406,21 @@ campaigns executed on 871; the descendant changes only the source-control runner
 and passed final prcheck. R62 and its immutable capsules own counts, controls,
 identity-based reuse and failures. No new milestone promotion or default enablement.
 Selected actual-client, full runtime/management and operational criteria remain.
+
+### Accepted bounded clinical projection controls 2026-11-06
+
+[R67](../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06)
+measures dormant current-row clinical recovery on unpublished1990: actual typed
+identity/bootstrap assertion controls and seven restored native cases. This is
+local component evidence, not whole1990 acceptance, live evaluator scheduling,
+notification/ack delivery or M5 promotion. R66's socket failure remains separate;
+current published835 retains its verified R64 scope.
+
+### Measured fresh schema socket DATA controls 2026-11-06
+
+[R68](../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06)
+measures optional fresh-schema DATA pattern/transaction/current-authority controls
+and restored four native cases. Catalogue matrix retains its original source.
+No populated import, downgrade, production transport/rollout, protected stream,
+alarm ack or broader M4/M5/M6 completion is adopted. Later joined acceptance must
+name its own frozen head; published835 retains R64 scope.

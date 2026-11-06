@@ -1,0 +1,184 @@
+{
+  "basis": "reproduced",
+  "date": "2026-11-06",
+  "prototype_rollout_adopted": false,
+  "initial_experiment": {
+    "source": "0d628db05d5078b1e057aabdcf8f8b8edfaaff10",
+    "measurement": "reproduced",
+    "acceptedPrototype": false,
+    "invocations": 1,
+    "runtimeReleased": "2026-11-06T22:51:41Z",
+    "passing": 6,
+    "pending": 0,
+    "failing": 1,
+    "breakdown": {
+      "optional-startup-schema-matrix": {
+        "passing": 3,
+        "pending": 0,
+        "failing": 0
+      },
+      "socket-data": {
+        "passing": 3,
+        "pending": 0,
+        "failing": 1
+      }
+    },
+    "measuredConsequences": [
+      "old catalogue checks old ledger successfully",
+      "selected successor refuses old ledger MIG_STALE before returning port",
+      "empty successor upgrade succeeds; new catalogue check succeeds",
+      "old catalogue rejects upgraded ledger MIG_UNKNOWN",
+      "populated upgrade refuses SQLSTATE23514 and leaves old rows/columns/guard/ledger unchanged",
+      "fresh generated insertion ordinals remain ordered through edits",
+      "unselected nonunique bounded reads remain refused; explicit sorted reads remain usable",
+      "held COMMIT marker reached after actual transactional stored row, independent precommit no row/event/ack",
+      "postwrite abort marker reached after actual transactional row; external row/clock/events rollback",
+      "foreign role refusal passes"
+    ],
+    "firstMismatch": "initial same-head Mongo reference add refuses because treatments.findFiltered is unbound under shared multi mode; PG add succeeds and callback parity fails",
+    "unmeasured": [
+      "multiple-match actual Mongo/PG callback and stored-identity subscenario not reached",
+      "retry and later DATA parity not reached",
+      "no actual Android binary, production role/transport, imported ordering or transparent backward schema compatibility"
+    ],
+    "resources": {
+      "ownedContainers": 2,
+      "ownedMountedVolumes": 3,
+      "allAbsent": true,
+      "hostVolumesBefore": 462,
+      "hostVolumesAfter": 462,
+      "unknownBaselinePreserved": true
+    },
+    "furtherAction": "Stopped before repair/retry/control; root chooses fixture-boundary correction/admission scope"
+  },
+  "corrected_reference_experiment": {
+    "source": "12919f5558c9cbac50b0fd15e4bc2ea482af1a24",
+    "measurement": "reproduced",
+    "prototypeAdopted": false,
+    "invocations": 1,
+    "runtimeReleased": "2026-11-06T22:56:57Z",
+    "passing": 4,
+    "pending": 0,
+    "failing": 0,
+    "changedPaths": [
+      "tests/fixtures/socket-forwarding/mongo-reference-child.js",
+      "tests/fixtures/socket-forwarding/mongo-reference.js",
+      "tests/tenant-socket-data-forwarding.integration.test.js"
+    ],
+    "productSchemaCatalogueIdenticalTo": "0d628db05d5078b1e057aabdcf8f8b8edfaaff10",
+    "reference": {
+      "type": "canonical handler/pattern replay using actual Mongo and Socket.IO",
+      "pid": 326937,
+      "ownProcessMode": "single",
+      "parentMode": "multi",
+      "exitCode": 0,
+      "independentlyAbsent": true
+    },
+    "reachedAndPassed": [
+      "initial treatment insert and retried add callback/stored identity parity",
+      "treatment update/unset/remove and device status callback/stored parity",
+      "two matching fresh rows with reverse lexical IDs choose actual Mongo first insertion on initial/retried add, callbacks equal and both identities unchanged",
+      "foreign transport role refused by current subject authority without callback/effect/event",
+      "held COMMIT reached after actual transaction row, independent precommit no row/ack/event then successful commit",
+      "postwrite abort reached after actual transaction row, independent row/floor/events unchanged after rollback"
+    ],
+    "attribution": {
+      "startupMatrix": "three native cases passed on product-identical0d628; not repeated here",
+      "original1990failedRun": "preserved immutable",
+      "original0d628failedReferenceRun": "preserved immutable"
+    },
+    "resources": {
+      "ownedContainers": 2,
+      "ownedMountedVolumes": 3,
+      "allAbsent": true,
+      "hostVolumesBefore": 462,
+      "hostVolumesAfter": 462,
+      "unknownBaselinePreserved": true
+    },
+    "limits": [
+      "unadopted optional successor catalogue; old binary rejects upgraded ledger MIG_UNKNOWN",
+      "populated/import ordering unsupported",
+      "no actual Android binary or full single-app run",
+      "no production transport/role/notification/ack semantics or broad M5/M6 completion",
+      "native semantic controls not run in this grant"
+    ]
+  },
+  "initial_artifact_index": {
+    "source": "0d628db05d5078b1e057aabdcf8f8b8edfaaff10",
+    "immutableCapture": "2026-11-06T22:51:41Z",
+    "artifacts": [
+      {
+        "file": "cleanup-audit.json",
+        "bytes": 884,
+        "sha256": "3e7d06a6685861c33dfcd58de8a82a7e54dc72c62930adc5bc06549c5b29bec8"
+      },
+      {
+        "file": "observe-resources.py",
+        "bytes": 1395,
+        "sha256": "b6fdac6eca192b0b92e8147e1857de831541929a43c27d77f0440d152c3cc2a3"
+      },
+      {
+        "file": "resources-observed.json",
+        "bytes": 12107,
+        "sha256": "1c93e5e08fdd1f516e0b92a199c410dddbdfeb77f180f80431e8623da7233cd0"
+      },
+      {
+        "file": "run.json",
+        "bytes": 1692,
+        "sha256": "6432f65e15ae7af720fa7837c76c7a55856b7d494c99d00de3f630f424f6afe6"
+      },
+      {
+        "file": "run.log",
+        "bytes": 7189,
+        "sha256": "b6255c159b78e7c23211bd0ab0bbc8df15ce920f9e6d7a3ac4c857ff1115b940"
+      },
+      {
+        "file": "summary.json",
+        "bytes": 2024,
+        "sha256": "93e14538dc8e488b3418e6387a816d63d5a0d628d629a631f47c0e8bba575e5e"
+      }
+    ]
+  },
+  "corrected_artifact_index": {
+    "source": "12919f5558c9cbac50b0fd15e4bc2ea482af1a24",
+    "immutableCapture": "2026-11-06T22:56:57Z",
+    "artifacts": [
+      {
+        "file": "cleanup-audit.json",
+        "bytes": 1077,
+        "sha256": "4b0e3fa0e017ca62249cb34ac249cc4bfadecdfc90a7adfb09bf4f1e65890009"
+      },
+      {
+        "file": "observe-resources.py",
+        "bytes": 1395,
+        "sha256": "b6fdac6eca192b0b92e8147e1857de831541929a43c27d77f0440d152c3cc2a3"
+      },
+      {
+        "file": "resources-observed.json",
+        "bytes": 12095,
+        "sha256": "da2e9e0ca3fc74b33fbc7f36a2404f3b4d6519357eb31c480d293b1275866045"
+      },
+      {
+        "file": "run.json",
+        "bytes": 1628,
+        "sha256": "f31278ba339c5290e846a1418e4b5c73e5c1bae8575f219935a892b3c014d76e"
+      },
+      {
+        "file": "run.log",
+        "bytes": 5855,
+        "sha256": "b0b61cffa8f8293b226c73d7d913f87a79052b4f538c38137b68aa0f5a4253f0"
+      },
+      {
+        "file": "summary.json",
+        "bytes": 2221,
+        "sha256": "305022c1973d06a2c9983d2cd8ba9f3deef107d76ac6b938cdc3860a72deab76"
+      }
+    ]
+  },
+  "native_controls": "reports/tenancy/socket-data-controls-12919f55-2026-11-06/summary.json",
+  "limits": [
+    "Matrix executes old/new catalogue checks and explicit port construction; it does not run an old application binary. Old-binary startup consequence is inferred from unchanged inspector/catalogue inputs.",
+    "No populated/import ordering provenance, downgrade, production transport or alarm-ack semantics.",
+    "Actual Mongo/Socket.IO canonical-handler pattern replay is not an Android binary/full single-app run."
+  ]
+}

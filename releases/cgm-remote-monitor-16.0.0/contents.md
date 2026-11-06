@@ -1708,3 +1708,39 @@ The [publication snapshot](../../reports/tenancy/control-recovery-publication-83
 and [workload capsule](../../reports/tenancy/2026-11-06-clock-http-workload/README.md)
 own measurements and limitations. Next socket/evaluator composition proceeds in a
 separate source batch; no later code is included by these successful checks.
+
+### Update — next joined socket evaluator proof exposes ordering gap (2026-11-06)
+
+| Scope | Reproduced outcome | Next boundary |
+|---|---|---|
+| Unpublished joined `1990f453` | [R66](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r66---joined-socket-evaluator-native-attempt-and-ordering-gap-2026-11-06): one native invocation 9/0/2; evaluator7 pass, socket2/2. | Batch not accepted. Rollback green is vacuous after pre-write refusal; held-commit timeout is not semantic evidence. |
+| Socket ordering | PG refuses canonical unsorted bounded dedup; required insertion-order column is absent in these domain schemas. | Optional successor capability and mixed-version/populated characterization prepared separately. No arbitrary sort or silently weakened query contract. |
+| Ongoing implementation | Evaluator controls and explicit headless owner-listener composition continue. | Published835 and its green CI/CodeQL remain unchanged; no broad milestone promotion. |
+
+[Failed attempt capsule](../../reports/tenancy/socket-evaluator-native-attempt-1990f453-2026-11-06.md)
+retains exact evidence and independently verified cleanup. No whole acceptance
+campaign was spent on this head after its targeted prediction failed.
+
+### Update — recovered clinical projection controls measured (2026-11-06)
+
+| Scope | Reproduced native evidence | Remaining gate |
+|---|---|---|
+| Dormant evaluator constructor on1990 | [R67](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06): typed-key removal gives111vs222; skipped bootstrap loses stored123; both explicit assertions red, fresh restoration7/0/0. | Bounded clinical recovery only, without full1990 acceptance or M5 promotion. |
+| Independent inputs and instrument | Physical row/type/value checks precede clinical assertions; consistent scratch-only optional-chain assertion keeps expected123. | Live role scheduling, socket delivery, ack/notification/provider and performance remain. |
+| Larger implementation batch | Headless-owner composition and socket capability work continue independently. | Published835 remains fully green; known socket failure and prototype migration limits are preserved. |
+
+The [native capsule](../../reports/projection-evaluator-gates/2026-11-06/README.md)
+retains reports, hashes and exact resource absence. No additional broad campaign
+was spent on this bounded control slot.
+
+### Update — fresh schema socket DATA prototype measured (2026-11-06)
+
+| Scope | Reproduced evidence | Boundary |
+|---|---|---|
+| Optional successor catalogues | [R68](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06): matrix3 passes, including atomic populated refusal and old-catalogue MIG_UNKNOWN. | Old application binary not executed; startup consequence inferred. No transparent populated upgrade/downgrade or rollout adopted. |
+| Corrected single/Mongo reference | Fixture-only12919 passes4native cases, including multiple-match stored identity and reached commit/abort boundaries. | Original0d628 wrong-mode reference failure retained; no actual Android binary claim. |
+| Meaningful native controls | Early callback while uncommitted; substituted role commits A-row; each exact assertion red, restored4green. | Dormant fresh-schema DATA component only; final joined V&V still required. |
+
+[Prototype capsule](../../reports/tenancy/socket-order-prototype-native-2026-11-06.md)
+and [native controls](../../reports/tenancy/socket-data-controls-12919f55-2026-11-06/README.md)
+own source attribution, proof/observation changes, raw hashes and resource absence.

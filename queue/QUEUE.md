@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 365 |
-| runnable gates | 426 |
+| runnable gates | 428 |
 | explicit `no-gate:` markers | 386 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 812 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 814 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8382,7 +8382,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
-| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
+| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 3 run + 1 no-gate |
 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
@@ -8643,17 +8643,24 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24`
+  - R68 experimental fresh-successor-schema DATA forwarding:four native canonical Mongo/PG pattern, current subject authority, held-COMMIT and reached post-write rollback cases. Actual early-ack and role controls expose independent physical state. No binary/transport/rollout claim.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b`
+  - R67 seven actual PG clinical projection cases plus native typed-identity and advanced-empty-bootstrap controls:independent physical inputs, current clinical values, A/B retained state, read failure/retry, explicit later-time computation and producer-death recovery.
 - `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c`
   - R62 archived seven actual PostgreSQL current-row replay cases:durable typed projection/checkpoint, repeatable-read bootstrap, process death, tenant fencing, rollback and scan bounds. Removing identity kind collapses independently stored twins; fresh restoration passes.
-- **NO GATE** &mdash; Dormant current-row convergence is measured; actual realtime/evaluator consumer composition, current socket authority, ack/snooze persistence, clinical view recovery, quiet wakes and notification handoff remain. Every intermediate transition and exactly-once external effects are outside this component. Provider/lease/capacity remain unmeasured.
+- **NO GATE** &mdash; Dormant current-row convergence is measured; actual realtime/evaluator role composition/scheduling, current socket authority, ack/snooze persistence, wider clinical cohorts, quiet wakes and notification handoff remain. R67 measures the dormant clinical constructor only. Every intermediate transition and exactly-once external effects are outside this component. Provider/lease/capacity remain unmeasured.
 
 **Evidence.**
 
+- `reports/tenancy/socket-data-controls-12919f55-2026-11-06/README.md`
+- `reports/tenancy/socket-order-prototype-native-2026-11-06.md`
+- `reports/projection-evaluator-gates/2026-11-06/README.md`
 - `reports/control-recovery-gates/2026-11-06/README.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** R62 accepts dormant persisted replay in83582e87; real871 native7/typed-key semantic red/restored7 plus full/browser/enabled-corpus acceptance. Source- control-runner-only continuation retains exact execution attribution. No realtime/evaluator role or provider/default selected; no M5 promotion. M4-M6; no clinical notification delivery acceptance inferred. Architecture plan joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator acceptance; contract design continues independently. Durable commit/checkpoint replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current authority after reconnect require paired controls. No SQLite dispatch.
+**Notes.** R68 native DATA prototype controls/restored4 measured on12919; matrix3 retains0d628 attribution by product/schema identity. Old-catalogue checker rejects upgraded ledger; populated/import order and downgrade unsupported. Experimental selection only; original failures preserved and no rollout, production transport/current stream or alarm ack semantics inferred. R67 measures dormant clinical projection recovery on unpublished1990: native7 positive, identity111vs222 and missing123 explicit assertion reds, restored7. Scratch-only optional-chain oracle keeps expected123 and physical inputs precede clinical assertions. No full-batch/role promotion; R66's independent socket ordering failure is preserved, not waived. R62 accepts dormant persisted replay in83582e87; real871 native7/typed-key semantic red/restored7 plus full/browser/enabled-corpus acceptance. Source-control-runner-only continuation retains exact execution attribution. No realtime/evaluator role or provider/default selected; no M5 promotion. M4-M6; no clinical notification delivery acceptance inferred. Architecture plan joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator acceptance; contract design continues independently. Durable commit/checkpoint replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current authority after reconnect require paired controls. No SQLite dispatch.
 
 ### `MT-IDENTITY-PLAN` &mdash; Human identity, tenant access grants and delegated consent plan
 

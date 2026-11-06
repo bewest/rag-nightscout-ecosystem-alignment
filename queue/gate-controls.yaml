@@ -3188,3 +3188,31 @@ controls:
     control-kind: integration
     proves: >
       Remove identity kind only from durable projection map key; independently stored two rows/two kinds remain, but projection count is one instead of two. Native assertion red, fresh restoration green.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
+    control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b --control identity
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
+    control-kind: integration
+    proves: >
+      Remove only durable projection identity kind; physical two rows/two kinds remain, but actual clinical current value is111 instead222. One explicit native assertion fails; fresh restoration passes.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
+    control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b --control bootstrap
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
+    control-kind: integration
+    proves: >
+      Skip full bootstrap at an advanced empty projection; independent physical reading123 remains, but recovered clinical value is missing. Scratch-only optional-chain oracle preserves expected123, producing explicit assertion rather than TypeError; fresh restoration passes.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+    control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24 --control earlyack
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+    control-kind: integration
+    proves: >
+      Move only callback before transport completes; held transaction has its own row, independent committed row/events remain absent, but actual callback arrives. Named native assertion true versus false plus physical proof; fresh restoration passes.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+    control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24 --control role
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+    control-kind: integration
+    proves: >
+      Replace only current socket subject authority with a transport-role actor; actual tenant-A row commits and callback/event appear while tenant-B rows stay unchanged. Native count1 versus0 and physical proof, not refusal timeout; fresh restoration passes.
