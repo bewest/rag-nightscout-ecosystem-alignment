@@ -1141,10 +1141,29 @@ becomes of the socket's write messages.
   `ack` on the `/alarm` namespace (`alarmSocket.js:168, 239`), which reaches `notifications.ack`
   (`lib/notifications.js:166-184`, per the [durable-delivery contract](durable-event-delivery-contract-2026-11-06.md) §7).
 
-The only socket writer found in the tree is the browser's own reports editor
-(`lib/client/renderer.js:942-1067`): **read-derived**; uploaders and followers use REST, and the
-[compatibility corpus](../../../tools/qc/compat) has not been searched for socket writers yet (an
-entry condition below).
+**Socket writers in the pinned client corpus (searched 2026-11-06, read-derived).** Every checkout
+under `externals/` outside the server's own trees was searched for the four write message names and
+for any socket.io client. The server's v3 sockets accept no data writes: `/storage` takes only
+`subscribe` (`lib/api3/storageSocket.js:40`) and `/alarm` takes `subscribe`, `ack` and `resubscribe`
+(`lib/api3/alarmSocket.js:93, 168, 239, 254`).
+
+| client, pinned | socket use | writes over the socket |
+|---|---|---|
+| the web client (CRM `35903069`) | v1 socket, `authorize`, `dataUpdate` | `dbAdd`, `dbUpdate`, `dbUpdateUnset`, `dbRemove` from the reports editor (`lib/client/renderer.js:942-1067`); alarm `ack` |
+| AndroidAPS 3.4.2.3, **NSClient** plugin (`plugins/sync/.../nsclient/services/NSClientService.kt:374, 603, 621, 630`) | v1 socket, `authorize` | **`dbAdd`, `dbUpdate` and `ack`**: this plugin's whole upload path is the socket |
+| AndroidAPS 3.4.2.3, **NSClient V3** plugin (`.../nsclientV3/services/NSClientV3Service.kt:166, 193, 344`) | v3 `/storage` and `/alarm` sockets | `subscribe` and alarm `ack` only; data writes are REST v3 |
+| AndroidAPS `dev` (`aa9cc88df2`, 3.4.2.2-1520) and the multiplatform tree (`7e1d537d49`, with the iOS `NsSocketBridge.swift:75`) | v3 sockets; the `nsclient` (v1) plugin directory is gone | `subscribe` and `ack` only |
+| LoopFollow v7.1.0 (`NightscoutSocketManager.swift:167, 194`) | v1 socket, `authorize`, `dataUpdate` | none (read only) |
+| xDrip 2026.07.15, xdripswift 6.3.1, Trio v0.8.4, nightscout-librelink-up v3.3.0, nightguard, LoopCaregiver, NightscoutKit | no socket.io client found | none |
+
+Two consequences for the options below. The AndroidAPS NSClient (v1) plugin shipped in 3.4.2.3 is a
+third-party socket writer; under option (a) a user on that plugin must move to NSClient V3, which
+AndroidAPS `dev` already made the only plugin. And the alarm `ack` over `/alarm` is what AndroidAPS V3,
+`dev` and the multiplatform tree all send, so (a) cannot move the ack to REST without breaking them:
+`realtime` must keep accepting `ack` on the socket, and the sub-question is whether it records the ack
+itself through one narrow tenant-keyed write (the only write authority it would hold) or forwards it to
+`api` internally (option (c)'s hop, for the ack alone). Nocturne is a server with its own hubs, not a
+client of this socket.
 
 **The conflation.** If the write messages stay on `realtime`, it is not a reader: it needs the
 write step, the tenant's storage write authority, the commit event and every write-side control
@@ -1157,7 +1176,7 @@ the socket's writes to leave `realtime`.
 
 | option | what changes | long-term direction | compatibility | maintenance | reliability | performance |
 |---|---|---|---|---|---|---|
-| **(a) `realtime` is a reader** *(recommended)* | the browser's reports editor and the alarm ack/snooze move to REST on `api` (an ack writes a row; the evaluator consumes it from the feed, contract §7); under `multitenant` the socket refuses `dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove` with a reply naming the route; `single` keeps today's socket writes | matches D5, D21 and {C}: one writer surface, readers stateless beyond connections | the web client changes two code paths; any third-party socket writer breaks under `multitenant` only (none found; corpus search owed) | one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in `single` only | a stuck `realtime` can only make realtime stale ({C} §3.5.3); writes never wait on fan-out | fan-out cost unchanged; acks add one REST write per ack |
+| **(a) `realtime` is a reader** *(recommended)* | the browser's reports editor moves to REST on `api`; the alarm ack stays on the `/alarm` socket and becomes a tenant-keyed ack row (written by `realtime` as its one narrow write, or forwarded to `api`; sub-question above), which the evaluator consumes from the feed (contract §7); under `multitenant` the socket refuses `dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove` with a reply naming the route; `single` keeps today's socket writes | matches D5, D21 and {C}: one writer surface, readers stateless beyond connections | the web client's reports editor moves to REST; AndroidAPS 3.4.2.3's NSClient (v1) plugin stops working under `multitenant` and its users move to NSClient V3 (the only plugin on AndroidAPS `dev`); the alarm `ack` stays on `/alarm` for AndroidAPS V3 and LoopFollow-class clients | one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in `single` only | a stuck `realtime` can only make realtime stale ({C} §3.5.3); writes never wait on fan-out | fan-out cost unchanged; acks add one REST write per ack |
 | **(b) `realtime` keeps the write path** | `realtime` embeds the write step and holds write authority; the commit event is emitted from two roles | contradicts D21's "no storage writes" and the matrix's r/o | client protocol unchanged | two writers to keep equal; every write-side control runs twice | socket connection and write availability coupled | none |
 | **(c) `realtime` brokers writes to `api`** | socket write messages are forwarded to `api` over an internal HTTP hop carrying the socket's tenant credential; the reply is relayed | keeps the reader/writer split; adds an internal role-to-role trust boundary (D7 planes) | client protocol unchanged | an internal client in `realtime`, its credential forwarding and its failure mapping to maintain | one more hop on the write path; an `api` outage is visible as socket write failures | one extra request per socket write |
 
@@ -1184,7 +1203,7 @@ connection ({C} §3.5.3.1's pooler trap) without giving it write grants.
 
 **Entry conditions before (a) is wired** (each with a control that must go red):
 
-1. The compatibility corpus is searched for socket writers; the list is recorded in this section.
+1. The pinned client corpus is searched for socket writers: **done 2026-11-06**, the table above; rerun when `workspace.lock.json` moves a client pin.
 2. A socket `dbAdd` under `multitenant` is refused with the named route; control: remove the
    refusal and the write must reach storage without `api`'s authority path, red.
 3. The alarm ack by REST writes the ack row and the evaluator honours it across a restart;
