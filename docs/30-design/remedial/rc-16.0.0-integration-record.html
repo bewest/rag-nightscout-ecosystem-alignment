@@ -4034,6 +4034,8 @@
       
         
       
+        
+      
     
     
     
@@ -4677,7 +4679,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>f5676296a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>2f3268a6e</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -8120,7 +8122,7 @@ parent consolidation handoff.</p>
 <code>3d5eac196256e447859373beadf7abf2efbfb2ce</code>, branch
 <code>codex/owner-local-auth-20261105</code>, a clean descendant of R46 <code>44331668</code>.
 The <a href="../tenancy/owner-authority.html">owner authority contract</a> owns the adopted
-policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e739c46673bb7d908180dcabfa12ef5c8462a195/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
+policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de54fd05e1f2e57dd36e6cf3a6be11c453994dc1/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
 retain the campaign summary. This is locally fixed code, not merged/released or
 published on #8898 by this lane. The coordinator has incorporated this clean
 application commit into its separate frame-integration tree, pending its own
@@ -8196,10 +8198,10 @@ invalid token's actual POST answer201 instead of401. Removing session-active
 checking makes a revoked session's GET answer200 instead of403. Reusing an earlier
 snapshot makes committed grant removal's next GET answer200 instead of403. Every
 mutant fails at the intended HTTP assertion; setup failure is not accepted as red.
-See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e739c46673bb7d908180dcabfa12ef5c8462a195/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
+See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de54fd05e1f2e57dd36e6cf3a6be11c453994dc1/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
 <p><strong>Repeated authorization-pipeline lab using the actual application verifier:</strong>
 16 semantic checks, 4 non-vacuous verifier/state controls, 24 timing cases/2880
-operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e739c46673bb7d908180dcabfa12ef5c8462a195/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
+operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de54fd05e1f2e57dd36e6cf3a6be11c453994dc1/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
 pins instrument <code>f814f967c</code>, application <code>ab09297b</code> and application-module SHA256.
 A direct git comparison confirms unchanged verifier bytes at final <code>3d5eac19</code>;
 this carries the component measurement forward without relabeling its source head. At concurrency8, current
@@ -8564,6 +8566,83 @@ commands, scoped controls and ownership:
 Native A step finished. D/clock lower proof active with HTTP/full/bench acceptance
 pending, Cqueued; no new clock acceptance allocation. No M0–M6 promotion,
 application push or combined full acceptance.</p>
+<h3 id="r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06">R53 - selected owner proposed-grant policy on 17f9a457 (2026-11-06)<a class="headerlink" href="#r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06" title="Permanent link">&para;</a></h3>
+<p><strong>Native tree:</strong> <code>codex/owner-enforcement-20261105</code>
+<code>17f9a4577e649208ada6b0aa8f83c51026459875</code>, over historical accepted R49
+<code>1c55098a3d4bcf3d871bcd345f159ce444d6e458</code>; current official/dev
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code> contained. Native acceptance below
+is not combined acceptance: root B+A+C <code>4a15802cc1fe5ecb60b5985cd0aff9b2d57eed37</code>
+has tier506files/8tiers PASS but combined full PENDING. No clock/profile2ee join.
+R51/R52 and earlier captured records are unchanged.</p>
+<table>
+<thead>
+<tr>
+<th>Reproduced native result, independently read/hash-verified from local logs</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Owned <code>npm run test:all</code>, <code>full-17.log</code></td>
+<td>7127passing/80pending/0failing, tiers2186/205/368/319/93/3938/18; all22owner bodies executed</td>
+</tr>
+<tr>
+<td>Default <code>npm run test:browser</code>, <code>browser-17.log</code></td>
+<td>684passing/0pending/0failing</td>
+</tr>
+<tr>
+<td>Final <code>tools/review/prcheck/prcheck.sh</code>, <code>prcheck-17.log</code></td>
+<td>OK, current dev contained, native source unchanged/clean</td>
+</tr>
+<tr>
+<td>Actual owner database/affected existing subject-PG-management corpus</td>
+<td>22/0 and26/0 at17f</td>
+</tr>
+<tr>
+<td>Catalogue/Shiro plus existing subject unit</td>
+<td>29+3=32positive; four negative guards not added to positive count</td>
+</tr>
+<tr>
+<td>Parent <code>node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875</code></td>
+<td>22passing/0failing; restored22/0</td>
+</tr>
+<tr>
+<td>Same archived gate <code>--control catalogue</code>, <code>ceiling</code>, <code>delegation</code>, <code>actor</code></td>
+<td>Each0passing/1ERR_ASSERTION, actual HTTP200vs403 with persisted effects</td>
+</tr>
+</tbody>
+</table>
+<p>Parent instrument source was alignmenta08947484eebb1123f03f1c38a73099591399059.
+Fresh private services per capture; all6recorded containers/6volumes independently
+absent, modes0700/0600. Controls are semantic failures, not setup/zero-test errors.
+Earlier product-identical3106 actualDB22 twice/restored22 and guards remain scoped.
+Only17f fixture correction expects migration003+004, applies prior3 before004 and
+compares all prior3 stored checksums. Initial affected25/1 retained; corrected26
+passes, no production guard weakened. Native registered504files/8tiers; root506/8
+is the combined registration result, not native full proof.</p>
+<p>Explicit ownerPolicy uses existing subject mutation transaction with proposed
+grants constrained by reviewed catalogue ∩ locked operator ceiling ∩ current
+matching management actor delegation. Authority/current actor row fencing extends
+through subject/credential mutation and audit. Selected REST37 only; DELETE
+refuses and managementAuth is injected. Full wildcard/default catalogue, human
+issuer/refresh, existing-grant clamping, DELETE policy and production listener
+remain unimplemented. R48 data-token readers unchanged; full native new-token7
+functional checks pass without becoming throughput/capacity proof.</p>
+<p>Current narrowing before proposal locks refuses; a proposal holding authority
+locks may complete before a waiting revoker commits, then the next proposal sees
+narrowing. These orderings do not establish cancellation/total deadlines or
+arbitrary lock-order guarantees. Native full records18containers/26volume
+references, browser3/5, final database1/1 and affected2/2, all recorded absent.
+Unknown unrelated resources remain untouched; no global cleanup guarantee.</p>
+<p>Public <a href="../../../reports/owner-subject-policy-acceptance-2026-11-06.html">native acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de54fd05e1f2e57dd36e6cf3a6be11c453994dc1/tools/lab/owner-subject-policy/results/17f9a457-acceptance.json">machine capture</a>
+record original output hashes/environment/controls. This records lane acceptance;
+root combined full and clock/profile work remain pending. Clock lower report8+
+controls/oldSQL42703/corrected9 is separate; no clock HTTP/full/bench acceptance
+is allocated here. Canonical clock correctness flags source registered for future
+combined run, benchmark off. No milestone/RC/production listener admission or push.
+Local final evidence: <code>owner-enforcement-campaign-20261106/</code> and
+<code>owner-archive-gate-runtime-20261106/summary.json</code> plus lane handoffs.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

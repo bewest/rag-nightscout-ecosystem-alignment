@@ -1531,6 +1531,8 @@
       
         
       
+        
+      
     
     
     
@@ -2174,7 +2176,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>f5676296a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>2f3268a6e</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -4894,7 +4896,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e739c46673bb7d908180dcabfa12ef5c8462a195/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de54fd05e1f2e57dd36e6cf3a6be11c453994dc1/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -5403,6 +5405,43 @@ No operator runtime deployment, release admission, candidate CI or application p
 and the R52 integration record retain exact native acceptance commands/limits.
 Local evidence: <code>HANDOFF-private-acquisition-extraction-20261105.md</code> and its
 home recovery logs/audits. Original incomplete ENOSPC campaign remains preserved.</p>
+<h3 id="update--selected-owner-policy-acceptance-and-pending-bac-full-2026-11-06">Update — selected owner policy acceptance and pending B+A+C full (2026-11-06)<a class="headerlink" href="#update--selected-owner-policy-acceptance-and-pending-bac-full-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Reproduced evidence independently read from captured logs</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R53 native17f9a457</td>
+<td>Full7127/80pending/0failure/browser684/finalprcheckOK; actual22/affected26/static32. Parent archived22, four0/1semantic guards with persisted effects, restored22.</td>
+<td>Explicit ownerPolicy transaction REST37 only; R48readers unchanged. No listener/full owner completion.</td>
+</tr>
+<tr>
+<td>Root4a15802c</td>
+<td>B+A+C incorporated; tier506files/8tiers PASS. R51/R52 captures unchanged.</td>
+<td><strong>Combined fullPENDING</strong>, not accepted; clock/profile2ee not joined.</td>
+</tr>
+<tr>
+<td>Fixture correction and cleanup</td>
+<td>Prior3106 affected25/1 retained;17f migration003+004/prior3checksums correction gives26. Native full18containers/26volumereferences and browser3/5 verified absent; parentgate6/6 absent/private0700/0600.</td>
+<td>No global leak-freedom claim, unknown resources untouched. No guard weakening or policy change after3106.</td>
+</tr>
+<tr>
+<td>Clock readiness</td>
+<td>Sanitized lower8+controls; all-domain oldSQL42703/corrected9. Corrected DHTTP retry active.</td>
+<td>HTTP/full/bench acceptance pending; no clock joined/default enabled. New correctness flags source registered, future combined runtime unmeasured; benchmark off.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-selected-owner-policy-and-pending-composition-2026-11-06">R53 continuation</a>
+and <a href="../../reports/owner-subject-policy-acceptance-2026-11-06.html">public C record</a>
+retain exact scope. Human issuer/refresh, full wildcard/default catalogue,
+existing-grant clamping, DELETE policy and production listener remain unimplemented.
+No M0–M6 promotion or application push.</p>
 
 
 

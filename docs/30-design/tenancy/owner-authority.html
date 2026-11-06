@@ -3002,6 +3002,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#selected-current-proposed-grant-wiring-r53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selected current proposed-grant wiring (R53)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#management-authentication-and-lifetime-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4406,6 +4417,8 @@
       
         
       
+        
+      
     
     
     
@@ -5062,6 +5075,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#selected-current-proposed-grant-wiring-r53" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selected current proposed-grant wiring (R53)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#management-authentication-and-lifetime-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5112,7 +5136,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>86d163c63</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>2f3268a6e</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5189,6 +5213,19 @@ delegation authority and current policy together inside the mutation transaction
 The existing operation/target-only callback is insufficient for this ceiling.
 Permission spellings and complete role catalogue remain design outputs; the adopted
 capability groups do not pretend those implementation details are complete.</p>
+<h2 id="selected-current-proposed-grant-wiring-r53">Selected current proposed-grant wiring (R53)<a class="headerlink" href="#selected-current-proposed-grant-wiring-r53" title="Permanent link">&para;</a></h2>
+<p>Accepted native17f9a457 explicitly selects ownerPolicy on the existing subject
+store transaction. Proposed grants must fit reviewed catalogue ∩ locked operator
+ceiling ∩ current matching management actor delegation, with current actor and
+authority row fencing before subject/credential mutation and audit commit.
+This implements only the selected REST37 operation subset. DELETE refuses and
+managementAuth remains injected; human issuer/refresh, full wildcard/default
+catalogue, existing-grant clamping and production owner listener remain
+unimplemented. R48 data-token readers are unchanged.</p>
+<p>Bounded native acceptance and parent semantic controls are recorded in
+<a href="../remedial/rc-16.0.0-integration-record.html#r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06">R53</a>.
+This selected transaction does not make an operation/target-only management
+callback sufficient for general proposed-grant enforcement.</p>
 <h2 id="management-authentication-and-lifetime-policy">Management authentication and lifetime policy<a class="headerlink" href="#management-authentication-and-lifetime-policy" title="Permanent link">&para;</a></h2>
 <p>The owner listener stays separate from data/private-operator listeners. Human
 authentication uses an interchangeable identity provider; Nightscout maps verified
