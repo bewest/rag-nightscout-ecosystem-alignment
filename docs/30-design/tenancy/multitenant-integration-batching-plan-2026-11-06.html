@@ -5265,7 +5265,7 @@
 <p><em>Contributor-facing execution plan, 2026-11-06, living. It says how work on the
 multitenant preview is batched, what verification runs at each stage, and which
 batches sit on the critical path to the M3 and M4 gates. Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7f74f5c81e538946e7dcaa3830ac5ca371a93f14/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0ab67e36f9b8613788eba35a47a6b8d21b8b8de5/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap-2026-11-02.html">REST delivery roadmap</a>
@@ -5479,7 +5479,7 @@ dispatched by the coordinating session that wrote this plan.</p>
 <td><strong>B7: M5 design acceptance</strong></td>
 <td>MT-RUNTIME-PLAN owner (draft by coordinator subagent)</td>
 <td>D-EVENT, D6 feed design, clock reports</td>
-<td><strong>Drafted for maintainer review:</strong> <a href="durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a>, eleven decisions and a nine-control entry bar, all UNMEASURED. Two consequences for sequencing: the contract applies only where the commit-coupled stamp exists, so the clock join (B2) precedes the first recovery slice; and the committed event at <code>35903069</code> carries neither tenant nor stamp (<code>lib/storage/write-intent.js:4656-4678</code>), so a payload slice follows B2 as its own lane and is not folded into the join. D23 (adopted 2026-11-06) settles the ack path the contract left open: <code>realtime</code> is a reader, socket writes are refused under <code>multitenant</code>, and the alarm ack is forwarded to <code>api</code>, which writes the tenant-keyed row the evaluator consumes from the feed.</td>
+<td><strong>Drafted for maintainer review:</strong> <a href="durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a>, eleven decisions and a nine-control entry bar, all UNMEASURED. Two consequences for sequencing: the contract applies only where the commit-coupled stamp exists, so the clock join (B2) precedes the first recovery slice; and the committed event at <code>35903069</code> carries neither tenant nor stamp (<code>lib/storage/write-intent.js:4656-4678</code>), so a payload slice follows B2 as its own lane and is not folded into the join. D23 (adopted and amended 2026-11-06) settles the ack path the contract left open: <code>realtime</code> is a reader and forwards every socket write and the alarm ack unchanged to an internal write endpoint on <code>api</code>, which writes with the <code>socket</code> source label; no client changes. Its entry condition 2, a replay of the pinned AndroidAPS 3.4.2.3 NSClient v1 socket upload sequence, is homed in the M4 packet.</td>
 </tr>
 </tbody>
 </table>

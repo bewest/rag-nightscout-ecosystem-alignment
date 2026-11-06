@@ -2863,6 +2863,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#46-d23-entry-condition-2-the-nsclient-v1-socket-sequence-against-a-forwarding-realtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 D23 entry condition 2: the NSClient v1 socket sequence against a forwarding realtime
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5402,6 +5413,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#46-d23-entry-condition-2-the-nsclient-v1-socket-sequence-against-a-forwarding-realtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 D23 entry condition 2: the NSClient v1 socket sequence against a forwarding realtime
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5768,6 +5790,15 @@ toolchain and device or simulator; out of scope for an automated Linux lab);
 <td>lock <code>7e1d537d</code></td>
 </tr>
 <tr>
+<td>10a</td>
+<td><strong>AndroidAPS 3.4.2.3 NSClient (v1) socket upload sequence</strong> (<code>aaps</code> at the 3.4.2.3 tag; <code>plugins/sync/.../nsclient/services/NSClientService.kt</code>)</td>
+<td>A as a <strong>driven sequence</strong>, D as the plugin itself</td>
+<td>a Node socket.io client replays the plugin's <code>authorize</code>, <code>dbAdd</code>, <code>dbUpdate</code> and <code>ack</code> message sequence as read from the pinned source, including a retried <code>dbAdd</code> after a withheld ack; this is source-pinned pattern replay, not execution of the Kotlin plugin</td>
+<td>v1 socket writes; the whole upload path of this plugin is the socket (execution plan §2.14 corpus table)</td>
+<td>socket <code>authorize</code> with the site's secret hash</td>
+<td>lock <code>7e1d537d</code> is <code>dev</code>, where the v1 plugin directory is gone; the 3.4.2.3 tag must be read by <code>gh api</code> or a pinned checkout, never a stale clone</td>
+</tr>
+<tr>
 <td>11</td>
 <td><strong>Loop via NightscoutKit / NightscoutService</strong> (<code>nightscoutkit</code>, <code>loop</code>)</td>
 <td>E</td>
@@ -5999,6 +6030,67 @@ classification and vocabulary, with one adapter the pipeline does not have today
   the archived head with <code>git show</code>/<code>git archive</code>, never a checkout. The id is allocated
   when the item is written, not here.</li>
 </ul>
+<h3 id="46-d23-entry-condition-2-the-nsclient-v1-socket-sequence-against-a-forwarding-realtime">4.6 D23 entry condition 2: the NSClient v1 socket sequence against a forwarding <code>realtime</code><a class="headerlink" href="#46-d23-entry-condition-2-the-nsclient-v1-socket-sequence-against-a-forwarding-realtime" title="Permanent link">&para;</a></h3>
+<p>D23, adopted and amended on 2026-11-06 (execution plan §2.14), makes <code>realtime</code> a
+reader that forwards every socket write message and the alarm <code>ack</code> unchanged, with
+the socket's own authorization, to an internal write endpoint on <code>api</code>, which runs the
+write step with the <code>socket</code> source label and relays the result into the socket
+acknowledgement. Its entry condition 2 names this packet as the home for the proof,
+because AndroidAPS 3.4.2.3's NSClient (v1) plugin is the one corpus client whose whole
+upload path is the socket.</p>
+<p><strong>Server under test:</strong> the explicit multitenant executable serving <code>api</code> and a
+forwarding <code>realtime</code> for two tenants, as in §4.1, plus the single-site Mongo baseline
+of §4.2 on the same head.</p>
+<p><strong>Driver:</strong> a Node socket.io client replaying the plugin's message sequence as read from
+the pinned 3.4.2.3 source: <code>authorize</code>, a <code>dbAdd</code> for a treatment and a devicestatus,
+a <code>dbUpdate</code> by the id returned in the add's acknowledgement, the alarm <code>ack</code>, and a
+retried <code>dbAdd</code> after the driver withholds its own acknowledgement handling, which is
+what the plugin does when no ack arrives. The driver is pattern replay (R40's caveat
+applies: not execution of the plugin) and carries no payload from any real site.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Predicted green</th>
+<th>Exact red symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>each forwarded write is stored once on tenant A with source label <code>socket</code>, and the acknowledgement carries the same id or result string the single-site baseline returns</td>
+<td>stored rows and ack bodies equal across baseline and preview, per the compat verdict vocabulary</td>
+<td>a differing ack shape, a missing source label, or a row on tenant B</td>
+</tr>
+<tr>
+<td>the retried <code>dbAdd</code> after a withheld ack stores no duplicate</td>
+<td>one row, one ack on the retry</td>
+<td>two rows for one logical add</td>
+</tr>
+<tr>
+<td><strong>control: acknowledge before <code>api</code> confirms</strong> (patch the forwarder in a scratch copy to reply before the forward resolves, then make the forward fail)</td>
+<td>the lost-write assertion goes red: an acknowledged add with no stored row</td>
+<td>if it stays green the assertion is vacuous; restore and rerun</td>
+</tr>
+<tr>
+<td><strong>control: <code>api</code> unavailable</strong></td>
+<td>the socket write receives no acknowledgement and the driver's retry fires; nothing is stored until <code>api</code> returns</td>
+<td>a success reply during the outage</td>
+</tr>
+<tr>
+<td><strong>control: tenant A's socket credential on tenant B's alias</strong></td>
+<td><code>authorize</code> refused; no write reaches <code>api</code></td>
+<td>any stored row on B</td>
+</tr>
+<tr>
+<td><code>single</code> unchanged</td>
+<td>the baseline's socket writes go directly to storage as today; no forwarder in the path</td>
+<td>a forwarded write observed in single-site mode</td>
+</tr>
+</tbody>
+</table>
+<p>Hop latency and its effect on the plugin's ack timeout are UNMEASURED and stay so
+until a quiet-hardware run; the control list above proves correctness of the forward,
+not its cost.</p>
 <h2 id="5-what-m4-still-leaves-unmeasured-after-this-lab">5. What M4 still leaves unmeasured after this lab<a class="headerlink" href="#5-what-m4-still-leaves-unmeasured-after-this-lab" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -6010,7 +6102,7 @@ classification and vocabulary, with one adapter the pipeline does not have today
 <tbody>
 <tr>
 <td><strong>Socket transport</strong></td>
-<td>None of the three clients speaks socket.io. AAPS v3 <code>/storage</code> and <code>/alarm</code> namespaces, LoopFollow's <code>authorize {secret: &lt;token&gt;}</code>, and AAPS v1 <code>dbAdd</code>/<code>dbUpdate</code> (only on the unpinned 3.4.x master) are M5's gate (socket authorization, reconnect, tenant-local rooms), not M4's</td>
+<td>None of the three clients speaks socket.io. AAPS v3 <code>/storage</code> and <code>/alarm</code> namespaces, LoopFollow's <code>authorize {secret: &lt;token&gt;}</code>, and AAPS v1 <code>dbAdd</code>/<code>dbUpdate</code> (only on the unpinned 3.4.x master) are M5's gate (socket authorization, reconnect, tenant-local rooms), not M4's The NSClient v1 forward path alone is covered by §4.6 under D23; the v3 <code>/storage</code> and <code>/alarm</code> subscribe paths and LoopFollow's socket <code>authorize</code> remain outside this lab.</td>
 </tr>
 <tr>
 <td><strong>Mobile binaries</strong></td>
