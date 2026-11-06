@@ -10,6 +10,18 @@ const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const suite = option('--suite'), ref = option('--ref'), control = option('--control');
 const cases = {
+  settings: {
+    file: 'tests/tenant-rest-settings-differential.integration.test.js', flag: 'NS_SETTINGS_DIFFERENTIAL_TEST',
+    controls: {
+      sortcap: ['lib/storage/postgres-filter.js', 'const MAX_SORT_KEYS = 5;', 'const MAX_SORT_KEYS = 4;',
+        'admits requested scalar sort with all stable tie-breakers'],
+      predicate: ['lib/storage/postgres-filter.js', "function compileFilter (ast, params, { legacyPatterns = false } = {}) {",
+        "function compileFilter (ast, params, { legacyPatterns = false } = {}) {\n  return 'true';", 'applies scalar predicate'],
+      projection: ['lib/storage/postgres-entries-read.js',
+        'const docs = rows.map(row => projectDocument(decodeDocument(row), o.projection));',
+        'const docs = rows.map(row => decodeDocument(row));', 'checks projection at actual storage port']
+    }
+  },
   'frame-acquisition': {
     file: 'tests/tenant-frame-acquisition.integration.test.js', flag: 'NS_FRAME_ACQUISITION_TEST',
     controls: {
@@ -122,7 +134,7 @@ let scratch;
 const containers = [];
 try {
   if (!Object.hasOwn(cases, suite) || !ref || (control && !Object.hasOwn(cases[suite].controls, control))) {
-    throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race|frame-acquisition|frame-concurrency --ref <commit> [--control <declared case>]');
+    throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race|frame-acquisition|frame-concurrency|settings --ref <commit> [--control <declared case>]');
   }
   const selected = cases[suite];
   const repository = process.env.NS_REST_GATE_REPO || CRM;
@@ -144,12 +156,12 @@ try {
   fs.symlinkSync(dependencies, path.join(scratch, 'node_modules'), 'dir');
   const runtime = { ...process.env, NODE_ENV: 'test', NODE_PATH: dependencies,
     ...(selected.flag ? { [selected.flag]: '1' } : {}), TEST_ENV_FILE: '/dev/null', TZ: 'UTC' };
-  if (suite === 'profile' || suite === 'identity' || suite === 'race' || suite === 'frame-concurrency') {
+  if (suite === 'profile' || suite === 'identity' || suite === 'race' || suite === 'frame-concurrency' || suite === 'settings') {
     const docker = values => execFileSync('docker', values,
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }).trim();
     const container = 'ns-profile-gate-' + require('node:crypto').randomBytes(8).toString('hex');
     containers.push(container);
-    docker(['run', '--name', container, '-d', '--ulimit', 'nofile=64000:64000',
+    docker(['run', ...(suite === 'settings' ? ['--pull=never'] : []), '--name', container, '-d', '--ulimit', 'nofile=64000:64000',
       '-p', '127.0.0.1::27017', 'mongo:8.0.34', '--bind_ip_all']);
     const port = docker(['port', container, '27017/tcp']).split(':').pop();
     const deadline = Date.now() + 30000;
@@ -166,11 +178,11 @@ try {
     Object.assign(runtime, require('node:util').parseEnv(fs.readFileSync(path.join(scratch, 'tests/ci.test.env'), 'utf8')),
       { NODE_ENV: 'test', NODE_PATH: dependencies, TEST_ENV_FILE: '/dev/null', TZ: 'UTC',
         CUSTOMCONNSTR_mongo: 'mongodb://127.0.0.1:' + port + '/' + suite + '_gate_test' });
-    if (suite === 'identity' || suite === 'race' || suite === 'frame-concurrency') {
+    if (suite === 'identity' || suite === 'race' || suite === 'frame-concurrency' || suite === 'settings') {
       const postgres = 'ns-identity-pg-' + require('node:crypto').randomBytes(8).toString('hex');
       const password = require('node:crypto').randomBytes(24).toString('hex');
       containers.push(postgres);
-      execFileSync('docker', ['run', '--name', postgres, '-d', '-p', '127.0.0.1::5432',
+      execFileSync('docker', ['run', ...(suite === 'settings' ? ['--pull=never'] : []), '--name', postgres, '-d', '-p', '127.0.0.1::5432',
         '-e', 'POSTGRES_USER=operator', '-e', 'POSTGRES_PASSWORD', '-e', 'POSTGRES_DB=identity_gate_test',
         'postgres:16'], { env: { ...process.env, POSTGRES_PASSWORD: password }, stdio: 'pipe', timeout: 30000 });
       const pgPort = docker(['port', postgres, '5432/tcp']).split(':').pop();
@@ -187,6 +199,30 @@ try {
       }
       runtime.NS_TEST_POSTGRES_ADMIN_URI = 'postgres://operator:' + password + '@127.0.0.1:' + pgPort + '/identity_gate_test';
     }
+    if (suite === 'settings') {
+      const vault = 'ns-settings-vault-' + require('node:crypto').randomBytes(8).toString('hex');
+      const token = require('node:crypto').randomBytes(24).toString('hex');
+      containers.push(vault);
+      execFileSync('docker', ['run', '--pull=never', '--name', vault, '-d', '-p', '127.0.0.1::8200',
+        '-e', 'VAULT_DEV_ROOT_TOKEN_ID',
+        'hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2',
+        'server', '-dev', '-dev-listen-address=0.0.0.0:8200'],
+      { env: { ...process.env, VAULT_DEV_ROOT_TOKEN_ID: token }, stdio: 'pipe', timeout: 30000 });
+      const vaultPort = docker(['port', vault, '8200/tcp']).split(':').pop();
+      const vaultDeadline = Date.now() + 30000;
+      for (;;) {
+        try {
+          docker(['exec', vault, 'vault', 'status', '-address=http://127.0.0.1:8200']);
+          console.log('Owned Vault: ready');
+          break;
+        } catch (error) {
+          if (Date.now() >= vaultDeadline) throw error;
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 150);
+        }
+      }
+      Object.assign(runtime, { NS_SETTINGS_DIFFERENTIAL_TEST: '1',
+        NS_SETTINGS_VAULT_ADDRESS: 'http://127.0.0.1:' + vaultPort, NS_SETTINGS_VAULT_TOKEN: token });
+    }
   }
   if (control) {
     const [file, before, after] = selected.controls[control];
@@ -200,7 +236,7 @@ try {
   }
   console.log('gate: next-slice ' + suite + '\n  tree ' + head);
   const result = spawnSync(process.execPath, [mocha, '--fail-zero', '--exit', '--timeout', '120000',
-    ...(suite === 'profile' ? ['--require', './tests/hooks.js'] : []),
+    ...((suite === 'profile' || suite === 'settings') ? ['--require', './tests/hooks.js'] : []),
     ...[selected.file].flat(), ...(control ? ['--grep', selected.controls[control][3]] : [])], {
     cwd: scratch, encoding: 'utf8', timeout: 240000, maxBuffer: 8 * 1024 * 1024,
     env: runtime
