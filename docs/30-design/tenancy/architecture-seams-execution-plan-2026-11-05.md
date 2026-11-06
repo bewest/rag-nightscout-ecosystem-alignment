@@ -1,8 +1,8 @@
 # Architecture seams and execution-profile integration
 
 *Contributor-facing execution plan, 2026-11-05. Authorized priority work;
-bounded R42 contract/management and independent R43 profile evidence is now
-recorded; broader composition/consolidation/frame acceptance remains UNMEASURED.
+bounded R42 contract/management, R43 profile and R44 current-domain composition
+evidence is recorded; broader consolidation/frame acceptance remains UNMEASURED.
 Item states, gates and blockers
 live in [the work queue](../../../queue/work-queue.yaml). This plan supplements
 the [REST delivery roadmap](multitenant-delivery-roadmap-2026-11-02.md), without
@@ -70,12 +70,30 @@ measure the bounded port, separate management and profile scopes; current
 authority/subject gates also run against the new REST head. Five representative
 controls are NON-VACUOUS. This does not complete their broader cards or M0–M6.
 
-Next composition work reserves domain-catalogue, backend factory/schema/readiness
-and storage-error classification boundaries with the coordinator. Preserve the
+Next storage work consumes the R44 composition boundary for proven common
+adapter consolidation, under coordinator ownership. Preserve the
 measured lower/preview projection differences and independent transaction scope;
 do not combine extraction with new query or write policy. #8891 keeps its current
 physical subscriber while logical no-op/outcome and full-writer replay continue.
 Its branch remains separate from REST and release placement. SQLite stays deferred.
+
+## Current-domain composition acceptance and next ownership
+
+[R44](../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05)
+accepts local REST `bc4ee1a9`, joining the domain/backend and failure/HTTP split
+with bounded direct imported-identity compatibility tests. Real startup/refusal,
+HTTP and stored-outcome controls, full nonbrowser/default-browser campaigns and
+independent source review establish this current-domain extraction. The public
+preview remains draft #8898 `d4570e58`; both that head and independent #8891
+`925c9527` have successful head CI/CodeQL at read-back. New changes stay local.
+
+The REST coordinator owns cumulative acceptance. Next storage ownership is
+`ARCH-SEAM-CONSOLIDATE`: extract only proven common adapter mechanics after
+comparing the measured lower/preview contract differences. Compatibility owns
+further settings/identity/index-race and actual-client evidence. R45 independently
+accepts actual-HTTP profile replay and corrected live fixture ownership; profile remains
+independent; complete writer/alarm coverage and logical no-op admission precede
+subscriber or shared-frame policy changes. No new RC gate or milestone promotion.
 
 ## Contract packet: ARCH-SEAM-CONTRACT
 

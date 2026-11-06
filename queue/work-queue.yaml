@@ -457,6 +457,11 @@ items:
     semver_reason: experiment
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite identity --ref bc4ee1a91b84a657012dbb77ee835fdeb78ef707
+        kind: integration
+        describe: >
+          Direct actual API3 Mongo/PG imported-identity differential: typed raw IDs,
+          absent/falsy identifier fallback, mutation/deletion and foreign-tenant state.
       - no-gate: >
           Requires M1 entries adapter and M2 tenant control-plane integration.
           Real HTTP v3 writes/reads and stored outcomes, same IDs across tenants,
@@ -468,7 +473,9 @@ items:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
       M3; R41 accepts local subject service and strict compatibility tests
-      at 94c57f1f; published draft remains R40 ded254b9, not full preview.
+      at 94c57f1f; published draft is R42 d4570e58, not full preview.
+      Local composition continuation adds bounded direct imported-identity coverage;
+      the historical release comparison retains its separately scoped omissions.
       Maintainer priority 2026-11-05: management HTTP and wider REST, with parallel
       current Mongo/PG and historical release/dev/PR-single compatibility.
       Existing RC corrections/client quirks need explicit expected-change
@@ -24992,9 +24999,10 @@ items:
     title: 'First: separate domain definitions from backend and HTTP bindings'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: PR8898@ded254b9; PR8891@744d1968
-    state: not-started
+    branch: codex/rest-compose-integration-20261105
+    base: PR8898@d4570e58
+    worktree: externals/work/crm-codex-compose-integration-20261105
+    state: in-progress
     blast_radius: >
       Tenant domain catalogue, PG factory/schema/readiness composition and storage
       failure taxonomy versus version-specific HTTP rendering.
@@ -25004,20 +25012,26 @@ items:
     semver_reason: Planning only; implementation and release placement require their acceptance.
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite compose --ref bc4ee1a91b84a657012dbb77ee835fdeb78ef707
+        kind: integration
+        describe: >
+          Explicit PG composition and actual CLI startup/refusal with read-only
+          readiness, incomplete ports, wrong catalogue and HTTP failure provenance.
       - no-gate: >
-          Composition refactor not implemented. Require actual default-single and
-          preview CLI/HTTP acceptance; incomplete ports, wrong catalogue and
-          unavailable-to-400 misclassification controls must fail. Preserve read-only
-          serving startup and explicit backend selection.
+          Current-domain extraction is measured separately. Broader portable
+          capability/schema/error/retry contracts and subsequent helper consolidation
+          remain open; no automatic backend selection or milestone promotion.
     blocks_on:
       - ARCH-SEAM-CONTRACT
     evidence:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      First priority after contract; composition owner reserves shared files with REST
-      coordinator. No fallback to Mongo for incomplete injection. Backend failure
-      classification belongs below the HTTP renderers; response semantics remain
-      version-specific.
+      Local cumulative composition separates domain metadata from explicit PG
+      factories/catalogues/readiness and extracts cause-chain dependency recognition
+      below version-specific HTTP rendering. Runtime tests and scratch-only controls
+      measure incomplete-port/catalogue refusal and unavailable503 versus internal500.
+      Full cumulative acceptance is recorded separately; current Mongo defaults,
+      transaction ownership and submitted-validation provenance are preserved.
 
   - id: ARCH-SEAM-CONSOLIDATE
     title: 'Next: consolidate proven common adapter mechanics'
@@ -25054,10 +25068,10 @@ items:
     title: 'Next: refresh and integrate PR 8891 single nonresident profile'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/profile-refresh-20261105
+    branch: codex/profile-writers-20261105
     pr: [8891]
-    base: official/dev@4a482627; PR8891@744d1968
-    worktree: externals/work/crm-codex-profile-refresh-20261105
+    base: official/dev@4a482627; PR8891@925c9527
+    worktree: externals/work/crm-codex-profile-writers-20261105
     state: in-progress
     blast_radius: >
       Existing feat/views-profile prototype, explicit opt-in boot, evaluator
@@ -25068,12 +25082,12 @@ items:
     semver_reason: Bounded dormant characterization; full composition and release placement remain separate.
     register: []
     gates:
-      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 925c95278ed04954d1181201da79ae5d6c48c095
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref dff9a8d42860be09c7f187f5e3d0527d6eb31d80
         kind: integration
         describe: >
           Independent refreshed nonresident single replay: actual write/timer
-          triggers, selected alarm/properties cohorts, resend cadence, fake
-          delivery/no-egress and teardown; no production subscriber switch.
+          triggers, actual API3 HTTP mutations/resends, retained properties and
+          selected live notification handoff with owned fixtures; no subscriber switch.
       - no-gate: >
           The selected current-head replay is measured by the bounded gate.
           Complete alarm/writer cohorts, logical no-op subscriber policy, live
@@ -25088,8 +25102,9 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      R43 independently accepts local 925c9527 after current-dev refresh,
-      full/default-browser regression and selected actual-trigger replay.
+      R43 published 925c9527 retains independent profile acceptance. The local
+      test-only dff9a8d4 continuation extends actual API3 writer/no-op coverage and
+      corrects live notification fixture ownership; its acceptance is separately recorded.
       Physical subscriber retained; logical no-op/refusal admission and full
       writer/alarm coverage remain open. Runtime cost and live stats freshness
       are unmeasured. No automatic join into #8898, release placement or

@@ -22,6 +22,16 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: composition and direct identity accepted; independent HTTP profile replay (2026-11-05)
+
+| Work / state | Evidence and remaining boundary |
+|---|---|
+| Local cumulative REST `bc4ee1a91b84a657012dbb77ee835fdeb78ef707` accepts current-domain composition and imported-identity differential. | [R44](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05): parent-reproduced full7035/80pending/0failing, default browser684, archived composition15 and identity15. Actual CLI/refusal and HTTP/storage controls fail semantically, restored gates pass; independent read-derived source review finds no blocking extraction issue. No new query/write/backend policy or full portability claim. |
+| Independent local profile `dff9a8d42860be09c7f187f5e3d0527d6eb31d80` extends #8891 with actual API3 writer/no-op replay. | [R45](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05): agent-reproduced full6682/3pending/0failing and default browser684, parent-audited anchored aggregates; parent-reproduced archived30 and actual trigger/closed-service controls. Review reproduced and corrected a closed-notification fixture; final live emission assertions pass. Production source and physical subscriber unchanged; no REST join. |
+| Three new/current bounded gate-control pairs are PASS/NON-VACUOUS. | Composition, direct imported-identity and expanded independent profile instruments. Their broader cards and M0-M6 remain incomplete. Historical R42 comparison is not rerun or enlarged by direct current-backend identity coverage. |
+| Published #8898 remains OPEN/draft at R42 d4570e58; #8891 OPEN/draft at R43 925c9527. | November 5 fresh read-back: both published heads have successful CI and CodeQL. The new continuations remain local/unpushed; no merge, release, role enablement or RC admission. Local `externals/work/HANDOFF-compose-integration-20261105.md` indexes owned branches, verification, review findings and maintainer publication commands. |
+| Next: proven adapter consolidation, continued compatibility and independent profile/shared-frame characterization. | [Current roadmap](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-composition-and-direct-identity-continuation-2026-11-05). Owner identity/ceilings, logical no-op admission, remaining REST/client/import/resource/lifecycle and durable M5/M6 gates stay open; SQLite remains deferred. |
+
 ### Update: contract and management HTTP accepted; profile independently refreshed (2026-11-05)
 
 | Work / state | Evidence and remaining boundary |

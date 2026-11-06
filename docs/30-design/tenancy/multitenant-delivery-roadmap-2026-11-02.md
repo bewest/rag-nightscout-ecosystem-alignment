@@ -25,11 +25,12 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest locally accepted cumulative REST head is `d4570e58`
-([R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05));
-it remains unpushed. The latest published accepted head is `ded254b9`, on
-nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. Current-head CI and
-CodeQL succeeded at the latest read-back. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+promotion is recorded. The latest locally accepted cumulative REST head is
+`bc4ee1a9` ([R44](../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05));
+it is local and unpushed. The published accepted head is R42 `d4570e58`, on
+nightscout/cgm-remote-monitor#8898, which remains OPEN/draft. The independent
+published #8891 is R43 `925c9527`, also OPEN/draft. Head CI and CodeQL succeed
+for both at the November 5 read-back. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
@@ -41,6 +42,51 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted composition and direct identity continuation (2026-11-05)
+
+[R44](../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05)
+accepts local cumulative `bc4ee1a91b84a657012dbb77ee835fdeb78ef707`:
+logical domain metadata is separate from explicit PG factories/catalogues and
+read-only readiness; dependency recognition is separate from HTTP rendering.
+Actual CLI startup and incomplete-port/wrong-catalogue refusal, HTTP error
+provenance and direct imported-identity Mongo/PG HTTP checks pass, with full
+nonbrowser/default-browser regression and semantic controls. R44 owns exact
+campaign figures, setup failures and limits. Independent source review finds
+no blocking extraction issue. Current default single, query/write policy and
+version-specific refusal semantics are preserved.
+
+This direct identity corpus covers typed raw identity with absent/falsy shown
+identifier fallback. The R42 historical comparison keeps its own scope; neither
+settings/index-race coverage nor real client binaries follows transitively.
+The separate profile branch is not joined into REST or admitted to the RC.
+
+**Next:** consolidate only proven common PG adapter mechanics against the
+accepted current-port/direct compatibility baseline. Keep source-specific
+ordering, representation, projection and write outcomes explicit; controls must
+detect ordering changes and pre-commit publication. Continue remaining REST
+receipts/egress, identity/settings/index races, actual clients, import/resource
+and lifecycle acceptance. Owner identity/grant ceilings and logical-event
+no-op admission remain their own decisions; they do not block this bounded
+consolidation. Shared frame and durable M5/M6 work retain their separate gates.
+No milestone promotion, production role enablement or SQLite dispatch follows.
+
+### Accepted independent HTTP profile continuation (2026-11-05)
+
+[R45](../remedial/rc-16.0.0-integration-record.md#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05)
+accepts local test-only `dff9a8d42860be09c7f187f5e3d0527d6eb31d80` over
+published #8891 R43 `925c9527`. Actual API3 mutations/resends now observe
+persistence, physical/logical event cadence, retained-property and request-signature
+parity, and selected live notification handoff. Parent archived replay and
+trigger/closed-service controls pass; independent full/default-browser regression
+and review pass. The reproduced notification-fixture lifecycle failure and scoped
+ownership correction are recorded in R45; superseded runs are not acceptance.
+
+The physical subscriber and timer are unchanged; acknowledge/refuse still do not
+refresh a retained cycle. Full writer/alarm coverage, logical no-op admission,
+live statistics/freshness, quiet cost and shared-frame/release placement remain
+open. This branch is independent of REST; no actual provider delivery or durable
+multitenant runtime is accepted.
 
 ### Architecture and execution-profile priority (2026-11-05)
 

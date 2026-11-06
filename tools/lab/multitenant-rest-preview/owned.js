@@ -17,11 +17,13 @@ const docker = args => execFileSync('docker', args, {
   encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000
 }).trim();
 const focused = [
-  'tenant-rest-entries.integration.test.js', 'tenant-rest-treatments.integration.test.js',
+  'tenant-rest-entries.integration.test.js', 'tenant-rest-identity-differential.integration.test.js',
+  'tenant-rest-treatments.integration.test.js',
   'tenant-rest-device-activity.integration.test.js', 'tenant-rest-profile-food.integration.test.js',
   'tenant-rest-context.integration.test.js', 'tenant-rest-derived.integration.test.js',
   'tenant-rest-client-replay.integration.test.js', 'tenant-rest-authority-review.test.js',
   'credential-extraction.test.js', 'tenant-rest-authority.test.js', 'storage-trusted-ports.test.js',
+  'multitenant-preview-process.integration.test.js',
   'tenant-write-clock.test.js', 'subject-admin.test.js', 'subject-admin-postgres.integration.test.js',
   'subject-management-http.integration.test.js', 'storage-port-contract.integration.test.js',
   'tenant-legacy-credentials.test.js', 'postgres-collection-intent.test.js', 'postgres-filter.test.js',
