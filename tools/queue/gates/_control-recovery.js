@@ -36,8 +36,11 @@ function verify (suite, report, status, control) {
   }
   const err = failure.err;
   const owner = suite === 'owner-reader';
-  if (owner ? JSON.stringify(err.actual) !== JSON.stringify([true, true, true]) ||
-      JSON.stringify(err.expected) !== JSON.stringify([false, false, false]) :
+  // Mocha's Base reporter stringifies assertion arrays before JSON emits them.
+  // Admit only the exact three-boolean shape, never a truthy/fuzzy conversion.
+  const triplet = (value, boolean) => JSON.stringify(value) === JSON.stringify([boolean, boolean, boolean]) ||
+    (typeof value === 'string' && value.replace(/\s/g, '') === '[' + [boolean, boolean, boolean].join('') + ']');
+  if (owner ? !triplet(err.actual, true) || !triplet(err.expected, false) :
     Number(err.actual) !== 1 || Number(err.expected) !== 2) {
     throw new Error('CONTROL-INVALID: unexpected assertion symptom');
   }

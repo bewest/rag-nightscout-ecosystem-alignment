@@ -26,6 +26,15 @@ for (const [suite, item] of Object.entries(cases)) {
     failures: [{ err: { code: 'ERR_ASSERTION', actual: suite === 'owner-reader' ? [true, true, true] : 1,
       expected: suite === 'owner-reader' ? [false, false, false] : 2 } }] };
   verify(suite, failure, 1, true);
+  if (suite === 'owner-reader') {
+    failure.failures[0].err.actual = '[\n  true\n  true\n  true\n]';
+    failure.failures[0].err.expected = '[\n  false\n  false\n  false\n]';
+    verify(suite, failure, 1, true);
+    for (const invalid of ['[true true]', '[true false true]', '[true true true] extra', [true, true], [true, false, true]]) {
+      failure.failures[0].err.actual = invalid;
+      assert.throws(() => verify(suite, failure, 1, true), /unexpected assertion/);
+    }
+  }
   failure.failures[0].err.code = 'ECONNREFUSED';
   assert.throws(() => verify(suite, failure, 1, true), /setup failure/);
   failure.failures[0].err.code = 'ERR_ASSERTION';
