@@ -144,25 +144,26 @@ It is not in the generated table above because its items are `in-progress`: the
 preview is dormant and opt-in, placement was decided on 2026-10-30 (it may ship
 dormant and labelled alpha behind `nightscout multitenant`, or be deferred; it is
 not a single-tenant release gate), and taking it out of draft, review and merge are
-the maintainer's actions when the completion batches reach them. What waits on a
-person now:
+the maintainer's actions when the completion batches reach them. The five
+decisions on the critical path are written up, one topic per section with a
+recommendation each, in the
+[open decisions note](../30-design/tenancy/multitenant-open-decisions-2026-11-06.md);
+each answer becomes one row in the release decisions file. In brief:
 
-- **A disposition for the selected-reader mode's root clients.** Under the optional
-  subject-reader policy an actual cgmsim root upload gets 503 where the unselected
-  mode returns 200 ([R63](../30-design/remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06)).
-  Root exclusion is deliberate; whether 503 is the right refusal, and whether the
-  mode can ever be selected while any root client remains, is a maintainer decision.
-  Until then the mode stays unselected and nothing changes for any client.
-- **Numeric bounds and retention before they become pass thresholds** for M6 and
-  the clock: the batching plan's criterion matrix says a limit is approved first and
-  measured second; R65's workload is descriptive and sets no budget.
-- **Ownership of the owner session/issuer lifecycle and the wider operational
-  implementation**, which the batching plan lists as unassigned; the coordinator
-  allocates them, and the maintainer confirms the lane.
+- **What a root credential gets under the selected-reader mode.** An actual cgmsim
+  root upload gets 503 where the unselected mode returns 200
+  ([R63](../30-design/remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06)).
+  Until decided the mode stays unselected and nothing changes for any client.
+- **What M2 is held to**: the roadmap cell or the dashboard's additions.
+- **Numeric bounds and performance budgets** before they become pass thresholds;
+  R65's workload is descriptive and sets no budget.
+- **What "actual client execution" means for M4**, given that the mobile clients
+  are outside the headless lab.
+- **Who owns the rest of batch C.** The owner session/issuer lifecycle decision
+  packet is assigned (session -8c); the wider operational implementation is not.
 
-The nested-write commit-stamp question logged in the durable event contract's §9
-is being resolved in the event-payload lane by implementation and test; it reaches
-this page only if the result needs a decision.
+Closed on 2026-11-06, for the record: the per-write event's `stamp` is the
+transaction's final clock floor (decisions file, B7 section).
 
 ### `BFQ-09`, `A7A-7` — `unsettled`, which is not the same as open
 
