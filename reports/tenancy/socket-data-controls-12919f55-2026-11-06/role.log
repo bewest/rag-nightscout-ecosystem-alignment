@@ -1,0 +1,16 @@
+Scratch-only socket oracle hardening: physical states precede callback assertions
+Owned MongoDB: 8.0.34
+Scratch-only control: socket-data-forwarding/role
+gate: next-slice socket-data-forwarding
+  tree 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+Single reference child started: {"type":"ready","pid":337968,"mode":"single","port":33241}
+[single-reference] [32mWS: [0mConnection from client ID:  sAwX6vQ_H6MMQjZaAAAA  IP:  127.0.0.1
+WS: dbAdd collection=treatments client=forwarded ref=2026-11-06T00:00:00.000Z eventType=Note
+[35mDEDUPE: [0mAdding new record
+[single-reference] [32mWS: [0mDisconnected client ID:  sAwX6vQ_H6MMQjZaAAAA
+Single reference child cleanup: {"pid":337968,"code":0,"signal":null,"absent":true}
+Private bounded artifacts: <alignment-worktree>/externals/work/control-recovery-gate-artifacts/socket-data-forwarding-kszcNG
+Owned socket child independently absent: 337968
+{"suites":1,"tests":1,"passes":0,"pending":0,"failures":1,"start":"2026-11-06T23:05:10.966Z","end":"2026-11-06T23:05:12.889Z","duration":1923}
+CONTROL-SEMANTIC: foreign role produced committed tenant A row and event with callback; tenant B unchanged
+Owned cleanup diagnostics: <alignment-worktree>/externals/work/cleanup-diagnostics/next-slice-OleH8f/containers.json

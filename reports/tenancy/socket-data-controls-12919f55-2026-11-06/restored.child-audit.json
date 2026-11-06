@@ -1,0 +1,11 @@
+{
+  "pid": 339159,
+  "mode": "single",
+  "exit": {
+    "pid": 339159,
+    "code": 0,
+    "signal": null,
+    "absent": true
+  },
+  "independentlyAbsent": true
+}

@@ -1,0 +1,1 @@
+[{"kind":"role","observation":"refused","acknowledged":false,"before":[],"current":[],"expectedForeign":[],"foreign":[],"eventCount":0,"events":0},{"kind":"earlyack","postWrite":true,"acknowledged":false,"current":[],"eventCount":0,"events":0}]

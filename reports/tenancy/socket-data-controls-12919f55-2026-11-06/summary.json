@@ -1,0 +1,161 @@
+{
+  "measurement": "reproduced",
+  "source": "12919f5558c9cbac50b0fd15e4bc2ea482af1a24",
+  "instrument": "c2fe24bb2d73fa25e75a5375299e72c8d34b0a9f",
+  "alignmentBase": "5866c9901fb68060b1cbd7bdcd7423d0ab243618",
+  "suite": "socket-data-forwarding",
+  "nativeInvocations": 3,
+  "runs": [
+    {
+      "run": "earlyack",
+      "exit": 1,
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T23:04:50.980Z",
+        "end": "2026-11-06T23:04:52.927Z",
+        "duration": 1947
+      },
+      "proofs": [
+        {
+          "kind": "earlyack",
+          "postWrite": true,
+          "acknowledged": true,
+          "current": [],
+          "eventCount": 0,
+          "events": 0
+        }
+      ],
+      "child": {
+        "pid": 336823,
+        "mode": "single",
+        "exit": {
+          "pid": 336823,
+          "code": 0,
+          "signal": null,
+          "absent": true
+        },
+        "independentlyAbsent": true
+      },
+      "nativeReportSha256": "ebec8113254ced9f07e47d5637f8adb75a0a61eb1c48810282cfcf9146ed5f14"
+    },
+    {
+      "run": "role",
+      "exit": 1,
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T23:05:10.966Z",
+        "end": "2026-11-06T23:05:12.889Z",
+        "duration": 1923
+      },
+      "proofs": [
+        {
+          "kind": "role",
+          "observation": "callback",
+          "acknowledged": true,
+          "before": [],
+          "current": [
+            {
+              "_id": "6aee5d282983c90002d7a6bc",
+              "notes": "synthetic-source-pattern",
+              "eventType": "Note",
+              "created_at": "2026-11-06T00:00:00.000Z",
+              "srvCreated": 1794006412783,
+              "srvModified": 1794006412783
+            }
+          ],
+          "expectedForeign": [],
+          "foreign": [],
+          "eventCount": 0,
+          "events": 1
+        }
+      ],
+      "child": {
+        "pid": 337968,
+        "mode": "single",
+        "exit": {
+          "pid": 337968,
+          "code": 0,
+          "signal": null,
+          "absent": true
+        },
+        "independentlyAbsent": true
+      },
+      "nativeReportSha256": "f954aac58292f49872a4b9e65e73de192dcb694067181d3142b63bb665ee1d98"
+    },
+    {
+      "run": "restored",
+      "exit": 0,
+      "stats": {
+        "suites": 1,
+        "tests": 4,
+        "passes": 4,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T23:05:30.955Z",
+        "end": "2026-11-06T23:05:33.278Z",
+        "duration": 2323
+      },
+      "proofs": [
+        {
+          "kind": "role",
+          "observation": "refused",
+          "acknowledged": false,
+          "before": [],
+          "current": [],
+          "expectedForeign": [],
+          "foreign": [],
+          "eventCount": 0,
+          "events": 0
+        },
+        {
+          "kind": "earlyack",
+          "postWrite": true,
+          "acknowledged": false,
+          "current": [],
+          "eventCount": 0,
+          "events": 0
+        }
+      ],
+      "child": {
+        "pid": 339159,
+        "mode": "single",
+        "exit": {
+          "pid": 339159,
+          "code": 0,
+          "signal": null,
+          "absent": true
+        },
+        "independentlyAbsent": true
+      },
+      "nativeReportSha256": "eac3699a43891337a569098d839525aa4c6e8a56a96fd75f2cc075dd8fb2381b"
+    }
+  ],
+  "scratchOracleSha256": "77431ccf9f8a4f1caa624f27dd9fd1205b1d54d3dc8c7e8292304920f007724f",
+  "runtimeReleased": "2026-11-06T23:06:05Z",
+  "resources": {
+    "containers": 6,
+    "mountedVolumes": 9,
+    "singleReferenceChildPids": 3,
+    "allIndependentlyAbsent": true,
+    "hostVolumesBefore": 462,
+    "hostVolumesAfter": 462,
+    "freeGiBAfter": 218,
+    "unknownBaselinePreserved": true
+  },
+  "admission": "prototype only; not adopted",
+  "limits": [
+    "fresh optional-successor schemas only",
+    "actual canonical-handler/Mongo/Socket.IO synthetic pattern reference, not Android binary or full single app",
+    "old catalogue startup rejects successor ledger MIG_UNKNOWN; populated/import order unsupported",
+    "no production transport/roles/notification or alarm-ack semantics",
+    "no full/browser/whole-corpus/prcheck or broad milestone promotion"
+  ]
+}

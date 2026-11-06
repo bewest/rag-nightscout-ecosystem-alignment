@@ -1,0 +1,1 @@
+[{"kind":"role","observation":"callback","acknowledged":true,"before":[],"current":[{"_id":"6aee5d282983c90002d7a6bc","notes":"synthetic-source-pattern","eventType":"Note","created_at":"2026-11-06T00:00:00.000Z","srvCreated":1794006412783,"srvModified":1794006412783}],"expectedForeign":[],"foreign":[],"eventCount":0,"events":1}]

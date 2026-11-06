@@ -1,0 +1,90 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-11-06T23:05:30.955Z",
+    "end": "2026-11-06T23:05:33.278Z",
+    "duration": 2323
+  },
+  "tests": [
+    {
+      "title": "matches same-head single Mongo acknowledgements and typed stored values for pinned treatment retry/update/unset/remove",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab matches same-head single Mongo acknowledgements and typed stored values for pinned treatment retry/update/unset/remove",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 219,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "does not publish a success acknowledgement or event before the owned API commit",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab does not publish a success acknowledgement or event before the owned API commit",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 163,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "rolls back a post-write API failure without a success callback, intent event or clock advance",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab rolls back a post-write API failure without a success callback, intent event or clock advance",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 11,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "matches same-head single Mongo acknowledgements and typed stored values for pinned treatment retry/update/unset/remove",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab matches same-head single Mongo acknowledgements and typed stored values for pinned treatment retry/update/unset/remove",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 219,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "does not publish a success acknowledgement or event before the owned API commit",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab does not publish a success acknowledgement or event before the owned API commit",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 163,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "rolls back a post-write API failure without a success callback, intent event or clock advance",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab rolls back a post-write API failure without a success callback, intent event or clock advance",
+      "file": "/tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 11,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ]
+}

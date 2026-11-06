@@ -1,0 +1,54 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-06T23:05:10.966Z",
+    "end": "2026-11-06T23:05:12.889Z",
+    "duration": 1923
+  },
+  "tests": [
+    {
+      "title": "refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "file": "/tmp/ns-next-slice-9C4LFV/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 36,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: socket role substitution changed committed tenant A row count\n\n1 !== 0\n\n    at Context.<anonymous> (tests/tenant-socket-data-forwarding.integration.test.js:227:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "socket role substitution changed committed tenant A row count\n\n1 !== 0\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "1",
+        "expected": "0",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab refuses a substituted foreign role credential at current API subject authority without effects or callback",
+      "file": "/tmp/ns-next-slice-9C4LFV/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 36,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: socket role substitution changed committed tenant A row count\n\n1 !== 0\n\n    at Context.<anonymous> (tests/tenant-socket-data-forwarding.integration.test.js:227:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "socket role substitution changed committed tenant A row count\n\n1 !== 0\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "1",
+        "expected": "0",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "passes": []
+}

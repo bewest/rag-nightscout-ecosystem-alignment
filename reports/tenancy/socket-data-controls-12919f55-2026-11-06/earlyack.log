@@ -1,0 +1,16 @@
+Scratch-only socket oracle hardening: physical states precede callback assertions
+Owned MongoDB: 8.0.34
+Scratch-only control: socket-data-forwarding/earlyack
+gate: next-slice socket-data-forwarding
+  tree 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+Single reference child started: {"type":"ready","pid":336823,"mode":"single","port":38661}
+[single-reference] [32mWS: [0mConnection from client ID:  G832CQIpRmvsvkD7AAAA  IP:  127.0.0.1
+WS: dbAdd collection=treatments client=forwarded ref=2026-11-06T00:00:00.000Z eventType=Note
+[35mDEDUPE: [0mAdding new record
+[single-reference] [32mWS: [0mDisconnected client ID:  G832CQIpRmvsvkD7AAAA
+Single reference child cleanup: {"pid":336823,"code":0,"signal":null,"absent":true}
+Private bounded artifacts: <alignment-worktree>/externals/work/control-recovery-gate-artifacts/socket-data-forwarding-4pJ8bC
+Owned socket child independently absent: 336823
+{"suites":1,"tests":1,"passes":0,"pending":0,"failures":1,"start":"2026-11-06T23:04:50.980Z","end":"2026-11-06T23:04:52.927Z","duration":1947}
+CONTROL-SEMANTIC: actual callback before held COMMIT; transactional row reached, independent row/event absent
+Owned cleanup diagnostics: <alignment-worktree>/externals/work/cleanup-diagnostics/next-slice-BFE2rH/containers.json

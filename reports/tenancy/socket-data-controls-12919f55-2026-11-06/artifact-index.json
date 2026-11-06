@@ -1,0 +1,92 @@
+[
+  {
+    "file": "earlyack.child-audit.json",
+    "bytes": 160,
+    "sha256": "da0b33a197a7838c4be772a2bebe6ebd397a0c8098d68e5db17184aa96760ef9"
+  },
+  {
+    "file": "earlyack.cleanup.json",
+    "bytes": 1183,
+    "sha256": "41c4bd12f86e7d8c51e7abeae41f31a902f5de1f4207b6e1b86869a99319ff3b"
+  },
+  {
+    "file": "earlyack.log",
+    "bytes": 1267,
+    "sha256": "36a8af36aa3ed274553fe575773cebd535892e161112b56185b0dc332d5a0bb2"
+  },
+  {
+    "file": "earlyack.mocha.json",
+    "bytes": 2486,
+    "sha256": "ebec8113254ced9f07e47d5637f8adb75a0a61eb1c48810282cfcf9146ed5f14"
+  },
+  {
+    "file": "earlyack.physical-proofs.json",
+    "bytes": 97,
+    "sha256": "342ca81781b14883c2ca59a86c7396184beacd4d6c98d0c542fe94ae13c1fe51"
+  },
+  {
+    "file": "final-audit.json",
+    "bytes": 2858,
+    "sha256": "28abeae828fccf9816c2b049cd15bda94c317eddc2a571fb0ccd6204970823ed"
+  },
+  {
+    "file": "restored.child-audit.json",
+    "bytes": 160,
+    "sha256": "411bec0c2673fc0b10bf4c05d2cba34f2b587976193c7d6f58d09f8bef00cee9"
+  },
+  {
+    "file": "restored.cleanup.json",
+    "bytes": 1183,
+    "sha256": "e4e1d06f3f6d73a0f4c29e062803d8d8a5c60b776152ae84be98dbba7effa3c4"
+  },
+  {
+    "file": "restored.log",
+    "bytes": 4313,
+    "sha256": "a5dc26f5f6f7c78d758df429ebaafda804d028cb379696c559155119b1b6df48"
+  },
+  {
+    "file": "restored.mocha.json",
+    "bytes": 4232,
+    "sha256": "eac3699a43891337a569098d839525aa4c6e8a56a96fd75f2cc075dd8fb2381b"
+  },
+  {
+    "file": "restored.physical-proofs.json",
+    "bytes": 244,
+    "sha256": "c6e0e80220997b7cac02c07c7e7036c8446099ccec4d9c13829ec361932a1e7c"
+  },
+  {
+    "file": "role.child-audit.json",
+    "bytes": 160,
+    "sha256": "275653bcc668fc73d5d2ee60a3fa96f1eafbcc87cd2cdeaa641fc908f2b16fee"
+  },
+  {
+    "file": "role.cleanup.json",
+    "bytes": 1183,
+    "sha256": "6956b2a88f12b5785a5e809345a62740bc1938442871516c9c95c2f224ec0977"
+  },
+  {
+    "file": "role.log",
+    "bytes": 1260,
+    "sha256": "0a1fb21dbf32ffcdfba8e4232ca6b4a117609c2d40a7bfd2136a573a227d39a9"
+  },
+  {
+    "file": "role.mocha.json",
+    "bytes": 2484,
+    "sha256": "f954aac58292f49872a4b9e65e73de192dcb694067181d3142b63bb665ee1d98"
+  },
+  {
+    "file": "role.physical-proofs.json",
+    "bytes": 330,
+    "sha256": "4721189ed4b136b2209fe70d3125659a9678eb1a792825ec6f529acbc78a73a0"
+  },
+  {
+    "file": "scratch-oracle.js",
+    "bytes": 19295,
+    "sha256": "77431ccf9f8a4f1caa624f27dd9fd1205b1d54d3dc8c7e8292304920f007724f"
+  },
+  {
+    "file": "summary.json",
+    "bytes": 4368,
+    "sha256": "12e894f512939884376c1c5aced85aa55eff836554ef9db7354dc7ce8ee84e42"
+  }
+]

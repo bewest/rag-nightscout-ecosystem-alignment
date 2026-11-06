@@ -1,0 +1,120 @@
+{
+  "source": "12919f5558c9cbac50b0fd15e4bc2ea482af1a24",
+  "gate": "c2fe24bb2d73fa25e75a5375299e72c8d34b0a9f",
+  "auditedAt": "2026-11-06T23:06:05.518769+00:00",
+  "allAbsent": true,
+  "resources": [
+    {
+      "run": "earlyack",
+      "kind": "container",
+      "id": "ns-profile-gate-c82dc8ee1b54085c",
+      "absent": true
+    },
+    {
+      "run": "earlyack",
+      "kind": "volume",
+      "id": "ea191cdbec2330d4a070021e5ff07589eb9a2046707dba887ee7d78bf1d14de0",
+      "absent": true
+    },
+    {
+      "run": "earlyack",
+      "kind": "volume",
+      "id": "55cf763a6e78b07b5b15034c2246fbdf31b671a1182cc70b563a2fa191a2c251",
+      "absent": true
+    },
+    {
+      "run": "earlyack",
+      "kind": "container",
+      "id": "ns-replay-gate-78873b3f75a758c6",
+      "absent": true
+    },
+    {
+      "run": "earlyack",
+      "kind": "volume",
+      "id": "64bd451100bbe9779aeb06de804cfb7751dc4954891314179d9d82c9e12895b8",
+      "absent": true
+    },
+    {
+      "run": "earlyack",
+      "kind": "child",
+      "pid": 336823,
+      "exitCode": 0,
+      "absent": true
+    },
+    {
+      "run": "role",
+      "kind": "container",
+      "id": "ns-profile-gate-3e9a2260932af650",
+      "absent": true
+    },
+    {
+      "run": "role",
+      "kind": "volume",
+      "id": "8a015ed23eedd29e463a27dbb94c4026857dd6c244f7291b1ac2bcd792eee5d6",
+      "absent": true
+    },
+    {
+      "run": "role",
+      "kind": "volume",
+      "id": "5ffbb8772503691e5e88dec4036259ec2d849e1cb3ac86c70df6e2afa9d73d4d",
+      "absent": true
+    },
+    {
+      "run": "role",
+      "kind": "container",
+      "id": "ns-replay-gate-2befa08dfb427520",
+      "absent": true
+    },
+    {
+      "run": "role",
+      "kind": "volume",
+      "id": "35b47eb55ec36cfdc38d7539f10117be5947066d76cdc7c7184e53f51784c434",
+      "absent": true
+    },
+    {
+      "run": "role",
+      "kind": "child",
+      "pid": 337968,
+      "exitCode": 0,
+      "absent": true
+    },
+    {
+      "run": "restored",
+      "kind": "container",
+      "id": "ns-profile-gate-e77d2cb6d59782de",
+      "absent": true
+    },
+    {
+      "run": "restored",
+      "kind": "volume",
+      "id": "1ef33e85c3e9a4a32259d83dbd365264c45692a413149149287ad532325cb61c",
+      "absent": true
+    },
+    {
+      "run": "restored",
+      "kind": "volume",
+      "id": "b89ef807536019024b2d6d0ca59216ddb0d7ab30889d7a8ba66a5dbfc548500d",
+      "absent": true
+    },
+    {
+      "run": "restored",
+      "kind": "container",
+      "id": "ns-replay-gate-62cbe1d37d60517c",
+      "absent": true
+    },
+    {
+      "run": "restored",
+      "kind": "volume",
+      "id": "11d99433cb7a1881d8d18b09600875bf7db5100a573c8d82ac5440e8fd02ef18",
+      "absent": true
+    },
+    {
+      "run": "restored",
+      "kind": "child",
+      "pid": 339159,
+      "exitCode": 0,
+      "absent": true
+    }
+  ],
+  "unknownBaselinePreserved": true
+}

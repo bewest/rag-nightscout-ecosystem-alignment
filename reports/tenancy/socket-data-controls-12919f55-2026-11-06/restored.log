@@ -1,0 +1,53 @@
+Scratch-only socket oracle hardening: physical states precede callback assertions
+Owned MongoDB: 8.0.34
+gate: next-slice socket-data-forwarding
+  tree 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
+Single reference child started: {"type":"ready","pid":339159,"mode":"single","port":39593}
+[single-reference] [32mWS: [0mConnection from client ID:  4G6BcDh2widPMb63AAAA  IP:  127.0.0.1
+[single-reference] [32mWS: [0mdbAdd collection=treatments client=4G6BcDh2widPMb63AAAA ref=synthetic-stable-id eventType=Note
+[single-reference] [35mDEDUPE: [0mAdding new record
+WS: dbAdd collection=treatments client=forwarded ref=synthetic-stable-id eventType=Note
+[35mDEDUPE: [0mAdding new record
+[single-reference] [32mWS: [0mdbAdd collection=treatments client=4G6BcDh2widPMb63AAAA ref=synthetic-stable-id eventType=Note
+[single-reference] [35mDEDUPE: [0mExact match
+WS: dbAdd collection=treatments client=forwarded ref=synthetic-stable-id eventType=Note
+[35mDEDUPE: [0mExact match
+[single-reference] [32mWS: [0mdbUpdate collection=treatments client=4G6BcDh2widPMb63AAAA ref=synthetic-stable-id
+[single-reference] Got results collection=treatments ref=synthetic-stable-id eventType=Note
+WS: dbUpdate collection=treatments client=forwarded ref=synthetic-stable-id
+Got results collection=treatments ref=synthetic-stable-id eventType=Note
+[single-reference] [32mWS: [0mdbUpdateUnset collection=treatments client=4G6BcDh2widPMb63AAAA ref=synthetic-stable-id
+[single-reference] Got results collection=treatments ref=synthetic-stable-id eventType=Note
+WS: dbUpdateUnset collection=treatments client=forwarded ref=synthetic-stable-id
+Got results collection=treatments ref=synthetic-stable-id eventType=Note
+[single-reference] [32mWS: [0mdbRemove collection=treatments client=4G6BcDh2widPMb63AAAA ref=synthetic-stable-id
+WS: dbRemove collection=treatments client=forwarded ref=synthetic-stable-id
+[single-reference] [32mWS: [0mdbAdd collection=devicestatus client=4G6BcDh2widPMb63AAAA ref=synthetic-device
+WS: dbAdd collection=devicestatus client=forwarded ref=synthetic-device
+[single-reference] [32mWS: [0mdbAdd collection=treatments client=4G6BcDh2widPMb63AAAA ref=synthetic-unmatched-attempt eventType=Note
+[single-reference] [35mDEDUPE: [0mExact match
+WS: dbAdd collection=treatments client=forwarded ref=synthetic-unmatched-attempt eventType=Note
+[35mDEDUPE: [0mExact match
+[single-reference] [32mWS: [0mdbAdd collection=treatments client=4G6BcDh2widPMb63AAAA ref=synthetic-unmatched-attempt eventType=Note
+[single-reference] [35mDEDUPE: [0mExact match
+WS: dbAdd collection=treatments client=forwarded ref=synthetic-unmatched-attempt eventType=Note
+[35mDEDUPE: [0mExact match
+WS: dbAdd collection=treatments client=forwarded ref=2026-11-06T00:00:00.000Z eventType=Note
+[35mDEDUPE: [0mAdding new record
+WS: dbAdd collection=treatments client=forwarded ref=synthetic-rolled-back eventType=Note
+[35mDEDUPE: [0mAdding new record
+[single-reference] [32mWS: [0mDisconnected client ID:  4G6BcDh2widPMb63AAAA
+Single reference child cleanup: {"pid":339159,"code":0,"signal":null,"absent":true}
+Error: synthetic post-write abort
+    at /tmp/ns-next-slice-JihTkw/tests/tenant-socket-data-forwarding.integration.test.js:278:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async /tmp/ns-next-slice-JihTkw/lib/storage/postgres-write-clock.js:63:29
+    at async run (/tmp/ns-next-slice-JihTkw/lib/storage/postgres-connection.js:79:22)
+    at async transaction (/tmp/ns-next-slice-JihTkw/lib/storage/postgres-write-clock.js:50:18)
+    at async Object.write (/tmp/ns-next-slice-JihTkw/lib/storage/postgres-intent-common.js:47:23)
+    at async processSingleDbAdd (/tmp/ns-next-slice-JihTkw/lib/server/socket-write-handlers.js:704:16)
+Private bounded artifacts: <alignment-worktree>/externals/work/control-recovery-gate-artifacts/socket-data-forwarding-RHVjs6
+Owned socket child independently absent: 339159
+{"suites":1,"tests":4,"passes":4,"pending":0,"failures":0,"start":"2026-11-06T23:05:30.955Z","end":"2026-11-06T23:05:33.278Z","duration":2323}
+PASS bounded socket-data-forwarding; activation, management and milestone acceptance remain separate
+Owned cleanup diagnostics: <alignment-worktree>/externals/work/cleanup-diagnostics/next-slice-MqW3jd/containers.json

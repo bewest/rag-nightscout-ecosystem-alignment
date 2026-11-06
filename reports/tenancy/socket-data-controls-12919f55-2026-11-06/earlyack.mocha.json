@@ -1,0 +1,54 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-06T23:04:50.980Z",
+    "end": "2026-11-06T23:04:52.927Z",
+    "duration": 1947
+  },
+  "tests": [
+    {
+      "title": "does not publish a success acknowledgement or event before the owned API commit",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab does not publish a success acknowledgement or event before the owned API commit",
+      "file": "/tmp/ns-next-slice-DRJK3e/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 34,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: socket success callback observed before API COMMIT with uncommitted stored row\n\ntrue !== false\n\n    at Context.<anonymous> (tests/tenant-socket-data-forwarding.integration.test.js:263:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "socket success callback observed before API COMMIT with uncommitted stored row\n\ntrue !== false\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "true",
+        "expected": "false",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "does not publish a success acknowledgement or event before the owned API commit",
+      "fullTitle": "dormant socket DATA forwarding real socket/database lab does not publish a success acknowledgement or event before the owned API commit",
+      "file": "/tmp/ns-next-slice-DRJK3e/tests/tenant-socket-data-forwarding.integration.test.js",
+      "duration": 34,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: socket success callback observed before API COMMIT with uncommitted stored row\n\ntrue !== false\n\n    at Context.<anonymous> (tests/tenant-socket-data-forwarding.integration.test.js:263:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "socket success callback observed before API COMMIT with uncommitted stored row\n\ntrue !== false\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "true",
+        "expected": "false",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "passes": []
+}

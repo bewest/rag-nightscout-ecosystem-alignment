@@ -1,0 +1,46 @@
+[
+  {
+    "container": "ns-profile-gate-3e9a2260932af650",
+    "volumeIds": [
+      "8a015ed23eedd29e463a27dbb94c4026857dd6c244f7291b1ac2bcd792eee5d6",
+      "5ffbb8772503691e5e88dec4036259ec2d849e1cb3ac86c70df6e2afa9d73d4d"
+    ],
+    "containerRemoved": true,
+    "absence": [
+      {
+        "kind": "container",
+        "id": "ns-profile-gate-3e9a2260932af650",
+        "absent": true
+      },
+      {
+        "kind": "volume",
+        "id": "8a015ed23eedd29e463a27dbb94c4026857dd6c244f7291b1ac2bcd792eee5d6",
+        "absent": true
+      },
+      {
+        "kind": "volume",
+        "id": "5ffbb8772503691e5e88dec4036259ec2d849e1cb3ac86c70df6e2afa9d73d4d",
+        "absent": true
+      }
+    ]
+  },
+  {
+    "container": "ns-replay-gate-2befa08dfb427520",
+    "volumeIds": [
+      "35b47eb55ec36cfdc38d7539f10117be5947066d76cdc7c7184e53f51784c434"
+    ],
+    "containerRemoved": true,
+    "absence": [
+      {
+        "kind": "container",
+        "id": "ns-replay-gate-2befa08dfb427520",
+        "absent": true
+      },
+      {
+        "kind": "volume",
+        "id": "35b47eb55ec36cfdc38d7539f10117be5947066d76cdc7c7184e53f51784c434",
+        "absent": true
+      }
+    ]
+  }
+]
