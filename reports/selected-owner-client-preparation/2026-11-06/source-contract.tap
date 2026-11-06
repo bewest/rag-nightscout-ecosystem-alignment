@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: existing denied-anonymous config admits concrete initial subject groups and clamps tightened ceiling
+ok 1 - existing denied-anonymous config admits concrete initial subject groups and clamps tightened ceiling
+  ---
+  duration_ms: 1.35984
+  type: 'test'
+  ...
+# Subtest: readiness only addresses the explicitly provisioned subject and all admitted operations
+ok 2 - readiness only addresses the explicitly provisioned subject and all admitted operations
+  ---
+  duration_ms: 0.760246
+  type: 'test'
+  ...
+# Subtest: HTTP and independent stored-state checks each reject their own corruption
+ok 3 - HTTP and independent stored-state checks each reject their own corruption
+  ---
+  duration_ms: 0.983325
+  type: 'test'
+  ...
+# Subtest: ablated intersection retains permission and both tightening oracle predicates go red; restoration passes
+ok 4 - ablated intersection retains permission and both tightening oracle predicates go red; restoration passes
+  ---
+  duration_ms: 0.360877
+  type: 'test'
+  ...
+# Subtest: admitted comparison rejects an unexpected payload difference and accepts restoration
+ok 5 - admitted comparison rejects an unexpected payload difference and accepts restoration
+  ---
+  duration_ms: 0.50208
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9.597714
