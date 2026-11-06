@@ -1546,3 +1546,13 @@ Local continuation and next frozen clock batch: `externals/work/HANDOFF-serial-v
 | Ownership and limits | Runtime released after stop; recorded gate-owned mounts audited absent. Prior captures preserved. | Older fixture anonymous volumes preserved; no global leak-freedom claim. No gate/app repair, queue ref moves, promotion, default enablement or push. |
 
 [Partial report](../../reports/tenancy/gate-controls-65bb8456-2026-11-06.md) and [machine capture](../../reports/tenancy/gate-controls-65bb8456-2026-11-06.json). Lane detail: `externals/work/HANDOFF-codex-b4a-20261106.md` (local). No maintainer policy decision changed. Root coordinator owns disposition and queue ref moves.
+
+
+### Update — frozen-head B4a continuation complete (2026-11-06)
+
+| Scope | Reproduced evidence | Remaining boundary |
+|---|---|---|
+| Frozen65bb, R58, authority instrument3845 | Combined12positive instruments/32semantic controls/12restored positives; original R57 unchanged. Ten continuation runs supply missing measurements. | Profile absent/excluded. B5 joined-head full/browser/corpus acceptance separate. Root owns queue refs. |
+| Runtime and cleanup | Slot released; diagnosed owned mounts audited absent; source clean. | Older fixture anonymous volumes preserved; no global leak-freedom or mutated-authority-effects count. No application repair, promotion, default enablement or push. |
+
+[Continuation report](../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.md) and [machine capture](../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.json). Lane detail: `externals/work/HANDOFF-codex-b4a-20261106.md` (local). No maintainer policy decision changed.

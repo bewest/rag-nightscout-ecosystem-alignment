@@ -1,0 +1,1140 @@
+{
+  "record": "R58",
+  "status": "bounded B4a gate evidence complete; no milestone or deployment admission",
+  "basis": "reproduced captured execution, independently re-read and hash-verified",
+  "application": "65bb8456618df9816106692a32f0dd5c76e216d1",
+  "prior_capture": {
+    "record": "R57",
+    "path": "reports/tenancy/gate-controls-65bb8456-2026-11-06.json",
+    "sha256": "d07d5478cd0afa0c0105d6e346f100778bcccda37511045c9c9ac053d7f715e7",
+    "commit": "7e3347ada8f9925a80fb3f8602085201209954c0",
+    "unchanged": true
+  },
+  "instrument_revision": {
+    "authority": "3845b3a156e19fec77b9bb495117c12403a5a953",
+    "gate_sha256": "c4742c7a53081578dbc7f2b01a7c5b6011f65419947ac72cbd2cdf91804dd398",
+    "helper_sha256": "d4c22143b78d2f4e370312379b9d472e416b27e957b02736c4a69804810972aa",
+    "other_gates": "unchanged original alignment 88902eba2532c42bf83a91a8104f9ea64da2ca18"
+  },
+  "runtime": {
+    "claimed": "2026-11-06T19:45:35Z",
+    "released": "2026-11-06T19:46:46Z",
+    "volume_count_before": 454,
+    "volume_count_after": 462,
+    "home_available": "83G"
+  },
+  "totals": {
+    "positive_instruments": 12,
+    "semantic_controls": 32,
+    "restored_instruments": 12,
+    "continuation_runs": 10
+  },
+  "continuation_runs": [
+    {
+      "run": "next-slices-owner-policy-restored",
+      "kind": "positive",
+      "exit": 0,
+      "passing": 22,
+      "failing": 0,
+      "pending": 0,
+      "symptoms": [],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/next-slices-owner-policy-restored.log",
+      "sha256": "ec6cca1b954e5a115fcdbc59f582896522c665d682a01ae9b216d73bfdace2b2",
+      "bytes": 1197
+    },
+    {
+      "run": "next-slices-settings-restored",
+      "kind": "positive",
+      "exit": 0,
+      "passing": 12,
+      "failing": 0,
+      "pending": 0,
+      "symptoms": [],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/next-slices-settings-restored.log",
+      "sha256": "b4a9e8dcba31d55be60896eced80fdc0d24643948ca2d590e8bb58ae217549ab",
+      "bytes": 6088
+    },
+    {
+      "run": "rest-authority-audience",
+      "kind": "control",
+      "exit": 1,
+      "passing": 4,
+      "failing": 1,
+      "pending": 0,
+      "symptoms": [
+        "Error: expected 401 \"Unauthorized\", got 200 \"OK\""
+      ],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/rest-authority-audience.log",
+      "sha256": "8e4e2d0f7d9f11140e09918a10ccb1e2836bb04c9a2fdbe724b5f4680abe0724",
+      "bytes": 3291
+    },
+    {
+      "run": "rest-authority-authority",
+      "kind": "control",
+      "exit": 1,
+      "passing": 3,
+      "failing": 2,
+      "pending": 0,
+      "symptoms": [
+        "Error: expected 401 \"Unauthorized\", got 200 \"OK\"",
+        "Error: expected 503 \"Service Unavailable\", got 200 \"OK\""
+      ],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/rest-authority-authority.log",
+      "sha256": "8e474d4019b818ab30b5f9c37822327f8d780945de8997016da6eeb39280883b",
+      "bytes": 4859
+    },
+    {
+      "run": "rest-authority-restored",
+      "kind": "positive",
+      "exit": 0,
+      "passing": 5,
+      "failing": 0,
+      "pending": 0,
+      "symptoms": [],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/rest-authority-restored.log",
+      "sha256": "203651552e63289e4843b93175b0e1442e76dc3517d1d7d441988a600cc86cd7",
+      "bytes": 1731
+    },
+    {
+      "run": "subject-admin-atomic",
+      "kind": "control",
+      "exit": 1,
+      "passing": 0,
+      "failing": 1,
+      "pending": 0,
+      "symptoms": [
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  {\n    'subject_admin.tenant_authorization_subject_roles': [\n      {\n        role_name: 'uploader',\n        subject_id: '000000000000000000000001',\n-       tenant_id: '11111111-1111-4111-8111-111111111111'\n-     },\n-     {\n-       role_name: 'uploader',\n-       subject_id: '000000000000000000000001',\n        tenant_id: '22222222-2222-4222-8222-222222222222'\n      }\n    ],\n    'subject_admin.tenant_authorization_subjects': [\n      {\n        created_at: '2026-01-01T00:00:00.000Z',\n+       display_name: 'Rollback',\n-       display_name: 'Original',\n        notes: 'preserved',\n        subject_id: '000000000000000000000001',\n        tenant_id: '11111111-1111-4111-8111-111111111111'\n      },\n      {\n...\n        tenant_id: '11111111-1111-4111-8111-111111111111',\n+       token_prefix: 'rollback'\n-       token_prefix: 'original'\n      },\n      {\n        subject_id: '000000000000000000000001',\n        tenant_id: '22222222-2222-4222-8222-222222222222',\n        token_prefix: 'foreign'\n\n      + expected - actual\n\n         \"subject_admin.tenant_authorization_subject_roles\": [\n           {\n             \"role_name\": \"uploader\"\n             \"subject_id\": \"000000000000000000000001\"\n      +      \"tenant_id\": \"11111111-1111-4111-8111-111111111111\"\n      +    }\n      +    {\n      +      \"role_name\": \"uploader\"\n      +      \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"22222222-2222-4222-8222-222222222222\"\n           }\n         ]\n         \"subject_admin.tenant_authorization_subjects\": [\n           {\n             \"created_at\": \"2026-01-01T00:00:00.000Z\"\n      -      \"display_name\": \"Rollback\"\n      +      \"display_name\": \"Original\"\n             \"notes\": \"preserved\"\n             \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"11111111-1111-4111-8111-111111111111\"\n           }\n--\n         \"subject_identity.legacy_credential_subjects\": [\n           {\n             \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"11111111-1111-4111-8111-111111111111\"\n      -      \"token_prefix\": \"rollback\"\n      +      \"token_prefix\": \"original\"\n           }\n           {\n             \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"22222222-2222-4222-8222-222222222222\""
+      ],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-atomic.log",
+      "sha256": "03d4025cd1be753eb30ced454e1497545608a688d64faef825fbd289ffb46f54",
+      "bytes": 3956
+    },
+    {
+      "run": "subject-admin-current",
+      "kind": "control",
+      "exit": 1,
+      "passing": 0,
+      "failing": 1,
+      "pending": 0,
+      "symptoms": [
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n      + expected - actual\n\n      -true\n      +false"
+      ],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-current.log",
+      "sha256": "a42a83094483d498d3eadc670e5cb10d6fb22220c5745430706ea514c78ff892",
+      "bytes": 1757
+    },
+    {
+      "run": "subject-admin-positive",
+      "kind": "positive",
+      "exit": 0,
+      "passing": 13,
+      "failing": 0,
+      "pending": 0,
+      "symptoms": [],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-positive.log",
+      "sha256": "7e912636ebec6a459a7109b1e282dc1181fca0f1be0451c2e414fa240df5d702",
+      "bytes": 2635
+    },
+    {
+      "run": "subject-admin-restored",
+      "kind": "positive",
+      "exit": 0,
+      "passing": 13,
+      "failing": 0,
+      "pending": 0,
+      "symptoms": [],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-restored.log",
+      "sha256": "680dbf1382a0b660147a6b99fdfb93e2efc97809443fcd092843e6ec9a820382",
+      "bytes": 2656
+    },
+    {
+      "run": "subject-admin-tenant",
+      "kind": "control",
+      "exit": 1,
+      "passing": 0,
+      "failing": 1,
+      "pending": 0,
+      "symptoms": [
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   created_at: '2026-02-01T00:00:00.000Z',\n-   created_at: '2026-01-01T00:00:00.000Z',\n    name: 'Renamed Test_user',\n+   notes: 'foreign notes',\n-   notes: 'preserved',\n    roles: [\n      'uploader'\n    ],\n    subjectId: '000000000000000000000001'\n  }\n\n      + expected - actual\n\n       {\n      -  \"created_at\": \"2026-02-01T00:00:00.000Z\"\n      +  \"created_at\": \"2026-01-01T00:00:00.000Z\"\n         \"name\": \"Renamed Test_user\"\n      -  \"notes\": \"foreign notes\"\n      +  \"notes\": \"preserved\"\n         \"roles\": [\n           \"uploader\"\n         ]\n         \"subjectId\": \"000000000000000000000001\""
+      ],
+      "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-tenant.log",
+      "sha256": "9139ca8b216f01e660783eae3117e1f1e49d4a41cb42e06860c9931ad251707e",
+      "bytes": 2324
+    }
+  ],
+  "combined_suites": [
+    {
+      "suite": "owner-policy",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 22,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-positive.log",
+        "sha256": "47638f905565be2e471ab6f80532366bf1c769f7f2d08ec7067a84f5c9aae679",
+        "bytes": 1197,
+        "start": "2026-11-06T19:28:08Z",
+        "end": "2026-11-06T19:28:23Z"
+      },
+      "controls": {
+        "catalogue": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-catalogue.log",
+          "sha256": "94f2c3354f62bbd18af2297c99247db6651aedd0e148472b74a55356686d4cd9",
+          "bytes": 1245,
+          "start": "2026-11-06T19:28:28Z",
+          "end": "2026-11-06T19:28:30Z"
+        },
+        "ceiling": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-ceiling.log",
+          "sha256": "b5caafb90e583e5b54286e03b3d9dc4a47c671a8dcf288e226b4b6932a4ad60a",
+          "bytes": 1241,
+          "start": "2026-11-06T19:28:30Z",
+          "end": "2026-11-06T19:28:32Z"
+        },
+        "delegation": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-delegation.log",
+          "sha256": "28174ac4cc0a2bcd312429d42beffc9d491ae1e5ce73cd1822a974796b4f2d34",
+          "bytes": 1247,
+          "start": "2026-11-06T19:28:32Z",
+          "end": "2026-11-06T19:28:35Z"
+        },
+        "actor": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-actor.log",
+          "sha256": "9033ab25ad569e6ceb6f98b2c03b7e94908c56c64adb6ec499e1bdb19ef5927e",
+          "bytes": 1237,
+          "start": "2026-11-06T19:28:35Z",
+          "end": "2026-11-06T19:28:37Z"
+        }
+      },
+      "restored": {
+        "run": "next-slices-owner-policy-restored",
+        "kind": "positive",
+        "exit": 0,
+        "passing": 22,
+        "failing": 0,
+        "pending": 0,
+        "symptoms": [],
+        "local_log": "externals/work/b4a-controls-continuation-20261106/next-slices-owner-policy-restored.log",
+        "sha256": "ec6cca1b954e5a115fcdbc59f582896522c665d682a01ae9b216d73bfdace2b2",
+        "bytes": 1197,
+        "status": "POSITIVE"
+      }
+    },
+    {
+      "suite": "settings",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 12,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-positive.log",
+        "sha256": "c171a216584a3338e9a2d015b53b9dfb3f361570c00632ee04cdebfe7f7ad733",
+        "bytes": 6391,
+        "start": "2026-11-06T19:28:55Z",
+        "end": "2026-11-06T19:29:00Z"
+      },
+      "controls": {
+        "sortcap": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: PG get /api/v3/settings?sort=rank {\"status\":500,\"message\":\"Database error\"}\n\n500 !== 200\n\n      + expected - actual\n\n      -500\n      +200",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-sortcap.log",
+          "sha256": "5557270f7ad38f4b95a7f9e8180a50dfdfa873b53c090488b3445ad93e3a09ea",
+          "bytes": 2905,
+          "start": "2026-11-06T19:29:11Z",
+          "end": "2026-11-06T19:29:16Z"
+        },
+        "predicate": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: /api/v3/settings?rank$eq=2&sort=identifier&limit=10\n+ actual - expected\n... Skipped lines\n\n  {\n    result: [\n      {\n        app: 'synthetic',\n        date: 1793664000123,\n...\n      },\n+     {\n+       app: 'synthetic',\n+       date: 1793664000123,\n+       extension: {\n+         removed: true,\n+         secret: 'synthetic-private',\n+         visible: 2\n+       },\n+       identifier: 'synthetic-distractor',\n+       isValid: true,\n+       markup: '<b>client settings retained verbatim</b>',\n+       rank: 9,\n+       tenantMarker: '11111111-1111-4111-8111-111111111111',\n+       utcOffset: 0\n+     }\n    ],\n    status: 200\n  }\n\n      + expected - actual\n\n             \"rank\": 2\n             \"tenantMarker\": \"11111111-1111-4111-8111-111111111111\"\n             \"utcOffset\": 0\n           }\n      -    {\n      -      \"app\": \"synthetic\"\n      -      \"date\": 1793664000123\n      -      \"extension\": {\n      -        \"removed\": true\n      -        \"secret\": \"synthetic-private\"\n      -        \"visible\": 2\n      -      }\n      -      \"identifier\": \"synthetic-distractor\"\n      -      \"isValid\": true\n      -      \"markup\": \"<b>client settings retained verbatim</b>\"\n      -      \"rank\": 9\n      -      \"tenantMarker\": \"11111111-1111-4111-8111-111111111111\"\n      -      \"utcOffset\": 0\n      -    }\n         ]\n         \"status\": 200\n       }",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-predicate.log",
+          "sha256": "9bbbd423f896005392aa0535a0bb34e5c80bf8f5c123267366ec48c454fb70da",
+          "bytes": 3294,
+          "start": "2026-11-06T19:29:16Z",
+          "end": "2026-11-06T19:29:20Z"
+        },
+        "projection": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   removed: true,\n+   secret: 'synthetic-private',\n    visible: 2\n  }\n\n      + expected - actual\n\n       {\n      -  \"removed\": true\n      -  \"secret\": \"synthetic-private\"\n         \"visible\": 2\n       }",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-projection.log",
+          "sha256": "3d1d08ccb2f56c7b13b285eefdc6fd30d1290d6bce82a1369702e28b6ba9a7ae",
+          "bytes": 1950,
+          "start": "2026-11-06T19:29:20Z",
+          "end": "2026-11-06T19:29:25Z"
+        }
+      },
+      "restored": {
+        "run": "next-slices-settings-restored",
+        "kind": "positive",
+        "exit": 0,
+        "passing": 12,
+        "failing": 0,
+        "pending": 0,
+        "symptoms": [],
+        "local_log": "externals/work/b4a-controls-continuation-20261106/next-slices-settings-restored.log",
+        "sha256": "b4a9e8dcba31d55be60896eced80fdc0d24643948ca2d590e8bb58ae217549ab",
+        "bytes": 6088,
+        "status": "POSITIVE"
+      }
+    },
+    {
+      "suite": "frame-acquisition",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 14,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-positive.log",
+        "sha256": "9dcf614e13de35387c507aab44c0e03e8bbd1aad24a310ab94d678348c7b8f15",
+        "bytes": 5472,
+        "start": "2026-11-06T19:35:15Z",
+        "end": "2026-11-06T19:35:21Z"
+      },
+      "controls": {
+        "tenant": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: a frame labelled tenant A must contain actual PG tenant A clinical values\n\n200 !== 100\n\n      + expected - actual\n\n      -200\n      +100",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-tenant.log",
+          "sha256": "ba3c860816fa4d3036f229162f63081db0d0be620a8da9d289b5429802083400",
+          "bytes": 1916,
+          "start": "2026-11-06T19:36:00Z",
+          "end": "2026-11-06T19:36:03Z"
+        },
+        "bound": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: actual alarms must acquire twelve newest sgv records\n\n1 !== 12\n\n      + expected - actual\n\n      -1\n      +12",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-bound.log",
+          "sha256": "65a560476a348c821a0dbaf7593dfef393cca7b34915cd6c3b2d483e5edf36db",
+          "bytes": 1938,
+          "start": "2026-11-06T19:36:03Z",
+          "end": "2026-11-06T19:36:06Z"
+        },
+        "clinical": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: shipping bgnow must retain the synthetic current reading\n      + expected - actual\n\n      -false\n      +true",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-clinical.log",
+          "sha256": "1ff8321f566c34d86a3274b2eb7801741ac19f404f6baf3c7b0d9c1761e57439",
+          "bytes": 1955,
+          "start": "2026-11-06T19:36:06Z",
+          "end": "2026-11-06T19:36:09Z"
+        },
+        "cache": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: private view loader must leave the supplied resident cache untouched\n+ actual - expected\n\n+ [\n+   {\n+     _id: '65a1b2c3d4e5f60718293a4b',\n+     direction: 'Flat',\n+     mgdl: 100,\n+     mills: 1793663940123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'typed-string',\n+     direction: 'Flat',\n+     mgdl: 101,\n+     mills: 1793663640123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-2',\n+     direction: 'Flat',\n+     mgdl: 102,\n+     mills: 1793663340123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-3',\n+     direction: 'Flat',\n+     mgdl: 103,\n+     mills: 1793663040123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-4',\n+     direction: 'Flat',\n+     mgdl: 104,\n+     mills: 1793662740123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-5',\n+     direction: 'Flat',\n+     mgdl: 105,\n+     mills: 1793662440123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-6',\n+     direction: 'Flat',\n+     mgdl: 106,\n+     mills: 1793662140123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-7',\n+     direction: 'Flat',\n+     mgdl: 107,\n+     mills: 1793661840123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-8',\n+     direction: 'Flat',\n+     mgdl: 108,\n+     mills: 1793661540123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-9',\n+     direction: 'Flat',\n+     mgdl: 109,\n+     mills: 1793661240123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-10',\n+     direction: 'Flat',\n+     mgdl: 110,\n+     mills: 1793660940123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-11',\n+     direction: 'Flat',\n+     mgdl: 111,\n+     mills: 1793660640123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-12',\n+     direction: 'Flat',\n+     mgdl: 112,\n+     mills: 1793660340123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-13',\n+     direction: 'Flat',\n+     mgdl: 113,\n+     mills: 1793660040123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-14',\n+     direction: 'Flat',\n+     mgdl: 114,\n+     mills: 1793659740123,\n+     type: 'sgv'\n+   }\n+ ]\n- []\n\n      + expected - actual\n\n      -[\n      -  {\n      -    \"_id\": \"65a1b2c3d4e5f60718293a4b\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 100\n      -    \"mills\": 1793663940123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"typed-string\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 101\n      -    \"mills\": 1793663640123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-2\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 102\n      -    \"mills\": 1793663340123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-3\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 103\n      -    \"mills\": 1793663040123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-4\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 104\n      -    \"mills\": 1793662740123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-5\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 105\n      -    \"mills\": 1793662440123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-6\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 106\n      -    \"mills\": 1793662140123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-7\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 107\n      -    \"mills\": 1793661840123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-8\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 108\n      -    \"mills\": 1793661540123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-9\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 109\n      -    \"mills\": 1793661240123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-10\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 110\n      -    \"mills\": 1793660940123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-11\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 111\n      -    \"mills\": 1793660640123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-12\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 112\n      -    \"mills\": 1793660340123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-13\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 113\n      -    \"mills\": 1793660040123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-14\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 114\n      -    \"mills\": 1793659740123\n      -    \"type\": \"sgv\"\n      -  }\n      -]\n      +[]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-cache.log",
+          "sha256": "1e2441a1f6a1da84ecc700b75064343f85473468a4333d43d8638ef3cab5247f",
+          "bytes": 6283,
+          "start": "2026-11-06T19:36:09Z",
+          "end": "2026-11-06T19:36:12Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 14,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-restored.log",
+        "sha256": "0f3df2fb2bebcbab3854a5bc10ef177fac2fba8482504f7a1a6359701e7690df",
+        "bytes": 5471,
+        "start": "2026-11-06T19:36:12Z",
+        "end": "2026-11-06T19:36:18Z"
+      }
+    },
+    {
+      "suite": "frame-concurrency",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-positive.log",
+        "sha256": "d9dc4132a69e8c118f584555fe940e2a8eb2ad4b2de8e21a218b8bb36ec3c548",
+        "bytes": 5155,
+        "start": "2026-11-06T19:36:18Z",
+        "end": "2026-11-06T19:36:22Z"
+      },
+      "controls": {
+        "partial": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: a failed collection read must refuse the whole HTTP frame\n\n200 !== 503\n\n      + expected - actual\n\n      -200\n      +503",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-partial.log",
+          "sha256": "e569c5e4c064ecc85bd4abd13a2d0cee4266a5e5981ccb44d05f3f1f98987d63",
+          "bytes": 3185,
+          "start": "2026-11-06T19:36:22Z",
+          "end": "2026-11-06T19:36:26Z"
+        },
+        "egress": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: the actual derived read must not attempt a non-dependency socket\n\n2 !== 1\n\n      + expected - actual\n\n      -2\n      +1",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-egress.log",
+          "sha256": "168e24034a5ec4e8488946fb77c8c206efb99b7ab25f0dcc6da1cd7bc90b6594",
+          "bytes": 1991,
+          "start": "2026-11-06T19:36:26Z",
+          "end": "2026-11-06T19:36:30Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-restored.log",
+        "sha256": "4796b73970676e8677fbb1d5985c7f1143e561b510de0f7fcf6be26a38853a08",
+        "bytes": 3989,
+        "start": "2026-11-06T19:36:30Z",
+        "end": "2026-11-06T19:36:34Z"
+      }
+    },
+    {
+      "suite": "consolidation",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 75,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-positive.log",
+        "sha256": "f2833318c50b5a336e089e3602815751685f21a539112f74ac6828fa24a91b72",
+        "bytes": 7599,
+        "start": "2026-11-06T19:36:35Z",
+        "end": "2026-11-06T19:36:39Z"
+      },
+      "controls": {
+        "order": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'string',\n+   'objectid',\n    'identifier',\n-   'objectid',\n-   'string'\n  ]\n\n      + expected - actual\n\n       [\n      -  \"string\"\n      -  \"objectid\"\n         \"identifier\"\n      +  \"objectid\"\n      +  \"string\"\n       ]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-order.log",
+          "sha256": "1e232e0d7ec3d871581d0a19bbedca5b70abc82c576b7496545a99c785062e33",
+          "bytes": 1877,
+          "start": "2026-11-06T19:36:39Z",
+          "end": "2026-11-06T19:36:41Z"
+        },
+        "projection": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   {}\n-   {\n-     _id: 'missing'\n-   }\n  ]\n\n      + expected - actual\n\n       [\n      -  {}\n      +  {\n      +    \"_id\": \"missing\"\n      +  }\n       ]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-projection.log",
+          "sha256": "204514a1b3a3b1790a6354cac2b5e589563009ab827b4653473befe9b41fe2b3",
+          "bytes": 1804,
+          "start": "2026-11-06T19:36:41Z",
+          "end": "2026-11-06T19:36:43Z"
+        },
+        "commit": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: a failed commit must not publish a logical event\n\n1 !== 0\n\n      + expected - actual\n\n      -1\n      +0",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-commit.log",
+          "sha256": "6060ab4327b8383c596b0d27aff3bfa5d260ba768c36f92419139f74cddb0558",
+          "bytes": 1660,
+          "start": "2026-11-06T19:36:43Z",
+          "end": "2026-11-06T19:36:46Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 75,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-restored.log",
+        "sha256": "9d45b4cf11006a0746461ec8f45b5bffd134f5fda14745a6d69274dd685b924c",
+        "bytes": 7599,
+        "start": "2026-11-06T19:36:46Z",
+        "end": "2026-11-06T19:36:50Z"
+      }
+    },
+    {
+      "suite": "race",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-race-positive.log",
+        "sha256": "a4dc00073c34ba96179989855bb9c9b7fa484355c36bf06f4b92af562e7c2da0",
+        "bytes": 2902,
+        "start": "2026-11-06T19:36:50Z",
+        "end": "2026-11-06T19:36:54Z"
+      },
+      "controls": {
+        "retry": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: loser must follow the configured resend contract\n\n500 !== 200\n\n      + expected - actual\n\n      -500\n      +200",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-race-retry.log",
+          "sha256": "b6be94be8b5f451d675a7158b36058fc036c5a4a339c280cd6bdcceac79c6b48",
+          "bytes": 4355,
+          "start": "2026-11-06T19:36:54Z",
+          "end": "2026-11-06T19:36:57Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-race-restored.log",
+        "sha256": "8b8bbfbfe70ac01e827924097e258cb61a5f9ed3356b87077ccddba8a97d9132",
+        "bytes": 2902,
+        "start": "2026-11-06T19:36:58Z",
+        "end": "2026-11-06T19:37:01Z"
+      }
+    },
+    {
+      "suite": "compose",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 22,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-positive.log",
+        "sha256": "a907d140195ece7be101f1ea811587d716df54a47ac5eca4d98ada996ee659cf",
+        "bytes": 5449,
+        "start": "2026-11-06T19:37:02Z",
+        "end": "2026-11-06T19:37:27Z"
+      },
+      "controls": {
+        "unavailable": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "Error: expected 503 \"Service Unavailable\", got 500 \"Internal Server Error\"",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-unavailable.log",
+          "sha256": "32b6fdf65fae5089e0141f910b01b368486d9e5e71b8eecb629c748e01cf0aca",
+          "bytes": 4577,
+          "start": "2026-11-06T19:37:27Z",
+          "end": "2026-11-06T19:37:28Z"
+        },
+        "capability": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: refused configuration must never bind",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-capability.log",
+          "sha256": "f9d0e3705369bdf565066d9984f0256eea2b450a7043571047d6c33e7c600a65",
+          "bytes": 1561,
+          "start": "2026-11-06T19:37:51Z",
+          "end": "2026-11-06T19:37:55Z"
+        },
+        "catalogue": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: refused configuration must never bind",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-catalogue.log",
+          "sha256": "257de443054059ee739c4a54e77483fe012731dc1a85c5fb1b5b6887f9b1b368",
+          "bytes": 1551,
+          "start": "2026-11-06T19:37:55Z",
+          "end": "2026-11-06T19:37:59Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 22,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-restored.log",
+        "sha256": "87d95d0fca9037d029a8f7a8156f2a3123e693751d23c869ce4eeee272ab17be",
+        "bytes": 5449,
+        "start": "2026-11-06T19:37:59Z",
+        "end": "2026-11-06T19:38:25Z"
+      }
+    },
+    {
+      "suite": "identity",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 15,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-positive.log",
+        "sha256": "f3442df00a3e123c088202a137cc2b4ba2ce6d0da027cfe39b910f25dca6623e",
+        "bytes": 3079,
+        "start": "2026-11-06T19:38:25Z",
+        "end": "2026-11-06T19:38:31Z"
+      },
+      "controls": {
+        "lookup": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "Error: expected 200 \"OK\", got 404 \"Not Found\"",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-lookup.log",
+          "sha256": "d2b2b929ae2533896d3e946736fa1c1ce268357babc7c739609aa8a1fd2b16d2",
+          "bytes": 3363,
+          "start": "2026-11-06T19:38:31Z",
+          "end": "2026-11-06T19:38:35Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 15,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-restored.log",
+        "sha256": "0697c45671f05e71bfd658e24eca80419728a96cfe999038de18a857500a82da",
+        "bytes": 3078,
+        "start": "2026-11-06T19:38:35Z",
+        "end": "2026-11-06T19:38:41Z"
+      }
+    },
+    {
+      "suite": "port",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 70,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-positive.log",
+        "sha256": "d411b02011b7c087c1a815beebb4eae04874327532d6827fed5186d5cd4bbba6",
+        "bytes": 7139,
+        "start": "2026-11-06T19:38:41Z",
+        "end": "2026-11-06T19:38:46Z"
+      },
+      "controls": {
+        "projection": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  [\n    {\n      _id: ObjectId {\n        i0: 6660530,\n        i1: 12834021,\n...\n      },\n+     label: null\n-     label: 'objectid'\n    }\n  ]\n\n      + expected - actual\n\n             \"i1\": 12834021\n             \"i2\": 16123672\n             \"i3\": 2701899\n           }\n      -    \"label\": [null]\n      +    \"label\": \"objectid\"\n         }\n       ]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-projection.log",
+          "sha256": "65960a627404e436ce929b0927b7e35028f52fd0bd062d61b460bd7115815d08",
+          "bytes": 1990,
+          "start": "2026-11-06T19:38:46Z",
+          "end": "2026-11-06T19:38:49Z"
+        },
+        "tenant": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok((await reader.findFiltered(and(), raw)).every(doc => doc.owner === undefined))\n\n      + expected - actual\n\n      -false\n      +true",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-tenant.log",
+          "sha256": "955c91a1fef57fde2723b7d56391d038e751571b52cf7fba5ba1cbdb284a61fb",
+          "bytes": 1902,
+          "start": "2026-11-06T19:38:49Z",
+          "end": "2026-11-06T19:38:51Z"
+        },
+        "outcome": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   updated: 0\n-   updated: 1\n  }\n\n      + expected - actual\n\n       {\n      -  \"updated\": 0\n      +  \"updated\": 1\n       }",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-outcome.log",
+          "sha256": "0d14309432c123da96c748083404a9e194d6073b9ac737fb2e1e613cc1a6a403",
+          "bytes": 1782,
+          "start": "2026-11-06T19:38:51Z",
+          "end": "2026-11-06T19:38:53Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 70,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-restored.log",
+        "sha256": "00eab4bbd60e24541993aa760b4e8d7b4bf10bdb177085665b2601defe03693a",
+        "bytes": 7139,
+        "start": "2026-11-06T19:38:53Z",
+        "end": "2026-11-06T19:38:59Z"
+      }
+    },
+    {
+      "suite": "management",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 13,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-positive.log",
+        "sha256": "4b99cf4861142811ab7e8c9c2ba20010b256858988270f5521fda516b4912870",
+        "bytes": 2455,
+        "start": "2026-11-06T19:38:59Z",
+        "end": "2026-11-06T19:39:02Z"
+      },
+      "controls": {
+        "auth": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: {\"subjectId\":\"000000000000000000000001\",\"name\":\"Refused\",\"roles\":[],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}\n\n200 !== 401\n\n      + expected - actual\n\n      -200\n      +401",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-auth.log",
+          "sha256": "7852e94b4c42ef6a3b63a7efa047679086e22847247a6907f6749ea63fe2fed1",
+          "bytes": 1861,
+          "start": "2026-11-06T19:39:02Z",
+          "end": "2026-11-06T19:39:04Z"
+        },
+        "tenant": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: {\"subjectId\":\"000000000000000000000001\",\"name\":\"Refused\",\"roles\":[],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}\n\n200 !== 401\n\n      + expected - actual\n\n      -200\n      +401",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-tenant.log",
+          "sha256": "ed287c2f4154f8938875700071e0701be11e0d48f4a0214ee7b2a874175f7fee",
+          "bytes": 1865,
+          "start": "2026-11-06T19:39:04Z",
+          "end": "2026-11-06T19:39:06Z"
+        },
+        "exposure": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: {\"subjectId\":\"000000000000000000000001\",\"name\":\"Not Mounted\",\"roles\":[],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}\n      + expected - actual\n\n      -false\n      +true",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-exposure.log",
+          "sha256": "7f5ad05966c3ff92f8884fec6b5c9ddd4a9254a8cf827d6795266bd92238f465",
+          "bytes": 1736,
+          "start": "2026-11-06T19:39:06Z",
+          "end": "2026-11-06T19:39:08Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 13,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-restored.log",
+        "sha256": "5b04f2c0f18c4de3289059d88c8497f628684a849cf995da1737763f2b331c0d",
+        "bytes": 2448,
+        "start": "2026-11-06T19:39:08Z",
+        "end": "2026-11-06T19:39:10Z"
+      }
+    },
+    {
+      "suite": "rest-authority",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 5,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/rest-authority-positive.log",
+        "sha256": "c7589a0769721e46015df21bc5a86a838a675a0103c26c282efcc92a7a6e487c",
+        "bytes": 1666,
+        "start": "2026-11-06T19:39:11Z",
+        "end": "2026-11-06T19:39:13Z"
+      },
+      "controls": {
+        "authority": {
+          "run": "rest-authority-authority",
+          "kind": "control",
+          "exit": 1,
+          "passing": 3,
+          "failing": 2,
+          "pending": 0,
+          "symptoms": [
+            "Error: expected 401 \"Unauthorized\", got 200 \"OK\"",
+            "Error: expected 503 \"Service Unavailable\", got 200 \"OK\""
+          ],
+          "local_log": "externals/work/b4a-controls-continuation-20261106/rest-authority-authority.log",
+          "sha256": "8e474d4019b818ab30b5f9c37822327f8d780945de8997016da6eeb39280883b",
+          "bytes": 4859,
+          "status": "SEMANTIC-RED"
+        },
+        "audience": {
+          "run": "rest-authority-audience",
+          "kind": "control",
+          "exit": 1,
+          "passing": 4,
+          "failing": 1,
+          "pending": 0,
+          "symptoms": [
+            "Error: expected 401 \"Unauthorized\", got 200 \"OK\""
+          ],
+          "local_log": "externals/work/b4a-controls-continuation-20261106/rest-authority-audience.log",
+          "sha256": "8e4e2d0f7d9f11140e09918a10ccb1e2836bb04c9a2fdbe724b5f4680abe0724",
+          "bytes": 3291,
+          "status": "SEMANTIC-RED"
+        }
+      },
+      "restored": {
+        "run": "rest-authority-restored",
+        "kind": "positive",
+        "exit": 0,
+        "passing": 5,
+        "failing": 0,
+        "pending": 0,
+        "symptoms": [],
+        "local_log": "externals/work/b4a-controls-continuation-20261106/rest-authority-restored.log",
+        "sha256": "203651552e63289e4843b93175b0e1442e76dc3517d1d7d441988a600cc86cd7",
+        "bytes": 1731,
+        "status": "POSITIVE"
+      }
+    },
+    {
+      "suite": "subject-admin",
+      "positive": {
+        "run": "subject-admin-positive",
+        "kind": "positive",
+        "exit": 0,
+        "passing": 13,
+        "failing": 0,
+        "pending": 0,
+        "symptoms": [],
+        "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-positive.log",
+        "sha256": "7e912636ebec6a459a7109b1e282dc1181fca0f1be0451c2e414fa240df5d702",
+        "bytes": 2635,
+        "status": "POSITIVE"
+      },
+      "controls": {
+        "current": {
+          "run": "subject-admin-current",
+          "kind": "control",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptoms": [
+            "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n      + expected - actual\n\n      -true\n      +false"
+          ],
+          "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-current.log",
+          "sha256": "a42a83094483d498d3eadc670e5cb10d6fb22220c5745430706ea514c78ff892",
+          "bytes": 1757,
+          "status": "SEMANTIC-RED"
+        },
+        "tenant": {
+          "run": "subject-admin-tenant",
+          "kind": "control",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptoms": [
+            "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   created_at: '2026-02-01T00:00:00.000Z',\n-   created_at: '2026-01-01T00:00:00.000Z',\n    name: 'Renamed Test_user',\n+   notes: 'foreign notes',\n-   notes: 'preserved',\n    roles: [\n      'uploader'\n    ],\n    subjectId: '000000000000000000000001'\n  }\n\n      + expected - actual\n\n       {\n      -  \"created_at\": \"2026-02-01T00:00:00.000Z\"\n      +  \"created_at\": \"2026-01-01T00:00:00.000Z\"\n         \"name\": \"Renamed Test_user\"\n      -  \"notes\": \"foreign notes\"\n      +  \"notes\": \"preserved\"\n         \"roles\": [\n           \"uploader\"\n         ]\n         \"subjectId\": \"000000000000000000000001\""
+          ],
+          "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-tenant.log",
+          "sha256": "9139ca8b216f01e660783eae3117e1f1e49d4a41cb42e06860c9931ad251707e",
+          "bytes": 2324,
+          "status": "SEMANTIC-RED"
+        },
+        "atomic": {
+          "run": "subject-admin-atomic",
+          "kind": "control",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptoms": [
+            "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  {\n    'subject_admin.tenant_authorization_subject_roles': [\n      {\n        role_name: 'uploader',\n        subject_id: '000000000000000000000001',\n-       tenant_id: '11111111-1111-4111-8111-111111111111'\n-     },\n-     {\n-       role_name: 'uploader',\n-       subject_id: '000000000000000000000001',\n        tenant_id: '22222222-2222-4222-8222-222222222222'\n      }\n    ],\n    'subject_admin.tenant_authorization_subjects': [\n      {\n        created_at: '2026-01-01T00:00:00.000Z',\n+       display_name: 'Rollback',\n-       display_name: 'Original',\n        notes: 'preserved',\n        subject_id: '000000000000000000000001',\n        tenant_id: '11111111-1111-4111-8111-111111111111'\n      },\n      {\n...\n        tenant_id: '11111111-1111-4111-8111-111111111111',\n+       token_prefix: 'rollback'\n-       token_prefix: 'original'\n      },\n      {\n        subject_id: '000000000000000000000001',\n        tenant_id: '22222222-2222-4222-8222-222222222222',\n        token_prefix: 'foreign'\n\n      + expected - actual\n\n         \"subject_admin.tenant_authorization_subject_roles\": [\n           {\n             \"role_name\": \"uploader\"\n             \"subject_id\": \"000000000000000000000001\"\n      +      \"tenant_id\": \"11111111-1111-4111-8111-111111111111\"\n      +    }\n      +    {\n      +      \"role_name\": \"uploader\"\n      +      \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"22222222-2222-4222-8222-222222222222\"\n           }\n         ]\n         \"subject_admin.tenant_authorization_subjects\": [\n           {\n             \"created_at\": \"2026-01-01T00:00:00.000Z\"\n      -      \"display_name\": \"Rollback\"\n      +      \"display_name\": \"Original\"\n             \"notes\": \"preserved\"\n             \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"11111111-1111-4111-8111-111111111111\"\n           }\n--\n         \"subject_identity.legacy_credential_subjects\": [\n           {\n             \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"11111111-1111-4111-8111-111111111111\"\n      -      \"token_prefix\": \"rollback\"\n      +      \"token_prefix\": \"original\"\n           }\n           {\n             \"subject_id\": \"000000000000000000000001\"\n             \"tenant_id\": \"22222222-2222-4222-8222-222222222222\""
+          ],
+          "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-atomic.log",
+          "sha256": "03d4025cd1be753eb30ced454e1497545608a688d64faef825fbd289ffb46f54",
+          "bytes": 3956,
+          "status": "SEMANTIC-RED"
+        }
+      },
+      "restored": {
+        "run": "subject-admin-restored",
+        "kind": "positive",
+        "exit": 0,
+        "passing": 13,
+        "failing": 0,
+        "pending": 0,
+        "symptoms": [],
+        "local_log": "externals/work/b4a-controls-continuation-20261106/subject-admin-restored.log",
+        "sha256": "680dbf1382a0b660147a6b99fdfb93e2efc97809443fcd092843e6ec9a820382",
+        "bytes": 2656,
+        "status": "POSITIVE"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/authority-source-tests.log",
+      "sha256": "83989e05c9287e6f50ca4fb289705f8d77780d85a5cf2b0ad6a78a249212740e",
+      "bytes": 1197
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/continue.py",
+      "sha256": "b365eab72cfff3b1b5ed5e1d659214a1c7852558d76a32a6befeb5e4c1d83893",
+      "bytes": 4003
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/next-slices-owner-policy-restored.audit.json",
+      "sha256": "4b8cac6de07b6626ac17802daee0f8b4722d6e5efbc243c49bcc051abbbe4658",
+      "bytes": 76432
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/next-slices-owner-policy-restored.log",
+      "sha256": "ec6cca1b954e5a115fcdbc59f582896522c665d682a01ae9b216d73bfdace2b2",
+      "bytes": 1197
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/next-slices-owner-policy-restored.runner-output",
+      "sha256": "248753ddd5b2da32188e52bdaede9fae7c7c52e830a47da0bd3a75c1630d07b4",
+      "bytes": 370
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/next-slices-settings-restored.audit.json",
+      "sha256": "3ea0ba66d7205463ec64b1a9da9a05f0ec5bdbce055f3d2fbaf026d0dbb8a7eb",
+      "bytes": 77610
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/next-slices-settings-restored.log",
+      "sha256": "b4a9e8dcba31d55be60896eced80fdc0d24643948ca2d590e8bb58ae217549ab",
+      "bytes": 6088
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/next-slices-settings-restored.runner-output",
+      "sha256": "aec0273a2ffd5153f8726b6fe253b189ae4c1e75a5880abd8b674652db7836ac",
+      "bytes": 5265
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-audience.audit.json",
+      "sha256": "b9bb4f3667ac00c417faf5bb33ae614e6614de6bbb2dcd905b322b7424c165ca",
+      "bytes": 75544
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-audience.log",
+      "sha256": "8e4e2d0f7d9f11140e09918a10ccb1e2836bb04c9a2fdbe724b5f4680abe0724",
+      "bytes": 3291
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-audience.runner-output",
+      "sha256": "f00267f9bbe5a7d96baf6d8b5bdb9ff21c7bd648ebea6112771a377f9218d8d1",
+      "bytes": 2398
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-authority.audit.json",
+      "sha256": "271e821737ace3aa1857a3b5024c5f087e8b788ed81876f3e9c6dc22390f1d61",
+      "bytes": 75396
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-authority.log",
+      "sha256": "8e474d4019b818ab30b5f9c37822327f8d780945de8997016da6eeb39280883b",
+      "bytes": 4859
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-authority.runner-output",
+      "sha256": "8d5668921266b0e46bca391192d5d18390561672b7747253f585fc2b2f5c0d45",
+      "bytes": 3965
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-restored.audit.json",
+      "sha256": "da4822e0cf002745f0cf7f769b93be079ace0cd93dc0a51e17a97d63be3d416b",
+      "bytes": 75692
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-restored.log",
+      "sha256": "203651552e63289e4843b93175b0e1442e76dc3517d1d7d441988a600cc86cd7",
+      "bytes": 1731
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/rest-authority-restored.runner-output",
+      "sha256": "5c0e7cb287a93e302067f74625e35cf7589746d3ea62fbd9702fc518093e8445",
+      "bytes": 857
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/run.sh",
+      "sha256": "64671b9a4287fc09914056509590c00ae3a97f28f95c9f7a2a66d34290707f35",
+      "bytes": 733
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-atomic.audit.json",
+      "sha256": "90c0e364d181ebb2f6e36918ca0b1fc291929e201bce1d507c618826e2bb72ba",
+      "bytes": 76284
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-atomic.log",
+      "sha256": "03d4025cd1be753eb30ced454e1497545608a688d64faef825fbd289ffb46f54",
+      "bytes": 3956
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-atomic.runner-output",
+      "sha256": "276837e03160d470c5077a504be450fd52a736f416b000b30d0134fe11679a08",
+      "bytes": 3131
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-current.audit.json",
+      "sha256": "5f17e6c80b018d4972202dd4cd2325f4fb4d109ff9b3487342930cfa83da9944",
+      "bytes": 75988
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-current.log",
+      "sha256": "a42a83094483d498d3eadc670e5cb10d6fb22220c5745430706ea514c78ff892",
+      "bytes": 1757
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-current.runner-output",
+      "sha256": "0acb8cb5421c933c498a2de5e70789f7190a857c542b8dddcb5f99083dbd00e1",
+      "bytes": 931
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-positive.audit.json",
+      "sha256": "f1c59d73b93db3852e17b34b897d50e56a44f5dd64a4462bdad0fa6167705943",
+      "bytes": 75840
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-positive.log",
+      "sha256": "7e912636ebec6a459a7109b1e282dc1181fca0f1be0451c2e414fa240df5d702",
+      "bytes": 2635
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-positive.runner-output",
+      "sha256": "b4dcd4f8e837bf5a3005a182097cb0b348d7a07f2379a26c2bf4096397eba953",
+      "bytes": 1827
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-restored.audit.json",
+      "sha256": "07e8d0eaf31ff48537a8d534dc87e6a8989d76249821264283af33c8fd67a655",
+      "bytes": 76432
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-restored.log",
+      "sha256": "680dbf1382a0b660147a6b99fdfb93e2efc97809443fcd092843e6ec9a820382",
+      "bytes": 2656
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-restored.runner-output",
+      "sha256": "144c6d4ea04d51411cf6dd675f1cfcf8164a0967a78c0655ee5a2416289a411e",
+      "bytes": 1848
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-tenant.audit.json",
+      "sha256": "b48ee75f6a7ece5dea65ef3d9c65c92c90aa1e2c1ad7c6c6c6f18f76f1faad55",
+      "bytes": 76136
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-tenant.log",
+      "sha256": "9139ca8b216f01e660783eae3117e1f1e49d4a41cb42e06860c9931ad251707e",
+      "bytes": 2324
+    },
+    {
+      "local_path": "externals/work/b4a-controls-continuation-20261106/subject-admin-tenant.runner-output",
+      "sha256": "1aa2c70b24b5a9a9251263f27cafdf7af302a6c931d4d82bb76cc210d9201a76",
+      "bytes": 1499
+    }
+  ],
+  "limitations": [
+    "Profile absent on frozen head, excluded.",
+    "Original invalid authority control and classifier stop preserved in immutable R57.",
+    "Authority negative controls assert HTTP refusal; they fail before later effects-array assertions. Mutated handler side effects are not independently quantified by the control log.",
+    "Gate-owned diagnostic mount cleanup audited; older internal fixtures retain anonymous volumes without mount identity capture. Unknown resources preserved; no global leak-freedom/SIGKILL bound.",
+    "No application source change, queue ref move, milestone promotion, default enablement, full/browser/corpus campaign or push in this lane. B5 acceptance remains its own campaign."
+  ]
+}
