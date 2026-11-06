@@ -51,7 +51,7 @@ try {
   const output = (result.stdout || '') + (result.stderr || '');
   if (result.status !== 0) process.exitCode = 1;
   else if (control) throw new Error('CONTROL_DID_NOT_FAIL: ' + control);
-  else if (!/5 passing/.test(output) || /[1-9]\d* pending/.test(output)) throw new Error('Expected all five local-token HTTP cases without pending');
+  else if (!/7 passing/.test(output) || /[1-9]\d* pending/.test(output)) throw new Error('Expected all seven local-token HTTP cases without pending');
   else console.log('  PASS actual configured CLI/HTTP verification, current authority and dependency refusals; bounded acceptance only');
 } catch (error) { console.error(error.message); process.exitCode = 1; }
 finally { if (scratch) fs.rmSync(scratch, { recursive: true, force: true }); }

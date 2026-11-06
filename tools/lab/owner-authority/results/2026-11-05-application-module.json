@@ -1,0 +1,524 @@
+{
+  "experiment": "owner-authority-local-verification",
+  "capturedAt": "2026-11-06T03:55:01.565Z",
+  "alignmentHead": "f814f967c228a5030948b0c80e38989d292c593b",
+  "instrumentHashes": {
+    "harness.js": "921051293990f0729d398cda752d15a1d0c2ac25d2e4df7b0b3290e4b12c4ba7",
+    "local-token.js": "76a36d0f0390f6abc64210a5539bf42a4cdc9a15c5985e6d17c38814b8b139ce",
+    "controls.js": "7f16915462eb357df415f6e177614c8a65f8ae9e57b2a6ce873ac80a48621c09"
+  },
+  "applicationVerifierHash": "32d5443e18c917ebee9572864c962695d34c0d2e616a13d882d29a830fc1982a",
+  "sourceHead": "ab09297b319e12249d55da2103f8cceca035d9f9",
+  "versions": {
+    "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+    "vault": "2.2.1",
+    "node": "v22.23.4"
+  },
+  "checks": [
+    {
+      "name": "all three paths authorize reads and writes on two independent pools",
+      "passed": true
+    },
+    {
+      "name": "new token contains stable IDs and no legacy accessToken or root",
+      "passed": true
+    },
+    {
+      "name": "tampered signature refuses before PostgreSQL",
+      "passed": true
+    },
+    {
+      "name": "both tenant keys work locally and cross-tenant presentation fails by signature",
+      "passed": true
+    },
+    {
+      "name": "signed wrong issuer/audience/purpose/tenant and invalid times refuse",
+      "passed": true
+    },
+    {
+      "name": "unknown key and header algorithm/key URL injection refuse",
+      "passed": true
+    },
+    {
+      "name": "same earlier tokens lose grants on the next operation across both pools",
+      "passed": true
+    },
+    {
+      "name": "tenant suspension refuses across pools",
+      "passed": true
+    },
+    {
+      "name": "individual session revocation refuses across pools",
+      "passed": true
+    },
+    {
+      "name": "credential generation rotation refuses across pools",
+      "passed": true
+    },
+    {
+      "name": "key retirement despite cached public key refuses across pools",
+      "passed": true
+    },
+    {
+      "name": "session expiry refuses across pools",
+      "passed": true
+    },
+    {
+      "name": "omitted tenant predicate still cannot read another tenant under forced RLS",
+      "passed": true
+    },
+    {
+      "name": "authorization-store errors refuse rather than reuse earlier permission",
+      "passed": true
+    },
+    {
+      "name": "Vault stopped: cached-key data access survives; old verification, issuance and secret decrypt refuse",
+      "passed": true
+    },
+    {
+      "name": "PostgreSQL stopped: local signature still verifies but all protected operations refuse",
+      "passed": true
+    }
+  ],
+  "benchmarks": [
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "method": "read",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 1863.9581669999998,
+      "p50Ms": 15.09621100000004,
+      "p95Ms": 23.647022000000106,
+      "operationsPerSecond": 64.3791272382134,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 120,
+        "metadata": 240,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "method": "read",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 167.90581500000008,
+      "p50Ms": 1.1517239999993762,
+      "p95Ms": 2.842083999999886,
+      "operationsPerSecond": 714.6863853404955,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 120,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "method": "read",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 116.9894030000005,
+      "p50Ms": 0.9465350000000399,
+      "p95Ms": 1.4238670000004277,
+      "operationsPerSecond": 1025.7339290807347,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "method": "write",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 1407.9570910000002,
+      "p50Ms": 11.174156000000039,
+      "p95Ms": 16.988805999999386,
+      "operationsPerSecond": 85.22987011967113,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 240,
+        "metadata": 240,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "method": "write",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 233.05603400000018,
+      "p50Ms": 1.76111900000069,
+      "p95Ms": 3.169267999999647,
+      "operationsPerSecond": 514.897631871655,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 240,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "method": "write",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 102.5803850000002,
+      "p50Ms": 0.8196920000000318,
+      "p95Ms": 1.2602770000003147,
+      "operationsPerSecond": 1169.8142875950384,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 8,
+      "method": "read",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 312.648964,
+      "p50Ms": 18.904246000000057,
+      "p95Ms": 31.21430699999928,
+      "operationsPerSecond": 383.8170402509314,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 120,
+        "metadata": 240,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 8,
+      "method": "read",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 37.85263699999996,
+      "p50Ms": 2.27498900000046,
+      "p95Ms": 3.3577769999992597,
+      "operationsPerSecond": 3170.188644981329,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 120,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 8,
+      "method": "read",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 50.749870000000556,
+      "p50Ms": 2.794659000000138,
+      "p95Ms": 5.568609999999353,
+      "operationsPerSecond": 2364.5380766492344,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 8,
+      "method": "write",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 303.13090999999986,
+      "p50Ms": 18.76357199999984,
+      "p95Ms": 29.757810000000063,
+      "operationsPerSecond": 395.86857044700605,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 240,
+        "metadata": 240,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 8,
+      "method": "write",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 53.81034600000021,
+      "p50Ms": 3.455121999999392,
+      "p95Ms": 4.777209999999286,
+      "operationsPerSecond": 2230.054421133057,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 240,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 8,
+      "method": "write",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 33.47000900000057,
+      "p50Ms": 2.1523430000006556,
+      "p95Ms": 3.0700959999994666,
+      "operationsPerSecond": 3585.2993048193666,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 1,
+      "method": "read",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 124.55753900000036,
+      "p50Ms": 1.0103550000003452,
+      "p95Ms": 1.6723180000008142,
+      "operationsPerSecond": 963.4101714228607,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 1,
+      "method": "read",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 116.0711680000004,
+      "p50Ms": 0.8895440000005692,
+      "p95Ms": 1.4801109999998516,
+      "operationsPerSecond": 1033.8484747564494,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 120,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 1,
+      "method": "read",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 1382.4619359999988,
+      "p50Ms": 10.666665999999168,
+      "p95Ms": 17.86204799999996,
+      "operationsPerSecond": 86.80166655959206,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 120,
+        "metadata": 240,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 1,
+      "method": "write",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 134.19648400000005,
+      "p50Ms": 1.0218039999999746,
+      "p95Ms": 1.5716350000002421,
+      "operationsPerSecond": 894.2112075007863,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 1,
+      "method": "write",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 217.53466800000024,
+      "p50Ms": 1.7713430000003427,
+      "p95Ms": 2.2847660000006726,
+      "operationsPerSecond": 551.6362109234003,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 240,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 1,
+      "method": "write",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 1226.6085890000013,
+      "p50Ms": 9.450478999999177,
+      "p95Ms": 16.727364000000307,
+      "operationsPerSecond": 97.8307188422923,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 240,
+        "metadata": 240,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 8,
+      "method": "read",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 34.83454000000165,
+      "p50Ms": 2.2513980000003357,
+      "p95Ms": 3.3205809999999474,
+      "operationsPerSecond": 3444.856742761475,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 8,
+      "method": "read",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 34.50667599999906,
+      "p50Ms": 2.161772999999812,
+      "p95Ms": 3.520657000000938,
+      "operationsPerSecond": 3477.5879311007316,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 120,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 8,
+      "method": "read",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 295.5173810000015,
+      "p50Ms": 18.5718250000009,
+      "p95Ms": 30.49879300000066,
+      "operationsPerSecond": 406.06748609483446,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 120,
+        "metadata": 240,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 8,
+      "method": "write",
+      "arm": "local-combined",
+      "samples": 120,
+      "elapsedMs": 33.35954500000116,
+      "p50Ms": 2.15295100000003,
+      "p95Ms": 3.0526239999999234,
+      "operationsPerSecond": 3597.171364297559,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 0,
+        "metadata": 0,
+        "combined": 120
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 8,
+      "method": "write",
+      "arm": "local-shipping-authority",
+      "samples": 120,
+      "elapsedMs": 52.90594499999861,
+      "p50Ms": 3.4037459999999555,
+      "p95Ms": 4.674395000000004,
+      "operationsPerSecond": 2268.17610005838,
+      "calls": {
+        "vault": 0,
+        "audit": 0,
+        "authority": 240,
+        "metadata": 0,
+        "combined": 0
+      }
+    },
+    {
+      "repeat": 2,
+      "concurrency": 8,
+      "method": "write",
+      "arm": "current",
+      "samples": 120,
+      "elapsedMs": 253.71036000000095,
+      "p50Ms": 16.395872000000963,
+      "p95Ms": 19.414888999999675,
+      "operationsPerSecond": 472.9802913842365,
+      "calls": {
+        "vault": 240,
+        "audit": 240,
+        "authority": 240,
+        "metadata": 240,
+        "combined": 0
+      }
+    }
+  ],
+  "limits": [
+    "Synthetic authorization pipeline only; no end-to-end API handler/data-write/client performance claim.",
+    "Loopback development Vault and disposable PostgreSQL; shared host, no production TLS/HA/capacity acceptance.",
+    "Two independent pools; combined candidate tests fixed denied defaults and provisioned roles only, not full owner ceilings.",
+    "Public key preloaded from trusted provisioning; cold key distribution, rotations and production provider identity remain open.",
+    "New-format claims/algorithm are a prototype; legacy issuance and single-tenant behavior are unchanged."
+  ]
+}

@@ -1404,5 +1404,20 @@ integration gates are skipped. Those existing measurements do not promote this
 prototype. CRM full regression and site-check were skipped: no CRM application
 source, rich site page or pages.yaml changed.
 
-Lane worktree, anchors, next steps and peer ownership are in the local untracked
-[owner-authority handoff](../../externals/work/HANDOFF-owner-authority-2026-11-05.md).
+Lane worktree, anchors, next steps and peer ownership are in the machine-local,
+untracked handoff at `externals/work/HANDOFF-owner-authority-2026-11-05.md`.
+That local path is a maintainer reference and is excluded from the published site.
+
+
+## Update — owner authority application integration, 2026-11-05
+
+| Scope / queue | Measured current result | Remaining boundary |
+|---|---|---|
+| `T30-WIRING`, `MT-SECRETS-CONTRACT`: new-format API verification | [R48](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05) accepts local CRM `3d5eac196256e447859373beadf7abf2efbfb2ce`: explicit API executable/config and shared handlers use the application verifier and one current PG snapshot. Full nonbrowser7058/80pending/0fail; browser684/0/0; full process16; archived new-format7 and four semantic red controls. Final prcheck OK. | Fixed locally, not merged/released or published by this lane. Separate coordinator incorporated the source correction into its frame-integration branch; that cumulative tree needs its own acceptance. No parent failure is waived by this branch's passing run. |
+| Owner authority/QMS | [Adopted contract](../../docs/30-design/tenancy/owner-authority.md), current D22/plan corrections and historical census/schema provenance are reconciled. The lab imports application code; no standalone verifier duplicate remains. Actual revocation and Vault/PG outage behavior are recorded in R48. | New-format state remains operator-provisioned; automatic legacy issuance migration, complete human/refresh sessions, proposed-grant ceilings, production provider/key distribution and M5 streams remain open. Legacy8h exchange/single behavior preserved. No RC admission, listener exposure or milestone promotion. |
+
+This application acceptance supersedes the earlier prototype-only readiness boundary;
+the earlier immutable prototype measurement remains evidence for its own instrument.
+Queue/links/site checks for the joined QMS branch are recorded in the local handoff.
+The #8898 coordinator owns final queue/dashboard/next-gen-map reconciliation and
+maintainer-operated publication of the combined branch.

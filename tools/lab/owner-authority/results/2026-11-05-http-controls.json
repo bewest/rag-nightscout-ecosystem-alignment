@@ -1,0 +1,26 @@
+[
+  {
+    "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+    "control": "signature",
+    "exitCode": 1,
+    "semanticFailure": true
+  },
+  {
+    "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+    "control": "audience",
+    "exitCode": 1,
+    "semanticFailure": true
+  },
+  {
+    "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+    "control": "session",
+    "exitCode": 1,
+    "semanticFailure": true
+  },
+  {
+    "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+    "control": "snapshot",
+    "exitCode": 1,
+    "semanticFailure": true
+  }
+]

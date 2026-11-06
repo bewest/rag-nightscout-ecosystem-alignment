@@ -1,0 +1,95 @@
+{
+  "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+  "alignmentInstrumentHead": "f814f967c228a5030948b0c80e38989d292c593b",
+  "reproduced": true,
+  "versions": {
+    "node": "v22.23.4",
+    "postgres": "16.15",
+    "mongo": "8.0.34",
+    "vault": "2.2.1"
+  },
+  "seed": "41574423920",
+  "campaigns": {
+    "nonbrowser": {
+      "passing": 7058,
+      "pending": 80,
+      "failing": 0,
+      "tiers": [
+        2157,
+        205,
+        368,
+        319,
+        93,
+        3898,
+        18
+      ]
+    },
+    "browser": {
+      "passing": 684,
+      "pending": 0,
+      "failing": 0
+    },
+    "processFile": {
+      "passing": 16,
+      "pending": 0,
+      "failing": 0
+    },
+    "archivedNewFormat": {
+      "passing": 7,
+      "pending": 0,
+      "failing": 0
+    }
+  },
+  "negativeControls": [
+    {
+      "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+      "control": "signature",
+      "exitCode": 1,
+      "semanticFailure": true
+    },
+    {
+      "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+      "control": "audience",
+      "exitCode": 1,
+      "semanticFailure": true
+    },
+    {
+      "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+      "control": "session",
+      "exitCode": 1,
+      "semanticFailure": true
+    },
+    {
+      "sourceHead": "3d5eac196256e447859373beadf7abf2efbfb2ce",
+      "control": "snapshot",
+      "exitCode": 1,
+      "semanticFailure": true
+    }
+  ],
+  "logSHA256": {
+    "owner-app-full-final": "7874f5520d0ab4a601aca7509410333a496d3b5b4a03c61e6b38b2cc17e990bb",
+    "owner-app-browser-final": "9acc4c450f7626debc2cd95bd42e6cc93149d9b7740abf6f0cfe1da6a0988d45",
+    "owner-app-process-corrected": "a6b92ef936d22eef46efc25af8de3a937f4ab3efc11800f573ab7412e51f3ac9",
+    "owner-app-final-positive": "85e3c01dbb5bd052737a219a575f92e50c871ea61cdf9f45b11175e3e1f055c5",
+    "owner-app-edge-before": "c5fceb098e086e286c3ce68aa81d418e526262997460d711a2ec4070727bb725",
+    "owner-app-prcheck-final": "1e9935c7e87a1227397c27615f3322a56aaaa3a0114606bc3f0f59b61d34f069"
+  },
+  "limits": [
+    "New tokens use operator-provisioned key/credential/session state; no automatic legacy issuance migration or complete human/refresh issuer.",
+    "No complete owner-ceiling mutation implementation, production deployment/identity/JOSE acceptance or milestone promotion.",
+    "Original and repeated lab timing compares authorization pipeline/candidate snapshot, not the production access-postgres query or complete HTTP throughput.",
+    "Shared-host disposable services; actual API blackhole outages are paused Vault/PostgreSQL with bounded refusal, not crash/HA recovery."
+  ],
+  "benchmarkSourceHead": "ab09297b319e12249d55da2103f8cceca035d9f9",
+  "compatibilityBeforeFix": {
+    "sourceHead": "ab09297b319e12249d55da2103f8cceca035d9f9",
+    "passing": 0,
+    "failing": 2,
+    "symptoms": [
+      "Malformed anonymous defaults: legacy503/new200",
+      "Missing name: legacy read200/new503"
+    ],
+    "testProvenance": "New actual HTTP characterization cases subsequently committed unchanged in 3d5eac19; predecessor application code under test."
+  },
+  "finalPrcheck": "OK"
+}

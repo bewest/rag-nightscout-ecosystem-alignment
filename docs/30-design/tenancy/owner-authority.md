@@ -134,5 +134,9 @@ results are synthetic authorization-pipeline measurements, not API-handler throu
 production capacity, full owner-ceiling acceptance or milestone promotion.
 
 The [November 5 measurement](../../60-research/tenancy/owner-authority-local-verification-2026-11-05.md)
-records the reproduced prototype results and their controls; production behavior
-remains unimplemented by this alignment-only prototype.
+records the reproduced prototype results and their controls. The [R48 application
+acceptance](../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05)
+tracks the local branch that wires new-format verification through the actual
+API preview. Legacy issuance migration, complete management/session flows and
+production deployment acceptance remain separately scoped; local wiring is not
+a claim that published operators or all existing clients use the new format.
