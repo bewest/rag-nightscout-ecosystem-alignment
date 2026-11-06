@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: reconciled to recorded R60 acceptance at d89a44e1, published draft #8898. M0 foundations promoted; bounded M4-CLIENT-LAB complete. Joined tenant clock has bounded correctness acceptance; performance benchmark pending. R60 preserves each campaign executed head and source-identity reuse. M1\u2013M6 remain open. R55 independent profile2ee remains separate. B7 direction adopted; dormant replay/owner/operations continuations are separate, without runtime or default enablement.",
+ "measured": "2026-11-06: R62/R64 published draft #8898 control/recovery acceptance; M0 foundations promoted in R60 and bounded M4-CLIENT-LAB complete. M1\u2013M6 remain open. R63 selected actual subject workflows are bounded; root refusal keeps universal activation disabled. R67 clinical constructor and R68 fresh-schema DATA controls are local component evidence. Joined owner/clinical/DATA candidate is local and in verification, without full/browser acceptance. R55 whole profile branch remains separate. B7 adopted; no live runtime/default/rollout enabled. R65 clock HTTP data is descriptive; capacity and budget acceptance remain unmeasured.",
  "tracks": [
   {
    "id": "storage",
@@ -309,11 +309,11 @@
     "ST-VIEWS"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8891",
-   "ref": "R55 profile 2ee8b493 accepted independently; helper matches the accepted REST implementation, but the branches remain separate. Wider runtime admission stays open.",
+   "ref": "R55 whole profile branch remains independently accepted and separate. Reusing its private helper/evaluateCycle hunk in the local candidate does not admit a live profile/evaluator role or common atomic revision.",
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "R55 independent profile / scope limits",
@@ -347,17 +347,17 @@
    "phase": "multi",
    "state": "progress",
    "short": "PG REST ports / import",
-   "title": "R60 accepts selected legacy/API3 PostgreSQL ports, client identity and bounded lookup repairs. Existing write/import caps are implemented. Complete admitted backend/import semantics, populated identity/order fidelity and wider resource behavior remain open.",
+   "title": "R62/R64 retain selected PostgreSQL REST ports and accept persisted typed current-row replay with populated PG recovery LAB. Full admitted backend/import/order/resource semantics remain open. R68 fresh-schema ordering is a local prototype only.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
    "check": "R51 bounded settings33870764 full7089/80pending/0failure/browser684/prcheckOK; archived12, sortcap/predicate/projection each0/1semantic, restored12. Only product edit global PG sort cap4\u21925. Six-key refusal and regex/dotted PG500 capability limits remain; performance/full client parity unmeasured.",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "R60 d89a44e1 is the accepted cumulative batch. See its capsule for actual executed heads and source-identity reuse; this component remains in progress.",
+   "ref": "Published dormant control/recovery batch; local fresh-only ordering has no populated/imported-history migration or downmigration. No full M1 promotion.",
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -394,6 +394,14 @@
     {
      "label": "architecture and compatibility",
      "href": "../tenancy/single-and-multitenant-architecture.md"
+    },
+    {
+     "label": "R67 bounded clinical native controls",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06"
+    },
+    {
+     "label": "R68 fresh-schema DATA native controls",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
     }
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898"
@@ -717,8 +725,8 @@
    ],
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "R40 API preview acceptance",
@@ -729,7 +737,7 @@
      "href": "../tenancy/single-and-multitenant-architecture.md"
     }
    ],
-   "ref": "Merged namespace: #8865 / 991b0654, amended by #8899 / 4a482627. Draft API preview: #8898 d89a44e1, R60; no default or production role enabled.",
+   "ref": "Merged namespace #8865/#8899; R64 verifies published draft #8898 API preview. Headless owner CLI is a local candidate in verification; no production role or M2 promotion.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
@@ -756,13 +764,17 @@
    "phase": "boundary",
    "state": "progress",
    "short": "Per-tenant config table",
-   "title": "Owner-authority policy is adopted; R53 accepts explicitly selected transactional proposed-grant delegation/ceiling enforcement within REST37. Full permission/settings/default catalogue, existing-grant clamping and production owner API/listener remain unimplemented; this historical item is not complete.",
+   "title": "Adopted owner-authority policy, selected proposed-grant enforcement and R62 optional current-subject reader clamping are accepted. Full permission/settings/default catalogue and deployable owner lifecycle remain open.",
    "ref": "Selected R40 services are separate from the older seam catalogue. Current T30-SCHEMA-CONFIG static gate fails its crm-seam D15 table predicate; see the architecture evidence gaps. No full-catalogue promotion.",
    "depends": [
     "T30-RESEARCH",
     "T30-DONE"
    ],
    "spec": [
+    {
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+    },
     {
      "label": "Adopted owner authority and token verification",
      "href": "../tenancy/owner-authority.md"
@@ -784,7 +796,7 @@
    "state": "blocked",
    "short": "Resolution / lifecycle",
    "title": "Direct-alias and explicitly trusted canonical resolution run in the accepted API preview. Full tenant lifecycle and production transport/service identity remain blocked on their prerequisites.",
-   "ref": "R60 d89a44e1 retains configured two-tenant CLI/current authority composition. Static maps do not establish durable provisioning/publication or production owner/operator lifecycle.",
+   "ref": "R62/R64 retain configured direct/canonical two-tenant preview resolution. Local owner CLI verification does not establish durable mapping, provisioning/publication or production owner/operator lifecycle.",
    "depends": [
     "MT-CONFIG-MIN",
     "MIG-RUNNER",
@@ -793,8 +805,8 @@
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "remaining M2 gates",
@@ -812,8 +824,8 @@
    "phase": "multi",
    "state": "progress",
    "short": "Tenant-scoped auth",
-   "title": "Current tenant credentials/grants compose with actual CLI/REST. The adopted contract permits optional new-format Ed25519 data-token verification locally with current PG session/key/grants per operation; R53 separately accepts selected proposed-grant ceiling/delegation enforcement. Human management issuer/refresh, existing-grant clamping, full catalogue and production lifecycle remain unimplemented.",
-   "ref": "R60 retains current PG session/key/grants and optional local data-token verification, compatible legacy carriers and strict refusal envelopes. Human management issuance/refresh and wider lifecycle remain open.",
+   "title": "Current tenant credentials/grants and optional local Ed25519 data-token verification compose with CLI/REST. R62 accepts selected current-subject catalogue/ceiling clamping per operation. Human issuer/refresh, full catalogue and production lifecycle remain open.",
+   "ref": "R63 actual oref0 subject workflows pass with next-operation tightening refusal; cgmsim root selected-mode refusal keeps universal activation disabled. Local headless owner candidate remains in verification.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
@@ -821,8 +833,8 @@
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "R48 bounded local data-token API acceptance",
@@ -856,8 +868,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "R60 accepts the coherent CI/client/clock batch and promotes M0 foundations. The bounded client lab card is complete; full M3 still requires complete M1 and M2.",
-   "ref": "R60 d89a44e1: joined clock correctness, explicit corpus and final prcheck accepted. Broader client/import/resource/control-plane criteria remain open; performance benchmark pending. Independent R55 profile is separate.",
+   "title": "R60 M0 promotion and bounded M4-CLIENT-LAB completion are retained. R62 accepts the dormant control/recovery batch and R64 verifies publication. Full M3 remains blocked on complete M1/M2.",
+   "ref": "Published acceptance and local R67/R68 component controls are separate. Joined local candidate full/browser verification is pending; wider client/import/resource/control-plane and capacity acceptance remain open.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -866,8 +878,8 @@
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -940,12 +952,12 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current policy / settings",
-   "title": "R42 persisted subject service/standalone HTTP and R53 explicitly selected transactional proposed-grant enforcement are accepted within REST37. Human management issuer/refresh, full wildcard/default catalogue, existing-grant clamping, DELETE policy and production owner listener remain unimplemented.",
-   "ref": "R60 retains selected proposed-grant policy; DELETE refuses and management authentication remains injected. Full catalogue, human issuer/refresh and production listener remain open; dormant reader clamping is separate.",
+   "title": "R62 accepts optional current-subject clamping to the reviewed finite catalogue and current operator ceiling in one authorization snapshot. Human management issuer/refresh, wildcard/default/root migration, DELETE policy and production owner lifecycle remain open.",
+   "ref": "Unselected behavior retains compatibility. R63 bounds actual subject-client workflows; root refusal prevents universal activation. Local headless owner CLI is in verification, not production composition.",
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -1066,17 +1078,17 @@
    "phase": "multi",
    "state": "progress",
    "short": "Private allocation / separate accepted branches",
-   "title": "R60 REST and R55 independent profile retain shared private allocation behind separate caller policies. No common revision, stronger snapshot, branch merge or multitenant evaluator admission.",
+   "title": "Published REST and independent R55 profile retain private allocation behind separate caller policies. R67 accepts bounded recovered clinical constructor controls; the joined clinical candidate is local and in verification.",
    "check": "Nativee5fe0b5e full7080/80pending/0failure, prior same-head browser684/prcheckOK; acquisition14/concurrency4, six controls/restored14/4 and caller4/reused-target2fail/restored4.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "Accepted REST d89a44e1 and independent profile 2ee8b493 preserve their separate scopes; the shared helper does not provide atomic acquisition.",
+   "ref": "Whole R55 profile branch remains separate; only the private helper/evaluateCycle hunk joins the local candidate. No common atomic revision, live profile/evaluator role or notification handoff accepted.",
    "spec": [
     {
-     "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
      "label": "R54 cumulative / native scope limits",
@@ -1101,6 +1113,14 @@
     {
      "label": "architecture execution plan",
      "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
+    },
+    {
+     "label": "R67 bounded clinical native controls",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06"
+    },
+    {
+     "label": "R68 fresh-schema DATA native controls",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
     }
    ]
   },
@@ -1110,9 +1130,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "Durable runtime / replay",
-   "title": "B7 design direction is adopted. Dormant replay implementation and recovery experiments proceed separately; M5/M6 still require durable consumer, realtime/evaluator and operational acceptance.",
-   "ref": "R60 contains bounded clock correctness; later replay/recovery work is separate. No production role or runtime consumer is admitted.",
+   "title": "B7 direction is adopted. R62 accepts dormant typed current-row replay/recovery; R67 clinical and R68 fresh-schema DATA controls are bounded local evidence. M5/M6 remain open.",
+   "ref": "Local joined owner/clinical/DATA candidate is in verification. No live scheduling/current stream authority, ack/notification/provider/lease/capacity or rollout accepted. Fresh-schema prototype rejects populated migration; no downmigration or imported past ordering. Transaction final-floor event stamps are adopted; local separate payload implementation awaits broader verification.",
    "spec": [
+    {
+     "label": "R62/R64 published acceptance and verification",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
+    },
     {
      "label": "Adopted durable delivery direction and experiments",
      "href": "../tenancy/durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments"
@@ -1120,6 +1144,14 @@
     {
      "label": "Current runtime gates",
      "href": "../tenancy/multitenant-delivery-dashboard.md#mt-runtime-plan"
+    },
+    {
+     "label": "R67 bounded clinical native controls",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06"
+    },
+    {
+     "label": "R68 fresh-schema DATA native controls",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
     }
    ]
   }

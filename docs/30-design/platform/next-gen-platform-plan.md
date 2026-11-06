@@ -1,8 +1,8 @@
 # Next-gen platform: one write path, four tracks
 
 *Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
-[R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06)
-and draft #8898 `d89a44e1`, based on dev `4a482627`. Earlier storage,
+[R62/R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
+and published draft #8898 `83582e87`, with bounded local R67/R68 component evidence. Earlier storage,
 identity and registration measurements retain their named pins. Current milestone
 claims live in the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md);
 release placement lives in [release allocation](release-allocation-2026-10-27.md).*
@@ -26,17 +26,21 @@ use this map to see how the platform tracks meet.
 
 | Scope | Current recorded acceptance | What remains |
 |---|---|---|
-| Multitenant foundations | **M0 promoted** in R60; draft #8898 is `d89a44e1`. Restricted-role/RLS, isolation, rollback, pool reuse and startup refusal have bounded acceptance. | No default or production role enabled; the PR is open/draft, not merged or released. |
-| Data, authority and clients | R60 joins the tenant clock and selected client compatibility repairs. The bounded `M4-CLIENT-LAB` card is complete. | M1–M4 still need complete admitted backend/import/resource, deployable control-plane and wider client criteria. M3 depends on complete M1/M2. |
-| Durable runtime | B7 design direction is adopted; implementation and recovery experiments proceed separately. | M5/M6 need runtime consumers, replay/recovery, lifecycle and operational acceptance. The clock performance benchmark remains pending. |
-| Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | Separate from #8898; no common read revision, stronger snapshot or distributed evaluator acceptance. |
+| Multitenant foundations | **M0 promoted** in R60; R64 verifies the published draft #8898 control/recovery batch. | No default or production role enabled; the PR is open/draft, not merged or released. |
+| Data, authority and clients | R62 accepts optional current-subject grant clamping, persisted typed current-row replay and populated PG recovery LAB. The bounded `M4-CLIENT-LAB` card remains complete. | M1–M4 retain backend/import/resource, control-plane and wider client criteria; M3 depends on complete M1/M2. R63's actual oref0 workflows pass, but the cgmsim root refusal keeps universal selected-mode activation disabled. |
+| Durable runtime | B7 direction is adopted. R67 accepts a bounded local recovered clinical constructor; R68 accepts a local fresh-schema DATA prototype with physical controls. | M5/M6 remain open. The transaction final-floor event-stamp direction is adopted; its payload implementation/verification remains separate. No live evaluator/realtime role, notification/ack, provider/lease or rollout acceptance. Fresh-only ordering has no populated/imported-history migration or downmigration. |
+| Local joined candidate | Owner CLI, clinical projection and experimental DATA components are joined in a **local candidate in verification**. | Native component evidence does not accept the joined full/browser campaign or promote M2/M5. Current head and lane state belong to the dashboard. |
+| Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | The whole profile branch remains separate. Reusing its private helper/evaluateCycle hunk in the local candidate establishes no common atomic revision, live profile role or notification handoff. |
 
-R60 and its [final capsule](../../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.md)
-own the measured figures and executed heads. Earlier full/browser/client/pooler
-campaigns are reused only after exact relevant source identity; they are not
-relabelled as final-head executions. Remote CI is separate from local acceptance.
-See the [release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--coherent-compatibility-batch-accepted-m0-promoted-2026-11-06)
-for the programme disposition.
+The [integration record](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
+owns measured heads, controls and source-identity reuse; R64 records remote publication
+checks separately from local acceptance. [R67](../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06)
+and [R68](../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06)
+are bounded local component evidence, not whole-candidate acceptance. R66's original
+socket failure remains recorded. R65 supplies descriptive small clock HTTP data;
+capacity, steady-state performance and budget acceptance remain unmeasured. The
+older corpus benchmark remains pending in its capture. See the
+[release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md) for programme disposition.
 
 | Earlier overview | Retained evidence |
 |---|---|
@@ -230,14 +234,14 @@ contains request-flow, isolation and historical-comparison diagrams.
 | PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT, and no image HEALTHCHECK so a boot-error page is not restarted away (D21) | dev |
 | PLAT-SERVE | Merged `multitenant` CLI namespace (#8899); explicit API preview on draft #8898, with separate operator preparation/readiness. Other roles remain unenabled | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface: 264 settings on dev, 12 contested | D-T30 |
-| T30-SCHEMA-CONFIG | Adopted owner-authority policy and selected transactional proposed-grant fencing are accepted; full permission/settings catalogue and deployable owner API remain open. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate | T30-RESEARCH |
+| T30-SCHEMA-CONFIG | Adopted owner-authority policy and selected transactional proposed-grant fencing and optional current-subject reader clamping are accepted; full permission/settings catalogue and deployable owner API remain open. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate | T30-RESEARCH |
 | TEN-RESOLVE | Direct/canonical preview resolution accepted; full production trust, durable mapping and operator lifecycle still blocked | MT-CONFIG-MIN, MIG-RUNNER, PLAT-SERVE |
-| T30-WIRING | Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; selected proposed-grant fencing is accepted; management issuer/refresh, wider ceilings and production lifecycle remain open | TEN-RESOLVE, MT-SECRETS-CONTRACT |
-| TEN-LAB | R60 accepts the coherent CI/client/clock batch and promotes M0; complete M3 remains blocked on full M1/M2 | ST-PG, T30-WIRING, MIG-RUNNER |
+| T30-WIRING | Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; selected proposed-grant fencing and optional current-subject clamping are accepted; management issuer/refresh, full catalogue and production lifecycle remain open | TEN-RESOLVE, MT-SECRETS-CONTRACT |
+| TEN-LAB | R62/R64 accept and verify the published dormant control/recovery batch; R60 M0 promotion is retained; complete M3 remains blocked on full M1/M2 | ST-PG, T30-WIRING, MIG-RUNNER |
 
 Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): `nightscout single` is single-tenant and the `nightscout multitenant` namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and `TENANCY_MODE` retires as an operator setting. Which listener and role owns each API is mapped in [interface ownership](interface-ownership-2026-10-27.md), with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D23 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 
-Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R60 retains the REST side; the independent profile branch remains separate. No common atomic revision is accepted.
+Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the local joined candidate. R67 bounds recovered clinical constructor evidence. No common atomic revision, live profile/evaluator role or notification handoff is accepted.
 
 ## 5. Open decisions
 
