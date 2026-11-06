@@ -7,6 +7,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 const { REPO_ROOT, CRM } = require('./_gate');
+const disableCurrentAuthority = require('./_rest-authority-control');
 
 const args = process.argv.slice(2);
 function option (name) {
@@ -32,13 +33,16 @@ try {
     'lib', 'tests', 'package.json'], { maxBuffer: 128 * 1024 * 1024 });
   execFileSync('tar', ['-xf', '-', '-C', scratch], { input: archive });
   if (control) {
-    const changes = control === 'authority'
-      ? ['lib/server/tenant-app/data-access.js', 'await authority.authorize({ tenant, principal, permission })', 'true']
-      : ['lib/secrets/component.js', 'payload.aud !== identity.tenant || ', ''];
-    const file = path.join(scratch, changes[0]);
+    const file = path.join(scratch, control === 'authority'
+      ? 'lib/server/tenant-app/data-access.js' : 'lib/secrets/component.js');
     const source = fs.readFileSync(file, 'utf8');
-    if (!source.includes(changes[1])) throw new Error('CONTROL-INVALID: expected source boundary missing');
-    fs.writeFileSync(file, source.split(changes[1]).join(changes[2]));
+    if (control === 'authority') {
+      fs.writeFileSync(file, disableCurrentAuthority(source));
+    } else {
+      const boundary = 'payload.aud !== identity.tenant || ';
+      if (!source.includes(boundary)) throw new Error('CONTROL-INVALID: expected source boundary missing');
+      fs.writeFileSync(file, source.split(boundary).join(''));
+    }
     console.log('Applied scratch-only source control: ' + control);
   }
   console.log('gate: multitenant-rest-authority\n  tree ' + head);
