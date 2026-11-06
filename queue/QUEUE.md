@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 364 |
-| runnable gates | 433 |
-| explicit `no-gate:` markers | 375 |
+| runnable gates | 423 |
+| explicit `no-gate:` markers | 385 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 808 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 385 of the 808 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -186,17 +186,17 @@ with 15.0.9. None of these needs a tenancy decision.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `released` | `bf/alarms` | minor | 5 run + 4 no-gate |
-| `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `released` | `bf/cache` | patch | 6 run + 2 no-gate |
-| `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `released` | `bf/auth` | major | 3 run + 4 no-gate |
-| `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `released` | `bf/throttle` | patch | 5 run + 3 no-gate |
+| `P0-A` | bf/alarms - PR #8739, BF-28, BF-29, BF-31 | `released` | `bf/alarms` | minor | 4 run + 5 no-gate |
+| `P0-B` | bf/cache - PR #8740, T0.2 and T0.3 read-path cost | `released` | `bf/cache` | patch | 5 run + 3 no-gate |
+| `P0-C` | bf/auth - BF-17 plaintext token (BF-30 split out to P0-J) | `released` | `bf/auth` | major | 2 run + 5 no-gate |
+| `P0-J` | bf/throttle - BF-30, failed-auth throttling, compatibility default | `released` | `bf/throttle` | patch | 3 run + 5 no-gate |
 | `P0-C-REMEDIATE` | Operator remediation for tokens already stored in plaintext - text, not tooling | `released` | `-` | n/a | 1 run + 2 no-gate |
-| `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `released` | `bf/coercion` | minor | 5 run + 2 no-gate |
-| `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `released` | `bf/reads` | major | 6 run + 6 no-gate |
+| `P0-D` | bf/coercion - PR #8737, query filter typing (T0.5) and the $exists inversion | `released` | `bf/coercion` | minor | 4 run + 3 no-gate |
+| `P0-E` | bf/reads - PR #8738, six read-path fixes, independent of bf/coercion | `released` | `bf/reads` | major | 5 run + 7 no-gate |
 | `P0-F` | fix/connect-timer-jitter - PR #68, BF-34 backoff precedence and start jitter | `released` | `fix/connect-timer-jitter` | minor | 4 run + 1 no-gate |
-| `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `released` | `bf/food` | minor | 5 run + 2 no-gate |
-| `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `released` | `bf/merge` | patch | 5 run + 3 no-gate |
-| `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `released` | `bf/parms` | patch | 5 run + 2 no-gate |
+| `P0-G` | bf/food - PR #8735, BF-16 quick-pick filter, BF-35 bolus calculator chooser | `released` | `bf/food` | minor | 4 run + 3 no-gate |
+| `P0-H` | bf/merge - PR #8734, BF-36 client delta merge reads past the end | `released` | `bf/merge` | patch | 4 run + 4 no-gate |
+| `P0-I` | bf/parms - PR #8736, BF-37, BF-38, BF-39 | `released` | `bf/parms` | patch | 4 run + 3 no-gate |
 | `P0-K` | bf/operators - PR #8743, BF-04 extracted, BF-70 found | `released` | `bf/operators` | minor | 4 run + 3 no-gate |
 | `P0-TAG` | nightscout-connect 0.1.0 - the full release, from connector dev | `done` | `main` | minor | 5 run |
 | `P0-CONNECT-ROLE` | nightscout-connect's nightscout source creates its reader subject with role, not roles (BF-89) | `released` | `fix/nightscout-reader-roles` | patch | 3 run |
@@ -232,8 +232,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms official/dev`
   - Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8739, merged 2026-09-20) and cannot silently leave it. An upstream revert or force-push turns it red.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/alarms >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/alarms`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 official/master`
   - official/master (the released 15.0.9 and later) contains 7a5561f4 (#8739's merge). Red if master is rewritten without it.
 - **NO GATE** &mdash; The branch-level test gates that ran in externals/work/crm-bf-alarms were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.
@@ -276,8 +275,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache official/dev`
   - Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8740, merged 2026-09-20) and cannot silently leave it. An upstream revert or force-push turns it red.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/cache >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/cache`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[integration]` `node tools/queue/gates/t02-read-ratio.js`
   - T0.2's stated gate, run live, and it is MET - an untyped /api/v1/entries read must come within 2x of a typed one at count=10, and it is 0.7x. It sits beside the T0.3 gate on purpose: that one is red and this one is green, and showing only one would misrepresent the branch. Non-vacuity is structural: the harness reads lib/api/entries/index.js out of the worktree and names the shape it found - clone-then-slice on dev, slice-then-clone on the branch. Measured 2026-09-16: dev FAILS at 42.3x, the branch PASSES at 0.7x. SKIPS when the worktree has no node_modules.
 - `[integration]` `node tools/queue/gates/t03-cycle-clone-budget.js`
@@ -320,8 +318,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth official/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth official/dev`
   - bf/auth ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once #8754 merges. Needs `git -C externals/cgm-remote-monitor-official fetch origin` first.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/auth >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/auth`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd official/master`
   - official/master (the released 15.0.9 and later) contains ce82f0cd (bf/auth's content commit, shipped through #8754). Red if master is rewritten without it.
 - **NO GATE** &mdash; The branch-level test gates that ran in externals/work/crm-bf-auth were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.
@@ -358,10 +355,8 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle official/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle official/dev`
   - bf/throttle ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once #8754 merges. Needs `git -C externals/cgm-remote-monitor-official fetch origin` first.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/throttle >/dev/null`
-  - trial-merge into origin/dev is conflict-free
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle official/chore/nightscout-modernization >/dev/null`
-  - The property this branch exists for - it merges clean with PR #8605. With the peer-address plumbing included it conflicted in five files (index.js, storage.js, alarmSocket.js, security.js, websocket.js). Non-vacuity, reproduced 2026-09-16: the identical command against bf/auth, which narrows storage.js, CONFLICTS - so this is not passing because merge-tree always passes.
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/throttle`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge against the modernization branch (`merge-tree --write-tree bf/throttle official/chore/nightscout-modernization`) measured the property this branch existed for: that it would merge clean with PR #8605 (with the peer-address plumbing included it had conflicted in five files; its 2026-09-16 control was the same command against bf/auth, which conflicted). That question is settled: #8605 merged into dev on 2026-10-26 (47723cda) and bf/throttle is contained in official/dev and, through 15.0.9, in official/master. The gate had no control entry and could not fail any more.
 - `[static]` `sh -c 'git -C externals/cgm-remote-monitor-official grep -qI peer-address bf/throttle && exit 1 || exit 0'`
   - lib/server/peer-address.js is NOT on this branch and nothing references it. A tracking gate against the obvious regression - re-adding that module re-creates the four-file conflict with #8605, and it would look like a harmless improvement to anyone who had not measured it.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 435419ce official/master`
@@ -435,8 +430,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion official/dev`
   - Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8737, merged 2026-09-18) and cannot silently leave it. An upstream revert or force-push turns it red.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/coercion >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/coercion`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 official/master`
   - official/master (the released 15.0.9 and later) contains b7234753 (the fix commit merged by #8737). Red if master is rewritten without it.
 - **NO GATE** &mdash; The branch-level test gates that ran in externals/work/crm-bf-coercion were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.
@@ -476,8 +470,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads official/dev`
   - Containment: this tip is an ancestor of origin/dev, so the fix is in dev (PR #8738, merged 2026-09-18) and cannot silently leave it. An upstream revert or force-push turns it red.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/reads >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/reads`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[static]` `node tools/queue/gates/bf-reads-read-contract.js`
   - The database-free half of the branch's behaviour, driven through the four pure modules the six fixes live in: parseCount/hasCount/applyCount, the dotted-?fields= projector, the _id tiebreak in the v3 sort chain, and the count path's use of query_for with nothing printed. 8 assertions. Built-in negative control: `--rev origin/dev` runs the identical assertions against dev materialised from the object database and gives 4 failing. (A branch-has-a-commit check is not a substitute: it passes for origin/dev, origin/master and bf/alarms too.)
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53 official/master`
@@ -561,8 +554,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food official/dev`
   - Containment: this tip is an ancestor of origin/dev, so the fix (PR #8735, merged 2026-09-20) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/food >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/food`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 official/master`
   - official/master (the released 15.0.9 and later) contains 73495331 (the fix commit merged by #8735). Red if master is rewritten without it.
 - **NO GATE** &mdash; The branch-level test gates that ran in externals/work/crm-bf-food were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.
@@ -601,8 +593,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge official/dev`
   - Containment: this tip is an ancestor of origin/dev, so the fix (PR #8734, merged 2026-09-18) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/merge >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/merge`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf official/master`
   - official/master (the released 15.0.9 and later) contains b06c6faf (the fix commit merged by #8734). Red if master is rewritten without it.
 - **NO GATE** &mdash; The branch-level test gates that ran in externals/work/crm-bf-merge were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.
@@ -642,8 +633,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms official/dev`
   - Containment: this tip is an ancestor of origin/dev, so the fix (PR #8736, merged 2026-09-20) is in dev and cannot silently leave it. An upstream revert or force-push turns it red.
-- `[static]` `git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/parms >/dev/null`
-  - trial-merge into origin/dev is conflict-free
+- **NO GATE** &mdash; Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree official/dev bf/parms`) measured whether this branch could still land. It landed, and 15.0.9 released it on 2026-10-21; a contained branch merges trivially, so the command could no longer fail for the reason it was written, and its control (a pair measured to conflict in September) had itself stopped conflicting by 2026-11-06. The containment gates on this item (the branch in official/dev, its content commit in official/master) are the measurement now.
 - `[static]` `git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 official/master`
   - official/master (the released 15.0.9 and later) contains eb0bc918 (the fix commit merged by #8736). Red if master is rewritten without it.
 - **NO GATE** &mdash; The branch-level test gates that ran in externals/work/crm-bf-parms were retired on 2026-10-26: that worktree was removed after the fix was released in 15.0.9. Every test file those gates named is on official/master (checked 2026-10-26), so the released tree's suite carries them; the containment gate above replaces the gates.

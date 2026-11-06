@@ -670,9 +670,15 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8739, merged 2026-09-20) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/alarms >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/alarms`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 official/master
         kind: static
         describe: >
@@ -769,9 +775,15 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8740, merged 2026-09-20) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/cache >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/cache`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: node tools/queue/gates/t02-read-ratio.js
         kind: integration
         describe: >
@@ -895,9 +907,15 @@ items:
           its tip is contained in #8754's head, or in origin/dev once #8754
           merges. Needs `git -C externals/cgm-remote-monitor-official fetch
           origin` first.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/auth >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/auth`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd official/master
         kind: static
         describe: >
@@ -1025,18 +1043,25 @@ items:
           BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once
           #8754 merges. Needs `git -C externals/cgm-remote-monitor-official
           fetch origin` first.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/throttle >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle official/chore/nightscout-modernization >/dev/null
-        kind: static
-        describe: >
-          The property this branch exists for - it merges clean with PR #8605.
-          With the peer-address plumbing included it conflicted in five files
-          (index.js, storage.js, alarmSocket.js, security.js, websocket.js).
-          Non-vacuity, reproduced 2026-09-16: the identical command against
-          bf/auth, which narrows storage.js, CONFLICTS - so this is not passing
-          because merge-tree always passes.
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/throttle`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
+      - no-gate: >
+          Retired 2026-11-06. The trial merge against the modernization branch
+          (`merge-tree --write-tree bf/throttle official/chore/nightscout-modernization`)
+          measured the property this branch existed for: that it would merge
+          clean with PR #8605 (with the peer-address plumbing included it had
+          conflicted in five files; its 2026-09-16 control was the same command
+          against bf/auth, which conflicted). That question is settled: #8605
+          merged into dev on 2026-10-26 (47723cda) and bf/throttle is contained
+          in official/dev and, through 15.0.9, in official/master. The gate
+          had no control entry and could not fail any more.
       - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -qI peer-address bf/throttle && exit 1 || exit 0'
         kind: static
         describe: >
@@ -1277,9 +1302,15 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8737, merged 2026-09-18) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/coercion >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/coercion`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 official/master
         kind: static
         describe: >
@@ -1383,9 +1414,15 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8738, merged 2026-09-18) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/reads >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/reads`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: node tools/queue/gates/bf-reads-read-contract.js
         kind: static
         describe: >
@@ -1628,9 +1665,15 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
           #8735, merged 2026-09-20) is in dev and cannot silently leave it. An
           upstream revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/food >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/food`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 official/master
         kind: static
         describe: >
@@ -1717,9 +1760,15 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
           #8734, merged 2026-09-18) is in dev and cannot silently leave it. An
           upstream revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/merge >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/merge`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf official/master
         kind: static
         describe: >
@@ -1803,9 +1852,15 @@ items:
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
           #8736, merged 2026-09-20) is in dev and cannot silently leave it. An
           upstream revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/parms >/dev/null
-        kind: static
-        describe: trial-merge into origin/dev is conflict-free
+      - no-gate: >
+          Retired 2026-11-06. The trial merge into dev (`merge-tree --write-tree
+          official/dev bf/parms`) measured whether this branch could still land.
+          It landed, and 15.0.9 released it on 2026-10-21; a contained branch
+          merges trivially, so the command could no longer fail for the reason
+          it was written, and its control (a pair measured to conflict in
+          September) had itself stopped conflicting by 2026-11-06. The
+          containment gates on this item (the branch in official/dev, its
+          content commit in official/master) are the measurement now.
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 official/master
         kind: static
         describe: >
