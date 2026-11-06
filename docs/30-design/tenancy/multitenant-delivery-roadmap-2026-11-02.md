@@ -18,7 +18,10 @@ milestone dependencies, parallel lanes, next gates and slice acceptance stages.*
 It is generated from queue claims plus dated acceptance metadata, not a live
 branch monitor. It distinguishes local acceptance, incorporation with testing
 pending, integrated acceptance and milestone promotion. Nothing is pushed or
-enabled merely because a dormant slice passes.
+enabled merely because a dormant slice passes. The
+[integration batching plan](multitenant-integration-batching-plan-2026-11-06.md)
+says how lanes join one frozen cumulative head per batch, what verification runs
+at each acceptance stage, and which batches are on the critical path.
 
 This page retains the adopted decisions and promotion criteria below. The
 [execution evidence](#execution-evidence-2026-11-02) is collapsed under section 6;
