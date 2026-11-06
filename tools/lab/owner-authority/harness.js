@@ -8,7 +8,7 @@ const { createRequire } = require('node:module');
 const { execFileSync } = require('node:child_process');
 const { performance } = require('node:perf_hooks');
 
-const tree = fs.realpathSync(process.env.CRM_WORKTREE || 'externals/work/crm-codex-rest-integration-next-20261105');
+const tree = fs.realpathSync(process.env.CRM_WORKTREE || 'externals/work/crm-owner-local-auth-20261105');
 const crm = createRequire(path.join(tree, 'package.json'));
 const { Client } = crm('pg');
 const { run } = crm('./lib/migrations/postgres');
@@ -360,6 +360,7 @@ async function main () {
     alignmentHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     instrumentHashes: Object.fromEntries(['harness.js', 'local-token.js', 'controls.js'].map(file =>
       [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname, file))).digest('hex')])),
+    applicationVerifierHash: crypto.createHash('sha256').update(fs.readFileSync(path.join(tree, 'lib/tenant-authorization/access-token.js'))).digest('hex'),
     sourceHead: execFileSync('git', ['-C', tree, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     versions, checks, benchmarks, limits: [
       'Synthetic authorization pipeline only; no end-to-end API handler/data-write/client performance claim.',

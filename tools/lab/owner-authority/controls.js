@@ -5,7 +5,8 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
-const source = fs.readFileSync(path.join(__dirname, 'local-token.js'), 'utf8');
+if (!process.env.CRM_WORKTREE) throw new Error('CRM_WORKTREE is required');
+const source = fs.readFileSync(path.resolve(process.env.CRM_WORKTREE, 'lib/tenant-authorization/access-token.js'), 'utf8');
 const controls = [
   ['signature', '!verify(null, Buffer.from(parts[0] + \'.\' + parts[1]), key.publicKey, signature)',
     'false', 'tampered signature refuses before PostgreSQL'],
@@ -21,7 +22,7 @@ for (const [name, before, after, symptom] of controls) {
   try {
     assert.equal(source.split(before).length, 2, 'control anchor must occur exactly once');
     let mutant = source.replace(before, after);
-    if (name === 'stale-authority') mutant = mutant.replace('return async function authorize', 'let cached;\n  return async function authorize');
+    if (name === 'stale-authority') mutant = mutant.replace('return async function authenticate', 'let cached;\n  return async function authenticate');
     const modulePath = path.join(scratch, 'local-token.js');
     fs.writeFileSync(modulePath, mutant);
     const run = spawnSync(process.execPath, [path.join(__dirname, 'harness.js')], {

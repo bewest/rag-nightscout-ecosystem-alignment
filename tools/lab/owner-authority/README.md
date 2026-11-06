@@ -1,13 +1,18 @@
 # Owner authority local-verification prototype
 
 Contributor-facing synthetic lab for the adopted [owner authority contract](../../../docs/30-design/tenancy/owner-authority.md).
-No shipping module, listener, single-tenant default or legacy token changes.
+The current lab imports the application's `lib/tenant-authorization/access-token.js`;
+`local-token.js` is a loader, not a second verifier implementation. The original
+prototype remains retrievable at the instrument commit in the immutable
+[November 5 measurement](../../../docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md).
+Application integration acceptance is recorded separately in the release integration
+record; no single-tenant default or legacy token changes are implied by this lab.
 
 ## Run and predicted outcome
 
 Requires Docker, Node, and an existing CRM worktree with locked dependencies.
 Set `CRM_WORKTREE` to that worktree's absolute path. The source must still include
-the real secrets component/Transit adapter, PostgreSQL secrets/legacy/authority
+the application access-token module, real secrets component/Transit adapter, PostgreSQL secrets/legacy/authority
 adapters and migration runner; missing or changed boundaries fail, never substitute.
 All dependencies/keys/data are synthetic, loopback-only and owned by the harness.
 Do not point this lab at an existing Vault or database. It creates/removes only
@@ -52,7 +57,7 @@ refuse the same token's next operation on both pools; uncommitted grant removal
 must not appear committed. Session/credential/key retirement and suspension/expiry
 must refuse even with a cached public key. Forced RLS must filter an unscoped read.
 
-`controls.js` mutates only a temporary copy of the actual prototype verifier. It
+`controls.js` mutates only a temporary copy of the actual application verifier. It
 removes signature verification, audience validation, session status enforcement,
 or reuses a stale authority snapshot. Each must make its named assertion fail
 with ERR_ASSERTION. Setup failure or CONTROL_DID_NOT_FAIL is not accepted as red.
