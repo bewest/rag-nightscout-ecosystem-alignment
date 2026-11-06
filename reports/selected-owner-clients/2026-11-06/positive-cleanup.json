@@ -1,0 +1,89 @@
+{
+  "containers": [
+    {
+      "name": "m4-lab-pg-2ed9641aa0fde970",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-vault-2ed9641aa0fde970",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-7b8898fe53c3ebbd",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-4dc1372ea4b6e3f8",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-9e7f21c54ad4c0c7",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-a1be5beffd9ee6d5",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-c14b0f350dc5eadb",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-pg-0a0035fef5b8e440",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-vault-0a0035fef5b8e440",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-1f43b9071a9aea04",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-aa39e84449c90011",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-5124897beee1a2ad",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-21eba76250fd81d3",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "m4-lab-client-2c536ed1f970f6c5",
+      "verifiedAbsent": true
+    }
+  ],
+  "volumes": [
+    {
+      "name": "21ad13663922705b5e99590231cd5329fda6d5f11309e7777b10d57905d6aee3",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "25bc64176ae44c3e159cae6bbaa5d18869725c0ad3c500661d52e45372dab048",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "2ffa3dc484ce5141f630c06a3a7d3e8a2f59dceba7631051d34d0ed5de394f20",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "4805508ece01840efea64961a2ffa49d91d3c8f2996d9532a2c571b8badaf21a",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "6c61758ec16c510e3642c3fc75742b321dda0bf01660494c1c0cb14165fab158",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "c4678db5566ac21f8de9ed2e2f5405c1aadf341eea646f6177101c3a7ace135a",
+      "verifiedAbsent": true
+    }
+  ],
+  "observerErrors": [],
+  "volumesAfter": 462,
+  "released": "2026-11-06T22:11:44Z"
+}

@@ -1,0 +1,58 @@
+{
+  "before": {
+    "11111111-1111-4111-8111-111111111111:entries": [
+      "{\"_id\":\"6aee50569c5a770a4836f82c\",\"date\":1794002122167,\"dateString\":\"2026-11-06T21:55:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"srvCreated\":1794003030965,\"srvModified\":1794003030965,\"sysTime\":\"2026-11-06T21:55:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+      "{\"_id\":\"6aee50569c5a770a4836f82d\",\"date\":1794002422167,\"dateString\":\"2026-11-06T22:00:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"srvCreated\":1794003030966,\"srvModified\":1794003030966,\"sysTime\":\"2026-11-06T22:00:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+      "{\"_id\":\"6aee50569c5a770a4836f82e\",\"date\":1794002722167,\"dateString\":\"2026-11-06T22:05:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"srvCreated\":1794003030967,\"srvModified\":1794003030967,\"sysTime\":\"2026-11-06T22:05:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+    ],
+    "11111111-1111-4111-8111-111111111111:treatments": [
+      "{\"_id\":\"6aee50579c5a770a4836f82f\",\"absolute\":0.85,\"created_at\":\"2026-11-06T21:50:22.167Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"srvCreated\":1794003031272,\"srvModified\":1794003031272,\"utcOffset\":0}",
+      "{\"_id\":\"6aee50579c5a770a4836f830\",\"created_at\":\"2026-11-06T22:00:22.167Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"srvCreated\":1794003031273,\"srvModified\":1794003031273,\"utcOffset\":0}"
+    ],
+    "11111111-1111-4111-8111-111111111111:devicestatus": [
+      "{\"_id\":\"6aee50579c5a770a4836f831\",\"created_at\":\"2026-11-06T22:05:22.167Z\",\"device\":\"openaps://rig\",\"openaps\":{\"iob\":{\"basaliob\":0.1,\"iob\":0.6,\"time\":\"2026-11-06T22:05:22.167Z\"},\"suggested\":{\"bg\":121,\"duration\":30,\"rate\":0.85,\"reason\":\"synthetic\",\"temp\":\"absolute\"}},\"pump\":{\"battery\":{\"percent\":75},\"clock\":\"2026-11-06T22:05:22.167Z\",\"reservoir\":120},\"srvCreated\":1794003031548,\"srvModified\":1794003031548,\"uploader\":{\"battery\":80},\"utcOffset\":0}"
+    ],
+    "11111111-1111-4111-8111-111111111111:profile": [],
+    "11111111-1111-4111-8111-111111111111:food": [],
+    "11111111-1111-4111-8111-111111111111:activity": [],
+    "11111111-1111-4111-8111-111111111111:settings": [],
+    "22222222-2222-4222-8222-222222222222:entries": [],
+    "22222222-2222-4222-8222-222222222222:treatments": [],
+    "22222222-2222-4222-8222-222222222222:devicestatus": [],
+    "22222222-2222-4222-8222-222222222222:profile": [],
+    "22222222-2222-4222-8222-222222222222:food": [],
+    "22222222-2222-4222-8222-222222222222:activity": [],
+    "22222222-2222-4222-8222-222222222222:settings": []
+  },
+  "after": {
+    "11111111-1111-4111-8111-111111111111:entries": [
+      "{\"_id\":\"6aee50569c5a770a4836f82c\",\"date\":1794002122167,\"dateString\":\"2026-11-06T21:55:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"srvCreated\":1794003030965,\"srvModified\":1794003030965,\"sysTime\":\"2026-11-06T21:55:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+      "{\"_id\":\"6aee50569c5a770a4836f82d\",\"date\":1794002422167,\"dateString\":\"2026-11-06T22:00:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"srvCreated\":1794003030966,\"srvModified\":1794003030966,\"sysTime\":\"2026-11-06T22:00:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+      "{\"_id\":\"6aee50569c5a770a4836f82e\",\"date\":1794002722167,\"dateString\":\"2026-11-06T22:05:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"srvCreated\":1794003030967,\"srvModified\":1794003030967,\"sysTime\":\"2026-11-06T22:05:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+      "{\"_id\":\"6aee50579c5a770a4836f832\",\"date\":1794002182167,\"dateString\":\"2026-11-06T21:56:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"srvCreated\":1794003031813,\"srvModified\":1794003031813,\"sysTime\":\"2026-11-06T21:56:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+      "{\"_id\":\"6aee50579c5a770a4836f833\",\"date\":1794002482167,\"dateString\":\"2026-11-06T22:01:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"srvCreated\":1794003031814,\"srvModified\":1794003031814,\"sysTime\":\"2026-11-06T22:01:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+      "{\"_id\":\"6aee50579c5a770a4836f834\",\"date\":1794002782167,\"dateString\":\"2026-11-06T22:06:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"srvCreated\":1794003031815,\"srvModified\":1794003031815,\"sysTime\":\"2026-11-06T22:06:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+    ],
+    "11111111-1111-4111-8111-111111111111:treatments": [
+      "{\"_id\":\"6aee50579c5a770a4836f82f\",\"absolute\":0.85,\"created_at\":\"2026-11-06T21:50:22.167Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"srvCreated\":1794003031272,\"srvModified\":1794003031272,\"utcOffset\":0}",
+      "{\"_id\":\"6aee50579c5a770a4836f830\",\"created_at\":\"2026-11-06T22:00:22.167Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"srvCreated\":1794003031273,\"srvModified\":1794003031273,\"utcOffset\":0}"
+    ],
+    "11111111-1111-4111-8111-111111111111:devicestatus": [
+      "{\"_id\":\"6aee50579c5a770a4836f831\",\"created_at\":\"2026-11-06T22:05:22.167Z\",\"device\":\"openaps://rig\",\"openaps\":{\"iob\":{\"basaliob\":0.1,\"iob\":0.6,\"time\":\"2026-11-06T22:05:22.167Z\"},\"suggested\":{\"bg\":121,\"duration\":30,\"rate\":0.85,\"reason\":\"synthetic\",\"temp\":\"absolute\"}},\"pump\":{\"battery\":{\"percent\":75},\"clock\":\"2026-11-06T22:05:22.167Z\",\"reservoir\":120},\"srvCreated\":1794003031548,\"srvModified\":1794003031548,\"uploader\":{\"battery\":80},\"utcOffset\":0}"
+    ],
+    "11111111-1111-4111-8111-111111111111:profile": [],
+    "11111111-1111-4111-8111-111111111111:food": [],
+    "11111111-1111-4111-8111-111111111111:activity": [],
+    "11111111-1111-4111-8111-111111111111:settings": [],
+    "22222222-2222-4222-8222-222222222222:entries": [],
+    "22222222-2222-4222-8222-222222222222:treatments": [],
+    "22222222-2222-4222-8222-222222222222:devicestatus": [],
+    "22222222-2222-4222-8222-222222222222:profile": [],
+    "22222222-2222-4222-8222-222222222222:food": [],
+    "22222222-2222-4222-8222-222222222222:activity": [],
+    "22222222-2222-4222-8222-222222222222:settings": []
+  },
+  "status": 200,
+  "protectedRefused": false,
+  "storedUnchanged": false
+}

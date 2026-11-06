@@ -1,0 +1,736 @@
+{
+  "head": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+  "started": "2026-11-06T22:10:22.167Z",
+  "pins": {
+    "oref0": "d219baf9559d62a8bb0bd42014192a2d7c0839ef",
+    "cgmsim-lib": "c09f9c039007a80a431baec6dbf852c52e3669db"
+  },
+  "control": true,
+  "provenance": {
+    "ok": true,
+    "head": "c09f9c039007a80a431baec6dbf852c52e3669db",
+    "typescript": "4.9.5",
+    "runtime_files": 94,
+    "files": [
+      {
+        "file": "CGMSIMsimulator.js",
+        "source_sha256": "58244cc53f2801d7ca049c32f0eb54066544c2177f8f9f6223a4d4cc762bda3f",
+        "installed_sha256": "58244cc53f2801d7ca049c32f0eb54066544c2177f8f9f6223a4d4cc762bda3f",
+        "equal": true
+      },
+      {
+        "file": "SolverRK.js",
+        "source_sha256": "5d50156f2a813e7f829db044094feb187b11705d3a818a711d12f1272ca97e58",
+        "installed_sha256": "5d50156f2a813e7f829db044094feb187b11705d3a818a711d12f1272ca97e58",
+        "equal": true
+      },
+      {
+        "file": "TypeDateISO.js",
+        "source_sha256": "c055d4c171e1886b3d06c24e86993acb56834884de21ef2fd7498903e97bc997",
+        "installed_sha256": "c055d4c171e1886b3d06c24e86993acb56834884de21ef2fd7498903e97bc997",
+        "equal": true
+      },
+      {
+        "file": "Types.js",
+        "source_sha256": "abdcf5d7c4324fad11c8b5312d6426ef3496eadcbe6042df6cf927885a98021b",
+        "installed_sha256": "abdcf5d7c4324fad11c8b5312d6426ef3496eadcbe6042df6cf927885a98021b",
+        "equal": true
+      },
+      {
+        "file": "UVAsimulator.js",
+        "source_sha256": "be1d1d195076cfaed1b190da28041d8c2bba761ddc1ff7baffa831c7823d9c5a",
+        "installed_sha256": "be1d1d195076cfaed1b190da28041d8c2bba761ddc1ff7baffa831c7823d9c5a",
+        "equal": true
+      },
+      {
+        "file": "alcohol.js",
+        "source_sha256": "754d1a63ce4aee269906b4b669a2305b54158871b2cbf2b556ab2c3174e9e77e",
+        "installed_sha256": "754d1a63ce4aee269906b4b669a2305b54158871b2cbf2b556ab2c3174e9e77e",
+        "equal": true
+      },
+      {
+        "file": "arrows.js",
+        "source_sha256": "04285245346cb972718980836c54946993fe1bfebb0919b09d68d225a59e49dc",
+        "installed_sha256": "04285245346cb972718980836c54946993fe1bfebb0919b09d68d225a59e49dc",
+        "equal": true
+      },
+      {
+        "file": "basal.js",
+        "source_sha256": "e0245c925537f3da0636586ac2a91a917ad9af6e4ebf5d356852d58229237288",
+        "installed_sha256": "e0245c925537f3da0636586ac2a91a917ad9af6e4ebf5d356852d58229237288",
+        "equal": true
+      },
+      {
+        "file": "basalProfile.js",
+        "source_sha256": "e520e891024d6ad120e34168671ff9e6986c45bbd4eede631f38e71509654963",
+        "installed_sha256": "e520e891024d6ad120e34168671ff9e6986c45bbd4eede631f38e71509654963",
+        "equal": true
+      },
+      {
+        "file": "bolus.js",
+        "source_sha256": "22a82639b7c644d0a8a4462ccfd2d669fa702eff4721a4fb7fdebb988eaf7bb5",
+        "installed_sha256": "22a82639b7c644d0a8a4462ccfd2d669fa702eff4721a4fb7fdebb988eaf7bb5",
+        "equal": true
+      },
+      {
+        "file": "carbs.js",
+        "source_sha256": "c2c16c0f32b9ead2aff480a05c3fc2c4f7e3a27ca980372e37f1d77b18979e9e",
+        "installed_sha256": "c2c16c0f32b9ead2aff480a05c3fc2c4f7e3a27ca980372e37f1d77b18979e9e",
+        "equal": true
+      },
+      {
+        "file": "cortisone.js",
+        "source_sha256": "f767a8785157292c6fb3c5e03cd495c458dbb38baeee3c667d7292c03bd68c6e",
+        "installed_sha256": "f767a8785157292c6fb3c5e03cd495c458dbb38baeee3c667d7292c03bd68c6e",
+        "equal": true
+      },
+      {
+        "file": "delete.js",
+        "source_sha256": "4e09be424321a974e59d8edc16a307ae6677a7236fadffd6b390833f5f966ec9",
+        "installed_sha256": "4e09be424321a974e59d8edc16a307ae6677a7236fadffd6b390833f5f966ec9",
+        "equal": true
+      },
+      {
+        "file": "downloads.js",
+        "source_sha256": "0bea230eb2a6c8c5dffede790014408c184cdeb01356672f2bd159ca1bde7a03",
+        "installed_sha256": "0bea230eb2a6c8c5dffede790014408c184cdeb01356672f2bd159ca1bde7a03",
+        "equal": true
+      },
+      {
+        "file": "drug.js",
+        "source_sha256": "b93db7256a2c7545f202b7d06ae7625d62e239605bd56e6640814009423227fe",
+        "installed_sha256": "b93db7256a2c7545f202b7d06ae7625d62e239605bd56e6640814009423227fe",
+        "equal": true
+      },
+      {
+        "file": "heartRate.js",
+        "source_sha256": "eb2f97c5397ed4cb8a290e22536e0942f809cbf05691cbea99f0be86b7f25f75",
+        "installed_sha256": "eb2f97c5397ed4cb8a290e22536e0942f809cbf05691cbea99f0be86b7f25f75",
+        "equal": true
+      },
+      {
+        "file": "index.js",
+        "source_sha256": "d729073d5e990986340f0cacfcf0a799483af8136ccaff7a1701584ec064897c",
+        "installed_sha256": "d729073d5e990986340f0cacfcf0a799483af8136ccaff7a1701584ec064897c",
+        "equal": true
+      },
+      {
+        "file": "liver.js",
+        "source_sha256": "e981b4a767856d88bc8004ea526d9652c4137f4802eab5bcad84ed08b8e1ce11",
+        "installed_sha256": "e981b4a767856d88bc8004ea526d9652c4137f4802eab5bcad84ed08b8e1ce11",
+        "equal": true
+      },
+      {
+        "file": "load-activity.js",
+        "source_sha256": "c7a8691a66297e04783307be62cc094fc536fe5bcd6f0e972918e7d1ccf9a573",
+        "installed_sha256": "c7a8691a66297e04783307be62cc094fc536fe5bcd6f0e972918e7d1ccf9a573",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/DailyProfile.js",
+        "source_sha256": "5477225f4b7f3f1ebf44e2839517e0439b739042a619a33f5a1094eb678dd3e5",
+        "installed_sha256": "5477225f4b7f3f1ebf44e2839517e0439b739042a619a33f5a1094eb678dd3e5",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/DateUtility.js",
+        "source_sha256": "29cbe99850b748b80f5c78c8a7d82caa3e173a896fffc7e2cd8d02e47e5eaecf",
+        "installed_sha256": "29cbe99850b748b80f5c78c8a7d82caa3e173a896fffc7e2cd8d02e47e5eaecf",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/EKF.js",
+        "source_sha256": "d9ddca1f407034cdd00b666a5daa5354f0fb0a9e77ce888236dba7fb5297e19a",
+        "installed_sha256": "d9ddca1f407034cdd00b666a5daa5354f0fb0a9e77ce888236dba7fb5297e19a",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/Jacobian.js",
+        "source_sha256": "ef07e6ffcad1f5d9d2131be0dcc601f24679a4d24b949e04a968a00bde0fe744",
+        "installed_sha256": "ef07e6ffcad1f5d9d2131be0dcc601f24679a4d24b949e04a968a00bde0fe744",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/JohnsonTransform.js",
+        "source_sha256": "a83af27a3f25f977ce3aa61ad4d74f63c6ca438d74c7216e0020f2e627ab374a",
+        "installed_sha256": "a83af27a3f25f977ce3aa61ad4d74f63c6ca438d74c7216e0020f2e627ab374a",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/LSESolver.js",
+        "source_sha256": "035a4c52ca8335ffbaf965406992e015a6ffc54b3e76748685270b9c8460611b",
+        "installed_sha256": "035a4c52ca8335ffbaf965406992e015a6ffc54b3e76748685270b9c8460611b",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/LevenbergMarquardt.js",
+        "source_sha256": "59539bb7bc06245e545f3fa81be5e39d5e93f0ed6a41c103c568e0db2c67ec13",
+        "installed_sha256": "59539bb7bc06245e545f3fa81be5e39d5e93f0ed6a41c103c568e0db2c67ec13",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/LinearAlgebra.js",
+        "source_sha256": "8733a84e8403ab993e2f7343bd7d45038dc549264f5b0d6d68d8268e50ed4eb8",
+        "installed_sha256": "8733a84e8403ab993e2f7343bd7d45038dc549264f5b0d6d68d8268e50ed4eb8",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/NamedVectorUtil.js",
+        "source_sha256": "1d4e69952d7a6a1b150f0d82a4a1bc8e9f2e2379638baf04303617dbe986335e",
+        "installed_sha256": "1d4e69952d7a6a1b150f0d82a4a1bc8e9f2e2379638baf04303617dbe986335e",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/NewtonRaphsonSolver.js",
+        "source_sha256": "147a81eba37e69937e855b926b0ae0e65ce34c1b33801f4002e6e8c1794b212e",
+        "installed_sha256": "147a81eba37e69937e855b926b0ae0e65ce34c1b33801f4002e6e8c1794b212e",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/NewtonSolver.js",
+        "source_sha256": "b7ab9e09cf4c63129de1f6def0edb62f780951d5ad1fc2cba28e1b5febba0a6f",
+        "installed_sha256": "b7ab9e09cf4c63129de1f6def0edb62f780951d5ad1fc2cba28e1b5febba0a6f",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/NoiseAndError.js",
+        "source_sha256": "1e8c103d944e77cf4c9a5db9de969f41275db40033243837b55484f0afc362e1",
+        "installed_sha256": "1e8c103d944e77cf4c9a5db9de969f41275db40033243837b55484f0afc362e1",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/Oref0ConsoleLogger.js",
+        "source_sha256": "19c68081f29c040128c19606806c7ee4ce8c35ad844cf93ff825623b42beab3a",
+        "installed_sha256": "19c68081f29c040128c19606806c7ee4ce8c35ad844cf93ff825623b42beab3a",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/Statistics.js",
+        "source_sha256": "9f0d3db6c909ff483e4e8c70203ea1e6efd76c2fb27226a063b9d46b6a86779a",
+        "installed_sha256": "9f0d3db6c909ff483e4e8c70203ea1e6efd76c2fb27226a063b9d46b6a86779a",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/SteadyStateFinder.js",
+        "source_sha256": "0c37bf56f2b3ecd453463329159ad5b5ed8abf9f615d3f007fdcf7c06f901921",
+        "installed_sha256": "0c37bf56f2b3ecd453463329159ad5b5ed8abf9f615d3f007fdcf7c06f901921",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/UtilityFunctions.js",
+        "source_sha256": "d42305341f12f8edce3528ed0454ee214184db11138cc8812ac884211604c93c",
+        "installed_sha256": "d42305341f12f8edce3528ed0454ee214184db11138cc8812ac884211604c93c",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/errors/InvalidResultError.js",
+        "source_sha256": "8dc1a3ad8a0739aaebe780666a3e421905b6f6e1f9a6dd613098802b3b7263c0",
+        "installed_sha256": "8dc1a3ad8a0739aaebe780666a3e421905b6f6e1f9a6dd613098802b3b7263c0",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/random/RNG_MRG32K3A.js",
+        "source_sha256": "888b2c28070c05be7e0b98b5b50ab3f6cecacaf247df5609ab9bdb1d6c19ad4e",
+        "installed_sha256": "888b2c28070c05be7e0b98b5b50ab3f6cecacaf247df5609ab9bdb1d6c19ad4e",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/random/RNG_MRG32K3A_Matlab.js",
+        "source_sha256": "7d50f0d36691ca9c0681e872f819ffda8aaec923b867bd398934a59671398c76",
+        "installed_sha256": "7d50f0d36691ca9c0681e872f819ffda8aaec923b867bd398934a59671398c76",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/random/RNG_SHR3.js",
+        "source_sha256": "8860c4d902cd7c468169c53aa2780b7c8a31deccf13fa248ba38a6a356743f3c",
+        "installed_sha256": "8860c4d902cd7c468169c53aa2780b7c8a31deccf13fa248ba38a6a356743f3c",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/random/RNG_Simulink.js",
+        "source_sha256": "e38a45078abc348bc928202201ce9cff030a8e1dd3061d89e9c6192adc321917",
+        "installed_sha256": "e38a45078abc348bc928202201ce9cff030a8e1dd3061d89e9c6192adc321917",
+        "equal": true
+      },
+      {
+        "file": "lt1/common/random/RNG_Ziggurat_SHR3.js",
+        "source_sha256": "bafa992065d7008917fb6abedff7ead8e87ec37dc9bbd04cdaae8735cfe0fb1a",
+        "installed_sha256": "bafa992065d7008917fb6abedff7ead8e87ec37dc9bbd04cdaae8735cfe0fb1a",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/AbstractActuator.js",
+        "source_sha256": "66d2e8c6cc19d46a86da4ce8d9b59b83ed5b2f72d9a2653ce40e5a1feabe3e75",
+        "installed_sha256": "66d2e8c6cc19d46a86da4ce8d9b59b83ed5b2f72d9a2653ce40e5a1feabe3e75",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/AbstractController.js",
+        "source_sha256": "a5b742cfcf43637cf5f4da7494d431918f81286fcc268c69aeddbae6aeeea5d0",
+        "installed_sha256": "a5b742cfcf43637cf5f4da7494d431918f81286fcc268c69aeddbae6aeeea5d0",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/AbstractODEPatient.js",
+        "source_sha256": "199a0d890b315440328f56878c0a40daa4f747eb750a1c87c0212016f1b1e2f1",
+        "installed_sha256": "199a0d890b315440328f56878c0a40daa4f747eb750a1c87c0212016f1b1e2f1",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/AbstractParametricModule.js",
+        "source_sha256": "807aef49a00ce130beeed3af25693fde3e7fa58331fb64b3ae5be6f23f02c3b2",
+        "installed_sha256": "807aef49a00ce130beeed3af25693fde3e7fa58331fb64b3ae5be6f23f02c3b2",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/AbstractSensor.js",
+        "source_sha256": "042676473e8f19ceef36cd558f4b5df5ace6f954b5f8b0f6d7040e1ee1598b94",
+        "installed_sha256": "042676473e8f19ceef36cd558f4b5df5ace6f954b5f8b0f6d7040e1ee1598b94",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/ControllerUnion.js",
+        "source_sha256": "e05c67a266ed7af93fc131e074da2f97502d1ab256433ade8e84b775e6ed042e",
+        "installed_sha256": "e05c67a266ed7af93fc131e074da2f97502d1ab256433ade8e84b775e6ed042e",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/EventManager.js",
+        "source_sha256": "265f4a7403d883c12da8fce803bb80569dfcd4293d7a5051f18e717518a4bbac",
+        "installed_sha256": "265f4a7403d883c12da8fce803bb80569dfcd4293d7a5051f18e717518a4bbac",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/Simulator.js",
+        "source_sha256": "17defb14f963b8bef24b787139a7cb7b957bae9e8f0d8b9cadf0441153347f1b",
+        "installed_sha256": "17defb14f963b8bef24b787139a7cb7b957bae9e8f0d8b9cadf0441153347f1b",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/actuators/OmnipodDash.js",
+        "source_sha256": "9c3b9cce2d4b54c402eedb73f95661ee9389532d4db8e47e493c03af44d463d3",
+        "installed_sha256": "9c3b9cce2d4b54c402eedb73f95661ee9389532d4db8e47e493c03af44d463d3",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/actuators/StaticInsulinPump.js",
+        "source_sha256": "7ef59cc15215b3462325c00058b4531e7a805adb1575f16bf62af6acd75d07ae",
+        "installed_sha256": "7ef59cc15215b3462325c00058b4531e7a805adb1575f16bf62af6acd75d07ae",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/models/Cambridge.js",
+        "source_sha256": "6004640a1c99ef7d292e9b8f7d26389c64c6ba471d2a4d3d79e017b34e90c2fd",
+        "installed_sha256": "6004640a1c99ef7d292e9b8f7d26389c64c6ba471d2a4d3d79e017b34e90c2fd",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/models/CambridgeJacobs2015.js",
+        "source_sha256": "2e0f27325743bb22515c10c7c50280f7e5853a567ef2f39fdbe7cb936bf888f3",
+        "installed_sha256": "2e0f27325743bb22515c10c7c50280f7e5853a567ef2f39fdbe7cb936bf888f3",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/models/Deichmann2021.js",
+        "source_sha256": "12df13797677f11a45816e8db64f965e4e85271cca2c3959b1b585d0ce6e73da",
+        "installed_sha256": "12df13797677f11a45816e8db64f965e4e85271cca2c3959b1b585d0ce6e73da",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/models/RoyParker2007.js",
+        "source_sha256": "bab5fbf71a593ac470b762cdf3ec733feb2cd8ab4799e49e11abe27a7ddc235e",
+        "installed_sha256": "bab5fbf71a593ac470b762cdf3ec733feb2cd8ab4799e49e11abe27a7ddc235e",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/models/UvaPadova_T1DMS.js",
+        "source_sha256": "f26735210d301d1d19a9e1ebd2cd684ef898ca2e518a75bd7af2aa330229cf5c",
+        "installed_sha256": "f26735210d301d1d19a9e1ebd2cd684ef898ca2e518a75bd7af2aa330229cf5c",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/models/UvaPadova_Visentin2015.js",
+        "source_sha256": "afee79f4bad788ac65a0f8483305c60525415e8d57108a2ee6c986cbb4f5fe72",
+        "installed_sha256": "afee79f4bad788ac65a0f8483305c60525415e8d57108a2ee6c986cbb4f5fe72",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/sensors/Breton2008.js",
+        "source_sha256": "74052afaef5f36af38ea6809defb6aff0fc5159e85e51f8ce915e024c51b49b7",
+        "installed_sha256": "74052afaef5f36af38ea6809defb6aff0fc5159e85e51f8ce915e024c51b49b7",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/sensors/Facchinetti2014.js",
+        "source_sha256": "949f083f09de80a48f85a6ebf59f449b1b1fe752b3107dd67e43ac75c82a50e6",
+        "installed_sha256": "949f083f09de80a48f85a6ebf59f449b1b1fe752b3107dd67e43ac75c82a50e6",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/sensors/IdealCGM.js",
+        "source_sha256": "9d8b78a48655cbb2fece6e727a8c5b563d8a99862ad7e73ad3cf13ba93639ac2",
+        "installed_sha256": "9d8b78a48655cbb2fece6e727a8c5b563d8a99862ad7e73ad3cf13ba93639ac2",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/sensors/IdealSMBG.js",
+        "source_sha256": "f28584a5bb562fd9c73c1841aa620a957cbd9f21fba2137d50386494f02bb467",
+        "installed_sha256": "f28584a5bb562fd9c73c1841aa620a957cbd9f21fba2137d50386494f02bb467",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/sensors/Vettoretti2018.js",
+        "source_sha256": "7651980ea94d7058d3fc876d888381836e06b7f5ed309f6e67ccc963c1a413f5",
+        "installed_sha256": "7651980ea94d7058d3fc876d888381836e06b7f5ed309f6e67ccc963c1a413f5",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/sensors/Vettoretti2019.js",
+        "source_sha256": "7c5dc0b4afeaba1d471362c5a80018d1dfdfb77a70c56276bf4580ede2dfc8ea",
+        "installed_sha256": "7c5dc0b4afeaba1d471362c5a80018d1dfdfb77a70c56276bf4580ede2dfc8ea",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/solvers/SolverRK1.js",
+        "source_sha256": "dbaf6b3986b2f2a42488fab14f92a1330f1afc2f0997071717aca176b75a944d",
+        "installed_sha256": "dbaf6b3986b2f2a42488fab14f92a1330f1afc2f0997071717aca176b75a944d",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/solvers/SolverRK1_2.js",
+        "source_sha256": "c1c012e4910d4fc39501f2547d889f7ad55047ae9ebf99a411b792b101b6c472",
+        "installed_sha256": "c1c012e4910d4fc39501f2547d889f7ad55047ae9ebf99a411b792b101b6c472",
+        "equal": true
+      },
+      {
+        "file": "lt1/core/solvers/SolverRK4.js",
+        "source_sha256": "52f78bcb2bdeb24b9eb3542f9b1b0c856fc24c6713685f2ece7de73861e7bfd9",
+        "installed_sha256": "52f78bcb2bdeb24b9eb3542f9b1b0c856fc24c6713685f2ece7de73861e7bfd9",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Actuator.js",
+        "source_sha256": "14d3076763e7d3901227adeef8f06d0074ed92511ae77f945cd003a3c508cdd4",
+        "installed_sha256": "14d3076763e7d3901227adeef8f06d0074ed92511ae77f945cd003a3c508cdd4",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/CommonTypes.js",
+        "source_sha256": "8a883613944ed2888112eb4be0477f09b7a56c2dfe1f6c883e4b5c2762bab007",
+        "installed_sha256": "8a883613944ed2888112eb4be0477f09b7a56c2dfe1f6c883e4b5c2762bab007",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Controller.js",
+        "source_sha256": "02c094b4b9a9f676e7b7ef9ebb1dcb2354e532dbd2cbb93333b13329c44eb841",
+        "installed_sha256": "02c094b4b9a9f676e7b7ef9ebb1dcb2354e532dbd2cbb93333b13329c44eb841",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Exercise.js",
+        "source_sha256": "008e275953f1fbd22263c0bd4bc69daf6c5b56e86646c58df445a6f4374bd0bc",
+        "installed_sha256": "008e275953f1fbd22263c0bd4bc69daf6c5b56e86646c58df445a6f4374bd0bc",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/IOModule.js",
+        "source_sha256": "ebfb39662fcdb23d29cefe1b600fd4425249efde27309d299763b48b313e5d55",
+        "installed_sha256": "ebfb39662fcdb23d29cefe1b600fd4425249efde27309d299763b48b313e5d55",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Meal.js",
+        "source_sha256": "07a8097808f3c361148103e5c9154f5640592c129d868a88c041fa1807b49b0b",
+        "installed_sha256": "07a8097808f3c361148103e5c9154f5640592c129d868a88c041fa1807b49b0b",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/ModuleProfile.js",
+        "source_sha256": "0ca7e9f645437e67ff156549885396c6c013758e06462b8a059aab2addccfcdc",
+        "installed_sha256": "0ca7e9f645437e67ff156549885396c6c013758e06462b8a059aab2addccfcdc",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/ODEPatientModel.js",
+        "source_sha256": "28f1bd30bdae7ae23e698e1a60f7ae61fb14cf1dc22da28ae0430fc483935080",
+        "installed_sha256": "28f1bd30bdae7ae23e698e1a60f7ae61fb14cf1dc22da28ae0430fc483935080",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/ParameterFileContents.js",
+        "source_sha256": "683f0a8d5ba1dbf0609703345cb8528ef6d3e59b20c9ed3887748671ea12af70",
+        "installed_sha256": "683f0a8d5ba1dbf0609703345cb8528ef6d3e59b20c9ed3887748671ea12af70",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/ParametricModule.js",
+        "source_sha256": "dab6ed7f340092e56cad5cda05c1596315c0fd2351c27ec339dc23a61503170b",
+        "installed_sha256": "dab6ed7f340092e56cad5cda05c1596315c0fd2351c27ec339dc23a61503170b",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Patient.js",
+        "source_sha256": "fd89d828545602e4465eef677ebcf817382edd9dbee9432ab87190a01680c256",
+        "installed_sha256": "fd89d828545602e4465eef677ebcf817382edd9dbee9432ab87190a01680c256",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/RandomNumberGenerator.js",
+        "source_sha256": "447f8aebe184d44cd7b5dfcbbd01e172c42a7e5c2f58548b9e1476bf2b9d638c",
+        "installed_sha256": "447f8aebe184d44cd7b5dfcbbd01e172c42a7e5c2f58548b9e1476bf2b9d638c",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Sensor.js",
+        "source_sha256": "85862385fa478ff6100d1dafcfd100ab0a68529fcc9fbc09a0aff1cb41419a86",
+        "installed_sha256": "85862385fa478ff6100d1dafcfd100ab0a68529fcc9fbc09a0aff1cb41419a86",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Signals.js",
+        "source_sha256": "a33ae82447558892a0af19edf0b0fb463f3c841339fdb09cfdf53fd72e0956c8",
+        "installed_sha256": "a33ae82447558892a0af19edf0b0fb463f3c841339fdb09cfdf53fd72e0956c8",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/SimulationResult.js",
+        "source_sha256": "58efcf8e9b5f91ed14d02f74bec49a930e276e7d2805801f6737debc8209a22f",
+        "installed_sha256": "58efcf8e9b5f91ed14d02f74bec49a930e276e7d2805801f6737debc8209a22f",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/Solver.js",
+        "source_sha256": "2d94cb05ec215426565dbc943ebd0a2721e6b2f3eef9c61b824b94e0a88d227c",
+        "installed_sha256": "2d94cb05ec215426565dbc943ebd0a2721e6b2f3eef9c61b824b94e0a88d227c",
+        "equal": true
+      },
+      {
+        "file": "lt1/types/StructureDiagram.js",
+        "source_sha256": "abbdc74b4b4e9a051839812296c59f94e8a89b9e004596d0c3ad6239d7c4c9c0",
+        "installed_sha256": "abbdc74b4b4e9a051839812296c59f94e8a89b9e004596d0c3ad6239d7c4c9c0",
+        "equal": true
+      },
+      {
+        "file": "physical.js",
+        "source_sha256": "3dd9021c47ad124d2c10d2b9a61f6b1a859cc75f6b3a17b7c6990181434c5f52",
+        "installed_sha256": "3dd9021c47ad124d2c10d2b9a61f6b1a859cc75f6b3a17b7c6990181434c5f52",
+        "equal": true
+      },
+      {
+        "file": "pump.js",
+        "source_sha256": "c2dbea43b7fcc6bdf50d7fdde6601cd7afbf2c44f66f64ad132755fde9f50294",
+        "installed_sha256": "c2dbea43b7fcc6bdf50d7fdde6601cd7afbf2c44f66f64ad132755fde9f50294",
+        "equal": true
+      },
+      {
+        "file": "setupParams.js",
+        "source_sha256": "aaa284fca89b0fb7b44b8ec73abf00080583d9e53def3830469b03c86369b253",
+        "installed_sha256": "aaa284fca89b0fb7b44b8ec73abf00080583d9e53def3830469b03c86369b253",
+        "equal": true
+      },
+      {
+        "file": "sgv.js",
+        "source_sha256": "4052f7746b1c4649440839d61d84bc06f316addbfe2e62a71a34be47e6c55911",
+        "installed_sha256": "4052f7746b1c4649440839d61d84bc06f316addbfe2e62a71a34be47e6c55911",
+        "equal": true
+      },
+      {
+        "file": "sinus.js",
+        "source_sha256": "67dad9c07f2afb60af4790f5904530281f5d17ad98feb1cab53ef00b23de495b",
+        "installed_sha256": "67dad9c07f2afb60af4790f5904530281f5d17ad98feb1cab53ef00b23de495b",
+        "equal": true
+      },
+      {
+        "file": "steps.js",
+        "source_sha256": "be12677826094447c2a1bcd4e42c4ed23180b8e0ae958fa11b6b6d194079d25a",
+        "installed_sha256": "be12677826094447c2a1bcd4e42c4ed23180b8e0ae958fa11b6b6d194079d25a",
+        "equal": true
+      },
+      {
+        "file": "surprise.js",
+        "source_sha256": "d81416dbe07a765288c321d3d2dab9ff21671c68f901dd4dc1b90bd7287f85fc",
+        "installed_sha256": "d81416dbe07a765288c321d3d2dab9ff21671c68f901dd4dc1b90bd7287f85fc",
+        "equal": true
+      },
+      {
+        "file": "upload.js",
+        "source_sha256": "78cdbc5546d8762ede54115e7f8c4f1ca5111ba67ed03b9aa350901cf97ed079",
+        "installed_sha256": "78cdbc5546d8762ede54115e7f8c4f1ca5111ba67ed03b9aa350901cf97ed079",
+        "equal": true
+      },
+      {
+        "file": "utils.js",
+        "source_sha256": "d3c49da8e98905fcf3e6ceda256edf9b06f7786725428efb2b9268b750cc3357",
+        "installed_sha256": "d3c49da8e98905fcf3e6ceda256edf9b06f7786725428efb2b9268b750cc3357",
+        "equal": true
+      },
+      {
+        "file": "uva.js",
+        "source_sha256": "8d106edf595b18e83bff5e7779cf751d94f854b4faed78f66e9088ce5d2a0d85",
+        "installed_sha256": "8d106edf595b18e83bff5e7779cf751d94f854b4faed78f66e9088ce5d2a0d85",
+        "equal": true
+      },
+      {
+        "file": "uvaSgv.js",
+        "source_sha256": "05f6090df31dc4e01a741fd428169c4175f92a1628a70af5bb1bf7303797a37b",
+        "installed_sha256": "05f6090df31dc4e01a741fd428169c4175f92a1628a70af5bb1bf7303797a37b",
+        "equal": true
+      }
+    ],
+    "mismatches": []
+  },
+  "catalogue": [
+    "api:entries:read",
+    "api:entries:create",
+    "api:treatments:read",
+    "api:treatments:create",
+    "api:devicestatus:read",
+    "api:devicestatus:create"
+  ],
+  "admittedClients": [
+    "oref0"
+  ],
+  "rootBoundaryClients": [
+    "cgmsim"
+  ],
+  "phases": {
+    "reference": {
+      "versions": {
+        "postgres": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+        "vault": "2.2.1",
+        "node": "v22.23.4"
+      },
+      "admitted": {
+        "entries": {
+          "st": "200 [3]",
+          "store": "n=3 OID",
+          "shape": "date,dateString,device,direction,sgv,sysTime,type,utcOffset",
+          "ident": "absent",
+          "documents": [
+            "{\"date\":1794002122167,\"dateString\":\"2026-11-06T21:55:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T21:55:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+            "{\"date\":1794002422167,\"dateString\":\"2026-11-06T22:00:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T22:00:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+            "{\"date\":1794002722167,\"dateString\":\"2026-11-06T22:05:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"sysTime\":\"2026-11-06T22:05:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+          ],
+          "method": "POST",
+          "path": "/api/v1/entries.json?token=…",
+          "carrier": "query-token",
+          "exit": 0
+        },
+        "treatments": {
+          "st": "200 [2]",
+          "store": "n=2 OID",
+          "shape": "absolute,created_at,duration,enteredBy,eventType,insulin,rate,utcOffset",
+          "ident": "absent",
+          "documents": [
+            "{\"absolute\":0.85,\"created_at\":\"2026-11-06T21:50:22.167Z\",\"duration\":30,\"enteredBy\":\"openaps://rig\",\"eventType\":\"Temp Basal\",\"rate\":0.85,\"utcOffset\":0}",
+            "{\"created_at\":\"2026-11-06T22:00:22.167Z\",\"enteredBy\":\"openaps://rig\",\"eventType\":\"Correction Bolus\",\"insulin\":0.4,\"utcOffset\":0}"
+          ],
+          "method": "POST",
+          "path": "/api/v1/treatments.json?token=…",
+          "carrier": "query-token",
+          "exit": 0
+        },
+        "devicestatus": {
+          "st": "200 [1]",
+          "store": "n=1 OID",
+          "shape": "created_at,device,openaps,pump,uploader,utcOffset",
+          "ident": "absent",
+          "documents": [
+            "{\"created_at\":\"2026-11-06T22:05:22.167Z\",\"device\":\"openaps://rig\",\"openaps\":{\"iob\":{\"basaliob\":0.1,\"iob\":0.6,\"time\":\"2026-11-06T22:05:22.167Z\"},\"suggested\":{\"bg\":121,\"duration\":30,\"rate\":0.85,\"reason\":\"synthetic\",\"temp\":\"absolute\"}},\"pump\":{\"battery\":{\"percent\":75},\"clock\":\"2026-11-06T22:05:22.167Z\",\"reservoir\":120},\"uploader\":{\"battery\":80},\"utcOffset\":0}"
+          ],
+          "method": "POST",
+          "path": "/api/v1/devicestatus.json?token=…",
+          "carrier": "query-token",
+          "exit": 0
+        }
+      },
+      "tightened": {
+        "status": 200,
+        "cell": {
+          "st": "200 [3]",
+          "store": "n=6 OID",
+          "shape": "date,dateString,device,direction,sgv,sysTime,type,utcOffset",
+          "ident": "absent",
+          "documents": [
+            "{\"date\":1794002122167,\"dateString\":\"2026-11-06T21:55:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T21:55:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+            "{\"date\":1794002182167,\"dateString\":\"2026-11-06T21:56:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":100,\"sysTime\":\"2026-11-06T21:56:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+            "{\"date\":1794002422167,\"dateString\":\"2026-11-06T22:00:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T22:00:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+            "{\"date\":1794002482167,\"dateString\":\"2026-11-06T22:01:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":107,\"sysTime\":\"2026-11-06T22:01:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+            "{\"date\":1794002722167,\"dateString\":\"2026-11-06T22:05:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"sysTime\":\"2026-11-06T22:05:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}",
+            "{\"date\":1794002782167,\"dateString\":\"2026-11-06T22:06:22.167Z\",\"device\":\"openaps://rig\",\"direction\":\"Flat\",\"sgv\":114,\"sysTime\":\"2026-11-06T22:06:22.167Z\",\"type\":\"sgv\",\"utcOffset\":0}"
+          ],
+          "method": "POST",
+          "path": "/api/v1/entries.json?token=…",
+          "carrier": "query-token",
+          "exit": 0
+        }
+      },
+      "cgmsimRoot": {
+        "status": 200,
+        "exit": 0
+      },
+      "checks": [],
+      "cleanup": [
+        {
+          "name": "m4-lab-pg-6a0655448f453c8b",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-vault-6a0655448f453c8b",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-35f5fe5f7dd9dce1",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-40b4a783c80d5bb5",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-87bd0d516e197f40",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-50dcae95fdd6d5dc",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-244027d1e74c1bce",
+          "absent": true
+        }
+      ]
+    },
+    "selected": {
+      "cleanup": [
+        {
+          "name": "m4-lab-pg-927163965dc441e2",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-vault-927163965dc441e2",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-8cd49af42d120966",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-d2b6521a599bd9da",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-a986ce9ca3042272",
+          "absent": true
+        },
+        {
+          "name": "m4-lab-client-f0052b8ad94df03d",
+          "absent": true
+        }
+      ]
+    }
+  },
+  "ok": false,
+  "failure": "tightening requires existing v1 HTTP 401 and independently unchanged stored state\n+ actual - expected\n\n  {\n+   protectedRefused: false,\n+   storedUnchanged: false\n-   protectedRefused: true,\n-   storedUnchanged: true\n  }\n",
+  "finished": "2026-11-06T22:10:32.497Z"
+}

@@ -1,0 +1,31 @@
+{
+  "source_head": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+  "instrument_commit": "7aae38a7de56c0c0367c524b354d4169f4d3e107",
+  "claimed": "2026-11-06T22:09:53Z",
+  "released": "2026-11-06T22:11:44Z",
+  "instrument_sha256": {
+    "tools/lab/selected-owner-clients/contract.js": "9ca41b51ca5a4cab366012529e1137fa35d7271b8de0c4a439673ef17403d1b6",
+    "tools/lab/selected-owner-clients/bootstrap.js": "9390865bde46a5ade1f6fc428c02af21a3548c09e08b7f57c4b4846e30739cbb",
+    "tools/lab/selected-owner-clients/gate.js": "6c2c0f7c360af8bcc361a9bfd1aa0c8362f9253d00914e3919a885542a9e3cf2",
+    "tools/lab/selected-owner-clients/server.js": "cc3d2fb0ac586cb702f63ef4cff53b6ba474ce1ec8d8fc68adf276ddec825ae9",
+    "tools/lab/selected-owner-clients/test-contract.js": "025d0c24d59f784484ce593ace3dd9c1947c1c8047b263a66314acb91ec9051d",
+    "tools/lab/selected-owner-clients/runner.js": "1997506ce44299674c1a6f3b7a7bdc6dc7030e20f86abb87ec00e96822c88ab3"
+  },
+  "unmodified_canonical_sha256": {
+    "tools/lab/m4-client-binaries/lab.js": "8d618b2a96d0fbb3995be83cef83c3cd126c69d24edb15f2729676df99759973",
+    "tools/lab/m4-client-binaries/build-provenance.js": "1393682a030d60ad70ed905d450c08251a6dfc2bcdf53cc95786e31ad8e9b9fa"
+  },
+  "capacity": {
+    "baseline_volumes": 462,
+    "available_gib_rounded": 79,
+    "max_inotify_instances": 128,
+    "max_inotify_watches": 1048576
+  },
+  "limits": [
+    "Three oref0 token uploads only; response summaries, not raw reply bodies, compared.",
+    "Actual cgmsim root exclusion returned503; compatibility disposition still required.",
+    "Root no-effects asserted during successful run; root snapshots not serialized.",
+    "Publication candidate83582e876dd193f4448f44c28e379fb5464a26c7 not measured by this instrument.",
+    "No activation, other clients, profile/read workflows, sockets, TLS, performance or soak acceptance."
+  ]
+}

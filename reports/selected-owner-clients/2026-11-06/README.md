@@ -1,0 +1,23 @@
+# Selected-owner bounded actual-client measurement — 2026-11-06
+
+Reproduced on archived CRM `8713395992e07b4dd2cde61ee972e9a15c8ada8c` using the separate [selected-subject instrument](../../../tools/lab/selected-owner-clients/README.md), commit `7aae38a7de56c0c0367c524b354d4169f4d3e107`. The archive-only intersection ablation exited **1** with its exact intended failure; fresh restoration exited **0**. Both source compilations matched all **94** cgmsim runtime JavaScript files against the pinned source. Application source, default instrumentation and production configuration were unchanged.
+
+| Actual operation | Unselected reference | Selected reader |
+|---|---|---|
+| oref0 existing subject-token uploads: entries, treatments, devicestatus | Three admitted workflows | Three admitted workflows; paired response summaries, exits and normalized stored values identical |
+| Next oref0 entries upload after operator ceiling emptied | HTTP 200; three new synthetic records stored | HTTP 401; independent stored state unchanged on every domain of tenants A and B |
+| cgmsim unchanged root-secret entries upload | HTTP 200 | HTTP 503; independent stored-state equality assertion passed |
+
+The initial catalogue contains six concrete reviewed terminals: read/create for entries, treatments and devicestatus. Actual SQL provisions the role/policy rows with existing denied-anonymous defaults before serving. The lab bootstrap selects the existing owner-reader constructor explicitly and checks readiness through its provisioned subject. It exposes no production selection or management listener.
+
+[Restored run](positive-run.json) records the admitted paired cells and explicit policy differences. oref0 uses its pinned binary's supported `token=` carrier. The strict comparison covers HTTP status/response array length summary, client exit, identifiers' kinds, method/path/carrier and normalized stored values. It does **not** compare every raw reply-body field. The canonical cell normalization separates generated primary IDs and top-level server timestamps; nested synthetic values remain compared. oref0's curl exits zero for the denied HTTP response; protocol status is measured separately.
+
+[Selected tightening oracle](positive-selected-tightening-oracle.json) retains raw before/after SQL snapshots and shows status 401, `protectedRefused=true`, `storedUnchanged=true`. The [unselected oracle](positive-reference-tightening-oracle.json) shows status 200 and the expected additional stored records. Removing the ceiling intersection from the archived source retains the grant: [the red selected oracle](red-selected-tightening-oracle.json) shows status **200**, `protectedRefused=false`, `storedUnchanged=false`. [The failed run](red-run.json) preserves both predicate failures. This is a sensitive real-client/SQL control; no classifier exception or repair was used.
+
+Pinned cgmsim always hashes its input into an API-secret header and has no existing subject-token carrier. Root exclusion is deliberate; **503 is the observed current mapping and still needs compatibility disposition**. The root no-effect assertion compared independent all-domain SQL snapshots during the successful run; those root snapshots were not separately serialized. This evidence does not establish admitted selected cgmsim compatibility or satisfy a universal no-negative-impact condition for root-credential clients. Selected-mode activation remains disabled.
+
+Runtime was claimed at **22:09:53Z** and released at **22:11:44Z**. Independent exact-identity audits verified [13 red-run containers and six mounted volumes](red-cleanup.json), then [14 restored-run containers and six mounted volumes](positive-cleanup.json), absent. Both observers reported zero errors; the positive observer caught 13 containers and its manifest identified the additional short-lived client. No deletion was necessary; the host returned to **462** volumes. Unknown pre-existing fixtures were preserved. Instrument hashes and capacity are retained in [metadata](metadata.json).
+
+This is bounded evidence for three oref0 token uploads, immediate current-ceiling revocation and the actual cgmsim root boundary. Other admitted workflows, clients, access tokens, sockets, TLS, retry soak and performance remain unmeasured here. The newer publication candidate `83582e876dd193f4448f44c28e379fb5464a26c7` was not run by this instrument; these measurements remain attributed to `8713395`. Current batch publication is independent of this prospective activation evidence.
+
+Record verification: `make queue-check` and `make docs-links` passed. No runtime source, registered gate, generated queue view, release record or site page changed in this capture lane.
