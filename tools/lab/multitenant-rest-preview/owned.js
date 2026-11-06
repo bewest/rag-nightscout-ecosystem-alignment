@@ -18,6 +18,7 @@ const docker = args => execFileSync('docker', args, {
 }).trim();
 const focused = [
   'tenant-rest-entries.integration.test.js', 'tenant-rest-identity-differential.integration.test.js',
+  'tenant-rest-identifier-race.integration.test.js',
   'tenant-rest-treatments.integration.test.js',
   'tenant-rest-device-activity.integration.test.js', 'tenant-rest-profile-food.integration.test.js',
   'tenant-rest-context.integration.test.js', 'tenant-rest-derived.integration.test.js',

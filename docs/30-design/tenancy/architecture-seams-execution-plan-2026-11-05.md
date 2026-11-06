@@ -44,6 +44,9 @@ continue; no new implementation agent is dispatched by this planning commit.
 
 ## Active bounded dispatch checkpoint
 
+This records the delivered R42/R43 dispatch. Current R46/R47 acceptance and
+next ownership are recorded below.
+
 Continuation authorized 2026-11-05 from accepted CRM R41 `94c57f1f` and
 alignment `fc8c4010e`; fresh remote read-back retains draft #8898 `ded254b9`,
 draft #8891 `744d1968` and dev `4a482627`. Selected current integration gates
@@ -84,8 +87,8 @@ accepts local REST `bc4ee1a9`, joining the domain/backend and failure/HTTP split
 with bounded direct imported-identity compatibility tests. Real startup/refusal,
 HTTP and stored-outcome controls, full nonbrowser/default-browser campaigns and
 independent source review establish this current-domain extraction. The public
-preview remains draft #8898 `d4570e58`; both that head and independent #8891
-`925c9527` have successful head CI/CodeQL at read-back. New changes stay local.
+preview is draft #8898 `bc4ee1a9`; both that head and independent #8891
+`dff9a8d4` have successful head CI/CodeQL at read-back. New continuations stay local.
 
 The REST coordinator owns cumulative acceptance. Next storage ownership is
 `ARCH-SEAM-CONSOLIDATE`: extract only proven common adapter mechanics after
@@ -94,6 +97,28 @@ further settings/identity/index-race and actual-client evidence. R45 independent
 accepts actual-HTTP profile replay and corrected live fixture ownership; profile remains
 independent; complete writer/alarm coverage and logical no-op admission precede
 subscriber or shared-frame policy changes. No new RC gate or milestone promotion.
+
+## Bounded consolidation and evaluator continuation acceptance
+
+[R46](../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05)
+accepts local REST `44331668`: shared PG projection/identifying-read/owned-commit
+event mechanics with independent translators and source-specific behavior retained.
+Expanded baseline/current port and direct index-on race checks, semantic controls,
+full regression and independent source review pass. Broader helper relocation,
+portable capabilities and remaining REST/client/import/resource gates stay open.
+
+[R47](../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05)
+independently accepts test-only v1 writer composition over the actual evaluator;
+production routes and subscriber remain unchanged. The source-pinned frame
+inventory below is read-derived preparation. Next shared-frame work must first
+measure acquisition and concurrent-read boundaries before extracting lower private
+working-set mechanics. Keep retention/notification and REST all-or-error policy
+separate; no consistency strengthening, provider selection, RC admission or
+M0-M6 promotion is inferred.
+
+Published #8898 is OPEN/draft R44 `bc4ee1a9`; #8891 is OPEN/draft R45 `dff9a8d4`,
+both with successful head CI/CodeQL at fresh read-back. New continuations stay
+local until the maintainer publishes them. SQLite remains deferred.
 
 ## Contract packet: ARCH-SEAM-CONTRACT
 
@@ -218,6 +243,26 @@ Own ack/snooze, scheduling and retained properties per tenant. Verify crash afte
 commit/before publish, duplicate replay, idle wake, ownership loss and current
 authority after reconnect. A local EventEmitter and a cell lease cannot establish
 these application guarantees. Provider selection remains open.
+
+## Shared-frame inventory and next characterization
+
+**Read-derived**, pinned to independent R47 `0c98ad06` and tenant REST R44
+`bc4ee1a9`. This inventory prepares `ARCH-DERIVED-FRAME`; no shared implementation
+or stronger consistency contract is accepted.
+
+| Boundary | Observed source | Next characterization |
+|---|---|---|
+| Acquisition and materialization | `lib/data/views/index.js:121-219` reads bounded domain unions and creates private loader/ddata/cache with frame:false. `lib/server/tenant-app/snapshot.js:15-75` validates tenant-bound ports, accumulates read failures and creates private state with frame:true. | Compare identical admitted inputs under explicit bounds/frame/error policy before sharing the lower private working-set primitive. |
+| Calculations and effects | `views/index.js:228-289` runs per-view properties and notification phases. `tenant-app/derived-frame.js:8-30` selects property setters and propagates errors, without notification phases. | Share only demonstrated property/sandbox mechanics; REST reads must remain free of evaluator/connector egress. |
+| Lifecycle and identity | `lib/server/nonresident.js:138-219` retains the last cycle across write/timer triggers and hands requests to long-lived process-local notification state. `serve/preview-domains.js:124-143` prepares a request-local tenant frame. | Keep retained freshness, ack/snooze/scheduler state and HTTP all-or-error behavior explicit. Bind any future retained multitenant result to tenant/settings/plugin policy, evaluation instant and bounded lifetime. |
+| Consistency, failure and statistics | Neither acquisition module declares a shared database revision. Failed evaluator cycles retain previous properties; failed REST reads refuse the response. Tenant statistics exclude shared index bytes; replay fixtures use fixed synthetic statistics. | Run concurrent-write characterization and partial-read controls. Do not infer snapshot consistency, shared stats equivalence or current cost/freshness. |
+
+Predicted entry bar: admitted resident/nonresident/tenant REST inputs preserve
+approved derived values with documented lifecycle differences. Cross-bound frame,
+partial read, incorrect property setter and read-egress controls must each fail.
+Keep logical no-op admission and durable commit-coupled recovery separate. Broader
+socket status/read paths still assume resident data; test-only v1 writer replay
+does not admit that transport or join the profile into REST.
 
 ## Integration and merge boundaries
 

@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-05: local REST composition/direct identity bc4ee1a9/R44 and independent HTTP-profile dff9a8d4/R45; published drafts #8898 d4570e58/R42 and #8891 925c9527/R43. Other tracks retain historical pins; bounded component evidence does not promote M0\u2013M6",
+ "measured": "2026-11-05: local bounded PG consolidation/indexed races44331668/R46 and independent test-composed v1 evaluator0c98ad06/R47. Published drafts #8898bc4ee1a9/R44 and #8891dff9a8d4/R45 have successful CI/CodeQL. Shared-frame inventory is read-derived; component evidence does not promote M0\u2013M6.",
  "tracks": [
   {
    "id": "storage",
@@ -304,13 +304,17 @@
    "short": "one-tenant computed profile",
    "title": "Explicit single/nonresident prototype: actual physical-write and heartbeat evaluation, retained cycle properties and fake delivery handoff; default single remains resident. No multitenant evaluator or production subscriber change.",
    "where": "scripts/views-profile-server.js, lib/server/bootevent.js and nonresident.js, tests/views-profile.test.js",
-   "check": "R45 independently accepts full/default-browser, actual API3 HTTP mutations/resends, retained properties, request-signature parity and selected live notification handoff. Trigger and closed-service controls detect failures; full cohorts/writers, live stats and runtime cost remain open.",
+   "check": "R47 full/default-browser and parent archived36 actual API3/test-composed v1 writer replay, retained-property/request-signature parity and selected live handoff; v1 trigger/closed-service controls. Full writers/alarms/live stats/cost remain open.",
    "depends": [
     "ST-VIEWS"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8891",
-   "ref": "Independent local dff9a8d4/R45 extends published #8891 925c9527/R43. Test-only continuation repairs notification fixture ownership; physical subscriber retained and logical no-op admission remains open. No REST join or RC admission.",
+   "ref": "Independent local0c98ad06/R47 extends published #8891dff9a8d4/R45. Test-only v1 handlers, no executable v1/socket admission, subscriber switch, REST join or RC admission.",
    "spec": [
+    {
+     "label": "R47 independent v1 evaluator replay",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05"
+    },
     {
      "label": "R45 actual HTTP profile replay",
      "href": "../remedial/rc-16.0.0-integration-record.md#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05"
@@ -333,12 +337,16 @@
    "short": "PG REST ports / import",
    "title": "Published preview reuses shipping legacy and API3 handlers over tenant-bound PostgreSQL/RLS, shared intent rules and explicit domain catalogues. R40 adds derived reads and pinned client patterns; complete storage/import/resource parity remains open.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
-   "check": "R44 current-domain/backend composition, R42 Mongo/PG lower and preview port contracts, strict HTTP/client differentials and full regression. Explicit refusals and typed identity retained; natural/import ordering and all resource bounds remain open.",
+   "check": "R46 bounded common PG mechanics with expanded actual baseline/current ports and real indexed HTTP races; lower/preview/source-specific capabilities retained. Full query/import/resource/client coverage remains open.",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Local bc4ee1a9/R44 extends published d4570e58/R42. Actual port capabilities and direct bounded historical comparison measured; full storage/import/resource acceptance remains open.",
+   "ref": "Local44331668/R46 extends published #8898bc4ee1a9/R44. Historical comparison keeps its own scope; no all-backend portability claim.",
    "spec": [
+    {
+     "label": "R46 bounded PG consolidation and indexed races",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
+    },
     {
      "label": "R44 local composition and direct identity",
      "href": "../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05"
@@ -693,7 +701,7 @@
      "href": "../tenancy/single-and-multitenant-architecture.md"
     }
    ],
-   "ref": "Merged namespace: #8865 / 991b0654, amended by #8899 / 4a482627. Preview: published #8898 d4570e58, R42. Default single/Mongo and global backend registry remain.",
+   "ref": "Merged namespace: #8865 / 991b0654, amended by #8899 / 4a482627. Preview: published #8898 bc4ee1a9, R44. Default single/Mongo and global backend registry remain.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
@@ -744,7 +752,7 @@
    "state": "blocked",
    "short": "Resolution / lifecycle",
    "title": "Direct-alias and explicitly trusted canonical resolution run in the accepted API preview. Full tenant lifecycle and production transport/service identity remain blocked on their prerequisites.",
-   "ref": "Published d4570e58 / R42: configured two-tenant CLI and current authority compose. Static maps are not durable provisioning/publication; private owner/operator lifecycle remains open.",
+   "ref": "Published bc4ee1a9 / R44: configured two-tenant CLI and current authority compose. Static maps are not durable provisioning/publication; private owner/operator lifecycle remains open.",
    "depends": [
     "MT-CONFIG-MIN",
     "MIG-RUNNER",
@@ -769,7 +777,7 @@
    "state": "progress",
    "short": "Tenant-scoped auth",
    "title": "Current tenant credentials, grants and subject metadata compose with actual v1/v2/v3 and derived HTTP through the explicit CLI/PG/Vault preview. Production identity and administration/lifecycle remain incomplete.",
-   "ref": "Current-source authority and separate management acceptance in R42 at published d4570e58. Published preview is d4570e58; production identity/owner ceilings/lifecycle remain open.",
+   "ref": "Current-source authority and separate management acceptance in R42 at published d4570e58. Published preview is bc4ee1a9; production identity/owner ceilings/lifecycle remain open.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
@@ -800,8 +808,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "R44 accepts local domain/backend composition and direct imported identity; R42 published REST/management/contract and R43 independent profile remain separately scoped. Full M3 awaits complete M1/M2.",
-   "ref": "Local R44 bc4ee1a9; published R42 d4570e58. Remaining side effects/client binaries/import/resources/lifecycle and full listener acceptance remain open.",
+   "title": "R46 accepts bounded common PG mechanics and direct index-on race compatibility; R47 independently extends writer replay. Full M3 awaits complete M1/M2.",
+   "ref": "Local REST44331668/R46; published #8898bc4ee1a9/R44. Independent evaluator0c98ad06/R47 is not joined. Wider REST/clients/import/resources/lifecycle remain open.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -809,6 +817,10 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R46 bounded PG consolidation and indexed races",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
+    },
     {
      "label": "R44 local composition and direct identity",
      "href": "../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05"
@@ -884,7 +896,7 @@
    "state": "progress",
    "short": "Tenant secrets / Vault",
    "title": "Vault Transit, encrypted PostgreSQL references and tenant-scoped exchange are exercised by the preview. Production token issuance/renewal, service identity, HA and operational recovery remain open.",
-   "ref": "Published d4570e58 / R42; real provider composition is not production deployment acceptance.",
+   "ref": "Published bc4ee1a9 / R44; real provider composition is not production deployment acceptance.",
    "spec": [
     {
      "label": "provider gates",
@@ -922,7 +934,7 @@
    "depends": [
     "ARCH-SEAM-CONTRACT"
    ],
-   "ref": "R44 accepts local bc4ee1a9; published #8898 stays d4570e58. No new backend policy, milestone or RC gate.",
+   "ref": "R44 accepts local bc4ee1a9; published #8898 is bc4ee1a9. No new backend policy, milestone or RC gate.",
    "spec": [
     {
      "label": "architecture execution plan",
@@ -934,14 +946,18 @@
    "id": "ARCH-SEAM-CONSOLIDATE",
    "track": "storage",
    "phase": "multi",
-   "state": "planned",
-   "short": "Proven helper consolidation",
-   "title": "Extract only measured common projection/filter/transaction/event/error mechanics; retain source-specific ordering and representation differences.",
+   "state": "progress",
+   "short": "Bounded PG mechanics",
+   "title": "R46 accepts identical projection, identifying-read and owned-commit/event mechanics with real baseline/current ports and index-on races. Broader helper relocation remains open.",
    "depends": [
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "Next after R44 current-domain composition and direct identity acceptance; preserve measured lower/preview and source-specific differences.",
+   "ref": "Local44331668/R46; full regression, semantic ordering/projection/precommit/retry controls and independent review. Source-specific policy retained; no backend adoption or milestone promotion.",
    "spec": [
+    {
+     "label": "R46 bounded PG consolidation and indexed races",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
+    },
     {
      "label": "architecture execution plan",
      "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
@@ -952,15 +968,19 @@
    "id": "ARCH-DERIVED-FRAME",
    "track": "tenancy",
    "phase": "multi",
-   "state": "planned",
-   "short": "Shared frame / policies",
-   "title": "Future join: share bounded materialization/calculation primitives while retaining REST authorization, evaluator freshness and no-egress policies. Durable recovery remains M5.",
+   "state": "progress",
+   "short": "Frame policy inventory",
+   "title": "Read-derived acquisition/tenant/error/statistics/lifecycle inventory prepared. Actual common materialization, concurrent-read characterization and shared implementation remain UNMEASURED.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "R42/R43 own the current bounded evidence; no SQLite dispatch or new RC gate.",
+   "ref": "R47 inventory over independent profile0c98ad06 and REST R44bc4ee1a9. Next characterize bounded acquisition before extraction; no database revision or snapshot guarantee.",
    "spec": [
+    {
+     "label": "Shared-frame inventory and next characterization",
+     "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md#shared-frame-inventory-and-next-characterization"
+    },
     {
      "label": "architecture execution plan",
      "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
