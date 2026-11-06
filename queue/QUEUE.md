@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 365 |
-| runnable gates | 424 |
+| runnable gates | 426 |
 | explicit `no-gate:` markers | 386 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 810 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 812 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8378,11 +8378,11 @@ alarm-readiness items, and the seam branch refresh.
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 6 run + 1 no-gate |
-| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
+| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 3 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `blocked` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
-| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 1 run + 1 no-gate |
 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
@@ -8505,6 +8505,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c`
+  - R62 archived current selected subject-reader catalogue/ceiling:12 native PostgreSQL checks, fresh independent pools and synthetic-token HTTP. Tightened ceiling ablation admits three protected operations; restored reader refuses. Optional mode only; unselected/default clients separate.
 - `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875`
   - R53 selected ownerPolicy proposed-grant transaction:22 real PostgreSQL checks, catalogue/ceiling/current actor delegation and row fencing. Selected REST37 only; no issuer/listener/full catalogue acceptance.
 - `[integration]` `node tools/queue/gates/multitenant-subject-admin.js --ref d4570e585d0e12e46386ed26772790b269b2b736`
@@ -8516,10 +8518,12 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/owner-authority.md`
 - `docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md`
 - `tools/lab/multitenant-subject-admin/README.md`
+- `reports/control-recovery-gates/2026-11-06/README.md`
+- `reports/selected-owner-clients/2026-11-06/README.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK; parent archived22/four semantic guards/restored22. R53 native17f scope is retained in cumulativeR54. T30-TENANT-ADMIN uses this canonical bounded gate; full owner lifecycle/listener/issuer remain open. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner- authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.
+**Notes.** R63 measures three actual oref0 subject-token upload summary/value pairs and next-operation tightening401/noeffects; source-ablation red/restored. Actual cgmsim root503 requires disposition; universal activation blocked. R62 accepts optional current subject-reader clamping on83582e87 with actual871 native12/intersection semantic red/restored12; comprehensive full7226/99pending/0failure/browser684/corpus460/1benchmarkpending/0failure. Runner-only descendant identity preserves actual execution attribution. Selected root/anonymous/wildcard cases refuse; no default enablement, delegator lineage, complete owner catalogue or production lifecycle claim. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK; parent archived22/four semantic guards/restored22. R53 native17f scope is retained in cumulativeR54. T30-TENANT-ADMIN uses this canonical bounded gate; full owner lifecycle/listener/issuer remain open. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.
 
 ### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
 
@@ -8639,14 +8643,17 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Milestones adopted in the roadmap; detailed interprocess event, checkpoint/replay, ordering/deduplication and recovery contract still needs executable controls before distributed runtime wiring.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c`
+  - R62 archived seven actual PostgreSQL current-row replay cases:durable typed projection/checkpoint, repeatable-read bootstrap, process death, tenant fencing, rollback and scan bounds. Removing identity kind collapses independently stored twins; fresh restoration passes.
+- **NO GATE** &mdash; Dormant current-row convergence is measured; actual realtime/evaluator consumer composition, current socket authority, ack/snooze persistence, clinical view recovery, quiet wakes and notification handoff remain. Every intermediate transition and exactly-once external effects are outside this component. Provider/lease/capacity remain unmeasured.
 
 **Evidence.**
 
+- `reports/control-recovery-gates/2026-11-06/README.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** M4-M6; no clinical notification delivery acceptance inferred. Architecture plan joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator acceptance; contract design continues independently. Durable commit/checkpoint replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current authority after reconnect require paired controls. No SQLite dispatch.
+**Notes.** R62 accepts dormant persisted replay in83582e87; real871 native7/typed-key semantic red/restored7 plus full/browser/enabled-corpus acceptance. Source- control-runner-only continuation retains exact execution attribution. No realtime/evaluator role or provider/default selected; no M5 promotion. M4-M6; no clinical notification delivery acceptance inferred. Architecture plan joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator acceptance; contract design continues independently. Durable commit/checkpoint replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current authority after reconnect require paired controls. No SQLite dispatch.
 
 ### `MT-IDENTITY-PLAN` &mdash; Human identity, tenant access grants and delegated consent plan
 

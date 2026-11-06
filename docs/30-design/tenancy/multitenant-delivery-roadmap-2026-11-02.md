@@ -2396,3 +2396,13 @@ Programme figures live in R60 and its linked immutable captures. Current milesto
 claims live in the [dashboard source](multitenant-delivery-status.json), and queue
 claims remain in the manifest. Publication/remote CI is recorded after execution;
 local acceptance does not imply release or production enablement.
+
+### Accepted bounded owner reader and recovery batch 2026-11-06
+
+[R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
+accepts candidate `83582e87`: optional current subject-grant clamping, dormant
+persisted typed replay and populated PostgreSQL recovery lab. Comprehensive
+campaigns executed on 871; the descendant changes only the source-control runner
+and passed final prcheck. R62 and its immutable capsules own counts, controls,
+identity-based reuse and failures. No new milestone promotion or default enablement.
+Selected actual-client, full runtime/management and operational criteria remain.

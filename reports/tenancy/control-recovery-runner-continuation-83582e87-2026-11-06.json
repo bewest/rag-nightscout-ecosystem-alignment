@@ -1,0 +1,152 @@
+{
+  "basis": "reproduced",
+  "date": "2026-11-06",
+  "candidate": "83582e876dd193f4448f44c28e379fb5464a26c7",
+  "accepted_ancestor": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+  "complete_changed_path_allowlist": [
+    "scripts/test-durable-replay-controls.js"
+  ],
+  "all_other_paths_identical": true,
+  "full_browser_corpus_client_pooler_execution_head": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+  "reused_only_on_complete_path_identity": true,
+  "source_controls": {
+    "bootstrap": {
+      "red": {
+        "passing": 20,
+        "failing": 2
+      },
+      "restored": {
+        "passing": 22
+      }
+    },
+    "typed-identity": {
+      "red": {
+        "passing": 21,
+        "failing": 1
+      },
+      "restored": {
+        "passing": 22
+      }
+    },
+    "soft-delete": {
+      "red": {
+        "passing": 21,
+        "failing": 1
+      },
+      "restored": {
+        "passing": 22
+      }
+    },
+    "row-bound": {
+      "red": {
+        "passing": 21,
+        "failing": 1
+      },
+      "restored": {
+        "passing": 22
+      }
+    },
+    "snapshot": {
+      "red": {
+        "passing": 21,
+        "failing": 1
+      },
+      "restored": {
+        "passing": 22
+      }
+    }
+  },
+  "prcheck": {
+    "exit": 0,
+    "result": "OK",
+    "head_unchanged": true,
+    "last_application_gate": true
+  },
+  "artifacts": [
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/lint.log",
+      "sha256": "ad617fa0c18e236964d4fbf86aaa6c06d4b0b650ac321c4f365ba36db4d7af5b",
+      "bytes": 1303
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/original-driver.log",
+      "sha256": "04b15576194623fd36e962c23a4a6dd3635ae6e8a33b4f6e1faa98c1460c12c3",
+      "bytes": 1500
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/original-host/bootstrap-restored.log",
+      "sha256": "69e4253a4660a9018e4b6c3a848e3a7864c43b2f6a11ee0152671e71d4143ffe",
+      "bytes": 3542
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/original-host/bootstrap.log",
+      "sha256": "57a3297aafbd085a8edea078d3f10a7f21a70050564f5fcd0185df453f6b8f72",
+      "bytes": 4212
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/original-host-driver.log",
+      "sha256": "8c026f116455dd28de1c83a2de938dda9cfce73e3186c18ef3205cc13a03af92",
+      "bytes": 910
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/prcheck.log",
+      "sha256": "5e87f5d4c144662dfa31c4878710d2ddf7c128fedf2973aa4c2dcabb1dd7ad87",
+      "bytes": 14662
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/bootstrap-restored.log",
+      "sha256": "1b53d9e4e69bde5e1d2edc90f935fd443d9e1ca5566e6be14a3792ca82b9033d",
+      "bytes": 2146
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/bootstrap.log",
+      "sha256": "c516e617f044d6644abb93016a083c1d4ca1bfa247c547cfe662f2b227ee24a7",
+      "bytes": 2830
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/row-bound-restored.log",
+      "sha256": "7299d4c4d0455ffe86963a53b1fa9d7080f061d416258ed28ccdfa6da378ed0d",
+      "bytes": 2146
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/row-bound.log",
+      "sha256": "64d53e67d32c2e1a1ebd45f6b15d452603d7aacbdc7391f41dcb253cb6145506",
+      "bytes": 2438
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/snapshot-restored.log",
+      "sha256": "786b6b5cdc1f6134b385c5b991182f59eac3be75cfc4d57550409db15312211d",
+      "bytes": 2146
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/snapshot.log",
+      "sha256": "a0ed63dfbc564e376db4765561d82426ff4264a6e663bf6d613220a97fe8e609",
+      "bytes": 2616
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/soft-delete-restored.log",
+      "sha256": "3e6bc7ea3f078480ceda7c399437545f384db0fa39bae1a174d2a00b2ee2aef7",
+      "bytes": 2146
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/soft-delete.log",
+      "sha256": "3cb74604c1201b692164eaefa31a2179ae54d28ccd486f43f8906c00a51c4052",
+      "bytes": 2899
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/typed-identity-restored.log",
+      "sha256": "2d6f8447830d8b30a0db3f0de023f967eedd7c7772cba7a07c1c237e4bda2580",
+      "bytes": 2146
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired/typed-identity.log",
+      "sha256": "4021e047035ae1aee211333c65c04c40f3f352134ddae86e0f3279fe60e65836",
+      "bytes": 2541
+    },
+    {
+      "path": "externals/work/replay-controls-closure-scratch-20261106/repaired-driver.log",
+      "sha256": "230d981872c8f8a732951bad72f54452f2b40eb84b959cf527569589a143579d",
+      "bytes": 211
+    }
+  ]
+}

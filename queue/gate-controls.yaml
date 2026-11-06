@@ -3174,3 +3174,17 @@ controls:
       control: six stored-value assertions fail with zero B rows while HTTP still
       reaches A. The registered positive retains both default clients; the focused
       control proves the independent oracle notices the wrong tenant.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c --control intersection
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+    control-kind: integration
+    proves: >
+      Remove only selected reader catalogue/current-ceiling intersection; three fresh protected operations wrongly admit after tightening. Native assertion red, exact Mocha representation validated, fresh restoration green.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+    control: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c --control identity
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+    control-kind: integration
+    proves: >
+      Remove identity kind only from durable projection map key; independently stored two rows/two kinds remain, but projection count is one instead of two. Native assertion red, fresh restoration green.

@@ -1670,3 +1670,28 @@ The separate default `make queue-status` audit on the unchanged starting tree
 reports PASS=198 / FAIL=43 / UNMEASURED=124; integration gates are skipped there.
 Those wider gate failures are not repaired or represented as green by this
 documentation reconciliation. No application campaign was rerun.
+
+### Update — bounded owner reader and recovery batch accepted (2026-11-06)
+
+| Scope | Reproduced acceptance | Remaining boundary |
+|---|---|---|
+| Local candidate `83582e87` | [R62](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06) accepts the joined optional subject-reader policy, persisted current-row replay and populated PG recovery lab. | Unselected defaults; no owner/realtime/evaluator role or production recovery enabled. M1–M6 remain open. |
+| Comprehensive application V&V | Fresh `87133959` full 7226/99pending/0failure, browser 684/0/0, 35-suite corpus 460/1benchmarkpending/0failure, actual default clients 82/82 and affected pooler 9+4. | Complete path identity permits reuse on the source-control-runner-only 835 descendant; final prcheck ran on 835. Actual execution heads remain explicit. |
+| Meaningful early proofs | Archived native selected-reader intersection and persisted typed-replay controls go red and restore; original focused restore/oracle failures are preserved beside their bounded repairs. | No every-transition/external exactly-once, selected root-client parity, performance, key/provider or full lifecycle claim. |
+
+The [comprehensive capsule](../../reports/tenancy/control-recovery-acceptance-87133959-2026-11-06.md),
+[archived controls](../../reports/control-recovery-gates/2026-11-06/README.md)
+and [runner-only continuation](../../reports/tenancy/control-recovery-runner-continuation-83582e87-2026-11-06.md)
+own actual measurements and limits. Publication and remote CI are recorded after execution.
+Lane detail: `externals/work/HANDOFF-codex-completion-coordination-20261106.md` (local, untracked).
+
+### Update — selected subject client compatibility measured (2026-11-06)
+
+| Scope | Reproduced result | Compatibility disposition |
+|---|---|---|
+| Explicit selected subject reader | [R63](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06): three actual oref0 token-upload workflows match reference response summaries/exits/stored values; current-ceiling tightening refuses next upload with no effects. | Bounded subject-token evidence; raw reply-field and broader workflow parity remain unmeasured. Source stays dormant. |
+| Root-client boundary | Actual cgmsim root upload gets 503/no effects under selected mode, versus 200 unselected. | Root exclusion is intentional; 503 mapping needs disposition. Universal selected-mode no-impact condition is not met; default behavior remains accepted and unchanged. |
+| Sensitive control | Ceiling-intersection ablation returns 200 and changes stored state; fresh restoration passes. | Separate targeted experiment on871, not a new full campaign on835 or a milestone promotion. |
+
+The [selected-client capsule](../../reports/selected-owner-clients/2026-11-06/README.md)
+preserves precise scope and independently audited cleanup. No activation decision is inferred.

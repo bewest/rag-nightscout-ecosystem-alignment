@@ -311,6 +311,13 @@ items:
     semver_reason: design and lab contract
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+        kind: integration
+        describe: >
+          R62 archived current selected subject-reader catalogue/ceiling:12 native
+          PostgreSQL checks, fresh independent pools and synthetic-token HTTP.
+          Tightened ceiling ablation admits three protected operations; restored
+          reader refuses. Optional mode only; unselected/default clients separate.
       - run: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
         kind: integration
         describe: >
@@ -333,9 +340,20 @@ items:
       - docs/30-design/tenancy/owner-authority.md
       - docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md
       - tools/lab/multitenant-subject-admin/README.md
+      - reports/control-recovery-gates/2026-11-06/README.md
+      - reports/selected-owner-clients/2026-11-06/README.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      R63 measures three actual oref0 subject-token upload summary/value pairs
+      and next-operation tightening401/noeffects; source-ablation red/restored.
+      Actual cgmsim root503 requires disposition; universal activation blocked.
+      R62 accepts optional current subject-reader clamping on83582e87 with
+      actual871 native12/intersection semantic red/restored12; comprehensive
+      full7226/99pending/0failure/browser684/corpus460/1benchmarkpending/0failure.
+      Runner-only descendant identity preserves actual execution attribution.
+      Selected root/anonymous/wildcard cases refuse; no default enablement,
+      delegator lineage, complete owner catalogue or production lifecycle claim.
       R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
       browser684/settings12/freshprcheckOK; native gate captures retain their pins.
       No clock/profile2ee join, milestone promotion or expanded production scope.
@@ -543,15 +561,29 @@ items:
     semver_reason: design
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+        kind: integration
+        describe: >
+          R62 archived seven actual PostgreSQL current-row replay cases:durable
+          typed projection/checkpoint, repeatable-read bootstrap, process death,
+          tenant fencing, rollback and scan bounds. Removing identity kind
+          collapses independently stored twins; fresh restoration passes.
       - no-gate: >
-          Milestones adopted in the roadmap; detailed interprocess event,
-          checkpoint/replay, ordering/deduplication and recovery contract still
-          needs executable controls before distributed runtime wiring.
+          Dormant current-row convergence is measured; actual realtime/evaluator
+          consumer composition, current socket authority, ack/snooze persistence,
+          clinical view recovery, quiet wakes and notification handoff remain.
+          Every intermediate transition and exactly-once external effects are
+          outside this component. Provider/lease/capacity remain unmeasured.
     blocks_on: []
     evidence:
+      - reports/control-recovery-gates/2026-11-06/README.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      R62 accepts dormant persisted replay in83582e87; real871 native7/typed-key
+      semantic red/restored7 plus full/browser/enabled-corpus acceptance.
+      Source-control-runner-only continuation retains exact execution attribution.
+      No realtime/evaluator role or provider/default selected; no M5 promotion.
       M4-M6; no clinical notification delivery acceptance inferred. Architecture plan
       joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator
       acceptance; contract design continues independently. Durable commit/checkpoint
