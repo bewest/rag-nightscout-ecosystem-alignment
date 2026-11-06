@@ -2553,6 +2553,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2622,6 +2628,90 @@
     
   
     Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
   
 
     
@@ -5175,7 +5265,7 @@
 <p><em>Contributor-facing execution plan, 2026-11-06, living. It says how work on the
 multitenant preview is batched, what verification runs at each stage, and which
 batches sit on the critical path to the M3 and M4 gates. Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18a9a5420c062aeb6cfe195d0fc0d5fd096509e2/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5ecdc0cf2be37da54d047a87b092721f164dd466/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap-2026-11-02.html">REST delivery roadmap</a>
@@ -5308,11 +5398,13 @@ lane does not rerun an accepted campaign.</p>
    checking free disk and the inotify watch budget, both of which caused the
    November 5 ENOSPC holds. Capacity for overlap is unmeasured; the coordinator
    decides and records the check.</li>
-<li><strong>One command for the preview's own corpus.</strong> Twelve named opt-in flags and
-   forty reads of the PostgreSQL admin URI gate the suites today. A single
-   <code>npm run test:multitenant</code> that provisions one disposable PostgreSQL and Vault
-   and runs every opt-in suite with <code>--fail-zero</code> makes the corpus one tier for
-   the local slot and for CI. Batch B5 builds it.</li>
+<li><strong>One command for the preview's own corpus.</strong> Measured by B5: 31 opt-in
+   suites, all in the integration tier, gated by 23 flag variables plus the bare
+   PostgreSQL admin URI; 18 start at least one container of their own, and 15
+   also open a real MongoDB client. <code>npm run test:multitenant</code> provisions one
+   disposable PostgreSQL 16, one MongoDB 8.0 where a selected suite needs it and
+   one Vault dev server where needed, then runs every opt-in suite with
+   <code>--fail-zero</code>, so the corpus is one tier for the local slot and for CI.</li>
 <li><strong>CI runs the corpus.</strong> A PostgreSQL plus Vault job on #8898 moves the
    stage-three campaign off the single local slot. The roadmap's section 4 already
    calls for explicit PG jobs as applicable suites execute.</li>
@@ -5362,26 +5454,32 @@ dispatched by the coordinating session that wrote this plan.</p>
 <tr>
 <td><strong>B4: milestone promotion review M0–M3</strong></td>
 <td>coordinator subagent, read-only</td>
-<td>roadmap section 4; R24–R54</td>
-<td>a review page mapping every criterion to an R entry or marking it unmeasured. Predicted gaps: M1 "no pending-as-pass" (78 pending opt-in cases); M2 human issuer/refresh and lifecycle; M3 production runtime.</td>
+<td>roadmap section 4; R24–R55</td>
+<td><strong>Done:</strong> <a href="milestone-promotion-review-2026-11-06.html">milestone promotion review</a>. Rows measured / partial / unmeasured: M0 5/3/0, M1 5/5/1, M2 4/2/4, M3 4/2/1. Top blocker for M3 is that no negative control has been re-run on the cumulative head <code>35903069</code> (R24 and R54 both say so); the cheapest closure is rule 6 applied once: run every registered <code>multitenant-next-slices.js</code> suite with its <code>--control</code> variants against <code>35903069</code> in the next slot. Predicted: every control red with its recorded symptom, every positive green.</td>
+</tr>
+<tr>
+<td><strong>B4a: controls on the cumulative head</strong></td>
+<td>root coordinator, next runtime slot</td>
+<td>the registered archived suites and their <code>--control</code> variants; <code>35903069</code></td>
+<td>queue gates for every multitenant item run against <code>35903069</code> with the admin URI set, positives and controls, recorded as one R entry; item <code>--ref</code> values then move to <code>35903069</code>. Predicted: all positives green, every control red with its recorded symptom. A green control is a vacuous gate, not a pass.</td>
 </tr>
 <tr>
 <td><strong>B5: corpus command and CI job</strong></td>
-<td>coordinator subagent, new lane <code>codex/multitenant-ci-20261106</code> off 359</td>
-<td>the twelve opt-in flags; <code>scripts/test-tiers.js</code>; <code>.github/workflows/main.yml</code></td>
-<td><code>npm run test:multitenant</code> runs every opt-in suite against one owned PostgreSQL and Vault; break-it: a failing suite and a zero-test run both exit non-zero. Smoke on one suite locally; the whole-corpus run happens in the next batch slot. CI job added behind the same command.</td>
+<td>coordinator subagent, lane <code>codex/multitenant-ci-20261106</code> off 359, head <code>f2be3afa</code> (three commits, four files, no <code>lib/</code>, no test or fixture change)</td>
+<td>the 31 opt-in suites; <code>scripts/test-tiers.js</code>; <code>.github/workflows/main.yml</code></td>
+<td><strong>Built and controlled, corpus run UNMEASURED.</strong> <code>scripts/test-multitenant.js</code> with <code>--list</code>, <code>--only</code>, <code>--record</code>; inventory page <code>docs/multitenant-test-corpus.md</code>. Smoke on the PostgreSQL connection suite: 10 / 0 / 0, container and volume verified absent. Controls: unreachable admin URI exit 2 with nothing run; no matching suite exit 2; one flipped assertion exit 1 with 1 failing. CI job <code>multitenant-postgres</code> on ubuntu-22.04 added to the <code>tests-pass</code> needs. <strong>Before this lane is pushed:</strong> run the whole corpus once in a batch slot and record its counts, or hold the job out of <code>needs</code> until that run exists. The inventory guard is non-vacuous: an unlisted opt-in test file makes <code>--list</code> exit 2 naming the file, and removing it restores 31.</td>
 </tr>
 <tr>
 <td><strong>B6: M4 client-binary lab packet</strong></td>
 <td>coordinator subagent, read-derived</td>
 <td><code>tools/qc/compat</code>, the journey lab, pinned client inventory</td>
-<td>a packet ranking clients by executable feasibility against the preview, with the token shape each needs and the gates and controls. No runtime claim.</td>
+<td><strong>Done:</strong> <a href="m4-client-binary-lab-packet-2026-11-06.html">M4 client-binary lab packet</a>. Headless on Linux without a vendor cloud: nightscout-connect, oref0, cgmsim-lib; the mobile clients need an emulator or Apple platforms and are out of the automated lab. Credential finding at <code>35903069</code>: SHA-1 header and exchange-Bearer clients fit v1 and v3; query-token clients fit v1/v2 only and are refused on the API3 bridge; no pinned client emits new-format tokens. The lab needs its own queue item, allocated when dispatched.</td>
 </tr>
 <tr>
 <td><strong>B7: M5 design acceptance</strong></td>
-<td>MT-RUNTIME-PLAN owner</td>
-<td>D-EVENT, D6 feed design, clock results from B2</td>
-<td>written durable-delivery contract: checkpoint/replay, ordering, duplicates, deletes, config invalidation, restart catch-up; entry bar before any evaluator wiring.</td>
+<td>MT-RUNTIME-PLAN owner (draft by coordinator subagent)</td>
+<td>D-EVENT, D6 feed design, clock reports</td>
+<td><strong>Drafted for maintainer review:</strong> <a href="durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a>, eleven decisions and a nine-control entry bar, all UNMEASURED. Two consequences for sequencing: the contract applies only where the commit-coupled stamp exists, so the clock join (B2) precedes the first recovery slice; and the committed event at <code>35903069</code> carries neither tenant nor stamp (<code>lib/storage/write-intent.js:4656-4678</code>), so a payload slice follows B2 as its own lane and is not folded into the join.</td>
 </tr>
 </tbody>
 </table>
