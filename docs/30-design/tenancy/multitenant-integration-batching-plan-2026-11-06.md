@@ -219,8 +219,10 @@ the existing M4 chat owns the independent client lab; the M4 application-repair
 agent owns diagnosed UUID-default and literal-regexp compatibility work; the M5
 agent owns an executable recovery research prototype. The durable-delivery
 contract remains draft and checkpoint bookkeeping authority remains unresolved,
-so this prototype cannot establish adopted production runtime semantics. Owner
-session/issuer lifecycle and the wider operational implementation are **unassigned**;
+so this prototype cannot establish adopted production runtime semantics. A separate
+owner-clamping characterization and populated-import preflight are active early
+proofs; neither selects a new authority policy or establishes real database restore.
+Owner session/issuer lifecycle and the wider operational implementation are **unassigned**;
 the coordinator must allocate those before claiming A or C implementation complete.
 Local integration ownership and exact unpushed anchors are in
 `externals/work/HANDOFF-codex-completion-batches-20261106.md` (local, untracked).

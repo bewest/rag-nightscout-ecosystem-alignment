@@ -1571,3 +1571,18 @@ No application or operator-visible runtime behavior changed in this records-only
 lane. Lane detail: `externals/work/HANDOFF-codex-completion-batches-20261106.md`
 (local, untracked). B4a/B5/M4 source and evidence remain on their respective lanes
 until the coordinator joins them; their acceptance figures are not recaptured here.
+
+
+### Update — completion-batch incorporation and early proofs (2026-11-06)
+
+| Scope | Reproduced source evidence | Remaining boundary |
+|---|---|---|
+| Batch A local candidate `863c8a2b` | Corpus inventory correction, typed role table and M4 identity/literal-slash repairs incorporated; selected source checks 201 passing; tier registry 512 files / 8 tiers; inventory 34 suites. | Actual-client rerun and exact-head comprehensive acceptance remain UNMEASURED. Owner/session, import/resource and remaining milestone criteria stay open. |
+| M5 research `25c8441a` | Coordinator independently ran the isolated file-backed recovery prototype: 8 passing / 0 failing / 0 skipped. | No production consumer/DDL. PostgreSQL recovery, RLS and concurrent replay UNMEASURED; projection/bootstrap and checkpoint bookkeeping authority remain decisions. |
+| Coordination records | Instrument repair and immutable R57/R58 records combined with the approved A–C completion schedule; queue-check and document links pass. | No queue-ref moves, milestone promotion, default enablement, application-ready claim or push. |
+
+[Source-check capture](../../reports/tenancy/completion-batch-source-checks-2026-11-06.md)
+owns commands and limits. Local detail:
+`externals/work/HANDOFF-codex-completion-coordination-20261106.md` (untracked).
+Owner-clamping and populated-import proofs continue independently; production
+decisions are deferred, research continuing.
