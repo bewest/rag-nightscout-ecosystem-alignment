@@ -1,0 +1,116 @@
+{
+  "applicationTree": "17f9a4577e649208ada6b0aa8f83c51026459875",
+  "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "canonicalRunnerAlignment": "4f3c0b12502d5650595ec6b48cb59e338b46f6ac",
+  "canonicalRunnerSHA256": "385e424c2cb2ae91af78fbb41200c3804e6a809ed05eb9e25f4e7cab6407bc03",
+  "nestedAuditHelperTree": "37242d950e79972fa512db8ff72fa1a049ad6d87",
+  "versions": {
+    "node": "v22.23.4",
+    "postgres": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)",
+    "mongo": "8.0.34",
+    "vault": "2.2.1"
+  },
+  "seed": "41574423920",
+  "full": {
+    "tree": "17f9a4577e649208ada6b0aa8f83c51026459875",
+    "passingByTier": [
+      2186,
+      205,
+      368,
+      319,
+      93,
+      3938,
+      18
+    ],
+    "passing": 7127,
+    "pending": 80,
+    "failing": 0,
+    "ownerBodiesExecuted": 22,
+    "cleanup": {
+      "auditedContainers": 18,
+      "recordedVolumes": 26,
+      "allRecordedResourcesAbsent": true
+    },
+    "rawSHA256": "f671953bd0c7ebea7c975fcfb9726399af087e6f5ab49b80d64f18149f5288b0"
+  },
+  "browser": {
+    "passing": 684,
+    "pending": 0,
+    "failing": 0,
+    "rawSHA256": "bb55271be3110fadd43e07bf464ed9510c39ba2b8e93c3fdf59cf8fc20d83e8b",
+    "cleanup": {
+      "auditedContainers": 3,
+      "recordedVolumes": 5,
+      "allRecordedResourcesAbsent": true
+    }
+  },
+  "affected": {
+    "passing": 26,
+    "pending": 0,
+    "failing": 0,
+    "rawSHA256": "6353a0c00315a460d3a1545fc289ee7775cdbd1da89b4bd814a784170ef675d0",
+    "cleanup": {
+      "auditedContainers": 2,
+      "recordedVolumes": 2,
+      "allRecordedResourcesAbsent": true
+    }
+  },
+  "ownerDatabase": {
+    "instrument": "owner-subject-policy",
+    "tree": "17f9a4577e649208ada6b0aa8f83c51026459875",
+    "node": "v22.23.4",
+    "database": true,
+    "control": null,
+    "stats": {
+      "suites": 1,
+      "tests": 22,
+      "passes": 22,
+      "pending": 0,
+      "failures": 0,
+      "start": "2026-11-06T16:55:26.142Z",
+      "end": "2026-11-06T16:55:40.798Z",
+      "duration": 14656
+    },
+    "outcome": "bounded-pass",
+    "rawSHA256": "5bb529448b252104a79a6d38a1a04aae495613b60e5fd46801e9a300691e04ea",
+    "cleanup": {
+      "auditedContainers": 1,
+      "recordedVolumes": 1,
+      "allRecordedResourcesAbsent": true
+    }
+  },
+  "localTokenHttpChecks": [
+    "new-format actual API reads and writes use local keys and current PostgreSQL across processes",
+    "new-format signature and audience controls refuse before any handler effect",
+    "new-format same-token grant and session revocation are current across independent API processes",
+    "new-format preserves default-role validation from the current authority",
+    "new-format preserves incomplete-name reads and refuses unattributed writes",
+    "new-format startup refuses shared tenant keys and unsafe access-state privileges before binding",
+    "new-format API continues through Vault outage but refuses an unavailable PostgreSQL authority"
+  ],
+  "priorControls": {
+    "applicationTree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+    "productionSourcesUnchanged": true,
+    "catalogue": 1,
+    "ceiling": 1,
+    "delegation": 1,
+    "actor": 1,
+    "semantic": "actual HTTP200 versus403 and persisted effects changed"
+  },
+  "finalPrcheck": {
+    "status": "OK",
+    "rawSHA256": "e33591beace62f0c125bc44aecc3851b98b395ab4124969050ef9f683d47a0be"
+  },
+  "build": {
+    "status": "PASS",
+    "webpackPerformanceWarnings": 3
+  },
+  "auditSmoke": {
+    "node": "v22.23.4",
+    "smoke": "real Docker create/remove; database never started",
+    "ownedContainerRemoved": true,
+    "volumeCount": 1,
+    "recordedVolumesAbsent": true,
+    "privateAudit": true
+  }
+}
