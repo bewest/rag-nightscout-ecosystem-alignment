@@ -1556,3 +1556,18 @@ Local continuation and next frozen clock batch: `externals/work/HANDOFF-serial-v
 | Runtime and cleanup | Slot released; diagnosed owned mounts audited absent; source clean. | Older fixture anonymous volumes preserved; no global leak-freedom or mutated-authority-effects count. No application repair, promotion, default enablement or push. |
 
 [Continuation report](../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.md) and [machine capture](../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.json). Lane detail: `externals/work/HANDOFF-codex-b4a-20261106.md` (local). No maintainer policy decision changed.
+
+
+### Update — completion batches adopted (2026-11-06)
+
+| Scope | Decision and current work | Acceptance boundary |
+|---|---|---|
+| Multitenant completion schedule | Maintainer approved [larger completion batches](../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06): A data/control/clients (M0–M4), B durable runtime (M5), C synthetic operations (M6). | Targeted checks during implementation, then comprehensive labs/V&V and final regression on each frozen completion candidate; existing milestone criteria remain mandatory. |
+| Early uncertainty reduction | Stamp/recovery, actual-client differences, owner authority/lifecycle and populated restore/resource proofs remain bounded experiments before dependent assumptions expand. | No new provider, authenticator, retention rule or numeric limit selected. Missing implementation, measurement and decisions remain distinct. |
+| Parallel delivery | Independent implementation, fixtures and test preparation proceed concurrently; isolated runtime overlap depends on measured capacity/ownership. | The local full/browser/corpus slot is a resource constraint. Final-tree evidence, exact-head controls, approved differences and failed-capture preservation remain required; no milestone/default/release promotion. |
+
+This records the maintainer's execution decision, not a new application measurement.
+No application or operator-visible runtime behavior changed in this records-only
+lane. Lane detail: `externals/work/HANDOFF-codex-completion-batches-20261106.md`
+(local, untracked). B4a/B5/M4 source and evidence remain on their respective lanes
+until the coordinator joins them; their acceptance figures are not recaptured here.

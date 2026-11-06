@@ -245,6 +245,13 @@ contracts; future schema upload does not waive current compatibility testing.
 | **Page-bundle budget option A**: `ee94b148` keeps the earlier allowances, app 349000 and total 417000 gzip bytes, over the measurement on `b8ff91cb` (341123 and 412296, against 334513 and 405305 on `62a9476f`; the growth is #8831's modern theme, which every page loads in `bundle.app.js`) | maintainer, 2026-10-25 | `RT-2` | on `dev` since #8837 (`eb44a9c2`) |
 | **Page-bundle budget option B as a follow-up**: load the modern theme's code only when it is chosen, as a bundle or chunk of its own | maintainer, 2026-10-25, for Andy Low | `RT-BUNDLE-THEME-SPLIT` | not started; owner Andy Low or the maintainer |
 
+
+## Multitenant completion execution
+
+| decision | who, when | queue | as it stands |
+|---|---|---|---|
+| **Complete the roadmap in larger implementation batches, retaining targeted checks and early uncertainty proofs.** A covers data/control/clients (M0–M4), B durable runtime (M5), C synthetic operations (M6); each frozen completion candidate receives comprehensive labs/V&V, full regression and final prcheck. | maintainer, 2026-11-06, approving the completion-batch recommendation in this session | Existing multitenant items; manifest claims unchanged | Adopted [completion schedule and criterion-to-test matrix](../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06). Implementation/test preparation may proceed in parallel; runtime overlap requires isolated owned fixtures and measured capacity. Small stamp/recovery, client-difference, authority/lifecycle and populated-restore/resource proofs remain before dependent assumptions expand. Exact-head acceptance, milestone criteria, separate notification/production gates and maintainer publication remain unchanged. |
+
 ---
 
 *Draft, 2026-10-26; rows added 2026-10-30 and 2026-10-31. Requires maintainer review before it is relied upon.*

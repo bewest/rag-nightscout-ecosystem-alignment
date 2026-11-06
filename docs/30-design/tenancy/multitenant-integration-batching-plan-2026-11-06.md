@@ -2,7 +2,8 @@
 
 *Contributor-facing execution plan, 2026-11-06, living. It says how work on the
 multitenant preview is batched, what verification runs at each stage, and which
-batches sit on the critical path to the M3 and M4 gates. Item states, gates and
+completion batches cover M0–M6 and where an early proof is still required.
+Item states, gates and
 blockers live in [the work queue](../../../queue/work-queue.yaml); acceptance
 evidence lives in the [integration record](../remedial/rc-16.0.0-integration-record.md)
 and the [working dashboard](multitenant-delivery-dashboard.md). This plan
@@ -10,10 +11,12 @@ supplements the [REST delivery roadmap](multitenant-delivery-roadmap-2026-11-02.
 and the [architecture seams plan](architecture-seams-execution-plan-2026-11-05.md)
 without changing release placement or promoting M0–M6.*
 
-## 1. Measured basis
+<a id="1-measured-basis"></a>
+## 1. Historical measured basis
 
-Read from tool output on 2026-11-06. Counts are not additive and are not
-completion percentages.
+The following capture is the basis of the original B1–B7 dispatch, not a live
+branch or CI status. Later evidence remains in its dated integration records.
+Counts are not additive and are not completion percentages.
 
 | Anchor or measure | Value |
 |---|---|
@@ -54,7 +57,7 @@ not the lane's nerves.
 |---|---|---|---|
 | Locally accepted | this lane's change does what it says on its own head | lint on changed JS; `npm run test:affected`; the lane's focused suites; every authored break-it control, red then restored | the lane, in its handoff |
 | Incorporated | the change is an ancestor of the frozen batch head | ancestry check; affected suites on the combined tree; tier registry check | the coordinator |
-| Integrated acceptance recorded | the frozen batch head regresses nothing | **one** full nonbrowser, **one** default browser, final `prcheck.sh`; the queue gates for the batch's items run with a database against the frozen head | the coordinator, as one R entry |
+| Integrated acceptance recorded | the frozen batch head regresses nothing | **one** full nonbrowser, **one** default browser, the enabled multitenant corpus and batch labs, final `prcheck.sh`; applicable queue positives and paired breaks run against the frozen head | the coordinator, as one R entry |
 | Milestone promoted | a roadmap section 4 criterion list is fully met | the milestone's own list; controls rerun on the cumulative tree; client-binary replay where the milestone claims client compatibility; benchmark where it claims capacity | maintainer decision, recorded in the roadmap and dashboard |
 
 A batch does not repeat lower-stage work for its members. A fresh agent resuming a
@@ -62,16 +65,21 @@ lane does not rerun an accepted campaign.
 
 ## 3. Batch rules
 
-1. **Theme batches by milestone, three to six lanes each, one frozen head per
-   batch.** Each lane joins by rebase or merge onto the current cumulative head;
-   the coordinator freezes one head, runs the stage-three campaign once, and
-   publishes that head to #8898 once. Target cadence: one batch per working day.
-2. **Triggers that force a full campaign before the batch closes.** Any change
+1. **Batch toward completion, with one frozen candidate per completion stage.**
+   The A–C schedule below governs current work. Parallel lanes join through an
+   owned integration branch; do not rewrite shared published history. The
+   coordinator records one comprehensive acceptance campaign per candidate.
+   Publication remains the maintainer's action; agents never push.
+2. **Triggers that require a full campaign on the final candidate.** Any change
    to: an existing shipping file under `lib/api`, `lib/api3`, `lib/server`,
    `lib/storage` or `lib/data`; `tests/tiers.json`; `package.json` or the lock;
    a migration; a fixture another lane shares; or any red result that is not a
-   declared control. New opt-in files alone never trigger one.
-3. **The runtime slot serializes full and browser campaigns only.** Focused
+   declared control. These changes do not require one full campaign per member
+   slice. After a failure, run focused regression/controls during repair; a
+   material source, migration, dependency or shared-fixture change invalidates
+   final acceptance and requires the full campaign on the replacement head.
+   New opt-in files alone never trigger a separate native full campaign.
+3. **The local runtime slot serializes full, browser and whole-corpus campaigns.** Focused
    suites own their random ports, schemas and containers and may overlap, after
    checking free disk and the inotify watch budget, both of which caused the
    November 5 ENOSPC holds. Capacity for overlap is unmeasured; the coordinator
@@ -83,6 +91,9 @@ lane does not rerun an accepted campaign.
    disposable PostgreSQL 16, one MongoDB 8.0 where a selected suite needs it and
    one Vault dev server where needed, then runs every opt-in suite with
    `--fail-zero`, so the corpus is one tier for the local slot and for CI.
+   These counts describe the original B5 capture; every later batch reconciles
+   the source inventory before freezing, including joined clock suites.
+   An explicitly disabled benchmark stays named pending, never a functional pass.
 5. **CI runs the corpus.** A PostgreSQL plus Vault job on #8898 moves the
    stage-three campaign off the single local slot. The roadmap's section 4 already
    calls for explicit PG jobs as applicable suites execute.
@@ -97,9 +108,12 @@ lane does not rerun an accepted campaign.
    and that the task is still open before starting; stop and report a mismatch
    rather than reaching for the nearest thing that works. Agents never push.
 
-## 4. Critical-path batches
+<a id="4-critical-path-batches"></a>
+## 4. Historical B1–B7 dispatch
 
-Ordered. Each names its owner, inputs, gate and predicted result. B1 is a
+Retained as the original dispatch and evidence history. The completion schedule
+below supersedes its slice-by-slice next-action sequencing, not its captures.
+Each names its owner, inputs, gate and predicted result. B1 is a
 maintainer action; B2 and B3 are owned by active lanes; B4 through B7 are
 dispatched by the coordinating session that wrote this plan.
 
@@ -123,7 +137,96 @@ not block B5 or B6. B5 removes the slot bottleneck for every later batch, so it
 was started before B2 finished; its corpus ran once (418 / 0 / 2), both failures were fixed with controls, and the
 confirming run on `b7eac9bb` measured 420 / 0 / 0; the lane waits only for the next join into #8898.
 
-## 5. Lane ownership and coordination
+## 5. Current completion schedule (adopted 2026-11-06)
+
+The maintainer approved larger implementation batches followed by comprehensive
+labs and V&V, retaining targeted tests during implementation and small proofs
+where uncertainty could change the architecture. Batch completion and milestone
+promotion remain separate: every criterion in roadmap §4 must have an explicit
+verdict on the final applicable tree. A completed dependency does not promote its
+consumer, and no batch changes release placement or enables a serving default.
+
+| Completion batch | Deliverable and owner | Work that may proceed now | Freeze and acceptance boundary |
+|---|---|---|---|
+| **A — data, control and clients (M0–M4)** | Coordinator joins storage/authority/config/migration/runtime-readiness completion with the client lane's compatible v1/v2/v3 surface. | Active: M4 lab findings and application repairs; integrate B4a evidence/instrument repair and the B5 corpus inventory correction; inventory remaining M0–M3 criteria as implementation, measurement or decision gaps. Populated-import and authority/lifecycle proofs run before dependent assumptions spread. | Freeze a coherent candidate after targeted lane checks. Run both-store applicable contracts, actual two-tenant HTTP and stored oracles, pooled/concurrent authority/outage/schema controls, actual pinned-client labs, full/browser/enabled corpus, then final prcheck. All semantic differences require an approved basis; unknown differences remain failures. |
+| **B — durable runtime (M5)** | Runtime owner joins one proven durable producer/consumer path, realtime forwarding/fan-out, evaluator state and durable ack/snooze. | Active early proof: commit-stamp meaning and crash/replay correctness. Implementation may proceed in parallel against established interfaces after the proof and required contract approval; role-table and event-payload lanes remain separate until their gates pass. | First reference is separate roles on one machine. Freeze the assembled runtime, then exercise real process death/restart, duplicate/lost delivery, cohort pagination, current socket authorization, forwarding acknowledgements, replay-equivalent tenant views and retained evaluator results. Run batch regression and final prcheck once on that candidate. |
+| **C — synthetic operational preview (M6)** | Operations owner joins import/export/deletion, ciphertext/key recovery, backup/restore, upgrade/rollback, bounded resources/egress and final-tree review. | Prepare tools and populated synthetic fixtures in parallel with A/B. Run one representative populated restore/import and contention experiment early; broader acceptance waits for stable data/runtime contracts and approved bounds. | Freeze the complete preview after A/B criteria and chosen owner capabilities are satisfied. Run populated failure/recovery and lifecycle campaigns, isolation/security/client/runtime regression, explicit capacity/latency workloads and the complete criterion matrix. Production identity/traffic, real data, role enablement and publication retain their separate approvals. |
+
+A–C are completion stages, not three indivisible code changes. A lane continues
+through a coherent family of fixes without demanding a full suite after every
+commit. Every lane still runs changed-code lint, affected tests, meaningful
+focused checks and authored red/restored controls. Final full acceptance belongs
+to the exact assembled head; ancestry alone never transfers a control result.
+
+### Criterion-to-test matrix for the frozen candidates
+
+The coordinator fills the actual command/selector, tree, instrument revision,
+artifact and verdict for every row before claiming completion. The rows below
+are required coverage, not new passing measurements. Counts and waived criteria
+cannot substitute for that mapping.
+
+| Milestone / acceptance family | Candidate and required instrument | Current kind of remaining work |
+|---|---|---|
+| M0 binding, RLS, pool reuse, rollback and unsafe schema | A: real restricted-role PG/pooler positives plus paired tenant/RLS/transaction failures and actual startup refusal | Existing implementation/evidence foundation; final-tree deployment/schema/pool coverage remains measurement work. |
+| M1 backend semantics, identities, queries, history, batches and imports | A: applicable Mongo/PG differential contracts, populated import/replay oracle and query/lock/materialization bounds | Bounded compatibility gaps require implementation; broad populated/resource acceptance remains measurement; new numeric limits require a maintainer decision. |
+| M2 settings/current authority/secrets and listener separation | A: actual provider + PG + HTTP config/versioning/revocation and owner/data/operator boundary controls | Remaining issuer/refresh, existing-grant clamping and production lifecycle/listener composition are implementation gaps; authenticator, recovery or capability-policy choices stay decisions. |
+| M3 cumulative two-tenant HTTP | A: actual executable, overlapping identities, independent stored-state oracle, grants/outages/concurrency/schema and restored controls | Combined acceptance must execute after source joins; earlier positives and controls remain historical evidence on their own heads. |
+| M4 pinned client workflows | A: actual executable clients and independent responses/stored values, retries/refusals/revocation, followed by explained differential cells | Reproduced lab differences need focused diagnosis and implementation. Mobile/v3 binary feasibility and source-pattern replay coverage remain explicit; no all-client claim follows from a headless subset. |
+| M5 durable feed/recovery | B: persisted checkpoint and complete-cohort oracle under commit-before-publish death, duplicates, missed notifications, soft deletion and cross-tenant checkpoint refusal | Architectural proof first. Hard-delete recovery, replay horizon, transport/provider and multi-node ownership guarantees cannot be inferred; unresolved choices stay scoped/deferred. |
+| M5 sockets/evaluator/ack | B: D23 forwarding with actual ack/no-ack behavior, current authorization/reconnect, tenant rooms/caches, replay-equivalent evaluation and durable ack/snooze recovery | Implementation after interfaces are proven; ack schema/retention and notification delivery retain their own decision/acceptance gates. Live external notifications are not admitted by evaluator lab success. |
+| M6 populated operations and bounds | C: export/import fidelity, tenant deletion, recoverable keys/ciphertext, interrupted restore/upgrade, egress refusal and resource workloads on final assembled tree | Early feasibility proof and substantial implementation/measurement remain. Approve numeric bounds/retention policy before using them as pass thresholds. |
+
+### Early proofs that remain deliberately small
+
+| Proof / owner | Question resolved before broader work | Predicted green and meaningful red |
+|---|---|---|
+| Stamp and recovery / runtime owner | Define a per-write stamp versus transaction floor, including nested writes allocating nothing; establish a durable checkpoint/replay model. | Green: committed state is reconstructed after writer/consumer death without losing tied rows or repeating logical effects. Red: break checkpoint persistence, cohort completion or duplicate identity and observe missing/duplicate tenant outcomes; rollback emits nothing. |
+| Actual client differences / client and application owners | Diagnose each observed response/value difference against the same-head Mongo reference before widening the client claim. | Green: repaired workflow has matching supported replies and independent stored values; intentional differences have an adopted basis. Red: perturb the oracle or reply/identity handling and the client assertion/classifier fails for that mechanism. |
+| Owner authority/lifecycle / control-plane owner | Establish current actor/delegation/existing-grant behavior and separate listener trust before joining management workflows. | Green: authorized current own-tenant operation persists, revoked/foreign/over-ceiling operation refuses without effects. Red: bypass one permission/current-state fence and the stored-state assertion detects it. |
+| Populated restore/import and contention / operations owner | Establish fidelity, recoverable key material and practical resource/locking behavior before completing operations. | Green: recovered synthetic values/identity/tenant boundaries match, interruption resumes or explicitly refuses safely. Red: omit a populated cohort/key or break rollback/recovery and the independent oracle detects the loss. Capacity thresholds remain UNMEASURED until approved and exercised. |
+
+These proofs reduce uncertainty; they do not each trigger a full native acceptance
+campaign. A failed prediction is reported with its exact symptom and preserved
+before repair. Do not silently redefine the contract or choose a provider,
+authenticator, recovery guarantee, retention horizon or numeric limit to get green.
+
+### Parallel execution and evidence accounting
+
+Parallel implementation and test preparation are the default. Isolated focused
+jobs may overlap only with recorded capacity and positive resource ownership;
+unknown containers/volumes remain untouched. CI or independent workers may run
+separate labs concurrently when their namespaces, ports, fixtures and teardown
+are isolated and capacity is measured. The local slot is a machine constraint,
+not an ordering dependency between independent implementation lanes. Quiet
+performance measurements receive a separate controlled window.
+
+Before freezing a batch, reconcile the enabled-suite inventory with source and
+publish named pending/unsupported cases. A pending benchmark is not functional
+acceptance and does not prove a budget. Run one comprehensive campaign on the
+frozen candidate; after fixes, rerun affected assertions/controls and repeat final
+full acceptance when the material candidate changed. Allocate each integration
+record at write-time, preserve immutable failures and source/instrument revisions,
+and move queue refs only after the actual frozen-head campaign passes.
+
+B4a is recorded complete locally in R58 on its evidence branch, with the original
+partial R57 preserved; its instrument repair is a separate change. B5's joined
+clock corpus required an inventory repair; source listing is verified but expanded
+runtime acceptance remains UNMEASURED. These bounded results are inputs to A,
+not completion of A.
+
+Current ownership: root coordinator owns Batch A integration and acceptance;
+the existing M4 chat owns the independent client lab; the M4 application-repair
+agent owns diagnosed UUID-default and literal-regexp compatibility work; the M5
+agent owns an executable recovery research prototype. The durable-delivery
+contract remains draft and checkpoint bookkeeping authority remains unresolved,
+so this prototype cannot establish adopted production runtime semantics. Owner
+session/issuer lifecycle and the wider operational implementation are **unassigned**;
+the coordinator must allocate those before claiming A or C implementation complete.
+Local integration ownership and exact unpushed anchors are in
+`externals/work/HANDOFF-codex-completion-batches-20261106.md` (local, untracked).
+
+<a id="5-lane-ownership-and-coordination"></a>
+## 6. Lane ownership and coordination
 
 - The **root coordinator** owns the cumulative application branch, the queue,
   release records, dashboard and map edits, and the single runtime slot.
@@ -136,15 +239,16 @@ confirming run on `b7eac9bb` measured 420 / 0 / 0; the lane waits only for the n
 - **Lane handoffs** are `externals/work/HANDOFF-<lane>-<date>.md`, local and
   untracked. The coordinating session's own notes are in
   `externals/work/HANDOFF-batching-coordinator-20261106.md`.
-- **Publication** of alignment records follows the standing authorization for
-  reviewed record-keeping commits, by pinned fast-forward only. Application
-  pushes and PR edits remain the maintainer's.
+- **Publication** of alignment records and application branches remains the
+  maintainer's action. Agents prepare local commits and reviewable instructions;
+  agents never push.
 - The two untracked November 2 draft files in this directory belong to a peer
   session and are never staged by anyone else.
 - Several sessions share one git index: check `git diff --cached --name-only`
   and commit by path.
 
-## 6. What this plan does not do
+<a id="6-what-this-plan-does-not-do"></a>
+## 7. What this plan does not do
 
 It promotes no milestone, selects no backend or provider, enables no listener
 or default, and adds no release gate for 16.0.0. It does not weaken the
