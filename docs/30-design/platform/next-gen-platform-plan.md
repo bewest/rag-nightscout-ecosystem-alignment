@@ -2,7 +2,7 @@
 
 *Contributor-facing living plan. Tenancy progress reconciled 2026-11-06 against
 cgm-remote-monitor dev `4a482627`, published draft #8898 `bc4ee1a9` (R44),
-local integration `4a15802c` (B338+A+C17f, combined full PENDING),
+local cumulative `35903069` (B338+A+C17f, R54 full/browser accepted),
 accepted settings `33870764` (R51) and native acquisition `e5fe0b5e` (R52),
 preceded by frame `1c55098a` (R49), published independent #8891 `dff9a8d4` (R45) and local evaluator acquisition
 `5173864d` (R50). R46/R47 remain the accepted preceding baseline. Actual frame
@@ -24,6 +24,24 @@ This plan covers the work that follows the 16.0.0 modernization:
 It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.
 
 ## 1. Where things stand
+
+### Cumulative B+A+C accepted with existing scope limits (2026-11-06)
+
+R54 local35903069 accepts cumulative B338+A e5+C17f:
+full7144/80pending/0failure, browser684, settings12 and fresh finalprcheckOK.
+Final359 only removes unused bindings in settings-test normalization. R51–R53
+native captures and all milestone states are unchanged. Successful captured
+settings3/5/full18/26/browser3/5 resources are absent;219preserved volumes remain,
+with private0700/0600 audit. No global leak-freedom claim.
+
+Selected explicit ownerPolicy REST37 is not full owner/listener enablement;
+human issuer/refresh, full wildcard/default catalogue and existing-grant clamping
+remain open. Acquisition adds no stronger snapshot/common revision. Clock and
+independent profile2ee are not joined; clock HTTP/full/bench acceptance pending.
+No milestone promotion or application push. See the
+[R54 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06)
+and [public cumulative record](../../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.md).
+Earlier pending sections retain their dated capture scope.
 
 ### Selected owner policy accepted; combined verification pending (2026-11-06)
 

@@ -229,6 +229,9 @@ items:
       - tools/lab/postgres-foundation/README.md
       - tools/lab/postgres-foundation/results.json
     notes: >
+      R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
+      browser684/settings12/freshprcheckOK; native gate captures retain their pins.
+      No clock/profile2ee join, milestone promotion or expanded production scope.
       R51 2026-11-06:33870764 bounded settings accepted and exact root FF;
       full7089/80pending/0failure/browser684/prcheckOK. Archived12 and semantic
       sortcap/predicate/projection controls restored12. Broader ST-PG remains open.
@@ -333,9 +336,11 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
+      browser684/settings12/freshprcheckOK; native gate captures retain their pins.
+      No clock/profile2ee join, milestone promotion or expanded production scope.
       R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK;
-      parent archived22/four semantic guards/restored22. RootB+A+C4a15802c
-      incorporated, combined fullPENDING. T30-TENANT-ADMIN uses this canonical
+      parent archived22/four semantic guards/restored22. R53 native17f scope is retained in cumulativeR54. T30-TENANT-ADMIN uses this canonical
       bounded gate; full owner lifecycle/listener/issuer remain open.
       2026-11-05 maintainer adopted owner authority and the D22 local-public-key
       verification amendment; owner-authority.md owns permission/delegation
@@ -6882,9 +6887,12 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
+      browser684/settings12/freshprcheckOK; native gate captures retain their pins.
+      No clock/profile2ee join, milestone promotion or expanded production scope.
       R53 selected ownerPolicy accepted native17f9a457; canonical bounded
       owner-policy runtime gate and four controls live on MT-CONFIG-MIN.
-      RootB+A+C4a15802c combined fullPENDING; no complete owner/listener admission.
+      R54 cumulative acceptance adds no complete owner/listener admission.
       Current 2026-11-06: R42 accepts the separately authenticated standalone
       subject facade and real persistence/current-authority HTTP tests. R53 adds
       explicitly selected ownerPolicy proposed-grant enforcement for REST37.
@@ -25231,9 +25239,12 @@ items:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
+      browser684/settings12/freshprcheckOK; native gate captures retain their pins.
+      No clock/profile2ee join, milestone promotion or expanded production scope.
       R52 nativee5fe0b5e accepted full7080/80pending/0failure, prior browser684,
       final prcheckOK; acquisition14/concurrency4+six semantic controls/restorations.
-      Root4a15802c incorporates B+A+C with combined full PENDING. Independent
+      R54 cumulative35903069 accepts B+A+C composition. Independent
       profile2ee8b493 source-only, new runtime/full/browser/prcheck UNMEASURED.
       Actual tenant HTTP reads observe old entries/new treatments across an atomic
       independent writer commit; tenant B stays unchanged. Bounds, future-record,

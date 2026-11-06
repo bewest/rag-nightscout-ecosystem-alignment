@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R53 native C17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK, actual22/affected26/static32 and parent archived22/four semantic controls/restored22. Root4a15802c=B+A+C with tier506/8 but combinedfullPENDING. R51/R52/R49/R50 captures unchanged; profile2ee/clock not joined. Selected explicit ownerPolicy REST37 only; no human issuer/refresh/full wildcard-default catalogue/existing-grant clamping/production listener, R48readers unchanged. Clock lower8+controls/all-domain oldSQL42703/new9 recorded; correctedHTTPretry active, HTTP/full/bench pending. No milestone promotion/applicationpush.",
+ "measured": "2026-11-06: R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure/browser684/settings12/freshprcheckOK; test-only normalization finalfix. R51-R53/R49-R50 captures unchanged. Successfulcaptured cleanup3/5+18/26+3/5absent/219preserved/private0700/0600. No clock/profile2ee join, milestone/RC promotion, productionownerlistener or stronger snapshot. ClockHTTP/full/benchacceptance separatelypending.",
  "tracks": [
   {
    "id": "storage",
@@ -349,7 +349,7 @@
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "R51 settings33870764 native accepted. Observed root4a15802c adds accepted native A but combined fullPENDING. Six-key refusal, full client parity and resource performance remain explicit.",
+   "ref": "R54 localcumulative35903069 B338+A+C17f accepted full7144/80pending/0failure/browser684/settings12/prcheckOK. R51 settings338 native scope retained; six-key/refusedcapabilities, widerclient/resourcecost open.",
    "spec": [
     {
      "label": "Native acquisition / pending composition",
@@ -837,7 +837,7 @@
    "state": "blocked",
    "short": "Full M3 acceptance",
    "title": "Accepted R49 bounded HTTP/frame proof remains. NEXT settings/replica lanes are not accepted; actual replica characterization confirms a FAILED exclusive-history guarantee. Full M3 still awaits complete M1/M2.",
-   "ref": "Observed root4a15802c=B338+A+C17f, combined fullPENDING; native R51/R52/R53 accepted separately. Historical R49/R50 unchanged, profile separate. D measured history gap unfixed; Clock/profile/runtime acceptance not joined.",
+   "ref": "R54 localcumulative35903069 B338+A+C17f accepted full7144/80pending/0failure/browser684/settings12/freshprcheckOK. NativeR51-R53/historyR49R50 unchanged. No clock/profile2eejoin or milestone promotion.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -913,7 +913,7 @@
    "state": "progress",
    "short": "Current policy / settings",
    "title": "R42 persisted subject service/standalone HTTP and R53 explicitly selected transactional proposed-grant enforcement are accepted within REST37. Human management issuer/refresh, full wildcard/default catalogue, existing-grant clamping, DELETE policy and production owner listener remain unimplemented.",
-   "ref": "R53 native17f9a457 full7127/80pending/0failure/browser684/prcheckOK, actual22/affected26/static32; parent archived22/four0-1semantic/restored22. Explicit ownerPolicy catalogue\u2229ceiling\u2229current actor delegation/row fencing, REST37only. DELETE refuses/mgmtAuth injected; human issuer/refresh/full wildcard-default catalogue/existing-grant clamping/listener unimplemented. R48readers unchanged. Root4a15802c combinedfullPENDING.",
+   "ref": "R53 selected native17f and R54 cumulative35903069 accepted full7144/80pending/0failure/browser684/settings12/prcheckOK. Explicit ownerPolicy transaction REST37 only; DELETErefused/mgmtAuthinjected; humanissuerrefresh/fullcatalogue/existinggrantclamping/productionlistener open, R48readers unchanged.",
    "spec": [
     {
      "label": "Native acquisition / pending composition",
@@ -1034,13 +1034,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "Private allocation accepted / join pending",
-   "title": "R52 accepts native shared private acquisition allocation behind unchanged caller policies. RootB+A+C composition awaits full verification; no common revision, stronger snapshot or multitenant evaluator guarantee.",
+   "title": "R52 native and R54 cumulative composition accept private acquisition allocation behind caller policies. No common revision, stronger snapshot or multitenant evaluator guarantee.",
    "check": "Nativee5fe0b5e full7080/80pending/0failure, prior same-head browser684/prcheckOK; acquisition14/concurrency4, six controls/restored14/4 and caller4/reused-target2fail/restored4.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "Observed root4a15802c is B338+A+C17f with combined fullPENDING. R52 local acceptance and historical R49/R50 scopes distinct. Independent profile2ee8b493 source-only, new runtime38/full/browser/prcheckUNMEASURED.",
+   "ref": "R54 cumulative35903069 accepted full7144/80pending/0failure/browser684/prcheckOK. R52 nativee5 scope unchanged; independentprofile2ee newruntime38/full/browser/prcheckUNMEASURED, no RESTjoin.",
    "spec": [
     {
      "label": "Native acquisition / pending composition",

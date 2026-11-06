@@ -25,13 +25,12 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The observed local integration head is `4a15802c` (B338+A+C17f),
-with combined full verification **PENDING**. R51 settings `33870764` remains its
-accepted exact-tree capture; R52 accepts native A `e5fe0b5e` separately. Published
-#8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain their prior draft/open
-captures; no candidate CI or application push is claimed. Independent accepted
-R50 `5173864d` stays separate; helper-only descendant `2ee8b493` has no runtime
-acceptance. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+promotion is recorded. The locally accepted cumulative integration head is `35903069` (B338+A+C17f),
+measured in R54 with full7144/80pending/0failure/browser684/settings12/prcheckOK.
+R51–R53 native acceptance and R49/R50 historical captures remain unchanged.
+Published #8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain prior captures;
+no candidate CI or application push is claimed. Independent accepted R50 stays
+separate; profile2ee preparation and clock code are not joined. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
@@ -43,6 +42,34 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted cumulative settings acquisition and owner policy (2026-11-06)
+
+R54 accepts local integration `35903069` (B338+A e5+C17f):
+full7144/80pending/0failure, browser684, actual settings12, fresh finalprcheckOK,
+current official/dev4a482627 contained and final source clean. Changed JavaScript
+lint has0errors/0warnings. Final359 changes only a settings-test normalization
+helper to remove unused bindings; no product scope change. R51–R53 native and
+R49/R50 historical captures remain unchanged, not replaced by this cumulative run.
+
+The [sanitized public cumulative record](../../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.md)
+and [machine capture](../../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.json)
+retain independently verified raw-output hashes, exact source pins, commands,
+counts and scope. Initial sandbox prcheck DNS failure is preserved separately;
+the successful final fresh check is the accepted one.
+Successful settings3containers/5volumes, full18/26 and browser3/5 are independently
+absent; all219preserved volumes remain present, with private0700/0600 audit.
+This is bounded recorded cleanup, not global leak freedom.
+
+Accepted composition preserves selected explicit ownerPolicy REST37, injected
+managementAuth/refused DELETE and R48 data-token behavior. Human issuer/refresh,
+full wildcard/default catalogue, existing-grant clamping and production listener
+remain unimplemented. Private allocation retains caller policies and adds no
+common revision/stronger snapshot. Clock code and independent profile2ee are not
+joined. Clock HTTP/full/bench acceptance remains separately pending; no new D
+result is allocated here. No M0–M6/RC promotion, default production enablement or
+application push. Earlier pending-composition sections below are their dated
+captures, not current cumulative acceptance status.
 
 ### Accepted selected owner policy and pending composition (2026-11-06)
 

@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-06",
+  "applicationHead": "35903069b46974cfbaddd8dce00c994fb2562bc3",
+  "branch": "codex/serial-integration-20261106",
+  "alignmentRunnerHead": "e739c46673bb7d908180dcabfa12ef5c8462a195",
+  "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "nativeInputs": {
+    "settings": "338707648c43dea190cf47f3d64d6f8d2bcde56c",
+    "privateAcquisition": "e5fe0b5ed2e5cdc1c7841320d898128673095e9f",
+    "ownerPolicy": "17f9a4577e649208ada6b0aa8f83c51026459875"
+  },
+  "settings": {
+    "passing": 12,
+    "pending": 0,
+    "failing": 0
+  },
+  "full": {
+    "passing": 7144,
+    "pending": 80,
+    "failing": 0,
+    "tiers": [
+      2191,
+      205,
+      368,
+      319,
+      93,
+      3950,
+      18
+    ]
+  },
+  "browser": {
+    "passing": 684,
+    "pending": 0,
+    "failing": 0
+  },
+  "finalPrcheck": "OK; source unchanged; first sandbox DNS attempt preserved",
+  "changedJavascriptLint": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "cleanup": [
+    {
+      "mode": "settings",
+      "containers": 3,
+      "volumes": 5,
+      "remainingContainers": 0,
+      "remainingVolumes": 0,
+      "directoryMode": "0o700",
+      "fileModes": [
+        "0o600"
+      ],
+      "preservedVolumeCount": 219,
+      "preservedMissingCount": 0
+    },
+    {
+      "mode": "all",
+      "containers": 18,
+      "volumes": 26,
+      "remainingContainers": 0,
+      "remainingVolumes": 0,
+      "directoryMode": "0o700",
+      "fileModes": [
+        "0o600"
+      ],
+      "preservedVolumeCount": 219,
+      "preservedMissingCount": 0
+    },
+    {
+      "mode": "browser",
+      "containers": 3,
+      "volumes": 5,
+      "remainingContainers": 0,
+      "remainingVolumes": 0,
+      "directoryMode": "0o700",
+      "fileModes": [
+        "0o600"
+      ],
+      "preservedVolumeCount": 219,
+      "preservedMissingCount": 0
+    }
+  ],
+  "hashes": {
+    "settings-35903069.log": "9348b5f3917a6db08bd78179c305c1b558366dfa63e9820fc21d863015217a89",
+    "all-35903069.log": "5cd515c4d74d82a4194696455284a5cc5c84bf14bc58d5b01a2debcbd5ac578c",
+    "browser-35903069.log": "ce578755cae67334d7d8bea3c140f61aeda23a7d44c1a09b4d819a8c7219a176",
+    "prcheck-35903069-retry.log": "7c12901b3882035a088abaf9b39e698d38b25475ad871a61dbefae148408b471",
+    "lint-combined.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-35903069.log": "2e406eb93ad66394692949272dc74dc60c32bc200994607d42f4532596275fd5"
+  },
+  "scope": "Local cumulative acceptance only. Clock prototype and new independent profile helper are not joined. No application push or milestone promotion.",
+  "sourceManifestSHA256": "348c35f65831664479e6b0b263453206091a0c783d6e0675cf17bed71056a9c2",
+  "captureBasis": "Captured synthetic runtime logs independently read and SHA256 verified; no runtime rerun by records lane.",
+  "limits": [
+    "Selected explicit ownerPolicy REST37 only, not full catalogue/issuer/refresh/clamping/listener",
+    "No common database revision or stronger snapshot promise",
+    "Clock code and independent profile2ee not joined",
+    "No milestone promotion, production enablement or application push",
+    "Cleanup covers captured successful runs only; unknown unrelated resources untouched"
+  ]
+}

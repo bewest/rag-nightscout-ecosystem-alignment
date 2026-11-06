@@ -1505,3 +1505,18 @@ and [public C record](../../reports/owner-subject-policy-acceptance-2026-11-06.m
 retain exact scope. Human issuer/refresh, full wildcard/default catalogue,
 existing-grant clamping, DELETE policy and production listener remain unimplemented.
 No M0–M6 promotion or application push.
+
+
+### Update — cumulative B+A+C acceptance (2026-11-06)
+
+| Scope | Reproduced evidence independently read and hash-verified | Remaining boundary |
+|---|---|---|
+| R54 local35903069 | B338+A e5+C17f combined full7144/80pending/0failure, browser684, settings12, fresh finalprcheckOK; currentdev4a contained/sourceclean, changedJS0errors/0warnings. | R51–R53 native/R49–R50 historical captures unchanged; no milestone promotion/default enablement. |
+| Final normalization fix | Test-only unused-binding cleanup after4a158 preserves normalized comparison fields. | No product scope change; earlier sandboxDNSprcheckfailure preserved, finalsuccessfulretry accepted. |
+| Successful campaign cleanup | Captured3/5+18/26+3/5 containers/volumes absent;219preserved present, private0700/0600 audit. | Bounded successful recorded resources only, no globalleakfreedom/unknownownership cleanup. |
+| Open work | Clock and independent profile2ee not joined. Existing ownerREST37/caller-specific acquisition limits retained. | Humanissuerrefresh/fullcatalogue/existinggrantclamping/productionlistener, commonrevision/strongersnapshot, clockHTTP/full/bench acceptance pending. No newDresult allocated. |
+
+[Public cumulative capture](../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.md)
+and [R54 continuation](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06)
+retain exact commands/hashes/limits. No application push, RC/deployment admission or
+new policy decision is made by this measurement.
