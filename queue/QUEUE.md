@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 364 |
-| runnable gates | 426 |
+| runnable gates | 429 |
 | explicit `no-gate:` markers | 375 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 801 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 375 of the 804 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8401,7 +8401,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `done` | `-` | n/a | 0 run + 1 no-gate |
 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
-| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261105` | n/a | 1 run + 1 no-gate |
+| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261105` | n/a | 2 run + 1 no-gate |
 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `in-progress` | `codex/owner-subject-http-20261105` | minor | 1 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
@@ -8448,8 +8448,8 @@ alarm-readiness items, and the seam branch refresh.
 | `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `in-progress` | `codex/seam-contract-20261105` | n/a | 1 run + 1 no-gate |
 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `in-progress` | `codex/rest-compose-integration-20261105` | n/a | 1 run + 1 no-gate |
 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `in-progress` | `codex/pg-consolidation-integration-20261105` | n/a | 1 run + 1 no-gate |
-| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/evaluator-next-20261105` | n/a | 1 run + 1 no-gate |
-| `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/evaluator-next-20261105` | n/a | 0 run + 1 no-gate |
+| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/evaluator-frame-20261105` | n/a | 1 run + 1 no-gate |
+| `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/frame-integration-20261105` | n/a | 2 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
@@ -8693,7 +8693,7 @@ alarm-readiness items, and the seam branch refresh.
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
 | worktree | `externals/work/crm-seam` |
 | semver | `n/a` |
-| review | maintainer. The document is a DRAFT carrying sections marked DECISION that need a yes before T30-SCHEMA-CONFIG can start; the item is a decision surface, not an unstarted research task. |
+| review | maintainer. Owner authority and D22 policy direction are adopted in owner-authority.md. Remaining full settings/role catalogue and per-plan policy choices need their own decisions; bounded implementation can continue under the adopted contract. |
 
 **Blast radius.** A design report. Every SETTINGS_* variable, every plugin credential, which are secrets and which are not, what a tenant may override versus what the hoster pins. Delivered as section B of the tenant-owner config-surface document: 277 distinct names, classified T / TS / D / B / X, measured against crm-seam at 81a1f6ce.
 
@@ -8714,10 +8714,12 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
+- `docs/30-design/tenancy/owner-authority.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`
 
-**Notes.** 2026-10-27 (maintainer, recorded by session -4f): D22 decided. Tenant configuration is a per-setting operator policy (default, mode open / bounded / pinned, constraint) over owner values, under project floors enforced in code under multi (four groups: no deployment secrets, no anonymous writes, network safety, data and log safety). Secrets are a component: encrypted at rest, decrypted only by the consuming process, a logged reveal operation (initial policy: an owner session; target: re-authentication). Open: policy by plan or cohort; the dashboard call path (lab of three designs briefed); the twelve contested settings re-stated under D22. Execution plan §2.13; census §3. Second round, same day: integrations (connectors, webhooks, push) are typed records with a credential reference and status; a change takes effect live, versioned with rollback, at the tenant's next request or loop cycle; operator policy varies per tenant by operator override, floors over all. Call path decided (maintainer, same day): owner token end to end to ns-tenant-admin, provisioning and suspension through an orchestrator on the operator plane only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and §F.1 / D17 wording contradictions the lab found are noted in place. T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it is the maintainer decisions the document defers, and the harnesses that would turn its numbers into measurements. The three decisions with the longest reach are where the tenant- owner API lives, what issues and verifies a tenant-owner credential, and whether D7's credential-free platform plane holds against Nocturne's design, which puts platform admin on the consumer API behind a platform_admin role instead. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).
+**Notes.** 2026-10-27 (maintainer, recorded by session -4f): D22 decided. Tenant configuration is a per-setting operator policy (default, mode open / bounded / pinned, constraint) over owner values, under project floors enforced in code under multi (four groups: no deployment secrets, no anonymous writes, network safety, data and log safety). Secrets are a component: encrypted at rest, decrypted only by the consuming process, a logged reveal operation (initial policy: an owner session; target: re-authentication). Policy by plan or cohort and the complete settings catalogue remain open; the call-path and owner- authority decisions below supersede the earlier lab-only state. The twelve contested settings are re-stated under D22. Execution plan §2.13; census §3. Second round, same day: integrations (connectors, webhooks, push) are typed records with a credential reference and status; a change takes effect live, versioned with rollback, at the tenant's next request or loop cycle; operator policy varies per tenant by operator override, floors over all. Call path decided (maintainer, same day): owner token end to end to ns-tenant-admin, provisioning and suspension through an orchestrator on the operator plane only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and §F.1 / D17 wording contradictions the lab found are noted in place. T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it includes the remaining catalogue and per-plan policy decisions plus their acceptance harnesses. The maintainer adopted the owner authority and D22 local-public-key verification contract in owner-authority.md: separate management authentication/listener and the private operator plane are the direction. R48 accepts optional new- format data-token wiring and current authority in the actual API preview. Full human issuer/refresh-session integration, the complete settings/role catalogue, explicit delegation-ceiling enforcement and production provider enforcement remain incomplete; adopted policy does not imply those implementations or milestone completion. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).
 
 ### `T30-AUTH` &mdash; The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split
 
@@ -8943,6 +8945,8 @@ alarm-readiness items, and the seam branch refresh.
 
 - `[integration]` `node tools/queue/gates/multitenant-rest-authority.js --ref d4570e585d0e12e46386ed26772790b269b2b736`
   - Archived immutable CRM current-authority HTTP probe on owned PG: cross-tenant audience, same-token committed grant revocation, outage/no-handler-effects, credential precedence and unsafe mutation privilege refusal. Synthetic crypto; not full REST, Vault, production runtime or milestone acceptance.
+- `[integration]` `node tools/queue/gates/owner-local-token.js --ref 3d5eac196256e447859373beadf7abf2efbfb2ce`
+  - R48 bounded actual configured-executable new-format data-token verification and current-authority HTTP acceptance. Archived trusted public-key, tenant/audience, grant/session revocation and dependency refusal cases; not human issuance, a management listener, full owner ceilings, provider enforcement or milestone completion.
 - **NO GATE** &mdash; R40 parent-run campaigns accept derived REST and pinned-pattern replay atop R38/R39 at published ded254b9, including actual CLI/PG/Vault current-authority composition. The bounded archived authority probe is wired separately; no complete production runtime gate exists; loopback test-local trust is not production transport provenance. Required D14 property: A's token presented against tenant B's host fails as a SIGNATURE failure, not a claim check - with a control where the same token against A's own host succeeds, so the failure is known to come from the key and not from everything failing.
 
 **Evidence.**
@@ -8954,7 +8958,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Current 2026-11-04: R40 accepts derived reads and source-pinned client patterns with parent-run cumulative evidence at published ded254b9; PR title/description read back correctly; current-head CI and CodeQL succeeded at the visualization read-back. Archived authority probe is a bounded PASS with NON-VACUOUS control; complete production runtime is open. Test-only credential fidelity is incorporated; no supported credential importer or atomic tenant activation is implied. This in-progress claim does not complete TEN-RESOLVE dependencies or promote M2/M3; production provisioning, runtime identity and listeners remain open. No OIDC, client protocol or role enablement is inferred. 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS-CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current-dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
+**Notes.** 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. R48 accepts actual optional new-format data-token wiring through the configured API executable with local public-key verification and current PostgreSQL authority. This is local application acceptance, not complete human/refresh-session issuance, management listener admission, full settings/role catalogue, delegation-ceiling or production provider enforcement, nor milestone promotion. Current 2026-11-04: R40 accepts derived reads and source-pinned client patterns with parent-run cumulative evidence at published ded254b9; PR title/description read back correctly; current-head CI and CodeQL succeeded at the visualization read-back. Archived authority probe is a bounded PASS with NON-VACUOUS control; complete production runtime is open. Test-only credential fidelity is incorporated; no supported credential importer or atomic tenant activation is implied. This in-progress claim does not complete TEN-RESOLVE dependencies or promote M2/M3; production provisioning, runtime identity and listeners remain open. No OIDC, client protocol or role enablement is inferred. 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS-CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current-dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
 
 ### `T30-TENANT-ADMIN` &mdash; cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)
 
@@ -10371,9 +10375,9 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/evaluator-next-20261105` |
+| branch | `codex/evaluator-frame-20261105` |
 | base | `official/dev@4a482627; PR8891@dff9a8d4` |
-| worktree | `externals/work/crm-codex-evaluator-next-20261105` |
+| worktree | `externals/work/crm-codex-evaluator-frame-20261105` |
 | semver | `n/a` |
 | review | maintainer; architecture, storage and compatibility review |
 | blocks on | `ST-WRITES` |
@@ -10386,8 +10390,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f`
-  - Independent refreshed nonresident single replay: actual write/timer triggers, actual API3 and test-composed v1 HTTP mutations/resends, retained properties and selected live handoff; no executable v1 admission or subscriber switch.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70`
+  - Independent refreshed nonresident single replay: actual write/timer triggers, actual API3 and test-composed v1 HTTP mutations/resends, retained properties, actual concurrent-read schedule, callback-error retention/recovery and selected live handoff; no executable v1 admission or subscriber switch.
 - **NO GATE** &mdash; The selected current-head replay is measured by the bounded gate. Complete alarm/writer cohorts, logical no-op subscriber policy, live database-stat freshness and final integration/release placement remain open. Timer/write-trigger suppression, shortened window and request-time-properties controls must fail; historical replay/cost is not current evidence.
 
 **Evidence.**
@@ -10396,7 +10400,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** Published R45 dff9a8d4 retains independent profile acceptance. Local test-only 0c98ad06 adds actual shipping v1 configurators over the real nonresident context, batch/resend/hard-delete and live handoff characterization; no production v1 or socket route enablement. Shared-frame inventory is read- derived, not extraction. Physical subscriber retained; logical no-op/refusal admission and full writer/alarm coverage remain open. Runtime cost and live stats freshness are unmeasured. No automatic join into #8898, release placement or multitenant evaluator enablement; no new RC tag gate.
+**Notes.** R50 independent5173864d adds actual Mongo read barriers and raw concurrent writes: retained A/B then next actual trigger B/B; callback fault after real rows preserves the prior cycle and the next trigger recovers. Teardown proves no late fake-provider delivery, not DB cancellation or absent internal handoff. Physical subscriber, executable routes, full writers/alarms, live stats/cost and release placement remain open; no automatic REST join or new RC tag gate.
 
 ### `ARCH-DERIVED-FRAME` &mdash; Next join: shared bounded frames and derived calculations
 
@@ -10404,28 +10408,33 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/evaluator-next-20261105` |
-| base | `REST-R44@bc4ee1a9; PROFILE-R47@0c98ad06` |
-| worktree | `externals/work/crm-codex-evaluator-next-20261105` |
+| branch | `codex/frame-integration-20261105` |
+| base | `REST-R49@1c55098a; PROFILE-R50@5173864d` |
+| worktree | `externals/work/crm-codex-frame-integration-20261105` |
 | semver | `n/a` |
 | review | maintainer; architecture, storage and compatibility review |
 | blocks on | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
 
-**Blast radius.** Shipping computed views, tenant snapshot/property composition and refreshed nonresident evaluator; explicit freshness, consistency, plugin and side-effect policies.
+**Blast radius.** Shipping computed views, tenant snapshot/property composition and independent nonresident evaluator; explicit bounds/frame/statistics/error/lifecycle policy.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `n/a`.** Source-pinned read-derived inventory only; extraction and release placement remain unmeasured.
+**Why `n/a`.** Bounded runtime characterization; shared extraction and release placement remain open.
 
 **Gates.**
 
-- **NO GATE** &mdash; Source-pinned policy/lifecycle inventory is read-derived; no shared-frame convergence or concurrent-write characterization is accepted. Compare actual resident/nonresident/tenant REST paths with current input corpus; characterize concurrent writes without inventing snapshot consistency. Cross-bound frame, partial read, incorrect clinical setter and read-egress controls must each fail; restored actual derived HTTP and alarm replay required.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458`
+  - Real Mongo/PG cross-path acquisition, tenant binding, private cache and selected derived-value bounds/policy differences.
+- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458`
+  - Actual PG concurrent HTTP mixed-frame observation, whole-response real read-error refusal and owned-port read-egress guard.
+- **NO GATE** &mdash; R49/R50 characterize existing paths; no production shared primitive, common database revision, settings/plugin version key or stronger snapshot consistency is implemented. Full alarm/writer cohorts, live statistics/cost, distributed recovery and final release placement remain open.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 
-**Notes.** R47 records a read-derived inventory of acquisition bounds/frame flags, failure/tenant/statistics policy and retained versus request-local lifecycle. Next characterize actual cross-path materialization before extraction. Share materialization/calculation while retaining REST all-or-error authorization and evaluator retained-result/notification policies. Distributed recovery stays in MT-RUNTIME-PLAN.
+**Notes.** Actual tenant HTTP reads observe old entries/new treatments across an atomic independent writer commit; tenant B stays unchanged. Bounds, future-record, typed-union and statistics/error differences remain explicit. Next extract private materialization behind those policies while keeping HTTP all-or-error and evaluator retained-result/notification ownership separate. No M5/M6 promotion.
 
 ### `ARCH-SQLITE-SPIKE` &mdash; Deferred low priority: hypothetical SQLite and cell adapter probe
 

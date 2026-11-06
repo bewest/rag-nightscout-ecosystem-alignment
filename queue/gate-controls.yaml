@@ -3005,9 +3005,9 @@ controls:
       Scratch-only credential bypass permits a management mutation where
       the actual HTTP assertion requires 401; persisted effects are observed.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f
-    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f --control v1-closed
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70 --control v1-closed
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
     control-kind: integration
     proves: >
       Close only the new HTTP cohort notification service after its request
@@ -3042,3 +3042,71 @@ controls:
     control-kind: integration
     proves: >
       Disable the single duplicate-identifier retry in scratch: after two empty matches and a real indexed INSERT loser, actual HTTP500 replaces the required resend200.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70 --control frame-clinical
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+    control-kind: integration
+    proves: >
+      Alter the next real-trigger BG from240 to241; the retained clinical value assertion fails.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70 --control frame-retention
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+    control-kind: integration
+    proves: >
+      Erase kept on a callback error after real rows; exact prior-cycle/timestamp retention fails.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control tenant
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control-kind: integration
+    proves: >
+      Cross-bind real tenant acquisition; selected tenant100 becomes foreign200.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control bound
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control-kind: integration
+    proves: >
+      Shrink actual SGV alarm acquisition from twelve to one; bounds assertion fails.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control clinical
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control-kind: integration
+    proves: >
+      Alter the actual BG setter; current clinical property invariant fails.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control cache
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control-kind: integration
+    proves: >
+      Reuse caller cache during real materialization; exact unchanged caller contents assertion fails.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control partial
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control-kind: integration
+    proves: >
+      Ignore collected read errors; real42501 returns HTTP200 instead of503.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458 --control egress
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+    control-kind: integration
+    proves: >
+      Attempt provider connection during actual derived read; owned-port guard denies an additional connection.
+
+
+  - gate: node tools/queue/gates/owner-local-token.js --ref 3d5eac196256e447859373beadf7abf2efbfb2ce
+    control: node tools/queue/gates/owner-local-token.js --ref 3d5eac196256e447859373beadf7abf2efbfb2ce --control signature
+    positive-control: node tools/queue/gates/owner-local-token.js --ref 3d5eac196256e447859373beadf7abf2efbfb2ce
+    control-kind: integration
+    proves: >
+      R48 records a scratch-only removed signature comparison: an invalid
+      new-format token POST succeeds instead of the required refusal, failing
+      the actual configured-executable HTTP assertion. Audience, session and
+      stale-snapshot controls are independently recorded in R48; production
+      sources remain unchanged.

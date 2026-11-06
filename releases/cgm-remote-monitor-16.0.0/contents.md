@@ -1421,3 +1421,17 @@ the earlier immutable prototype measurement remains evidence for its own instrum
 Queue/links/site checks for the joined QMS branch are recorded in the local handoff.
 The #8898 coordinator owns final queue/dashboard/next-gen-map reconciliation and
 maintainer-operated publication of the combined branch.
+
+### Update — frame acquisition and concurrent-read characterization (2026-11-05)
+
+| Lane | Tree and measured status | Remaining boundary |
+|---|---|---|
+| Cumulative REST frame / owner-authority join | `codex/frame-integration-20261105` at `1c55098a3d4bcf3d871bcd345f159ce444d6e458`; [R49](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05) records final full/browser and archived14 acquisition/4 concurrency positives, six semantic controls and test-fixture red/green correction. R48 source and evidence preserved. | Existing bounds/frame/statistics/identity policies remain explicit; actual PG HTTP can combine old entries/new treatments across an atomic writer commit. Shared extraction and stronger consistency remain open. |
+| Independent evaluator frame | `codex/evaluator-frame-20261105` at `5173864da1835da7aecf1f73121b28463f6a6a70`; [R50](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05) records full6690/3pending/0failure, browser684, parent archived38 and two semantic controls. | Actual A/B acquisition then real-trigger B/B, callback-error retention/recovery and no late fake-provider delivery. No DB cancellation/internal-handoff guarantee, logical subscriber change, REST join or multitenant evaluator admission. |
+| Owner authority | Adopted contract and R48 optional data-token verification incorporated; owner gate registered with actual-HTTP signature control. | Full human issuer/refresh, individual-setting catalogue, proposed-grant/delegation ceilings, production provider/key operations remain incomplete. |
+| Dashboard and next-gen map | Source/dashboard regeneration, queue validation/check and document links pass; rendered map/site validation recorded in the final QMS update. | Runtime characterization remains in progress; no M0-M6 promotion, RC admission, publication or agent push. |
+
+Machine-local lane detail: `externals/work/HANDOFF-frame-integration-20261105.md`.
+The earlier predecessor full run failed fixture setup; it is recorded in R49 and
+superseded only by the final cumulative measurement. Published drafts remain at
+their separately captured remote heads until the maintainer publishes this work.

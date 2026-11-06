@@ -10,6 +10,29 @@ const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const suite = option('--suite'), ref = option('--ref'), control = option('--control');
 const cases = {
+  'frame-acquisition': {
+    file: 'tests/tenant-frame-acquisition.integration.test.js', flag: 'NS_FRAME_ACQUISITION_TEST',
+    controls: {
+      tenant: ['lib/server/tenant-app/snapshot.js', 'return scope.withTenant(tenant, () => new Promise',
+        "return scope.withTenant('22222222-2222-4222-8222-222222222222', () => new Promise", 'PG snapshot keeps real row binding'],
+      bound: ['lib/data/views/bounds.js', "newestOfType('sgv', 12)", "newestOfType('sgv', 1)",
+        'pg preserves explicit alarm and property acquisition bounds'],
+      clinical: ['lib/plugins/bgnow.js', 'const newBgNow = { ...recent };',
+        'const newBgNow = { ...recent, last: -1 };', 'pg agrees on selected current clinical properties'],
+      cache: ['lib/data/views/index.js', 'lctx.cache = createCache(env, lctx);',
+        'lctx.cache = ctx.cache;', 'pg retains raw typed identity']
+    }
+  },
+  'frame-concurrency': {
+    file: 'tests/tenant-frame-concurrency.integration.test.js', flag: 'NS_ENTRIES_CRUD_HTTP_TEST',
+    controls: {
+      partial: ['lib/server/tenant-app/snapshot.js', 'if (error || errors.length) return reject(error || errors[0]);',
+        'if (error) return reject(error);', 'real 42501'],
+      egress: ['lib/server/tenant-app/derived-frame.js', "  const levels = { ...require('../../levels'), translate: language.translate };",
+        "  require('node:net').connect({ host: 'provider.invalid', port: 443 });\n  const levels = { ...require('../../levels'), translate: language.translate };",
+        'without connecting']
+    }
+  },
   consolidation: {
     file: ['tests/storage-port-contract.integration.test.js', 'tests/postgres-collection-intent.test.js'],
     flag: 'NS_STORAGE_PORT_CONTRACT_DOCKER_TEST',
@@ -86,6 +109,10 @@ const cases = {
         '\n      ctx.notifications = notifications; closeNotifications();\n    }\n', 'entries POST, PATCH and DELETE'],
       'v1-closed': ['tests/views-profile.test.js', '\n      ctx.notifications = notifications;\n    }\n',
         '\n      ctx.notifications = notifications; closeNotifications();\n    }\n', 'entries batch, identity resend and hard delete'],
+      'frame-clinical': ['lib/plugins/bgnow.js', 'const newBgNow = { ...recent };',
+        'const newBgNow = { ...recent }; if (newBgNow.mean === 240) newBgNow.mean = 241;', 'retains the observed entries A'],
+      'frame-retention': ['lib/server/nonresident.js', 'stats.errors += 1;',
+        'stats.errors += 1; kept = null;', 'a failed real materialization'],
       window: ['env', 'VIEWS_PROFILE_DS_NEWEST', '10', 'a second uploader'],
       freshness: ['env', 'VIEWS_PROFILE_ON_REQUEST', '1', 'retains cycle properties']
     }
@@ -95,7 +122,7 @@ let scratch;
 const containers = [];
 try {
   if (!Object.hasOwn(cases, suite) || !ref || (control && !Object.hasOwn(cases[suite].controls, control))) {
-    throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race --ref <commit> [--control <declared case>]');
+    throw new Error('Usage: --suite port|management|profile|compose|identity|consolidation|race|frame-acquisition|frame-concurrency --ref <commit> [--control <declared case>]');
   }
   const selected = cases[suite];
   const repository = process.env.NS_REST_GATE_REPO || CRM;
@@ -117,7 +144,7 @@ try {
   fs.symlinkSync(dependencies, path.join(scratch, 'node_modules'), 'dir');
   const runtime = { ...process.env, NODE_ENV: 'test', NODE_PATH: dependencies,
     ...(selected.flag ? { [selected.flag]: '1' } : {}), TEST_ENV_FILE: '/dev/null', TZ: 'UTC' };
-  if (suite === 'profile' || suite === 'identity' || suite === 'race') {
+  if (suite === 'profile' || suite === 'identity' || suite === 'race' || suite === 'frame-concurrency') {
     const docker = values => execFileSync('docker', values,
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }).trim();
     const container = 'ns-profile-gate-' + require('node:crypto').randomBytes(8).toString('hex');
@@ -139,7 +166,7 @@ try {
     Object.assign(runtime, require('node:util').parseEnv(fs.readFileSync(path.join(scratch, 'tests/ci.test.env'), 'utf8')),
       { NODE_ENV: 'test', NODE_PATH: dependencies, TEST_ENV_FILE: '/dev/null', TZ: 'UTC',
         CUSTOMCONNSTR_mongo: 'mongodb://127.0.0.1:' + port + '/' + suite + '_gate_test' });
-    if (suite === 'identity' || suite === 'race') {
+    if (suite === 'identity' || suite === 'race' || suite === 'frame-concurrency') {
       const postgres = 'ns-identity-pg-' + require('node:crypto').randomBytes(8).toString('hex');
       const password = require('node:crypto').randomBytes(24).toString('hex');
       containers.push(postgres);

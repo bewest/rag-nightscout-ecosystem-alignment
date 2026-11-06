@@ -25,12 +25,12 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest local cumulative REST head is `44331668`
-([R46](../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05));
+promotion is recorded. The latest local cumulative REST head is `1c55098a`
+([R49](../remedial/rc-16.0.0-integration-record.md#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05));
 it remains unpushed. Published #8898 is OPEN/draft at R44 `bc4ee1a9`;
 independent #8891 is OPEN/draft at R45 `dff9a8d4`. Both published heads have
-successful CI and CodeQL at fresh read-back. Independent local R47 `0c98ad06`
-extends evaluator writer replay without joining REST or enabling a role.
+successful CI and CodeQL at fresh read-back. Independent local R50 `5173864d`
+extends actual evaluator acquisition/retention characterization without joining REST or enabling a role.
 [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
@@ -2071,3 +2071,41 @@ rerun. These results do not promote M1-M6 or establish fresh remote CI
 success. No agent push was performed.
 Exact run commands and acceptance limits are recorded in
 [R23](../remedial/rc-16.0.0-integration-record.md#r23---8898-opt-in-ci-accounting-on-0afdb87f-2026-11-03).
+
+
+### Accepted frame acquisition and concurrent-read characterization (2026-11-05)
+
+R49 records cumulative runtime characterization over R46 and the adopted R48
+owner-authority data-token integration. Actual Mongo/PG acquisition and actual PG
+HTTP concurrent reads now have bounded executable gates and semantic controls.
+The [architecture plan](architecture-seams-execution-plan-2026-11-05.md#reproduced-frame-acquisition-and-concurrent-reads)
+owns the measured bounds/frame/statistics/identity differences and mixed-frame
+observation. No common revision or shared production implementation is inferred.
+Next extract private acquisition behind the explicit path policies and rerun
+these gates; durable realtime/evaluator recovery remains MT-RUNTIME-PLAN work.
+Exact tree, regression and control results live in R49 of the
+[integration record](../remedial/rc-16.0.0-integration-record.md).
+
+### Accepted independent evaluator frame characterization (2026-11-05)
+
+Independent `codex/evaluator-frame-20261105` at
+`5173864da1835da7aecf1f73121b28463f6a6a70` extends R47 with actual Mongo read
+barriers, concurrent raw writes and a real subsequent write trigger. R50 records
+full/browser regression, parent archived38 replay and clinical/retention controls.
+Selected A/B then B/B results, callback-error retention and recovery are reproduced;
+late-read teardown establishes no late fake-provider delivery only. Cancellation,
+internal closed-state immutability, all-writer/alarm coverage, live statistics/cost,
+logical no-op policy and multitenant durable recovery remain open. The independent
+profile is not joined into REST or admitted as a multitenant evaluator.
+
+
+### Accepted optional local data-token authority (2026-11-05)
+
+The adopted [owner authority contract](owner-authority.md) and its D22 amendment
+own the policy. [R48](../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05)
+accepts optional new-format data-token Ed25519 local verification through the
+actual API, with current PostgreSQL tenant/session/credential/key/grants on each
+operation and same-state legacy compatibility. The signature, audience, session
+and stale-snapshot controls fail semantically. Human issuer/refresh, full
+individual-setting catalogue and proposed-grant/delegation ceiling enforcement,
+production provider/key distribution and protected streams remain incomplete.

@@ -264,6 +264,49 @@ Keep logical no-op admission and durable commit-coupled recovery separate. Broad
 socket status/read paths still assume resident data; test-only v1 writer replay
 does not admit that transport or join the profile into REST.
 
+## Reproduced frame acquisition and concurrent reads
+
+The R49 REST frame lane exercises shipping views, tenant snapshots and resident
+loader frame modes over actual MongoDB and PostgreSQL wrappers. Selected current
+BG, direction, uploader battery and IOB values agree on the admitted corpus.
+This establishes a bounded comparison, with these measured differences retained:
+
+- Alarm acquisition keeps twelve SGVs plus MBG/calibration; property acquisition
+  keeps fifteen SGVs within two days. Tenant frame mode excludes future records;
+  the unframed loader includes them. Food/activity, old sensor/pump records and
+  per-kind device-status bounds retain their existing path-specific policies.
+- Raw ObjectId and same-spelling string identities are fetched separately. The
+  computed-view union collapses that spelling while the framed loader retains
+  both fetched rows. This characterization does not prescribe an identity fix.
+- Views and tenant snapshots reject a statistics error; resident loading logs it
+  and continues with empty statistics. Tenant-local statistics exclude shared
+  index bytes. Private acquisition leaves the caller's cache/ddata untouched.
+
+The actual tenant HTTP concurrency fixture pauses a treatment SELECT before
+execution, completes an entries SELECT, then commits both updated domains in one
+independent PostgreSQL transaction. The response contains old entries and new
+treatments. Before/after responses and tenant B remain separately asserted.
+**Reproduced:** parallel reads do not provide a common database revision. Real
+permission and missing-relation failures refuse the entire response; read paths
+make no additional network connection outside the owned loopback services.
+Tenant binding, input bounds, clinical values, private cache, partial-read refusal
+and read-egress controls each have explicit semantic break-it checks in R49.
+
+Independent R50 exercises actual nonresident materialization over MongoDB with
+read barriers and raw writes that emit no process event. The selected ordering
+retains entries A/treatments B, then a real marker write refreshes B/B. A callback
+fault injected after real rows arrive retains the complete previous result and
+its timestamp; the next real trigger recovers. The teardown check proves no late
+fake-provider delivery/listener remains. It does not prove database cancellation,
+absence of an internal handoff, or immutable closed evaluator state.
+
+No production frame extraction, stronger snapshot consistency, settings/plugin
+version key, logical no-op subscriber policy, durable recovery or M5/M6 admission
+is accepted by these fixtures. Next extract the measured private acquisition
+primitive behind explicit bounds/frame/statistics/error policies, preserve the
+REST all-or-error and evaluator retained-result boundaries, and rerun the same
+controls. Any stronger consistency policy needs its own implementation and test.
+
 ## Integration and merge boundaries
 
 For the bounded #8898 preview, prioritize contract review, capability/refusal

@@ -37,9 +37,10 @@ research deliverable
 
 ## Who should review this, and why
 
-maintainer. The document is a DRAFT carrying sections marked DECISION that
-need a yes before T30-SCHEMA-CONFIG can start; the item is a decision surface,
-not an unstarted research task.
+maintainer. Owner authority and D22 policy direction are adopted in owner-
+authority.md. Remaining full settings/role catalogue and per-plan policy
+choices need their own decisions; bounded implementation can continue under
+the adopted contract.
 
 ## What was measured
 
@@ -88,6 +89,8 @@ the enumeration is complete or correct.
 ## Evidence
 
 - [`docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`](../../docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md)
+- [`docs/30-design/tenancy/owner-authority.md`](../../docs/30-design/tenancy/owner-authority.md)
+- [`docs/30-design/remedial/rc-16.0.0-integration-record.md`](../../docs/30-design/remedial/rc-16.0.0-integration-record.md)
 - [`docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
 - [`docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`](../../docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md)
 
@@ -99,9 +102,10 @@ pinned, constraint) over owner values, under project floors enforced in code
 under multi (four groups: no deployment secrets, no anonymous writes, network
 safety, data and log safety). Secrets are a component: encrypted at rest,
 decrypted only by the consuming process, a logged reveal operation (initial
-policy: an owner session; target: re-authentication). Open: policy by plan or
-cohort; the dashboard call path (lab of three designs briefed); the twelve
-contested settings re-stated under D22. Execution plan §2.13; census §3.
+policy: an owner session; target: re-authentication). Policy by plan or cohort
+and the complete settings catalogue remain open; the call-path and owner-
+authority decisions below supersede the earlier lab-only state. The twelve
+contested settings are re-stated under D22. Execution plan §2.13; census §3.
 Second round, same day: integrations (connectors, webhooks, push) are typed
 records with a credential reference and status; a change takes effect live,
 versioned with rollback, at the tenant's next request or loop cycle; operator
@@ -113,13 +117,16 @@ only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and
 the largest correction owed in the programme. It does not block T3.3, which
 landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The
 enumeration was written and adversarially reviewed on 2026-09-15; the surface
-total is 277. What remains is not enumeration: it is the maintainer decisions
-the document defers, and the harnesses that would turn its numbers into
-measurements. The three decisions with the longest reach are where the tenant-
-owner API lives, what issues and verifies a tenant-owner credential, and
-whether D7's credential-free platform plane holds against Nocturne's design,
-which puts platform admin on the consumer API behind a platform_admin role
-instead. 2026-10-07 (session -69's T30 agent,
+total is 277. What remains is not enumeration: it includes the remaining
+catalogue and per-plan policy decisions plus their acceptance harnesses. The
+maintainer adopted the owner authority and D22 local-public-key verification
+contract in owner-authority.md: separate management authentication/listener
+and the private operator plane are the direction. R48 accepts optional new-
+format data-token wiring and current authority in the actual API preview. Full
+human issuer/refresh-session integration, the complete settings/role
+catalogue, explicit delegation-ceiling enforcement and production provider
+enforcement remain incomplete; adopted policy does not imply those
+implementations or milestone completion. 2026-10-07 (session -69's T30 agent,
 docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the
 census is now a gate, and 247 against 277 is measured: 247 is the union the
 settings layer, env.js and the README can see; 277 adds 30 names found only by

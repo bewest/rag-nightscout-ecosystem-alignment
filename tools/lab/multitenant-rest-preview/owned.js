@@ -19,6 +19,7 @@ const docker = args => execFileSync('docker', args, {
 const focused = [
   'tenant-rest-entries.integration.test.js', 'tenant-rest-identity-differential.integration.test.js',
   'tenant-rest-identifier-race.integration.test.js',
+  'tenant-frame-acquisition.integration.test.js', 'tenant-frame-concurrency.integration.test.js',
   'tenant-rest-treatments.integration.test.js',
   'tenant-rest-device-activity.integration.test.js', 'tenant-rest-profile-food.integration.test.js',
   'tenant-rest-context.integration.test.js', 'tenant-rest-derived.integration.test.js',
@@ -86,7 +87,7 @@ const focused = [
     console.log('REST preview campaign:', JSON.stringify({ head, mode, versions, seed: '41574423920' }));
     const env = { ...process.env, ...defaults, TZ: 'UTC', TEST_SHUFFLE_SEED: '41574423920',
       TEST_ENV_FILE: '/dev/null', NODE_ENV: 'test',
-      NS_PROFILE_FOOD_HTTP_TEST: '1', NS_ENTRIES_CRUD_HTTP_TEST: '1', NS_REST_TREATMENTS_HTTP_TEST: '1',
+      NS_FRAME_ACQUISITION_TEST: '1', NS_PROFILE_FOOD_HTTP_TEST: '1', NS_ENTRIES_CRUD_HTTP_TEST: '1', NS_REST_TREATMENTS_HTTP_TEST: '1',
       NS_REST_DEVICE_ACTIVITY_TEST: '1', NS_REST_CONTEXT_HTTP_TEST: '1', NS_REST_DERIVED_HTTP_TEST: '1',
       NS_REST_AUTHORITY_REVIEW_TEST: '1', NS_REST_CLIENT_REPLAY_TEST: '1',
       NS_SUBJECT_ADMIN_POSTGRES_DOCKER_TEST: '1',

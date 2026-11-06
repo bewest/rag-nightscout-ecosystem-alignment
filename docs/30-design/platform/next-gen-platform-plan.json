@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-05: local bounded PG consolidation/indexed races44331668/R46 and independent test-composed v1 evaluator0c98ad06/R47. Published drafts #8898bc4ee1a9/R44 and #8891dff9a8d4/R45 have successful CI/CodeQL. Shared-frame inventory is read-derived; component evidence does not promote M0\u2013M6.",
+ "measured": "2026-11-05: R49 actual frame acquisition/concurrent REST reads at 1c55098a extends accepted R46; full7076/80pending/0failure and browser684 pass. Independent evaluator5173864d/R50 has full6690/3pending/0failure, default-browser684 and archived38 with semantic controls. Adopted owner-authority contract; R48 bounded local data-token verification accepted. Published draft heads #8898bc4ee1a9/#8891dff9a8d4 and CI belong to prior captures, not fresh checks. No shared implementation, atomic revision or M0\u2013M6 promotion.",
  "tracks": [
   {
    "id": "storage",
@@ -304,13 +304,17 @@
    "short": "one-tenant computed profile",
    "title": "Explicit single/nonresident prototype: actual physical-write and heartbeat evaluation, retained cycle properties and fake delivery handoff; default single remains resident. No multitenant evaluator or production subscriber change.",
    "where": "scripts/views-profile-server.js, lib/server/bootevent.js and nonresident.js, tests/views-profile.test.js",
-   "check": "R47 full/default-browser and parent archived36 actual API3/test-composed v1 writer replay, retained-property/request-signature parity and selected live handoff; v1 trigger/closed-service controls. Full writers/alarms/live stats/cost remain open.",
+   "check": "R50 full6690/3pending/0failure and default-browser684; parent archived38 with clinical/retention semantic controls. Actual held reads yield A/B then a real trigger B/B; callback failure retains previous time/properties and recovers. Teardown proves no late fake-provider delivery only. Wider writers/alarms/live stats/cost remain open.",
    "depends": [
     "ST-VIEWS"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8891",
-   "ref": "Independent local0c98ad06/R47 extends published #8891dff9a8d4/R45. Test-only v1 handlers, no executable v1/socket admission, subscriber switch, REST join or RC admission.",
+   "ref": "Independent local5173864d/R50 extends R47 and prior published #8891dff9a8d4/R45. Production runtime/routes/physical subscriber unchanged; no REST join, shared frame, cancellation guarantee or RC admission.",
    "spec": [
+    {
+     "label": "R50 independent evaluator frame characterization",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
+    },
     {
      "label": "R47 independent v1 evaluator replay",
      "href": "../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05"
@@ -337,12 +341,16 @@
    "short": "PG REST ports / import",
    "title": "Published preview reuses shipping legacy and API3 handlers over tenant-bound PostgreSQL/RLS, shared intent rules and explicit domain catalogues. R40 adds derived reads and pinned client patterns; complete storage/import/resource parity remains open.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
-   "check": "R46 bounded common PG mechanics with expanded actual baseline/current ports and real indexed HTTP races; lower/preview/source-specific capabilities retained. Full query/import/resource/client coverage remains open.",
+   "check": "R46 common PG mechanics/indexed races remain accepted. R49 characterizes actual acquisition bounds/frame-future/statistics/typed-union/private-cache differences; final cumulative full7076/80pending/0failure and browser684 pass. Full query/import/resource/client coverage remains open.",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Local44331668/R46 extends published #8898bc4ee1a9/R44. Historical comparison keeps its own scope; no all-backend portability claim.",
+   "ref": "Local 1c55098a/R49 extends44331668/R46; published #8898bc4ee1a9/R44 remains the prior capture. No all-backend portability, common atomic revision or shared-frame implementation claim.",
    "spec": [
+    {
+     "label": "R49 actual frame acquisition and concurrent reads",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
+    },
     {
      "label": "R46 bounded PG consolidation and indexed races",
      "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
@@ -728,13 +736,17 @@
    "phase": "boundary",
    "state": "progress",
    "short": "Per-tenant config table",
-   "title": "Full tenant configuration catalogue and owner API remain open. The selected display/current-policy services exist in the preview; that does not finish this historical catalogue/schema item.",
+   "title": "Owner-authority policy is adopted. Full permission/settings catalogue, transactional delegation-ceiling enforcement and owner API remain unimplemented; selected display/current-policy services do not finish this historical item.",
    "ref": "Selected R40 services are separate from the older seam catalogue. Current T30-SCHEMA-CONFIG static gate fails its crm-seam D15 table predicate; see the architecture evidence gaps. No full-catalogue promotion.",
    "depends": [
     "T30-RESEARCH",
     "T30-DONE"
    ],
    "spec": [
+    {
+     "label": "Adopted owner authority and token verification",
+     "href": "../tenancy/owner-authority.md"
+    },
     {
      "label": "current evidence gaps",
      "href": "../tenancy/single-and-multitenant-architecture.md#remaining-evidence-gaps-and-next-work"
@@ -776,14 +788,22 @@
    "phase": "multi",
    "state": "progress",
    "short": "Tenant-scoped auth",
-   "title": "Current tenant credentials, grants and subject metadata compose with actual v1/v2/v3 and derived HTTP through the explicit CLI/PG/Vault preview. Production identity and administration/lifecycle remain incomplete.",
-   "ref": "Current-source authority and separate management acceptance in R42 at published d4570e58. Published preview is bc4ee1a9; production identity/owner ceilings/lifecycle remain open.",
+   "title": "Current tenant credentials/grants compose with actual CLI/REST. The adopted contract permits optional new-format Ed25519 data-token verification locally with current PG session/key/grants per operation; human management issuer/refresh, ceilings and lifecycle remain unimplemented.",
+   "ref": "R48 accepts bounded local data-token verification at3d5eac19; this optional data-token path does not enable the management issuer/listener or export private signing keys. Legacy compatibility and R42 management separation remain; published #8898bc4ee1a9 is a prior capture.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R48 bounded local data-token API acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
+    },
+    {
+     "label": "Adopted owner authority and token verification",
+     "href": "../tenancy/owner-authority.md"
+    },
     {
      "label": "R42 local acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
@@ -808,8 +828,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "R46 accepts bounded common PG mechanics and direct index-on race compatibility; R47 independently extends writer replay. Full M3 awaits complete M1/M2.",
-   "ref": "Local REST44331668/R46; published #8898bc4ee1a9/R44. Independent evaluator0c98ad06/R47 is not joined. Wider REST/clients/import/resources/lifecycle remain open.",
+   "title": "R49 actual acquisition and held concurrent REST reads extend accepted R46. Old entries/new treatments are observed despite an atomic independent writer commit; full/browser acceptance is recorded. Full M3 awaits complete M1/M2.",
+   "ref": "Local 1c55098a/R49; prior published #8898bc4ee1a9/R44. Independent evaluator5173864d/R50 is not joined. No common atomic revision/shared frame; wider REST/clients/import/resources/lifecycle remain open.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -817,6 +837,14 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R49 actual frame acquisition and concurrent reads",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
+    },
+    {
+     "label": "R50 independent evaluator frame characterization",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
+    },
     {
      "label": "R46 bounded PG consolidation and indexed races",
      "href": "../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05"
@@ -868,9 +896,17 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current policy / settings",
-   "title": "R42 preserves persisted subject update/delete and known-role service semantics using shared validation, with a separate authenticated HTTP factory. Human identity, owner ceilings, full roles/settings and listener enablement remain open.",
-   "ref": "Published d4570e58/R42; subject and management gates PASS/NON-VACUOUS. No production M2 or full administration claim.",
+   "title": "R42 persisted subject service and standalone authenticated HTTP remain bounded acceptance. Adopted explicit ownership/delegation/ceiling policy still needs human management issuer/refresh, transactional enforcement, full roles/settings catalogue and listener implementation.",
+   "ref": "Owner-authority contract is adopted; R48 bounded local data-token verification is accepted and does not implement owner ceilings. R42 subject/management gates do not establish full M2 or administration.",
    "spec": [
+    {
+     "label": "R48 bounded local data-token API acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
+    },
+    {
+     "label": "Adopted owner authority and token verification",
+     "href": "../tenancy/owner-authority.md"
+    },
     {
      "label": "R42 local acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05"
@@ -895,9 +931,17 @@
    "phase": "multi",
    "state": "progress",
    "short": "Tenant secrets / Vault",
-   "title": "Vault Transit, encrypted PostgreSQL references and tenant-scoped exchange are exercised by the preview. Production token issuance/renewal, service identity, HA and operational recovery remain open.",
-   "ref": "Published bc4ee1a9 / R44; real provider composition is not production deployment acceptance.",
+   "title": "Vault Transit and encrypted PG references remain exercised. Adopted optional new-format local signature verification keeps private signing keys in the secrets component and current session/key/grants in PostgreSQL; production issuance/renewal, identity, HA and recovery remain open.",
+   "ref": "R48 accepts bounded local data-token verification at3d5eac19. Local Ed25519 data-token verification is separate from the unimplemented human management issuer and full provider/JOSE acceptance; legacy behavior remains supported.",
    "spec": [
+    {
+     "label": "R48 bounded local data-token API acceptance",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
+    },
+    {
+     "label": "Adopted owner authority and token verification",
+     "href": "../tenancy/owner-authority.md"
+    },
     {
      "label": "provider gates",
      "href": "../tenancy/multitenant-delivery-dashboard.md#mt-secrets-contract"
@@ -969,14 +1013,26 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "Frame policy inventory",
-   "title": "Read-derived acquisition/tenant/error/statistics/lifecycle inventory prepared. Actual common materialization, concurrent-read characterization and shared implementation remain UNMEASURED.",
+   "short": "Measured frame acquisition",
+   "title": "R49/R50 reproduce actual acquisition bounds, frame/future records, statistics, typed-identity union, private-cache behavior, concurrent reads and failed-cycle retention/recovery. Shared implementation and a common atomic revision remain unaccepted.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "R47 inventory over independent profile0c98ad06 and REST R44bc4ee1a9. Next characterize bounded acquisition before extraction; no database revision or snapshot guarantee.",
+   "ref": "Local REST 1c55098a/R49 full7076/80pending/0failure and browser684 pass; independent evaluator5173864d/R50 measured separately. Next extract only demonstrated private acquisition behind explicit path policies; no subscriber switch, versioned frame identity or durable recovery.",
    "spec": [
+    {
+     "label": "R49 actual frame acquisition and concurrent reads",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
+    },
+    {
+     "label": "R50 independent evaluator frame characterization",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
+    },
+    {
+     "label": "Reproduced frame acquisition and concurrent reads",
+     "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md#reproduced-frame-acquisition-and-concurrent-reads"
+    },
     {
      "label": "Shared-frame inventory and next characterization",
      "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md#shared-frame-inventory-and-next-characterization"
@@ -1069,7 +1125,7 @@
    "id": "D-T30",
    "short": "Tenant config surface",
    "owner": "maintainer",
-   "question": "Approve the DECISION sections of the tenant-owner configuration surface (what a tenant may set, what the hoster pins).",
+   "question": "Complete the remaining setting-by-setting tenant/operator classification and permission catalogue. Owner-authority capability groups, delegation ceilings and issuer separation are already adopted; their enforcement and full catalogue remain implementation work.",
    "holds": [
     "T30-RESEARCH"
    ],

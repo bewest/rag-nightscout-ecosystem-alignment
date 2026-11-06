@@ -6141,9 +6141,10 @@ items:
       document: 277 distinct names, classified T / TS / D / B / X, measured
       against crm-seam at 81a1f6ce.
     review: >
-      maintainer. The document is a DRAFT carrying sections marked DECISION that
-      need a yes before T30-SCHEMA-CONFIG can start; the item is a decision
-      surface, not an unstarted research task.
+      maintainer. Owner authority and D22 policy direction are adopted in
+      owner-authority.md. Remaining full settings/role catalogue and per-plan
+      policy choices need their own decisions; bounded implementation can
+      continue under the adopted contract.
     operator_visible: ""
     semver: n/a
     semver_reason: research deliverable
@@ -6194,6 +6195,8 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md
+      - docs/30-design/tenancy/owner-authority.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md
     notes: >
@@ -6204,8 +6207,9 @@ items:
       anonymous writes, network safety, data and log safety). Secrets are a
       component: encrypted at rest, decrypted only by the consuming process,
       a logged reveal operation (initial policy: an owner session; target:
-      re-authentication). Open: policy by plan or cohort; the dashboard call
-      path (lab of three designs briefed); the twelve contested settings
+      re-authentication). Policy by plan or cohort and the complete settings
+      catalogue remain open; the call-path and owner-authority decisions below
+      supersede the earlier lab-only state. The twelve contested settings are
       re-stated under D22. Execution plan §2.13; census §3.
       Second round, same day: integrations (connectors, webhooks, push) are
       typed records with a credential reference and status; a change takes
@@ -6222,12 +6226,16 @@ items:
       T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked
       DONE-EXCEPT. The enumeration was written and adversarially reviewed on
       2026-09-15; the surface total is 277. What remains is not enumeration: it
-      is the maintainer decisions the document defers, and the harnesses that
-      would turn its numbers into measurements. The three decisions with the
-      longest reach are where the tenant-owner API lives, what issues and
-      verifies a tenant-owner credential, and whether D7's credential-free
-      platform plane holds against Nocturne's design, which puts platform admin
-      on the consumer API behind a platform_admin role instead.
+      includes the remaining catalogue and per-plan policy decisions plus
+      their acceptance harnesses. The maintainer adopted the owner authority
+      and D22 local-public-key verification contract in owner-authority.md:
+      separate management authentication/listener and the private operator
+      plane are the direction. R48 accepts optional new-format data-token
+      wiring and current authority in the actual API preview. Full human
+      issuer/refresh-session integration, the complete settings/role catalogue,
+      explicit delegation-ceiling enforcement and production provider
+      enforcement remain incomplete; adopted policy does not imply those
+      implementations or milestone completion.
 
       2026-10-07 (session -69's T30 agent,
       docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md):
@@ -6749,6 +6757,14 @@ items:
           outage/no-handler-effects, credential precedence and unsafe
           mutation privilege refusal. Synthetic crypto; not full REST,
           Vault, production runtime or milestone acceptance.
+      - run: node tools/queue/gates/owner-local-token.js --ref 3d5eac196256e447859373beadf7abf2efbfb2ce
+        kind: integration
+        describe: >
+          R48 bounded actual configured-executable new-format data-token
+          verification and current-authority HTTP acceptance. Archived trusted
+          public-key, tenant/audience, grant/session revocation and dependency
+          refusal cases; not human issuance, a management listener, full owner
+          ceilings, provider enforcement or milestone completion.
       - no-gate: >
           R40 parent-run campaigns accept derived REST and pinned-pattern
           replay atop R38/R39 at published ded254b9, including actual CLI/PG/Vault
@@ -6773,8 +6789,12 @@ items:
       2026-11-05 maintainer adopted owner authority and the D22 local-public-key
       verification amendment; owner-authority.md owns permission/delegation
       ceilings, separate management authentication, human token/session limits
-      and failure semantics. Synthetic prototype evidence is bounded; no
-      production wiring, full ceiling/session implementation or milestone promotion.
+      and failure semantics. R48 accepts actual optional new-format data-token
+      wiring through the configured API executable with local public-key
+      verification and current PostgreSQL authority. This is local application
+      acceptance, not complete human/refresh-session issuance, management
+      listener admission, full settings/role catalogue, delegation-ceiling or
+      production provider enforcement, nor milestone promotion.
       Current 2026-11-04: R40 accepts derived reads and source-pinned
       client patterns with parent-run cumulative evidence at published ded254b9;
       PR title/description read back correctly; current-head CI and
@@ -25109,10 +25129,10 @@ items:
     title: 'Next: refresh and integrate PR 8891 single nonresident profile'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/evaluator-next-20261105
+    branch: codex/evaluator-frame-20261105
     pr: [8891]
     base: official/dev@4a482627; PR8891@dff9a8d4
-    worktree: externals/work/crm-codex-evaluator-next-20261105
+    worktree: externals/work/crm-codex-evaluator-frame-20261105
     state: in-progress
     blast_radius: >
       Existing feat/views-profile prototype, explicit opt-in boot, evaluator
@@ -25123,12 +25143,13 @@ items:
     semver_reason: Bounded dormant characterization; full composition and release placement remain separate.
     register: []
     gates:
-      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 0c98ad06f8e01114639d58e1bc0724499af97f1f
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
         kind: integration
         describe: >
           Independent refreshed nonresident single replay: actual write/timer
           triggers, actual API3 and test-composed v1 HTTP mutations/resends, retained
-          properties and selected live handoff; no executable v1 admission or subscriber switch.
+          properties, actual concurrent-read schedule, callback-error retention/recovery
+          and selected live handoff; no executable v1 admission or subscriber switch.
       - no-gate: >
           The selected current-head replay is measured by the bounded gate.
           Complete alarm/writer cohorts, logical no-op subscriber policy, live
@@ -25143,53 +25164,53 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      Published R45 dff9a8d4 retains independent profile acceptance. Local test-only
-      0c98ad06 adds actual shipping v1 configurators over the real nonresident context,
-      batch/resend/hard-delete and live handoff characterization; no production v1
-      or socket route enablement. Shared-frame inventory is read-derived, not extraction.
-      Physical subscriber retained; logical no-op/refusal admission and full
-      writer/alarm coverage remain open. Runtime cost and live stats freshness
-      are unmeasured. No automatic join into #8898, release placement or
-      multitenant evaluator enablement; no new RC tag gate.
+      R50 independent5173864d adds actual Mongo read barriers and raw concurrent
+      writes: retained A/B then next actual trigger B/B; callback fault after real
+      rows preserves the prior cycle and the next trigger recovers. Teardown proves
+      no late fake-provider delivery, not DB cancellation or absent internal handoff.
+      Physical subscriber, executable routes, full writers/alarms, live stats/cost
+      and release placement remain open; no automatic REST join or new RC tag gate.
 
   - id: ARCH-DERIVED-FRAME
     title: 'Next join: shared bounded frames and derived calculations'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/evaluator-next-20261105
-    base: REST-R44@bc4ee1a9; PROFILE-R47@0c98ad06
-    worktree: externals/work/crm-codex-evaluator-next-20261105
+    branch: codex/frame-integration-20261105
+    base: REST-R49@1c55098a; PROFILE-R50@5173864d
+    worktree: externals/work/crm-codex-frame-integration-20261105
     state: in-progress
     blast_radius: >
-      Shipping computed views, tenant snapshot/property composition and refreshed
-      nonresident evaluator; explicit freshness, consistency, plugin and side-effect
-      policies.
+      Shipping computed views, tenant snapshot/property composition and independent
+      nonresident evaluator; explicit bounds/frame/statistics/error/lifecycle policy.
     review: maintainer; architecture, storage and compatibility review
     operator_visible: ''
     semver: n/a
-    semver_reason: Source-pinned read-derived inventory only; extraction and release placement remain unmeasured.
+    semver_reason: Bounded runtime characterization; shared extraction and release placement remain open.
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+        kind: integration
+        describe: Real Mongo/PG cross-path acquisition, tenant binding, private cache and selected derived-value bounds/policy differences.
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458
+        kind: integration
+        describe: Actual PG concurrent HTTP mixed-frame observation, whole-response real read-error refusal and owned-port read-egress guard.
       - no-gate: >
-          Source-pinned policy/lifecycle inventory is read-derived; no shared-frame
-          convergence or concurrent-write characterization is accepted. Compare actual
-          resident/nonresident/tenant REST paths with current input corpus;
-          characterize concurrent writes without inventing snapshot consistency.
-          Cross-bound frame, partial read, incorrect clinical setter and read-egress
-          controls must each fail; restored actual derived HTTP and alarm replay
-          required.
+          R49/R50 characterize existing paths; no production shared primitive,
+          common database revision, settings/plugin version key or stronger snapshot
+          consistency is implemented. Full alarm/writer cohorts, live statistics/cost,
+          distributed recovery and final release placement remain open.
     blocks_on:
       - ARCH-SEAM-CONTRACT
       - ST-VIEWS-PROFILE
     evidence:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
-      R47 records a read-derived inventory of acquisition bounds/frame flags,
-      failure/tenant/statistics policy and retained versus request-local lifecycle.
-      Next characterize actual cross-path materialization before extraction. Share
-      materialization/calculation while retaining REST all-or-error authorization and
-      evaluator retained-result/notification policies. Distributed recovery stays in
-      MT-RUNTIME-PLAN.
+      Actual tenant HTTP reads observe old entries/new treatments across an atomic
+      independent writer commit; tenant B stays unchanged. Bounds, future-record,
+      typed-union and statistics/error differences remain explicit. Next extract
+      private materialization behind those policies while keeping HTTP all-or-error
+      and evaluator retained-result/notification ownership separate. No M5/M6 promotion.
 
   - id: ARCH-SQLITE-SPIKE
     title: 'Deferred low priority: hypothetical SQLite and cell adapter probe'
