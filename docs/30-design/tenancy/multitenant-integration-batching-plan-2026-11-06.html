@@ -16,7 +16,7 @@
         <link rel="prev" href="multitenant-delivery-roadmap-2026-11-02.html">
       
       
-        <link rel="next" href="multitenant-rest-api-delivery-plan-2026-11-04.html">
+        <link rel="next" href="multitenant-open-decisions-2026-11-06.html">
       
       
         
@@ -2559,6 +2559,8 @@
       
         
       
+        
+      
     
     
     
@@ -2967,6 +2969,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant: the five decisions on the critical path (2026-11-06)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -4597,6 +4627,8 @@
       
         
       
+        
+      
     
     
     
@@ -5372,7 +5404,7 @@
 multitenant preview is batched, what verification runs at each stage, and which
 completion batches cover M0–M6 and where an early proof is still required.
 Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/5a594531d4e02703fc06b74236a6deb5319cf6ed/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4833e0b53182936396ed70e12284bde0e447558d/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap-2026-11-02.html">REST delivery roadmap</a>
@@ -5430,6 +5462,42 @@ Counts are not additive and are not completion percentages.</p>
 <tr>
 <td>CI coverage of the preview</td>
 <td>none: every PostgreSQL and Vault suite is opt-in by environment flag, so the PR's green CI measures Mongo single-site regression only</td>
+</tr>
+</tbody>
+</table>
+<p>Live read-back of #8898 on 2026-11-06 at 23:41 UTC, from <code>gh</code> and <code>git</code> (the
+rows above are the original capture and stay as written):</p>
+<table>
+<thead>
+<tr>
+<th>Anchor or measure</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Published draft #8898 head</td>
+<td><code>83582e876dd193f4448f44c28e379fb5464a26c7</code> on <code>workspace/multitenant-20261102</code>, base <code>dev</code>; open, draft, mergeable; R62 accepted it, R64 verified it</td>
+</tr>
+<tr>
+<td>Upstream <code>official/dev</code></td>
+<td><code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>, contained in the head</td>
+</tr>
+<tr>
+<td>Head versus dev</td>
+<td>172 commits; 245 files, of which 193 new, 52 modified, 0 deleted; +31,997 / −157 lines</td>
+</tr>
+<tr>
+<td>CI on <code>83582e87</code></td>
+<td>15 jobs passed, including the <code>Multitenant opt-in corpus (PostgreSQL, MongoDB, Vault)</code> job and the three browser engines; CodeQL passed; 3 release-image jobs skipped by condition (<a href="https://github.com/nightscout/cgm-remote-monitor/actions/runs/42303661682">run 42303661682</a>)</td>
+</tr>
+<tr>
+<td>Review state</td>
+<td>3 review events (CodeQL comments, all 8 inline threads resolved per R64); 0 issue comments; 0 human reviews</td>
+</tr>
+<tr>
+<td>CI coverage of the preview</td>
+<td>the opt-in corpus now runs in CI (rule 5 done through Batch A, R60–R61); the Mongo matrix still measures single-site regression</td>
 </tr>
 </tbody>
 </table>
@@ -5557,13 +5625,13 @@ dispatched by the coordinating session that wrote this plan.</p>
 <td><strong>B1: publish the accepted head</strong></td>
 <td>maintainer</td>
 <td>cumulative <code>35903069</code></td>
-<td><strong>Done 2026-11-06:</strong> #8898 head is <code>35903069</code>, body refreshed from R54. Remaining: read back CI and CodeQL on that head and record the result; no PG suite executes in CI until B5 lands.</td>
+<td><strong>Done 2026-11-06:</strong> #8898 head was <code>35903069</code>, body refreshed from R54. The remaining read-back was done on the later heads: CI and CodeQL green on <code>d89a44e1</code> (<a href="../remedial/rc-16.0.0-integration-record.html#r61---published-batch-remote-ci-and-codeql-verification-2026-11-06">R61</a>) and on <code>83582e87</code> (<a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>), each with the opt-in corpus job executing in CI.</td>
 </tr>
 <tr>
 <td><strong>B2: clock batch → R56</strong></td>
 <td>peer session (join, done), coordinator (publication)</td>
 <td>R54 <code>35903069</code> + clock lane <code>11770146</code> + clock HTTP lane <code>3532c1a4</code></td>
-<td><strong>Done, recorded as R56</strong> on frozen join head <code>65bb8456</code>, local and unpushed: clock mode 28 / 1 pending (benchmark opt-in) / 0; full 7,187 / 81 / 0; browser 684 / 0 / 0; prcheck OK. Three ablations red and restored: serialization 0/3, readiness 0/2, rollback 0/3. Passing rises by 43 over R54, five of them test-only cases of the unaccepted replica candidate <code>714f6c8b</code> that the HTTP fixture requires. Remaining: the opt-in benchmark, Mongo comparison, mixed writers, bulk ties and SIGKILL cleanup bound stay UNMEASURED; six pre-existing lint errors in the clock HTTP lane's test files; publication of <code>65bb8456</code> to #8898 is the maintainer's.</td>
+<td><strong>Done, recorded as R56</strong> on frozen join head <code>65bb8456</code>, local and unpushed: clock mode 28 / 1 pending (benchmark opt-in) / 0; full 7,187 / 81 / 0; browser 684 / 0 / 0; prcheck OK. Three ablations red and restored: serialization 0/3, readiness 0/2, rollback 0/3. Passing rises by 43 over R54, five of them test-only cases of the unaccepted replica candidate <code>714f6c8b</code> that the HTTP fixture requires. Remaining: the opt-in benchmark, Mongo comparison, mixed writers, bulk ties and SIGKILL cleanup bound stay UNMEASURED (<a href="../remedial/rc-16.0.0-integration-record.html#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06">R65</a> is a descriptive workload, not a budget); six pre-existing lint errors in the clock HTTP lane's test files. <code>65bb8456</code> reached #8898 as an ancestor of the Batch A head <code>d89a44e1</code> (R60), published by fast-forward.</td>
 </tr>
 <tr>
 <td><strong>B3: profile 2ee acceptance</strong></td>
@@ -5599,7 +5667,7 @@ dispatched by the coordinating session that wrote this plan.</p>
 <td><strong>B7: M5 design acceptance</strong></td>
 <td>MT-RUNTIME-PLAN owner (draft by coordinator subagent)</td>
 <td>D-EVENT, D6 feed design, clock reports</td>
-<td><strong>Drafted for maintainer review:</strong> <a href="durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a>, eleven decisions and a nine-control entry bar, all UNMEASURED. Two consequences for sequencing: the contract applies only where the commit-coupled stamp exists, so the clock join (B2) precedes the first recovery slice; and the committed event at <code>35903069</code> carries neither tenant nor stamp (<code>lib/storage/write-intent.js:4656-4678</code>), so a payload slice follows B2 as its own lane and is not folded into the join. <strong>Payload slice built (session <code>-8c</code>, lane <code>codex/event-payload-20261106</code>, head <code>4b5edf02</code>, three commits over <code>65bb8456</code>, unpushed):</strong> the per-write event carries <code>tenant</code> (the bound scope, null under <code>single</code>) and <code>stamp</code> (the clock decorator's allocated floor through a new <code>connection.currentStamp()</code>, null for settle, Mongo and clock-off). Measured in the lane's handoff: new unit file 9 passing; the seven touching unit files 133 / 33 / 0; tiers 512 ok; eslint 0 / 0; focused <code>clock</code> run on <code>4b5edf02</code> 28 / 1 / 0 with the one pending the opt-in benchmark, 3 containers and 5 volumes absent after. Controls: stamp never captured 7 / 2, tenant remembered from first use 6 / 3, restored 9. UNMEASURED: the new Mongo-gated d-event case (the project environment's MongoDB is 3.6). One contract question is logged in the contract's §9 (the stamp is captured when the nested write resolves, not at the transaction's final floor). Joins #8898 at a batch boundary. D23 (adopted and amended 2026-11-06) settles the ack path the contract left open: <code>realtime</code> is a reader and forwards every socket write and the alarm ack unchanged to an internal write endpoint on <code>api</code>, which writes with the <code>socket</code> source label; no client changes. Its entry condition 2, a replay of the pinned AndroidAPS 3.4.2.3 NSClient v1 socket upload sequence, is homed in the M4 packet.</td>
+<td><strong>Design direction adopted:</strong> <a href="durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">durable event delivery contract §11</a>. The original draft identified eleven decisions and a nine-control entry bar; later bounded implementation evidence is scoped separately by R62 and R67, without full M5 promotion. Two consequences for sequencing: the contract applies only where the commit-coupled stamp exists, so the clock join (B2) precedes the first recovery slice; and the committed event at <code>35903069</code> carries neither tenant nor stamp (<code>lib/storage/write-intent.js:4656-4678</code>), so a payload slice follows B2 as its own lane and is not folded into the join. <strong>Payload slice built (session <code>-8c</code>, lane <code>codex/event-payload-20261106</code>, head <code>4b5edf02</code>, three commits over <code>65bb8456</code>, unpushed):</strong> the per-write event carries <code>tenant</code> (the bound scope, null under <code>single</code>) and <code>stamp</code> (the clock decorator's allocated floor through a new <code>connection.currentStamp()</code>, null for settle, Mongo and clock-off). Measured in the lane's handoff: new unit file 9 passing; the seven touching unit files 133 / 33 / 0; tiers 512 ok; eslint 0 / 0; focused <code>clock</code> run on <code>4b5edf02</code> 28 / 1 / 0 with the one pending the opt-in benchmark, 3 containers and 5 volumes absent after. Controls: stamp never captured 7 / 2, tenant remembered from first use 6 / 3, restored 9. UNMEASURED: the new Mongo-gated d-event case (the project environment's MongoDB is 3.6). That original capture is superseded by the maintainer's final-floor decision and <code>e7baff74</code> (section 6), including the later Mongo run. Joins #8898 at a batch boundary. D23 (adopted and amended 2026-11-06) settles the ack path the contract left open: <code>realtime</code> is a reader and forwards every socket write and the alarm ack unchanged to an internal write endpoint on <code>api</code>, which writes with the <code>socket</code> source label; no client changes. Its entry condition 2, a replay of the pinned AndroidAPS 3.4.2.3 NSClient v1 socket upload sequence, is homed in the M4 packet.</td>
 </tr>
 </tbody>
 </table>
@@ -5650,7 +5718,16 @@ consumer, and no batch changes release placement or enables a serving default.</
 <p>The first coherent CI/client sub-batch is accepted in
 <a href="../remedial/rc-16.0.0-integration-record.html#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06">R60</a>:
 M0 foundations is promoted and the bounded actual-client lab card is complete.
-This does not close all of A. A runner/docs-only correction retained the exact
+The second, <a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>
+on <code>83582e87</code>, joins the optional subject-reader policy (A), the first dormant
+durable replay (an early B proof under the adopted B7 direction) and the
+populated PostgreSQL recovery lab (an early C proof); <a href="../remedial/rc-16.0.0-integration-record.html#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06">R63</a>
+bounds the selected-reader mode with actual clients and leaves the cgmsim root
+503 mapping for a disposition; <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>
+verifies the publication. Rule 6's <code>--ref</code> move to <code>83582e87</code> is done only for
+the two gates R62 archived (owner-reader and durable-replay, on <code>87133959</code>); the
+other multitenant gates keep their native capture pins, and their replay on the
+frozen head is UNMEASURED. Neither sub-batch closes all of A. A runner/docs-only correction retained the exact
 serving/test/dependency trees: prior campaigns remain attributed to their executed
 head, while the changed runner's whole corpus and final prcheck ran on the final
 head. Byte identity and an explicit affected-input analysis permit that reuse;
@@ -5785,8 +5862,12 @@ and executable proof, rather than another direction approval. The source-only
 prototype does not establish production recovery. A separate
 owner-clamping characterization and populated-import preflight are active early
 proofs; neither selects a new authority policy or establishes real database restore.
-Owner session/issuer lifecycle and the wider operational implementation are <strong>unassigned</strong>;
-the coordinator must allocate those before claiming A or C implementation complete.
+Owner session/issuer lifecycle and the first Batch C tooling proof were assigned by the
+maintainer on 2026-11-06 to session <code>-8c</code> (see section 6): the lifecycle item as a
+read-derived decision packet, no code; the tooling proof as a source-only lane with one
+focused run. The wider operational implementation (backup/restore, upgrade/rollback,
+resource and egress bounds, final-tree review) remains <strong>unassigned</strong>; the coordinator
+must allocate it before claiming C implementation complete.
 Local integration ownership and exact unpushed anchors are in
 <code>externals/work/HANDOFF-codex-completion-batches-20261106.md</code> (local, untracked).</p>
 <p><a id="5-lane-ownership-and-coordination"></a></p>
@@ -5797,11 +5878,35 @@ Local integration ownership and exact unpushed anchors are in
 <li><strong>Source-only lanes off the R56 head <code>65bb8456</code></strong> (session <code>-8c</code>, maintainer-assigned
   2026-11-06, no slot): <code>codex/event-payload-20261106</code> carries the durable delivery
   contract's decision 3 (tenant and commit stamp on the per-write event; one focused
-  <code>clock</code> run with its own containers under rule 3; <strong>done at <code>4b5edf02</code></strong>, figures in the
-  B7 row), and <code>codex/role-table-20261106</code> carries D23 entry condition 4 (typed fields on
+  <code>clock</code> run with its own containers under rule 3; first done at <code>4b5edf02</code>, figures in the
+  B7 row; <strong>final-floor head <code>e7baff74</code></strong>, five commits over <code>65bb8456</code>: the clock hands each
+  after-commit publish the transaction's final floor, with the in-transaction capture only
+  on a connection without the clock; re-read from logs, 8 unit files 134 / 33 / 0, stamp-null
+  control 7 / 3 then restored 10 and 134, tiers 512 ok, eslint clean, the Mongo-gated d-event
+  suite 103 / 0 / 0 on a disposable <code>mongo:8.0.34</code> (removed after); the <code>clock</code> mode was last
+  run at <code>4b5edf02</code>, not on <code>e7baff74</code>), and <code>codex/role-table-20261106</code> carries D23 entry condition 4 (typed fields on
   the role table, <code>describeComposition</code>, a unit test; <strong>done at <code>7b49829e</code></strong>, 14 passing,
-  two controls red and restored, recorded in the execution plan's D23 row). Each joins
-  #8898 at a batch boundary; neither is pushed on its own.</li>
+  two controls red and restored, recorded in the execution plan's D23 row). The typed
+  role-table source is already incorporated and published through R60/R64: its
+  role and unit-test blobs match accepted835 exactly. The event-payload branch
+  remains separate pending final-floor verification and a later batch join.
+  The maintainer closed the contract's section 9 stamp question on 2026-11-06:
+  the event carries the transaction's <strong>final floor</strong>. The payload lane implements
+  the capture change and nested-allocation test at <code>e7baff74</code>; its focused results
+  are recorded in the contract. Joining and comprehensive acceptance remain separate.</li>
+<li><strong>Batch C tooling early proof</strong> (session <code>-8c</code>, maintainer-assigned 2026-11-06, no slot
+  until its one focused run): tenant export/import fidelity and tenant deletion with
+  recoverable key material on a synthetic populated fixture. New CRM worktree off the
+  accepted head <code>83582e87</code>, branch <code>codex/tenant-export-delete-20261106</code>, handoff
+  <code>HANDOFF-tenant-export-delete-20261106.md</code>. Source-only until one focused run with its
+  own containers; it builds beside, not inside, R62's populated dump/restore lab. Checked
+  2026-11-06 23:40 UTC: no other lane, branch, worktree or document claims this work.</li>
+<li><strong>Owner session/issuer lifecycle decision packet</strong> (session <code>-8c</code>, maintainer-assigned
+  2026-11-06, no code, no slot): a read-derived packet for the maintainer at
+  <code>owner-lifecycle-decision-packet-2026-11-06.md</code> in this directory. It covers the human
+  issuer/refresh, existing-grant clamping, DELETE policy and provision/suspend/export/delete
+  questions that the promotion review lists as unimplemented. Checked 2026-11-06 23:40 UTC:
+  unclaimed by any Codex lane; the owner/evaluator batch explicitly excludes human issuer/refresh.</li>
 <li><strong>Lane handoffs</strong> are <code>externals/work/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>, local and
   untracked. The coordinating session's own notes are in
   <code>externals/work/HANDOFF-batching-coordinator-20261106.md</code>.</li>

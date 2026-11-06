@@ -3779,6 +3779,8 @@
       
         
       
+        
+      
     
     
     
@@ -5049,6 +5051,8 @@
       
         
       
+        
+      
     
     
     
@@ -5744,10 +5748,12 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>c04d20397</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>552772567</code>.</em></p>
 <p><em>Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
-<a href="../remedial/rc-16.0.0-integration-record.html#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06">R60</a>
-and draft #8898 <code>d89a44e1</code>, based on dev <code>4a482627</code>. Earlier storage,
+<a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>
+and <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>:
+draft #8898 is <code>83582e87</code>, based on dev <code>4a482627</code>, with CI and CodeQL green on
+that head. R67/R68 add bounded local component evidence. Earlier storage,
 identity and registration measurements retain their named pins. Current milestone
 claims live in the <a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a>;
 release placement lives in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
@@ -5775,32 +5781,40 @@ use this map to see how the platform tracks meet.</p>
 <tbody>
 <tr>
 <td>Multitenant foundations</td>
-<td><strong>M0 promoted</strong> in R60; draft #8898 is <code>d89a44e1</code>. Restricted-role/RLS, isolation, rollback, pool reuse and startup refusal have bounded acceptance.</td>
+<td><strong>M0 promoted</strong> in R60; R64 verifies the published draft #8898 control/recovery batch.</td>
 <td>No default or production role enabled; the PR is open/draft, not merged or released.</td>
 </tr>
 <tr>
 <td>Data, authority and clients</td>
-<td>R60 joins the tenant clock and selected client compatibility repairs. The bounded <code>M4-CLIENT-LAB</code> card is complete.</td>
-<td>M1–M4 still need complete admitted backend/import/resource, deployable control-plane and wider client criteria. M3 depends on complete M1/M2.</td>
+<td>R62 accepts optional current-subject grant clamping, persisted typed current-row replay and populated PG recovery LAB. The bounded <code>M4-CLIENT-LAB</code> card remains complete.</td>
+<td>M1–M4 retain backend/import/resource, control-plane and wider client criteria; M3 depends on complete M1/M2. R63's actual oref0 workflows pass, but the cgmsim root refusal keeps universal selected-mode activation disabled.</td>
 </tr>
 <tr>
 <td>Durable runtime</td>
-<td>B7 design direction is adopted; implementation and recovery experiments proceed separately.</td>
-<td>M5/M6 need runtime consumers, replay/recovery, lifecycle and operational acceptance. The clock performance benchmark remains pending.</td>
+<td>B7 direction is adopted. R67 accepts a bounded local recovered clinical constructor; R68 accepts a local fresh-schema DATA prototype with physical controls.</td>
+<td>M5/M6 remain open. The transaction final-floor event-stamp direction is adopted; its payload implementation/verification remains separate. No live evaluator/realtime role, notification/ack, provider/lease or rollout acceptance. Fresh-only ordering has no populated/imported-history migration or downmigration.</td>
+</tr>
+<tr>
+<td>Local joined candidate</td>
+<td>Owner CLI, clinical projection and experimental DATA components are joined in a <strong>local candidate in verification</strong>.</td>
+<td>Native component evidence does not accept the joined full/browser campaign or promote M2/M5. Current head and lane state belong to the dashboard.</td>
 </tr>
 <tr>
 <td>Independent single/nonresident profile</td>
 <td>R55 accepts private acquisition on <code>2ee8b493</code>, with caller policies and the physical subscriber retained.</td>
-<td>Separate from #8898; no common read revision, stronger snapshot or distributed evaluator acceptance.</td>
+<td>The whole profile branch remains separate. Reusing its private helper/evaluateCycle hunk in the local candidate establishes no common atomic revision, live profile role or notification handoff.</td>
 </tr>
 </tbody>
 </table>
-<p>R60 and its <a href="../../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.html">final capsule</a>
-own the measured figures and executed heads. Earlier full/browser/client/pooler
-campaigns are reused only after exact relevant source identity; they are not
-relabelled as final-head executions. Remote CI is separate from local acceptance.
-See the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html#update--coherent-compatibility-batch-accepted-m0-promoted-2026-11-06">release record</a>
-for the programme disposition.</p>
+<p>The <a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">integration record</a>
+owns measured heads, controls and source-identity reuse; the <a href="../../../reports/tenancy/control-recovery-acceptance-87133959-2026-11-06.html">R62 capsule</a> retains broad campaigns executed on <code>87133959</code> and the exact runner-only difference on <code>83582e87</code>. R64 records remote publication
+checks separately from local acceptance. <a href="../remedial/rc-16.0.0-integration-record.html#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06">R67</a>
+and <a href="../remedial/rc-16.0.0-integration-record.html#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06">R68</a>
+are bounded local component evidence, not whole-candidate acceptance. R66's original
+socket failure remains recorded. R65 supplies descriptive small clock HTTP data;
+capacity, steady-state performance and budget acceptance remain unmeasured. The
+older corpus benchmark remains pending in its capture. See the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a> for programme disposition.</p>
 <table>
 <thead>
 <tr>
@@ -6280,7 +6294,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>T30-SCHEMA-CONFIG</td>
-<td>Adopted owner-authority policy and selected transactional proposed-grant fencing are accepted; full permission/settings catalogue and deployable owner API remain open. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate</td>
+<td>Adopted owner-authority policy and selected transactional proposed-grant fencing and optional current-subject reader clamping are accepted; full permission/settings catalogue and deployable owner API remain open. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate</td>
 <td>T30-RESEARCH</td>
 </tr>
 <tr>
@@ -6290,18 +6304,18 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>T30-WIRING</td>
-<td>Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; selected proposed-grant fencing is accepted; management issuer/refresh, wider ceilings and production lifecycle remain open</td>
+<td>Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; selected proposed-grant fencing and optional current-subject clamping are accepted; management issuer/refresh, full catalogue and production lifecycle remain open</td>
 <td>TEN-RESOLVE, MT-SECRETS-CONTRACT</td>
 </tr>
 <tr>
 <td>TEN-LAB</td>
-<td>R60 accepts the coherent CI/client/clock batch and promotes M0; complete M3 remains blocked on full M1/M2</td>
+<td>R62/R64 accept and verify the published dormant control/recovery batch; R60 M0 promotion is retained; complete M3 remains blocked on full M1/M2</td>
 <td>ST-PG, T30-WIRING, MIG-RUNNER</td>
 </tr>
 </tbody>
 </table>
 <p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. Which listener and role owns each API is mapped in <a href="interface-ownership-2026-10-27.html">interface ownership</a>, with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D23 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>.</p>
-<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R60 retains the REST side; the independent profile branch remains separate. No common atomic revision is accepted.</p>
+<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the local joined candidate. R67 bounds recovered clinical constructor evidence. No common atomic revision, live profile/evaluator role or notification handoff is accepted.</p>
 <h2 id="5-open-decisions">5. Open decisions<a class="headerlink" href="#5-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up. Release questions (the 16.0.0 quiet period, cohort requests, when dev reopens) are Q13–Q16 in the <a href="release-allocation-2026-10-27.html#5-open-decisions">release allocation</a>.</p>
 <!-- chart: decisions -->

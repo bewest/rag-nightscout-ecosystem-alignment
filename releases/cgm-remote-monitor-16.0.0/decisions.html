@@ -1541,6 +1541,8 @@
       
         
       
+        
+      
     
     
     
@@ -2184,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>dc02af802</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>552772567</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2946,6 +2948,12 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td><code>MT-RUNTIME-PLAN</code></td>
 <td><a href="../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">Contract and experiment questions</a>. Design direction adopted; recovery controls and workload-specific capacity remain UNMEASURED. Notification/checkpoint crash boundaries and intermediate-transition retention require explicit experiments. Provider selection, hard-delete recovery, multi-node failover, default enablement, M5/M6 promotion and release admission remain separate.</td>
 </tr>
+<tr>
+<td><strong>The per-write logical event's <code>stamp</code> is the transaction's final clock floor</strong>, not the floor at the moment a nested write resolved; the event names the equal-stamp cohort that committed together (contract §9 row, closed). <code>tenant</code> is the bound scope, null under <code>single</code>; <code>settle</code>, MongoDB and clock-off writes carry <code>stamp: null</code></td>
+<td>maintainer, 2026-11-06, via session -8c ("use the final floor for the stamp")</td>
+<td><code>MT-RUNTIME-PLAN</code>, <code>ST-EVENT</code></td>
+<td>built on <code>codex/event-payload-20261106</code> at <code>e7baff74</code> (local, unpushed): final-floor capture, nested-allocation test, unit 134 / 33 / 0, control red and restored, Mongo-gated suite 103 / 0 / 0 on MongoDB 8.0.34; joins #8898 at the root coordinator's next batch boundary</td>
+</tr>
 </tbody>
 </table>
 <h2 id="query-layer">Query layer<a class="headerlink" href="#query-layer" title="Permanent link">&para;</a></h2>
@@ -3080,7 +3088,7 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td><strong>Complete the roadmap in larger implementation batches, retaining targeted checks and early uncertainty proofs.</strong> A covers data/control/clients (M0–M4), B durable runtime (M5), C synthetic operations (M6); each frozen completion candidate receives comprehensive labs/V&amp;V, full regression and final prcheck.</td>
 <td>maintainer, 2026-11-06, approving the completion-batch recommendation in this session</td>
 <td>Existing multitenant items; manifest claims unchanged</td>
-<td>Adopted <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule and criterion-to-test matrix</a>. Implementation/test preparation may proceed in parallel; runtime overlap requires isolated owned fixtures and measured capacity. Small stamp/recovery, client-difference, authority/lifecycle and populated-restore/resource proofs remain before dependent assumptions expand. Exact-head acceptance, milestone criteria, separate notification/production gates and maintainer publication remain unchanged.</td>
+<td>Adopted <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule and criterion-to-test matrix</a>. Two sub-batches of A are accepted and published on draft #8898: R60 <code>d89a44e1</code> (M0 promoted) and R62 <code>83582e87</code> (optional subject-reader policy, first dormant durable replay, populated PG recovery lab), the latter verified by R64 with CI and CodeQL green; R63 leaves the selected-reader mode unselected pending a 503 disposition for root clients. Implementation/test preparation may proceed in parallel; runtime overlap requires isolated owned fixtures and measured capacity. Small stamp/recovery, client-difference, authority/lifecycle and populated-restore/resource proofs remain before dependent assumptions expand. Exact-head acceptance, milestone criteria, separate notification/production gates and maintainer publication remain unchanged.</td>
 </tr>
 </tbody>
 </table>

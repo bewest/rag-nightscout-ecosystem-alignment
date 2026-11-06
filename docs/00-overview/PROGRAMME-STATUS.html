@@ -1638,6 +1638,8 @@
       
         
       
+        
+      
     
     
     
@@ -2300,7 +2302,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>c04d20397</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>552772567</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2441,9 +2443,14 @@ The <a href="../../site/pages/nightscout-next-gen-platform.html">next-generation
 shows the dependencies and bounded acceptance stages. These records distinguish local
 branch acceptance, combined integration and milestone completion; <code>make queue-status</code>
 measures the queue's claims.</p>
-<p>Decisions D1–D22 live in the
+<p>The preview itself is draft PR #8898 (<code>83582e87</code> on 2026-11-06, CI and CodeQL
+green, open, not merged or released); the
+<a href="../30-design/tenancy/single-and-multitenant-architecture.html">architecture comparison</a>
+lists what it holds and which record governs each module.
+Decisions D1–D23 live in the
 <a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>,
-with the adopted <a href="../30-design/tenancy/owner-authority.html">owner-authority amendment</a>.
+with the adopted <a href="../30-design/tenancy/owner-authority.html">owner-authority amendment</a>
+and the <a href="../30-design/tenancy/durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a> (B7).
 Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is
 an additional deployment target. Release readiness follows the
 <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release records</a>.</p>

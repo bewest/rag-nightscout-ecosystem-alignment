@@ -2559,6 +2559,8 @@
       
         
       
+        
+      
     
     
     
@@ -2986,6 +2988,34 @@
     
   
     Multitenant integration batching plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -4624,6 +4654,8 @@
       
         
       
+        
+      
     
     
     
@@ -5964,7 +5996,7 @@ that goes red for a setup reason is not evidence (clock proof plan). All are
 </tr>
 <tr>
 <td>which floor the event carries when an outer transaction allocates more stamps after a nested write resolved: the write's own floor (as built, at most the final floor) or the transaction's final floor (readable from the clock state in the after-commit callback)</td>
-<td><strong>open for the contract owner</strong>; the built behavior is the write's own floor, flagged by the payload lane and not changed. Either choice keeps §3 ordering, because both floors commit together; the difference is only which stamp names the event</td>
+<td><strong>decided, maintainer, 2026-11-06: the transaction's final floor.</strong> The event names the cohort that committed together, read from the clock state in the after-commit callback; built on <code>codex/event-payload-20261106</code> at <code>e7baff74a8da0035a2ff473ecadf09123abbdeb7</code>: the clock hands each after-commit publish the final floor, a nested-allocation test asserts it (unit 134 / 33 / 0; the stamp-null control 7 / 3 with "the event carries the final floor, not the floor at resolve", restored 10), and the Mongo-gated d-event suite ran on MongoDB 8.0.34 at 103 / 0 / 0. Either choice keeps §3 ordering; the final floor makes the event's stamp equal the cohort's stamp</td>
 </tr>
 <tr>
 <td>anything about single-tenant MongoDB</td>
