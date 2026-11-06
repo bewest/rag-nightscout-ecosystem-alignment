@@ -2772,6 +2772,8 @@
       
         
       
+        
+      
     
     
     
@@ -4030,6 +4032,8 @@
       
         
       
+        
+      
     
     
     
@@ -4673,7 +4677,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>3a27f5cd9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>79bdac61f</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -8116,7 +8120,7 @@ parent consolidation handoff.</p>
 <code>3d5eac196256e447859373beadf7abf2efbfb2ce</code>, branch
 <code>codex/owner-local-auth-20261105</code>, a clean descendant of R46 <code>44331668</code>.
 The <a href="../tenancy/owner-authority.html">owner authority contract</a> owns the adopted
-policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
+policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
 retain the campaign summary. This is locally fixed code, not merged/released or
 published on #8898 by this lane. The coordinator has incorporated this clean
 application commit into its separate frame-integration tree, pending its own
@@ -8192,10 +8196,10 @@ invalid token's actual POST answer201 instead of401. Removing session-active
 checking makes a revoked session's GET answer200 instead of403. Reusing an earlier
 snapshot makes committed grant removal's next GET answer200 instead of403. Every
 mutant fails at the intended HTTP assertion; setup failure is not accepted as red.
-See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
+See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
 <p><strong>Repeated authorization-pipeline lab using the actual application verifier:</strong>
 16 semantic checks, 4 non-vacuous verifier/state controls, 24 timing cases/2880
-operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
+operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
 pins instrument <code>f814f967c</code>, application <code>ab09297b</code> and application-module SHA256.
 A direct git comparison confirms unchanged verifier bytes at final <code>3d5eac19</code>;
 this carries the component measurement forward without relabeling its source head. At concurrency8, current
@@ -8388,6 +8392,91 @@ and returned no rows under the restored real clock; a fresh raw synthetic row
 makes the intended late-row assertion meaningful. No production behavior changed.
 Commands, ownership and local artifacts:
 <code>externals/work/HANDOFF-evaluator-frame-20261105.md</code>.</p>
+<h3 id="r51---bounded-settings-differential-on-33870764-2026-11-06">R51 - bounded settings differential on 33870764 (2026-11-06)<a class="headerlink" href="#r51---bounded-settings-differential-on-33870764-2026-11-06" title="Permanent link">&para;</a></h3>
+<p><strong>Tree:</strong> <code>codex/settings-differential-20261105</code>
+<code>338707648c43dea190cf47f3d64d6f8d2bcde56c</code>, over accepted R49
+<code>1c55098a3d4bcf3d871bcd345f159ce444d6e458</code>; contains official/dev
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>. Root
+<code>codex/serial-integration-20261106</code> fast-forwarded this exact application tree.
+Independent R50 remains separate; A/C/D/clock are not joined. Five changed files,
+seven additive commits; the only product edit raises global PG sort cap4→5.</p>
+<table>
+<thead>
+<tr>
+<th>Reproduced measurement (logs independently read and manifest hashes verified)</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Owned final <code>npm run test:all</code>, <code>settings-evidence-20261106/full-fixed.log</code></td>
+<td>7089 passing /80pending /0failing: tiers2158/205/368/319/93/3928/18</td>
+</tr>
+<tr>
+<td>Owned default <code>npm run test:browser</code>, <code>browser.log</code></td>
+<td>684passing /0pending /0failing</td>
+</tr>
+<tr>
+<td><code>node scripts/test-tiers.js check</code>; final <code>tools/review/prcheck/prcheck.sh</code></td>
+<td>503files/8tiers PASS; final prcheckOK, current dev contained, source clean</td>
+</tr>
+<tr>
+<td>Actual settings focused repeats; settings+profile/food ordered pair</td>
+<td>12/0 twice; pair25/0</td>
+</tr>
+<tr>
+<td>Parent <code>node tools/queue/gates/multitenant-next-slices.js --suite settings --ref 338707648c43dea190cf47f3d64d6f8d2bcde56c</code></td>
+<td>12passing /0failing; restored invocation12/0</td>
+</tr>
+<tr>
+<td>Same gate <code>--control sortcap</code></td>
+<td>0passing /1semantic failure: actual HTTP500 instead of200</td>
+</tr>
+<tr>
+<td>Same gate <code>--control predicate</code></td>
+<td>0/1semantic: selected exact-row result includes synthetic distractor</td>
+</tr>
+<tr>
+<td>Same gate <code>--control projection</code></td>
+<td>0/1semantic: raw storage projection leaks synthetic private fields</td>
+</tr>
+</tbody>
+</table>
+<p>Gate source was alignment <code>40d1dfb859e6d110c3267b9066b90ee95a666764</code>, archived
+with matching candidate private dependencies and fresh owned Mongo/PG/Vault.
+These are assertion failures, not setup/anchor failures. Source controls at
+application-identical predecessor0a also cover predicate/projection, cross-binding
+and restored cap4; cross-binding proves a forbidden operation completed, not which
+rows changed. R48 existing stale-authority control remains its own entries proof,
+not new settings token proof. Final candidate full new-token suite passes.</p>
+<p><strong>Diagnostic correction:</strong> earlier0a full failed profile/food setup with duplicate
+Vault transit mount HTTP400; ordered pair reproduced12settings passing+1setup
+failure. Fixture-only commits use unique mount names, successful-create ownership
+and owned-only DELETEfinally. Pair25/0 and complete final full/browser were rerun
+at338; application source after0a is unchanged. This failure was not ENOSPC.
+Earlier ENOSPC/NUL/truncated campaigns remain unaccepted and individual numbered
+failures are not all assigned to capacity without isolation.</p>
+<p>Synthetic actual settings preserve supported scalar filtering/sorting/projection,
+current authority and mutation contracts with six-key sort refusal. Regex and
+dotted predicates retain sanitized PG500 capability refusals. No client binary,
+all-query parity, sort-cost performance, cross-process history/revision or full
+owner lifecycle acceptance. R49/R50 are retained historical captures. No M0–M6
+promotion or final combined A/C/D/clock acceptance.</p>
+<p><strong>Separate infrastructure reproduction:</strong> actual source cleanup blocks from
+ddd3334d cover4runner/gate success/controlled-failure cases, continued attempts,
+private0700/0600 diagnostics and6owned anonymous volumes independently absent.
+Five archived settings audit files verify15owned containers and25recorded volumes
+absent. Authorized inventory cleanup3779/3779,0errors/no outside-inventory loss;
+B75recorded new volumes absent and219preserved volumes present. Unknown40nested
+volumes remain preserved; this does not prove complete cleanup. New canonical
+all registration fromd0d60fa6 has not run a future combined campaign.</p>
+<p>Private command/log homes: <code>externals/work/settings-evidence-20261106/</code> and
+<code>externals/work/resource-cleanup-scratch/</code>. Acceptance manifest SHA256
+<code>2802b42bd27d13e90b043ae1fc89bff5e91ea607ae6f55b412683a6279282f81</code>;
+all listed artifact hashes independently verified. Lane handoffs:
+<code>HANDOFF-settings-verification-20261106.md</code> and
+<code>HANDOFF-cleanup-settings-runtime-20261106.md</code>. B slot released, A now active;
+no service campaign or deletion performed by this records lane. No push.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

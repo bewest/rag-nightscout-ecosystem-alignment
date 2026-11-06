@@ -2549,6 +2549,8 @@
       
         
       
+        
+      
     
     
     
@@ -2726,16 +2728,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#current-status-and-parallel-ownership-2026-11-05" class="md-nav__link">
+  <a href="#current-status-and-parallel-ownership-2026-11-06" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current status and parallel ownership (2026-11-05)
+        Current status and parallel ownership (2026-11-06)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-05)">
+    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-06)">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accepted-settings-differential-and-serial-recovery-2026-11-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accepted settings differential and serial recovery (2026-11-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next-lanes-and-shared-capacity-hold-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next lanes and shared capacity hold (2026-11-05)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#accepted-adapter-consolidation-and-index-race-continuation-2026-11-05" class="md-nav__link">
@@ -3630,6 +3654,34 @@
     
   
     Tenant owner authority and token verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -4976,6 +5028,8 @@
       
         
       
+        
+      
     
     
     
@@ -5610,16 +5664,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#current-status-and-parallel-ownership-2026-11-05" class="md-nav__link">
+  <a href="#current-status-and-parallel-ownership-2026-11-06" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current status and parallel ownership (2026-11-05)
+        Current status and parallel ownership (2026-11-06)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-05)">
+    <nav class="md-nav" aria-label="Current status and parallel ownership (2026-11-06)">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accepted-settings-differential-and-serial-recovery-2026-11-06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accepted settings differential and serial recovery (2026-11-06)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next-lanes-and-shared-capacity-hold-2026-11-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next lanes and shared capacity hold (2026-11-05)
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#accepted-adapter-consolidation-and-index-race-continuation-2026-11-05" class="md-nav__link">
@@ -6297,7 +6373,7 @@ reviewable slices. Alignment records may be published separately.</p>
 in the <a href="../../10-domain/nightscout-multitenancy-priorities-deep-dive.html">priorities assessment</a>.
 The assessment's current-dev findings still apply. No multitenant work reopens
 v16's release merge list.</p>
-<h2 id="current-status-and-parallel-ownership-2026-11-05">Current status and parallel ownership (2026-11-05)<a class="headerlink" href="#current-status-and-parallel-ownership-2026-11-05" title="Permanent link">&para;</a></h2>
+<h2 id="current-status-and-parallel-ownership-2026-11-06">Current status and parallel ownership (2026-11-06)<a class="headerlink" href="#current-status-and-parallel-ownership-2026-11-06" title="Permanent link">&para;</a></h2>
 <p><strong>Use the <a href="multitenant-delivery-dashboard.html">working dashboard</a> for current
 milestone dependencies, parallel lanes, next gates and slice acceptance stages.</strong>
 It is generated from queue claims plus dated acceptance metadata, not a live
@@ -6309,13 +6385,13 @@ enabled merely because a dormant slice passes.</p>
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest local cumulative REST head is <code>1c55098a</code>
-(<a href="../remedial/rc-16.0.0-integration-record.html#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05">R49</a>);
-it remains unpushed. Published #8898 is OPEN/draft at R44 <code>bc4ee1a9</code>;
-independent #8891 is OPEN/draft at R45 <code>dff9a8d4</code>. Both published heads have
-successful CI and CodeQL at fresh read-back. Independent local R50 <code>5173864d</code>
-extends actual evaluator acquisition/retention characterization without joining REST or enabling a role.
-<a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
+promotion is recorded. The latest accepted local cumulative REST head is <code>33870764</code>
+(<a href="../remedial/rc-16.0.0-integration-record.html#r51---bounded-settings-differential-on-33870764-2026-11-06">R51</a>);
+root integration fast-forwarded the exact tested tree. R49 remains its historical
+capture. Published #8898 <code>bc4ee1a9</code> and independent #8891 <code>dff9a8d4</code> remain draft/open
+at the coordinator's2026-11-06 capture; no candidate CI is claimed. Independent
+R50 <code>5173864d</code> extends actual evaluator acquisition/retention without joining REST
+or enabling a role. <a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. <a href="../remedial/rc-16.0.0-integration-record.html#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04">R39</a>
@@ -6327,6 +6403,110 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The <a href="#accepted-post-provider-and-canonical-continuations-2026-11-04">latest accepted continuations</a>
 and <a href="#completion-checkpoints-and-publication-2026-11-04">completion checkpoints</a>
 separate measured integration from complete storage, runtime and preview acceptance.</p>
+<h3 id="accepted-settings-differential-and-serial-recovery-2026-11-06">Accepted settings differential and serial recovery (2026-11-06)<a class="headerlink" href="#accepted-settings-differential-and-serial-recovery-2026-11-06" title="Permanent link">&para;</a></h3>
+<p>R51 accepts bounded settings at <code>33870764</code>: full7089/80pending/0failure,
+default browser684, tier registration503files/8tiers and final prcheckOK. Root
+<code>codex/serial-integration-20261106</code> fast-forwarded the exact tested application
+head. R49 REST <code>1c55098a</code> and independent R50 profile <code>5173864d</code> remain their
+unchanged historical captures; profile is not joined. Published drafts #8898
+<code>bc4ee1a9</code>/#8891 <code>dff9a8d4</code> remain open on <code>4a482627</code> at the2026-11-06 remote
+capture; candidate CI is not claimed.</p>
+<p>The only product edit raises global PG sort cap4→5 for requested scalar plus
+four stable tie breakers; six-key sorts refuse. Actual settings focused12 and
+parent archived12/restored12 pass. Sortcap control fails0/1 with HTTP500vs200;
+predicate control0/1 exposes a distractor; projection control0/1 leaks raw private
+fields. Regex/dotted predicates retain explicit sanitized PG500 capability
+refusals. Synthetic single-process patterns are not client binaries, complete
+backend parity, replica history/revision or measured performance.</p>
+<p>The earlier full attempt at <code>0a4a7d59</code> failed actual fixture setup: duplicate
+Vault transit mount400, reproduced by the settings+profile/food pair12passes+
+setup failure. Unique owned mount naming and owned-only cleanup fix the fixture;
+final pair25/0 and two focused12 repeats pass at338. This was not ENOSPC; failed
+full attempts remain unaccepted. Application source after0a is unchanged.</p>
+<p>Authorized cleanup audit records3779inventoried/deleted,0missing/preserved/errors
+and no outside-inventory loss. Four actual cleanup-block cases cover success and
+controlled removal failure, continued attempts, private0700/0600 diagnostics and
+six owned anonymous volumes independently absent. Five settings gate audits
+verify15owned containers and25recorded volumes absent. B's75recorded volumes are
+absent and219preserved volumes remain;40unknown nested volumes stay inventoried
+and untouched. These are bounded infrastructure results, not complete leak freedom.
+New canonical all flags await a future combined campaign.</p>
+<p>B released its slot; <strong>A fresh full active → D → C → clock queued</strong>. A <code>e5fe0b5e</code>
+is unaccepted after its incomplete ENOSPC/NUL/truncated exit7 campaign; prior
+bounded14/4/browser684 stays scoped and alignment <code>334dc571</code> is NOT JOINED.
+D <code>714f6c8b</code> remains unaccepted and its <a href="../../../reports/tenancy/rest-replica-history-characterization-2026-11-05.html">measured history gap</a>
+at <code>2a6eaf73</code> is unfixed. C <code>3106f14d</code> has static preparation only, with new
+DB/full/browser/prcheck pending. Existing accepted R48 is retained.</p>
+<p>The maintainer adopted the <a href="postgres-tenant-clock-proof.html">transactional tenant-clock proof direction</a>.
+Separate source prototypes, independent HTTP proof and contention/fresh-ingestion
+latency measurements are unmeasured; no clock implementation is production enabled.
+Root owns joins and final cumulative acceptance. R51 and its bounded ST-PG gate
+promote no milestone; wider M0–M6 and all remaining lanes remain open.
+Local evidence is in <code>HANDOFF-settings-verification-20261106.md</code>,
+<code>HANDOFF-cleanup-settings-runtime-20261106.md</code> and their home scratch logs;
+counts above are reproduced in those logs and independently read for this record.
+The2026-11-05 HOLD table below is a historical capture, not current slot status.</p>
+<h3 id="next-lanes-and-shared-capacity-hold-2026-11-05">Next lanes and shared capacity hold (2026-11-05)<a class="headerlink" href="#next-lanes-and-shared-capacity-hold-2026-11-05" title="Permanent link">&para;</a></h3>
+<p>This is continuation/status upkeep, not a new numbered acceptance wave.
+The frozen accepted baseline remains REST <code>1c55098a</code> (<a href="../remedial/rc-16.0.0-integration-record.html#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05">R49</a>: full7076/80pending/0failure, browser684) and independent profile <code>5173864d</code>
+(<a href="../remedial/rc-16.0.0-integration-record.html#r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05">R50</a>: full6690/3pending/0failure, browser684), within their recorded boundaries.
+The following <strong>NEXT lanes are separate and not accepted</strong>. Figures below are
+read-derived from lane handoffs and the immutable replica measurement, not new
+campaigns run for this upkeep. Counts overlap and are not completion percentages.</p>
+<table>
+<thead>
+<tr>
+<th>Lane</th>
+<th>Candidate and bounded evidence</th>
+<th>Status and next gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A — private acquisition</td>
+<td>CRM <code>e5fe0b5e</code> has bounded acquisition14/concurrency4, semantic controls, caller ownership/error checks and browser684. Alignment cache-control <code>334dc571</code> is separate and <strong>NOT JOINED</strong>.</td>
+<td>Full campaign <strong>UNACCEPTED</strong>: exit7 during root ENOSPC, NUL/truncated output, no complete reliable summary. Do not assign every numbered failure to capacity without isolation. Final prcheck and separate evaluator adaptation <strong>NOT RUN</strong>. Hold new campaigns until capacity and a serialized slot are released.</td>
+</tr>
+<tr>
+<td>B — settings differential</td>
+<td>Separate <code>0a4a7d59</code> has focused12 and predicate/projection semantic controls. Its only product edit raises the <strong>global PostgreSQL sort cap4 to5</strong>; six-term refusal remains explicit.</td>
+<td>Full/browser, cross-binding and cap-restoration controls, and final prcheck <strong>PENDING capacity</strong>. This bounded compiler extension does not establish all-settings/query parity or measured resource cost.</td>
+</tr>
+<tr>
+<td>C — owner proposed-grant enforcement</td>
+<td>Existing accepted R48 baseline retained. New transactional catalogue/operator-ceiling/actor-delegation enforcement has no accepted head.</td>
+<td><strong>UNMEASURED</strong>; source-preparation/runtime acceptance on HOLD. Prior token verification does not implement these ceilings, the human issuer/refresh or the complete owner catalogue.</td>
+</tr>
+<tr>
+<td>D — replica/history</td>
+<td><a href="../../../reports/tenancy/rest-replica-history-characterization-2026-11-05.html">Immutable actual HTTP measurement</a> at <code>2a6eaf73</code> has five passing characterization assertions of a <strong>FAILED history contract</strong>. Latest test-only instrument/cleanup candidate is <code>714f6c8b</code>, superseding <code>d93b7fca</code>.</td>
+<td>Two already-running processes assign equal raw <code>srvModified</code> to successive writes: exclusive history omits the later row despite successful addressed GET. Same-process advances1, restart hydration2, foreign tenant unchanged. Corrected controls/cleanup runtime, full/browser and prcheck remain <strong>PENDING</strong>; no general replica acceptance.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Capacity HOLD, reproduced host snapshot:</strong> <code>df -h / /home /tmp</code> reported root
+453G total/431G used/0 available, with96G available on /home. All new DB/full/browser
+campaigns remain held globally; source, rendering and static checks use /home
+scratch/TMPDIR. Incomplete campaigns retain their original failures and logs;
+ENOSPC plus incomplete output is not evidence that every failure is environmental.
+Old cleanup removed containers before anonymous volume IDs were captured, so it
+cannot attribute orphan ownership. The separate3779-entry unattached-anonymous-volume
+inventory awaits user approval; <strong>no deletion is authorized or recorded here</strong>.
+No peer/global resource cleanup follows from this status work.</p>
+<p>The clock investigation is <strong>read-derived design work</strong>: unique allocation alone
+cannot establish commit order if a lower timestamp can commit after a higher one
+has been exposed. Legacy paths also plan timestamps before their PG transaction.
+A same-data-commit/fencing design needs evaluation; <strong>no production clock fix or
+workaround is selected or applied</strong>. The user-selected single-machine-first
+expansion boundary remains; these tests do not admit multi-node/HA operation.
+No M0–M6 promotion, shared implementation acceptance, queue-state change or release
+admission follows from this continuation.</p>
+<p>Local untracked coordination detail (machine-local references, not public links):
+<code>externals/work/HANDOFF-next-lanes-20261105.md</code>,
+<code>externals/work/HANDOFF-private-acquisition-extraction-20261105.md</code>,
+<code>externals/work/HANDOFF-settings-differential-20261105.md</code> and
+<code>externals/work/HANDOFF-rest-replicas-20261105.md</code>. The coordinator owns additive
+joins; runner/gate cleanup is a separate branch, not part of these source records.</p>
 <h3 id="accepted-adapter-consolidation-and-index-race-continuation-2026-11-05">Accepted adapter consolidation and index race continuation (2026-11-05)<a class="headerlink" href="#accepted-adapter-consolidation-and-index-race-continuation-2026-11-05" title="Permanent link">&para;</a></h3>
 <p><a href="../remedial/rc-16.0.0-integration-record.html#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05">R46</a>
 accepts local cumulative <code>44331668038dca5bc23af24c4125052b9c8e5612</code>:
@@ -7533,7 +7713,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -7568,7 +7748,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients

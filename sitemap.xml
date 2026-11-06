@@ -1333,6 +1333,10 @@
          <lastmod>2026-11-06</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/postgres-tenant-clock-proof.html</loc>
+         <lastmod>2026-11-06</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/single-and-multitenant-architecture.html</loc>
          <lastmod>2026-11-06</lastmod>
     </url>
@@ -5434,6 +5438,14 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/synthetic-demo-analysis/clinical-report.html</loc>
+         <lastmod>2026-11-06</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/index.html</loc>
+         <lastmod>2026-11-06</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/rest-replica-history-characterization-2026-11-05.html</loc>
          <lastmod>2026-11-06</lastmod>
     </url>
     <url>

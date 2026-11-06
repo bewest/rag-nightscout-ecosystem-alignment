@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/single-and-multitenant-architecture.html">
       
       
-        <link rel="prev" href="owner-authority.html">
+        <link rel="prev" href="postgres-tenant-clock-proof.html">
       
       
         <link rel="next" href="tenant-config-schema-2026-10-27.html">
@@ -2549,6 +2549,8 @@
       
         
       
+        
+      
     
     
     
@@ -2926,6 +2928,34 @@
     
   
     Tenant owner authority and token verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -4424,6 +4454,8 @@
       
         
       
+        
+      
     
     
     
@@ -5410,8 +5442,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof

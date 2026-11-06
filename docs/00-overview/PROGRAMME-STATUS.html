@@ -1626,6 +1626,8 @@
       
         
       
+        
+      
     
     
     
@@ -2288,7 +2290,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>75af70098</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>20cbcbc3a</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2420,14 +2422,20 @@ official/dev official/chore/&lt;branch&gt;</code>; the trial merges are <code>RT
 gates. The files newly conflicting on cuts 2–4 were touched by the merged Phase 0
 PRs, so every merge to <code>dev</code> raises the rebase cost of the train. Whether the train reaches <code>dev</code>
 by merge or by rebase is open (<code>RT-PROPAGATION</code>); so far every propagation has been a merge.</p>
-<p><strong>Multitenant</strong> — making bulk hosting feasible. Decisions D1–D21 are recorded in the
-<a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>;
-D17 is adopted in three of four rows, with row 2 (cohort-wide human identity) held
-pending <code>T30-ORY-PROOF</code>. Most implementation is not started, and several items are
-blocked behind remedial and release work. The seam branches refresh once, after the 15.0.9 freeze,
-as the first step of the write contract (<code>WRITE-CONTRACT</code>, plan §4.1 and §5.1). Self-hosted single-tenant stays
-first-class permanently (D1, D4): multitenancy is a second deployment target, never a
-replacement.</p>
+<p><strong>Multitenant</strong> — adding tenant isolation alongside first-class single-tenant Nightscout.
+Current delivery progress, accepted evidence and remaining gates live in the
+<a href="../30-design/tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> and
+<a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>.
+The <a href="../../site/pages/nightscout-next-gen-platform.html">next-generation platform map</a>
+shows the dependencies and bounded acceptance stages. These records distinguish local
+branch acceptance, combined integration and milestone completion; <code>make queue-status</code>
+measures the queue's claims.</p>
+<p>Decisions D1–D22 live in the
+<a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>,
+with the adopted <a href="../30-design/tenancy/owner-authority.html">owner-authority amendment</a>.
+Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is
+an additional deployment target. Release readiness follows the
+<a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release records</a>.</p>
 <hr />
 <h2 id="status-words-merged-is-not-released">Status words: merged is not released<a class="headerlink" href="#status-words-merged-is-not-released" title="Permanent link">&para;</a></h2>
 <p><strong>In the backfix register, neither <code>fixed</code> nor <code>merged</code> means an operator is safe.</strong>
@@ -3330,7 +3338,7 @@ measurement.</p>
 <td><a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html"><code>../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md</code></a></td>
 </tr>
 <tr>
-<td>tenancy decisions D1–D21</td>
+<td>tenancy decisions D1–D22</td>
 <td><a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html"><code>../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></a></td>
 </tr>
 <tr>

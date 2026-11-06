@@ -1529,6 +1529,8 @@
       
         
       
+        
+      
     
     
     
@@ -2172,7 +2174,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>f7b555338</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>79bdac61f</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -4892,7 +4894,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4f3c0b12502d5650595ec6b48cb59e338b46f6ac/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -5277,6 +5279,94 @@ maintainer-operated publication of the combined branch.</p>
 The earlier predecessor full run failed fixture setup; it is recorded in R49 and
 superseded only by the final cumulative measurement. Published drafts remain at
 their separately captured remote heads until the maintainer publishes this work.</p>
+<h3 id="update--next-lanes-and-capacity-hold-2026-11-05">Update — next lanes and capacity hold (2026-11-05)<a class="headerlink" href="#update--next-lanes-and-capacity-hold-2026-11-05" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Recorded source and status</th>
+<th>Acceptance boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frozen accepted baseline</td>
+<td>REST <code>1c55098a</code>, R49 full7076/80pending/0failure and browser684; independent profile <code>5173864d</code>, R50 full6690/3pending/0failure and browser684.</td>
+<td>Existing measured scope retained; new lane candidates do not replace these heads. No fresh runtime or remote-CI result is produced by this records-only upkeep.</td>
+</tr>
+<tr>
+<td>NEXT A — private acquisition</td>
+<td>Separate CRM <code>e5fe0b5e</code>: bounded14/4 plus semantic controls and browser684; alignment cache-control <code>334dc571</code> <strong>NOT JOINED</strong>.</td>
+<td>Full exit7/ENOSPC/NUL/truncated campaign remains <strong>UNACCEPTED</strong> with individual failures unclassified. Final prcheck/evaluator adaptation <strong>NOT RUN</strong>.</td>
+</tr>
+<tr>
+<td>NEXT B — settings</td>
+<td>Separate <code>0a4a7d59</code>: focused12/predicate/projection controls; only product change is global PG sort cap4→5.</td>
+<td>Full/browser/cross-binding/sort-cap controls/prcheck <strong>PENDING capacity</strong>. No broader settings/query/resource acceptance.</td>
+</tr>
+<tr>
+<td>NEXT C — owner enforcement</td>
+<td>Accepted R48 baseline retained; new proposed-grant/ceiling enforcement has no accepted head.</td>
+<td><strong>UNMEASURED</strong>, source preparation/runtime acceptance on HOLD; no issuer/refresh or full catalogue completion.</td>
+</tr>
+<tr>
+<td>NEXT D — replica history</td>
+<td><a href="../../reports/tenancy/rest-replica-history-characterization-2026-11-05.html">Immutable measurement</a> at <code>2a6eaf73</code>: five actual HTTP characterization cases demonstrate the <strong>FAILED exclusive-history guarantee</strong>. Latest test/cleanup candidate <code>714f6c8b</code> supersedes <code>d93b7fca</code>.</td>
+<td>Equal raw timestamps across successive process writes omit a later row from history despite addressed GET success. Same-process+1/restart+2/foreign unchanged are bounded controls. Corrected controls/cleanup/full/browser/prcheck remain PENDING; no clock fix or replica acceptance.</td>
+</tr>
+<tr>
+<td>Capacity and ownership</td>
+<td>Reproduced root snapshot453G/431G/0available; /home96G available. All new DB/full/browser campaigns on global HOLD. Separately inventoried3779 unattached anonymous volumes await user approval; no deletion.</td>
+<td>Own cleanup cannot reconstruct orphan ownership. No peer/global deletion, milestone promotion, queue-state/gate-reference change or new numbered acceptance allocation. Central joins and runner/gate cleanup have separate owners.</td>
+</tr>
+</tbody>
+</table>
+<p>Lane figures are <strong>read-derived</strong> from the local handoffs and immutable replica
+capture; the accepted baseline remains in R49/R50. The <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#next-lanes-and-shared-capacity-hold-2026-11-05">dated continuation</a>
+owns sequencing and limits. Unique timestamp allocation alone is read-derived
+insufficient for commit ordering; a same-data-commit/fencing design is still under
+investigation. No production clock fix, operator-visible runtime change, release
+admission or push was made by this upkeep.</p>
+<p>Machine-local untracked references: <code>externals/work/HANDOFF-next-lanes-20261105.md</code>,
+<code>externals/work/HANDOFF-private-acquisition-extraction-20261105.md</code>,
+<code>externals/work/HANDOFF-settings-differential-20261105.md</code>,
+<code>externals/work/HANDOFF-rest-replicas-20261105.md</code>.</p>
+<h3 id="update--accepted-settings-and-serialized-recovery-2026-11-06">Update — accepted settings and serialized recovery (2026-11-06)<a class="headerlink" href="#update--accepted-settings-and-serialized-recovery-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Reproduced evidence, independently read from owned logs</th>
+<th>Remaining work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R51 settings <code>33870764</code></td>
+<td>Root integration FF exact tested tree; full7089/80pending/0failure, browser684, tier503files/8tiers, final prcheckOK. Parent archived12/three semantic controls/restored12.</td>
+<td>Only global PG sort cap4→5 product change. Six-key refusal, regex/dotted PG500 limits, performance/client/replica scope remain explicit. No milestone promotion.</td>
+</tr>
+<tr>
+<td>Failure and correction</td>
+<td>Earlier0a full Vault duplicate-mount400; ordered pair12+setupfailure. Fixture-only unique owned mount/cleanup correction gives25/0 and final full acceptance.</td>
+<td>Failed campaign not accepted or classified ENOSPC. R49/R50 historical captures unchanged; independent profile not joined.</td>
+</tr>
+<tr>
+<td>Bounded cleanup</td>
+<td>Authorized inventory3779deleted/0errors/no outside-inventory loss; smoke4realcases/sixvolumesabsent; gate audit15containers/25volumesabsent/private0700/0600. B75recordedvolumes absent,219preserved remain.</td>
+<td>Unknown40nested volumes preserved; no complete leak-freedom claim. Canonical new all flags await future combined execution.</td>
+</tr>
+<tr>
+<td>Next serial lanes</td>
+<td>B released; A fresh full active; D/C/clock queued.</td>
+<td>A/C/D/clock unaccepted. D history gap unfixed; adopted clock proof/source preparation and contention/latency unmeasured. Root owns cumulative joins/acceptance.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-settings-differential-and-serial-recovery-2026-11-06">R51 and serial continuation</a>
+links the adopted proof plan and scope. Local evidence: <code>HANDOFF-settings-verification-20261106.md</code>
+and <code>HANDOFF-cleanup-settings-runtime-20261106.md</code>; raw Docker identifiers remain local.
+No operator runtime deployment, release admission, candidate CI or application push claimed.</p>
 
 
 

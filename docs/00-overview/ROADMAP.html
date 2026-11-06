@@ -1681,6 +1681,8 @@
       
         
       
+        
+      
     
     
     
@@ -2398,7 +2400,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>75af70098</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>20cbcbc3a</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2421,7 +2423,7 @@ live in these places, and this page links to them:</p>
 <td><a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html#83-the-release-train">versioning policy §8.3</a></td>
 </tr>
 <tr>
-<td>tenancy decisions D1–D21 and the tenancy task definitions</td>
+<td>tenancy decisions D1–D22 and the tenancy task definitions</td>
 <td><a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">multitenancy execution plan</a></td>
 </tr>
 <tr>
@@ -2707,30 +2709,22 @@ harness cut 1 keeps is retired later under scope B (<code>RT-JSDOM-REST</code>, 
 <!-- END GENERATED: road-release-train -->
 
 <h2 id="3-multitenant">3. Multitenant<a class="headerlink" href="#3-multitenant" title="Permanent link">&para;</a></h2>
-<p>Self-hosted, single-tenant Nightscout stays first-class permanently (D1, D4). Multitenancy is a
-second deployment target and never replaces it.</p>
-<p><strong>The schedule is bounded by the release train.</strong> Tenancy work is based on
-<code>chore/nightscout-modernization</code> (D9), so no tenancy code reaches a release before cuts 3 + 5.
-Until then, the order below is the order of development, not of release.</p>
-<ul>
-<li><strong>First, the seam refresh (<code>SEAM-REFRESH</code>), once, after the 15.0.9 freeze.</strong> Nothing builds on
-  the seam, and nine of its conflicting paths are files that now call a 15.0.9 write rule, so the
-  refresh is done as the first step of the write contract (<code>WRITE-CONTRACT</code>, plan §4.1): one write
-  step behind the storage interface, for all three write paths and both backends. What the refresh
-  lands on depends on how the release train reaches <code>dev</code>, which is open (<code>RT-PROPAGATION</code>, plan
-  §5.1). The seam chain's first 16 commits carry no tenancy behaviour and can ship to self-hosted
-  operators as a refactor release, followed by the write contract. Modernization work continues in
-  parallel.</li>
-<li><strong>Then the configuration and credential root (T3.0).</strong> <code>T30-SCHEMA-CRED</code> has no blockers.
-  <code>T30-SCHEMA-CONFIG</code> waits on the configuration research and on <code>T30-ORY-PROOF</code>, a proof that
-  one identity pool can serve two tenants. Everything per-tenant after that waits on
-  <code>T30-WIRING</code>.</li>
-<li><strong>Alarms under <code>TENANCY_MODE=multi</code> come last, and are off until then by design.</strong> They turn on
-  only when a test shows tenant A's alarm reaching A and not B, through the real producer path,
-  with a snooze that survives a restart and a process change (<code>A7A-GATE</code>; plan §7a). On a hosted
-  multi-tenant server, alarms stay off until that gate passes. A self-hosted Nightscout that
-  serves one person or family is not affected.</li>
-</ul>
+<p>Self-hosted single-tenant Nightscout stays first-class permanently (D1, D4).
+Multitenant is an additional deployment target.</p>
+<p>The <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">multitenant delivery roadmap</a>
+owns the current implementation sequence and milestone acceptance criteria. Use the
+<a href="../30-design/tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> for bounded
+accepted evidence and remaining gates, and the
+<a href="../../site/pages/nightscout-next-gen-platform.html">next-generation platform map</a>
+for architecture dependencies and parallel lanes. The generated table below gives
+queue dependencies; <code>make queue-status</code> measures its claimed states. Release readiness
+is recorded separately in the
+<a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.</p>
+<p>Single-tenant compatibility, tenant isolation, current authority, realtime and evaluator
+behavior each retain their acceptance gates in that roadmap. Alarms under
+<code>TENANCY_MODE=multi</code> remain off until <code>A7A-GATE</code> proves delivery through the real
+producer path to the correct tenant, with snooze state surviving a restart and
+process change (<a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#7a-what-stands-between-here-and-alarms-being-on-under-multi">execution plan §7a</a>).</p>
 <!-- BEGIN GENERATED: road-tenancy -->
 
 <table>
