@@ -1,0 +1,54 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-06T22:47:03.677Z",
+    "end": "2026-11-06T22:47:05.067Z",
+    "duration": 1390
+  },
+  "tests": [
+    {
+      "title": "preserves typed twins in SQL and the current clinical reading after replay",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL preserves typed twins in SQL and the current clinical reading after replay",
+      "file": "/tmp/ns-next-slice-Vge8JD/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 105,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: clinical newest reading survives typed replay\n\n111 !== 222\n\n    at /tmp/ns-next-slice-Vge8JD/tests/tenant-projection-evaluator.integration.test.js:53:16\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async lab.at (tests/fixtures/tenant-projection-evaluator.js:69:18)\n    at async Context.<anonymous> (tests/tenant-projection-evaluator.integration.test.js:51:7)",
+        "message": "clinical newest reading survives typed replay\n\n111 !== 222\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "111",
+        "expected": "222",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "preserves typed twins in SQL and the current clinical reading after replay",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL preserves typed twins in SQL and the current clinical reading after replay",
+      "file": "/tmp/ns-next-slice-Vge8JD/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 105,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: clinical newest reading survives typed replay\n\n111 !== 222\n\n    at /tmp/ns-next-slice-Vge8JD/tests/tenant-projection-evaluator.integration.test.js:53:16\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async lab.at (tests/fixtures/tenant-projection-evaluator.js:69:18)\n    at async Context.<anonymous> (tests/tenant-projection-evaluator.integration.test.js:51:7)",
+        "message": "clinical newest reading survives typed replay\n\n111 !== 222\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "111",
+        "expected": "222",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "passes": []
+}

@@ -1,0 +1,21 @@
+[
+  {
+    "container": "ns-replay-gate-ba5dc08b38214050",
+    "volumeIds": [
+      "c4e882e4b0f7d15aa055d75826627096b3b06845b762e59e3dd7d736707e97d8"
+    ],
+    "containerRemoved": true,
+    "absence": [
+      {
+        "kind": "container",
+        "id": "ns-replay-gate-ba5dc08b38214050",
+        "absent": true
+      },
+      {
+        "kind": "volume",
+        "id": "c4e882e4b0f7d15aa055d75826627096b3b06845b762e59e3dd7d736707e97d8",
+        "absent": true
+      }
+    ]
+  }
+]

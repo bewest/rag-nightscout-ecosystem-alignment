@@ -1,0 +1,11 @@
+Scratch-only clinical oracle hardening: absent bgnow yields assertion, still expected123
+Scratch-only control: projection-evaluator/identity
+gate: next-slice projection-evaluator
+  tree 1990f453e09303d9dcf3394f0f50a42c3ce4052b
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+Private bounded artifacts: <gate-worktree>/externals/work/control-recovery-gate-artifacts/projection-evaluator-tB0yeJ
+{"suites":1,"tests":1,"passes":0,"pending":0,"failures":1,"start":"2026-11-06T22:47:03.677Z","end":"2026-11-06T22:47:05.067Z","duration":1390}
+CONTROL-SEMANTIC: clinical current reading111 instead222 while independent stored typed twins remain
+Owned cleanup diagnostics: <gate-worktree>/externals/work/cleanup-diagnostics/next-slice-TYOifa/containers.json

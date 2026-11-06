@@ -1,0 +1,50 @@
+{
+  "independentAbsence": [
+    {
+      "run": "identity",
+      "resources": [
+        {
+          "kind": "container",
+          "id": "ns-replay-gate-a65039d6dfcafb0a",
+          "absent": true
+        },
+        {
+          "kind": "volume",
+          "id": "6fb3ae85621066f95ebd36411e5efacf854d3ca61c96e786d7b181cbc1f7f0f0",
+          "absent": true
+        }
+      ]
+    },
+    {
+      "run": "bootstrap",
+      "resources": [
+        {
+          "kind": "container",
+          "id": "ns-replay-gate-6e578df9cfe589b8",
+          "absent": true
+        },
+        {
+          "kind": "volume",
+          "id": "c080f67e118b3b03681a9136bc2eec08934f182723a9c14d9c59415531bc1b45",
+          "absent": true
+        }
+      ]
+    },
+    {
+      "run": "restored",
+      "resources": [
+        {
+          "kind": "container",
+          "id": "ns-replay-gate-ba5dc08b38214050",
+          "absent": true
+        },
+        {
+          "kind": "volume",
+          "id": "c4e882e4b0f7d15aa055d75826627096b3b06845b762e59e3dd7d736707e97d8",
+          "absent": true
+        }
+      ]
+    }
+  ],
+  "volumeCount": 462
+}

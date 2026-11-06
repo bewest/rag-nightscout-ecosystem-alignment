@@ -1,0 +1,144 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 7,
+    "passes": 7,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-11-06T22:47:48.547Z",
+    "end": "2026-11-06T22:47:53.468Z",
+    "duration": 4921
+  },
+  "tests": [
+    {
+      "title": "rebuilds clinical properties equal to fresh physical reads after a new consumer handle",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL rebuilds clinical properties equal to fresh physical reads after a new consumer handle",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 1787,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "preserves typed twins in SQL and the current clinical reading after replay",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL preserves typed twins in SQL and the current clinical reading after replay",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 88,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "bootstraps an advanced empty projection into the same current clinical reading",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL bootstraps an advanced empty projection into the same current clinical reading",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 42,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "retains independent A/B clinical results and refuses a foreign retained-state read",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL retains independent A/B clinical results and refuses a foreign retained-state read",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 52,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "retains the prior successful result after read failure and retries from committed projection",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL retains the prior successful result after read failure and retries from committed projection",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 51,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "recomputes the same checkpoint at a later explicit instant without a new write",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL recomputes the same checkpoint at a later explicit instant without a new write",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 66,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "recovers clinical state after the actual producer dies after commit before publication",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL recovers clinical state after the actual producer dies after commit before publication",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 167,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "rebuilds clinical properties equal to fresh physical reads after a new consumer handle",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL rebuilds clinical properties equal to fresh physical reads after a new consumer handle",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 1787,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "preserves typed twins in SQL and the current clinical reading after replay",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL preserves typed twins in SQL and the current clinical reading after replay",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 88,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "bootstraps an advanced empty projection into the same current clinical reading",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL bootstraps an advanced empty projection into the same current clinical reading",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 42,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "retains independent A/B clinical results and refuses a foreign retained-state read",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL retains independent A/B clinical results and refuses a foreign retained-state read",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 52,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "retains the prior successful result after read failure and retries from committed projection",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL retains the prior successful result after read failure and retries from committed projection",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 51,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "recomputes the same checkpoint at a later explicit instant without a new write",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL recomputes the same checkpoint at a later explicit instant without a new write",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 66,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "recovers clinical state after the actual producer dies after commit before publication",
+      "fullTitle": "dormant recovered tenant clinical projection actual PostgreSQL recovers clinical state after the actual producer dies after commit before publication",
+      "file": "/tmp/ns-next-slice-5kFJ6x/tests/tenant-projection-evaluator.integration.test.js",
+      "duration": 167,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ]
+}

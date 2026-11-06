@@ -1,0 +1,104 @@
+{
+  "measurement": "reproduced",
+  "date": "2026-11-06",
+  "applicationSource": "1990f453e09303d9dcf3394f0f50a42c3ce4052b",
+  "gateInstrument": "2d7ea7a3c95ae924745b9e9d66d2af33371a21f3",
+  "node": "v22.23.4",
+  "postgresImageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+  "postgresRepoDigest": "postgres@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97",
+  "runtimeClaimed": "2026-11-06T22:46:40Z",
+  "runtimeReleased": "2026-11-06T22:48:29Z",
+  "volumeCountBefore": 462,
+  "volumeCountAfter": 462,
+  "scratchTestAdaptation": {
+    "file": "tests/tenant-projection-evaluator.integration.test.js",
+    "before": "assert.equal(result.properties.bgnow.mean, 123, 'advanced empty cache must reconstruct clinical state');",
+    "after": "assert.equal(result.properties.bgnow?.mean, 123, 'advanced empty cache must reconstruct clinical state');",
+    "scope": "one unique assertion in each scratch archive; expectation unchanged, missing value is ERR_ASSERTION rather than TypeError; no source worktree changed"
+  },
+  "runs": [
+    {
+      "name": "identity",
+      "nativeExit": 1,
+      "expectedGateExit": 1,
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T22:47:03.677Z",
+        "end": "2026-11-06T22:47:05.067Z",
+        "duration": 1390
+      },
+      "failure": {
+        "stack": "AssertionError [ERR_ASSERTION]: clinical newest reading survives typed replay\n\n111 !== 222\n\n    at /tmp/ns-next-slice-Vge8JD/tests/tenant-projection-evaluator.integration.test.js:53:16\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async lab.at (tests/fixtures/tenant-projection-evaluator.js:69:18)\n    at async Context.<anonymous> (tests/tenant-projection-evaluator.integration.test.js:51:7)",
+        "message": "clinical newest reading survives typed replay\n\n111 !== 222\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "111",
+        "expected": "222",
+        "operator": "strictEqual",
+        "diff": "simple"
+      },
+      "nativeSource": "1990f453e09303d9dcf3394f0f50a42c3ce4052b"
+    },
+    {
+      "name": "bootstrap",
+      "nativeExit": 1,
+      "expectedGateExit": 1,
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T22:47:26.720Z",
+        "end": "2026-11-06T22:47:28.113Z",
+        "duration": 1393
+      },
+      "failure": {
+        "stack": "AssertionError [ERR_ASSERTION]: advanced empty cache must reconstruct clinical state\n\nundefined !== 123\n\n    at /tmp/ns-next-slice-CFiQXz/tests/tenant-projection-evaluator.integration.test.js:72:16\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async lab.at (tests/fixtures/tenant-projection-evaluator.js:69:18)\n    at async Context.<anonymous> (tests/tenant-projection-evaluator.integration.test.js:70:7)",
+        "message": "advanced empty cache must reconstruct clinical state\n\nundefined !== 123\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "expected": 123,
+        "operator": "strictEqual",
+        "diff": "simple"
+      },
+      "nativeSource": "1990f453e09303d9dcf3394f0f50a42c3ce4052b"
+    },
+    {
+      "name": "restored",
+      "nativeExit": 0,
+      "expectedGateExit": 0,
+      "stats": {
+        "suites": 1,
+        "tests": 7,
+        "passes": 7,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T22:47:48.547Z",
+        "end": "2026-11-06T22:47:53.468Z",
+        "duration": 4921
+      },
+      "failure": null,
+      "nativeSource": "1990f453e09303d9dcf3394f0f50a42c3ce4052b"
+    }
+  ],
+  "limits": [
+    "No full/browser/corpus/prcheck or complete M5 acceptance.",
+    "Current-row clinical properties only; no notification handoff, timer, role enablement, provider or intermediate-event guarantee.",
+    "Initial joined seven-case positive remains separately scoped; only two reds and one seven-case restoration executed in this slot.",
+    "Published logs replace only machine-local alignment prefixes; raw private hashes retained separately."
+  ],
+  "sourceChecks": {
+    "syntax": "passed",
+    "help": "passed",
+    "strictMutationAndClassifier": "passed",
+    "lintErrors": 0,
+    "lintWarnings": 25
+  }
+}

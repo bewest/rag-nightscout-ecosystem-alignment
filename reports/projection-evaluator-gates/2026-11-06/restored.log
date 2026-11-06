@@ -1,0 +1,63 @@
+Scratch-only clinical oracle hardening: absent bgnow yields assertion, still expected123
+gate: next-slice projection-evaluator
+  tree 1990f453e09303d9dcf3394f0f50a42c3ce4052b
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+2026-11-06T12:00:00.000Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 222 +111 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":222,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+2026-11-06T12:00:00.000Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 222 +111 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":222,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+2026-11-06T12:00:00.000Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 222 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":222,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+2026-11-06T12:00:00.000Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 222 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":222,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+2026-11-06T12:00:00.000Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 222 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":222,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+ Prefs: { warn: 30, urgent: 60, enableAlerts: undefined }
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+For the COB plugin to derive COB from treatments you need a treatment profile with both sens and carbratio fields
+For the Basal plugin to function you need a treatment profile
+Private bounded artifacts: <gate-worktree>/externals/work/control-recovery-gate-artifacts/projection-evaluator-K4lP4b
+{"suites":1,"tests":7,"passes":7,"pending":0,"failures":0,"start":"2026-11-06T22:47:48.547Z","end":"2026-11-06T22:47:53.468Z","duration":4921}
+PASS bounded projection-evaluator; activation, management and milestone acceptance remain separate
+Owned cleanup diagnostics: <gate-worktree>/externals/work/cleanup-diagnostics/next-slice-vqHnkj/containers.json
