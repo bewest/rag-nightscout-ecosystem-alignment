@@ -10,6 +10,8 @@ const [repository, ref] = process.argv.slice(2);
 assert(repository && ref, 'Pass frozen application repository and commit');
 const show = file => execFileSync('git', ['-C', repository, 'show', ref + ':' + file], { encoding: 'utf8' });
 const original = show(owner.definition.file), adapted = owner.adapt(original);
+assert.equal(original.split('await start(missing, {}, false)').length, 2);
+assert.equal(original.split('await start(config(), { OWNER_READER: process.env.NS_TEST_POSTGRES_ADMIN_URI }, false)').length, 2);
 new vm.Script(adapted, { filename: 'archived-owner-oracle.js' });
 assert.notEqual(adapted, original);
 assert.throws(() => owner.adapt(''), /exactly one/);
@@ -89,14 +91,23 @@ const wrongGreen = clone(green); wrongGreen.stats.pending = 1;
 assert.throws(() => owner.verify(wrongGreen, 0, undefined, restored), /cohort/);
 const children = (count, listener = false) => Array.from({ length: count }, (_, i) => {
   const roles = listener && i === count - 1 ? 'tenant-admin,api' : 'tenant-admin';
-  return [{ kind: 'worker-start', pid: i + 1, roles }, { kind: 'worker-stop', pid: i + 1, roles,
-    code: listener && i === count - 1 ? null : 0, signal: listener && i === count - 1 ? 'SIGKILL' : null }];
+  const noBind = count === 6 && [2, 3].includes(i);
+  return [{ kind: 'worker-start', pid: i + 1, roles, expectedReady: !noBind }, { kind: 'worker-stop', pid: i + 1, roles,
+    code: noBind ? 1 : listener && i === count - 1 ? null : 0, signal: listener && i === count - 1 ? 'SIGKILL' : null,
+    listeningMarker: !noBind, portPresent: !noBind }];
 }).flat();
 assert.equal(owner.auditChildren(children(2), 'snapshot', () => false).length, 2);
 assert.equal(owner.auditChildren(children(3, true), 'listener', () => false).length, 3);
 assert.equal(owner.auditChildren(children(6), undefined, () => false).length, 6);
 assert.throws(() => owner.auditChildren(children(2), 'snapshot', () => true), /absence audit/);
 assert.throws(() => owner.auditChildren([], 'snapshot', () => false), /missing\/ambiguous/);
+for (const mutate of [p => { p[1].code = 1; }, p => { delete p[5].listeningMarker; },
+  p => { p[5].listeningMarker = true; }, p => { p[4].expectedReady = true; p[0].expectedReady = false; },
+  p => { p[5].portPresent = true; }, p => { delete p[4].expectedReady; }]) {
+  const proof = children(6); mutate(proof);
+  assert.throws(() => owner.auditChildren(proof, undefined, () => false), /classification|lifecycle/);
+}
+
 owner.validateAudit([], 'snapshot');
 const containers = ['pg', 'vault'].map(kind => ({ container: 'ns-preview-replicas-' + kind + '-0123456789abcdef',
   volumeIds: Array.from({ length: kind === 'pg' ? 1 : 2 }, (_, i) => kind + '-synthetic-volume-' + i), containerRemoved: true }));

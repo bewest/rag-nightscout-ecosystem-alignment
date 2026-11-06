@@ -22,6 +22,9 @@ const definition = {
 const physicalMessage = 'owner protected request changed physical subject/link/credential/audit state before status assertion';
 const listenerMessage = 'owner DATA listener changed physical owner state before refusal assertion';
 const adaptations = [
+  ['    async function start (configuration = config(), overrides = {}, expectReady = true) {',
+    `    async function start (configuration = config(), overrides = {}, expectReady = true) {
+      assert.equal(typeof expectReady, 'boolean', 'fixture readiness expectation must be explicit');`],
   ["const assert = require('node:assert/strict');", `const assert = require('node:assert/strict');
 const gateProofs = [];
 let gatePhase = 'ordinary', gateBaseline, gateRevocation;
@@ -30,10 +33,11 @@ function gateRecord (proof) {
   require('node:fs').writeFileSync(process.env.NS_OWNER_GATE_PROOF, JSON.stringify(gateProofs));
 }`],
   ['      worker.child = child; children.add(worker);', `      worker.child = child; children.add(worker);
-      gateRecord({ kind: 'worker-start', pid: child.pid, roles: 'tenant-admin' });`],
+      gateRecord({ kind: 'worker-start', pid: child.pid, roles: 'tenant-admin', expectedReady: expectReady });`],
   ['      await worker.closed; children.delete(worker);', `      await worker.closed; children.delete(worker);
       gateRecord({ kind: 'worker-stop', pid: worker.child.pid, roles: 'tenant-admin',
-        code: worker.child.exitCode, signal: worker.child.signalCode });`],
+        code: worker.child.exitCode, signal: worker.child.signalCode,
+        listeningMarker: /Listening/.test(worker.stdout), portPresent: Number.isInteger(worker.port) });`],
   [`      const before = await snapshot(); const response = await http(worker, credential, body, host);
       assert.equal(response.status, status, JSON.stringify(response.body)); assert.deepEqual(await snapshot(), before);`,
   `      const before = await snapshot(); const response = await http(worker, credential, body, host);
@@ -69,7 +73,7 @@ function gateRecord (proof) {
     });
     it('retains transactional operator ceiling and current actor delegation fences',`],
   ["        }, { roles: 'tenant-admin,api' });", `        }, { roles: 'tenant-admin,api' });
-        gateRecord({ kind: 'worker-start', pid: combined.child.pid, roles: 'tenant-admin,api' });`],
+        gateRecord({ kind: 'worker-start', pid: combined.child.pid, roles: 'tenant-admin,api', expectedReady: true });`],
   [`        assert([401, 403, 404, 405].includes(response.status), 'data listener must not expose management route: ' + response.status);
         assert.deepEqual(await snapshot(), before, 'data listener refusal must not mutate owner rows or audit');`,
   `        const current = await snapshot();
@@ -82,7 +86,8 @@ function gateRecord (proof) {
   ['      } finally { await data.cleanup(); }', `      } finally {
         await data.cleanup();
         if (combined) gateRecord({ kind: 'worker-stop', pid: combined.child.pid, roles: 'tenant-admin,api',
-          code: combined.exit?.code, signal: combined.exit?.signal });
+          code: combined.exit?.code, signal: combined.exit?.signal,
+          listeningMarker: /Listening/.test(combined.stdout), portPresent: Number.isInteger(combined.port) });
       }`],
   ["        await admin.query(`UPDATE ${a(table)} SET \"${column}\"=$2 WHERE tenant_id=$1`, [A, disabled]);", "        await admin.query(`UPDATE ${a(table)} SET \"${column}\"=$2 WHERE tenant_id=$1`, [A, disabled]);\n        const observed = (await admin.query(`SELECT \"${column}\" AS value FROM ${a(table)} WHERE tenant_id=$1`, [A])).rows.map(row => row.value);\n        assert(observed.length > 0 && observed.every(value => value === disabled || value === String(disabled)),\n          'independent operator read must confirm committed current-state revocation');\n        gateRevocation = { table, column, disabled, observed };"]
 ];
@@ -182,13 +187,18 @@ function auditChildren (proofs, control, present = pid => {
   const count = control === 'snapshot' ? 2 : control === 'listener' ? 3 : 6;
   if (starts.length !== count || stops.length !== count || new Set(starts.map(p => p.pid)).size !== count)
     throw new Error('Owned owner CLI lifecycle audit missing/ambiguous');
+  if (starts.filter(start => start.expectedReady === false).length !== (control ? 0 : 2))
+    throw new Error('Owned owner CLI expected-ready classification missing/incomplete');
   return starts.map(start => {
     const matches = stops.filter(stop => stop.pid === start.pid && stop.roles === start.roles);
     const stop = matches[0];
-    const valid = matches.length === 1 && Number.isSafeInteger(start.pid) && start.pid > 0 &&
-      (stop.code === 0 && stop.signal === null || !control && stop.roles === 'tenant-admin' && stop.code === 78 && stop.signal === null ||
-        control === 'listener' && stop.roles === 'tenant-admin,api' && stop.code === null && stop.signal === 'SIGKILL');
-    if (!valid || present(start.pid)) throw new Error('Owned owner CLI lifecycle/absence audit failed');
+    const noBind = !control && start.expectedReady === false && start.roles === 'tenant-admin' &&
+      stop?.code === 1 && stop.signal === null && stop.listeningMarker === false && stop.portPresent === false;
+    const ready = start.expectedReady === true && stop?.listeningMarker === true && stop.portPresent === true &&
+      (stop.code === 0 && stop.signal === null || control === 'listener' && start.roles === 'tenant-admin,api' &&
+        stop.code === null && stop.signal === 'SIGKILL');
+    if (matches.length !== 1 || !Number.isSafeInteger(start.pid) || start.pid < 1 || !(noBind || ready) || present(start.pid))
+      throw new Error('Owned owner CLI lifecycle/absence audit failed');
     return { ...start, exit: stop, independentlyAbsent: true };
   });
 }
