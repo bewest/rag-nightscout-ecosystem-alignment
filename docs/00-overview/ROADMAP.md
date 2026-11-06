@@ -14,7 +14,7 @@ live in these places, and this page links to them:
 | what | where it is decided |
 |---|---|
 | the release train and each release's number | [versioning policy §8.3](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train) |
-| tenancy decisions D1–D21 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| tenancy decisions D1–D22 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
 | defect facts, and what ships to operators today | [backfix register](../30-design/remedial/nightscout-backfix-register.md) |
 | each item's state, gate and blockers | `queue/work-queue.yaml`; `make queue-status` measures it |
 
@@ -146,30 +146,24 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 
 ## 3. Multitenant
 
-Self-hosted, single-tenant Nightscout stays first-class permanently (D1, D4). Multitenancy is a
-second deployment target and never replaces it.
+Self-hosted single-tenant Nightscout stays first-class permanently (D1, D4).
+Multitenant is an additional deployment target.
 
-**The schedule is bounded by the release train.** Tenancy work is based on
-`chore/nightscout-modernization` (D9), so no tenancy code reaches a release before cuts 3 + 5.
-Until then, the order below is the order of development, not of release.
+The [multitenant delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+owns the current implementation sequence and milestone acceptance criteria. Use the
+[delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md) for bounded
+accepted evidence and remaining gates, and the
+[next-generation platform map](../../site/pages/nightscout-next-gen-platform.html)
+for architecture dependencies and parallel lanes. The generated table below gives
+queue dependencies; `make queue-status` measures its claimed states. Release readiness
+is recorded separately in the
+[release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
-- **First, the seam refresh (`SEAM-REFRESH`), once, after the 15.0.9 freeze.** Nothing builds on
-  the seam, and nine of its conflicting paths are files that now call a 15.0.9 write rule, so the
-  refresh is done as the first step of the write contract (`WRITE-CONTRACT`, plan §4.1): one write
-  step behind the storage interface, for all three write paths and both backends. What the refresh
-  lands on depends on how the release train reaches `dev`, which is open (`RT-PROPAGATION`, plan
-  §5.1). The seam chain's first 16 commits carry no tenancy behaviour and can ship to self-hosted
-  operators as a refactor release, followed by the write contract. Modernization work continues in
-  parallel.
-- **Then the configuration and credential root (T3.0).** `T30-SCHEMA-CRED` has no blockers.
-  `T30-SCHEMA-CONFIG` waits on the configuration research and on `T30-ORY-PROOF`, a proof that
-  one identity pool can serve two tenants. Everything per-tenant after that waits on
-  `T30-WIRING`.
-- **Alarms under `TENANCY_MODE=multi` come last, and are off until then by design.** They turn on
-  only when a test shows tenant A's alarm reaching A and not B, through the real producer path,
-  with a snooze that survives a restart and a process change (`A7A-GATE`; plan §7a). On a hosted
-  multi-tenant server, alarms stay off until that gate passes. A self-hosted Nightscout that
-  serves one person or family is not affected.
+Single-tenant compatibility, tenant isolation, current authority, realtime and evaluator
+behavior each retain their acceptance gates in that roadmap. Alarms under
+`TENANCY_MODE=multi` remain off until `A7A-GATE` proves delivery through the real
+producer path to the correct tenant, with snooze state surviving a restart and
+process change ([execution plan §7a](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#7a-what-stands-between-here-and-alarms-being-on-under-multi)).
 
 <!-- BEGIN GENERATED: road-tenancy -->
 

@@ -72,14 +72,21 @@ gates. The files newly conflicting on cuts 2–4 were touched by the merged Phas
 PRs, so every merge to `dev` raises the rebase cost of the train. Whether the train reaches `dev`
 by merge or by rebase is open (`RT-PROPAGATION`); so far every propagation has been a merge.
 
-**Multitenant** — making bulk hosting feasible. Decisions D1–D21 are recorded in the
-[execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md);
-D17 is adopted in three of four rows, with row 2 (cohort-wide human identity) held
-pending `T30-ORY-PROOF`. Most implementation is not started, and several items are
-blocked behind remedial and release work. The seam branches refresh once, after the 15.0.9 freeze,
-as the first step of the write contract (`WRITE-CONTRACT`, plan §4.1 and §5.1). Self-hosted single-tenant stays
-first-class permanently (D1, D4): multitenancy is a second deployment target, never a
-replacement.
+**Multitenant** — adding tenant isolation alongside first-class single-tenant Nightscout.
+Current delivery progress, accepted evidence and remaining gates live in the
+[delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md) and
+[delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md).
+The [next-generation platform map](../../site/pages/nightscout-next-gen-platform.html)
+shows the dependencies and bounded acceptance stages. These records distinguish local
+branch acceptance, combined integration and milestone completion; `make queue-status`
+measures the queue's claims.
+
+Decisions D1–D22 live in the
+[execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md),
+with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md).
+Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is
+an additional deployment target. Release readiness follows the
+[release records](../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
 ---
 
@@ -345,7 +352,7 @@ measurement.
 | how 15.0.9 was released, and what is left | [`ROADMAP.md` §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle) (generated) |
 | Phase 0 PR ordering and coupling | [`../30-design/remedial/phase0-pr-sequencing-2026-09-15.md`](../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) |
 | the release train and its order | [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md) |
-| tenancy decisions D1–D21 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| tenancy decisions D1–D22 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
 | the governance / zero-reviews finding | [`../30-design/remedial/maintainer-release-brief-2026-09-15.md`](../30-design/remedial/maintainer-release-brief-2026-09-15.md) |
 
 <!-- BEGIN GENERATED: provenance -->
