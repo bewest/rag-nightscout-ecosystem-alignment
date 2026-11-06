@@ -1,0 +1,186 @@
+{
+  "basis": "reproduced remote read-back",
+  "captured_at": "2026-11-06 22:32:14 UTC",
+  "application_head": "83582e876dd193f4448f44c28e379fb5464a26c7",
+  "alignment_head": "74d273225a4a9c50854c905c73a6dafb9347dc85",
+  "pr": {
+    "url": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
+    "number": 8898,
+    "state": "open",
+    "draft": true,
+    "base": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+    "head": "83582e876dd193f4448f44c28e379fb5464a26c7",
+    "description_verified_with_new_ci_links": true
+  },
+  "application_ci": {
+    "id": 42303661682,
+    "url": "https://github.com/nightscout/cgm-remote-monitor/actions/runs/42303661682",
+    "head": "83582e876dd193f4448f44c28e379fb5464a26c7",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 128187491531,
+        "name": "Tests without a database (26)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491637,
+        "name": "Browser tests (26, webkit)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491647,
+        "name": "Run Tests (24, 6)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491814,
+        "name": "Run Tests (22.23.4, 8.0)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491846,
+        "name": "Validate Docker image (amd64)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491852,
+        "name": "Browser tests (26, firefox)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491863,
+        "name": "Validate Docker image (arm64)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491865,
+        "name": "Validate npm 12 install and build",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491888,
+        "name": "Run Tests (22, 6)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491925,
+        "name": "Tests without a database (22.23.4)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187491944,
+        "name": "Run Tests (26, 5.0)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187492000,
+        "name": "Multitenant opt-in corpus (PostgreSQL, MongoDB, Vault)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187492066,
+        "name": "Maintained MongoDB (26, 8.0.29)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187492070,
+        "name": "Browser tests (26, chromium)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128192005322,
+        "name": "Tests pass",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128192042495,
+        "name": "Build Docker image (${{ matrix.arch }})",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 128192042541,
+        "name": "Publish the release image",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 128192043622,
+        "name": "Publish to Docker Hub",
+        "status": "completed",
+        "conclusion": "skipped"
+      }
+    ]
+  },
+  "codeql": {
+    "id": 42303661681,
+    "url": "https://github.com/nightscout/cgm-remote-monitor/actions/runs/42303661681",
+    "head": "83582e876dd193f4448f44c28e379fb5464a26c7",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 128187491462,
+        "name": "Analyze (javascript)",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "codeql_check_annotations": 0,
+    "analyze_job_annotation": "runner-image migration notice"
+  },
+  "alignment_ci": {
+    "id": 42303565719,
+    "url": "https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42303565719",
+    "head": "74d273225a4a9c50854c905c73a6dafb9347dc85",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 128187171268,
+        "name": "Specs and fixtures",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187171537,
+        "name": "Python syntax (3.12)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 128187438712,
+        "name": "Site (build, check, publish to gh-pages)",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "retrieved_review_threads": {
+    "count": 8,
+    "resolved": 8
+  },
+  "limits": [
+    "No dev merge, release/tag or default/role activation.",
+    "R62/R63 retain executed source and selected-client compatibility boundaries.",
+    "Three release-image jobs skipped by workflow conditions.",
+    "Separate clock workload is descriptive, without approved performance threshold."
+  ]
+}

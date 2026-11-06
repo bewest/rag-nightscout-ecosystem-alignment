@@ -1695,3 +1695,16 @@ Lane detail: `externals/work/HANDOFF-codex-completion-coordination-20261106.md` 
 
 The [selected-client capsule](../../reports/selected-owner-clients/2026-11-06/README.md)
 preserves precise scope and independently audited cleanup. No activation decision is inferred.
+
+### Update — control recovery publication verified and clock workload captured (2026-11-06)
+
+| Scope | Reproduced result | Boundary |
+|---|---|---|
+| Published #8898 `83582e87` | [R64](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06): [CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42303661682) and [CodeQL](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42303661681) passed; all 15 CI jobs succeeded, three release-image jobs skipped. Draft description read back with current-head links. | No dev merge/release/default activation. R62 execution/reuse and R63 selected-client limits remain. |
+| Alignment `74d273225` | [CI/site](https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42303565719) passed. | Peer main ancestry preserved; no competing source or publication changes. |
+| Small native clock workload | [R65](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06): four fresh cohorts, 40 HTTP201 requests each, zero errors/retries; p95 18.2–23.1 ms and throughput 303–339 successful requests/s in these short observations. | Descriptive only; no approved budget, steady-state/causal comparison or final independent stored-count oracle. Earlier pending corpus captures remain unchanged; no milestone promotion. |
+
+The [publication snapshot](../../reports/tenancy/control-recovery-publication-83582e87-2026-11-06.json)
+and [workload capsule](../../reports/tenancy/2026-11-06-clock-http-workload/README.md)
+own measurements and limitations. Next socket/evaluator composition proceeds in a
+separate source batch; no later code is included by these successful checks.

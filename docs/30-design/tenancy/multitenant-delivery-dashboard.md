@@ -2,7 +2,7 @@
 # Multitenant delivery: working dashboard
 
 **Recorded 2026-11-06; not a live branch monitor.** Observed integration tip: `83582e87` on `codex/replay-controls-closure-20261106`.
-R62 accepts the joined dormant owner-reader, persisted typed replay and populated PostgreSQL recovery lab. Fresh comprehensive and default-client campaigns executed on871; complete source identity permits reuse on835, whose only change repairs the source-control runner and whose final prcheck passed. Native policy/replay semantic controls pass with red/restored evidence. Benchmark remains pending; no defaults, role enablement or M1–M6 promotion. Publication/remote checks are recorded separately.
+R62 accepts joined dormant owner-reader, persisted typed replay and populated PG recovery; R63 measures bounded selected oref0 workflows and the cgmsim root limitation, so activation remains disabled. R64 verifies published835 with application CI, CodeQL and alignment/site success. Fresh comprehensive/default-client campaigns executed on871; only the source-control runner differs on835, whose final prcheck passed. R65 captures a separate small descriptive clock workload without performance acceptance; the broad-corpus benchmark remained pending in its capture. M0 retains R60 promotion; M1–M6 and later socket/evaluator source remain open.
 
 **Start here:** use the dependency map for sequencing, the lane table for parallel work, and the acceptance ledger for what has actually passed. No milestone is promoted by a completed dependency slice.
 
