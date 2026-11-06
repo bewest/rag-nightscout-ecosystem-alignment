@@ -1,0 +1,131 @@
+{
+  "date": "2026-11-06",
+  "classification": "reproduced bounded current-head PgBouncer foundation continuation",
+  "applicationHead": "c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6",
+  "exit": 0,
+  "stderrEmpty": true,
+  "pgVersion": "16.15",
+  "poolVersion": "PgBouncer 1.25.2\nlibevent 2.1.12-stable\nadns: evdns2\ntls: OpenSSL 3.5.6 7 Apr 2026",
+  "images": {
+    "postgres": "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "pgbouncer": "edoburu/pgbouncer@sha256:4c1ca296ef525f108f5d3552cc337c0c09587cf8dae7f0067fd93349e47dc1cd"
+  },
+  "harnessSha256": "9004a1e69ef3a90a6295f7126d8cdeff25199426863b772dc4253509633989e1",
+  "ddlSha256": "c5c3d1bc4394e7a4f90eb7025450e6b3261323855123bad0c1f3b010229816b1",
+  "connectionSha256": "72b22da585c0e50180542b84cd5fba67d2cd78740496766bdf15b224940d92f5",
+  "typedDDLSha256": "0460c76bed932b35472595745491fb61ae918cc6ff4b403b51ba0cc9cffa6a69",
+  "identitySha256": "bbed55dc0da348f99ff1c23623493dbebfaa2ab6b1d783c05ff0d45e0621438c",
+  "poolConfiguration": {
+    "default_pool_size": "1",
+    "pool_mode": "transaction",
+    "server_reset_query_always": "0"
+  },
+  "distinctBackends": 1,
+  "checks": [
+    {
+      "name": "generated entries DDL applies; overlapping tenant identities remain independent",
+      "passed": true
+    },
+    {
+      "name": "two independent clients reuse one transaction-pooled backend without tenant leakage",
+      "passed": true
+    },
+    {
+      "name": "unbound readers fail closed and cross-tenant writes/TRUNCATE are refused",
+      "passed": true
+    },
+    {
+      "name": "rollback and caught SQL failures leave no committed write or retained binding",
+      "passed": true
+    },
+    {
+      "name": "updates and deletes affect only the bound tenant through the pooler",
+      "passed": true
+    },
+    {
+      "name": "generated columns preserve dirty documents and distinguish missing from explicit null",
+      "passed": true
+    },
+    {
+      "name": "red control: removing RLS exposes both tenants through the same pooler",
+      "passed": true
+    },
+    {
+      "name": "red control: BYPASSRLS application role is rejected through the pooler",
+      "passed": true
+    },
+    {
+      "name": "red control: actual session-binding mutation leaks to another pooled client",
+      "passed": true
+    }
+  ],
+  "identityChecks": [
+    {
+      "name": "typed generated DDL and actual codec preserve both id forms per tenant",
+      "passed": true
+    },
+    {
+      "name": "kind-scoped delete preserves the string twin and every other tenant record",
+      "passed": true
+    },
+    {
+      "name": "typed DDL refuses absent/invalid kinds and malformed ObjectId encodings",
+      "passed": true
+    },
+    {
+      "name": "red control: flattening the actual codec kind collapses otherwise distinct keys",
+      "passed": true
+    }
+  ],
+  "adapterBlockers": [
+    {
+      "property": "ObjectId and same-spelling string _id remain distinguishable",
+      "satisfied": false,
+      "evidence": "Current idForms returns both; node-postgres JSON serialization collapses them to one key (23505); raw Extended JSON instead fails generated _id NOT NULL (23502)"
+    },
+    {
+      "property": "Current v3 history/validity and identifier-index requirements reconciled",
+      "satisfied": false,
+      "evidence": "Historical generated DDL has no srvModified/isValid indexes or tenant-scoped partial unique identifier index"
+    }
+  ],
+  "scopeOfAdapterBlockers": "historical generated DDL fixture only; not a test of current operator migrations or complete adapters",
+  "cleanup": {
+    "observedContainersVerifiedAbsent": 2,
+    "mountedVolumesVerifiedAbsent": 1,
+    "uniqueNetworkVerifiedAbsent": true,
+    "attributedVolumesRemovedByAudit": 0,
+    "volumeBefore": 462,
+    "volumeAfter": 462
+  },
+  "runtimeReleased": "2026-11-06T21:04:14Z",
+  "limits": [
+    "Historical generated entries DDL is a lab fixture, not the current migration catalogue.",
+    "Its adapterBlockers describe that historical fixture; they do not reverse current adapter evidence.",
+    "Typed codec proof is bounded; arbitrary BSON import fidelity remains separate.",
+    "No HTTP, performance, HA, operations, complete migration or milestone promotion claim.",
+    "This continuation does not waive the failed corpus capture or complete final prcheck."
+  ],
+  "localArtifacts": {
+    "resources-foundation-c0e8ad3c-audit.json": {
+      "sha256": "d175421b48dd489f7fe2dc43cd22e5b3dd4acca2a9cc6e9d52ec6c80d4358b3a",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-foundation-c0e8ad3c-audit.json"
+    },
+    "foundation-c0e8ad3c.json": {
+      "sha256": "0a48f1398ff752f60a7f73f4268f286b3ba513bc30cd7d21176da093e752703a",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/foundation-c0e8ad3c.json"
+    },
+    "foundation-c0e8ad3c.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/foundation-c0e8ad3c.stderr"
+    },
+    "foundation-network-audit-c0e8ad3c.json": {
+      "sha256": "415c4b79c8052ee7dbb29f1d87ceaa20b8fb263b1c040d70ed259e40a9582598",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/foundation-network-audit-c0e8ad3c.json"
+    },
+    "resources-foundation-c0e8ad3c.json": {
+      "sha256": "7a9bc58c90074abcba68cb8374fb5bfd7651229d087ce8975456f7dde07fc612",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-foundation-c0e8ad3c.json"
+    }
+  }
+}
