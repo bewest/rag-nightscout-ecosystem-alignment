@@ -1596,3 +1596,24 @@ decisions are deferred, research continuing.
 | Local lane | Isolated branch `codex/m4-client-lab-20261106`; paused main/index snapshot preserved. | Lane detail: `externals/work/HANDOFF-codex-m4-20261106.md` (local, untracked). No push; B5 full/browser/corpus acceptance remains separate. |
 
 This measurement changes no release placement, operator-visible behavior or policy decision.
+
+
+### Update — combined Batch A actual clients (2026-11-06)
+
+| Scope | Reproduced capture | Remaining boundary |
+|---|---|---|
+| `M4-CLIENT-LAB`, archived `863c8a2b` | One combined actual-client campaign on committed instrument `c724b38aa`: 106/106 checks, 21 cells per stack. Identity preservation and header lookup now match. [Immutable report](../../reports/m4-client-binaries/2026-11-06-batch-a/README.md). | One unexplained legacy 401 envelope difference; gate-not-met. Root's dedicated compatibility repair and revised-freeze affected-client measurement precede B5 acceptance. No waiver or promotion. |
+
+Root owns the next integration-record allocation after combining B4a and Batch A records;
+M4 reserves no R59. Local ownership/transfer: `externals/work/HANDOFF-codex-m4-20261106.md`.
+
+
+### Update — bounded M4 lab locally accepted on revised freeze (2026-11-06)
+
+| Scope | Reproduced capture | Remaining boundary |
+|---|---|---|
+| `M4-CLIENT-LAB`, archived `c0e8ad3c` | Actual registered default gate 82/82 checks, 19 cells per stack, zero differences/missing cells, exit 0. Focused oref0 positive/restored 68 each; oracle six semantic failures; planted reply one unexplained. [Immutable accepted capture](../../reports/m4-client-binaries/2026-11-06-revised-freeze/README.md). | Local ready-to-push proposal only until root integrates instrument/records and retires exact archived draft. B5 comprehensive acceptance and broader M4 milestone limits stay separate. |
+
+The 863 combined capture and earlier failed/provenance controls remain unchanged. No classifier
+waiver, application push or M0–M6 promotion was made by this lane. Root owns the next R record
+allocation and publication. Local transfer: `externals/work/HANDOFF-codex-m4-20261106.md`.

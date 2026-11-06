@@ -43,8 +43,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 |---|---|---|
 | `not-started` | 74 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE |
 | `in-progress` | 23 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
-| `gate-not-met` | 4 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR, M4-CLIENT-LAB |
-| `ready-to-push` | 2 | T30-AUTH, WS-LAB |
+| `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
+| `ready-to-push` | 3 | T30-AUTH, WS-LAB, M4-CLIENT-LAB |
 | `blocked` | 14 | TEN-RESOLVE, TEN-LAB, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 4 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
@@ -8441,7 +8441,7 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/private-acquisition-profile-prep-20261106` | n/a | 1 run + 1 no-gate |
 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/serial-integration-20261106` | n/a | 2 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `M4-CLIENT-LAB` | M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo | `gate-not-met` | `codex/m4-client-lab-20261106` | n/a | 1 run + 1 no-gate |
+| `M4-CLIENT-LAB` | M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo | `ready-to-push` | `codex/m4-client-lab-20261106` | n/a | 1 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -10466,7 +10466,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `gate-not-met` |
+| state (claimed) | `ready-to-push` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `codex/m4-client-lab-20261106` |
 | base | `main@88902eba2532c42bf83a91a8104f9ea64da2ca18` |
@@ -10482,7 +10482,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c994fb2562bc3`
+- `[integration]` `node tools/queue/gates/m4-client-binaries.js --ref c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6`
   - Archives the cumulative head, boots the preview and single-site Mongo from it, runs the pinned cgmsim-lib and oref0 binaries in host-network containers against both, reads stored rows from PostgreSQL and MongoDB oracles, and classifies every differing cell with the compat vocabulary; red on any failed positive or negative check or any unexplained cell.
 - **NO GATE** &mdash; Connector scenarios are opt-in and separate from the default gate. Fixed-data Share upload/restart and preview-to-single-site entries-only source execution are measured in the dated report. Connector-specific refusal controls, incremental new-reading polling, baseline-as-source differential, mobile/v3 binaries, socket forwarding and TLS remain UNMEASURED. D23 entry condition 2 has no forwarding-realtime implementation on the selected head.
 
@@ -10490,8 +10490,10 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/m4-client-binary-lab-packet-2026-11-06.md`
 - `reports/m4-client-binaries/2026-11-06/README.md`
+- `reports/m4-client-binaries/2026-11-06-batch-a/README.md`
+- `reports/m4-client-binaries/2026-11-06-revised-freeze/README.md`
 
-**Notes.** Paused Claude lane taken over with maintainer authorization, in an isolated alignment worktree; shared main and its staged snapshot untouched. Actual clients were executed against the same archived app head and independent Mongo/PostgreSQL oracles. The dated report records the measured differences, controls and remaining limits; no compatibility exception, application fix, milestone promotion or release gate is adopted. Root coordination allocates the integration-record R entry after combining the B4a records.
+**Notes.** Locally accepted bounded lab; proposed ready-to-push claim on this isolated branch, pending coordinator integration before canonical promotion/publication. Exact registered default gate passed on c0e8 with zero differences after focused semantic controls and restoration. Prior failed captures and the combined 863 connector scope remain immutable. Current reports hold counts, client provenance, limitations and source ancestry. No general M4 promotion. Shared main/index draft is archived; only root retires the exact unchanged old draft after integrating the committed replacement. No application push.
 
 ---
 

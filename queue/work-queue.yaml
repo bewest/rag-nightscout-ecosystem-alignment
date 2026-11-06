@@ -25443,7 +25443,7 @@ items:
     branch: codex/m4-client-lab-20261106
     base: main@88902eba2532c42bf83a91a8104f9ea64da2ca18
     worktree: externals/work/alignment-codex-m4-20261106
-    state: gate-not-met
+    state: ready-to-push
     blast_radius: >
       Lab code under tools/lab/m4-client-binaries, one queue gate and its control,
       a run record. No cgm-remote-monitor or client file changes. Measures the M4
@@ -25455,7 +25455,7 @@ items:
     semver_reason: Measurement only; no shipped surface moves.
     register: []
     gates:
-      - run: node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c994fb2562bc3
+      - run: node tools/queue/gates/m4-client-binaries.js --ref c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6
         kind: integration
         describe: >
           Archives the cumulative head, boots the preview and single-site Mongo from it,
@@ -25474,11 +25474,14 @@ items:
     evidence:
       - docs/30-design/tenancy/m4-client-binary-lab-packet-2026-11-06.md
       - reports/m4-client-binaries/2026-11-06/README.md
+      - reports/m4-client-binaries/2026-11-06-batch-a/README.md
+      - reports/m4-client-binaries/2026-11-06-revised-freeze/README.md
     notes: >
-      Paused Claude lane taken over with maintainer authorization, in an isolated
-      alignment worktree; shared main and its staged snapshot untouched. Actual
-      clients were executed against the same archived app head and independent
-      Mongo/PostgreSQL oracles. The dated report records the measured differences,
-      controls and remaining limits; no compatibility exception, application fix,
-      milestone promotion or release gate is adopted. Root coordination allocates
-      the integration-record R entry after combining the B4a records.
+      Locally accepted bounded lab; proposed ready-to-push claim on this isolated
+      branch, pending coordinator integration before canonical promotion/publication.
+      Exact registered default gate passed on c0e8 with zero differences after
+      focused semantic controls and restoration. Prior failed captures and the
+      combined 863 connector scope remain immutable. Current reports hold counts,
+      client provenance, limitations and source ancestry. No general M4 promotion.
+      Shared main/index draft is archived; only root retires the exact unchanged
+      old draft after integrating the committed replacement. No application push.

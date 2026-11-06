@@ -1,0 +1,33 @@
+{
+ "rows": [
+  {
+   "cell": "treatments v1 oref0-latest-token",
+   "collection": "treatments",
+   "seed_path": "v1",
+   "resend_path": "v1",
+   "form": "oref0-latest-token",
+   "results": false,
+   "diff_fields": [
+    "st"
+   ],
+   "before": {
+    "st": "401 {description,message,status}"
+   },
+   "after": {
+    "st": "401 {error}"
+   },
+   "group": "q",
+   "group_label": "(q) reply only",
+   "data_effect": "reply-only",
+   "explained": null,
+   "group_verdict": "No value change"
+  }
+ ],
+ "unexplained": [
+  "treatments v1 oref0-latest-token"
+ ],
+ "missing_in_preview": [],
+ "missing_in_baseline": [],
+ "cells_baseline": 21,
+ "cells_preview": 21
+}
