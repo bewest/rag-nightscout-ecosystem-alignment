@@ -2829,6 +2829,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#11-maintainer-acceptance-and-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Maintainer acceptance and experiments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sources" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4607,6 +4618,8 @@
       
         
       
+        
+      
     
     
     
@@ -5362,6 +5375,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#11-maintainer-acceptance-and-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Maintainer acceptance and experiments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sources" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5394,7 +5418,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-11-06. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing design contract, 2026-11-06, draft for maintainer review.
+<p><em>Contributor-facing design contract, 2026-11-06, design direction adopted by the maintainer.
 Batch B7 of the <a href="multitenant-integration-batching-plan-2026-11-06.html">integration batching plan</a>;
 queue home <code>MT-RUNTIME-PLAN</code> (in-progress, no runnable gate yet). It reconciles
 D-EVENT's in-process commit event with D6's change-feed design and the
@@ -5454,9 +5478,10 @@ the independent evaluator's retained-cycle policy (R50, R55, seams plan).</p>
   frame join and multitenant recovery" says a local <code>EventEmitter</code> and a cell
   lease cannot establish these guarantees, and that provider selection stays open.</li>
 </ul>
-<p>Nothing read contradicts that premise. Two things it did not say are recorded
-in §2 and §10 because the contract depends on them: the event payload carries
-no tenant and no stamp today, and the clock is not in the cumulative head.</p>
+<p>The event payload at the anchored source carries no tenant or stamp. B2 has
+since joined the clock locally; the <a href="../../../reports/tenancy/tenant-clock-join-2026-11-06.html">R56 report</a>
+owns that measured baseline. The original source references below remain anchored
+to the table above; they are not line references into the joined source.</p>
 <h2 id="1-terms">1. Terms<a class="headerlink" href="#1-terms" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5956,10 +5981,53 @@ sentence the entry bar in §8 can falsify:</p>
     plugin set, with R50's retention policy.</li>
 <li>The contract applies only where the commit-coupled stamp exists; the clock
     (batch B2) is therefore a prerequisite of the first recovery slice, and the
-    clock is not yet in the cumulative head at <code>35903069</code>
-    (<code>lib/storage/postgres-write-clock.js</code> is absent there; it is on the lane
-    heads the reports cite).</li>
+    clock is absent from the original anchor <code>35903069</code>. B2 has since joined
+    it locally; R56 owns the joined baseline and its measured limits.</li>
 </ol>
+<h2 id="11-maintainer-acceptance-and-experiments">11. Maintainer acceptance and experiments<a class="headerlink" href="#11-maintainer-acceptance-and-experiments" title="Permanent link">&para;</a></h2>
+<p>The maintainer adopted B7's design direction on 2026-11-06 in the B7 approval
+chat: proceed with tenant-local durable checkpoints, commit-coupled ordering,
+at-least-once replay and idempotent consumers, and use experiments to inform
+scalability and performance. The decision is recorded in the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#b7-durable-multitenant-delivery-2026-11-06">release decisions</a>.
+This accepts the direction and the executable entry bar, not measured distributed
+recovery, a performance budget, a provider, milestone promotion or release admission.
+<code>MT-RUNTIME-PLAN</code> remains in-progress with <code>no-gate</code> until its instrument exists.</p>
+<p><strong>What UNMEASURED means.</strong> The named behavior has no applicable executed capture
+on the stated assembled source and workload. It is neither a failure nor a pass.
+A source reading is a hypothesis; a focused positive and mechanism-specific red
+control support only the schedules and source actually exercised. Existing clock
+proofs do not establish distributed consumer or notification recovery.</p>
+<p><strong>Correctness experiments before runtime acceptance.</strong> Implement the §8 positives
+and paired breaks in an isolated synthetic producer/consumer slice. Also cut the
+consumer at each boundary between processing, durable notification handoff and
+checkpoint persistence: demonstrate neither a lost required handoff nor a duplicate
+request after restart. Provider delivery to a device remains a separate acceptance.
+Exercise subscription during concurrent commits so startup cannot depend on an
+uncovered gap between catch-up and listening. Measure an update that overwrites a
+row, then another update or hard delete before replay: state convergence from current
+rows is not proof that every intermediate transition can be recovered. Specify which
+transitions the evaluator must preserve and whether a retained log, outbox or
+tombstone is required. These are questions for the prototype, not added guarantees.</p>
+<p><strong>Performance experiments before capacity claims.</strong> Pin the assembled head,
+hardware, data size and consumer count; compare clock on/off at identical load.
+Sweep active and idle tenants, write rate per tenant, burst size, bulk cohorts,
+reconnect backlog and slow consumers. Include one hot tenant beside ordinary
+tenants on a shared pool. Capture commit-to-view and commit-to-evaluation p50/p95/p99,
+clock lock wait/hold time, throughput, pool occupancy, CPU/memory, database reads,
+checkpoint writes, replay lag/catch-up duration and retained bytes. Evaluate idle
+poll overhead separately: aggregate work depends on tenants and poll frequency,
+not only incoming writes. Declare workload-specific freshness and recovery targets
+before judging an operating envelope; do not invent a tenant capacity from a green
+functional suite.</p>
+<p><strong>How results change expectations.</strong> Correctness positives with meaningful red
+controls support bounded recovery claims. A load sweep establishes where freshness
+and recovery targets hold, and where queues grow. Contention may require shorter
+transactions or admission limits; aggregate polling cost may require batching or a
+different provider; lost intermediate transitions may require retained history.
+Per-tenant ordering avoids a global ordering requirement, but shared pools, CPU,
+retention and database I/O can still couple tenants. Architecture and provider
+choices remain revisitable when experiments refute their assumptions.</p>
 <h2 id="sources">Sources<a class="headerlink" href="#sources" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">decisions.md</a>, D-EVENT rows (2026-10-31) and Q9 release-2 row</li>

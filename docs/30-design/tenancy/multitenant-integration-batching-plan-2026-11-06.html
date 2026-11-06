@@ -4591,6 +4591,8 @@
       
         
       
+        
+      
     
     
     
@@ -5366,7 +5368,7 @@
 multitenant preview is batched, what verification runs at each stage, and which
 completion batches cover M0–M6 and where an early proof is still required.
 Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/38ce43d529632facf94dfe20ddf65cea50d7692c/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed18a7bceb096fc52e155fc5a005106f7e91263d/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap-2026-11-02.html">REST delivery roadmap</a>
@@ -5630,7 +5632,7 @@ consumer, and no batch changes release placement or enables a serving default.</
 <tr>
 <td><strong>B — durable runtime (M5)</strong></td>
 <td>Runtime owner joins one proven durable producer/consumer path, realtime forwarding/fan-out, evaluator state and durable ack/snooze.</td>
-<td>Active early proof: commit-stamp meaning and crash/replay correctness. Implementation may proceed in parallel against established interfaces after the proof and required contract approval; role-table and event-payload lanes remain separate until their gates pass.</td>
+<td>Active early proof: commit-stamp meaning and crash/replay correctness. Implementation proceeds under the adopted B7 direction, with early recovery experiments resolving concrete semantics before dependent consumer wiring; role-table and event-payload lanes retain their own gates.</td>
 <td>First reference is separate roles on one machine. Freeze the assembled runtime, then exercise real process death/restart, duplicate/lost delivery, cohort pagination, current socket authorization, forwarding acknowledgements, replay-equivalent tenant views and retained evaluator results. Run batch regression and final prcheck once on that candidate.</td>
 </tr>
 <tr>
@@ -5641,6 +5643,15 @@ consumer, and no batch changes release placement or enables a serving default.</
 </tr>
 </tbody>
 </table>
+<p>The first coherent CI/client sub-batch is accepted in
+<a href="../remedial/rc-16.0.0-integration-record.html#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06">R60</a>:
+M0 foundations is promoted and the bounded actual-client lab card is complete.
+This does not close all of A. A runner/docs-only correction retained the exact
+serving/test/dependency trees: prior campaigns remain attributed to their executed
+head, while the changed runner's whole corpus and final prcheck ran on the final
+head. Byte identity and an explicit affected-input analysis permit that reuse;
+ancestry alone does not. A product, assertion, dependency or relevant environment
+change requires reassessing and rerunning affected acceptance.</p>
 <p>A–C are completion stages, not three indivisible code changes. A lane continues
 through a coherent family of fixes without demanding a full suite after every
 commit. Every lane still runs changed-code lint, affected tests, meaningful
@@ -5673,7 +5684,7 @@ cannot substitute for that mapping.</p>
 <tr>
 <td>M2 settings/current authority/secrets and listener separation</td>
 <td>A: actual provider + PG + HTTP config/versioning/revocation and owner/data/operator boundary controls</td>
-<td>Remaining issuer/refresh, existing-grant clamping and production lifecycle/listener composition are implementation gaps; authenticator, recovery or capability-policy choices stay decisions.</td>
+<td>Deployable management/listener composition and current-policy enforcement remain implementation gaps. Human issuer/refresh and full owner lifecycle retain the roadmap's M6 gates; authenticator, recovery or capability-policy choices stay decisions.</td>
 </tr>
 <tr>
 <td>M3 cumulative two-tenant HTTP</td>
@@ -5761,9 +5772,13 @@ not completion of A.</p>
 <p>Current ownership: root coordinator owns Batch A integration and acceptance;
 the existing M4 chat owns the independent client lab; the M4 application-repair
 agent owns diagnosed UUID-default and literal-regexp compatibility work; the M5
-agent owns an executable recovery research prototype. The durable-delivery
-contract remains draft and checkpoint bookkeeping authority remains unresolved,
-so this prototype cannot establish adopted production runtime semantics. A separate
+agent owns the executable recovery prototype and first dormant durable replay
+implementation. B7 direction is adopted in the
+<a href="durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">contract acceptance</a>;
+its approval record has been reconciled from the separate decision lane.
+Recovery semantics and checkpoint bookkeeping require explicit implementation
+and executable proof, rather than another direction approval. The source-only
+prototype does not establish production recovery. A separate
 owner-clamping characterization and populated-import preflight are active early
 proofs; neither selects a new authority policy or establishes real database restore.
 Owner session/issuer lifecycle and the wider operational implementation are <strong>unassigned</strong>;
