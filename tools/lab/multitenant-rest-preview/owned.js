@@ -12,14 +12,16 @@ const alignment = path.resolve(__dirname, '../../..');
 const root = path.resolve(process.env.CRM_REST_WORKTREE ||
   path.join(alignment, 'externals/work/crm-codex-rest-integration-next-20261105'));
 const mode = process.argv[2] || 'focused';
-const modes = new Set(['focused', 'all', 'browser', 'migration', 'settings', 'replicas', 'owner-policy']);
+const modes = new Set(['focused', 'all', 'browser', 'migration', 'settings', 'replicas', 'owner-policy', 'clock']);
 const docker = args => execFileSync('docker', args, {
   encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000
 }).trim();
 const laneFiles = {
   settings: ['tenant-rest-settings-differential.integration.test.js'],
   replicas: ['multitenant-preview-replicas.integration.test.js'],
-  'owner-policy': ['owner-policy-catalogue.test.js', 'owner-subject-policy.integration.test.js']
+  'owner-policy': ['owner-policy-catalogue.test.js', 'owner-subject-policy.integration.test.js'],
+  clock: ['tenant-commit-clock.test.js', 'tenant-commit-clock-port.integration.test.js',
+    'tenant-commit-clock-http.integration.test.js']
 };
 const focused = [
   'tenant-rest-entries.integration.test.js', 'tenant-rest-identity-differential.integration.test.js',
@@ -95,6 +97,9 @@ const focused = [
       TEST_ENV_FILE: '/dev/null', NODE_ENV: 'test',
       NS_SETTINGS_DIFFERENTIAL_TEST: '1', NS_MULTITENANT_PREVIEW_REPLICAS_DOCKER_TEST: '1',
       NS_OWNER_SUBJECT_POLICY_DOCKER_TEST: '1',
+      NS_TENANT_COMMIT_CLOCK_TEST: '1', NS_TENANT_COMMIT_CLOCK_HTTP_DOCKER_TEST: '1',
+      // Benchmarks have a separate explicit command; correctness campaigns exclude them.
+      NS_TENANT_COMMIT_CLOCK_BENCHMARK: '0',
       NS_FRAME_ACQUISITION_TEST: '1', NS_PROFILE_FOOD_HTTP_TEST: '1', NS_ENTRIES_CRUD_HTTP_TEST: '1', NS_REST_TREATMENTS_HTTP_TEST: '1',
       NS_REST_DEVICE_ACTIVITY_TEST: '1', NS_REST_CONTEXT_HTTP_TEST: '1', NS_REST_DERIVED_HTTP_TEST: '1',
       NS_REST_AUTHORITY_REVIEW_TEST: '1', NS_REST_CLIENT_REPLAY_TEST: '1',
