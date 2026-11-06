@@ -62,13 +62,18 @@ superseded checkpoints through a pinned history link.
 The next consolidation candidates are the delivery roadmap's dated execution
 journal and the execution plan's old implementation/task narrative. Preserve
 milestone criteria, decision anchors and unique designs as separate maintained
-sections. Retire superseded prose through pinned history rows and rewrite inbound
+sections. Consolidate current material by topic, then retain superseded journals
+under an indexed tenancy archive outside the active design directory. The archive
+index should explain scope, period and successor; readers do not need a listing
+of every intermediate commit. Git retains that detailed history. Rewrite inbound
 links after a full scope/evidence review. The discussion and owner census are
 historical evidence candidates for leaving the default reading path; their length
 alone is not evidence that their contents can be deleted.
 
 Follow [document control §3.5](../../00-overview/DOCUMENT-CONTROL.md#35-changing-a-document):
 read a cluster in full, preserve unique content and evidence, rewrite inbound links,
-then remove superseded files. Avoid moving dated records merely to make the
+then remove superseded files from the active reading path. The maintainer's
+2026-11-06 direction favors useful consolidation and indexed archival over
+commit-by-commit journal listings. Avoid moving dated records merely to make the
 folder appear smaller. Untracked correspondence drafts belong to their owning
 session and are outside this guide's controlled inventory.
