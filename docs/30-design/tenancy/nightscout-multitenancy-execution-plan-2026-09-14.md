@@ -3,7 +3,7 @@
 *Contributor- and maintainer-facing.*
 
 **Status: living document — the decision record.** Decisions D1–D21 are the maintainer's
-(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03) and are all **adopted**, except **D17 row 2**
+(2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03) and are all **adopted** (D23 is a **proposed draft**, §2.14, not adopted), except **D17 row 2**
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is **adopted in principle,
 gated** on the edge's production conditions and the compliance question (`T30-ORY-PROOF` held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
@@ -159,6 +159,7 @@ preference.
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
 | **D21** | **One executable; `single` and `multitenant` name the tenancy profiles.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands. `nightscout single` remains today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). The multitenant roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are invoked as `nightscout multitenant <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7). `serve` describes an HTTP operation, not a tenancy mode, and is not the selected CLI namespace. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer and test tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's configuration split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed invocation of every multitenant role is part of the target or only a small-operator convenience | maintainer, 2026-10-26, amended 2026-11-03 — §2.12 |
 | **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them. The [owner authority amendment](owner-authority.md) governs delegation, management sessions and local public-key verification; private keys stay in the secrets component | maintainer, 2026-10-27; amended 2026-11-05 — §2.13 |
+| **D23** *(proposed 2026-11-06, not adopted)* | **`realtime` is a reader: fan-out from the change feed, socket rooms and one `LISTEN` per held tenant, with no storage write authority. The socket's write messages (`dbAdd`, `dbUpdate`, `dbUpdateUnset`, `dbRemove`) and the alarm ack and snooze are writes, and under `multitenant` they go to `api` over REST; `realtime` refuses them with a reply that names the route. `single` is unchanged.** Roles stay arguments of one subcommand (D21); the database feed is the only path between roles (D6), and a direct `api` → `realtime` stream is not adopted (§2.14, revisit triggers from {C} §3.5.3.1) | drafted by session -8c for the maintainer, 2026-11-06 — §2.14 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -1118,6 +1119,85 @@ secret. Vault transit and a cloud key service are the production adapters, behin
 **Not decided.** The twelve contested settings re-stated under D22 are drafted for
 review in [census §3a](../../60-research/tenancy/t30-census-dev-2026-10-27.md); row 7 decided the same
 day: the strict settings read (`API3_SETTINGS_STRICT_READ_ENABLED`) is a floor, always on under `multi`.
+
+### 2.14 D23 (proposed) — `realtime` is a reader; socket writes and acks are writes (draft, 2026-11-06)
+
+*Draft for the maintainer, written by session -8c on 2026-11-06 at alignment `main` `7f461bfb`. Not
+adopted. Multitenant profile only; `single` is unchanged. Figures are quoted from the documents named;
+code lines are read from CRM `35903069`.*
+
+**What the decisions already say.** D5 names `realtime` "fan-out". D21's subcommand table says
+`nightscout multitenant realtime` runs "socket.io and the change feed; no storage writes". The
+components document says it "holds connections", is "stateful only in connections", and its
+entrypoint matrix gives it storage **r/o** ({C} §2.3, the matrix in §3). None of them says what
+becomes of the socket's write messages.
+
+**What the code does today.** `lib/server/websocket.js` on `35903069` carries two duties:
+
+- fan-out: `emitData` sends `dataUpdate` to the `DataReceivers` room (`websocket.js:151-159`), and
+  `lib/api3/alarmSocket.js` fans alarms out on the `/alarm` namespace (`alarmSocket.js:21,79`);
+- writes: the messages `dbAdd`, `dbUpdate`, `dbUpdateUnset` and `dbRemove` (`websocket.js:394-417,
+  470, 552, 662`), each through the write step via `socketStep` (`websocket.js:54-56`), and the alarm
+  `ack` on the `/alarm` namespace (`alarmSocket.js:168, 239`), which reaches `notifications.ack`
+  (`lib/notifications.js:166-184`, per the [durable-delivery contract](durable-event-delivery-contract-2026-11-06.md) §7).
+
+The only socket writer found in the tree is the browser's own reports editor
+(`lib/client/renderer.js:942-1067`): **read-derived**; uploaders and followers use REST, and the
+[compatibility corpus](../../../tools/qc/compat) has not been searched for socket writers yet (an
+entry condition below).
+
+**The conflation.** If the write messages stay on `realtime`, it is not a reader: it needs the
+write step, the tenant's storage write authority, the commit event and every write-side control
+that `api` already carries. That makes two writers with one surface duplicated, and ties socket
+availability to the write path. The reader/writer split that gives availability under load (writers
+scale with ingest and are stateless; readers scale with sockets and hold only connections) needs
+the socket's writes to leave `realtime`.
+
+**The question.** Under `multitenant`, what do the socket's write messages and the alarm ack become?
+
+| option | what changes | long-term direction | compatibility | maintenance | reliability | performance |
+|---|---|---|---|---|---|---|
+| **(a) `realtime` is a reader** *(recommended)* | the browser's reports editor and the alarm ack/snooze move to REST on `api` (an ack writes a row; the evaluator consumes it from the feed, contract §7); under `multitenant` the socket refuses `dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove` with a reply naming the route; `single` keeps today's socket writes | matches D5, D21 and {C}: one writer surface, readers stateless beyond connections | the web client changes two code paths; any third-party socket writer breaks under `multitenant` only (none found; corpus search owed) | one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in `single` only | a stuck `realtime` can only make realtime stale ({C} §3.5.3); writes never wait on fan-out | fan-out cost unchanged; acks add one REST write per ack |
+| **(b) `realtime` keeps the write path** | `realtime` embeds the write step and holds write authority; the commit event is emitted from two roles | contradicts D21's "no storage writes" and the matrix's r/o | client protocol unchanged | two writers to keep equal; every write-side control runs twice | socket connection and write availability coupled | none |
+| **(c) `realtime` brokers writes to `api`** | socket write messages are forwarded to `api` over an internal HTTP hop carrying the socket's tenant credential; the reply is relayed | keeps the reader/writer split; adds an internal role-to-role trust boundary (D7 planes) | client protocol unchanged | an internal client in `realtime`, its credential forwarding and its failure mapping to maintain | one more hop on the write path; an `api` outage is visible as socket write failures | one extra request per socket write |
+
+**Is all role-to-role traffic through PostgreSQL, and was a direct `api` → `realtime` stream
+considered?** Yes to both, already decided and measured. D6 makes the change feed the spine
+(replication slot) plus `NOTIFY` for latency plus a bounded poll as backstop, with `NOTIFY` emitted
+by the slot reader. The components document took up the direct chain and set it aside: the
+evaluator does not call the socket engine for data updates ({C} §3.5.2), alarms reach `realtime`
+as rows through the same feed, and `realtime` is exactly the bridge from the feed to sockets that a
+broker would be. The reasons it gives: the WAL is already the durable ordered log, a second log
+(Kafka, or a stream from `api` replicas) would add durability and replay where the fan-out hop
+deliberately wants none, and a reconnecting client can query what it missed from rows. Its
+measurements, quoted: `NOTIFY` degrades in listener count, not message rate (7,873/s at one
+listener to 495/s at 256, EXP-MT-059), and 32 listeners received 6,400 of 6,400 deliveries; the
+design holds because processes listen, not sockets. It names the triggers for revisiting: more
+than about 100 listening processes, a change rate near 10⁴/s, storage leaving PostgreSQL, or a
+requirement that fan-out survive database unavailability ({C} §3.5.3.1). D23 does not reopen that;
+it only settles which role writes.
+
+**What users and operators notice.** Under (a), browser edits in reports and alarm acks arrive
+over REST; nothing changes for uploaders, followers or `single` operators. A multitenant operator
+can scale `api` and `realtime` independently and can run `realtime` through a direct PostgreSQL
+connection ({C} §3.5.3.1's pooler trap) without giving it write grants.
+
+**Entry conditions before (a) is wired** (each with a control that must go red):
+
+1. The compatibility corpus is searched for socket writers; the list is recorded in this section.
+2. A socket `dbAdd` under `multitenant` is refused with the named route; control: remove the
+   refusal and the write must reach storage without `api`'s authority path, red.
+3. The alarm ack by REST writes the ack row and the evaluator honours it across a restart;
+   control: drop the ack row's tenant key, red (the contract's §8 shape).
+4. The role table in `lib/server/serve/roles.js` states each role's inputs and outputs (listener,
+   storage write authority, feed consumer, egress) as fields, not prose, so a composed process can
+   be checked against them; `realtime` declares no write authority.
+
+**What this does not decide.** Provider selection for the feed (deferred, research continuing),
+multi-node leasing, performance budgets, and whether `vcpool`'s egress and the evaluator's
+notification egress are one role or two. Those keep their own rows.
+
+---
 
 ## 3. D8 — the query surface
 
