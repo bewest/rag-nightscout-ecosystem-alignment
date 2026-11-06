@@ -1,0 +1,41 @@
+{
+  "tree": "37242d950e79972fa512db8ff72fa1a049ad6d87",
+  "runtime": "fake backend only; no Docker services",
+  "results": [
+    {
+      "mode": "positive",
+      "status": 0,
+      "passes": 9,
+      "failures": 0,
+      "record": "37242d950-docker-fake-positive.tap"
+    },
+    {
+      "mode": "ownership",
+      "status": 1,
+      "passes": 7,
+      "failures": 2,
+      "record": "37242d950-docker-fake-ownership.tap"
+    },
+    {
+      "mode": "immutable_id",
+      "status": 1,
+      "passes": 7,
+      "failures": 2,
+      "record": "37242d950-docker-fake-immutable_id.tap"
+    },
+    {
+      "mode": "compensation",
+      "status": 1,
+      "passes": 8,
+      "failures": 1,
+      "record": "37242d950-docker-fake-compensation.tap"
+    },
+    {
+      "mode": "restored",
+      "status": 0,
+      "passes": 9,
+      "failures": 0,
+      "record": "37242d950-docker-fake-restored.tap"
+    }
+  ]
+}
