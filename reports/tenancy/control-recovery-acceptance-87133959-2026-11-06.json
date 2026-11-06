@@ -1,0 +1,315 @@
+{
+  "date": "2026-11-06",
+  "classification": "reproduced bounded comprehensive control/recovery batch acceptance",
+  "applicationHead": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+  "acceptanceBranch": "codex/control-recovery-acceptance-20261106",
+  "basePublishedHead": "d89a44e182e771ef84aa99190ec166e6ff0d9772",
+  "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "upstreamFetchMerge": "already up to date before acceptance; final prcheck unchanged",
+  "tiers": {
+    "unit": {
+      "files": 151,
+      "passing": 2247,
+      "pending": 0,
+      "failing": 0
+    },
+    "dom": {
+      "files": 19,
+      "passing": 205,
+      "pending": 0,
+      "failing": 0
+    },
+    "dependency": {
+      "files": 32,
+      "passing": 368,
+      "pending": 2,
+      "failing": 0
+    },
+    "core": {
+      "files": 26,
+      "passing": 319,
+      "pending": 0,
+      "failing": 0
+    },
+    "harness": {
+      "files": 9,
+      "passing": 93,
+      "pending": 0,
+      "failing": 0
+    },
+    "integration": {
+      "files": 235,
+      "passing": 3976,
+      "pending": 97,
+      "failing": 0
+    },
+    "stress": {
+      "files": 1,
+      "passing": 18,
+      "pending": 0,
+      "failing": 0
+    }
+  },
+  "full": {
+    "passing": 7226,
+    "pending": 99,
+    "failing": 0,
+    "exit": 0
+  },
+  "browser": {
+    "files": 41,
+    "passing": 684,
+    "pending": 0,
+    "failing": 0,
+    "exit": 0
+  },
+  "corpus": {
+    "selectedSuites": 35,
+    "status": 0,
+    "signal": null,
+    "passing": 460,
+    "pending": 1,
+    "failing": 0,
+    "scriptExit": 0,
+    "remaining": [],
+    "startedAt": "2026-11-06T21:59:35.622Z",
+    "finishedAt": "2026-11-06T22:03:23.823Z",
+    "pendingReason": "explicitly disabled HTTP performance benchmark"
+  },
+  "foundation": {
+    "exit": 0,
+    "stderrEmpty": true,
+    "pgVersion": "16.15",
+    "poolVersion": "PgBouncer 1.25.2\nlibevent 2.1.12-stable\nadns: evdns2\ntls: OpenSSL 3.5.6 7 Apr 2026",
+    "images": {
+      "postgres": "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+      "pgbouncer": "edoburu/pgbouncer@sha256:4c1ca296ef525f108f5d3552cc337c0c09587cf8dae7f0067fd93349e47dc1cd"
+    },
+    "connectionSha256": "dbd527353eb0b01f98e75e04b38df44358cdd3727a555892693a0276a21aa97e",
+    "identitySha256": "bbed55dc0da348f99ff1c23623493dbebfaa2ab6b1d783c05ff0d45e0621438c",
+    "ddlSha256": "c5c3d1bc4394e7a4f90eb7025450e6b3261323855123bad0c1f3b010229816b1",
+    "typedDDLSha256": "0460c76bed932b35472595745491fb61ae918cc6ff4b403b51ba0cc9cffa6a69",
+    "poolConfiguration": {
+      "default_pool_size": "1",
+      "pool_mode": "transaction",
+      "server_reset_query_always": "0"
+    },
+    "distinctBackends": 1,
+    "checks": [
+      {
+        "name": "generated entries DDL applies; overlapping tenant identities remain independent",
+        "passed": true
+      },
+      {
+        "name": "two independent clients reuse one transaction-pooled backend without tenant leakage",
+        "passed": true
+      },
+      {
+        "name": "unbound readers fail closed and cross-tenant writes/TRUNCATE are refused",
+        "passed": true
+      },
+      {
+        "name": "rollback and caught SQL failures leave no committed write or retained binding",
+        "passed": true
+      },
+      {
+        "name": "updates and deletes affect only the bound tenant through the pooler",
+        "passed": true
+      },
+      {
+        "name": "generated columns preserve dirty documents and distinguish missing from explicit null",
+        "passed": true
+      },
+      {
+        "name": "red control: removing RLS exposes both tenants through the same pooler",
+        "passed": true
+      },
+      {
+        "name": "red control: BYPASSRLS application role is rejected through the pooler",
+        "passed": true
+      },
+      {
+        "name": "red control: actual session-binding mutation leaks to another pooled client",
+        "passed": true
+      }
+    ],
+    "identityChecks": [
+      {
+        "name": "typed generated DDL and actual codec preserve both id forms per tenant",
+        "passed": true
+      },
+      {
+        "name": "kind-scoped delete preserves the string twin and every other tenant record",
+        "passed": true
+      },
+      {
+        "name": "typed DDL refuses absent/invalid kinds and malformed ObjectId encodings",
+        "passed": true
+      },
+      {
+        "name": "red control: flattening the actual codec kind collapses otherwise distinct keys",
+        "passed": true
+      }
+    ],
+    "historicalFixtureBlockers": [
+      {
+        "property": "ObjectId and same-spelling string _id remain distinguishable",
+        "satisfied": false,
+        "evidence": "Current idForms returns both; node-postgres JSON serialization collapses them to one key (23505); raw Extended JSON instead fails generated _id NOT NULL (23502)"
+      },
+      {
+        "property": "Current v3 history/validity and identifier-index requirements reconciled",
+        "satisfied": false,
+        "evidence": "Historical generated DDL has no srvModified/isValid indexes or tenant-scoped partial unique identifier index"
+      }
+    ],
+    "historicalFixtureBlockersScope": "These describe historical generated DDL, not current operator migrations or complete adapters."
+  },
+  "runner": {
+    "path": "tools/lab/multitenant-rest-preview/owned.js",
+    "sha256": "08e83d8e71b46d8088d604861fe18a4cc8073fede47869ce16deeabc2665fae4",
+    "seed": "41574423920"
+  },
+  "foundationHarnessSha256": "9004a1e69ef3a90a6295f7126d8cdeff25199426863b772dc4253509633989e1",
+  "sourceChecks": {
+    "tiers": 514,
+    "inventorySuites": 35,
+    "lintErrors": 0,
+    "lintWarnings": 27,
+    "bundleExit": 0,
+    "syntax": "PASS",
+    "whitespace": "PASS"
+  },
+  "finalPrcheck": {
+    "exit": 0,
+    "result": "OK",
+    "lastApplicationGate": true,
+    "headUnchanged": true
+  },
+  "cleanup": {
+    "all": {
+      "observedContainersVerifiedAbsent": 22,
+      "observedMountedVolumesVerifiedAbsent": 32,
+      "positivelyAttributedUnattachedVolumesRemoved": 19
+    },
+    "browser": {
+      "observedContainersVerifiedAbsent": 3,
+      "observedMountedVolumesVerifiedAbsent": 5,
+      "positivelyAttributedUnattachedVolumesRemoved": 0
+    },
+    "corpus": {
+      "observedContainersVerifiedAbsent": 36,
+      "observedMountedVolumesVerifiedAbsent": 51,
+      "positivelyAttributedUnattachedVolumesRemoved": 37
+    },
+    "foundation": {
+      "observedContainersVerifiedAbsent": 2,
+      "observedMountedVolumesVerifiedAbsent": 1,
+      "positivelyAttributedUnattachedVolumesRemoved": 0
+    }
+  },
+  "uniqueFoundationNetworkVerifiedAbsent": true,
+  "volumeBaseline": 462,
+  "volumeAfter": 462,
+  "runtimeReleased": "2026-11-06T22:04:35Z",
+  "limits": [
+    "Fresh full/browser/corpus/pooler executions all on 871; no earlier broad campaign reused.",
+    "Campaign totals overlap and must not be summed; pending cases are not passes.",
+    "Unselected pinned-client prerequisite was measured by a separate lane; selected-mode pinned clients remain unmeasured.",
+    "Owner clamping remains dormant, subject-only and tenant-ceiling bounded; no retrospective delegator lineage.",
+    "Replay is explicit current-state convergence, not every transition or exactly-once external effects.",
+    "Populated recovery is a stopped-write synthetic PG lab with explicit ACL recreation; no production backup/provider-key recovery or general typed API import claim.",
+    "No mode/default/listener activation, full M2/M5/M6 promotion, performance, HA or release claim.",
+    "Remote CI on this new head remains unmeasured here; coordinator owns publication and readback."
+  ],
+  "localArtifacts": {
+    "all.log": {
+      "sha256": "44f0740a761395d626f65d78921a76eb8123ae74698764e8c0696810a64b6d61",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/all.log"
+    },
+    "browser.log": {
+      "sha256": "edc2c8b28971fc9da45ce542fed93f0080d1ff1b9cbb8eeeeb94e2e21204eb91",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/browser.log"
+    },
+    "build.log": {
+      "sha256": "f9c9455a6741e820bef5ee7cf6f0a8655a2b43ca69d6e3e0b0f6d8e1ba808a3a",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/build.log"
+    },
+    "corpus.json": {
+      "sha256": "0b94484dcdfe14674e693a43f3e9e1885859d05de38d838f53ac5f7128b674c3",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/corpus.json"
+    },
+    "corpus.log": {
+      "sha256": "8497f8b3700281cba012c226d1a0b3318b85b3d19b3b950de797e20877b723b8",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/corpus.log"
+    },
+    "final-inventory.log": {
+      "sha256": "753b1a1a6b25df0f355f83984216be3dde3fc8aaeca314acef5b1359429347fd",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/final-inventory.log"
+    },
+    "final-tiers.log": {
+      "sha256": "8ad30f646d1cb40a9a9f95acd91e090e42dbc0fee2d1a9d342dd904a53026ffc",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/final-tiers.log"
+    },
+    "foundation.json": {
+      "sha256": "447e67e2f58e569f9aa0a84c20211beb5474cf1ef075f782b7627f44a2b9e5ab",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/foundation.json"
+    },
+    "foundation.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/foundation.stderr"
+    },
+    "inventory.log": {
+      "sha256": "753b1a1a6b25df0f355f83984216be3dde3fc8aaeca314acef5b1359429347fd",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/inventory.log"
+    },
+    "lint.log": {
+      "sha256": "c615932b9589e9159bbd39292ea5a6c2d6d4406d6c3fac62ad31d5ad1517a43d",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/lint.log"
+    },
+    "network-audit.json": {
+      "sha256": "2829cdfb1c8d5f4c9da3023cb13caf266b7efb8961ce9d5a8fd8b1ab8ddea93c",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/network-audit.json"
+    },
+    "prcheck.log": {
+      "sha256": "4aec2e66f5be8eeea63851dcdba12da622ea87714c00998b86aeb7a12dbdeed7",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/prcheck.log"
+    },
+    "resources-all-audit.json": {
+      "sha256": "38fdeabbe7f071705221f170763cd8c43f46286689931ac39629cfb8d65dc18b",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-all-audit.json"
+    },
+    "resources-all.json": {
+      "sha256": "06f8c522e6ba289604612c20fc637f20d70273d0576a06561b3267eca1b8873f",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-all.json"
+    },
+    "resources-browser-audit.json": {
+      "sha256": "97985e83c89d513e3035d4825e2aa70308d6b1004b01e32b59579f4496170820",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-browser-audit.json"
+    },
+    "resources-browser.json": {
+      "sha256": "dc879cec7da3cbe73e5c51c34452cf548ec349b8cd69c5c93b084d62121644b2",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-browser.json"
+    },
+    "resources-corpus-audit.json": {
+      "sha256": "46d0e86b01fc962dbfac61c3665aad88482e7d77bd4b23647291343d65fa2e44",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-corpus-audit.json"
+    },
+    "resources-corpus.json": {
+      "sha256": "6a1757462a231194cf34a3a8a641119e987a747d4836825ebb4649d2d3ff2d1e",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-corpus.json"
+    },
+    "resources-foundation-audit.json": {
+      "sha256": "749d6e7114ac0a31775d48835598e259cae729ab4ff3bad38c1c1037e6911e1a",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-foundation-audit.json"
+    },
+    "resources-foundation.json": {
+      "sha256": "48c97dd4b8a3113648b95e39c71d7542273b5ffdd83afe4fa453dc260ae4c271",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/resources-foundation.json"
+    },
+    "tiers.log": {
+      "sha256": "8ad30f646d1cb40a9a9f95acd91e090e42dbc0fee2d1a9d342dd904a53026ffc",
+      "localPath": "externals/work/control-recovery-acceptance-scratch-20261106/tiers.log"
+    }
+  }
+}
