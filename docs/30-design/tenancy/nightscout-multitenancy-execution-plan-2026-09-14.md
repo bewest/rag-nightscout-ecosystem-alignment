@@ -1222,7 +1222,18 @@ connection ({C} §3.5.3.1's pooler trap) without giving it write grants.
    the ack row's tenant key, red (the contract's §8 shape).
 4. The role table in `lib/server/serve/roles.js` states each role's inputs and outputs (listener,
    storage write authority, feed consumer, egress) as fields, not prose, so a composed process can
-   be checked against them; `realtime` declares no write authority.
+   be checked against them; `realtime` declares no write authority. **Built 2026-11-06** on branch
+   `codex/role-table-20261106` at `7b49829e65e28e6b7e0f61f8d9b3a7862f5aeb2f` (two commits over
+   `65bb8456`; local, not joined): every role carries `listener`, `storage` (write, read or none),
+   `feed` and `egress`, `realtime` carries `forwardsWritesTo: 'api'`, and `describeComposition(names)`
+   derives writers, readers, listeners, feed consumers and egress or throws naming the offending role.
+   `tests/serve-roles.test.js` 14 passing; serve-related unit tests 84 → 98; tier check 512 files ok.
+   Controls red then restored: `realtime.storage = 'write'` gives `'write' !== 'read'` (11/3);
+   deleting `feed` from evaluator gives `evaluator lacks feed` and `role evaluator lacks the feed field`
+   (9/5). `index.js` and `listeners.js` are unchanged. Reviewer note: the fields do not model a
+   consumer's own per-tenant checkpoint row (durable-delivery contract §2 rule 2), which is a read
+   role's bookkeeping write; decide whether that is `storage: 'read'` plus a checkpoint field or its own
+   value before the first consumer is wired.
 
 **What this does not decide.** Provider selection for the feed (deferred, research continuing),
 multi-node leasing, performance budgets, and whether `vcpool`'s egress and the evaluator's
