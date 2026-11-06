@@ -12,10 +12,15 @@ const alignment = path.resolve(__dirname, '../../..');
 const root = path.resolve(process.env.CRM_REST_WORKTREE ||
   path.join(alignment, 'externals/work/crm-codex-rest-integration-next-20261105'));
 const mode = process.argv[2] || 'focused';
-const modes = new Set(['focused', 'all', 'browser', 'migration']);
+const modes = new Set(['focused', 'all', 'browser', 'migration', 'settings', 'replicas', 'owner-policy']);
 const docker = args => execFileSync('docker', args, {
   encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000
 }).trim();
+const laneFiles = {
+  settings: ['tenant-rest-settings-differential.integration.test.js'],
+  replicas: ['multitenant-preview-replicas.integration.test.js'],
+  'owner-policy': ['owner-policy-catalogue.test.js', 'owner-subject-policy.integration.test.js']
+};
 const focused = [
   'tenant-rest-entries.integration.test.js', 'tenant-rest-identity-differential.integration.test.js',
   'tenant-rest-identifier-race.integration.test.js',
@@ -29,11 +34,12 @@ const focused = [
   'tenant-write-clock.test.js', 'subject-admin.test.js', 'subject-admin-postgres.integration.test.js',
   'subject-management-http.integration.test.js', 'storage-port-contract.integration.test.js',
   'tenant-legacy-credentials.test.js', 'postgres-collection-intent.test.js', 'postgres-filter.test.js',
-  'postgres-entries-read.test.js', 'postgres-entries-write.test.js', 'test-backends.test.js'
+  'postgres-entries-read.test.js', 'postgres-entries-write.test.js', 'test-backends.test.js',
+  ...Object.values(laneFiles).flat()
 ].map(name => 'tests/' + name);
 
 (async () => {
-  if (!modes.has(mode)) throw new Error('Mode must be focused, all, browser or migration');
+  if (!modes.has(mode)) throw new Error('Mode must be ' + [...modes].join(', '));
   const head = execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
   const dirty = execFileSync('git', ['-C', root, 'status', '--porcelain', '--untracked-files=no'], { encoding: 'utf8' });
   if (dirty.trim()) throw new Error('Tracked CRM changes must be committed before an immutable-tree campaign');
@@ -87,6 +93,8 @@ const focused = [
     console.log('REST preview campaign:', JSON.stringify({ head, mode, versions, seed: '41574423920' }));
     const env = { ...process.env, ...defaults, TZ: 'UTC', TEST_SHUFFLE_SEED: '41574423920',
       TEST_ENV_FILE: '/dev/null', NODE_ENV: 'test',
+      NS_SETTINGS_DIFFERENTIAL_TEST: '1', NS_MULTITENANT_PREVIEW_REPLICAS_DOCKER_TEST: '1',
+      NS_OWNER_SUBJECT_POLICY_DOCKER_TEST: '1',
       NS_FRAME_ACQUISITION_TEST: '1', NS_PROFILE_FOOD_HTTP_TEST: '1', NS_ENTRIES_CRUD_HTTP_TEST: '1', NS_REST_TREATMENTS_HTTP_TEST: '1',
       NS_REST_DEVICE_ACTIVITY_TEST: '1', NS_REST_CONTEXT_HTTP_TEST: '1', NS_REST_DERIVED_HTTP_TEST: '1',
       NS_REST_AUTHORITY_REVIEW_TEST: '1', NS_REST_CLIENT_REPLAY_TEST: '1',
@@ -94,14 +102,17 @@ const focused = [
       NS_SUBJECT_MANAGEMENT_HTTP_DOCKER_TEST: '1', NS_STORAGE_PORT_CONTRACT_DOCKER_TEST: '1',
       NS_MULTITENANT_PREVIEW_PROCESS_DOCKER_TEST: '1', NS_TENANT_CREDENTIAL_HTTP_DOCKER_TEST: '1',
       NS_TEST_POSTGRES_ADMIN_URI: 'postgres://operator:' + password + '@127.0.0.1:' + pgPort + '/rest_preview_test',
-      CUSTOMCONNSTR_mongo: mongoURI, NS_PROFILE_FOOD_VAULT_ADDRESS: address, NS_PROFILE_FOOD_VAULT_TOKEN: token };
+      CUSTOMCONNSTR_mongo: mongoURI, NS_PROFILE_FOOD_VAULT_ADDRESS: address, NS_PROFILE_FOOD_VAULT_TOKEN: token,
+      NS_SETTINGS_VAULT_ADDRESS: address, NS_SETTINGS_VAULT_TOKEN: token };
     const migration = ['tests/migrations.test.js', 'tests/postgres-migrations.integration.test.js', 'tests/tenant-entries-http.integration.test.js'];
     if (mode === 'migration') { env.NS_MIGRATION_DOCKER_TEST = '1'; env.NS_TENANT_HTTP_DOCKER_TEST = '1'; }
+    const selected = mode === 'migration' ? migration
+      : laneFiles[mode] ? laneFiles[mode].map(name => 'tests/' + name) : focused;
     const broad = mode === 'all' || mode === 'browser';
     result = spawnSync(broad ? 'npm' : process.execPath, broad
       ? ['run', mode === 'all' ? 'test:all' : 'test:browser']
       : ['node_modules/mocha/bin/mocha.js', '--fail-zero', '--exit', '--timeout', '60000',
-        '--require', './tests/hooks.js', ...(mode === 'migration' ? migration : focused), ...process.argv.slice(3)],
+        '--require', './tests/hooks.js', ...selected, ...process.argv.slice(3)],
     { cwd: root, stdio: 'inherit', env });
     if (result.error) throw result.error;
     const after = execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
