@@ -66,8 +66,9 @@ accepted current-port/direct compatibility baseline. Keep source-specific
 ordering, representation, projection and write outcomes explicit; controls must
 detect ordering changes and pre-commit publication. Continue remaining REST
 receipts/egress, identity/settings/index races, actual clients, import/resource
-and lifecycle acceptance. Owner identity/grant ceilings and logical-event
-no-op admission remain their own decisions; they do not block this bounded
+and lifecycle acceptance. Owner authority is adopted in the [current contract](owner-authority.md);
+application integration and full ceiling/session enforcement remain open. Logical-event
+no-op admission remains a separate decision; these do not block this bounded
 consolidation. Shared frame and durable M5/M6 work retain their separate gates.
 No milestone promotion, production role enablement or SQLite dispatch follows.
 
@@ -123,7 +124,7 @@ FAIL remains visible. No milestone is promoted by this dispatch.
 | Now: M2 authority; MT-CONFIG-MIN / T30-WIRING | `codex/tenant-subject-admin-20261105`: persisted subject update/delete and known-role assignment, stable IDs, metadata/omission/rename semantics; separately authorized writer and append-only migration. | Actual PG persistence/rollback/isolation, shipping semantic characterization, same earlier credential denied on the next operation after deletion/grant removal; serving role cannot write authority. Paired controls, then cumulative integration. No HTTP management admission in this packet. |
 | Parallel: M1/M4 compatibility; ST-PG / TEN-LAB | `codex/tenant-cross-compat-20261105`: expand shared Mongo/PG HTTP corpus for mixed legacy/v3 treatment edits, omitted versus null fields, retries, replacement and tombstone/history. | Compare replies AND stored results, stable identity, exact retained/removed fields and tenant isolation. Only incidental time/opaque-ID normalization, with explicit refusal rows. Source-pinned client patterns remain distinct from client binaries. |
 | Parallel: RC backwards compatibility; TEN-LAB | `codex/rc-compat-refresh-20261105`: fresh same-corpus old release, current dev and PR-single comparison, with repeated runs and classified intended changes. | Preserve immutable prior captures; every semantic difference needs an existing decision/bugfix/client-contract basis or remains unexpected. A classifier control must detect a planted unapproved difference. No old-release-to-PG transitivity claim. |
-| Next: M2/M4 administration | Join the accepted subject service to a separately authenticated owner/management boundary; characterize stable role IDs and unresolved/default roles before full roles CRUD. | Actual owner requests and persisted effects, no management route on the data listener, permission ceilings/current grants and cross-worker revocation controls. Stop on an unselected management identity/policy contract while independent REST work continues. |
+| Next: M2/M4 administration | Join the accepted subject service to a separately authenticated owner/management boundary; characterize stable role IDs and unresolved/default roles before full roles CRUD. | Actual owner requests and persisted effects, no management route on the data listener, permission ceilings/current grants and cross-worker revocation controls. Implement the [adopted owner authority](owner-authority.md); provider deployment, permission catalogue and transactionally enforced proposed-grant checks remain acceptance work. |
 | Next: M1/M4 remaining REST/client/import | Complete one missing route/domain workflow at a time, including notices/debug and notification/assistant receipts/egress; extend import/rerun fidelity and populated-data/query bounds. | Fake-provider no-egress/cross-tenant controls, supported-shape/refusal inventory, bounded failures/reruns; execute actual clients where tooling permits, otherwise keep binary acceptance UNMEASURED. Numeric bounds and new lifecycle semantics require explicit decisions. |
 | Integration: M3; TEN-LAB | Coordinator joins clean lanes into the existing PR continuation and reruns exact-head focused/provider/migration, full nonbrowser/browser campaigns and final prcheck after dev merge. | No unexplained compatibility deltas, meaningful restored controls, owned-service cleanup and current QMS/dashboard. M3 promotion still requires complete M1/M2; partial M4 work may proceed in parallel. |
 | Then: M5/M6 | Durable events/replay, realtime/evaluator and synthetic operational recovery on accepted authority/storage contracts. | Commit-coupled recovery, tenant-local caches/current socket authority, restart replay, backup/restore/upgrade/rollback and resource/egress evidence. No in-process event substitutes for durability. |
@@ -200,9 +201,10 @@ figures and limitations rather than treating the comparison matrix as transitive
 1. Compose subject management behind a separately authenticated management HTTP
    boundary, preserving data-listener refusal. Reuse the accepted service;
    characterize stable role IDs and unknown/default role behavior before full
-   roles CRUD. The trusted management callback is not a selected human identity
-   provider or owner grant-ceiling policy. Stop on that unselected policy slice
-   while other admitted REST/client work continues.
+   roles CRUD. Implement the [adopted owner authority](owner-authority.md) rather
+   than treating policy as undecided. The injected callback remains a test seam
+   until real authentication, proposed-grant ceilings and current-policy fencing
+   pass actual management-request tests.
 2. Extend the remaining REST inventory one concrete workflow at a time: notices/
    debug, then notification/assistant receipt and egress seams with fake-provider
    controls. Preserve current authority and version-specific refusals.

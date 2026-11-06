@@ -1,5 +1,11 @@
 # Tenant configuration schema for hosted Nightscout (T30-SCHEMA-CONFIG)
 
+*Current-use note, 2026-11-05: retain this bounded schema design and its pinned lab
+evidence. [Owner authority](owner-authority.md) owns the later management/delegation,
+session-lifetime and local-verification decisions. Open-question rows below must
+be checked against that contract; this candidate is not the deployed schema or a
+claim that the application token path already uses the new verifier.*
+
 *Contributor-facing. Draft of 2026-10-27, for the maintainer's review. Queue item
 `T30-SCHEMA-CONFIG`. It builds on D22 ([execution plan
 §2.13](nightscout-multitenancy-execution-plan-2026-09-14.md)), the [census re-measured on

@@ -2,11 +2,13 @@
 
 > **Re-measured 2026-10-27 on dev `7abe1cf6`: 264 names, not 277**, with twelve contested settings for the maintainer and a list of what is stale here: [t30-census-dev-2026-10-27](../../60-research/tenancy/t30-census-dev-2026-10-27.md).
 
-*Contributor-facing.* **Snapshot, 2026-09-15. Current: the only statement of the tenant-owner
-configuration surface (T3.0's research deliverable).** A specification, not landed work: nothing in it is
-implemented, and the DDL in §A has **not** been executed against PostgreSQL (§G.1). Sections marked
-**DECISION** need the maintainer's yes before code is written; sections marked **CONSEQUENCE**
-follow from D13/D14/D15. Decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). Item state:
+*Contributor-facing.* **Historical snapshot, 2026-09-15, on the pinned seam below.**
+This retains the original census, proposed DDL and their evidence boundaries; it is
+not the current policy or application acceptance record. Current decisions live in
+[execution-plan D22](nightscout-multitenancy-execution-plan-2026-09-14.md#213-d22--per-setting-policy-project-floors-and-secrets)
+and [owner authority](owner-authority.md); the [schema candidate](tenant-config-schema-2026-10-27.md)
+records later bounded schema tests. Its original **DECISION** markers are historical
+questions, not proof those questions are still open. Item state:
 [`queue/QUEUE.md`](../../../queue/QUEUE.md) — `T30-RESEARCH`, `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`,
 `T30-WIRING`, `T30-ORY-PROOF`.
 

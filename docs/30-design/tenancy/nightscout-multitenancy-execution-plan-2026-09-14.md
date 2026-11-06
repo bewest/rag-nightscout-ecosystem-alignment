@@ -115,13 +115,14 @@ decision was, this plan wins.**
 |---|---|---|
 | [`queue/README.md`](../../../queue/README.md), [`queue/QUEUE.md`](../../../queue/QUEUE.md), `queue/work-queue.yaml` | the live index of every work item, with a gate per item | **item state** |
 | this plan | decisions, their evidence, and task definitions | **decisions**, and what a task means |
+| [owner authority](owner-authority.md) | adopted D17/D22 amendment | **owner permissions/delegation, management authentication and new-token verification**; application wiring is measured separately |
 | [backfix register](../remedial/nightscout-backfix-register.md) | every defect found, with provenance | **defect facts and ids** |
 | [roadmap](../../00-overview/ROADMAP.md) | the order of the work ahead, generated from the queue's blockers | nothing; it links to where each order is decided |
 | [maintainer release brief](../remedial/maintainer-release-brief-2026-09-15.md) | the Phase 0 batch, branch by branch | what a maintainer needs to say yes or no |
 | [PR sequencing](../remedial/phase0-pr-sequencing-2026-09-15.md) | how the Phase 0 branches land | branch mechanics |
 | [semver and release versioning policy](../modernization/semver-and-release-versioning-policy-2026-09-15.md) | the surface ladder, the version procedure, the adopted release train | **what number a change gets; the train** |
-| [15.0.9 contents](../../../releases/cgm-remote-monitor-15.0.9/contents.md) and [decisions](../../../releases/cgm-remote-monitor-15.0.9/decisions.md) | what the next release contains, leaves broken and was decided on; what it still waits on is in [ROADMAP §1](../../00-overview/ROADMAP.md) | the next release |
-| [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) | T3.0's research deliverable and proposed DDL | the per-tenant configuration surface |
+| [16.0.0 contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) and [decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md) | current development-cycle contents, acceptance and release decisions | the current release cycle; [15.0.9](../../../releases/cgm-remote-monitor-15.0.9/contents.md) is the released historical cycle |
+| [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) | historical T3.0 census and proposed DDL | its pinned research; current policy is D22 and the owner-authority amendment, current census is linked from the snapshot |
 | [operator upgrade path](../../40-migration/operator-upgrade-path-2026-09-15.md) | what each release means for someone running a site | operator-facing upgrade guidance |
 | [legacy CGM ingestion → Connect](../../40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md) | the Dexcom and MiniMed retirement | the legacy-bridge migration, which is on cut 1 (queue `RT-1`) |
 | [connector pin consolidation](../../40-migration/connector-pin-consolidation-2026-09-15.md) | the `nightscout-connect` pins across `dev` and the cuts | background to the pin decision; item state in `P0-PIN` and `RT-CONNECT-PIN-CUTS` |
@@ -157,7 +158,7 @@ preference.
 | **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. *(corrected 2026-10-15: reverse-DNS, `dev.nightscout/` — the well-known label prefix of rule 7; specified 2026-10-15, `SPEC-REG-INSTANCE`, hub-sync design §3.6)* | maintainer, 2026-10-14 — §2.6.2 |
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
 | **D21** | **One executable; `single` and `multitenant` name the tenancy profiles.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands. `nightscout single` remains today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). The multitenant roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are invoked as `nightscout multitenant <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7). `serve` describes an HTTP operation, not a tenancy mode, and is not the selected CLI namespace. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer and test tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's configuration split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed invocation of every multitenant role is part of the target or only a small-operator convenience | maintainer, 2026-10-26, amended 2026-11-03 — §2.12 |
-| **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them | maintainer, 2026-10-27 — §2.13 |
+| **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them. The [owner authority amendment](owner-authority.md) governs delegation, management sessions and local public-key verification; private keys stay in the secrets component | maintainer, 2026-10-27; amended 2026-11-05 — §2.13 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
 identity is per-cohort, authorization is per-tenant.* Isolation rests on the authorization layer
@@ -1016,10 +1017,10 @@ the owner may no longer set goes to a review list, never dropped silently.
 connector logins, push keys and webhook signing secrets. Each is encrypted at rest. A pluggable backend
 (a cloud key service, Vault, or an encrypted column whose key is held outside the database) follows D17's
 "bring your own" shape. Only the process that uses a secret decrypts it. The owner dashboard never holds a
-decryption key: it calls a separate, logged **reveal** operation. Initial policy: a valid owner session may
-reveal the owner's own credential. Target: reveal also needs a fresh re-authentication. Moving from the first
-to the second changes one operation's policy, with no data migration or re-keying. The operator plane never
-reveals. This answers the config-surface document's open §C.5 in direction; the backend is not chosen.
+decryption key: it calls a separate, logged **reveal** operation. Reveal requires explicit authority and
+recent reauthentication under the [owner authority contract](owner-authority.md). The operator plane
+never reveals. The production provider remains pluggable; Vault Transit feasibility and the later
+local-verification prototype are bounded measurements, not provider operations acceptance.
 
 **Decided the same day (maintainer, 2026-10-27, second round).**
 
@@ -1050,9 +1051,9 @@ Evidence: [`tools/lab/tenant-config-callpath/`](../../../tools/lab/tenant-config
 (designs A, B0, B1, C; 33 controls). A trusted orchestrator writing for owners (B) gave one component on
 the dashboard's path read, write and reveal over every tenant, and an audit log that cannot name a
 verified human. Under A, a token used on another tenant fails as a signature failure. Remaining
-all-tenant components: the tenant-owner listener (it fetches every signing key), the identity provider
-and the operator plane. Next: a lab arm in which the secrets component signs and verifies, so keys never
-leave it.
+all-tenant components require distinct trust review. In the adopted new-token contract, the listener
+receives public verification keys, never private signing keys; the identity provider, private operator
+plane and secrets component retain their separately scoped trust. See [owner authority](owner-authority.md).
 
 **Alarm settings, decided 2026-10-27 (maintainer):** hidden from the owner, with a plain-language
 explanation, until multi-mode alarms pass the gate in §7a. Settings that do nothing on an alarm path
@@ -1062,21 +1063,18 @@ would invite false trust.
 named consumer; sign; verify; reveal, logged), with a cloud key service and Vault's transit engine as the
 first two adapters. Both can sign without exporting a key.
 
-**Keys stay inside the secrets component, from the start (maintainer, 2026-10-27).** The secrets
-component signs and verifies per-tenant owner tokens itself; a signing key is used only inside it and is
-never exported, so "decrypted only by the consuming process" means, for a signing key, that the secrets
-component is its only consumer. It sets each token's lifetime. **Amended 2026-11-05:**
-new-format tokens use local public-key verification in serving workers, with current
-PostgreSQL authority on each protected operation; private keys stay inside the secrets
-component. The [owner authority contract](owner-authority.md) owns permissions, grant
-ceilings, token/session limits, management authentication and outage semantics. Existing
-HS256/legacy paths remain compatible until separately measured migration. Evidence for
-the earlier remote-verification design: the call-path lab's keys-stay arm
+**Private keys stay inside the secrets component (maintainer, 2026-10-27; amended 2026-11-05).**
+The component signs tokens under trusted lifetime policy. New-format tokens use local public-key
+verification in serving workers, with current PostgreSQL authority on each protected operation.
+The [owner authority contract](owner-authority.md) owns permissions, grant ceilings,
+token/session limits, management authentication and outage semantics. Existing HS256/legacy
+paths remain compatible until separately measured migration. The call-path lab's earlier
+remote-verification keys-stay arm remains historical evidence:
 ([`tools/lab/tenant-config-callpath/`](../../../tools/lab/tenant-config-callpath/README.md), 46 controls):
 during a listener compromise the reach is the same as A's, but no key leaves, and once the compromise ends
 and tokens expire the attacker can neither write nor reveal, where under A the stolen keys keep minting
-tokens until every tenant's key is rotated. Cost: one verify call per edit, and edits depend on the secrets
-component being up.
+tokens until every tenant's key is rotated. The current ordinary-operation dependency policy is in
+the owner authority contract; the historical lab’s remote verification cost is not that policy.
 
 The secrets component is a role of the one executable (D21), `nightscout multitenant secrets`, from the same
 image. Its first adapter is a **built-in signer**: keys encrypted under a master key supplied only to that
