@@ -31,6 +31,18 @@ Counts are not additive and are not completion percentages.
 | #8898 CI at read-back of `1c55098a` | 15 checks green, draft, mergeable; 3 review events, all CodeQL comments; 0 human reviews. CI on `35903069` is UNMEASURED by this plan |
 | CI coverage of the preview | none: every PostgreSQL and Vault suite is opt-in by environment flag, so the PR's green CI measures Mongo single-site regression only |
 
+Live read-back of #8898 on 2026-11-06 at 23:41 UTC, from `gh` and `git` (the
+rows above are the original capture and stay as written):
+
+| Anchor or measure | Value |
+|---|---|
+| Published draft #8898 head | `83582e876dd193f4448f44c28e379fb5464a26c7` on `workspace/multitenant-20261102`, base `dev`; open, draft, mergeable; R62 accepted it, R64 verified it |
+| Upstream `official/dev` | `4a482627bfdafb1fef8dcbe0ac6c484811cae563`, contained in the head |
+| Head versus dev | 172 commits; 245 files, of which 193 new, 52 modified, 0 deleted; +31,997 / −157 lines |
+| CI on `83582e87` | 15 jobs passed, including the `Multitenant opt-in corpus (PostgreSQL, MongoDB, Vault)` job and the three browser engines; CodeQL passed; 3 release-image jobs skipped by condition ([run 42303661682](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42303661682)) |
+| Review state | 3 review events (CodeQL comments, all 8 inline threads resolved per R64); 0 issue comments; 0 human reviews |
+| CI coverage of the preview | the opt-in corpus now runs in CI (rule 5 done through Batch A, R60–R61); the Mongo matrix still measures single-site regression |
+
 Three facts shape the rules below.
 
 - **The regression surface on shipping code is narrow.** The preview is mostly
@@ -119,8 +131,8 @@ dispatched by the coordinating session that wrote this plan.
 
 | Batch | Owner | Inputs | Gate and predicted result |
 |---|---|---|---|
-| **B1: publish the accepted head** | maintainer | cumulative `35903069` | **Done 2026-11-06:** #8898 head is `35903069`, body refreshed from R54. Remaining: read back CI and CodeQL on that head and record the result; no PG suite executes in CI until B5 lands. |
-| **B2: clock batch → R56** | peer session (join, done), coordinator (publication) | R54 `35903069` + clock lane `11770146` + clock HTTP lane `3532c1a4` | **Done, recorded as R56** on frozen join head `65bb8456`, local and unpushed: clock mode 28 / 1 pending (benchmark opt-in) / 0; full 7,187 / 81 / 0; browser 684 / 0 / 0; prcheck OK. Three ablations red and restored: serialization 0/3, readiness 0/2, rollback 0/3. Passing rises by 43 over R54, five of them test-only cases of the unaccepted replica candidate `714f6c8b` that the HTTP fixture requires. Remaining: the opt-in benchmark, Mongo comparison, mixed writers, bulk ties and SIGKILL cleanup bound stay UNMEASURED; six pre-existing lint errors in the clock HTTP lane's test files; publication of `65bb8456` to #8898 is the maintainer's. |
+| **B1: publish the accepted head** | maintainer | cumulative `35903069` | **Done 2026-11-06:** #8898 head was `35903069`, body refreshed from R54. The remaining read-back was done on the later heads: CI and CodeQL green on `d89a44e1` ([R61](../remedial/rc-16.0.0-integration-record.md#r61---published-batch-remote-ci-and-codeql-verification-2026-11-06)) and on `83582e87` ([R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)), each with the opt-in corpus job executing in CI. |
+| **B2: clock batch → R56** | peer session (join, done), coordinator (publication) | R54 `35903069` + clock lane `11770146` + clock HTTP lane `3532c1a4` | **Done, recorded as R56** on frozen join head `65bb8456`, local and unpushed: clock mode 28 / 1 pending (benchmark opt-in) / 0; full 7,187 / 81 / 0; browser 684 / 0 / 0; prcheck OK. Three ablations red and restored: serialization 0/3, readiness 0/2, rollback 0/3. Passing rises by 43 over R54, five of them test-only cases of the unaccepted replica candidate `714f6c8b` that the HTTP fixture requires. Remaining: the opt-in benchmark, Mongo comparison, mixed writers, bulk ties and SIGKILL cleanup bound stay UNMEASURED ([R65](../remedial/rc-16.0.0-integration-record.md#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06) is a descriptive workload, not a budget); six pre-existing lint errors in the clock HTTP lane's test files. `65bb8456` reached #8898 as an ancestor of the Batch A head `d89a44e1` (R60), published by fast-forward. |
 | **B3: profile 2ee acceptance** | lane A (done), maintainer (publish) | independent head `2ee8b493` | **Recorded as R55:** full 6,690 / 3 / 0, browser 684, archived 38 with three semantic controls red and restored, final prcheck OK. Remaining: publish `2ee8b493` to #8891, whose head at read-back is in the row below this table. No join to #8898. |
 | **B4: milestone promotion review M0–M3** | coordinator subagent, read-only | roadmap section 4; R24–R55 | **Done:** [milestone promotion review](milestone-promotion-review-2026-11-06.md). Rows measured / partial / unmeasured: M0 5/3/0, M1 5/5/1, M2 4/2/4, M3 4/2/1. Top blocker for M3 is that no negative control has been re-run on the cumulative head `35903069` (R24 and R54 both say so); the cheapest closure is rule 6 applied once: run every registered `multitenant-next-slices.js` suite with its `--control` variants against `35903069` in the next slot. Predicted: every control red with its recorded symptom, every positive green. |
 | **B4a: controls on the cumulative head** | session `-8c` (maintainer-assigned 2026-11-06, after the Codex root coordinator did not claim it); the `--ref` moves stay root's | the registered archived suites and their `--control` variants; the current frozen head, `65bb8456` since R56 | queue gates for every multitenant item run against the frozen head with the admin URI set, positives and controls, recorded as one R entry; item `--ref` values then move to that head. Predicted: all positives green, every control red with its recorded symptom. A green control is a vacuous gate, not a pass. |
@@ -155,7 +167,16 @@ consumer, and no batch changes release placement or enables a serving default.
 The first coherent CI/client sub-batch is accepted in
 [R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06):
 M0 foundations is promoted and the bounded actual-client lab card is complete.
-This does not close all of A. A runner/docs-only correction retained the exact
+The second, [R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
+on `83582e87`, joins the optional subject-reader policy (A), the first dormant
+durable replay (an early B proof under the adopted B7 direction) and the
+populated PostgreSQL recovery lab (an early C proof); [R63](../remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06)
+bounds the selected-reader mode with actual clients and leaves the cgmsim root
+503 mapping for a disposition; [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
+verifies the publication. Rule 6's `--ref` move to `83582e87` is done only for
+the two gates R62 archived (owner-reader and durable-replay, on `87133959`); the
+other multitenant gates keep their native capture pins, and their replay on the
+frozen head is UNMEASURED. Neither sub-batch closes all of A. A runner/docs-only correction retained the exact
 serving/test/dependency trees: prior campaigns remain attributed to their executed
 head, while the changed runner's whole corpus and final prcheck ran on the final
 head. Byte identity and an explicit affected-input analysis permit that reuse;

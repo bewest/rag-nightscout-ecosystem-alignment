@@ -1744,3 +1744,14 @@ was spent on this bounded control slot.
 [Prototype capsule](../../reports/tenancy/socket-order-prototype-native-2026-11-06.md)
 and [native controls](../../reports/tenancy/socket-data-controls-12919f55-2026-11-06/README.md)
 own source attribution, proof/observation changes, raw hashes and resource absence.
+
+### Update — multitenant records reconciled to published #8898 `83582e87` (2026-11-06)
+
+| Scope | Reproduced read-back (2026-11-06 23:41 UTC, `gh` and `git`) | Disposition |
+|---|---|---|
+| Draft #8898 | Head `83582e876dd193f4448f44c28e379fb5464a26c7` on `workspace/multitenant-20261102`, base `dev`, open, draft, mergeable; contains `official/dev 4a482627`; 172 commits and 245 files over dev (193 new, 52 modified, 0 deleted). 15 CI jobs passed, including the opt-in corpus job and three browser engines; CodeQL passed; 3 release-image jobs skipped by condition. 3 review events (CodeQL), 0 issue comments, 0 human reviews. | Matches R62 (accepted) and R64 (verified). Not merged, not released; no default or production role enabled. Placement stays as decided 2026-10-30: dormant and alpha behind `nightscout multitenant`, or deferred. |
+| Documents re-pinned to `83582e87` | [Architecture comparison](../../docs/30-design/tenancy/single-and-multitenant-architecture.md) (every source link re-verified at the head; the write-clock anchor moved from line 62 to 64; a table of every dormant module the PR holds, with its governing record), [next-gen plan](../../docs/30-design/platform/next-gen-platform-plan.md) and its data file, [delivery roadmap](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md) current-acceptance paragraph, [tenancy reading guide](../../docs/30-design/tenancy/README.md), [batching plan](../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md) (live read-back row, B1/B2 closure, R62–R64 in §5), [programme status](../../docs/00-overview/PROGRAMME-STATUS.md) (D1–D23, the preview named), [NEEDS-A-HUMAN](../../docs/00-overview/NEEDS-A-HUMAN.md) (what waits on a person for the preview). | Read-derived reconciliation; no application campaign rerun and no milestone promoted. R40–R43 citations are retained as history where pages cite them. |
+| Queue | Item notes for `ST-PG`, `TEN-LAB`, `T30-WIRING` and `T30-TENANT-ADMIN` lead with the R62/R64 state. Gate `--ref` values are unchanged: owner-reader and durable-replay already pin `87133959` (R62); the other multitenant gates keep their native capture pins. | Replay of those gates on the frozen head (batching plan rule 6) is UNMEASURED: at the time of this update the runtime slot held the event-payload lane's focused run, so no gate campaign was started. |
+
+Lane detail for the open source lanes stays in their local handoffs
+(`externals/work/HANDOFF-*-20261106.md`, untracked).

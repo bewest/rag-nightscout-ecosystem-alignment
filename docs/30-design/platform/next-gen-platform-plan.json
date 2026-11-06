@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R62/R64 published draft #8898 control/recovery acceptance; M0 foundations promoted in R60 and bounded M4-CLIENT-LAB complete. M1\u2013M6 remain open. R63 selected actual subject workflows are bounded; root refusal keeps universal activation disabled. R67 clinical constructor and R68 fresh-schema DATA controls are local component evidence. Joined owner/clinical/DATA candidate is local and in verification, without full/browser acceptance. R55 whole profile branch remains separate. B7 adopted; no live runtime/default/rollout enabled. R65 clock HTTP data is descriptive; capacity and budget acceptance remain unmeasured.",
+ "measured": "2026-11-06: R62/R64 published draft #8898 83582e87 control/recovery acceptance with CI and CodeQL green; M0 foundations promoted in R60 and bounded M4-CLIENT-LAB complete. M1\u2013M6 remain open. R63 selected actual subject workflows are bounded; root refusal keeps universal activation disabled. R67 clinical constructor and R68 fresh-schema DATA controls are local component evidence. Joined owner/clinical/DATA candidate is local and in verification, without full/browser acceptance. R55 whole profile branch remains separate. B7 adopted; no live runtime/default/rollout enabled. R65 clock HTTP data is descriptive; capacity and budget acceptance remain unmeasured.",
  "tracks": [
   {
    "id": "storage",
@@ -353,7 +353,7 @@
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Published dormant control/recovery batch; local fresh-only ordering has no populated/imported-history migration or downmigration. No full M1 promotion.",
+   "ref": "Published dormant control/recovery batch; local fresh-only ordering has no populated/imported-history migration or downmigration. No full M1 promotion. R62 broad campaigns executed on 87133959; exact runner-only difference permits reuse on published83582e87.",
    "spec": [
     {
      "label": "R62/R64 published acceptance and verification",

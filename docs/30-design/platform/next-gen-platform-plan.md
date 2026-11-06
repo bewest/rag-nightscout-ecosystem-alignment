@@ -1,8 +1,10 @@
 # Next-gen platform: one write path, four tracks
 
 *Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
-[R62/R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
-and published draft #8898 `83582e87`, with bounded local R67/R68 component evidence. Earlier storage,
+[R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
+and [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06):
+draft #8898 is `83582e87`, based on dev `4a482627`, with CI and CodeQL green on
+that head. R67/R68 add bounded local component evidence. Earlier storage,
 identity and registration measurements retain their named pins. Current milestone
 claims live in the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md);
 release placement lives in [release allocation](release-allocation-2026-10-27.md).*
@@ -33,7 +35,7 @@ use this map to see how the platform tracks meet.
 | Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | The whole profile branch remains separate. Reusing its private helper/evaluateCycle hunk in the local candidate establishes no common atomic revision, live profile role or notification handoff. |
 
 The [integration record](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
-owns measured heads, controls and source-identity reuse; R64 records remote publication
+owns measured heads, controls and source-identity reuse; the [R62 capsule](../../../reports/tenancy/control-recovery-acceptance-87133959-2026-11-06.md) retains broad campaigns executed on `87133959` and the exact runner-only difference on `83582e87`. R64 records remote publication
 checks separately from local acceptance. [R67](../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06)
 and [R68](../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06)
 are bounded local component evidence, not whole-candidate acceptance. R66's original

@@ -1,18 +1,22 @@
 # Single and multitenant Nightscout: architecture and compatibility
 
 *Contributor-facing living explanation. Source inspection is **read-derived** at
-cgm-remote-monitor `ded254b9acf5a94e3a4fd99c85b23e1413fa08b6`, based on dev
-`4a482627bfdafb1fef8dcbe0ac6c484811cae563`. Test figures below are **recorded
-reproductions**, not new runs for this explanation. Current delivery and milestone
-claims live in the [delivery dashboard](multitenant-delivery-dashboard.md);
+cgm-remote-monitor `83582e876dd193f4448f44c28e379fb5464a26c7`, the published head
+of draft PR #8898 on 2026-11-06, based on dev `4a482627bfdafb1fef8dcbe0ac6c484811cae563`
+(172 commits and 245 files over dev: 193 new, 52 modified, none deleted; read
+from `git` at the re-pin). Every source link below was re-verified to resolve at
+that head; the shared-code line anchors were re-read there. Test figures below are
+**recorded reproductions**, not new runs for this explanation. Current delivery
+and milestone claims live in the [delivery dashboard](multitenant-delivery-dashboard.md).
+[R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
+accepts `83582e87`; [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
+verifies its publication and remote CI. The earlier
 [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
-owns the historical R40 preview acceptance; [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
-owns its local subject-service/compatibility continuation. Later local
+preview acceptance on `ded254b9`, [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05),
 [R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
 and independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)
-add measured port contracts, a separate management factory and nonresident replay.
-The diagrams retain their published R40 source scope. PR #8898 is
-open/draft, not merged or released.*
+are retained as history where this page cites them. PR #8898 is open/draft, not
+merged or released.*
 
 ## What the write seam made possible
 
@@ -78,26 +82,54 @@ activity stays legacy-only. Legacy v2 inherits the actual v1 routes. Derived
 properties/ddata/summary are v2-only. Administration, notices/debug, notification
 receipts/egress and assistants are unfinished REST work.
 
-See the CRM [preview contract](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/docs/architecture/multitenant-api-preview.md)
+See the CRM [preview contract](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/docs/architecture/multitenant-api-preview.md)
 for exact admission/configuration, and the [REST inventory](multitenant-rest-api-delivery-plan-2026-11-04.md)
 for the full target surface.
 
 ## What actually changed in shared code
 
-These are **read-derived** source findings, pinned to the preview commit. They
-refute a literal zero-code-change claim without alleging a single-tenant defect.
+These are **read-derived** source findings, pinned to `83582e87` (first read at
+`ded254b9`; the anchors were re-read at the new head, where only the write-clock
+entry point moved, from line 62 to 64). They refute a literal zero-code-change
+claim without alleging a single-tenant defect. Across the whole PR, 52 existing
+files are modified: the hooks below, the legacy v1 routers for activity,
+devicestatus, food, profile, status and treatments, the API3 generic operations
+and specific status/version/lastModified handlers, `lib/api2`, the serve roles,
+the CLI, `bin/nightscout.js`, the write-intent module, `package.json` (adds `pg`
+and `umzug`, and the `test:multitenant` script), the CI workflow and the tier
+registry.
 
 | Shared code | Change for the preview | Existing single/default branch |
 |---|---|---|
-| [storage-reads.js:34](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/server/storage-reads.js#L34) and domain constructors | Accept trusted collection/read/intent ports; incomplete injected capabilities refuse | Absent injection still constructs the existing Mongo collection and intent factory |
-| [API3 Collection:26](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/api3/generic/collection.js#L26) | Accept explicit storage, intent and narrow validation/error adapters | Absent injected storage retains MongoCollectionStorage plus CachedCollectionStorage |
-| [collectionWriteIntent.js:5](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/api3/shared/collectionWriteIntent.js#L5) | Choose the supplied intent factory | Otherwise use the existing shared write-intent factory |
-| [srv-dates.js:62](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/server/srv-dates.js#L62) | Maintain bound-tenant write clocks | The single-tenant sentinel retains the process clock branch |
-| [legacy router factories](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/api/index.js), API3 operations and credential/parser seams | Allow deliberate composition and request-bound authority while reusing handler behavior | Existing registrations and default service construction remain covered by the single/Mongo suites |
-| [multitenant CLI](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/cli/commands/multitenant.js) | Opt into preview boot, provider/configuration preparation, readiness and owned shutdown | Missing preview configuration refuses; it never falls back to starting `single` |
+| [storage-reads.js:34](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/server/storage-reads.js#L34) and domain constructors | Accept trusted collection/read/intent ports; incomplete injected capabilities refuse | Absent injection still constructs the existing Mongo collection and intent factory |
+| [API3 Collection:26](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/api3/generic/collection.js#L26) | Accept explicit storage, intent and narrow validation/error adapters | Absent injected storage retains MongoCollectionStorage plus CachedCollectionStorage |
+| [collectionWriteIntent.js:5](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/api3/shared/collectionWriteIntent.js#L5) | Choose the supplied intent factory | Otherwise use the existing shared write-intent factory |
+| [srv-dates.js:64](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/server/srv-dates.js#L64) | Maintain bound-tenant write clocks | The single-tenant sentinel retains the process clock branch |
+| [legacy router factories](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/api/index.js), API3 operations and credential/parser seams | Allow deliberate composition and request-bound authority while reusing handler behavior | Existing registrations and default service construction remain covered by the single/Mongo suites |
+| [multitenant CLI](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/cli/commands/multitenant.js) | Opt into preview boot, provider/configuration preparation, readiness and owned shutdown | Missing preview configuration refuses; it never falls back to starting `single` |
 
 This is dependency injection plus explicit tenant/runtime composition. It is not
 one global backend flag that turns every existing Nightscout feature multitenant.
+
+### What the preview holds at `83582e87`
+
+The 193 new files are dormant, opt-in modules. Each directory carries its own
+README in the PR; the alignment contract that governs it is named beside it.
+
+| New module at `83582e87` | What it is | Governing record |
+|---|---|---|
+| [`lib/tenant-resolution`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/tenant-resolution/README.md), [`lib/server/tenant-app`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/server/tenant-app/README.md) | Host-to-tenant resolution (direct alias and canonical ingress) and the dormant tenant HTTP composition that reuses the shipping v1/API3 handlers | roadmap §1–2; the [preview contract](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/docs/architecture/multitenant-api-preview.md) |
+| [`lib/storage/postgres-*`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/storage/PORT-CONTRACT.md), `lib/migrations`, `migrations/candidates` | PostgreSQL connection/transaction binding, entries/treatments/devicestatus/activity ports, identity codec, write limits, the tenant write clock, the migration catalogue and `nightscout migrate` | [storage seam §11](nightscout-storage-seam-interface-2026-09-14.md), [write contract §9](write-contract-spec-2026-10-07.md), [clock proof plan](postgres-tenant-clock-proof.md) |
+| [`lib/tenant-authorization`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/tenant-authorization/README.md), `lib/api3/tenant-authentication.js`, `lib/authorization/credential-extraction.js` | Tenant-bound credential exchange, current persisted grants, optional new-format data tokens verified locally | [owner authority](owner-authority.md); execution-plan D22 |
+| [`lib/secrets`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/secrets/README.md) | Secrets component, Vault Transit adapter, PostgreSQL persistence and rewrap | roadmap §3 |
+| [`lib/tenant-settings`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/tenant-settings), [`lib/subject-admin`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-admin/README.md), [`lib/subject-policy`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-policy/README.md), [`lib/operator-policy`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/operator-policy/README.md), `lib/server/subject-management-app.js` | Per-tenant settings with provenance and history; subject administration; the optional subject-reader policy that clamps stored grants to the reviewed catalogue and the current operator ceiling (unselected by default) | [tenant config schema](tenant-config-schema-2026-10-27.md), [owner authority](owner-authority.md); R53, R62, R63 |
+| [`lib/storage/postgres-durable-replay.js`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/docs/durable-current-state-replay.md), `migrations/candidates/postgres-consumer-checkpoint-v1.json` | Dormant durable current-row replay: typed projection and checkpoint persisted atomically, repeatable-read bootstrap, publish after commit | [durable event delivery contract](durable-event-delivery-contract-2026-11-06.md) (B7); R62 |
+| [`lib/import`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/import/README.md), `tools/import-entries.js`, `lib/data/private-acquisition.js` | One-time API entries importer to a PostgreSQL target; private acquisition of a request-local frame | roadmap M1; R52, R55 |
+| [`docs/multitenant-test-corpus.md`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/docs/multitenant-test-corpus.md), `scripts/test-multitenant.js`, the `multitenant-postgres` CI job | One command for the opt-in corpus, 35 suites at this head, with disposable PostgreSQL 16, MongoDB 8.0 and Vault; the same corpus runs in the PR's CI | [batching plan §3 rules 4–5](multitenant-integration-batching-plan-2026-11-06.md#3-batch-rules); R60, R61, R64 |
+
+Only the `api` role starts; `evaluator`, `realtime`, `vcpool`, `tenant-admin`
+and `admin` refuse with exit 64, and missing configuration or failed readiness
+refuses with exit 78 before listening. Nothing here changes `nightscout single`.
 
 ## Isolation extends beyond the write boundary
 
@@ -134,6 +166,24 @@ new declarations that every exposed field has an independent collection grant.
 
 ### Preview versus current single/Mongo behavior
 
+The current accepted head is `83582e87`
+([R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)):
+full nonbrowser 7,226 passing / 99 pending / 0 failing, browser 684 / 0 / 0, the
+35-suite opt-in corpus 460 / 1 pending (the disabled benchmark) / 0, and the actual
+default cgmsim/oref0 gate with 82 checks over 19 paired Mongo/PG cells with zero
+differences, all executed on `87133959`; only the source-control runner differs
+on `83582e87`, whose final prcheck passed. Archived owner-reader and durable-replay
+gates went red under their semantic controls and passed restored.
+[R63](../remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06)
+bounds the optional selected-reader mode with actual clients: three oref0
+subject-token uploads match the reference, tightening the ceiling refuses the next
+upload with no effects, and an actual cgmsim root upload gets 503 under selected
+mode against 200 unselected, so that mode stays unselected and the 503 mapping
+awaits a disposition. [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
+reads back the published head: all 15 CI jobs and CodeQL passed, including the
+opt-in corpus job; three release-image jobs were skipped by condition. The
+sections below retain the earlier records they cite.
+
 Latest local [R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
 adds real lower/preview/Mongo port characterization and a separate authenticated
 management factory, with current-head cumulative/control evidence. Independent
@@ -157,15 +207,17 @@ is **recorded reproduced** on `ded254b9`. This document audit did not rerun it.
 | Authored semantic source controls | Checks detect cross-bound tenants, stale authority, incorrect IOB, retry/response identity and disabled executable admission; restored runs pass | Demonstrates sensitivity to those exercised breaks, not every possible isolation or semantic defect |
 | Pinned NightscoutKit and LoopFollow request patterns through actual CLI/PG/Vault | Concrete uploader/follower request, retry, response-ID and history/restart workflows | Synthetic extraction from pinned source, not execution of Swift applications or every client version |
 
-The published head's [CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417437)
+The R40 head's [CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417437)
 and [CodeQL](https://github.com/nightscout/cgm-remote-monitor/actions/runs/41956417396)
-succeeded at read-back. Remote defaults do not enable every opt-in provider lab;
-R40 and the CI jobs have different scopes.
+succeeded at read-back; at that time remote defaults enabled no opt-in provider
+lab, so R40 and those CI jobs had different scopes. Since Batch A (R60, R61) the
+PR's CI runs the opt-in corpus as its own job; on `83582e87` that job and the
+other 14 passed ([R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)).
 
 Explicit default-construction checks include
-[storage-trusted-ports.test.js](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/tests/storage-trusted-ports.test.js),
-[credential/exchange contract tests](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/tests/authorization-exchange-contract.test.js),
-and [process admission tests](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/tests/multitenant-preview-process.integration.test.js).
+[storage-trusted-ports.test.js](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/tests/storage-trusted-ports.test.js),
+[credential/exchange contract tests](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/tests/authorization-exchange-contract.test.js),
+and [process admission tests](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/tests/multitenant-preview-process.integration.test.js).
 Differentials compare current shipping Mongo handlers against the PG preview,
 not an old release. Some comparisons normalize nondeterministic timestamps or
 transport fields; they are not a claim of identical bytes everywhere.
@@ -174,7 +226,7 @@ There are deliberate preview differences: unsupported query/path/representation
 shapes refuse, JSONB uses logical JSON equality rather than BSON key order, and
 an invalid selected credential does not silently become anonymous; carrier precedence remains version-specific. Unsupported route
 and error mappings can differ from the single application. See the pinned
-[tenant-app boundaries](https://github.com/nightscout/cgm-remote-monitor/blob/ded254b9acf5a94e3a4fd99c85b23e1413fa08b6/lib/server/tenant-app/README.md).
+[tenant-app boundaries](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/server/tenant-app/README.md).
 Full query/resource acceptance and populated import-order fidelity remain open.
 
 ### New Nightscout versus older releases
@@ -201,7 +253,7 @@ flowchart LR
   end
   subgraph Preview["Current HTTP / storage differential"]
     direction TB
-    Current["Current single / Mongo handlers<br/>ded254b9"] <-->|"preview differential"| Multi["Multitenant PG preview<br/>ded254b9"]
+    Current["Current single / Mongo handlers<br/>83582e87 (run on 87133959)"] <-->|"preview differential"| Multi["Multitenant PG preview<br/>83582e87 (run on 87133959)"]
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview
@@ -238,8 +290,9 @@ installation/rollback compatibility must be assessed separately.
 
 ## Hypothetical third-backend smell test
 
-**Read-derived at `ded254b9`, 2026-11-05; no SQLite adapter, isolation or performance
-experiment was run.** A third backend has a clearer insertion point than the
+**Read-derived at `ded254b9`, 2026-11-05, and the resolver anchor re-read at
+`83582e87` on 2026-11-06 (`collection` at line 34, `resolve` at 41, `intent` at
+54); no SQLite adapter, isolation or performance experiment was run.** A third backend has a clearer insertion point than the
 Mongo-only base: trusted `ctx.storagePorts.resolve` supplies storage and an
 intent factory (`lib/server/storage-reads.js:34–56`), and the PG adapters call
 the shared `write-intent.forCollectionResolved` rules. Existing shipping routers,
