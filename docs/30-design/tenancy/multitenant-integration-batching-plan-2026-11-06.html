@@ -5265,7 +5265,7 @@
 <p><em>Contributor-facing execution plan, 2026-11-06, living. It says how work on the
 multitenant preview is batched, what verification runs at each stage, and which
 batches sit on the critical path to the M3 and M4 gates. Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0ab67e36f9b8613788eba35a47a6b8d21b8b8de5/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/88902eba2532c42bf83a91a8104f9ea64da2ca18/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap-2026-11-02.html">REST delivery roadmap</a>
@@ -5459,15 +5459,15 @@ dispatched by the coordinating session that wrote this plan.</p>
 </tr>
 <tr>
 <td><strong>B4a: controls on the cumulative head</strong></td>
-<td>root coordinator, next runtime slot</td>
+<td>session <code>-8c</code> (maintainer-assigned 2026-11-06, after the Codex root coordinator did not claim it); the <code>--ref</code> moves stay root's</td>
 <td>the registered archived suites and their <code>--control</code> variants; the current frozen head, <code>65bb8456</code> since R56</td>
 <td>queue gates for every multitenant item run against the frozen head with the admin URI set, positives and controls, recorded as one R entry; item <code>--ref</code> values then move to that head. Predicted: all positives green, every control red with its recorded symptom. A green control is a vacuous gate, not a pass.</td>
 </tr>
 <tr>
 <td><strong>B5: corpus command and CI job</strong></td>
-<td>coordinator subagent, lane <code>codex/multitenant-ci-20261106</code> off 359, head <code>f2be3afa</code> (three commits, four files, no <code>lib/</code>, no test or fixture change)</td>
+<td>coordinator subagent, lane <code>codex/multitenant-ci-20261106</code> off 359, head <code>b7eac9bb</code> (four commits: the three build commits plus one fix; no <code>lib/</code> change; one opt-in test expectation changed)</td>
 <td>the 31 opt-in suites; <code>scripts/test-tiers.js</code>; <code>.github/workflows/main.yml</code></td>
-<td><strong>Built and controlled, corpus run UNMEASURED.</strong> <code>scripts/test-multitenant.js</code> with <code>--list</code>, <code>--only</code>, <code>--record</code>; inventory page <code>docs/multitenant-test-corpus.md</code>. Smoke on the PostgreSQL connection suite: 10 / 0 / 0, container and volume verified absent. Controls: unreachable admin URI exit 2 with nothing run; no matching suite exit 2; one flipped assertion exit 1 with 1 failing. CI job <code>multitenant-postgres</code> on ubuntu-22.04 added to the <code>tests-pass</code> needs. <strong>Before this lane is pushed:</strong> run the whole corpus once in a batch slot and record its counts, or hold the job out of <code>needs</code> until that run exists. The inventory guard is non-vacuous: an unlisted opt-in test file makes <code>--list</code> exit 2 naming the file, and removing it restores 31.</td>
+<td><strong>Corpus measured once on <code>f2be3afa</code> (session -38, slot 19:09–19:19 UTC): 418 passing / 0 pending / 2 failing, wall clock 3:22, the script's own three containers and volumes verified absent.</strong> Both failures reproduced in isolation and are fixed in <code>b7eac9bb</code> with controls: (1) <code>tests/tenant-rest-device-activity.integration.test.js</code> failed only outside UTC (the script inherited the machine zone; CI and the owned runner force <code>TZ=UTC</code>); the command now sets <code>TZ=UTC</code> (pre-fix under PST 12 / 1, fixed 13 / 0). (2) <code>tests/tenant-authorization-postgres.integration.test.js</code> listed the pending migrations by name and went stale when the candidate gained <code>0004_owner_policy_fencing</code> on 2026-11-05; the owned runner never sets that suite's flag, so R51–R54 never ran it and the corpus is the first instrument to do so; the expectation now reads the catalogue (stale 7 / 1, fixed 8 / 0). <strong>Confirming run on <code>b7eac9bb</code> (slot 19:22–19:26 UTC): 420 passing / 0 pending / 0 failing in 3:19, prediction met, 31 suites, containers and volumes of the script verified absent.</strong> B5 is complete as a lane: it joins the cumulative head at the next batch boundary, and the <code>multitenant-postgres</code> CI job then runs for the first time on the join head. <strong>Open finding (not fixed here):</strong> suite-owned containers are removed without <code>-v</code>, so the corpus run left 39 anonymous Docker volumes and the isolated reruns 3 more; the script's own volumes are verified absent. A follow-on lane adds <code>-v</code> to the suites' own <code>docker rm</code> calls; the finding is attributable only by running suites one at a time.</td>
 </tr>
 <tr>
 <td><strong>B6: M4 client-binary lab packet</strong></td>
@@ -5488,11 +5488,18 @@ head <code>2ee8b493</code> is not yet published; that is a maintainer push, not 
 <p>Order of dependence: B1, B2 and B3 are done; B2's join head awaits publication.
 B2 fed B7, whose first recovery slice can now be scheduled against <code>65bb8456</code>. B4 tells the maintainer which milestone can be promoted first; it does
 not block B5 or B6. B5 removes the slot bottleneck for every later batch, so it
-is started now rather than after B2.</p>
+was started before B2 finished; its corpus ran once (418 / 0 / 2), both failures were fixed with controls, and the
+confirming run on <code>b7eac9bb</code> measured 420 / 0 / 0; the lane waits only for the next join into #8898.</p>
 <h2 id="5-lane-ownership-and-coordination">5. Lane ownership and coordination<a class="headerlink" href="#5-lane-ownership-and-coordination" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The <strong>root coordinator</strong> owns the cumulative application branch, the queue,
   release records, dashboard and map edits, and the single runtime slot.</li>
+<li><strong>Source-only lanes off the R56 head <code>65bb8456</code></strong> (session <code>-8c</code>, maintainer-assigned
+  2026-11-06, no slot): <code>codex/event-payload-20261106</code> carries the durable delivery
+  contract's decision 3 (tenant and commit stamp on the per-write event; one focused
+  <code>clock</code> run with its own containers under rule 3), and <code>codex/role-table-20261106</code>
+  carries D23 entry condition 4 (typed fields on the role table, <code>describeComposition</code>,
+  a unit test). Each joins #8898 at a batch boundary; neither is pushed on its own.</li>
 <li><strong>Lane handoffs</strong> are <code>externals/work/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>, local and
   untracked. The coordinating session's own notes are in
   <code>externals/work/HANDOFF-batching-coordinator-20261106.md</code>.</li>

@@ -6070,14 +6070,14 @@
 
 
 <h1 id="multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs">Multitenancy execution plan: decisions, tasks, and the context each one needs<a class="headerlink" href="#multitenancy-execution-plan-decisions-tasks-and-the-context-each-one-needs" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>43c07748a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>88902eba2</code>.</em></p>
 <p><em>Contributor- and maintainer-facing.</em></p>
 <p><strong>Status: living document — the decision record.</strong> Decisions D1–D23 are the maintainer's
 (2026-09-14 to 2026-09-16, D18 on 2026-10-09, its addendum on 2026-10-12, D19 on 2026-10-14, D20 on 2026-10-16, D21 on 2026-10-26 and amended on 2026-11-03, D23 on 2026-11-06) and are all <strong>adopted</strong>, except <strong>D17 row 2</strong>
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0ab67e36f9b8613788eba35a47a6b8d21b8b8de5/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/88902eba2532c42bf83a91a8104f9ea64da2ca18/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -7600,7 +7600,7 @@ launcher.</p>
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
 change) and PLAT-SERVE (the multitenant roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0ab67e36f9b8613788eba35a47a6b8d21b8b8de5/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/88902eba2532c42bf83a91a8104f9ea64da2ca18/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
 <p><strong>Amended 2026-10-27 (maintainer; CLI name amended 2026-11-03): the subcommand selects
 tenancy.</strong> <code>nightscout single</code> is single-tenant and every <code>nightscout multitenant</code> role is
@@ -7914,7 +7914,18 @@ connection ({C} §3.5.3.1's pooler trap) without giving it write grants.</p>
    the ack row's tenant key, red (the contract's §8 shape).</li>
 <li>The role table in <code>lib/server/serve/roles.js</code> states each role's inputs and outputs (listener,
    storage write authority, feed consumer, egress) as fields, not prose, so a composed process can
-   be checked against them; <code>realtime</code> declares no write authority.</li>
+   be checked against them; <code>realtime</code> declares no write authority. <strong>Built 2026-11-06</strong> on branch
+   <code>codex/role-table-20261106</code> at <code>7b49829e65e28e6b7e0f61f8d9b3a7862f5aeb2f</code> (two commits over
+   <code>65bb8456</code>; local, not joined): every role carries <code>listener</code>, <code>storage</code> (write, read or none),
+   <code>feed</code> and <code>egress</code>, <code>realtime</code> carries <code>forwardsWritesTo: 'api'</code>, and <code>describeComposition(names)</code>
+   derives writers, readers, listeners, feed consumers and egress or throws naming the offending role.
+   <code>tests/serve-roles.test.js</code> 14 passing; serve-related unit tests 84 → 98; tier check 512 files ok.
+   Controls red then restored: <code>realtime.storage = 'write'</code> gives <code>'write' !== 'read'</code> (11/3);
+   deleting <code>feed</code> from evaluator gives <code>evaluator lacks feed</code> and <code>role evaluator lacks the feed field</code>
+   (9/5). <code>index.js</code> and <code>listeners.js</code> are unchanged. Reviewer note: the fields do not model a
+   consumer's own per-tenant checkpoint row (durable-delivery contract §2 rule 2), which is a read
+   role's bookkeeping write; decide whether that is <code>storage: 'read'</code> plus a checkpoint field or its own
+   value before the first consumer is wired.</li>
 </ol>
 <p><strong>What this does not decide.</strong> Provider selection for the feed (deferred, research continuing),
 multi-node leasing, performance budgets, and whether <code>vcpool</code>'s egress and the evaluator's
