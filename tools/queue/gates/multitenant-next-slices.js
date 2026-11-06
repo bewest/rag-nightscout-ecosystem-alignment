@@ -217,9 +217,41 @@ try {
   console.error(error.message);
   process.exitCode = 1;
 } finally {
-  for (const container of containers.reverse()) {
-    try { execFileSync('docker', ['rm', '-f', '-v', container], { stdio: 'pipe', timeout: 30000 }); }
-    catch (error) { console.error('Owned gate service cleanup failed: ' + error.message); process.exitCode = 1; }
+  let cleanupFailed = false;
+  const cleanup = [...containers].reverse().map(container => ({ container, volumeIds: null, containerRemoved: false }));
+  let diagnostic;
+  try {
+    if (cleanup.length) {
+      const directory = path.join(REPO_ROOT, 'externals/work/cleanup-diagnostics');
+      fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+      diagnostic = path.join(fs.mkdtempSync(path.join(directory, 'next-slice-')), 'containers.json');
+    }
+  } catch { cleanupFailed = true; }
+  // Inspect only Mounts: never persist container configuration, credentials or host paths.
+  for (const entry of cleanup) {
+    try {
+      const mounts = JSON.parse(execFileSync('docker', ['inspect', '--format', '{{json .Mounts}}', entry.container],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }));
+      entry.volumeIds = mounts.filter(mount => mount.Type === 'volume').map(mount => mount.Name);
+    } catch { entry.inspectionFailed = true; cleanupFailed = true; }
+  }
+  function recordCleanup () {
+    if (diagnostic) {
+      try { fs.writeFileSync(diagnostic, JSON.stringify(cleanup, null, 2) + '\n', { mode: 0o600 }); }
+      catch { cleanupFailed = true; }
+    }
+  }
+  recordCleanup(); // Persist volume identities before removing any owned container.
+  for (const entry of cleanup) {
+    try {
+      execFileSync('docker', ['rm', '-f', '-v', entry.container], { stdio: 'pipe', timeout: 30000 });
+      entry.containerRemoved = true;
+    } catch { cleanupFailed = true; console.error('Owned gate service cleanup failed: ' + entry.container); }
+    recordCleanup();
+  }
+  if (cleanupFailed) {
+    process.exitCode = 1;
+    console.error('Owned cleanup diagnostics: ' + (diagnostic || 'unavailable'));
   }
   if (scratch) fs.rmSync(scratch, { recursive: true, force: true });
 }

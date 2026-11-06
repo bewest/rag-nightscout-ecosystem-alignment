@@ -110,10 +110,38 @@ const focused = [
     process.exitCode = Number.isInteger(result.status) ? result.status : 1;
   } finally {
     let cleanupFailed = false;
-    for (const name of owned.reverse()) {
-      try { docker(['rm', '-f', name]); } catch (error) { cleanupFailed = true; console.error('Owned service cleanup failed: ' + name); }
+    const cleanup = [...owned].reverse().map(container => ({ container, volumeIds: null, containerRemoved: false }));
+    let diagnostic;
+    try {
+      if (cleanup.length) {
+        const directory = path.join(alignment, 'externals/work/cleanup-diagnostics');
+        fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+        diagnostic = path.join(fs.mkdtempSync(path.join(directory, 'rest-preview-')), 'containers.json');
+      }
+    } catch { cleanupFailed = true; }
+    // Inspect only Mounts: never persist container configuration, credentials or host paths.
+    for (const entry of cleanup) {
+      try {
+        const mounts = JSON.parse(docker(['inspect', '--format', '{{json .Mounts}}', entry.container]));
+        entry.volumeIds = mounts.filter(mount => mount.Type === 'volume').map(mount => mount.Name);
+      } catch { entry.inspectionFailed = true; cleanupFailed = true; }
     }
-    if (cleanupFailed) process.exitCode = 1;
+    function recordCleanup () {
+      if (diagnostic) {
+        try { fs.writeFileSync(diagnostic, JSON.stringify(cleanup, null, 2) + '\n', { mode: 0o600 }); }
+        catch { cleanupFailed = true; }
+      }
+    }
+    recordCleanup(); // Persist volume identities before removing any owned container.
+    for (const entry of cleanup) {
+      try { docker(['rm', '-f', '-v', entry.container]); entry.containerRemoved = true; }
+      catch { cleanupFailed = true; console.error('Owned service cleanup failed: ' + entry.container); }
+      recordCleanup();
+    }
+    if (cleanupFailed) {
+      process.exitCode = 1;
+      console.error('Owned cleanup diagnostics: ' + (diagnostic || 'unavailable'));
+    }
     console.log('Owned REST preview services cleanup finished.');
   }
 })().catch(error => { console.error(error.message); process.exitCode = 1; });
