@@ -176,7 +176,7 @@ Until then, the order below is the order of development, not of release.
 | wave | id | what | claimed state | waits on |
 |---:|---|---|---|---|
 | 1 | `A7A-7` | §7a item 7 - the clock question | `unsettled` | &mdash; |
-| 1 | `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `not-started` | &mdash; |
+| 1 | `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `in-progress` | &mdash; |
 | 1 | `DISPLAY-MEAL-GROUP` | Show a bolus and its carbs as one meal in the display layer; storage de-duplicat | `not-started` | &mdash; |
 | 1 | `ID-BATCH-RESULTS` | Release 2 (minor): per-item results in v1 batch replies; one bad item no longer  | `in-progress` | &mdash; |
 | 1 | `ID-CONVENTIONS` | Identifier conventions: one URL-form identifier template per record kind and sou | `in-progress` | &mdash; |
@@ -191,7 +191,7 @@ Until then, the order below is the order of development, not of release.
 | 1 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | &mdash; |
 | 1 | `SEAM-REFRESH` | Refresh the seam chain once after 15.0.9, onto the base the release train leaves | `blocked` | &mdash; |
 | 1 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | &mdash; |
-| 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `not-started` | &mdash; |
+| 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | &mdash; |
 | 1 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | `ready-to-push` | &mdash; |
 | 1 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | &mdash; |
 | 1 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | &mdash; |
@@ -215,7 +215,7 @@ Until then, the order below is the order of development, not of release.
 | 3 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `TEN-RESOLVE`, `MT-SECRETS-CONTRACT` |
 | 3 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `T30-SCHEMA-CONFIG` |
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
-| 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `not-started` | `T30-WIRING` |
+| 4 | `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n | `in-progress` | `T30-WIRING` |
 | 4 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `T30-WIRING` |
 | 4 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `T30-WIRING` |
 | 4 | `T44` | T4.4 - ns-evaluator, the per-tenant evaluation loop | `not-started` | `T30-WIRING` |

@@ -22,6 +22,13 @@ See the [current ecosystem/acceptance record](../../docs/10-domain/nightscout-v1
 [draft release notes](release-notes.md) and [cohort collection guide](testing-notes.md).
 Historical status/measurement sections below retain their dates.
 
+### Update: next bounded REST, storage-contract and profile lanes dispatched (2026-11-05)
+
+| Work / state | Basis and boundary |
+|---|---|
+| Continued from R41 `94c57f1f` and architecture-plan main `fc8c4010e`. | Fresh remote read-back: #8898 OPEN/draft ded254b9; #8891 OPEN/draft 744d1968; dev 4a482627. Existing R41 remains local/unpushed, not superseded acceptance. Selected integration gates MT-CONFIG-MIN/T30-WIRING PASS; full TEN-LAB and new contract/profile scopes UNMEASURED. |
+| Three isolated bounded lanes dispatched. | [Architecture dispatch checkpoint](../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md#active-bounded-dispatch-checkpoint): Mongo/PG port-contract characterization, standalone subject-management HTTP factory and independent #8891 refresh/replay. Existing shared composition/error/migration files reserved; no consolidation or SQLite coding. No new application result, role enablement, milestone promotion or RC placement claim. |
+
 ### Update: subject administration and compatibility continuation accepted locally (2026-11-05)
 
 | Work / state | Evidence and remaining gate |

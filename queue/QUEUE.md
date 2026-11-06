@@ -41,8 +41,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 80 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T30-TENANT-ADMIN, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, ARCH-SQLITE-SPIKE |
-| `in-progress` | 17 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM |
+| `not-started` | 77 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ARCH-DERIVED-FRAME, ARCH-SQLITE-SPIKE |
+| `in-progress` | 20 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ST-VIEWS-PROFILE |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | P0-C-REMEDIATE, T30-AUTH, WS-LAB |
 | `blocked` | 16 | TEN-RESOLVE, TEN-LAB, T31-REM, T32-REM, T33-REM, A7A-GATE, SEAM-REFRESH, WRITE-CONTRACT, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8402,7 +8402,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
 | `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261105` | n/a | 1 run + 1 no-gate |
-| `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `not-started` | `-` | minor | 0 run + 1 no-gate |
+| `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `in-progress` | `codex/owner-subject-http-20261105` | minor | 0 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 2 no-gate |
@@ -8445,10 +8445,10 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-FILTER-READS` | Storage interface, first PR: the filter tree and interface methods under API v3's adapter (ST-FILTER), and API v1 reads through them (ST-READS), with no v1 answer changed | `merged-upstream` | `feat/storage-filter` | patch | 1 run + 1 no-gate |
 | `ST-WRITES` | Storage interface, second PR: API v1, authorization storage and socket writes through the interface, each labelled by source; #8854's boundary check fails a write that skips the interface | `merged-upstream` | `feat/storage-writes` | patch | 1 run + 1 no-gate |
 | `ST-COUNT-ONEPATH` | API v1 count only through the storage interface: lib/server/aggregate.js loses its constructor pipeline hook and no-store path | `merged-upstream` | `feat/storage-count-onepath` | patch | 2 run |
-| `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `ARCH-SEAM-CONTRACT` | First: portable storage and commit contract characterization | `in-progress` | `codex/seam-contract-20261105` | n/a | 0 run + 1 no-gate |
 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `not-started` | `feat/views-profile` | n/a | 0 run + 1 no-gate |
+| `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | `codex/profile-refresh-20261105` | n/a | 0 run + 1 no-gate |
 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 
@@ -8948,30 +8948,30 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `seam/t1-2-storage-interface@81a1f6ce` |
-| worktree | `-` |
+| branch | `codex/owner-subject-http-20261105` |
+| base | `CRM-R41@94c57f1f` |
+| worktree | `externals/work/crm-codex-owner-http-20261105` |
 | semver | `minor` |
 | review | maintainer |
 | blocks on | `T30-WIRING` |
 
-**Blast radius.** Not designed yet. Expected: a second listen() in the ns-api process on its own bind address, serving only the tenant-owner surface, authenticated and RLS- scoped, resolving the tenant through T30-WIRING's extracted module. Multi mode only; single is unchanged.
+**Blast radius.** First bounded step: a dormant standalone subject-management HTTP factory using trusted management authentication and the R41 persisted service. The full target remains a second listen() in the API process on its own bind address, serving only the tenant-owner surface, authenticated and RLS-scoped, resolving the tenant through T30-WIRING's extracted module. Multi mode only; single is unchanged.
 
-**What an operator sees.** Not written yet. It would say: hosted deployments expose the tenant owner's settings on a separate address from the data API.
+**What an operator sees.** The management listener remains unavailable in this preview.
 
 **Why `minor`.** a new listener in multi mode, which is developer-only; single unchanged
 
 **Gates.**
 
-- **NO GATE** &mdash; Not started. The gate will show the tenant-owner routes answer on the second socket and not on the data socket (red when a route answers on both; control: the same request on its own socket), that a request resolves only its own tenant (red across tenants; control: the owner's own tenant), and that single mode's listeners are byte-identical to before.
+- **NO GATE** &mdash; Full listener admission remains unmeasured. The gate must show owner routes answer on the second socket and not on the data socket (red when a route answers on both; control: the same request on its own socket), that a request resolves only its own tenant (red across tenants; control: the owner's own tenant), and that single mode's listeners are byte-identical to before.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB- REG-CRM-ADMIN depends on it.
+**Notes.** Current 2026-11-05: separately authenticated subject facade characterization and implementation dispatched. No CLI binding, new identity provider or owner grant-ceiling policy is selected; factory acceptance is not full D16 listener completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
 
 ### `T31-REM` &mdash; T3.1 remainder - per-tenant signing key replaces the install-wide one
 
@@ -10259,11 +10259,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `PR8898@ded254b9; PR8891@744d1968` |
-| worktree | `-` |
+| branch | `codex/seam-contract-20261105` |
+| base | `CRM-R41@94c57f1f` |
+| worktree | `externals/work/crm-codex-seam-contract-20261105` |
 | semver | `n/a` |
 | review | maintainer; architecture, storage and compatibility review |
 
@@ -10281,7 +10281,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** First priority; architecture lane, alongside active REST and compatibility lanes. Review before treating the preview seams as stable; no new RC tag prerequisite. Characterize before extracting Mongo-shaped helpers.
+**Notes.** Dispatched 2026-11-05 from R41; new parameterized contract tests and module- facing documentation only, no production refactor. First priority alongside REST and compatibility lanes. Review before treating the preview seams as stable; no new RC tag prerequisite. Characterize before extracting Mongo- shaped helpers.
 
 ### `ARCH-SEAM-COMPOSE` &mdash; First: separate domain definitions from backend and HTTP bindings
 
@@ -10345,11 +10345,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `feat/views-profile` |
-| base | `PR8898@ded254b9; PR8891@744d1968` |
-| worktree | `-` |
+| branch | `codex/profile-refresh-20261105` |
+| base | `official/dev@4a482627; PR8891@744d1968` |
+| worktree | `externals/work/crm-codex-profile-refresh-20261105` |
 | semver | `n/a` |
 | review | maintainer; architecture, storage and compatibility review |
 | blocks on | `ST-WRITES` |
@@ -10368,7 +10368,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 
-**Notes.** Parallel preparation; execution-profile lane, not yet dispatched. Reuse PR 8891 rather than create a second evaluator. Evaluate logical intent subscriber against D-EVENT; integration and release placement retain entry bar and maintainer review. No automatic wiring into default single or multitenant; no new RC tag gate.
+**Notes.** Dispatched 2026-11-05 in an owned refresh/replay lane, separate from the R41 REST integration. New acceptance remains unmeasured. Reuse PR 8891 rather than create a second evaluator. Evaluate logical intent subscriber against D-EVENT; integration and release placement retain entry bar and maintainer review. No automatic wiring into default single or multitenant; no new RC tag gate.
 
 ### `ARCH-DERIVED-FRAME` &mdash; Next join: shared bounded frames and derived calculations
 

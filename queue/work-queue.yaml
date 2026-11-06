@@ -6764,25 +6764,27 @@ items:
     title: "cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ""
-    base: seam/t1-2-storage-interface@81a1f6ce
-    state: not-started
+    branch: codex/owner-subject-http-20261105
+    base: CRM-R41@94c57f1f
+    worktree: externals/work/crm-codex-owner-http-20261105
+    state: in-progress
     pr: []
     blast_radius: >
-      Not designed yet. Expected: a second listen() in the ns-api process
+      First bounded step: a dormant standalone subject-management HTTP factory
+      using trusted management authentication and the R41 persisted service.
+      The full target remains a second listen() in the API process
       on its own bind address, serving only the tenant-owner surface,
       authenticated and RLS-scoped, resolving the tenant through
       T30-WIRING's extracted module. Multi mode only; single is unchanged.
     review: maintainer
     operator_visible: >
-      Not written yet. It would say: hosted deployments expose the tenant
-      owner's settings on a separate address from the data API.
+      The management listener remains unavailable in this preview.
     semver: minor
     semver_reason: a new listener in multi mode, which is developer-only; single unchanged
     register: []
     gates:
       - no-gate: >
-          Not started. The gate will show the tenant-owner routes answer
+          Full listener admission remains unmeasured. The gate must show owner routes answer
           on the second socket and not on the data socket (red when a route
           answers on both; control: the same request on its own socket),
           that a request resolves only its own tenant (red across tenants;
@@ -6792,6 +6794,10 @@ items:
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      Current 2026-11-05: separately authenticated subject facade characterization
+      and implementation dispatched. No CLI binding, new identity provider or
+      owner grant-ceiling policy is selected; factory acceptance is not full
+      D16 listener completion.
       D16 (maintainer, 2026-09-16) set three listeners; the topology was
       decided 2026-10-16 (maintainer): a second bound socket inside ns-api,
       movable to its own process later without changing the contract
@@ -24939,9 +24945,10 @@ items:
     title: 'First: portable storage and commit contract characterization'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: PR8898@ded254b9; PR8891@744d1968
-    state: not-started
+    branch: codex/seam-contract-20261105
+    base: CRM-R41@94c57f1f
+    worktree: externals/work/crm-codex-seam-contract-20261105
+    state: in-progress
     blast_radius: >
       Storage identity/query/projection/result/error capabilities, tenant binding and
       owned commit boundaries; preserve shipping handlers and approved quirks.
@@ -24960,7 +24967,8 @@ items:
     evidence:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      First priority; architecture lane, alongside active REST and compatibility
+      Dispatched 2026-11-05 from R41; new parameterized contract tests and module-facing
+      documentation only, no production refactor. First priority alongside REST and compatibility
       lanes. Review before treating the preview seams as stable; no new RC tag
       prerequisite. Characterize before extracting Mongo-shaped helpers.
 
@@ -25030,10 +25038,11 @@ items:
     title: 'Next: refresh and integrate PR 8891 single nonresident profile'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: feat/views-profile
+    branch: codex/profile-refresh-20261105
     pr: [8891]
-    base: PR8898@ded254b9; PR8891@744d1968
-    state: not-started
+    base: official/dev@4a482627; PR8891@744d1968
+    worktree: externals/work/crm-codex-profile-refresh-20261105
+    state: in-progress
     blast_radius: >
       Existing feat/views-profile prototype, explicit opt-in boot, evaluator
       trigger/timer, retained properties, notification handoff and owned shutdown.
@@ -25055,7 +25064,8 @@ items:
     evidence:
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
-      Parallel preparation; execution-profile lane, not yet dispatched. Reuse PR 8891
+      Dispatched 2026-11-05 in an owned refresh/replay lane, separate from the
+      R41 REST integration. New acceptance remains unmeasured. Reuse PR 8891
       rather than create a second evaluator. Evaluate logical intent subscriber
       against D-EVENT; integration and release placement retain entry bar and
       maintainer review. No automatic wiring into default single or multitenant; no

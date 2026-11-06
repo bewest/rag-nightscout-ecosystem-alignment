@@ -40,6 +40,25 @@ The REST coordinator retains cumulative integration ownership. Existing subject
 administration, remaining side effects and direct/historical compatibility lanes
 continue; no new implementation agent is dispatched by this planning commit.
 
+## Active bounded dispatch checkpoint
+
+Continuation authorized 2026-11-05 from accepted CRM R41 `94c57f1f` and
+alignment `fc8c4010e`; fresh remote read-back retains draft #8898 `ded254b9`,
+draft #8891 `744d1968` and dev `4a482627`. Selected current integration gates
+MT-CONFIG-MIN and T30-WIRING pass; contract/profile/full-lab scope is UNMEASURED.
+
+| Lane | Owned bounded work | Acceptance boundary |
+|---|---|---|
+| `codex/seam-contract-20261105` | Actual Mongo/PG parameterized port characterization and module-facing contract; parent reconciles existing interface/write-contract documents. | Identity/query/projection/result and independent binding/transaction cases plus semantic controls; no production extraction or backend adoption. |
+| `codex/owner-subject-http-20261105` | Standalone management HTTP factory over R41 subject service, with trusted injected management authentication. | Real persisted effects/current authority and data-plane refusal; no CLI listener, identity provider or grant-ceiling default selected. |
+| `codex/profile-refresh-20261105` | Refresh existing #8891 in its own worktree; actual-trigger/timer/freshness characterization and controls. | Preserve current subscriber until its logical/physical event behavior is measured; separate from #8898 cumulative acceptance and release placement. |
+
+The coordinator reserves existing domain-catalogue, preview assembly, shared
+error wrappers and migration/tier registration. No composition/consolidation
+agent is dispatched yet. New lanes own new files or profile-specific source;
+owned services and private dependencies remain separate. Stop and report source
+or policy mismatches; partial instrumentation never promotes a milestone.
+
 ## Contract packet: ARCH-SEAM-CONTRACT
 
 Characterize the current implementation before prescribing extraction. At the
