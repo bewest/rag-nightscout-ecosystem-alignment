@@ -312,8 +312,8 @@
    "ref": "R50 accepted independent5173864d remains separate. New helper-only descendant2ee8b493 matches REST helper bytes and preserves evaluateCycle; new runtime38/controls/full/browser/prcheckUNMEASURED. No REST join or subscriber/notification admission.",
    "spec": [
     {
-     "label": "Native acquisition / pending composition",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06"
+     "label": "R54 cumulative / native scope limits",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "R50 independent evaluator frame characterization",
@@ -352,8 +352,8 @@
    "ref": "R54 localcumulative35903069 B338+A+C17f accepted full7144/80pending/0failure/browser684/settings12/prcheckOK. R51 settings338 native scope retained; six-key/refusedcapabilities, widerclient/resourcecost open.",
    "spec": [
     {
-     "label": "Native acquisition / pending composition",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06"
+     "label": "R54 cumulative / native scope limits",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
@@ -836,7 +836,7 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "Accepted R49 bounded HTTP/frame proof remains. NEXT settings/replica lanes are not accepted; actual replica characterization confirms a FAILED exclusive-history guarantee. Full M3 still awaits complete M1/M2.",
+   "title": "R54 accepts bounded cumulative settings/acquisition/selected owner policy. Replica/clock acceptance remains separate; the measured exclusive-history gap is not remedied by this composition. Full M3 still awaits complete M1/M2.",
    "ref": "R54 localcumulative35903069 B338+A+C17f accepted full7144/80pending/0failure/browser684/settings12/freshprcheckOK. NativeR51-R53/historyR49R50 unchanged. No clock/profile2eejoin or milestone promotion.",
    "depends": [
     "ST-PG",
@@ -846,8 +846,8 @@
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
     {
-     "label": "Native acquisition / pending composition",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06"
+     "label": "R54 cumulative / native scope limits",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "Immutable failed replica-history characterization",
@@ -916,8 +916,8 @@
    "ref": "R53 selected native17f and R54 cumulative35903069 accepted full7144/80pending/0failure/browser684/settings12/prcheckOK. Explicit ownerPolicy transaction REST37 only; DELETErefused/mgmtAuthinjected; humanissuerrefresh/fullcatalogue/existinggrantclamping/productionlistener open, R48readers unchanged.",
    "spec": [
     {
-     "label": "Native acquisition / pending composition",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06"
+     "label": "R54 cumulative / native scope limits",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "R48 bounded local data-token API acceptance",
@@ -1033,7 +1033,7 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "Private allocation accepted / join pending",
+   "short": "REST allocation accepted / profile prep pending",
    "title": "R52 native and R54 cumulative composition accept private acquisition allocation behind caller policies. No common revision, stronger snapshot or multitenant evaluator guarantee.",
    "check": "Nativee5fe0b5e full7080/80pending/0failure, prior same-head browser684/prcheckOK; acquisition14/concurrency4, six controls/restored14/4 and caller4/reused-target2fail/restored4.",
    "depends": [
@@ -1043,8 +1043,8 @@
    "ref": "R54 cumulative35903069 accepted full7144/80pending/0failure/browser684/prcheckOK. R52 nativee5 scope unchanged; independentprofile2ee newruntime38/full/browser/prcheckUNMEASURED, no RESTjoin.",
    "spec": [
     {
-     "label": "Native acquisition / pending composition",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06"
+     "label": "R54 cumulative / native scope limits",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
