@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "audience": "contributor-facing",
+  "captured_at_utc": "2026-11-06T18:01:41Z",
+  "status": "bounded independent profile acceptance passed",
+  "source": {
+    "application_commit": "2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35",
+    "independent_profile_base": "5173864da1835da7aecf1f73121b28463f6a6a70",
+    "official_dev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+    "rest_helper_source_commit": "ee480a96f8ce481c0fcbfb202a0fc0afeaade032",
+    "shared_helper_blob": "3a97307af1e749e98b99f2955182e6844c331441",
+    "lock_sha256": "74c52ff603dc82e45717bd2b8618e515c76486f49ca4373db420911ad0641119",
+    "changed_files": [
+      "lib/data/private-acquisition.js",
+      "lib/data/views/index.js"
+    ],
+    "related_pr": 8891,
+    "rest_pr_joined": false,
+    "default_role_or_subscriber_changed": false
+  },
+  "instruments": {
+    "alignment_commits": [
+      "de54fd05e1f2e57dd36e6cf3a6be11c453994dc1",
+      "60776e0859527c248ff24d041d65c56805f0a7bc"
+    ],
+    "gate": "tools/queue/gates/multitenant-next-slices.js",
+    "gate_blob": "385ed9775168defd07f6d2d5708a5d0b5a366539",
+    "broad_runner": "tools/lab/multitenant-rest-preview/owned.js",
+    "broad_runner_blob": "1051550d9a47053633042c221926968c86802f5f",
+    "docker_audit_commit": "37242d950e79972fa512db8ff72fa1a049ad6d87",
+    "provenance_note": "Both listed alignment commits contain identical gate and broad-runner blobs; the QMS document fast-forward did not change effective instrument bytes.",
+    "suite": "profile",
+    "dependency_selection_environment": [
+      "NS_REST_GATE_REPO",
+      "NS_REST_GATE_DEPENDENCIES",
+      "CRM_REST_WORKTREE"
+    ],
+    "private_environment_values_omitted": true
+  },
+  "runtime": {
+    "versions": {
+      "node": "v22.23.4",
+      "postgres": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)",
+      "mongo": "8.0.34",
+      "vault": "2.2.1"
+    },
+    "timezone": "UTC",
+    "shuffle_seed": "41574423920",
+    "scope_note": "The evaluator uses MongoDB. PostgreSQL and Vault are outer services supplied by the general broad runner; their presence is not PostgreSQL evaluator acceptance."
+  },
+  "measurements": {
+    "archived_profile": {
+      "passing": 38,
+      "pending": 0,
+      "failing": 0,
+      "exit": 0
+    },
+    "controls": [
+      {
+        "control": "http",
+        "mechanism": "Suppress the existing physical write-trigger subscriber during actual HTTP entry mutations.",
+        "assertion": "post refreshes one coalesced retained cycle",
+        "passing": 0,
+        "failing": 1,
+        "semantic_failure": true,
+        "exit": 1
+      },
+      {
+        "control": "frame-clinical",
+        "mechanism": "Alter the shipping clinical setter output on the selected current-reading cohort.",
+        "assertion": "next actual trigger observes entries B",
+        "passing": 0,
+        "failing": 1,
+        "semantic_failure": true,
+        "exit": 1
+      },
+      {
+        "control": "frame-retention",
+        "mechanism": "Clear the retained successful result when a selected materialization callback fails after real rows arrive.",
+        "assertion": "failed materialization preserves the previous timestamp and clinical properties",
+        "passing": 0,
+        "failing": 1,
+        "semantic_failure": true,
+        "exit": 1
+      }
+    ],
+    "restored_archived_profile": {
+      "passing": 38,
+      "pending": 0,
+      "failing": 0,
+      "exit": 0
+    },
+    "full_nonbrowser": {
+      "passing": 6690,
+      "pending": 3,
+      "failing": 0,
+      "exit": 0,
+      "tiers": {
+        "unit": 2081,
+        "dom": 205,
+        "dependency": 368,
+        "core": 319,
+        "harness": 92,
+        "integration": 3607,
+        "stress": 18
+      },
+      "pending_by_tier": {
+        "dependency": 2,
+        "integration": 1
+      }
+    },
+    "fresh_default_browser": {
+      "passing": 684,
+      "pending": 0,
+      "failing": 0,
+      "exit": 0,
+      "scope": "Default configured browser tier; no complete cross-engine matrix claim."
+    },
+    "source_checks": {
+      "changed_file_eslint": "pass, no findings",
+      "test_files": 456,
+      "tiers": 8,
+      "tier_check": "pass",
+      "write_boundary_adapters": 9,
+      "write_boundary_check": "pass",
+      "whitespace": "pass",
+      "private_install_and_build": "completed"
+    },
+    "final_prcheck": {
+      "result": "OK",
+      "fresh_official_dev_already_contained": true,
+      "tested_head_unchanged": true,
+      "source_clean": true
+    },
+    "count_scope": "Campaigns overlap; do not add them as independent coverage."
+  },
+  "cleanup": {
+    "serialized_runtime_campaigns": 7,
+    "captured_containers": 11,
+    "captured_volumes": 20,
+    "all_captured_absent": true,
+    "per_campaign": [
+      {
+        "campaign": "archived-positive",
+        "captured_containers": 1,
+        "captured_volumes": 2,
+        "all_captured_absent": true
+      },
+      {
+        "campaign": "actual-trigger-control",
+        "captured_containers": 1,
+        "captured_volumes": 2,
+        "all_captured_absent": true
+      },
+      {
+        "campaign": "clinical-control",
+        "captured_containers": 1,
+        "captured_volumes": 2,
+        "all_captured_absent": true
+      },
+      {
+        "campaign": "retention-control",
+        "captured_containers": 1,
+        "captured_volumes": 2,
+        "all_captured_absent": true
+      },
+      {
+        "campaign": "archived-restored",
+        "captured_containers": 1,
+        "captured_volumes": 2,
+        "all_captured_absent": true
+      },
+      {
+        "campaign": "all",
+        "captured_containers": 3,
+        "captured_volumes": 5,
+        "all_captured_absent": true
+      },
+      {
+        "campaign": "browser",
+        "captured_containers": 3,
+        "captured_volumes": 5,
+        "all_captured_absent": true
+      }
+    ],
+    "method": "Record successful detached container IDs and mount volume names before cleanup; augment removal only for known current IDs; independently require explicit missing-resource responses after cleanup.",
+    "scope": "Only exact captured IDs. Unknown resources, named or attached resources, and failed creates without returned IDs are outside this audit; no universal zero-leak claim."
+  },
+  "privacy": {
+    "data": "Synthetic fixtures only.",
+    "public_capture": "Aggregate counts, source and dependency hashes, versions and assertion descriptions only.",
+    "excluded": "Machine paths, container and volume identities, service addresses, raw runtime configuration, credential values, document bodies and traces.",
+    "per_slot": "One exclusive serialized profile slot; every captured campaign resource was checked after its own cleanup before advancing."
+  },
+  "preserved_boundaries": [
+    "Private per-acquisition helper and materialized targets remain distinct; caller cache and bus are not inherited.",
+    "Independent evaluateCycle definition and export retained; REST helper bytes and views allocation hunks match exactly.",
+    "Existing bounds, future-record handling, statistics failures, typed-identity union, evaluation cadence and retained-result policies unchanged.",
+    "Actual selected concurrent-read schedule remains mixed entries A and treatments B, followed by B and B on a real trigger.",
+    "Selected callback failure is injected after real rows arrive; it is not a real database-outage test."
+  ],
+  "limits": [
+    "No common database revision, stronger snapshot isolation, settings or plugin version key guarantee.",
+    "No logical subscriber switch, executable v1 or socket admission, default-role change, or REST branch join.",
+    "Teardown checks establish no late fake-provider delivery; they do not establish database cancellation, absence of internal handoff, or immutable closed state.",
+    "Complete clinical and writer cohorts, live statistics freshness, runtime cost, durable notification state and multitenant recovery remain open.",
+    "No milestone promotion, release placement or production enablement. All commits remain local at capture; no push by this lane."
+  ],
+  "evidence_grade": {
+    "runtime_measurements": "reproduced",
+    "policy_preservation": "read-derived exact source equivalence, supported by the scoped runtime checks"
+  }
+}
