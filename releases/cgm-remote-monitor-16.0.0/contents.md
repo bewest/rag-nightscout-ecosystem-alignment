@@ -1617,3 +1617,10 @@ M4 reserves no R59. Local ownership/transfer: `externals/work/HANDOFF-codex-m4-2
 The 863 combined capture and earlier failed/provenance controls remain unchanged. No classifier
 waiver, application push or M0–M6 promotion was made by this lane. Root owns the next R record
 allocation and publication. Local transfer: `externals/work/HANDOFF-codex-m4-20261106.md`.
+
+
+### Update — B7 design direction adopted (2026-11-06)
+
+| Scope | Decision and evidence | Remaining boundary |
+|---|---|---|
+| B7 / `MT-RUNTIME-PLAN` | Maintainer adopted the [durable delivery design direction](decisions.md#b7-durable-multitenant-delivery-2026-11-06), with scalability/performance experiments informing implementation. The [contract](../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) defines correctness and capacity questions. This is a decision record, not a new runtime measurement. | Distributed recovery and capacity remain UNMEASURED; queue state stays in-progress/no-gate. No operator-visible behavior, default, milestone or release admission changes. Batching-plan and queue edits remain with their active session owners. |

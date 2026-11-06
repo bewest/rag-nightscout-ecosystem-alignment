@@ -217,6 +217,12 @@ contracts; future schema upload does not waive current compatibility testing.
 | Amend D22: new tokens are verified locally with public keys; non-exportable private signing keys stay in the secrets component. PostgreSQL holds current tenant/session/credential/grant/policy and key-acceptance state. Cache public keys, never stale grants. | maintainer, 2026-11-05, owner-authority chat | `MT-SECRETS-CONTRACT`, `T30-WIRING` | Ordinary new-token operations do not call Vault. Existing tokens may continue during Vault outage only with trusted cached keys and current PostgreSQL authority; issuance/secret operations refuse; unavailable authority refuses reads/writes. Ed25519 is the prototype, pending production JOSE/provider interoperability. |
 | Distinguish first-party credential records from recoverable secrets: use PostgreSQL metadata/one-way verifiers where compatible; retain encrypted legacy derivation material while needed. Vendor/cloud/connect/APNs values remain recoverable by authorized consumers under the secrets component. | maintainer, 2026-11-05, owner-authority chat | `MT-SECRETS-CONTRACT`, `T30-WIRING` | Transit protects keys; tenant-bound ciphertext/references remain in PostgreSQL. JWTs are credentials, not signing keys. No change to single-tenant MongoDB/legacy defaults, provider KV selection, release admission or production enablement. |
 
+## B7 durable multitenant delivery (2026-11-06)
+
+| decision | who, when | queue | as it stands |
+|---|---|---|---|
+| **Adopt B7's durable multitenant delivery design direction and executable entry bar.** Use tenant-local durable checkpoints, commit-coupled ordering, at-least-once replay and idempotent consumers. Run experiments to inform scalability/performance; per-tenant costs are an architectural hypothesis, not a measured capacity. | maintainer, 2026-11-06, B7 approval chat ("let's approve as appropriate"; experiments should inform scalability/performance) | `MT-RUNTIME-PLAN` | [Contract and experiment questions](../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments). Design direction adopted; recovery controls and workload-specific capacity remain UNMEASURED. Notification/checkpoint crash boundaries and intermediate-transition retention require explicit experiments. Provider selection, hard-delete recovery, multi-node failover, default enablement, M5/M6 promotion and release admission remain separate. |
+
 ## Query layer
 
 | decision | who, when | queue | as it stands |
