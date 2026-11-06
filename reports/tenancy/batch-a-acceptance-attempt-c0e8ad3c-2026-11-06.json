@@ -1,0 +1,190 @@
+{
+  "date": "2026-11-06",
+  "classification": "reproduced partial acceptance; stopped on expanded-corpus setup failure; not ready",
+  "applicationHead": "c0e8ad3c562f5d6df3652bf2ba8d161fc1f69cf6",
+  "branch": "codex/data-control-client-batch-20261106",
+  "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "upstreamFetchMerge": "already up to date before acceptance",
+  "versions": {
+    "node": "v22.23.4",
+    "postgres": "16.15",
+    "mongo": "8.0.34",
+    "vault": "2.2.1"
+  },
+  "shuffleSeed": "41574423920",
+  "tiers": {
+    "unit": {
+      "files": 150,
+      "passing": 2229,
+      "pending": 0,
+      "failing": 0
+    },
+    "dom": {
+      "files": 19,
+      "passing": 205,
+      "pending": 0,
+      "failing": 0
+    },
+    "dependency": {
+      "files": 32,
+      "passing": 368,
+      "pending": 2,
+      "failing": 0
+    },
+    "core": {
+      "files": 26,
+      "passing": 319,
+      "pending": 0,
+      "failing": 0
+    },
+    "harness": {
+      "files": 9,
+      "passing": 93,
+      "pending": 0,
+      "failing": 0
+    },
+    "integration": {
+      "files": 234,
+      "passing": 3975,
+      "pending": 79,
+      "failing": 0
+    },
+    "stress": {
+      "files": 1,
+      "passing": 18,
+      "pending": 0,
+      "failing": 0
+    }
+  },
+  "full": {
+    "passing": 7207,
+    "pending": 81,
+    "failing": 0,
+    "exit": 0
+  },
+  "browser": {
+    "files": 41,
+    "passing": 684,
+    "pending": 0,
+    "failing": 0,
+    "exit": 0
+  },
+  "corpus": {
+    "selectedSuites": 34,
+    "startedAt": "2026-11-06T20:56:38.071Z",
+    "finishedAt": "2026-11-06T21:00:19.557Z",
+    "status": 2,
+    "signal": null,
+    "passing": 432,
+    "pending": 1,
+    "failing": 1,
+    "scriptExit": 1,
+    "remaining": [],
+    "pendingReason": "explicitly disabled HTTP performance benchmark",
+    "failure": {
+      "file": "tests/fixtures/tenant-commit-clock-port.js",
+      "line": 27,
+      "phase": "before all",
+      "message": "A disposable test database must be explicitly selected",
+      "bodyCompleted": false
+    }
+  },
+  "readDerivedMechanism": {
+    "runner": "scripts/test-multitenant.js:211 uses /postgres in the shared admin URI",
+    "fixture": "tests/fixtures/tenant-commit-clock-port.js:27 requires /test/i in URL pathname"
+  },
+  "cleanup": {
+    "all": {
+      "observedContainersVerifiedAbsent": 22,
+      "observedMountedVolumesVerifiedAbsent": 32,
+      "attributedUnattachedVolumesRemovedByAudit": 20
+    },
+    "browser": {
+      "observedContainersVerifiedAbsent": 3,
+      "observedMountedVolumesVerifiedAbsent": 5,
+      "attributedUnattachedVolumesRemovedByAudit": 0
+    },
+    "corpus": {
+      "observedContainersVerifiedAbsent": 34,
+      "observedMountedVolumesVerifiedAbsent": 51,
+      "attributedUnattachedVolumesRemovedByAudit": 39
+    }
+  },
+  "volumeBaseline": 462,
+  "volumeAfterAudit": 462,
+  "runtimeReleased": "2026-11-06T21:01:10Z",
+  "skipped": {
+    "foundation": "UNMEASURED; mismatch stop before execution",
+    "finalPrcheck": "UNMEASURED; mismatch stop before execution"
+  },
+  "limits": [
+    "Full, browser and corpus overlap; counts must not be summed.",
+    "Pending cases are not passing tests.",
+    "No source repair, retry, bypass, push or milestone promotion in this lane.",
+    "M4 client and B4a parent controls are separate captures, not rerun or claimed here.",
+    "Cleanup covers observed current-run mounts; unknown volumes preserved.",
+    "Node 26 CI, performance, mixed writers, arbitrary BSON import, HA and operational readiness not measured here."
+  ],
+  "localArtifacts": {
+    "all-c0e8ad3c.log": {
+      "sha256": "72c4c659f7c4741e20707e4c331a582515268330a71c3b1fbee66c64900f22c9",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/all-c0e8ad3c.log"
+    },
+    "browser-c0e8ad3c.log": {
+      "sha256": "6b3e4237102c7d2c9339def2aa93db0e7cd799b568e13287188247fd1b8bb969",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/browser-c0e8ad3c.log"
+    },
+    "build-c0e8ad3c.log": {
+      "sha256": "147130cebb43f51958f47ac8d9e81d5fe91fbf864fd8308b30235656c52dcb48",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/build-c0e8ad3c.log"
+    },
+    "corpus-c0e8ad3c.json": {
+      "sha256": "f02722b21f78d650fa2b77500d3badca21f80d43f4e8d9b28fa3f026fef3a030",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/corpus-c0e8ad3c.json"
+    },
+    "corpus-c0e8ad3c.log": {
+      "sha256": "36d986054a36dce5a24f9f017c400496ea03140960bc2bf73c33c6f9897e29ba",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/corpus-c0e8ad3c.log"
+    },
+    "inventory-c0e8ad3c-host.log": {
+      "sha256": "28e3c59ed4847479ceb64316b238474fa6dfe0b8d75b6a1bb62b0ff93d582fd8",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/inventory-c0e8ad3c-host.log"
+    },
+    "inventory-c0e8ad3c.log": {
+      "sha256": "b8ee762c22a333ae2203e2142d41ec1d44eb7bfd6a8601f6b1be9ea7e0861212",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/inventory-c0e8ad3c.log"
+    },
+    "lint-c0e8ad3c.log": {
+      "sha256": "d806f11513eb4591b2ac13ff5c6654c008cd7a46d3b51912c0bfb6f95209aa8d",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/lint-c0e8ad3c.log"
+    },
+    "resources-all-c0e8ad3c-audit.json": {
+      "sha256": "7e45bf2c60f1946536e9a7a3e54681c94adde87048b836b62b5dc49c072b1ea0",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-all-c0e8ad3c-audit.json"
+    },
+    "resources-all-c0e8ad3c.json": {
+      "sha256": "e8ce4eb54f1e4f365213ebd6a7fb801e212ed0ba92ce25a8fdfe862f82fe9a7b",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-all-c0e8ad3c.json"
+    },
+    "resources-browser-c0e8ad3c-audit.json": {
+      "sha256": "b1346a51083541e433fcf7a3f8be77b7de0c7d453a05aea5820cf1ba9f58d514",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-browser-c0e8ad3c-audit.json"
+    },
+    "resources-browser-c0e8ad3c.json": {
+      "sha256": "168f4df5148ea5087e55d7d86e19822adfa49893d5f41089c5725ee028db25c9",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-browser-c0e8ad3c.json"
+    },
+    "resources-corpus-c0e8ad3c-audit.json": {
+      "sha256": "841579834a71a48632cce3650db6db79994142f0ec1b4b7e90e29763b5d42749",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-corpus-c0e8ad3c-audit.json"
+    },
+    "resources-corpus-c0e8ad3c.json": {
+      "sha256": "90d19513b8a07b1cc7c9fb48e335f18c77cf50197cbeea7b4804b6c3d1c8becc",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/resources-corpus-c0e8ad3c.json"
+    },
+    "tiers-c0e8ad3c.log": {
+      "sha256": "b0b931852db6b85f965c38a1157a047a344a7c5445e49efbd9d42e335ff30fa3",
+      "localPath": "externals/work/b5-batch-a-acceptance-20261106/tiers-c0e8ad3c.log"
+    }
+  }
+}
