@@ -89,6 +89,13 @@ to the table above; they are not line references into the joined source.
    `35903069` it carries neither (`write-intent.js:4676-4677`); D-EVENT question
    3 already reserved "later the tenant". A consumer that receives an event
    without a stamp treats it as a wake-up only and reads from its checkpoint.
+   **Built** on lane `codex/event-payload-20261106` (head `4b5edf02`, three commits
+   over `65bb8456`, unpushed): `withCommitEvents.write` captures the tenant from the
+   bound scope and the stamp from a new `connection.currentStamp()` on the clock
+   decorator when the nested write resolves; settle, Mongo and clock-off carry null.
+   Unit 9 passing, controls red for a null stamp (7 / 2) and a remembered tenant (6 / 3),
+   focused `clock` run 28 / 1 / 0; the Mongo-gated case is UNMEASURED. The figures are
+   the lane's own (`HANDOFF-event-payload-20261106.md`), not re-run here.
 4. Commit coupling: the stamp is allocated inside the data transaction and held
    to `COMMIT` (clock proof plan "Proposed invariant"; `postgres-write-clock.js:52`
    per the HTTP report, **read-derived** at the clock head); publication
@@ -279,6 +286,7 @@ These rows are the gate `MT-RUNTIME-PLAN` lacks today; the queue item keeps
 | whether configuration and grant rows appear on the feed | **deferred**; §5 makes consumers correct without it |
 | tombstones for hard deletes | **deferred**; §4 keeps hard deletes outside the spine |
 | the storage shape and retention of per-tenant ack/snooze rows | separate gate per the roadmap; the writer is settled by D23 (`api`, via the `realtime` forward) |
+| which floor the event carries when an outer transaction allocates more stamps after a nested write resolved: the write's own floor (as built, at most the final floor) or the transaction's final floor (readable from the clock state in the after-commit callback) | **open for the contract owner**; the built behavior is the write's own floor, flagged by the payload lane and not changed. Either choice keeps §3 ordering, because both floors commit together; the difference is only which stamp names the event |
 | anything about single-tenant MongoDB | out of scope; D4 and the D-EVENT scope decision keep the in-process bus there |
 | M5/M6 promotion, RC admission, default enablement | **no**; this is a design acceptance input for batch B7, nothing more |
 
