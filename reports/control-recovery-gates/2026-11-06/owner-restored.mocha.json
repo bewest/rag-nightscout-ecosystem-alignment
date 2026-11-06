@@ -1,0 +1,234 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 12,
+    "passes": 12,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-11-06T22:08:07.584Z",
+    "end": "2026-11-06T22:08:10.365Z",
+    "duration": 2781
+  },
+  "tests": [
+    {
+      "title": "appends current display metadata without rewriting the applied candidate or inventing imported names",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) appends current display metadata without rewriting the applied candidate or inventing imported names",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 210,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "uses tenant anonymous defaults and enforces the no-anonymous-write floor",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) uses tenant anonymous defaults and enforces the no-anonymous-write floor",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 14,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "unions the tenant subject roles with configured defaults and isolates overlapping subject IDs",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) unions the tenant subject roles with configured defaults and isolates overlapping subject IDs",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "keeps trusted root distinct from uploader subjects and requires tenant configuration first",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) keeps trusted root distinct from uploader subjects and requires tenant configuration first",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "observes committed role revocation and grant changes from an independent worker",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) observes committed role revocation and grant changes from an independent worker",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "refuses missing authority, invalid records, and cross-tenant role links",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) refuses missing authority, invalid records, and cross-tenant role links",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "proves forced RLS hides foreign rows and disabling it exposes the negative-control row",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) proves forced RLS hides foreign rows and disabling it exposes the negative-control row",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 24,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "bounds old subject grants on fresh selected PostgreSQL snapshots across independent pools",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) bounds old subject grants on fresh selected PostgreSQL snapshots across independent pools",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 470,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "fails selected readers closed on missing, mismatched, wildcard and unsupported current policy",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) fails selected readers closed on missing, mismatched, wildcard and unsupported current policy",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 221,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "requires read-only forced-RLS current owner policy and refuses authority outages",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) requires read-only forced-RLS current owner policy and refuses authority outages",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 69,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "enforces selected current ceilings through actual signed-token HTTP on separate pools",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) enforces selected current ceilings through actual signed-token HTTP on separate pools",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 56,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "survives idle-connection termination and rejects the next authority query",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) survives idle-connection termination and rejects the next authority query",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 392,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "appends current display metadata without rewriting the applied candidate or inventing imported names",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) appends current display metadata without rewriting the applied candidate or inventing imported names",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 210,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "uses tenant anonymous defaults and enforces the no-anonymous-write floor",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) uses tenant anonymous defaults and enforces the no-anonymous-write floor",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 14,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "unions the tenant subject roles with configured defaults and isolates overlapping subject IDs",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) unions the tenant subject roles with configured defaults and isolates overlapping subject IDs",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "keeps trusted root distinct from uploader subjects and requires tenant configuration first",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) keeps trusted root distinct from uploader subjects and requires tenant configuration first",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "observes committed role revocation and grant changes from an independent worker",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) observes committed role revocation and grant changes from an independent worker",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "refuses missing authority, invalid records, and cross-tenant role links",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) refuses missing authority, invalid records, and cross-tenant role links",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "proves forced RLS hides foreign rows and disabling it exposes the negative-control row",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) proves forced RLS hides foreign rows and disabling it exposes the negative-control row",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 24,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "bounds old subject grants on fresh selected PostgreSQL snapshots across independent pools",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) bounds old subject grants on fresh selected PostgreSQL snapshots across independent pools",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 470,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "fails selected readers closed on missing, mismatched, wildcard and unsupported current policy",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) fails selected readers closed on missing, mismatched, wildcard and unsupported current policy",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 221,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "requires read-only forced-RLS current owner policy and refuses authority outages",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) requires read-only forced-RLS current owner policy and refuses authority outages",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 69,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "enforces selected current ceilings through actual signed-token HTTP on separate pools",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) enforces selected current ceilings through actual signed-token HTTP on separate pools",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 56,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "survives idle-connection termination and rejects the next authority query",
+      "fullTitle": "tenant authorization current state (disposable PostgreSQL) survives idle-connection termination and rejects the next authority query",
+      "file": "/tmp/ns-next-slice-9E5iYa/tests/tenant-authorization-postgres.integration.test.js",
+      "duration": 392,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ]
+}

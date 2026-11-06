@@ -1,0 +1,6 @@
+gate: next-slice durable-replay
+  tree 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+Private bounded artifacts: <alignment-worktree>/externals/work/control-recovery-gate-artifacts/durable-replay-ukFWCZ
+{"suites":1,"tests":7,"passes":7,"pending":0,"failures":0,"start":"2026-11-06T22:09:04.875Z","end":"2026-11-06T22:09:07.822Z","duration":2947}
+PASS bounded durable-replay; activation, management and milestone acceptance remain separate
+Owned cleanup diagnostics: <alignment-worktree>/externals/work/cleanup-diagnostics/next-slice-4Xr5dD/containers.json

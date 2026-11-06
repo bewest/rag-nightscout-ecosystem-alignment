@@ -1,0 +1,54 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-06T22:08:42.820Z",
+    "end": "2026-11-06T22:08:44.141Z",
+    "duration": 1321
+  },
+  "tests": [
+    {
+      "title": "bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "file": "/tmp/ns-next-slice-ehLDD8/tests/tenant-durable-replay.integration.test.js",
+      "duration": 35,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 2\n\n    at Context.<anonymous> (tests/tenant-durable-replay.integration.test.js:67:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "Expected values to be strictly equal:\n\n1 !== 2\n",
+        "generatedMessage": true,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "1",
+        "expected": "2",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "file": "/tmp/ns-next-slice-ehLDD8/tests/tenant-durable-replay.integration.test.js",
+      "duration": 35,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n1 !== 2\n\n    at Context.<anonymous> (tests/tenant-durable-replay.integration.test.js:67:14)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "Expected values to be strictly equal:\n\n1 !== 2\n",
+        "generatedMessage": true,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "1",
+        "expected": "2",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "passes": []
+}

@@ -1,0 +1,21 @@
+[
+  {
+    "container": "ns-tenant-authority-pg-c5361521b1e48090",
+    "volumeIds": [
+      "5c4a056abde4c5c958c355470fab8c0729302a7a242668ca3940a4f86b31a2e5"
+    ],
+    "containerRemoved": true,
+    "absence": [
+      {
+        "kind": "container",
+        "id": "ns-tenant-authority-pg-c5361521b1e48090",
+        "absent": true
+      },
+      {
+        "kind": "volume",
+        "id": "5c4a056abde4c5c958c355470fab8c0729302a7a242668ca3940a4f86b31a2e5",
+        "absent": true
+      }
+    ]
+  }
+]

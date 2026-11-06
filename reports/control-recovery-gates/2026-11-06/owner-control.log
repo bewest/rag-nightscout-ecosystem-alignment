@@ -1,0 +1,7 @@
+Scratch-only control: owner-reader/intersection
+gate: next-slice owner-reader
+  tree 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+Private bounded artifacts: <alignment-worktree>/externals/work/control-recovery-gate-artifacts/owner-reader-celOkX
+{"suites":1,"tests":1,"passes":0,"pending":0,"failures":1,"start":"2026-11-06T22:06:48.564Z","end":"2026-11-06T22:06:50.385Z","duration":1821}
+CONTROL-INVALID: unexpected assertion symptom
+Owned cleanup diagnostics: <alignment-worktree>/externals/work/cleanup-diagnostics/next-slice-t7LKUQ/containers.json

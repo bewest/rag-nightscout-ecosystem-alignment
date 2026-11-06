@@ -1,0 +1,144 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 7,
+    "passes": 7,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-11-06T22:08:27.121Z",
+    "end": "2026-11-06T22:08:30.019Z",
+    "duration": 2898
+  },
+  "tests": [
+    {
+      "title": "recovers after an actual producer dies after COMMIT before intent publication",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL recovers after an actual producer dies after COMMIT before intent publication",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 153,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "recovers durable projection on a new handle and duplicate wake-up changes nothing",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL recovers durable projection on a new handle and duplicate wake-up changes nothing",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 17,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 45,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "holds one explicit snapshot across pages while a writer overwrites a not-yet-read row",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL holds one explicit snapshot across pages while a writer overwrites a not-yet-read row",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 32,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "forces tenant RLS on checkpoints and grants bookkeeping without clinical writes",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL forces tenant RLS on checkpoints and grants bookkeeping without clinical writes",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rolls back a processed projection and checkpoint together before returning output",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL rolls back a processed projection and checkpoint together before returning output",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 30,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rebuilds an incompatible projection and refuses an incomplete bounded scan",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL rebuilds an incompatible projection and refuses an incomplete bounded scan",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 32,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "recovers after an actual producer dies after COMMIT before intent publication",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL recovers after an actual producer dies after COMMIT before intent publication",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 153,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "recovers durable projection on a new handle and duplicate wake-up changes nothing",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL recovers durable projection on a new handle and duplicate wake-up changes nothing",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 17,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL bootstraps an advanced empty cache and completes typed tied pages then soft deletes",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 45,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "holds one explicit snapshot across pages while a writer overwrites a not-yet-read row",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL holds one explicit snapshot across pages while a writer overwrites a not-yet-read row",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 32,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "forces tenant RLS on checkpoints and grants bookkeeping without clinical writes",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL forces tenant RLS on checkpoints and grants bookkeeping without clinical writes",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rolls back a processed projection and checkpoint together before returning output",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL rolls back a processed projection and checkpoint together before returning output",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 30,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rebuilds an incompatible projection and refuses an incomplete bounded scan",
+      "fullTitle": "dormant durable current-state replay actual PostgreSQL rebuilds an incompatible projection and refuses an incomplete bounded scan",
+      "file": "/tmp/ns-next-slice-bBpJ5Q/tests/tenant-durable-replay.integration.test.js",
+      "duration": 32,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ]
+}

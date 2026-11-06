@@ -1,0 +1,7 @@
+Scratch-only control: durable-replay/identity
+gate: next-slice durable-replay
+  tree 8713395992e07b4dd2cde61ee972e9a15c8ada8c
+Private bounded artifacts: <alignment-worktree>/externals/work/control-recovery-gate-artifacts/durable-replay-bL7yqx
+{"suites":1,"tests":1,"passes":0,"pending":0,"failures":1,"start":"2026-11-06T22:08:42.820Z","end":"2026-11-06T22:08:44.141Z","duration":1321}
+CONTROL-SEMANTIC: typed projection collapsed to one row while two stored identities remain
+Owned cleanup diagnostics: <alignment-worktree>/externals/work/cleanup-diagnostics/next-slice-MuIZbH/containers.json

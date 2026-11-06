@@ -1,0 +1,129 @@
+{
+  "measurement": "reproduced",
+  "date": "2026-11-06",
+  "source": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+  "classifier": "303470b5bad970f17a462c1fc9a1e8c9dfd3e27c",
+  "node": "v22.23.4",
+  "postgres_image_id": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+  "postgres_repo_digest": "postgres@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97",
+  "volumes_before": 462,
+  "volumes_after": 462,
+  "available_gib_after": 218,
+  "runtime_released": "2026-11-06T22:09:12Z",
+  "runs": [
+    {
+      "run": "owner-positive",
+      "measurement": "reproduced",
+      "source": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+      "capture_instrument": "470354eae413c93513e7bb9adc01160cf7ae83ae",
+      "exit": 0,
+      "stats": {
+        "suites": 1,
+        "tests": 12,
+        "passes": 12,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T22:06:31.874Z",
+        "end": "2026-11-06T22:06:34.551Z",
+        "duration": 2677
+      },
+      "mocha_sha256": "a3716d82f34c8bc77af8577af48b19ac5882a3c0edebc355d858594f4e9e2a6e",
+      "classification": "positive"
+    },
+    {
+      "run": "owner-control",
+      "measurement": "reproduced",
+      "source": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+      "capture_instrument": "470354eae413c93513e7bb9adc01160cf7ae83ae",
+      "exit": 1,
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T22:06:48.564Z",
+        "end": "2026-11-06T22:06:50.385Z",
+        "duration": 1821
+      },
+      "mocha_sha256": "d96e8876cd21b6964fc09f576dd390a0b842f731adf72f2ec1cc8d0c305a84d1",
+      "classification": "original classifier rejected Mocha formatting; same report validated offline under303470b5"
+    },
+    {
+      "run": "owner-restored",
+      "measurement": "reproduced",
+      "source": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+      "capture_instrument": "303470b5bad970f17a462c1fc9a1e8c9dfd3e27c",
+      "exit": 0,
+      "stats": {
+        "suites": 1,
+        "tests": 12,
+        "passes": 12,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T22:08:07.584Z",
+        "end": "2026-11-06T22:08:10.365Z",
+        "duration": 2781
+      },
+      "mocha_sha256": "f43523ea389fa6c6239dc07c1d5b885b80038551c21adaf6e8d148589138f386",
+      "classification": "positive"
+    },
+    {
+      "run": "replay-positive",
+      "measurement": "reproduced",
+      "source": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+      "capture_instrument": "303470b5bad970f17a462c1fc9a1e8c9dfd3e27c",
+      "exit": 0,
+      "stats": {
+        "suites": 1,
+        "tests": 7,
+        "passes": 7,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T22:08:27.121Z",
+        "end": "2026-11-06T22:08:30.019Z",
+        "duration": 2898
+      },
+      "mocha_sha256": "f66f0dc6ad38d0912a108e55b2a0cf2e2775846a6506b9b981aed8968274ea65",
+      "classification": "positive"
+    },
+    {
+      "run": "replay-control",
+      "measurement": "reproduced",
+      "source": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+      "capture_instrument": "303470b5bad970f17a462c1fc9a1e8c9dfd3e27c",
+      "exit": 1,
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T22:08:42.820Z",
+        "end": "2026-11-06T22:08:44.141Z",
+        "duration": 1321
+      },
+      "mocha_sha256": "4d75a8b6c51e429d8884b6142dbc7a413d0060053e51f09960978ad3cf357356",
+      "classification": "semantic red"
+    },
+    {
+      "run": "replay-restored",
+      "measurement": "reproduced",
+      "source": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+      "capture_instrument": "303470b5bad970f17a462c1fc9a1e8c9dfd3e27c",
+      "exit": 0,
+      "stats": {
+        "suites": 1,
+        "tests": 7,
+        "passes": 7,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T22:09:04.875Z",
+        "end": "2026-11-06T22:09:07.822Z",
+        "duration": 2947
+      },
+      "mocha_sha256": "3119cfb4ee0ba72f89841569e1bb2011ccb02ca64c9d88ac0d74fbce495cc922",
+      "classification": "positive"
+    }
+  ]
+}
