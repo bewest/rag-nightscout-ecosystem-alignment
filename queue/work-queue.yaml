@@ -1119,9 +1119,9 @@ items:
     parcel: phase0
     repo: cgm-remote-monitor
     branch: ""
-    base: origin/dev@a8888f0d
+    base: official/master@c6a0d8ed
     worktree: ""
-    state: ready-to-push
+    state: released
     blast_radius: >
       Operator-facing text only, in three documents this repo owns -
       releases/cgm-remote-monitor-15.0.9/release-notes.md,
@@ -1148,18 +1148,24 @@ items:
           17 checks. The deliverable is prose, and the prose has to match the
           code: a rename is cosmetic - checkToken keeps the LAST dash-segment of
           the presented token and matches it against subject.digest, which is
-          getSubjectHash(subject._id); the name reaches only the abbrev at the
+          getSubjectHash of the _id; the name reaches only the abbrev at the
           front, which is never read back. An operator who renamed and stopped
           would believe a leaked credential was retired while it still
-          authenticated. The gate pins the CODE property on origin/dev AND the
-          bf/auth worktree, so the prose cannot drift from it in either
-          direction, then checks each of the four documents for what must be
-          said and for sentences known to be wrong (rename as a rotation; the
-          stored copy discarded on load). Non-vacuity, reproduced 2026-09-16:
-          restoring the rename row to the release notes -> 1 failing; restoring
-          the PR body's "discarded when Nightscout next loads it" -> 2 failing;
-          restoring the rename option to report 2.3 -> 1 failing; empty
-          QUEUE_GATE_ROOT -> 17 failing.
+          authenticated. The gate pins the CODE property on official/master
+          (15.0.9, c6a0d8ed) AND official/dev (where #8758 respelled the
+          derivation as getSubjectHash(readContract.identifier(subject._id))),
+          so the prose cannot drift from it in either direction, then checks
+          each of the four documents for what must be said and for sentences
+          known to be wrong (rename as a rotation; the stored copy discarded on
+          load). Re-pinned 2026-11-06: the bf/auth worktree it read until then
+          was removed on 2026-10-26, and the 15.0.9 notes were rewritten as a
+          changelog on 2026-10-21 (9ed4a5441), so the notes checks now hold the
+          shipped text (the #8754 Security entry and the Upgrade note, both
+          saying readable copies remain until the tokens are rotated; no
+          rename offered as a way to change a token). Control re-run
+          2026-11-06 (bf17-rename-row-control.sh): restoring the rename row
+          and the PR body's "discarded when Nightscout next loads it" -> 4
+          failing of 17; gate 17/0 on the tree as committed.
       - no-gate: >
           No detector script, by decision (maintainer, 2026-09-16). A count is
           not remediation - remediation is rotation, and rotation is an operator
@@ -1181,7 +1187,20 @@ items:
       - releases/cgm-remote-monitor-15.0.9/release-notes.md
       - reports/phase0-pr-bodies/bf-auth.md
     notes: >
-      Ready: the text is written and the gate passes. The release notes
+      2026-11-06: released. The text shipped with 15.0.9 on 2026-10-21 (tag
+      v15.0.9, master c6a0d8ed). What shipped in the release notes is the
+      changelog form (9ed4a5441, rewritten at the maintainers' request the
+      same day): the #8754 Security entry and the Upgrade note both say that
+      copies written by earlier releases remain in the database until the
+      tokens are rotated. The rotation table, with its two real options and
+      the warning that a rename is not one of them, did not survive the
+      rewrite; the PR body of #8754 (reports/phase0-pr-bodies/bf-auth.md,
+      public on GitHub), the source report and the register still carry it,
+      and the gate holds them to it. The item's claim was stale from
+      2026-10-21 (shipped) and its gate red from 2026-10-26 (worktree
+      removed) until this re-pin; CLAIM DIVERGES was measured 2026-11-06.
+
+      Written 2026-09-16: ready, the text is written and the gate passes. The release notes
       (releases/cgm-remote-monitor-15.0.9/release-notes.md), the PR body
       (reports/phase0-pr-bodies/bf-auth.md) and the source report state
       both required facts, and bf17-remediation-note.js guards them. It
@@ -7223,9 +7242,9 @@ items:
     parcel: tenancy
     repo: cgm-remote-monitor
     branch: seam/t1-2-storage-interface
-    base: origin/chore/nightscout-modernization@b1bdaca0
+    base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: blocked
+    state: closed
     blast_radius: >
       16 seam branches. GT1 measured the chain as LINEAR - all 15 others are
       ancestors of seam/t1-2-storage-interface (81a1f6ce), and that still holds.
@@ -7255,18 +7274,41 @@ items:
     semver_reason: pre-release rebase mechanics
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization seam/t1-2-storage-interface
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 84fac457 official/dev
         kind: static
         describe: >
-          the seam tip has not fallen behind its base. Red since 2026-09-21, when
-          dev was merged into the modernization branch directly (e3b22034),
-          outside any release-train step.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/nightscout-modernization seam/t1-2-storage-interface >/dev/null
+          official/dev contains #8861's merge 84fac457 (ST-FILTER-READS: the
+          filter AST, interface methods and API v1 reads, re-cut on dev from
+          the seam chain; merged 2026-10-27). This is how the chain reached
+          dev instead of by a refresh. Red if dev is rewritten without it.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/dev
         kind: static
         describe: >
-          the seam trial-merges into its base cleanly. Red since 2026-09-21 - 19
-          conflicting paths, enumerated in blast_radius.
+          official/dev contains #8863's merge 9668b179 (ST-WRITES: API v1,
+          authorization and socket writes through the storage interface,
+          labelled by source; merged 2026-10-27). Red if dev is rewritten
+          without it.
       - no-gate: >
+          Closed 2026-11-06 as superseded, not done. The chain was never
+          refreshed: measured 2026-11-06, seam/t1-2-storage-interface
+          81a1f6ce is 1010 behind and 50 ahead of official/dev 4a482627
+          (`git rev-list --left-right --count
+          official/dev...seam/t1-2-storage-interface`) and its trial merge
+          conflicts across the tests and storage modules; the branch this
+          item's two former gates named, origin/chore/nightscout-modernization,
+          no longer exists in the checkout (cut 5 merged into dev as #8605 on
+          2026-10-26 and the branch was retired), so both gates were red for a
+          missing ref, not for the property they described. Nothing is left
+          to refresh: the seam's single-tenant content went to dev as slices
+          re-cut on dev (#8861, #8863, then the write step #8874 and #8886
+          under WC-STEP-PATCH), decided by the maintainer on 2026-10-27
+          (release allocation Q12 and section 3.5; 16.0.0 decisions.md row
+          "The storage seam slices ... go into 16.0.0 if feasible"), and the
+          multitenant remainder continues on dev under ST-PG, T30-* and the
+          ARCH-SEAM-* items. The chain at 81a1f6ce stays as reference for the
+          bulkUpsert modes and the T3.0/T4.4a prototypes; the rehearsal record
+          and the 19/50-conflict classification below are historical.
+
           What the 19 conflicts cost to resolve is unmeasured: the conflict COUNT
           is measured, the resolution is not, and RT-REBASE shows that conflict
           counts grow quickly while nobody re-runs them. Three of the nineteen
@@ -7284,11 +7326,20 @@ items:
           origin/dev...origin/chore/nightscout-modernization`). That is a
           re-basing decision, not a merge-conflict question. Now RT-PROPAGATION
           (2026-09-27).
-    blocks_on: [RT-REBASE]
+    blocks_on: []
     evidence:
       - docs/60-research/remedial/gt1-branch-inventory-2026-09-15.md
       - docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md
     notes: >
+      2026-11-06: closed, superseded. RT-REBASE (its only blocker) has been
+      merged-upstream since 2026-10-26, and the refresh it waited for was
+      overtaken by the maintainer's 2026-10-27 decision to carry the seam into
+      16.0.0 as slices re-cut on dev rather than by rebasing the 16-branch
+      chain; see the no-gate above for the measurement and the records. Items
+      that still blocked on this one (WRITE-CONTRACT, BFQ-66, HUB-REG-CRM-SEAM)
+      had the edge removed the same day; their real prerequisites are on dev.
+      The crm-seam and crm-seam-replay worktrees are left in place (rule 5).
+
       2026-10-26: cut 5 merged into dev (#8605, 47723cda; RT-3), and
       RT-REBASE, which this item is blocked on, is merged-upstream. The base
       named here, chore/nightscout-modernization b1bdaca0, is therefore an
@@ -7363,10 +7414,10 @@ items:
     parcel: tenancy
     repo: cgm-remote-monitor
     branch: ""
-    base: seam/t1-2-storage-interface@81a1f6ce
-    worktree: externals/work/crm-seam
-    state: blocked
-    pr: []
+    base: official/dev@4a482627
+    worktree: ""
+    state: merged-upstream
+    pr: [8874, 8886]
     blast_radius: >
       The storage interface (lib/storage) gains one write step that every
       write from every path passes through. It takes over the calls to the
@@ -7391,18 +7442,36 @@ items:
       policy decides.
     register: []
     gates:
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 368e6c23 official/dev
+        kind: static
+        describe: >
+          official/dev contains #8874's merge 368e6c23 (write(intent) release
+          1: every v1, v3 and socket write through one step in
+          lib/storage/write-intent.js, today's behaviour pinned; merged
+          2026-10-31). Red if dev is rewritten without it.
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 51d38f9f official/dev
+        kind: static
+        describe: >
+          official/dev contains #8886's merge 51d38f9f (write(intent) release
+          2: writes by filter resolved to ids in the step, and the per-write
+          event, D-EVENT; merged 2026-11-01). Red if dev is rewritten without
+          it.
       - no-gate: >
-          Not started, and it cannot start before SEAM-REFRESH. The drift it
-          removes is measured by the register entries it would have
-          prevented: BF-122, BF-144 (srvModified and v3 history), BF-141,
-          BF-143 (treatment re-sends), BF-146 (mills on v3 writes held in
-          memory), BF-135 (an isValid false delete still counted), and
-          BF-109, 110, 116, 117, 130, 136, 140, 142, 145 (_id forms and twins
-          per path). Its gates would be #8758's CRUD-by-id matrix run through
-          all three paths, tools/qc/write-arm.js against both backends, a
-          consumer-replay arm and tools/lab/rc-soak, each with a control that
-          removes the step from one path and goes red.
-    blocks_on: [SEAM-REFRESH]
+          The behavioural measurement lives on WC-STEP-PATCH: the
+          write-rule-copies gate (no write rule gains a copy outside the step,
+          with its planted-call control) and spec G1, the write-contract
+          matrix run by hand (0 cells against dev on e8224807, 2026-10-29).
+          This umbrella does not duplicate them. What the step was built to
+          remove is measured by the register entries it would have prevented:
+          BF-122, BF-144 (srvModified and v3 history), BF-141, BF-143
+          (treatment re-sends), BF-146 (mills on v3 writes held in memory),
+          BF-135 (an isValid false delete still counted), and BF-109, 110,
+          116, 117, 130, 136, 140, 142, 145 (_id forms and twins per path).
+          The spec's open questions that releases 1 and 2 did not settle are
+          their own items, WC-R1-QG, WC-R1-QI and WC-R2-QA to WC-R2-QH, each
+          not-started; the consumer-replay arm and tools/lab/rc-soak remain
+          unbuilt for this item.
+    blocks_on: []
     evidence:
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
       - docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md
@@ -7410,6 +7479,17 @@ items:
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - tools/qc/write-contract-matrix.js
     notes: >
+      2026-11-06: merged-upstream, not released. Both releases of spec Q6 (a)
+      are on dev: release 1 as #8874 (368e6c23, 2026-10-31, WC-STEP-PATCH)
+      and release 2 as #8886 (51d38f9f, 2026-11-01), aimed at 16.0.0 through
+      the entry bar; 16.0.0 is not tagged, so nothing here is released. The
+      step landed on dev's own tree (lib/storage/write-intent.js over #8854's
+      write boundary), never on the seam chain, so the blocker SEAM-REFRESH
+      was stale from 2026-10-31 and is removed (that item is closed as
+      superseded). The base below moves from the seam tip to official/dev
+      4a482627. Remaining questions are tracked as WC-R1-QG, WC-R1-QI and
+      WC-R2-QA to WC-R2-QH.
+
       2026-10-26: its blocker SEAM-REFRESH can now take dev as its base (cut 5
       merged, 47723cda). Draft #8854 (AndyLow91,
       wip/architecture-data-contracts 880b7369, 1 commit on dev 47723cda, 31
@@ -7446,7 +7526,7 @@ items:
       the no-gate above when the item starts. Needs maintainer decisions Q1 to
       Q6 (spec §6); Q3's devicestatus key needs an ns-data corpus count of
       created_at+device collisions first. Found BF-164, BF-165 and BF-166.
-      Still blocked on SEAM-REFRESH.
+      (Was: still blocked on SEAM-REFRESH; see 2026-11-06 above.)
 
       2026-10-26 (maintainer, session -66): Q1b decided for 16.0.0. A null in
       an update removes the field (RFC 7386, recursive, arrays replaced
@@ -11572,10 +11652,16 @@ items:
           unnoticed and why the severity is medium. Nothing gates "fails safe
           rather than open", and treating a safe failure as equivalent to an
           unsafe one is how a real refusal gets downgraded.
-    blocks_on: [T30-WIRING, T31-REM, SEAM-REFRESH]
+    blocks_on: [T30-WIRING, T31-REM]
     evidence:
       - docs/30-design/remedial/nightscout-backfix-register.md
     notes: >
+      2026-11-06: SEAM-REFRESH removed from blocks_on; it is closed as
+      superseded (the seam went to dev as re-cut slices, never by refresh), so
+      this item's prerequisites are T30-WIRING and T31-REM on dev. The no-gate
+      above still says "re-point the gate after the refresh": read that as
+      "after T30-WIRING lands the tenant check on dev".
+
       The fix belongs to T3.0 and should not be taken separately. The task that
       introduces the per-tenant signing key (D14) is the task that chooses the
       payload; fixing this first would mean choosing the tenant claim twice.
@@ -22985,7 +23071,7 @@ items:
           product) with different definitions are validated against one
           tenant's definition, the red a cache keyed by (vendor, product)
           gives, with the definitionId-keyed cache as the control.
-    blocks_on: [HUB-REG-CRM, SPEC-REG-MODES, SEAM-REFRESH]
+    blocks_on: [HUB-REG-CRM, SPEC-REG-MODES]
     evidence:
       - docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md

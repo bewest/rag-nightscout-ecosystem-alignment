@@ -29,13 +29,25 @@
  * THIS GATE MEASURES TWO THINGS, and needs both:
  *
  *   1. THE CODE PROPERTY. That the matcher really is name-independent, read
- *      out of the shipping source on `origin/dev` and out of the bf/auth
- *      worktree. If a future change makes the name load-bearing, the prose
- *      below becomes wrong in the other direction and somebody must revisit
- *      it. Asserting the prose alone would pin a claim to nothing.
+ *      out of the released source on `official/master` (15.0.9, c6a0d8ed)
+ *      and out of `official/dev`. If a future change makes the name
+ *      load-bearing, the prose below becomes wrong in the other direction
+ *      and somebody must revisit it. Asserting the prose alone would pin a
+ *      claim to nothing. (Until 2026-10-26 the branch side was read from the
+ *      bf/auth worktree; that worktree was removed after 15.0.9 shipped the
+ *      fix, and the released tree replaces it. On dev the digest line became
+ *      `getSubjectHash(readContract.identifier(subject._id))` with #8758's
+ *      object-id work; still a function of _id and the enclave key only.)
  *   2. THE PROSE. That every operator-facing document says the two things
  *      that are true (rename is not a rotation; the upgrade does not rewrite
  *      stored rows) and none of them carries the instruction that was wrong.
+ *      The 15.0.9 release notes were rewritten as a technical changelog on
+ *      2026-10-21 (9ed4a5441, at the maintainers' request) and the rotation
+ *      table left with it: the shipped notes say, twice, that copies written
+ *      by earlier releases stay in the database until the tokens are rotated,
+ *      and name no rotation method. The rename warning and both rotation
+ *      options live on in the #8754 PR body, the report and the register,
+ *      which this gate still holds to the full text.
  *
  * NON-VACUITY. Run `tools/queue/vacuity.py` — with QUEUE_GATE_ROOT pointing at
  * an empty tree every document read returns null and every finding fails.
@@ -50,7 +62,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { REPO_ROOT, CRM, show, report } = require('./_gate');
+const { REPO_ROOT, show, report } = require('./_gate');
 
 function read (rel) {
   try {
@@ -72,33 +84,33 @@ const findings = [];
 // ---- 1. the code property the prose is pinned to -------------------------
 
 const MATCHER = 'subject.digest.indexOf(prefix) === 0';
-const DERIVE = 'getSubjectHash(subject._id.toString())';
+// The released tree and dev spell the derivation differently (dev went through
+// #8758's object-id work); both are a function of _id and the enclave key only.
+const DERIVE = {
+  'official/master (15.0.9)': 'getSubjectHash(subject._id.toString())',
+  'official/dev': 'getSubjectHash(readContract.identifier(subject._id))',
+};
 
-const dev = show('origin/dev', 'lib/authorization/storage.js');
-const branchPath = path.join(REPO_ROOT, 'externals', 'work', 'crm-bf-auth',
-                             'lib', 'authorization', 'storage.js');
-let branch = null;
-try { branch = fs.readFileSync(branchPath, 'utf8'); } catch (e) { branch = null; }
+const master = show('official/master', 'lib/authorization/storage.js');
+const dev = show('official/dev', 'lib/authorization/storage.js');
 
-for (const [label, src] of [['origin/dev', dev], ['bf/auth worktree', branch]]) {
+for (const [label, src] of [['official/master (15.0.9)', master], ['official/dev', dev]]) {
   findings.push({
     ok: !!src && src.includes(MATCHER),
     text: `${label}: findSubject matches on the id-derived digest — \`${MATCHER}\``,
   });
   findings.push({
-    ok: !!src && src.includes(DERIVE),
-    text: `${label}: that digest is derived from _id and the enclave key — \`${DERIVE}\``,
+    ok: !!src && src.includes(DERIVE[label]),
+    text: `${label}: that digest is derived from _id and the enclave key — \`${DERIVE[label]}\``,
+  });
+  // The name reaches the token only as the abbrev prefix, which checkToken
+  // never reads back. If this line ever stops being how the token is built
+  // the whole "a rename is cosmetic" argument has to be re-derived.
+  findings.push({
+    ok: !!src && /abbrev \+ '-' \+ subject\.digest\.substring\(0, 16\)/.test(src),
+    text: `${label}: token is abbrev(name) + "-" + digest16, and only the digest half is matched`,
   });
 }
-
-// The name reaches the token only as the abbrev prefix, which checkToken
-// never reads back. If this line ever stops being how the token is built the
-// whole "a rename is cosmetic" argument has to be re-derived.
-findings.push({
-  ok: !!branch && /abbrev \+ '-' \+ subject\.digest\.substring\(0, 16\)/.test(branch),
-  text: 'bf/auth worktree: token is abbrev(name) + "-" + digest16, and only the '
-      + 'digest half is matched',
-});
 
 // ---- 2. the prose, per document ------------------------------------------
 
@@ -110,22 +122,20 @@ findings.push({
   ok: !!notes && !RENAME_ROW.test(notes),
   text: 'release notes: no "Rename the user" row in the rotation table',
 });
+// The shipped changelog (9ed4a5441, 2026-10-21) carries the fact in two
+// places: the Security entry for #8754 and the Upgrade notes.
 findings.push({
-  ok: !!notes && /Renaming the user is \*\*not\*\* a third way/.test(notes),
-  text: 'release notes: says plainly that renaming is not a way to retire a token',
+  ok: !!notes && /Copies written by earlier releases stay in the database until those tokens are\s+rotated/.test(notes),
+  text: 'release notes, Security (#8754): copies written by earlier releases stay until the tokens are rotated',
 });
 findings.push({
-  ok: !!notes && /Upgrading does not delete it/.test(notes),
-  text: 'release notes: says the upgrade does not remove the stored plain-text copy',
+  ok: !!notes && /Access tokens that earlier releases stored in readable form remain in the database until they\s+are rotated/.test(notes),
+  text: 'release notes, Upgrade notes: readable-form tokens remain until they are rotated',
 });
 findings.push({
-  ok: !!notes && /Delete the user and create a new one/.test(notes)
-             && /Change your site's `API_SECRET`/.test(notes),
-  text: 'release notes: both real rotation options are present',
-});
-findings.push({
-  ok: !!notes && /renaming the user does not retire its/i.test(notes),
-  text: 'release notes: the must-do list repeats the rename warning where people skim',
+  ok: !!notes && !/[Rr]enam(e|ing) the (user|subject)[^\n]*(retire|rotat|change)/.test(notes)
+             || (!!notes && /not a (rotation|way to retire)/i.test(notes)),
+  text: 'release notes: no sentence offers a rename as a way to change or retire a token',
 });
 
 const prbody = read(DOCS.prbody);

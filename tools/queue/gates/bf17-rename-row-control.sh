@@ -12,9 +12,14 @@
 # on 2026-09-16, restored verbatim rather than paraphrased.
 #
 # `externals/` is SYMLINKED, not copied — the gate also reads
-# lib/authorization/storage.js out of the official checkout and the bf/auth
-# worktree to pin the code property its prose depends on, and rule 5 forbids a
-# control from touching either. Reading through a symlink writes nothing.
+# lib/authorization/storage.js out of the official checkout (official/master
+# and official/dev) to pin the code property its prose depends on, and rule 5
+# forbids a control from touching it. Reading through a symlink writes nothing.
+#
+# 2026-11-06: the 15.0.9 notes were rewritten as a changelog on 2026-10-21 and
+# the rotation table is gone, so the row is restored after the Security entry
+# that replaced it ("...until those tokens are rotated. (#8754)"). The gate
+# refuses any "Rename the user" row wherever it sits.
 #
 # IT EXITS WITH THE GATE'S OWN STATUS, per the control convention: a control IS
 # the gate applied to a known-negative and must exit NON-ZERO. CONTROL-INVALID
@@ -47,13 +52,13 @@ import io, sys
 notes_path, prbody_path = sys.argv[1], sys.argv[2]
 
 notes = io.open(notes_path, encoding='utf-8').read()
-anchor = "| **Delete the user and create a new one**"
+anchor = "  rotated. (#8754)\n"
 row = ("| **Rename the user** (in the admin screen) | That one user's token "
        "changes. Everything using the old token stops working until you give it "
        "the new one. |\n")
 if notes.count(anchor) != 1:
-    sys.exit("anchor row not found in the release notes")
-io.open(notes_path, 'w', encoding='utf-8').write(notes.replace(anchor, row + anchor))
+    sys.exit("anchor line not found in the release notes")
+io.open(notes_path, 'w', encoding='utf-8').write(notes.replace(anchor, anchor + row))
 
 pr = io.open(prbody_path, encoding='utf-8').read()
 old = "previous edit left behind is dropped from the in-memory record on every load"

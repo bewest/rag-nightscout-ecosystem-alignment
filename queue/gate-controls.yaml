@@ -172,16 +172,52 @@ controls:
       not there exits 1. Rule 0: ls-remote READS and never pushes.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization seam/t1-2-storage-interface
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 84fac457 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor seam/t1-2-storage-interface origin/chore/nightscout-modernization
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 84fac457
     control-kind: static
     proves: >
-      origin/chore/nightscout-modernization is a strict ancestor of
-      seam/t1-2-storage-interface, so the reversed question must be
-      answered no (exit 1, measured). A command that said yes both ways
-      would not be reading ancestry at all.
+      #8861 (ST-FILTER-READS)'s merge 84fac457 is a strict ancestor of official/dev, so the
+      reversed question (is today's dev an ancestor of that older merge)
+      must be answered no (exit 1, measured 2026-11-06). A command that said
+      yes both ways would not be reading ancestry at all.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 9668b179 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 9668b179
+    control-kind: static
+    proves: >
+      #8863 (ST-WRITES)'s merge 9668b179 is a strict ancestor of official/dev, so the
+      reversed question (is today's dev an ancestor of that older merge)
+      must be answered no (exit 1, measured 2026-11-06). A command that said
+      yes both ways would not be reading ancestry at all.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 368e6c23 official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 368e6c23
+    control-kind: static
+    proves: >
+      #8874 (write(intent) release 1)'s merge 368e6c23 is a strict ancestor of official/dev, so the
+      reversed question (is today's dev an ancestor of that older merge)
+      must be answered no (exit 1, measured 2026-11-06). A command that said
+      yes both ways would not be reading ancestry at all.
+
+  - gate: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 51d38f9f official/dev
+    cwd: .
+    control: |-
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 51d38f9f
+    control-kind: static
+    proves: >
+      #8886 (write(intent) release 2)'s merge 51d38f9f is a strict ancestor of official/dev, so the
+      reversed question (is today's dev an ancestor of that older merge)
+      must be answered no (exit 1, measured 2026-11-06). A command that said
+      yes both ways would not be reading ancestry at all.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms
@@ -308,18 +344,6 @@ controls:
       origin/master is a strict ancestor of origin/dev, so the reversed
       question must be answered no (exit 1, measured). A command that
       said yes both ways would not be reading ancestry at all.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/nightscout-modernization seam/t1-2-storage-interface >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree seam/t1-2-storage-interface bf/coercion >/dev/null
-    control-kind: static
-    proves: >
-      seam/t1-2-storage-interface and bf/coercion were measured to
-      conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial
-      merge that returned 0 for a conflicting pair would make every
-      "merges cleanly" row in this queue meaningless.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms >/dev/null
@@ -771,7 +795,10 @@ controls:
       that these documents carried on 2026-09-16 - the "Rename the user" row in
       the 15.0.9 rotation table, and the PR body's "discarded when Nightscout
       next loads it" - into a throwaway copy, and the gate goes to 3 failing /
-      17. Run 2026-09-16. Three further ablations, run by hand the same day and
+      17. Run 2026-09-16. Re-run 2026-11-06 after the gate was re-pinned to
+      official/master and official/dev and to the changelog-form notes
+      (the row now goes in after the #8754 Security entry, since the table is
+      gone): 4 failing / 17, gate 17 / 0 on the committed tree. Three further ablations, run by hand the same day and
       recorded on the item: restoring the rename option to report 2.3 alone ->
       1 failing; QUEUE_GATE_ROOT at an empty directory -> 17 failing (the weak
       form); the pristine tree -> 0 failing (the positive-control above, which
