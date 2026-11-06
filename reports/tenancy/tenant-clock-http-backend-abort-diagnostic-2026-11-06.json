@@ -1,0 +1,103 @@
+{
+  "recordDate": "2026-11-06",
+  "alignmentBase": "de54fd05e1f2e57dd36e6cf3a6be11c453994dc1",
+  "applicationSource": "48b5bcd28a82c1e3fff62f7b3ed2343527e05427",
+  "classification": "reproduced availability failure under a controlled backend fault; selected functional clock oracle passes",
+  "measurementBasis": "Independent source-only audit of preserved actual runtime captures; no rerun by report lane",
+  "captures": [
+    {
+      "capture": "backend-abort-diagnostic-48b5.log",
+      "source": "48b5bcd28a82c1e3fff62f7b3ed2343527e05427",
+      "sha256": "e6ed3e9d6cbb3c56fd00e65eacfbdd2c0419d576f7c23c4250e8000ee4cec0ce",
+      "passing": 1,
+      "failing": 0,
+      "pending": 0
+    },
+    {
+      "capture": "functional-ad435.log",
+      "source": "ad435f98441ba116443d16519dca64f3308e6501",
+      "sha256": "74a921a40db76d5b89cee5a53306183486eb5234714b8bb06fc2a59273ef9b5f",
+      "passing": 7,
+      "failing": 0,
+      "pending": 1
+    },
+    {
+      "capture": "functional-d905.log",
+      "source": "d90532ce1eb7d730e7cf7f1f2e9036ef39b6c91e",
+      "sha256": "d4ea5dd32b5ee39216878f533b5674c5506a96fd9335816c938c7107a474a7af",
+      "passing": 4,
+      "failing": 1,
+      "pending": 0
+    }
+  ],
+  "monitor": {
+    "sha256": "3ec4c818a565b23d5ad8f61f076624e5dc1a739b600f90929fbb2911c0519ea5",
+    "scope": "W1 only",
+    "event": "uncaughtExceptionMonitor",
+    "handlesException": false,
+    "observed": {
+      "origin": "uncaughtException",
+      "name": "Error",
+      "code": null,
+      "connectionTerminated": true,
+      "locations": [
+        "node_modules/pg/lib/client.js:204:73",
+        "node:events:633:28",
+        "node:events:519:28",
+        "node:events:519:28"
+      ]
+    }
+  },
+  "writerOutcome": {
+    "transportFailure": true,
+    "exit": {
+      "code": 1,
+      "signal": null
+    },
+    "forcedKill": false,
+    "socketClosed": true,
+    "originalDataRowUnchanged": true,
+    "survivorProgressedWhileOriginalDataLockHeld": true,
+    "survivorFloorDelta": 1,
+    "stderrSignals": {
+      "administratorTermination": false,
+      "unhandledError": true,
+      "connectionTerminated": true,
+      "storageShutdownFailure": false
+    }
+  },
+  "sanitizedStack": [
+    "node:events:497",
+    "Error: Connection terminated unexpectedly",
+    "    at Connection.<anonymous> ([worktree]/node_modules/pg/lib/client.js:204:73)",
+    "    at Object.onceWrapper (node:events:633:28)",
+    "    at Connection.emit (node:events:519:28)",
+    "    at Socket.<anonymous> ([worktree]/node_modules/pg/lib/connection.js:64:12)",
+    "    at Socket.emit (node:events:519:28)",
+    "    at TCP.<anonymous> (node:net:347:12)",
+    "    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",
+    "Emitted 'error' event on Client instance at:",
+    "    at Client._handleErrorEvent ([worktree]/node_modules/pg/lib/client.js:422:10)",
+    "    at Connection.<anonymous> ([worktree]/node_modules/pg/lib/client.js:222:16)",
+    "    at Object.onceWrapper (node:events:633:28)",
+    "    at Connection.emit (node:events:519:28)",
+    "    at Socket.<anonymous> ([worktree]/node_modules/pg/lib/connection.js:64:12)",
+    "    at Socket.emit (node:events:519:28)",
+    "    at TCP.<anonymous> (node:net:347:12)",
+    "    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)"
+  ],
+  "cleanup": {
+    "captureAnnouncesContainers": 2,
+    "captureAnnouncesVolumeReferences": 3,
+    "coordinatorReportedAllAbsent": true,
+    "independentAbsenceArtifactAuditedByReportLane": false,
+    "scope": "Counts announced by fixture are independently read; absence verification is coordinator-reported, not independently reproduced in this report"
+  },
+  "acceptance": {
+    "fullClockHttp": false,
+    "workerAvailability": false,
+    "benchmark": false,
+    "fullNonbrowserBrowserPrcheck": false,
+    "joinedCombinedApplication": false
+  }
+}
