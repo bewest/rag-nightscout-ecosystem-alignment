@@ -260,10 +260,10 @@ Local integration ownership and exact unpushed anchors are in
   role-table source is already incorporated and published through R60/R64: its
   role and unit-test blobs match accepted835 exactly. The event-payload branch
   remains separate pending final-floor verification and a later batch join.
-  The maintainer closed the
-  contract's section 9 stamp question on 2026-11-06: the event carries the transaction's
-  **final floor**; the event-payload lane changes its capture point accordingly and runs
-  the Mongo-gated d-event case against a disposable MongoDB 8 (new head to be reported).
+  The maintainer closed the contract's section 9 stamp question on 2026-11-06:
+  the event carries the transaction's **final floor**. The payload lane implements
+  the capture change and nested-allocation test at `e7baff74`; its focused results
+  are recorded in the contract. Joining and comprehensive acceptance remain separate.
 - **Batch C tooling early proof** (session `-8c`, maintainer-assigned 2026-11-06, no slot
   until its one focused run): tenant export/import fidelity and tenant deletion with
   recoverable key material on a synthetic populated fixture. New CRM worktree off the
