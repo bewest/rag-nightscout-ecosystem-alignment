@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "audience": "contributor-facing",
+  "status": "immutable original-output provenance index; no runtime rerun",
+  "source_commit": "2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35",
+  "acceptance_capture_commit": "c620ad0452b98199c8b8e6d4d0519888aa96496b",
+  "hash_algorithm": "SHA-256",
+  "artifact_resolution": "Private output labels resolve within the original private evidence capture; public labels resolve beside this index. Labels are sanitized relative names only.",
+  "privacy": "Only source pins, artifact labels, byte lengths and hashes are published. Original contents, machine paths, service/resource identities, addresses and configuration are excluded.",
+  "artifacts": [
+    {
+      "label": "archive-positive.log",
+      "storage": "private_original_output",
+      "purpose": "profile positive output",
+      "bytes": 72458,
+      "sha256": "76161cf94f167564d98b7c6c7f876162500b1a11c773a28e2d4b4c78b99e92f1"
+    },
+    {
+      "label": "archive-restored.log",
+      "storage": "private_original_output",
+      "purpose": "restored profile output",
+      "bytes": 72465,
+      "sha256": "59df50c168aea6222565b8a5ee89413badc6d68857772c2abf1af469166d27fc"
+    },
+    {
+      "label": "archive-actual-trigger.log",
+      "storage": "private_original_output",
+      "purpose": "actual HTTP trigger semantic control output",
+      "bytes": 6430,
+      "sha256": "450973865de793a5834a700fb523fc45c6a5e0617f59e1f74599894815022dcf"
+    },
+    {
+      "label": "archive-clinical.log",
+      "storage": "private_original_output",
+      "purpose": "clinical setter semantic control output",
+      "bytes": 7561,
+      "sha256": "2ef773f7e37afc6919bd1fcab685cb8de9cc81bdcc26cb6645c17a4c8c985a94"
+    },
+    {
+      "label": "archive-retention.log",
+      "storage": "private_original_output",
+      "purpose": "failed-retention semantic control output",
+      "bytes": 14879,
+      "sha256": "d08b9250e66dc062576240358d61f88e1dd3c022b4c068e383471ff5250d725b"
+    },
+    {
+      "label": "broad-all.log",
+      "storage": "private_original_output",
+      "purpose": "complete nonbrowser original output",
+      "bytes": 2193807,
+      "sha256": "e48df5184066f968c50af6e746da8336333601cfe4fc1abd63699e03265f5060"
+    },
+    {
+      "label": "broad-browser.log",
+      "storage": "private_original_output",
+      "purpose": "fresh default browser original output",
+      "bytes": 62918,
+      "sha256": "3c297d671119d4773ee5864d19388a5e69d134883cdd6d74055dbfb5e206a74f"
+    },
+    {
+      "label": "final-prcheck.log",
+      "storage": "private_original_output",
+      "purpose": "final prcheck original output",
+      "bytes": 2387,
+      "sha256": "bc9ef4336b5b79de789d64325c5d5403c2d3278724c0defe3a72825da8b5b4bc"
+    },
+    {
+      "label": "eslint.log",
+      "storage": "private_original_output",
+      "purpose": "changed-file lint original output",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "tiers.log",
+      "storage": "private_original_output",
+      "purpose": "test tier original output",
+      "bytes": 30,
+      "sha256": "7229da44d5fc406597a77f1da79cca4b3fc0303f1179dc45151e31d7bd83a349"
+    },
+    {
+      "label": "write-boundary.log",
+      "storage": "private_original_output",
+      "purpose": "adapter write-boundary original output",
+      "bytes": 51,
+      "sha256": "5232a9b350862ea97fcec0436cb5e1d8dadbb11a3a30d00c64d07781f6cf2a30"
+    },
+    {
+      "label": "archive-summary.log",
+      "storage": "private_original_output",
+      "purpose": "archive and control aggregate output",
+      "bytes": 490,
+      "sha256": "647a6033c4ae79c01620b87b947ccbda18bdefa0fb275abb78a5136e2b6270e9"
+    },
+    {
+      "label": "broad-summary.log",
+      "storage": "private_original_output",
+      "purpose": "broad campaign and cleanup aggregate output",
+      "bytes": 743,
+      "sha256": "19d53e25e07a3bcb69d18e727b16e6ab4c73a2583033efcba3dba1563900e6f7"
+    },
+    {
+      "label": "summary-all.json",
+      "storage": "private_original_output",
+      "purpose": "nonbrowser aggregate summary",
+      "bytes": 225,
+      "sha256": "76bb14d18949c7193767dc7058a2ae19396a3cc2ca44847bfb0a7452364e544c"
+    },
+    {
+      "label": "summary-browser.json",
+      "storage": "private_original_output",
+      "purpose": "browser aggregate summary",
+      "bytes": 174,
+      "sha256": "24f0f177b8cae0bd3b5b59bc5c5ed1b45101ac591fdffd904e86aa395d99e29e"
+    },
+    {
+      "label": "cleanup-all.json",
+      "storage": "private_original_output",
+      "purpose": "nonbrowser captured-resource cleanup summary",
+      "bytes": 218,
+      "sha256": "8c179f9b9107fcb899965d6f3d4045a5bb4641946ee813ca6d39a96c622dc72e"
+    },
+    {
+      "label": "cleanup-browser.json",
+      "storage": "private_original_output",
+      "purpose": "browser captured-resource cleanup summary",
+      "bytes": 222,
+      "sha256": "154739e7b6950adafa7042be8e369fd379b346d81360c0dacafae65e184eda68"
+    },
+    {
+      "label": "cleanup-final.json",
+      "storage": "private_original_output",
+      "purpose": "final captured-resource cleanup summary",
+      "bytes": 223,
+      "sha256": "8b03edbd74345c5f5ff9dc714e0869179bbf5b4a6a9a477b227fdba02f63e7b6"
+    },
+    {
+      "label": "npm-ci.log",
+      "storage": "private_original_output",
+      "purpose": "matching private dependency installation output",
+      "bytes": 552,
+      "sha256": "8a68431f740ceb639b29b41c972999cb2f8e69f5ae49bcc1eb7afd0cddb24163"
+    },
+    {
+      "label": "postinstall.log",
+      "storage": "private_original_output",
+      "purpose": "matching private build output",
+      "bytes": 2419,
+      "sha256": "2094207d29d5908ee47760c3fe12e142717bf949069bef7fa62fc1a1e9450fe2"
+    },
+    {
+      "label": "acceptance.json",
+      "storage": "public_capture",
+      "purpose": "canonical acceptance capture",
+      "bytes": 8261,
+      "sha256": "9645a8d630f874877466e46186f55b75db97714a195cb2d726e89b0ca2eb73c4"
+    },
+    {
+      "label": "README.md",
+      "storage": "public_capture",
+      "purpose": "acceptance capture summary",
+      "bytes": 5072,
+      "sha256": "0354d9b4ea38c1fa8b75c40b09a8649b4db7029527155412d6018611f3509d6a"
+    }
+  ]
+}
