@@ -2178,7 +2178,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>c57589e9b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>919ce99a1</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -4898,7 +4898,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/88902eba2532c42bf83a91a8104f9ea64da2ca18/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/38ce43d529632facf94dfe20ddf65cea50d7692c/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -5503,11 +5503,121 @@ new policy decision is made by this measurement.</p>
 </tbody>
 </table>
 <p><a href="../../reports/private-acquisition-profile-2026-11-06/index.html">Canonical profile report</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/88902eba2532c42bf83a91a8104f9ea64da2ca18/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/38ce43d529632facf94dfe20ddf65cea50d7692c/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
 and <a href="../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.html">focused recovery record</a>
 retain exact scopes. No new numbered clock acceptance, milestone/RC promotion,
 production enablement or application push; no policy decision changed.</p>
 <p>Local continuation and next frozen clock batch: <code>externals/work/HANDOFF-serial-verification-20261106.md</code> (local, untracked).</p>
+<h3 id="update--frozen-head-b4a-controls-stopped-on-instrument-mismatch-2026-11-06">Update — frozen-head B4a controls stopped on instrument mismatch (2026-11-06)<a class="headerlink" href="#update--frozen-head-b4a-controls-stopped-on-instrument-mismatch-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Reproduced captured evidence</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frozen <code>65bb8456</code>, R57 partial</td>
+<td>11/12 positive instruments; 27 semantic controls; 8/12 restored instruments.</td>
+<td>Authority control invalid before Mocha: expected source boundary missing. B4a incomplete; B5 acceptance prerequisite unsatisfied. Missing controls/restores and subject-admin UNMEASURED.</td>
+</tr>
+<tr>
+<td>Ownership and limits</td>
+<td>Runtime released after stop; recorded gate-owned mounts audited absent. Prior captures preserved.</td>
+<td>Older fixture anonymous volumes preserved; no global leak-freedom claim. No gate/app repair, queue ref moves, promotion, default enablement or push.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="../../reports/tenancy/gate-controls-65bb8456-2026-11-06.html">Partial report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/38ce43d529632facf94dfe20ddf65cea50d7692c/reports/tenancy/gate-controls-65bb8456-2026-11-06.json">machine capture</a>. Lane detail: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code> (local). No maintainer policy decision changed. Root coordinator owns disposition and queue ref moves.</p>
+<h3 id="update--frozen-head-b4a-continuation-complete-2026-11-06">Update — frozen-head B4a continuation complete (2026-11-06)<a class="headerlink" href="#update--frozen-head-b4a-continuation-complete-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Reproduced evidence</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frozen65bb, R58, authority instrument3845</td>
+<td>Combined12positive instruments/32semantic controls/12restored positives; original R57 unchanged. Ten continuation runs supply missing measurements.</td>
+<td>Profile absent/excluded. B5 joined-head full/browser/corpus acceptance separate. Root owns queue refs.</td>
+</tr>
+<tr>
+<td>Runtime and cleanup</td>
+<td>Slot released; diagnosed owned mounts audited absent; source clean.</td>
+<td>Older fixture anonymous volumes preserved; no global leak-freedom or mutated-authority-effects count. No application repair, promotion, default enablement or push.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.html">Continuation report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/38ce43d529632facf94dfe20ddf65cea50d7692c/reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.json">machine capture</a>. Lane detail: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code> (local). No maintainer policy decision changed.</p>
+<h3 id="update--completion-batches-adopted-2026-11-06">Update — completion batches adopted (2026-11-06)<a class="headerlink" href="#update--completion-batches-adopted-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Decision and current work</th>
+<th>Acceptance boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multitenant completion schedule</td>
+<td>Maintainer approved <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">larger completion batches</a>: A data/control/clients (M0–M4), B durable runtime (M5), C synthetic operations (M6).</td>
+<td>Targeted checks during implementation, then comprehensive labs/V&amp;V and final regression on each frozen completion candidate; existing milestone criteria remain mandatory.</td>
+</tr>
+<tr>
+<td>Early uncertainty reduction</td>
+<td>Stamp/recovery, actual-client differences, owner authority/lifecycle and populated restore/resource proofs remain bounded experiments before dependent assumptions expand.</td>
+<td>No new provider, authenticator, retention rule or numeric limit selected. Missing implementation, measurement and decisions remain distinct.</td>
+</tr>
+<tr>
+<td>Parallel delivery</td>
+<td>Independent implementation, fixtures and test preparation proceed concurrently; isolated runtime overlap depends on measured capacity/ownership.</td>
+<td>The local full/browser/corpus slot is a resource constraint. Final-tree evidence, exact-head controls, approved differences and failed-capture preservation remain required; no milestone/default/release promotion.</td>
+</tr>
+</tbody>
+</table>
+<p>This records the maintainer's execution decision, not a new application measurement.
+No application or operator-visible runtime behavior changed in this records-only
+lane. Lane detail: <code>externals/work/HANDOFF-codex-completion-batches-20261106.md</code>
+(local, untracked). B4a/B5/M4 source and evidence remain on their respective lanes
+until the coordinator joins them; their acceptance figures are not recaptured here.</p>
+<h3 id="update--completion-batch-incorporation-and-early-proofs-2026-11-06">Update — completion-batch incorporation and early proofs (2026-11-06)<a class="headerlink" href="#update--completion-batch-incorporation-and-early-proofs-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Reproduced source evidence</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Batch A local candidate <code>863c8a2b</code></td>
+<td>Corpus inventory correction, typed role table and M4 identity/literal-slash repairs incorporated; selected source checks 201 passing; tier registry 512 files / 8 tiers; inventory 34 suites.</td>
+<td>Actual-client rerun and exact-head comprehensive acceptance remain UNMEASURED. Owner/session, import/resource and remaining milestone criteria stay open.</td>
+</tr>
+<tr>
+<td>M5 research <code>25c8441a</code></td>
+<td>Coordinator independently ran the isolated file-backed recovery prototype: 8 passing / 0 failing / 0 skipped.</td>
+<td>No production consumer/DDL. PostgreSQL recovery, RLS and concurrent replay UNMEASURED; projection/bootstrap and checkpoint bookkeeping authority remain decisions.</td>
+</tr>
+<tr>
+<td>Coordination records</td>
+<td>Instrument repair and immutable R57/R58 records combined with the approved A–C completion schedule; queue-check and document links pass.</td>
+<td>No queue-ref moves, milestone promotion, default enablement, application-ready claim or push.</td>
+</tr>
+</tbody>
+</table>
+<p><a href="../../reports/tenancy/completion-batch-source-checks-2026-11-06.html">Source-check capture</a>
+owns commands and limits. Local detail:
+<code>externals/work/HANDOFF-codex-completion-coordination-20261106.md</code> (untracked).
+Owner-clamping and populated-import proofs continue independently; production
+decisions are deferred, research continuing.</p>
 
 
 
