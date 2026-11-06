@@ -1,0 +1,59 @@
+{
+  "scope": "source-only research preflight; injected callbacks, no database/key recovery",
+  "head": "65bb8456618df9816106692a32f0dd5c76e216d1",
+  "fixtureSha256": "6b6b611d9a6998354b5d1e60e64395b6b860e0af45d749cced69ca0f0e817f23",
+  "control": null,
+  "checks": [
+    {
+      "name": "fixture populated typed identities and tenant mapping remain complete",
+      "ok": true
+    },
+    {
+      "name": "logical JSON values preserve null/missing, nested source and array order",
+      "ok": true
+    },
+    {
+      "name": "synthetic ciphertext metadata has a named recovery key reference",
+      "ok": true
+    },
+    {
+      "name": "actual identity codec preserves ObjectId/string twin across JSON serialization",
+      "ok": true
+    },
+    {
+      "name": "actual importer preserves supported API page values and traversal order to injected target",
+      "ok": true
+    },
+    {
+      "name": "actual importer refuses API textual collision of typed twins before first write",
+      "ok": true
+    },
+    {
+      "name": "actual importer refuses raw BSON source document rather than flattening its kind",
+      "ok": true
+    },
+    {
+      "name": "actual importer interruption propagates and rerun repeats beginning (no durable checkpoint claim)",
+      "ok": true
+    },
+    {
+      "name": "actual importer history carries soft-delete marker to injected target",
+      "ok": true
+    },
+    {
+      "name": "actual migration catalogue validates candidate checksums and rejects altered SQL",
+      "ok": true
+    }
+  ],
+  "passing": 10,
+  "failing": 0,
+  "unmeasured": [
+    "real PG/Mongo restore",
+    "RLS wrong-tenant storage refusal",
+    "provider decryption/key recovery",
+    "migration ledger restore and partial transaction rollback",
+    "snapshot consistency and natural ordering",
+    "hard-delete recovery",
+    "resource/RPO/RTO bounds"
+  ]
+}
