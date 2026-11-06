@@ -35,3 +35,28 @@ still imply descendants outside it. Adding new authorization operations requires
 reviewing the universe and implication tests; this lab does not prove arbitrary
 wildcard/default semantics, complete owner management, throughput or deployment
 readiness. Queue and release integration belong to the coordinating lane.
+
+## Optional nested-container audit
+
+`docker-audit.js` can be symlinked as `docker` in a private per-campaign PATH
+folder. Set `NS_OWNER_DOCKER_REAL` to the absolute real Docker executable and
+`NS_OWNER_DOCKER_AUDIT` to a fresh private 0700 directory. The helper stores only
+returned full container IDs, volume names and cleanup state in 0600 files, before
+subsequent inspections can fail. It augments supported top-level `rm` calls only
+when every current target ID is in that campaign's records, then removes by those
+immutable IDs. A reused container name cannot redirect augmented removal.
+
+Unsupported commands/flags and unknown/mixed targets pass through unchanged.
+This is scoped test instrumentation, not a general Docker permission boundary.
+The extra `--volumes` flag removes anonymous volumes; Docker preserves named
+volumes ([Docker CLI contract](https://docs.docker.com/reference/cli/docker/container/rm/)).
+It never issues a direct volume delete or global prune. Recorded removal success
+is not proof of volume absence; the campaign must inspect the recorded IDs after
+cleanup. Nonzero create/run outcomes without a returned ID cannot establish
+ownership and are not claimed leak-free. Detached successful test services are
+the supported creation path. A failed audit triggers exact-ID compensation;
+failed compensation retains and reports the returned ID for private recovery.
+
+Pure/fake-process checks run with `node docker-audit.test.js`; child-process
+execution must be permitted. Fake checks do not start Docker or establish real
+Docker behavior. Runtime smoke must wait for the coordinator's explicit slot.
