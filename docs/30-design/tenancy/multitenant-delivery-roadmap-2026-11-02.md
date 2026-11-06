@@ -29,8 +29,7 @@ promotion is recorded. The locally accepted cumulative integration head is `3590
 measured in R54 with full7144/80pending/0failure/browser684/settings12/prcheckOK.
 R51–R53 native acceptance and R49/R50 historical captures remain unchanged.
 Published #8898 `bc4ee1a9` and independent #8891 `dff9a8d4` remain prior captures;
-no candidate CI or application push is claimed. Independent accepted R50 stays
-separate; profile2ee preparation and clock code are not joined. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+no candidate CI or application push is claimed. Independent profile2ee is accepted in R55 on its separate branch; clock code remains unjoined. [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
 with parent-run cumulative acceptance; publication does not imply merge, release
 or milestone promotion. [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
@@ -42,6 +41,45 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Accepted independent private acquisition profile (2026-11-06)
+
+R55 independently accepts profile `2ee8b493`: full6690/3pending/0failure,
+default browser684, canonical archive38 and finalprcheckOK/currentdev4a
+contained/source clean. Actual-trigger (`http`), clinical and retention controls
+each fail0/1 semantically; restored38 pass. Notification-close (`v1-closed`)
+remains declared at2ee but its new-head runtime is UNMEASURED; prior517 measurement
+is historical, not a fourth R55 red. Positive38 retains live-handoff assertions.
+
+The private helper matches accepted REST bytes and independent evaluateCycle
+is retained. REST359 and PROFILE2ee are **separate accepted branches, not merged**.
+No runtime-role/subscriber/notification policy promotion. The R50–R54 captures and
+all milestone/queue states are unchanged; profile gate/current metadata now pin2ee.
+The [canonical profile report](../../../reports/private-acquisition-profile-2026-11-06/README.md),
+[acceptance capture](../../../reports/private-acquisition-profile-2026-11-06/acceptance.json)
+and additive [artifact index](../../../reports/private-acquisition-profile-2026-11-06/artifact-index.json)
+record exact scope and source; all22indexed artifact lengths/hashes were independently
+verified, with original capture/README unchanged. Seven serial campaigns capture
+11containers/20volumes, all recorded absent; no global leak-freedom claim.
+
+### Focused clock connection recovery; broader acceptance open (2026-11-06)
+
+The [original backend-abort diagnostic](../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.md)
+retains faulted-worker exit1 despite its passing selected functional oracle.
+The separate [focused recovery report](../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md)
+and [capture](../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.json)
+measure source3532 with repair117: actual HTTP7passing/1benchmarkpending;
+listener-removal control0passing/2failing (primary ECONNRESET instead of required
+HTTP, secondary strict afterEach sees exit1); restored selected1passing receives
+503/STORAGE_UNAVAILABLE, same-worker GET200/POST201 and strict exit0. All3raw log,
+5source, preparer and passive-monitor hashes were independently verified. Canonical
+report records6containers/9volumes absent; original diagnostic remains immutable.
+
+This is focused branch repair evidence, **not full clock acceptance or readiness**.
+Clock code is not joined/default-enabled. Full assembled single/Mongo/nonbrowser/
+browser/prcheck, broader failure controls, contention and ingestion latency remain
+UNMEASURED; the optional benchmark stayed pending. No new numbered clock acceptance,
+M0–M6/RC promotion or application push. Earlier sections retain their dated scopes.
 
 ### Accepted cumulative settings acquisition and owner policy (2026-11-06)
 

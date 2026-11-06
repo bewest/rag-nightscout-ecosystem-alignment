@@ -5,7 +5,7 @@ cgm-remote-monitor dev `4a482627`, published draft #8898 `bc4ee1a9` (R44),
 local cumulative `35903069` (B338+A+C17f, R54 full/browser accepted),
 accepted settings `33870764` (R51) and native acquisition `e5fe0b5e` (R52),
 preceded by frame `1c55098a` (R49), published independent #8891 `dff9a8d4` (R45) and local evaluator acquisition
-`5173864d` (R50). R46/R47 remain the accepted preceding baseline. Actual frame
+`2ee8b493` (R55; prior5173864d/R50 retained). R46/R47 remain the accepted preceding baseline. Actual frame
 acquisition/concurrent reads are characterized; shared implementation remains open.
 Storage/identity/registration measurements below retain their named historical
 pins. Full M0–M6 completion remains open; component states are not milestone
@@ -24,6 +24,26 @@ This plan covers the work that follows the 16.0.0 modernization:
 It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.
 
 ## 1. Where things stand
+
+### Independent profile accepted; clock recovery remains focused (2026-11-06)
+
+R55 PROFILE2ee independently passes full6690/3pending/0failure/browser684,
+archive38/three semantic `http`/clinical/retention controls/restored38 and final
+prcheckOK. REST359/PROFILE2ee remain separate, helper-identical with evaluateCycle
+retained; no merge/runtime-role/subscriber/notification promotion. The fourth
+declared notification-close control is UNMEASURED at2ee/prior517 historical.
+R50–R54 captures and all milestone states remain unchanged.
+[Profile report](../../../reports/private-acquisition-profile-2026-11-06/README.md)
+and [artifact index](../../../reports/private-acquisition-profile-2026-11-06/artifact-index.json)
+retain verified22artifact hashes and bounded11container/20volume cleanup.
+
+[Focused clock repair](../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md)
+separately measures3532/117: actual7passing/1benchmarkpending, negative0/2
+(primary lostHTTP, secondary strict workerexit1), restored1 with503 and same-worker
+GET200/POST201/strict0. Original [fatal diagnostic](../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.md)
+is retained. No full clock acceptance/readiness/join/default enablement; assembled
+single/Mongo/full/browser/prcheck, broader controls and performance UNMEASURED.
+See the [R55 continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-private-acquisition-profile-2026-11-06).
 
 ### Cumulative B+A+C accepted with existing scope limits (2026-11-06)
 

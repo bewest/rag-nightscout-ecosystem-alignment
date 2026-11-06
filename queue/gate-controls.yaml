@@ -3005,15 +3005,25 @@ controls:
       Scratch-only credential bypass permits a management mutation where
       the actual HTTP assertion requires 401; persisted effects are observed.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
-    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70 --control v1-closed
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35 --control v1-closed
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
     control-kind: integration
     proves: >
-      Close only the new HTTP cohort notification service after its request
-      recorder is installed: signatures remain observable but the required live
-      high-alarm emission is absent. Actual write-trigger suppression is also
-      independently measured; no production subscriber change.
+      UNMEASURED on2ee8b493; prior5173864d measurement is historical R50.
+      Expected: close the selected HTTP cohort notification service after its
+      recorder is installed; request signatures remain but live high-alarm
+      emission is absent. This fourth declared control is not one of the three
+      measured R55 controls and does not establish a new closed-service red.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35 --control http
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
+    control-kind: integration
+    proves: >
+      R55 measured physical-write trigger suppression during actual HTTP entry
+      mutations; post must refresh one coalesced retained cycle, but none runs.
+      Actual semantic assertion fails0passing/1failing, restored whole38passes.
 
   - gate: node tools/queue/gates/multitenant-next-slices.js --suite compose --ref bc4ee1a91b84a657012dbb77ee835fdeb78ef707
     control: node tools/queue/gates/multitenant-next-slices.js --suite compose --ref bc4ee1a91b84a657012dbb77ee835fdeb78ef707 --control unavailable
@@ -3043,16 +3053,16 @@ controls:
     proves: >
       Disable the single duplicate-identifier retry in scratch: after two empty matches and a real indexed INSERT loser, actual HTTP500 replaces the required resend200.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
-    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70 --control frame-clinical
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35 --control frame-clinical
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
     control-kind: integration
     proves: >
       Alter the next real-trigger BG from240 to241; the retained clinical value assertion fails.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
-    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70 --control frame-retention
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
+    control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35 --control frame-retention
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
     control-kind: integration
     proves: >
       Erase kept on a callback error after real rows; exact prior-cycle/timestamp retention fails.

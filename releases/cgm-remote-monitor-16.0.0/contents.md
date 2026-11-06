@@ -1520,3 +1520,17 @@ No M0–M6 promotion or application push.
 and [R54 continuation](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06)
 retain exact commands/hashes/limits. No application push, RC/deployment admission or
 new policy decision is made by this measurement.
+
+
+### Update — independent profile acceptance and focused clock repair (2026-11-06)
+
+| Scope | Reproduced capture, independently read/hash-verified | Remaining boundary |
+|---|---|---|
+| R55 independentPROFILE2ee | Full6690/3pending/0failure/browser684, archive38/http-clinical-retention each0/1semantic/restored38/finalprcheckOK. All22artifact lengths/hash verified;11containers/20volumes recorded absent across7serialcampaigns. | Separate accepted REST359 and PROFILE2ee, no merge/runtime-role/subscriber/notification promotion. Fourthdeclaredv1closed2eeUNMEASURED/prior517historical. R50–R54 immutable. |
+| Focused clock repair3532/117 | Actual7passing/1benchmarkpending; negative0/2(primaryECONNRESET/lostHTTP, secondary strict workerexit1); restored1/503/same-workerGET200/POST201/strict0. Raw3/source5/preparer/monitor hashes verified;6containers/9volumes absent per capture. | Focused branch evidence only, not clockready/fullacceptance. Clock unjoined/default-off; assembledsingle/Mongo/full/browser/prcheck/broadercontrols/performance UNMEASURED. Original fatal diagnostic retained. |
+
+[Canonical profile report](../../reports/private-acquisition-profile-2026-11-06/README.md),
+[artifact index](../../reports/private-acquisition-profile-2026-11-06/artifact-index.json)
+and [focused recovery record](../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md)
+retain exact scopes. No new numbered clock acceptance, milestone/RC promotion,
+production enablement or application push; no policy decision changed.

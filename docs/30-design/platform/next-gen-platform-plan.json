@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure/browser684/settings12/freshprcheckOK; test-only normalization finalfix. R51-R53/R49-R50 captures unchanged. Successfulcaptured cleanup3/5+18/26+3/5absent/219preserved/private0700/0600. No clock/profile2ee join, milestone/RC promotion, productionownerlistener or stronger snapshot. ClockHTTP/full/benchacceptance separatelypending.",
+ "measured": "2026-11-06: R54 REST359 accepted cumulative7144/80pending/0failure/browser684; R55 independentPROFILE2ee accepted6690/3pending/0failure/browser684/archive38/three measuredhttp-clinical-retention controls/restored38/prcheckOK. Notification-close fourthcontrol2eeUNMEASURED/prior517historical. REST/profile separate, not merged, no role/subscriber promotion. Originalclockfataldiagnostic retained; separate3532/117focusedHTTP7pass/1benchmarkpending, negative0/2(primaryECONNRESET+secondarystrict exit1), restored1/503/same-workerGET200POST201/strict0. No fullclockreadiness/acceptance/join/defaultenablement; singleMongo/full/browser/prcheck/broadercontrols/latencybenchUNMEASURED. All milestone states unchanged.",
  "tracks": [
   {
    "id": "storage",
@@ -302,18 +302,18 @@
    "phase": "intent",
    "state": "progress",
    "short": "one-tenant computed profile",
-   "title": "Explicit single/nonresident prototype: actual physical-write and heartbeat evaluation, retained cycle properties and fake delivery handoff; default single remains resident. No multitenant evaluator or production subscriber change.",
+   "title": "R55 independently accepts private acquisition helper integration in single/nonresident prototype, retained evaluateCycle and physical-write/timer policy. REST/profile branches separate; no runtime-role/subscriber/notification admission.",
    "where": "scripts/views-profile-server.js, lib/server/bootevent.js and nonresident.js, tests/views-profile.test.js",
-   "check": "R50 full6690/3pending/0failure and default-browser684; parent archived38 with clinical/retention semantic controls. Actual held reads yield A/B then a real trigger B/B; callback failure retains previous time/properties and recovers. Teardown proves no late fake-provider delivery only. Wider writers/alarms/live stats/cost remain open.",
+   "check": "R55 independent2ee full6690/3pending/0failure/browser684/prcheckOK, archive38; measuredhttp/clinical/retention controls each0/1semantic/restored38. Fourthv1-closedUNMEASURED on2ee/prior517historical. Live-handoff limits, widerwriters/alarms/stats/cost/recovery remain open.",
    "depends": [
     "ST-VIEWS"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8891",
-   "ref": "R50 accepted independent5173864d remains separate. New helper-only descendant2ee8b493 matches REST helper bytes and preserves evaluateCycle; new runtime38/controls/full/browser/prcheckUNMEASURED. No REST join or subscriber/notification admission.",
+   "ref": "R55 profile2ee8b493 accepted separately from R54REST35903069; helper bytes match, no branch merge. R50 capture retained.",
    "spec": [
     {
-     "label": "R54 cumulative / native scope limits",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
+     "label": "R55 independent profile / scope limits",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-private-acquisition-profile-2026-11-06"
     },
     {
      "label": "R50 independent evaluator frame characterization",
@@ -1033,14 +1033,14 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "REST allocation accepted / profile prep pending",
-   "title": "R52 native and R54 cumulative composition accept private acquisition allocation behind caller policies. No common revision, stronger snapshot or multitenant evaluator guarantee.",
+   "short": "Private allocation / separate accepted branches",
+   "title": "R54 REST359 and R55 independentPROFILE2ee accept private allocation behind separate caller policies. No commonrevision/strongersnapshot, branch merge or multitenant evaluator admission.",
    "check": "Nativee5fe0b5e full7080/80pending/0failure, prior same-head browser684/prcheckOK; acquisition14/concurrency4, six controls/restored14/4 and caller4/reused-target2fail/restored4.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "R54 cumulative35903069 accepted full7144/80pending/0failure/browser684/prcheckOK. R52 nativee5 scope unchanged; independentprofile2ee newruntime38/full/browser/prcheckUNMEASURED, no RESTjoin.",
+   "ref": "R54 REST359 and R55 PROFILE2ee independently accepted; same helper behind caller policies, no merge/common revision/stronger snapshot/distributed evaluator guarantee.",
    "spec": [
     {
      "label": "R54 cumulative / native scope limits",

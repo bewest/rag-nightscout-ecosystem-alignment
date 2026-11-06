@@ -25161,10 +25161,10 @@ items:
     title: 'Next: refresh and integrate PR 8891 single nonresident profile'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/evaluator-frame-20261105
+    branch: codex/private-acquisition-profile-prep-20261106
     pr: [8891]
-    base: official/dev@4a482627; PR8891@dff9a8d4
-    worktree: externals/work/crm-codex-evaluator-frame-20261105
+    base: official/dev@4a482627; PROFILE-R50@5173864d; REST-R54@35903069 separate
+    worktree: externals/work/crm-codex-private-acquisition-profile-prep-20261106
     state: in-progress
     blast_radius: >
       Existing feat/views-profile prototype, explicit opt-in boot, evaluator
@@ -25175,7 +25175,7 @@ items:
     semver_reason: Bounded dormant characterization; full composition and release placement remain separate.
     register: []
     gates:
-      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 2ee8b493d76ddf92bf53d5e5c9cf0d9d0d2dbb35
         kind: integration
         describe: >
           Independent refreshed nonresident single replay: actual write/timer
@@ -25196,6 +25196,10 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
     notes: >
+      R55 independent2ee8b493 accepts private acquisition helper integration;
+      full6690/3pending/0failure, browser684, archive38/http+clinical+retention
+      semantic controls/restored38 and finalprcheckOK. Fourth declaredv1-closed
+      control on2ee UNMEASURED/prior517historical. REST359 separate, not merged.
       R50 independent5173864d adds actual Mongo read barriers and raw concurrent
       writes: retained A/B then next actual trigger B/B; callback fault after real
       rows preserves the prior cycle and the next trigger recovers. Teardown proves
@@ -25207,9 +25211,9 @@ items:
     title: 'Next join: shared bounded frames and derived calculations'
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/frame-integration-20261105
-    base: REST-R49@1c55098a; PROFILE-R50@5173864d
-    worktree: externals/work/crm-codex-frame-integration-20261105
+    branch: codex/serial-integration-20261106
+    base: REST-R54@35903069; PROFILE-R55@2ee8b493 (separate branches)
+    worktree: externals/work/crm-codex-serial-integration-20261106
     state: in-progress
     blast_radius: >
       Shipping computed views, tenant snapshot/property composition and independent
@@ -25229,7 +25233,8 @@ items:
       - no-gate: >
           R52 accepts private allocation only on native REST; no common database
           revision, settings/plugin version key or stronger snapshot consistency
-          is implemented. Independent profile adaptation remains UNMEASURED.
+          is implemented. R55 accepts independent profile allocation separately;
+          no REST/profile merge or full runtime admission follows.
           Full alarm/writer cohorts, live statistics/cost,
           distributed recovery and final release placement remain open.
     blocks_on:
@@ -25245,7 +25250,7 @@ items:
       R52 nativee5fe0b5e accepted full7080/80pending/0failure, prior browser684,
       final prcheckOK; acquisition14/concurrency4+six semantic controls/restorations.
       R54 cumulative35903069 accepts B+A+C composition. Independent
-      profile2ee8b493 source-only, new runtime/full/browser/prcheck UNMEASURED.
+      profile2ee8b493 accepted in R55 on its own branch; no REST/profile merge.
       Actual tenant HTTP reads observe old entries/new treatments across an atomic
       independent writer commit; tenant B stays unchanged. Bounds, future-record,
       typed-union and statistics/error differences remain explicit. Private
