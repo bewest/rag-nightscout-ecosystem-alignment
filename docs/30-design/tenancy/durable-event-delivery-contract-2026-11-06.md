@@ -211,7 +211,7 @@ Where that state lives **today** at `35903069`, **read-derived**:
 | State | Home today | Scope today |
 |---|---|---|
 | alarm levels and `lastEmitTime` per group; the per-cycle `requests = { notifies, snoozes }` | `lib/notifications.js:23-74`, reset by `initRequests` each cycle | one process-global `ctx.notifications` |
-| ack and snooze | `notifications.ack` at `lib/notifications.js:166-184` deletes `lastEmitTime`; `requestSnooze` at `:118-127` | same object; the web client's ack arrives over the socket |
+| ack and snooze | `notifications.ack` at `lib/notifications.js:166-184` deletes `lastEmitTime`; `requestSnooze` at `:118-127` | same object; the web client's ack arrives over the socket. Under D23 (adopted 2026-11-06) the `/alarm` socket stays, `realtime` forwards the ack to `api`, and `api` writes the tenant-keyed ack row that the evaluator consumes from the feed |
 | the data the cycle evaluates | `ctx.ddata` (`lib/data/ddata.js`), loaded by `lib/data/dataloader.js` from `ddata.lastUpdated`; the cycle runs on `data-loaded` → plugins → `data-processed` → socket `dataUpdate` (`lib/server/bootevent.js:514-551`, `lib/server/websocket.js:122,159`) | one process, one site |
 | the write-driven trigger | `data-received` from the socket write paths (`websocket.js:285,538,598,...`) and the timer `tick` (`bootevent.js:526`) | in-process bus |
 | private, bounded acquisition that leaves the caller's `ddata` untouched | `lib/data/views/index.js:121-219` and `lib/server/tenant-app/snapshot.js:15-75` (per the seams plan's inventory, R49 **reproduced** the caller-cache-untouched control) | per call |
@@ -232,10 +232,13 @@ and the seams plan's identity rule:
 2. A failed cycle retains the entire prior successful result and timestamp and
    performs no notification handoff; the next real trigger recovers (R50, R55
    `frame-retention` control: null replacing the kept properties is the red).
-3. Ack and snooze are **per tenant** and survive a consumer restart only if
-   they are stored with the tenant; the roadmap keeps "owner ack/snooze and
-   actual notification delivery" on their separate gates, so their storage
-   shape is not decided here, only their key.
+3. Ack and snooze are **per tenant** writes. D23 names their writer: the
+   client acks on the `/alarm` socket, `realtime` forwards to `api`, and `api`
+   persists a tenant-keyed ack row that the evaluator reads from the feed like
+   any other committed row, so an ack survives a consumer restart by replay and
+   `realtime` holds no storage write authority. The roadmap keeps "owner
+   ack/snooze and actual notification delivery" on their separate gates, so the
+   row's shape and retention are not decided here, only its key and its writer.
 4. The retained cycle's inputs are the tenant's rows at or below the
    consumer's checkpoint; the evaluation instant is recorded with the cycle and
    is not a database revision (R49).
@@ -272,7 +275,7 @@ These rows are the gate `MT-RUNTIME-PLAN` lacks today; the queue item keeps
 | performance budgets: contention, fresh-ingestion latency, lock-held work, evaluator cost per tenant | **UNMEASURED**; the clock reports say so in the same words, and the benchmark is opt-in and pending |
 | whether configuration and grant rows appear on the feed | **deferred**; §5 makes consumers correct without it |
 | tombstones for hard deletes | **deferred**; §4 keeps hard deletes outside the spine |
-| the storage shape of per-tenant ack/snooze | separate gate per the roadmap |
+| the storage shape and retention of per-tenant ack/snooze rows | separate gate per the roadmap; the writer is settled by D23 (`api`, via the `realtime` forward) |
 | anything about single-tenant MongoDB | out of scope; D4 and the D-EVENT scope decision keep the in-process bus there |
 | M5/M6 promotion, RC admission, default enablement | **no**; this is a design acceptance input for batch B7, nothing more |
 
