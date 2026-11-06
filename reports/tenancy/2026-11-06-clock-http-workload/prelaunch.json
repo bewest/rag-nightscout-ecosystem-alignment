@@ -1,0 +1,8 @@
+{
+  "exit": 127,
+  "scope": "invalid prelaunch; no test loaded",
+  "error": "env: node: No such file or directory",
+  "observedNewResources": 0,
+  "observerErrors": [],
+  "repair": "root explicitly approved absolute existing Node and its directory in cleared PATH; no source/dependency/assertion changes"
+}

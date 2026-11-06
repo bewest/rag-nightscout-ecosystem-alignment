@@ -1,0 +1,143 @@
+{
+  "containers": [
+    {
+      "name": "ns-preview-replicas-pg-1f7a8aaf609a46fa",
+      "id": "d7f3aba699ab676b0dc38e8094ee14e9b17649c5e01106ce1ff531ec26dc8ead",
+      "image": "postgres:16",
+      "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-pg-53852877c66c194d",
+      "id": "64ebbef9477e73bd240fffc5040c005b3350ac57504ff43dc645e9716784eec0",
+      "image": "postgres:16",
+      "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-pg-7d4f161256051f7a",
+      "id": "cc73aff08850a4ea2652f1e32f383050d015bf9e8a8bf487c33ddaf3cb45110c",
+      "image": "postgres:16",
+      "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-pg-a36616bfaf287aee",
+      "id": "89861afe2c2d5e79deb795e59e99507139fff9a05ce845f21545733aff906fb0",
+      "image": "postgres:16",
+      "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-pg-b0ddc2a59ea0cb2a",
+      "id": "7da55ac08c0dcb04089b3010a5198a4dc7374f691b644b2e3c03154ebea550f3",
+      "image": "postgres:16",
+      "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-vault-1f7a8aaf609a46fa",
+      "id": "507d3fae3216f2474248c869d73f59ed5908f5053e5568a6ba35c9e4c3dd1421",
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-vault-53852877c66c194d",
+      "id": "725791a5c7ef5c8cccc631eed00a1c4a2d7bdba491e50c060ec34099c29a39ff",
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-vault-7d4f161256051f7a",
+      "id": "95ae1ac254fcdd373268a883c39bb5c13c2510459a2548c2e70a57d22895c368",
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-vault-a36616bfaf287aee",
+      "id": "7d50961cda5d3f76c4962b3763dd34f26645e5cb9673c66450bf9149747b13ff",
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "verifiedAbsent": true
+    },
+    {
+      "name": "ns-preview-replicas-vault-b0ddc2a59ea0cb2a",
+      "id": "e4a6b614de9a89bcd9e0bb72c9c76915a382640d72cea5b771dde4090448f6c9",
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "verifiedAbsent": true
+    }
+  ],
+  "volumes": [
+    {
+      "id": "11d93b5aad1a98cb9fe8eb5a94131fe7b72a68b545b4e4a70ff3130e419b4ffb",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "138bec99fca5389c6c7f39506dbc6ce37e998c656b6d50142cf53fab1dca48e8",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "16d72678dfff9b3e368697dd3e9cabf18852d5d7ec155d8bf6e912bac0289d4f",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "233e83c0f1401a160fd2b23842cd7f822c62bd4a1e2114d16153e428d0e83179",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "3fd26faba61b921c4452328251b5b6249431b6dfc7f8de2fb80beea450c86303",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "51a814746ea4209d259b49bfd10ee7805fa7a12d84e6264382b8f4e608bd5fdf",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "5556215f7932f927a775709183738fbdad2eac9e8bf315986c4b10bb4ef864b4",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "5fbf4fd23a296bcf2a25a0f840109e0f77cca61fab42049a65b770bda25e9b82",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "7de74b7e239ebb006c94faac7a13f0335b943847dd1f6c4ac431f20fb72b4998",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "8fbcfe2efd4ff0f760e170b83d6bb870cb6e37547ddc49ed3a4f490ce510e456",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "a8d5999e77e426bd72f17d971f95d55f744705f52447e6aa596a9d3ba3aee15a",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "b7f6569de585f0c8c8d7168bb0deed9741a5a9921a1840165b1c33bcbbb1711b",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "d1c4a5951ebf585aa6b843d0b82f2e313e4b55cb6af2eccda44ebba76363ddb6",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "e7fa30c81b89ba7b483a29217adfc53118a4fd20bfc01e4141b10665e5629701",
+      "verifiedAbsent": true
+    },
+    {
+      "id": "f5ff7692858844df50f73d946878c4f852bdfd3891b00e050fb4770b2cec70b3",
+      "verifiedAbsent": true
+    }
+  ],
+  "observerErrors": [],
+  "networksUsed": {
+    "bridge": "34b4eea182f4abb5092aa51b2a6184a15cf1e7e5bff3ebecacff09bffcff8711"
+  },
+  "volumesAfter": 462,
+  "networkOwnership": "existing default bridge only; no owned network created or removed",
+  "released": "2026-11-06T22:23:58Z"
+}

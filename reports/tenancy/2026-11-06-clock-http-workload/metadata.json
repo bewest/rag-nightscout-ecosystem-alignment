@@ -1,0 +1,66 @@
+{
+  "sourceHead": "83582e876dd193f4448f44c28e379fb5464a26c7",
+  "alignmentBase": "74d273225a4a9c50854c905c73a6dafb9347dc85",
+  "archiveSha256": "cdf66f5f304ed9281262db213e8aa2afd38203517ff670153208573d71724883",
+  "archiveTrackedRegularFilesVerifiedUnchanged": 1726,
+  "sourceMutation": false,
+  "actualNativeInvocations": 1,
+  "prelaunchFailures": 1,
+  "exit": 0,
+  "mocha": {
+    "passing": 1,
+    "reportedDuration": "18s"
+  },
+  "claimed": "2026-11-06T22:21:41Z",
+  "released": "2026-11-06T22:23:58Z",
+  "commandArgv": [
+    "env",
+    "-i",
+    "PATH=/home/bewest/n/bin:/usr/local/bin:/usr/bin:/bin",
+    "HOME=/home/bewest",
+    "TZ=UTC",
+    "NODE_ENV=test",
+    "NS_TENANT_COMMIT_CLOCK_HTTP_DOCKER_TEST=1",
+    "NS_TENANT_COMMIT_CLOCK_BENCHMARK=1",
+    "NS_TENANT_COMMIT_CLOCK_OFF_BASELINE=1",
+    "/home/bewest/n/bin/node",
+    "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/clock-http-workload-scratch-20261106/source/node_modules/mocha/bin/mocha.js",
+    "--fail-zero",
+    "--timeout",
+    "120000",
+    "--reporter",
+    "spec",
+    "--grep",
+    "reports end-to-end successful request latency and throughput",
+    "--exit",
+    "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/clock-http-workload-scratch-20261106/source/tests/tenant-commit-clock-http.integration.test.js"
+  ],
+  "cwd": "/home/bewest/src/rag-nightscout-ecosystem-alignment",
+  "rawSha256": {
+    "source/tests/tenant-commit-clock-http.integration.test.js": "5881a84fc082f1907aa62b121dea90076e33c5266cb8bfd94ce4ae62e887743d",
+    "source/tests/fixtures/tenant-commit-clock-http.js": "1afb917f782bb2afda0f3f6c320538848c4be718155361d00b730942216a5e97",
+    "source/tests/fixtures/multitenant-preview-replicas.js": "fe6fafce6f2046261fbd6bf432bddcfb15ff442232e8343a7b9164d546f229ff",
+    "source/package-lock.json": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+    "workload.log": "a9de9722a3180391c59c3d4fcf6eae079855f41f1442c930c95b7c3787ac4e07",
+    "workload-corrected.log": "1c4873c6eb7159c307fdf40be68671c11bb2f6b459e3074ed4e09cdb9786f2ee",
+    "resources.json": "6e0934f2d34dd8eacc4ae9b7025124dfa7ff8db7748dff3e56f060783c2f538f",
+    "resources-corrected.json": "bd6ff683e84959500fef1002dc28e707184dfc1704a08118c5c747242805354d",
+    "observe-resources.py": "1429db8749098394258fd6d17271112d5c60fffff1f41dd40615b89eb952d202",
+    "cleanup-audit.json": "ae71bae229fc1083eea93fde31069cd6c8c67516613f1f773160826a9cbf412c"
+  },
+  "capacityAtClaim": {
+    "volumes": 462,
+    "availableGiBRounded": 79
+  },
+  "unmeasured": [
+    "Final independent stored successful row count: benchmark has no assertion/reporting of it.",
+    "Individual latency samples/full histogram: native metrics emit p50/p95 only.",
+    "Database CPU, memory/I/O utilization and isolated tenant-clock lock wait.",
+    "Steady state/cache equivalence, repeated-run uncertainty, causal OFF/ON difference.",
+    "Approved latency/throughput budget or performance acceptance."
+  ],
+  "publicRawCopies": {
+    "workload-corrected.log": "workload.txt",
+    "workload.log": "prelaunch-failure.txt"
+  }
+}
