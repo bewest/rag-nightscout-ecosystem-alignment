@@ -20,7 +20,7 @@
  *            not, the harness is broken and the result means nothing.
  *   ref      a two-element list must build. A throw is BF-108.
  *
- * Reads only. Default ref origin/dev; pass --ref to measure another.
+ * Reads only. Default ref official/dev; pass --ref to measure another.
  */
 
 const { execFileSync } = require('child_process');
@@ -30,7 +30,7 @@ const path = require('path');
 const { CRM, report } = require('./_gate');
 
 const REF = process.argv.includes('--ref')
-  ? process.argv[process.argv.indexOf('--ref') + 1] : 'origin/dev';
+  ? process.argv[process.argv.indexOf('--ref') + 1] : 'official/dev';
 const findings = [];
 
 function build (ref, values) {

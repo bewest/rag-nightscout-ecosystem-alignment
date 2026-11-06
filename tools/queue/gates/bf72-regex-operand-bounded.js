@@ -46,7 +46,7 @@
 
 const { show, git, report } = require('./_gate');
 
-const REF = process.env.BF72_REF || 'origin/dev';
+const REF = process.env.BF72_REF || 'official/dev';
 const CANDIDATES = [
   'lib/server/query-operator-allowlist.js',
   'lib/server/query.js',

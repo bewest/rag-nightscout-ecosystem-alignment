@@ -79,7 +79,7 @@ touch anything else on someone else's item.
 
 A `fixed` or `merged` entry counts as covered, because the branch carrying the repair is itself an
 item. That is **not** a claim that an operator is safe: `fixed` means repaired on a branch and not
-merged, `merged` means in `origin/dev` and not released, and `DOC-EXPOSURE` owns saying so.
+merged, `merged` means in `official/dev` and not released, and `DOC-EXPOSURE` owns saying so.
 
 ## How to add an item
 
@@ -92,7 +92,7 @@ Append to the `items:` list in `queue/work-queue.yaml`, then run
     parcel: phase0                        # must exist in the `parcels:` block
     repo: cgm-remote-monitor
     branch: bf/example
-    base: origin/dev@a8888f0d             # say WHICH commit, not just "dev"
+    base: official/dev@a8888f0d             # say WHICH commit, not just "dev"
     worktree: externals/work/crm-bf-example
     state: ready-to-push                  # a CLAIM. the gates are the measurement.
     blast_radius: 2 commits, lib/server/example.js, +40/-12.
@@ -168,9 +168,9 @@ There are exactly two legal shapes, and the validator enforces it:
 
 ```yaml
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/x >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/x >/dev/null
         kind: static
-        describe: trial-merge into origin/dev is conflict-free
+        describe: trial-merge into official/dev is conflict-free
 
       - no-gate: >
           Nothing exercises the ENABLE warning through a booted plugin registry.
@@ -249,7 +249,7 @@ is why a control is a declared artefact rather than a habit:
   fired, and the item reported **3/3 PASS on a property that is false**.
 - **P0-E**'s only content gate was
   `git log --format=%H bf/reads | grep -q .` — an assertion that the branch has
-  at least one commit. It passes for `origin/dev`, `origin/master` and
+  at least one commit. It passes for `official/dev`, `official/master` and
   `bf/alarms` too.
 
 Every runnable gate has an entry in `queue/gate-controls.yaml` carrying either
@@ -283,7 +283,7 @@ Three helpers exist so that a control can be a one-line command:
 |---|---|
 | `tools/queue/gates/ablate.sh` | throwaway worktree of a branch, shipping code reverted to the base, the branch's own tests re-run. Exits with mocha's status. |
 | `tools/queue/gates/empty-root-control.sh` | runs a gate with `QUEUE_GATE_ROOT` pointed at an empty directory. The **weak** form: it proves a gate reads its inputs, not that it reads the right property of them. |
-| a gate's own `--rev` mode | `bf-reads-read-contract.js --rev origin/dev` runs the identical assertions against a rev materialised from the object database. The **strong** form. |
+| a gate's own `--rev` mode | `bf-reads-read-contract.js --rev official/dev` runs the identical assertions against a rev materialised from the object database. The **strong** form. |
 
 `ablate.sh` prints its scope and refuses to run a test if the working tree came
 out unchanged, because `git checkout <base> -- <path>` aborts the *whole*
@@ -294,8 +294,8 @@ rather than that the gate is vacuous, and you have to say which.
 
 Controls are **authored, never derived**. A rule like "a gate is vacuous if it
 passes on the base" would be wrong twice here: every containment gate (for
-example `P0-A`'s `merge-base --is-ancestor bf/alarms origin/dev`) and `P0-LOCK`'s
-lockfile gate pass against `origin/dev` on purpose, and `RT-D3`'s suite runs
+example `P0-A`'s `merge-base --is-ancestor bf/alarms official/dev`) and `P0-LOCK`'s
+lockfile gate pass against `official/dev` on purpose, and `RT-D3`'s suite runs
 against the shipping tree, which no control may modify.
 
 ## Writing `operator_visible`

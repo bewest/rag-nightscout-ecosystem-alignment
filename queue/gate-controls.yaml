@@ -123,10 +123,10 @@ controls:
       CONTROL finding and is the non-vacuous measurement for this item.
 
   - gate: |-
-      bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'
+      bash -c 's=$(git -C externals/cgm-remote-monitor-official show official/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'
     cwd: .
     control: |-
-      bash -c 's=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'
+      bash -c 's=$(git -C externals/cgm-remote-monitor-official show official/dev:lib/api/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'
     control-kind: static
     proves: >
       the identical pair of greps against a file that contains neither
@@ -148,7 +148,7 @@ controls:
       so the instrument is exercised with a stand-in pattern instead.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0
+      git -C externals/cgm-remote-monitor-official cat-file -e official/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show official/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0
     cwd: .
     control: |-
       git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q "maxLimit" && exit 1 || exit 0
@@ -220,10 +220,10 @@ controls:
       yes both ways would not be reading ancestry at all.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/alarms
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/alarms
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/alarms
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command since bf/alarms merged into
@@ -233,10 +233,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/auth
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/auth
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/auth
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/auth
     control-kind: static
     proves: >
       origin/chore/nightscout-modernization is a base bf/auth has NOT
@@ -245,10 +245,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/cache
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/cache
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/cache
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/cache
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command since bf/cache merged into
@@ -258,10 +258,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/coercion
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/coercion
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/coercion
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command since bf/coercion merged into
@@ -271,10 +271,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/connect-pin
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/connect-pin
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/connect-pin
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/connect-pin
     control-kind: static
     proves: >
       origin/chore/nightscout-modernization is a base bf/connect-pin has
@@ -283,10 +283,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/food
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/food
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/food
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/food
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command since bf/food merged into
@@ -296,10 +296,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/merge
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/merge
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/merge
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/merge
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command since bf/merge merged into
@@ -309,10 +309,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/parms
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/parms
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/parms
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/parms
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command since bf/parms merged into
@@ -322,10 +322,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/reads
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/reads
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/chore/nightscout-modernization bf/reads
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/reads
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command since bf/reads merged into
@@ -335,10 +335,10 @@ controls:
       dev moves ahead of the branch.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/master origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/master official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev official/master
     control-kind: static
     proves: >
       origin/master is a strict ancestor of origin/dev, so the reversed
@@ -346,106 +346,131 @@ controls:
       said yes both ways would not be reading ancestry at all.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/alarms >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/alarms origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/alarms and origin/chore/retire-jsdom were measured to conflict
-      on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge
-      that returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/alarms against
+      chore/retire-jsdom, stopped conflicting once cut 1 merged into dev (VACUOUS,
+      measured 2026-11-06). A trial merge that returned 0 for a conflicting pair
+      would make every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/auth >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/auth origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/auth and origin/chore/retire-jsdom were measured to conflict on
-      2026-09-15 and merge-tree exits 1 on the pair. A trial merge that
-      returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/auth against
+      chore/retire-jsdom, stopped conflicting once cut 1 merged into dev (VACUOUS,
+      measured 2026-11-06). A trial merge that returned 0 for a conflicting pair
+      would make every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/cache >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/cache origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/cache and origin/chore/retire-jsdom were measured to conflict
-      on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge
-      that returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/cache against
+      chore/retire-jsdom, stopped conflicting once cut 1 merged into dev (VACUOUS,
+      measured 2026-11-06). A trial merge that returned 0 for a conflicting pair
+      would make every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/coercion >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/coercion origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/coercion and origin/chore/retire-jsdom were measured to
-      conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial
-      merge that returned 0 for a conflicting pair would make every
-      "merges cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/coercion
+      against chore/retire-jsdom, stopped conflicting once cut 1 merged into dev
+      (VACUOUS, measured 2026-11-06). A trial merge that returned 0 for a
+      conflicting pair would make every "merges cleanly" row in this queue
+      meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/food >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/food origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/food and origin/chore/retire-jsdom were measured to conflict on
-      2026-09-15 and merge-tree exits 1 on the pair. A trial merge that
-      returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/food against
+      chore/retire-jsdom, stopped conflicting once cut 1 merged into dev (VACUOUS,
+      measured 2026-11-06). A trial merge that returned 0 for a conflicting pair
+      would make every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/merge >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/merge origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/merge and origin/chore/retire-jsdom were measured to conflict
-      on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge
-      that returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/merge against
+      chore/retire-jsdom, stopped conflicting once cut 1 merged into dev (VACUOUS,
+      measured 2026-11-06). A trial merge that returned 0 for a conflicting pair
+      would make every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/parms >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/parms origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/parms and origin/chore/retire-jsdom were measured to conflict
-      on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge
-      that returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/parms against
+      chore/retire-jsdom, stopped conflicting once cut 1 merged into dev (VACUOUS,
+      measured 2026-11-06). A trial merge that returned 0 for a conflicting pair
+      would make every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/reads >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/reads >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/reads origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev seam/t1-2-storage-interface >/dev/null
     control-kind: static
     proves: >
-      bf/reads and origin/chore/retire-jsdom were measured to conflict
-      on 2026-09-15 and merge-tree exits 1 on the pair. A trial merge
-      that returned 0 for a conflicting pair would make every "merges
-      cleanly" row in this queue meaningless.
+      official/dev and seam/t1-2-storage-interface (81a1f6ce, the frozen seam chain,
+      1010 behind dev) were measured to conflict on 2026-11-06 and merge-tree exits
+      1 on the pair; the chain is closed as superseded (SEAM-REFRESH) so the pair
+      stays conflicting. Re-authored 2026-11-06: the earlier pair, bf/reads against
+      chore/retire-jsdom, stopped conflicting once cut 1 merged into dev (VACUOUS,
+      measured 2026-11-06). A trial merge that returned 0 for a conflicting pair
+      would make every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/build-runtime-separation >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/build-runtime-separation >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/build-runtime-separation bf/reads >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/chore/build-runtime-separation bf/reads >/dev/null
     control-kind: static
     proves: >
       origin/chore/build-runtime-separation and bf/reads were measured
@@ -454,10 +479,10 @@ controls:
       every "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/compose-mongodb6 >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/compose-mongodb6 >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/compose-mongodb6 bf/reads >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/chore/compose-mongodb6 bf/reads >/dev/null
     control-kind: static
     proves: >
       origin/chore/compose-mongodb6 and bf/reads were measured to
@@ -466,10 +491,10 @@ controls:
       "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/mime-exposure-review >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/chore/mime-exposure-review bf/reads >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/chore/mime-exposure-review bf/reads >/dev/null
     control-kind: static
     proves: >
       origin/chore/mime-exposure-review and bf/reads were measured to
@@ -478,10 +503,10 @@ controls:
       "merges cleanly" row in this queue meaningless.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/nightscout-modernization >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/nightscout-modernization >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/retire-jsdom >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/retire-jsdom >/dev/null
     control-kind: static
     proves: >
       origin/dev and origin/chore/retire-jsdom conflict in seven files,
@@ -516,35 +541,38 @@ controls:
       a pull request.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/ws-loadretro-auth
     control-kind: static
     proves: >
-      bf/throttle is NOT contained in origin/dev - it is a Phase 0 branch
-      that has not been pushed - and the same command reports it so (exit 1,
-      measured 2026-09-21). That is the shape this gate must go red in: a
-      branch whose work has not landed. Without it the containment test could
-      be answering yes to everything.
+      bf/ws-loadretro-auth is a strict ancestor of official/dev, so the reversed
+      question (is today's official/dev an ancestor of that older commit) must be
+      answered no (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier
+      control asked whether 15.0.8's master lacked the commit, and went stale when
+      15.0.9 released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that
+      said yes both ways would not be reading ancestry at all.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/alarm-socket-scope
     control-kind: static
     proves: >
-      bf/auth is NOT contained in origin/dev, and the same command reports it
-      so (exit 1, measured 2026-09-21). Same argument as the gate above, with a
-      different unlanded branch so the two controls do not share a single point
-      of failure - if bf/throttle is pushed tomorrow, this one still holds.
+      bf/alarm-socket-scope is a strict ancestor of official/dev, so the reversed
+      question (is today's official/dev an ancestor of that older commit) must be
+      answered no (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier
+      control asked whether 15.0.8's master lacked the commit, and went stale when
+      15.0.9 released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that
+      said yes both ways would not be reading ancestry at all.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/dev >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/dev >/dev/null
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev origin/chore/mime-exposure-review >/dev/null
+      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/mime-exposure-review >/dev/null
     control-kind: static
     proves: >
       A control for a control, deliberately. The gate merges dev with itself
@@ -625,21 +653,23 @@ controls:
       the gate itself exits 0 against official/dev b29f1bf7.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official show origin/dev:lib/authorization/storage.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" && exit 1 || exit 0
+      git -C externals/cgm-remote-monitor-official show official/dev:lib/authorization/storage.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" && exit 1 || exit 0
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official show bf/auth:lib/authorization/storage.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" && exit 1 || exit 0
+      git -C externals/cgm-remote-monitor-official show 92d08342:lib/authorization/storage.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" && exit 1 || exit 0
     positive-control: |-
       git -C externals/cgm-remote-monitor-official show bf/reads:lib/server/aggregate.js | grep -qE "console\\.log\\('Loading',[[:space:]]*opts\\)" && exit 1 || exit 0
     control-kind: static
     proves: >
-      the same absence gate exits 1 against a ref that DOES carry the
-      line (bf/auth, at :113) and exits 0 against a file that does not
-      (bf/reads' aggregate.js, where BF-05's own console.log was
-      deleted). Both directions measured.
+      the same absence gate exits 1 against a ref that DOES carry the line
+      (92d08342, the 15.0.8 release, one match in lib/authorization/storage.js,
+      measured 2026-11-06) and exits 0 against a file that does not (bf/reads'
+      aggregate.js, the positive control). Re-authored 2026-11-06: the earlier
+      known-negative was bf/auth, which lost the line when 56ed29d2 removed it
+      (VACUOUS, measured 2026-11-06).
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official show origin/dev:lib/plugins/index.js | grep -q "return (p !== null)" && exit 1 || exit 0
+      git -C externals/cgm-remote-monitor-official show official/dev:lib/plugins/index.js | grep -q "return (p !== null)" && exit 1 || exit 0
     cwd: .
     control: |-
       git -C externals/cgm-remote-monitor-official show bf/alarms:lib/plugins/index.js | grep -q "return (p !== null)" && exit 1 || exit 0
@@ -676,7 +706,7 @@ controls:
       grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
     cwd: externals/work/crm-bf-connect-pin
     control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && git -C ../../../externals/cgm-remote-monitor-official show origin/dev:package-lock.json | sed 's#234d47c85510a77f07b3be0d2c026dd0272715d6#archive/refs/tags/v0.0.14.tar.gz#g' > "$T/lock.json" && grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' "$T/lock.json"
+      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && git -C ../../../externals/cgm-remote-monitor-official show official/dev:package-lock.json | sed 's#234d47c85510a77f07b3be0d2c026dd0272715d6#archive/refs/tags/v0.0.14.tar.gz#g' > "$T/lock.json" && grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' "$T/lock.json"
     positive-control: |-
       grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
     control-kind: static
@@ -722,7 +752,7 @@ controls:
       grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json
     cwd: externals/work/crm-bf-connect-pin
     control: |-
-      git -C ../../../externals/cgm-remote-monitor-official show origin/dev:package.json | grep -q 'archive/refs/tags/v0.0.14.tar.gz'
+      git -C ../../../externals/cgm-remote-monitor-official show official/dev:package.json | grep -q 'archive/refs/tags/v0.0.14.tar.gz'
     positive-control: |-
       grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json
     control-kind: static
@@ -760,7 +790,7 @@ controls:
       node tools/queue/gates/bf-reads-read-contract.js
     cwd: .
     control: |-
-      node tools/queue/gates/bf-reads-read-contract.js --rev origin/dev
+      node tools/queue/gates/bf-reads-read-contract.js --rev official/dev
     control-kind: static
     proves: >
       the identical 8 assertions against origin/dev, materialised from
@@ -808,10 +838,10 @@ controls:
       to that.
 
   - gate: |-
-      node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review
+      node tools/queue/gates/booterror-shape-coverage.js --ref official/chore/mime-exposure-review
     cwd: .
     control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review
+      tools/queue/gates/empty-root-control.sh tools/queue/gates/booterror-shape-coverage.js --ref official/chore/mime-exposure-review
     control-kind: static
     proves: >
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
@@ -821,10 +851,10 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      node tools/queue/gates/booterror-shape-coverage.js --ref origin/dev
+      node tools/queue/gates/booterror-shape-coverage.js --ref official/dev
     cwd: .
     control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/booterror-shape-coverage.js --ref origin/dev
+      tools/queue/gates/empty-root-control.sh tools/queue/gates/booterror-shape-coverage.js --ref official/dev
     control-kind: static
     proves: >
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
@@ -899,10 +929,10 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      node tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev
+      node tools/queue/gates/connector-pin-exposure.js --refs official/master,official/dev
     cwd: .
     control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev
+      tools/queue/gates/empty-root-control.sh tools/queue/gates/connector-pin-exposure.js --refs official/master,official/dev
     control-kind: static
     proves: >
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
@@ -1315,10 +1345,10 @@ controls:
   # ------------------------------------------------------------------------
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/alarms
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/alarms
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/alarms (it took the branch through a
@@ -1326,10 +1356,10 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/cache
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/cache
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/cache (it took the branch through a
@@ -1337,10 +1367,10 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/coercion
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/coercion
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/coercion (it took the branch through a
@@ -1348,10 +1378,10 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/food
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/food
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/food (it took the branch through a
@@ -1359,10 +1389,10 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/merge
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/merge
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/merge (it took the branch through a
@@ -1370,10 +1400,10 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/operators
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/operators
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/operators (it took the branch through a
@@ -1381,10 +1411,10 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/parms
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/parms
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/parms (it took the branch through a
@@ -1392,10 +1422,10 @@ controls:
       no. Exit 1, measured 2026-09-21.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/dev bf/reads
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/reads
     control-kind: static
     proves: >
       origin/dev is strictly ahead of bf/reads (it took the branch through a
@@ -1457,10 +1487,10 @@ controls:
   # different tree.
 
   - gate: |-
-      git -C externals/work/crm-adv-retro merge-base --is-ancestor origin/dev bf/ws-loadretro-auth
+      git -C externals/work/crm-adv-retro merge-base --is-ancestor official/dev bf/ws-loadretro-auth
     cwd: .
     control: |-
-      git -C externals/work/crm-adv-retro merge-base --is-ancestor bf/ws-loadretro-auth origin/dev
+      git -C externals/work/crm-adv-retro merge-base --is-ancestor bf/ws-loadretro-auth official/dev
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command; ADV-RETRO's branch merged into
@@ -1486,10 +1516,10 @@ controls:
       them needs a fixture that owns its own mongod.
 
   - gate: |-
-      git -C externals/work/crm-adv-alarm merge-base --is-ancestor origin/dev bf/alarm-socket-scope
+      git -C externals/work/crm-adv-alarm merge-base --is-ancestor official/dev bf/alarm-socket-scope
     cwd: .
     control: |-
-      git -C externals/work/crm-adv-alarm merge-base --is-ancestor bf/alarm-socket-scope origin/dev
+      git -C externals/work/crm-adv-alarm merge-base --is-ancestor bf/alarm-socket-scope official/dev
     control-kind: static
     proves: >
       ORPHAN: no queue gate uses this command; ADV-ALARM's branch merged into
@@ -1566,31 +1596,35 @@ controls:
       file, so the gate cannot be satisfied by some other route's read check.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev e3354218
     control-kind: static
     proves: >
-      e3354218 is not in origin/master 92d08342 (15.0.8; measured
-      2026-09-25), so the same ancestry question exits 1. Goes stale when
-      15.0.9 is released to master; re-author it then. The previous control
-      (e3354218 not in dev) went vacuous when #8754 merged, as it said it
-      would.
+      e3354218 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 71987bb4
     control-kind: static
     proves: >
-      71987bb4 is not in origin/master 92d08342 (15.0.8; measured
-      2026-09-25), so the same ancestry question exits 1. Goes stale when
-      15.0.9 is released to master; re-author it then.
+      71987bb4 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
 
   - gate: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" origin/dev -- lib
+      ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" official/dev -- lib
     cwd: .
     control: |-
       ! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" e549e1a6 -- lib
@@ -1601,7 +1635,7 @@ controls:
       security.js's 'trust proxy fn') and exits 1 (measured 2026-09-25).
 
   - gate: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" origin/dev -- lib tests ':!lib/server/client-ip.js'
+      ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" official/dev -- lib tests ':!lib/server/client-ip.js'
     cwd: .
     control: |-
       ! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" d0a3d628 -- lib tests ':!lib/server/client-ip.js'
@@ -1611,7 +1645,7 @@ controls:
       lines and exits 1 (measured 2026-09-25).
 
   - gate: |-
-      ! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" origin/dev -- lib/api2
+      ! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" official/dev -- lib/api2
     cwd: .
     control: |-
       ! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" e3354218 -- lib/api2
@@ -1625,7 +1659,7 @@ controls:
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/master
     control-kind: static
     proves: >
       The same ancestry question against origin/master (15.0.8), which does
@@ -1634,7 +1668,7 @@ controls:
       git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/bf/object-id-crud -- lib/server/object-id-forms.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" origin/master -- lib/server/object-id-forms.js
+      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/master -- lib/server/object-id-forms.js
     control-kind: static
     proves: >
       #8758's pushed head has no dropEmptyId, so the grep exits 1 there
@@ -1644,7 +1678,7 @@ controls:
       git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/bf/object-id-crud -- lib/server/devicestatus.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" origin/master -- lib/server/devicestatus.js
+      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/master -- lib/server/devicestatus.js
     control-kind: static
     proves: >
       #8758's pushed head has no withoutStoredIds, so the grep exits 1 there
@@ -1653,31 +1687,34 @@ controls:
       git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/bf/object-id-crud -- lib/api3/generic/delete/operation.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" origin/master -- lib/api3/generic/delete/operation.js
+      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/master -- lib/api3/generic/delete/operation.js
     control-kind: static
     proves: >
       #8758's pushed head deletes one form, so the grep exits 1 there until
       the push.
   - gate: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" origin/dev -- lib/api/entries/index.js'
+      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" official/dev -- lib/api/entries/index.js'
     cwd: .
     control: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" origin/master -- lib/api/entries/index.js'
+      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" official/master -- lib/api/entries/index.js'
     control-kind: static
     proves: >
       15.0.8 has the same "No such id" branch, so the inverted grep exits 1
       there as it does on the candidate today: the grep does match the text
       it looks for. The gate is red until BF-129 is fixed.
   - gate: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/api3/storage/mongoCollection/modify.js'
+      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" official/dev -- lib/api3/storage/mongoCollection/modify.js'
     cwd: .
     control: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/server/treatments.js'
+      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" c6a0d8ed -- lib/server/treatments.js'
     control-kind: static
     proves: >
-      The same inverted grep over a file that does use staleStringForms (the
-      v1 treatments writes) exits 1, so the pattern can match; the gate is
-      green only because v3 modify.js does not use it yet.
+      The same inverted grep over a file that does use staleStringForms (the 15.0.9
+      v1 treatments writes, c6a0d8ed lib/server/treatments.js:401) exits 1, so the
+      pattern can match; the gate is green only because v3 modify.js does not use
+      it. Re-authored 2026-11-06: on official/dev the helper moved into
+      lib/storage/write-intent.js with #8874, so treatments.js no longer matched
+      (VACUOUS, measured 2026-11-06).
   - gate: |-
       node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
     cwd: .
@@ -1716,7 +1753,7 @@ controls:
       git -C externals/cgm-remote-monitor-official grep -q "opItem" official/bf/object-id-crud -- lib/server/treatments.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "opItem" origin/master -- lib/server/treatments.js
+      git -C externals/cgm-remote-monitor-official grep -q "opItem" official/master -- lib/server/treatments.js
     control-kind: static
     proves: >
       #8758's pushed head has the one trailing stale delete and no opItem
@@ -1725,7 +1762,7 @@ controls:
       git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/bf/object-id-crud -- lib/server/entries.js
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" origin/master -- lib/server/entries.js
+      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/master -- lib/server/entries.js
     control-kind: static
     proves: >
       #8758's pushed head reports opts.find._id to the cache and has no
@@ -1738,26 +1775,32 @@ controls:
       nothing about what they measure. The harness's own controls (A/A, drop
       and leak faults) are recorded runs in results/proof-2026-09-25.md.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 7103f657
     control-kind: static
     proves: >
-      7103f657 (BF-47's admin-page fix) is not in origin/master 92d08342
-      (15.0.8; measured 2026-09-25), so the same ancestry question exits 1.
-      Goes stale when 15.0.9 is released to master; re-author it then.
+      7103f657 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf2/subject-edit-keeps-fields 29e6430e
     control-kind: static
     proves: >
-      29e6430e (bf2/auth-hardening, the allow-list base) is not in
-      origin/master 92d08342 (15.0.8; measured 2026-09-25), so the same
-      ancestry question exits 1. Goes stale when 15.0.9 is released to
-      master; re-author it then.
+      29e6430e is a strict ancestor of bf2/subject-edit-keeps-fields, so the
+      reversed question (is today's bf2/subject-edit-keeps-fields an ancestor of
+      that older commit) must be answered no (exit 1, measured 2026-11-06).
+      Re-authored 2026-11-06: the earlier control asked whether 15.0.8's master
+      lacked the commit, and went stale when 15.0.9 released on 2026-10-21 (VACUOUS,
+      measured 2026-11-06). A command that said yes both ways would not be reading
+      ancestry at all.
   - gate: |-
       cd externals/work/crm-bf47 && TEST=authsubjects npm run test-single
     cwd: .
@@ -1775,104 +1818,148 @@ controls:
 
   # --- #8758 merged 2026-09-25 (4d9ecc3b): containment gates (session -6a) ---
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 5581c5e4
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain 5581c5e4, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      5581c5e4 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev a2c7eb39
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain a2c7eb39, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      a2c7eb39 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev f1e8398b
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain f1e8398b, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      f1e8398b is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 1c2d1afd
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain 1c2d1afd, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      1c2d1afd is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev ab7b22d6
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain ab7b22d6, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      ab7b22d6 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev dd2cf8f1
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain dd2cf8f1, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      dd2cf8f1 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 17add44b
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain 17add44b, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      17add44b is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev c3a34bac
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain c3a34bac, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      c3a34bac is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 63dd716c
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain 63dd716c, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      63dd716c is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev 6c3ccce6
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain 6c3ccce6, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      6c3ccce6 is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/dev
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/dev
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/master
+      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev e9dbb1fb
     control-kind: static
     proves: >
-      origin/master (15.0.8) does not contain e9dbb1fb, so the same ancestry
-      question exits 1 there. Goes stale when 15.0.9 is released.
+      e9dbb1fb is a strict ancestor of official/dev, so the reversed question (is
+      today's official/dev an ancestor of that older commit) must be answered no
+      (exit 1, measured 2026-11-06). Re-authored 2026-11-06: the earlier control
+      asked whether 15.0.8's master lacked the commit, and went stale when 15.0.9
+      released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that said yes
+      both ways would not be reading ancestry at all.
 
   - gate: |-
       python3 -I docs/60-research/tenancy/identifier-duplicates-2026-10-17/iddup.py | grep -c "yes at every site" | grep -qx 4
@@ -2857,11 +2944,13 @@ controls:
       git -C externals/cgm-remote-monitor-official show tooling/jsconfig-watch-scope:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&&!c.files&&(c.exclude||[]).includes('node_modules')?0:1)"
     cwd: .
     control: |-
-      git -C externals/cgm-remote-monitor-official show official/dev:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&&!c.files&&(c.exclude||[]).includes('node_modules')?0:1)"
+      git -C externals/cgm-remote-monitor-official show c6a0d8ed:jsconfig.json | node -e "const c=JSON.parse(require('fs').readFileSync(0));process.exit(!c.include&&!c.files&&(c.exclude||[]).includes('node_modules')?0:1)"
     control-kind: static
     proves: >
-      the same check on official/dev 7abe1cf6, which has no jsconfig.json,
-      exits non-zero (measured 2026-10-27).
+      the same check on official/master c6a0d8ed (15.0.9), which has no
+      jsconfig.json, exits non-zero (measured 2026-11-06). Re-authored
+      2026-11-06: the earlier ref was official/dev 7abe1cf6, which gained a
+      jsconfig.json since (VACUOUS, measured 2026-11-06).
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c7857735 official/dev

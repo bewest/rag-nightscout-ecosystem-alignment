@@ -7,7 +7,7 @@
  * treatment drag again on #8760's head 8d797ba4, whose browser-side code is
  * what 15.0.9 ships. Those checks stay valid for the release only while the
  * code a browser runs is unchanged. This gate makes "no repeat needed" a
- * measurement: it builds the candidate (origin/dev merged with each open
+ * measurement: it builds the candidate (official/dev merged with each open
  * 15.0.9 PR head) and fails if anything outside a server-only allowlist
  * differs from the hand-checked tree.
  *
@@ -36,8 +36,8 @@ function arg (name, dflt) {
   return i === -1 ? dflt : process.argv[i + 1];
 }
 const HAND = arg('--hand', '8d797ba4');
-const BASE = arg('--base', 'origin/dev');
-const WITH = arg('--with', 'origin/bf/object-id-crud')
+const BASE = arg('--base', 'official/dev');
+const WITH = arg('--with', 'official/bf/object-id-crud')
   .split(',').filter(Boolean);
 
 const SERVER_PATHS = [

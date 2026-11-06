@@ -22,7 +22,7 @@ const { show, report } = require('./_gate');
 
 // Overridable so the gate can measure a PREPARED branch before a human pushes it.
 // Defaults to the published ref, so CI keeps measuring what operators would get.
-const CUT1 = process.env.NODE_FLOOR_REF || 'origin/chore/retire-jsdom';
+const CUT1 = process.env.NODE_FLOOR_REF || 'official/chore/retire-jsdom';
 const findings = [];
 
 const semver = require('semver');

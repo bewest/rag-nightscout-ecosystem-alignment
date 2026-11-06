@@ -2,7 +2,7 @@
 /*
  * version-collision.js  — RT-VERSION
  *
- * GT4's sharpest finding as a measurement: origin/dev and all five
+ * GT4's sharpest finding as a measurement: official/dev and all five
  * modernization cut tips carry "version": "15.0.9" in package.json, while dev
  * declares engines.node ">=20.x" and every cut declares "^22.23.2 || ^24.20.0".
  *
@@ -18,7 +18,7 @@ const { show, report } = require('./_gate');
 
 // 2026-10-21: reads `official/*`, the remote the maintainer pushes to and this
 // checkout fetches; `origin/*` here is an older fetch of the same repository
-// (origin/dev was still 4bca2ac2 when dev was 04d435eb). official/master is
+// (official/dev was still 4bca2ac2 when dev was 04d435eb). official/master is
 // included because the released version is the one an operator reports: a cut
 // that still says 15.0.9 collides with the 15.0.9 release, not only with dev.
 const REFS = [

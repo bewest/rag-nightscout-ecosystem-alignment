@@ -23,12 +23,12 @@
 const { show, report } = require('./_gate');
 
 // QUEUE_GATE_REF lets a branch be checked before it merges; the queue runs dev.
-const REF = process.env.QUEUE_GATE_REF || 'origin/dev';
+const REF = process.env.QUEUE_GATE_REF || 'official/dev';
 const findings = [];
 const boot = show(REF, 'lib/server/bootevent.js');
 
 if (boot === null) {
-  findings.push({ ok: false, text: 'origin/dev has no lib/server/bootevent.js' });
+  findings.push({ ok: false, text: 'official/dev has no lib/server/bootevent.js' });
   report('minimed-deprecation-path (RT-4)', findings);
 }
 

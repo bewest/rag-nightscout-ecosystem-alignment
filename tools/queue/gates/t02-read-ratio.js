@@ -3,7 +3,7 @@
  * t02-read-ratio.js — T0.2's stated gate, run live. This one is MET.
  *
  * T0.2 `done` asks that an untyped /api/v1/entries read come within 2x of a typed
- * one at count=10. On origin/dev it is 40x, because the untyped branch deep-clones
+ * one at count=10. On official/dev it is 40x, because the untyped branch deep-clones
  * the whole retained window before slicing ten documents out of it. The branch
  * slices first and clones the slice.
  *

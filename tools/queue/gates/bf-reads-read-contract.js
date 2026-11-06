@@ -9,7 +9,7 @@
  *     git log --format=%H bf/reads | grep -q .
  *
  * which asserts that the branch has at least one commit. The E3 audit ran it
- * against origin/dev, origin/master and bf/alarms and it passed for all three:
+ * against official/dev, official/master and bf/alarms and it passed for all three:
  * it measured nothing about the six read-path fixes. Its behavioural gate was
  * `npm run test:unit`, filed `integration` and therefore OFF by default, so the
  * item reported 3/3 PASS while nothing had looked at the code.
@@ -25,11 +25,11 @@
  *
  * THE CONTROL IS BUILT IN
  *
- *   node tools/queue/gates/bf-reads-read-contract.js --rev origin/dev
+ *   node tools/queue/gates/bf-reads-read-contract.js --rev official/dev
  *
  * runs the identical assertions against a rev materialised from the object
- * database into a throwaway directory. Against origin/dev every one of them
- * must FAIL. A run of this gate that passes at origin/dev is a vacuous gate,
+ * database into a throwaway directory. Against official/dev every one of them
+ * must FAIL. A run of this gate that passes at official/dev is a vacuous gate,
  * and `tools/queue/gates/vacuity-controls.py` runs exactly that command as
  * P0-E's declared control.
  *

@@ -258,7 +258,7 @@ for (const f of files) {
     // `docs/INDEX.md` and `docs/proposals/api-query-normalization.md` are real
     // files -- in cgm-remote-monitor, which is what these documents are ABOUT.
     // `docs/runtime-upgrade.md` is real on cut 1's branch. Measured against
-    // origin/dev, origin/master and chore/nightscout-modernization; the first
+    // official/dev, official/master and chore/nightscout-modernization; the first
     // run of this gate called all four dead and it was wrong about all four.
     //
     // So a root-path reference is enforced only when its first two segments

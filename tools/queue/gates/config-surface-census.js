@@ -64,7 +64,7 @@ function argValue(flag, fallback) {
   return at > -1 && process.argv[at + 1] ? process.argv[at + 1] : fallback;
 }
 
-const REF = argValue('--ref', 'origin/dev');
+const REF = argValue('--ref', 'official/dev');
 const ONLY = argValue('--arm', null);
 const findings = [];
 

@@ -18,7 +18,7 @@
  * said gate-not-met and the failing property sat behind a marker nobody could run.
  *
  * Re-measured 2026-09-16 on Node v24.15.0: the branch gives 2.656 ms against the
- * recorded 2.657, and origin/dev gives 3.929 against a recorded 3.747 — ordinary
+ * recorded 2.657, and official/dev gives 3.929 against a recorded 3.747 — ordinary
  * run-to-run variance on a timing benchmark, same direction and magnitude.
  *
  * NON-VACUITY IS STRUCTURAL, not asserted. The harness reads the live call sites

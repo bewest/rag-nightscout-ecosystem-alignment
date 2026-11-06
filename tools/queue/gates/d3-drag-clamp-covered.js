@@ -46,7 +46,7 @@ const os = require('os');
 const path = require('path');
 const { REPO_ROOT, CRM, report } = require('./_gate');
 
-const REF = 'origin/dev';
+const REF = 'official/dev';
 const SUITE = 'tests/dependency-d3.test.js';
 const TARGET = 'lib/client/renderer.js';
 

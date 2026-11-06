@@ -9,7 +9,7 @@
 # input the gate depends on is absent, and exits 0 only if the gate did NOT
 # pass. A gate that still exits 0 with none of its inputs present is not
 # reading anything: that is the P0-E failure — `git log ... | grep -q .` passed
-# against origin/dev, origin/master and bf/alarms alike.
+# against official/dev, official/master and bf/alarms alike.
 #
 # This control is DELIBERATELY WEAK, and it is worth being honest about which
 # question it answers. It shows a gate is coupled to its inputs at all. It does

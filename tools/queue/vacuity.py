@@ -17,7 +17,7 @@ failed if the property were false?", and a completeness critic proved on
     code reads `console.log('Loading',opts)` with no space. The pattern never
     matched, the gate reported PASS, and the property it asserted was FALSE.
   * P0-E's only content gate was `git log --format=%H bf/reads | grep -q .`.
-    It passed against origin/dev, origin/master and bf/alarms alike.
+    It passed against official/dev, official/master and bf/alarms alike.
 
 Both were GREEN. Neither was measuring anything. A queue whose gates are
 assertions wearing the costume of measurements is worse than no queue, because
@@ -180,7 +180,7 @@ SELF_TEST_GATES = [
     ("a deliberately vacuous gate — the P0-E shape, an assertion that the "
      "branch has commits",
      "git -C externals/cgm-remote-monitor-official log --format=%H bf/reads | grep -q .",
-     "git -C externals/cgm-remote-monitor-official log --format=%H origin/dev | grep -q .",
+     "git -C externals/cgm-remote-monitor-official log --format=%H official/dev | grep -q .",
      VACUOUS),
     ("a deliberately vacuous gate — the P0-C shape, a grep whose pattern can "
      "never match",
@@ -191,11 +191,11 @@ SELF_TEST_GATES = [
      VACUOUS),
     ("a real gate, for contrast — the replacement P0-E read contract",
      "node tools/queue/gates/bf-reads-read-contract.js",
-     "node tools/queue/gates/bf-reads-read-contract.js --rev origin/dev",
+     "node tools/queue/gates/bf-reads-read-contract.js --rev official/dev",
      NON_VACUOUS),
     ("a control that cannot be set up",
      "true",
-     "tools/queue/gates/ablate.sh /nope bf/nope origin/dev /nope nope",
+     "tools/queue/gates/ablate.sh /nope bf/nope official/dev /nope nope",
      CONTROL_ERROR),
 ]
 

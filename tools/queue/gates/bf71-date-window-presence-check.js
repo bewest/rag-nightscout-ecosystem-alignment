@@ -37,7 +37,7 @@
 
 const { show, git, report } = require('./_gate');
 
-const REF = process.env.BF71_REF || 'origin/dev';
+const REF = process.env.BF71_REF || 'official/dev';
 const FILE = 'lib/server/query.js';
 
 const src = show(REF, FILE);

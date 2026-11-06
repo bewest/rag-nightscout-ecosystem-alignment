@@ -1057,7 +1057,7 @@ queue-check: queue-validate
 ## 2026-09-15 two gates were measured green on properties that are FALSE: P0-C
 ## grepped for `console.log('Loading', opts)` against code that reads
 ## `console.log('Loading',opts)`, and P0-E's only content gate asserted that the
-## branch had at least one commit -- it passed for origin/dev, origin/master and
+## branch had at least one commit -- it passed for official/dev, official/master and
 ## bf/alarms too. Controls live in queue/gate-controls.yaml, keyed by the gate's
 ## exact command, so editing a gate forces its control to be re-authored.
 ##

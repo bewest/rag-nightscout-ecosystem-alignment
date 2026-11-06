@@ -32,7 +32,7 @@ function identity(dir) {
       head: git(['log', '-1', '--format=%h %ad %s', '--date=short'], dir),
       worktrees: git(['worktree', 'list'], dir).split('\n').filter(Boolean).length,
       hasDev: (() => {
-        try { git(['rev-parse', '--verify', 'origin/dev'], dir); return true; }
+        try { git(['rev-parse', '--verify', 'official/dev'], dir); return true; }
         catch (e) { return false; }
       })(),
     };
@@ -55,7 +55,7 @@ findings.push({
 });
 findings.push({
   ok: real.hasDev,
-  text: `externals/cgm-remote-monitor-official has origin/dev and ${real.worktrees} worktree(s) `
+  text: `externals/cgm-remote-monitor-official has official/dev and ${real.worktrees} worktree(s) `
       + '-- this is the checkout the programme\'s branches actually live in',
 });
 
@@ -65,7 +65,7 @@ if (decoy) {
   findings.push({
     ok: false,
     text: `externals/cgm-remote-monitor EXISTS and is a decoy: origin = ${decoy.origin}, `
-        + `HEAD = ${decoy.head}, ${decoy.worktrees} worktree(s), origin/dev `
+        + `HEAD = ${decoy.head}, ${decoy.worktrees} worktree(s), official/dev `
         + `${decoy.hasDev ? 'present' : 'ABSENT'}. It holds none of this programme's work, `
         + 'and any document or brief naming it the pristine shipping checkout sends an '
         + 'agent somewhere that answers questions plausibly and wrongly.',

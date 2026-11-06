@@ -11,7 +11,7 @@
  * evaluated as an ARGUMENT, before `pick()`'s own `obj == null` guard runs, so
  * a boot error with no `err` throws `TypeError: Cannot convert undefined or
  * null to object`, and the page that explains why the site will not start
- * crashes instead. `origin/dev` guards it (`obj.err == null` renders the
+ * crashes instead. `official/dev` guards it (`obj.err == null` renders the
  * description only; e6a50e9a, merged with #8753).
  *
  * It matters because cut 4 adds the first callers that omit `err`: a missing
@@ -28,8 +28,8 @@
  * NON-VACUITY: three control shapes must render through the same callback -
  * the Mongo shape (`err` a string), the ENV shape (an array) and a real
  * `Error`. If none renders, the harness is broken and that is reported as
- * such, not as a defect. `--ref origin/master` (15.0.8, no guard) must FAIL
- * the two err-less arms; `--ref origin/dev` must pass them.
+ * such, not as a defect. `--ref official/master` (15.0.8, no guard) must FAIL
+ * the two err-less arms; `--ref official/dev` must pass them.
  *
  * READS ONLY.
  *
@@ -44,7 +44,7 @@ function argValue(flag, fallback) {
   return at > -1 && process.argv[at + 1] ? process.argv[at + 1] : fallback;
 }
 
-const REF = argValue('--ref', 'origin/dev');
+const REF = argValue('--ref', 'official/dev');
 const findings = [];
 
 const rendererSource = show(REF, 'lib/server/booterror.js');

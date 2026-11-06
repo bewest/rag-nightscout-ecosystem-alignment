@@ -664,13 +664,13 @@ items:
       the branch needs an ordinary review, not an explicit capability-removal yes.
     register: [BF-28, BF-29, BF-31]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarms official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8739, merged 2026-09-20) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/alarms >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/alarms >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7a5561f4 official/master
@@ -696,7 +696,7 @@ items:
           Nothing exercises the ENABLE warning through a booted plugin registry.
           GT4 had to hand-reconstruct the plugin-name list to test it, and a
           reconstructed registry is not the registry. Needs a boot-level test.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5dcf783fdbb20188c378d79121dcbe860425eede origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5dcf783fdbb20188c378d79121dcbe860425eede official/dev
         kind: static
         describe: >
           containment: the measured tip of bf/alarms is in origin/dev, so the merge
@@ -763,13 +763,13 @@ items:
     semver_reason: performance only; no declared surface moves.
     register: [BF-06, BF-07]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/cache official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8740, merged 2026-09-20) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/cache >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/cache >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: node tools/queue/gates/t02-read-ratio.js
@@ -807,7 +807,7 @@ items:
           writes to a device-status document. A grep is not that proof when the
           failure mode is a field silently vanishing from every API read served
           out of the cache. There is no test that would catch it.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 4f86bab1637e926502c9b02af008cbba4f424c28 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 4f86bab1637e926502c9b02af008cbba4f424c28 official/dev
         kind: static
         describe: >
           containment: the measured tip of bf/cache is in origin/dev, so the merge
@@ -888,14 +888,14 @@ items:
       failures behind a shared proxy.
     register: [BF-17]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth official/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth official/dev
         kind: static
         describe: >
           bf/auth ships inside PR #8754 (bf2/auth-hardening, queue BF2-AUTH):
           its tip is contained in #8754's head, or in origin/dev once #8754
           merges. Needs `git -C externals/cgm-remote-monitor-official fetch
           origin` first.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/auth >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/auth >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce82f0cd official/master
@@ -1018,17 +1018,17 @@ items:
       surface. The secure default is a later and deliberate bump.
     register: [BF-30]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle official/bf2/auth-hardening || git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle official/dev
         kind: static
         describe: >
           bf/throttle ships inside PR #8754 (bf2/auth-hardening, queue
           BF2-AUTH): its tip is contained in #8754's head, or in origin/dev once
           #8754 merges. Needs `git -C externals/cgm-remote-monitor-official
           fetch origin` first.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/throttle >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/throttle >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle origin/chore/nightscout-modernization >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree bf/throttle official/chore/nightscout-modernization >/dev/null
         kind: static
         describe: >
           The property this branch exists for - it merges clean with PR #8605.
@@ -1271,13 +1271,13 @@ items:
       No request that worked stops working.
     register: [BF-02, BF-03, BF-11, BF-32, BF-40, BF-68]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/coercion official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8737, merged 2026-09-18) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/coercion >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/coercion >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b7234753 official/master
@@ -1291,7 +1291,7 @@ items:
           released in 15.0.9. Every test file those gates named is on
           official/master (checked 2026-10-26), so the released tree's suite
           carries them; the containment gate above replaces the gates.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b72347538ba29f965c531bdd47f81dc52d895a13 official/dev
         kind: static
         describe: >
           containment: the measured tip of bf/coercion is in origin/dev, so the merge
@@ -1377,13 +1377,13 @@ items:
       succeeded. The branch CHANGELOG lists read routes only.
     register: [BF-01, BF-05, BF-13, BF-14, BF-15, BF-33]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/reads official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix is in dev
           (PR #8738, merged 2026-09-18) and cannot silently leave it. An upstream
           revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/reads >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/reads >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: node tools/queue/gates/bf-reads-read-contract.js
@@ -1423,7 +1423,7 @@ items:
           The CHANGELOG on this branch lists read routes only, while the ?count=
           validator covers writes too. Nothing checks a release note against the
           code it describes.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 2ecfeb53ff1e6121ef5f76e1f08e97af1ca6c2fa official/dev
         kind: static
         describe: >
           containment: the measured tip of bf/reads is in origin/dev, so the merge
@@ -1622,13 +1622,13 @@ items:
       disappears.
     register: [BF-16, BF-35]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/food official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
           #8735, merged 2026-09-20) is in dev and cannot silently leave it. An
           upstream revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/food >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/food >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331 official/master
@@ -1642,7 +1642,7 @@ items:
           released in 15.0.9. Every test file those gates named is on
           official/master (checked 2026-10-26), so the released tree's suite
           carries them; the containment gate above replaces the gates.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 73495331e68c4cda3a63e8c047387bdf404b89b0 official/dev
         kind: static
         describe: >
           containment: the measured tip of bf/food is in origin/dev, so the merge
@@ -1711,13 +1711,13 @@ items:
     semver_reason: availability fix in client code; no declared surface moves
     register: [BF-36]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/merge official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
           #8734, merged 2026-09-18) is in dev and cannot silently leave it. An
           upstream revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/merge >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/merge >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf official/master
@@ -1736,7 +1736,7 @@ items:
           the merge path has the same effect. This branch fixes one throw, not
           the missing boundary. No test asserts the boundary exists because it
           does not.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf882ebd84d627468c75dade0fe1fd01a1 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor b06c6faf882ebd84d627468c75dade0fe1fd01a1 official/dev
         kind: static
         describe: >
           containment: the measured tip of bf/merge is in origin/dev, so the merge
@@ -1797,13 +1797,13 @@ items:
       no shipped catalogue uses more than %3.
     register: [BF-37, BF-38, BF-39]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/parms official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
           #8736, merged 2026-09-20) is in dev and cannot silently leave it. An
           upstream revert or force-push turns it red.
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/parms >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/parms >/dev/null
         kind: static
         describe: trial-merge into origin/dev is conflict-free
       - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918 official/master
@@ -1817,7 +1817,7 @@ items:
           released in 15.0.9. Every test file those gates named is on
           official/master (checked 2026-10-26), so the released tree's suite
           carries them; the containment gate above replaces the gates.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor eb0bc918036a7802a0b88156e9722f45fd9107f3 official/dev
         kind: static
         describe: >
           containment: the measured tip of bf/parms is in origin/dev, so the merge
@@ -1921,7 +1921,7 @@ items:
       assertions are rewritten, not deleted.
     register: [BF-04, BF-70]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix (PR
@@ -2247,12 +2247,12 @@ items:
     register: []
     gates:
       - run: >-
-          git -C externals/cgm-remote-monitor-official show origin/dev:package.json | grep -q '"nightscout-connect": "0.1.0"'
+          git -C externals/cgm-remote-monitor-official show official/dev:package.json | grep -q '"nightscout-connect": "0.1.0"'
         kind: static
         describe: >
           origin/dev pins the exact published 0.1.0 from npm (#8762, merged
           2026-09-24 as 153e5658).
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f61870f0 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f61870f0 official/dev
         kind: static
         describe: >
           The prerelease pin is on origin/dev: #8759's head f61870f0 (exact
@@ -2318,7 +2318,7 @@ items:
     semver_reason: lockfile only
     register: []
     gates:
-      - run: "git -C externals/cgm-remote-monitor-official show origin/dev:package-lock.json | python3 -c \"import json,sys; e=json.load(sys.stdin)['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)\""
+      - run: "git -C externals/cgm-remote-monitor-official show official/dev:package-lock.json | python3 -c \"import json,sys; e=json.load(sys.stdin)['packages']['node_modules/nightscout-connect']; sys.exit(0 if e.get('version')=='0.1.0' and e.get('resolved','').startswith('https://registry.npmjs.org/') else 1)\""
         kind: static
         describe: >
           the lockfile resolves nightscout-connect 0.1.0 from the npm registry.
@@ -2424,7 +2424,7 @@ items:
     semver_reason: performance only
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dfe2753d origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dfe2753d official/dev
         kind: static
         describe: >
           containment: the measured tip of bewest/wip/optimize-treatment-processing is in origin/dev, so the merge
@@ -2477,7 +2477,7 @@ items:
     register: [BF-54, BF-57]
     gates:
       - run: >-
-          sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive origin/dev | tar -x -C "$d" && ln -s "$PWD/externals/cgm-remote-monitor-official/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --require ./tests/hooks.js --exit tests/dependency-d3.test.js; r=$?; rm -rf "$d"; exit $r'
+          sh -c 'd=$(mktemp -d) && git -C externals/cgm-remote-monitor-official archive official/dev | tar -x -C "$d" && ln -s "$PWD/externals/cgm-remote-monitor-official/node_modules" "$d/node_modules" && cd "$d" && NODE_ENV=test ./node_modules/.bin/mocha --timeout 15000 --require ./tests/hooks.js --exit tests/dependency-d3.test.js; r=$?; rm -rf "$d"; exit $r'
         kind: unit
         describe: >
           Runs origin/dev's own tree (git archive), not the checkout's working
@@ -2839,7 +2839,7 @@ items:
     semver_reason: "narrows #8738's new refusal before any release has shipped it"
     register: []
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/count-zero-empty >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/count-zero-empty >/dev/null'
         kind: static
         describe: Merges into origin/dev with no conflict.
       - run: 'cd externals/work/crm-count-zero && TEST=api.count-parameter npm run test-single'
@@ -2920,7 +2920,7 @@ items:
           sh -c 'git -C externals/cgm-remote-monitor-official show docs/mongodb-floor:README.md | grep -q "MongoDB 4.4 is \*deprecated\*"'
         kind: static
         describe: the prepared branch carries the deprecation wording
-      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev docs/mongodb-floor >/dev/null
+      - run: git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev docs/mongodb-floor >/dev/null
         kind: static
         describe: the branch merges into dev without conflict
     blocks_on: []
@@ -3071,21 +3071,21 @@ items:
       same compiled function (measured 2026-09-24 at e549e1a6).
     register: []
     gates:
-      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" origin/dev -- lib'
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "trust proxy fn|createClientIP\(env|compileTrust\(env" official/dev -- lib'
         kind: static
         describe: >
           One source, on dev: nothing under lib/ compiles env.trustProxy
           itself or reads Express's 'trust proxy fn'; app.js, the consumers,
           the delay list and api3/security.js go through trustFor(env) /
           clientIPFor(env). At e549e1a6 the same grep matches 10 lines.
-      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" origin/dev -- lib tests '':!lib/server/client-ip.js'''
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "createClientIP|compileTrust|getClientIP" official/dev -- lib tests '':!lib/server/client-ip.js'''
         kind: static
         describe: >
           One way to do it, on dev: outside client-ip.js no code or test names
           the old entry points; client-ip.js exports trustFor and clientIPFor
           only, and a test pins that. At d0a3d628 the same grep matches 36
           lines.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3354218 official/dev
         kind: static
         describe: >
           Containment: both commits are in dev, through #8763 into #8754 and
@@ -3172,13 +3172,13 @@ items:
       Loop uploads; no API shape changes, and the key Loop requires is kept.
     register: []
     gates:
-      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" origin/dev -- lib/api2'
+      - run: '! git -C externals/cgm-remote-monitor-official grep -nE "req\.(connection|socket)\.remoteAddress" official/dev -- lib/api2'
         kind: static
         describe: >
           On dev, lib/api2 no longer reads the connection's peer as the
           sender's address; notifications-v2.js uses clientIPFor(env). At
           e3354218 the same grep matches notifications-v2.js:34.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 71987bb4 official/dev
         kind: static
         describe: >
           Containment: in dev through #8764 (into rt/trust-one-source), #8765
@@ -4522,7 +4522,7 @@ items:
           RED means the manual checks need repeating for what it names. Its
           control, #8760's own client change, is seen in the same run. Edit the
           --with list as 15.0.9 PRs open or merge.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor origin/master origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/master official/dev
         kind: static
         describe: dev descends from master with no divergence to reconcile
       - no-gate: >
@@ -5740,7 +5740,7 @@ items:
     semver_reason: a configuration file the project ships
     register: [BF-10]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official show origin/dev:docker-compose.yml | grep -q 'nofile'
+      - run: git -C externals/cgm-remote-monitor-official show official/dev:docker-compose.yml | grep -q 'nofile'
         kind: static
         describe: >
           origin/dev's docker-compose.yml gives the mongo service a nofile
@@ -7294,12 +7294,16 @@ items:
           81a1f6ce is 1010 behind and 50 ahead of official/dev 4a482627
           (`git rev-list --left-right --count
           official/dev...seam/t1-2-storage-interface`) and its trial merge
-          conflicts across the tests and storage modules; the branch this
-          item's two former gates named, origin/chore/nightscout-modernization,
-          no longer exists in the checkout (cut 5 merged into dev as #8605 on
-          2026-10-26 and the branch was retired), so both gates were red for a
-          missing ref, not for the property they described. Nothing is left
-          to refresh: the seam's single-tenant content went to dev as slices
+          conflicts across the tests and storage modules. Against the base
+          its two former gates named, chore/nightscout-modernization (now
+          a77cb146, itself wholly contained in dev and 333 commits behind
+          it), the seam is 677 behind and 50 ahead with 30 conflicting
+          paths, so both gates were red for the property they described,
+          and would stay red: the base is a dead end. (A first reading on
+          2026-11-06 reported the ref as missing; that was `git rev-parse
+          --short` given two refs, which implies --verify and refuses, not
+          a missing ref. Corrected the same day.) Nothing is left to
+          refresh: the seam's single-tenant content went to dev as slices
           re-cut on dev (#8861, #8863, then the write step #8874 and #8886
           under WC-STEP-PATCH), decided by the maintainer on 2026-10-27
           (release allocation Q12 and section 3.5; 16.0.0 decisions.md row
@@ -7335,7 +7339,9 @@ items:
       merged-upstream since 2026-10-26, and the refresh it waited for was
       overtaken by the maintainer's 2026-10-27 decision to carry the seam into
       16.0.0 as slices re-cut on dev rather than by rebasing the 16-branch
-      chain; see the no-gate above for the measurement and the records. Items
+      chain; see the no-gate above for the measurement and the records (the
+      old gates were red for the measured property, not a missing ref; the
+      earlier sentence saying otherwise was corrected the same day). Items
       that still blocked on this one (WRITE-CONTRACT, BFQ-66, HUB-REG-CRM-SEAM)
       had the edge removed the same day; their real prerequisites are on dev.
       The crm-seam and crm-seam-replay worktrees are left in place (rule 5).
@@ -9570,7 +9576,7 @@ items:
       surface changes.
     register: [BF-69]
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf3/quickpick-rebuild >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf3/quickpick-rebuild >/dev/null'
         kind: static
         describe: Merges into origin/dev with no conflict.
       - run: 'cd externals/work/crm-bf3-quickpick && n exec 20.20.0 npx mocha --timeout 30000 --exit tests/boluscalc.quickpick-rebuild.test.js tests/boluscalc.quickpick.test.js'
@@ -9691,7 +9697,7 @@ items:
           QUEUE_GATE_ROOT it fails rather than passing by absence. The in-file control -
           the configured date field is tested by value - distinguishes "the matcher sees
           nothing" from "the defect is present".
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/operators official/dev
         kind: static
         describe: >
           A dependency check, not a claim about BF-71. The measurement that establishes
@@ -10117,13 +10123,13 @@ items:
     register:
       - BF-87
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official show origin/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"'
+      - run: 'git -C externals/cgm-remote-monitor-official show official/dev:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(1 if o.get(\"qs\")==\"6.15.1\" or o.get(\"request\",{}).get(\"qs\")==\"6.15.1\" else 0)"'
         kind: static
         describe: "FAILS if origin/dev overrides qs to 6.15.1 at the root or under request. Green since #8749 merged (2026-09-23)."
       - run: 'git -C externals/cgm-remote-monitor-official show bf/qs-6.16:package.json | python3 -c "import json,sys; o=json.load(sys.stdin)[\"overrides\"]; sys.exit(0 if o.get(\"qs\")==\"6.16.0\" and o.get(\"request\",{}).get(\"qs\")==\"6.16.0\" else 1)"'
         kind: static
         describe: The prepared branch sets both qs overrides to 6.16.0.
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf/qs-6.16 >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf/qs-6.16 >/dev/null'
         kind: static
         describe: Merges into origin/dev with no conflict.
       - no-gate: >
@@ -10196,7 +10202,7 @@ items:
       which is a different obligation from a version number.
     register: [BF-42, BF-43]
     gates:
-      - run: node tools/queue/gates/connector-pin-exposure.js --refs origin/master,origin/dev
+      - run: node tools/queue/gates/connector-pin-exposure.js --refs official/master,official/dev
         kind: static
         describe: >
           FAILS on origin/master for both arms - the v0.0.13 tag tarball (112
@@ -10471,7 +10477,7 @@ items:
       capability removal on an HTTP surface.
     register: [BF-47]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 7103f657 official/dev
         kind: static
         describe: The fix is in origin/dev. Fails while it is not.
       - run: 'git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 29e6430e bf2/subject-edit-keeps-fields'
@@ -10711,7 +10717,7 @@ items:
       once. No setting, API or on-screen level changes.
     register: [BF-52]
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf3/age-push-once >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf3/age-push-once >/dev/null'
         kind: static
         describe: Merges into origin/dev with no conflict.
       - run: 'cd externals/work/crm-bf3-agepush && n exec 20.20.0 npx mocha --timeout 10000 --exit tests/age-notify-once.test.js tests/sensorage.test.js'
@@ -10804,7 +10810,7 @@ items:
     semver_reason: a client-side bug fix; what is shown and sounded is unchanged with or without data
     register: [BF-90]
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf3/alarm-no-reading >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf3/alarm-no-reading >/dev/null'
         kind: static
         describe: Merges into origin/dev with no conflict.
       - no-gate: >
@@ -11572,7 +11578,7 @@ items:
       half on cut 4 is part of that cut's own classification.
     register: [BF-63]
     gates:
-      - run: node tools/queue/gates/booterror-shape-coverage.js --ref origin/chore/mime-exposure-review
+      - run: node tools/queue/gates/booterror-shape-coverage.js --ref official/chore/mime-exposure-review
         kind: static
         describe: >
           FAILS on cut 4: its booterror.js lacks dev's null-err guard (cut 4 is
@@ -11581,12 +11587,12 @@ items:
           merge or rebase); the register asks for err at the call sites as well.
           The gate runs the map callback lifted from the ref's own file, with
           three control shapes that must render.
-      - run: node tools/queue/gates/booterror-shape-coverage.js --ref origin/dev
+      - run: node tools/queue/gates/booterror-shape-coverage.js --ref official/dev
         kind: static
         describe: >
           PASSES: origin/dev's renderer shows a desc-only boot error instead of
           throwing (e6a50e9a, merged with #8753).
-      - run: node tools/queue/gates/booterror-shape-coverage.js --ref origin/master >/dev/null && exit 1 || exit 0
+      - run: node tools/queue/gates/booterror-shape-coverage.js --ref official/master >/dev/null && exit 1 || exit 0
         kind: static
         describe: >
           CONTROL, PASSES because the gate FAILS on origin/master (15.0.8), whose
@@ -11746,14 +11752,14 @@ items:
       an answer, the change belongs to whichever fix moved, not to this.
     register: []
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0'
+      - run: 'git -C externals/cgm-remote-monitor-official cat-file -e official/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show official/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0'
         kind: static
         describe: >
           FAILS while the count rule is written twice on origin/dev: in
           lib/server/count.js (from P0-E, #8738) and in API v3's parseLimit
           (lib/api3/generic/collection.js). Goes green when one reading of the
           rule remains.
-      - run: 'git -C externals/cgm-remote-monitor-official cat-file -e origin/master:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show origin/master:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0'
+      - run: 'git -C externals/cgm-remote-monitor-official cat-file -e official/master:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show official/master:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0'
         kind: static
         describe: >
           CONTROL, PASSES: the identical command against origin/master (15.0.8),
@@ -11813,14 +11819,14 @@ items:
       than a new capability.
     register: []
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/plugins/index.js | grep -q "return (p !== null)" && exit 1 || exit 0'
+      - run: 'git -C externals/cgm-remote-monitor-official show official/dev:lib/plugins/index.js | grep -q "return (p !== null)" && exit 1 || exit 0'
         kind: static
         describe: >
           Follow-up 3. FAILS today - plugins.isPluginEnabled compares find()'s
           result with !== null, and find() returns UNDEFINED when it misses, so
           the function always returns true. No caller today, which is why it has
           no register id, but it is what the next instrument will reach for.
-      - run: 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/authorization/storage.js | grep -qE "console\\.log\\(''Loading'',[[:space:]]*opts\\)" && exit 1 || exit 0'
+      - run: 'git -C externals/cgm-remote-monitor-official show official/dev:lib/authorization/storage.js | grep -qE "console\\.log\\(''Loading'',[[:space:]]*opts\\)" && exit 1 || exit 0'
         kind: static
         describe: >
           Follow-up 4. FAILS today. BF-05's unfixed sibling - the same shape, a
@@ -11831,7 +11837,7 @@ items:
           gate so the two cannot diverge. The line is storage.js:82 on origin/dev
           74fc6619; line numbers quoted elsewhere may refer to bf/auth. This gate
           measures origin/dev, which is where the fix has to land.
-      - run: 'bash -c ''s=$(git -C externals/cgm-remote-monitor-official show origin/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'''
+      - run: 'bash -c ''s=$(git -C externals/cgm-remote-monitor-official show official/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'''
         kind: static
         describe: >
           Follow-up 7. FAILS today. The switch on request.type has no default,
@@ -12086,7 +12092,7 @@ items:
       `readable` instance an anonymous client still receives retroUpdate, which
       was confirmed as a live positive control on the fixed build.
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/ws-loadretro-auth official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix is in
@@ -12239,7 +12245,7 @@ items:
       major: no route removed, no required input added, and the shipped web
       client is unaffected because it subscribes.
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/alarm-socket-scope official/dev
         kind: static
         describe: >
           Containment: this tip is an ancestor of origin/dev, so the fix is in
@@ -12658,7 +12664,7 @@ items:
       - run: 'git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/auth bf2/auth-hardening && git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bf/throttle bf2/auth-hardening'
         kind: static
         describe: Contains both source branches by ancestry, not re-implementation.
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/auth-hardening >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf2/auth-hardening >/dev/null'
         kind: static
         describe: Merges into origin/dev with no conflict.
       - run: 'git -C externals/cgm-remote-monitor-official cat-file -e bf2/auth-hardening:lib/server/client-ip.js'
@@ -12758,7 +12764,7 @@ items:
       - run: 'grep -q "^## Verdicts" docs/60-research/remedial/modernization-backport-triage-2026-09-22.md'
         kind: static
         describe: The triage exists. It must carry, per commit, a reproduction on dev and a control.
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/backports >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf2/backports >/dev/null'
         kind: static
         describe: The two backports merge into origin/dev with no conflict.
       - no-gate: >
@@ -12826,7 +12832,7 @@ items:
       - BF-10
       - BF-63
     gates:
-      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree origin/dev bf2/ops >/dev/null'
+      - run: 'git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev bf2/ops >/dev/null'
         kind: static
         describe: Merges into origin/dev with no conflict.
       - run: 'git -C externals/cgm-remote-monitor-official show bf2/ops:docker-compose.yml | grep -q nofile'
@@ -12969,7 +12975,7 @@ items:
     semver_reason: restores a 15.0.8 read behaviour that the coercion change removed
     register: [BF-106]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab9c96e6 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab9c96e6 official/dev
         kind: static
         describe: >
           #8771's merge ab9c96e6 (2026-09-26) is contained in origin/dev. It
@@ -13047,7 +13053,7 @@ items:
     semver_reason: a crash fix
     register: [BF-107]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0ab266a3 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 0ab266a3 official/dev
         kind: static
         describe: >
           #8697's merge 0ab266a3 is contained in origin/dev.
@@ -13440,7 +13446,7 @@ items:
     semver_reason: Bug fixes; no API or setting moves.
     register: [BF-99, BF-100, BF-101, BF-102]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 5581c5e4 official/dev
         kind: static
         describe: >
           Containment: 5581c5e4 is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13524,7 +13530,7 @@ items:
     semver_reason: a defect in an unmerged fix; no API or setting moves
     register: [BF-109]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a2c7eb39 official/dev
         kind: static
         describe: >
           Containment: a2c7eb39 is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13587,7 +13593,7 @@ items:
     semver_reason: a defect in an unmerged fix, and release-note wording
     register: [BF-110]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1e8398b official/dev
         kind: static
         describe: >
           Containment: f1e8398b is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13641,7 +13647,7 @@ items:
     semver_reason: a bug fix; the request answers 200 and misses records
     register: [BF-111]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1c2d1afd official/dev
         kind: static
         describe: >
           Containment: 1c2d1afd is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13695,7 +13701,7 @@ items:
     semver_reason: a bug fix; admin-only
     register: [BF-112]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ab7b22d6 official/dev
         kind: static
         describe: >
           Containment: ab7b22d6 is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13749,7 +13755,7 @@ items:
     semver_reason: a defect in an unmerged fix, reachable only in-process
     register: [BF-113]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dd2cf8f1 official/dev
         kind: static
         describe: >
           Containment: dd2cf8f1 is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13810,7 +13816,7 @@ items:
     semver_reason: a crash fix; a request that stored an unusable id now stores a server id
     register: [BF-115]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 17add44b official/dev
         kind: static
         describe: >
           Containment: 17add44b is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13869,7 +13875,7 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-116]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3a34bac official/dev
         kind: static
         describe: >
           Containment: c3a34bac is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13927,7 +13933,7 @@ items:
     semver_reason: a bug fix in deletes and in which stored copy is read
     register: [BF-117]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 63dd716c official/dev
         kind: static
         describe: >
           Containment: 63dd716c is in origin/dev since #8758 merged as 4d9ecc3b
@@ -13987,7 +13993,7 @@ items:
     semver_reason: a bug fix in how existing records are read; nothing stored changes
     register: [BF-114]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 99689bf9 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 99689bf9 official/dev
         kind: static
         describe: >
           #8568's merge 99689bf9 (2026-09-25) is contained in origin/dev.
@@ -14037,7 +14043,7 @@ items:
     semver_reason: tests only
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 96a2c948 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 96a2c948 official/dev
         kind: static
         describe: >
           #8419's merge 96a2c948 (2026-09-25) is contained in origin/dev.
@@ -14094,7 +14100,7 @@ items:
       decision (2026-09-25), which the policy records as a departure.
     register: []
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3d42d4e origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor c3d42d4e official/dev
         kind: static
         describe: >
           #8530's merge c3d42d4e (2026-09-25) is contained in origin/dev.
@@ -14142,7 +14148,7 @@ items:
     semver_reason: a bug fix in how documented settings are read; a site that set all four values sees no change
     register: [BF-118]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e812a68c origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e812a68c official/dev
         kind: static
         describe: >
           #8766's merge e812a68c (2026-09-25) is contained in origin/dev.
@@ -14210,7 +14216,7 @@ items:
     semver_reason: a documented setting starts doing what it says; no stored data or API changes
     register: [BF-119]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ecb63223 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ecb63223 official/dev
         kind: static
         describe: >
           #8767's merge ecb63223 (2026-09-25) is contained in origin/dev.
@@ -14273,7 +14279,7 @@ items:
     semver_reason: a bug fix in how the clock page draws data it already has
     register: [BF-120]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e2bbeb66 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e2bbeb66 official/dev
         kind: static
         describe: >
           #8768's merge e2bbeb66 (2026-09-25) is contained in origin/dev.
@@ -14349,7 +14355,7 @@ items:
     semver_reason: changes which v1 treatment writes update and which insert
     register: [BF-121]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ff93fa94 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ff93fa94 official/dev
         kind: static
         describe: >
           #8780's merge ff93fa94 (2026-09-26) is contained in origin/dev. It
@@ -14507,12 +14513,12 @@ items:
     semver_reason: v1-written records gain srvModified/srvCreated and v3 history returns more records
     register: [BF-122, BF-135]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1157a8de origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1157a8de official/dev
         kind: static
         describe: >
           #8775's merge 1157a8de (2026-09-26) is contained in origin/dev. It
           carries bf/v1-writes-v3-history dbc4c5fc (BF-122 and BF-135).
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" origin/dev -- tests/api3.v1-writes-history.test.js
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "a v1 DELETE still removes the record" official/dev -- tests/api3.v1-writes-history.test.js
         kind: static
         describe: >
           The maintainer's v1 DELETE decision (2026-09-26, keep hard delete)
@@ -14662,7 +14668,7 @@ items:
     semver_reason: a bug fix in how an existing record is read; nothing stored changes
     register: [BF-123]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f0174d05 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f0174d05 official/dev
         kind: static
         describe: >
           #8774's merge f0174d05 (2026-09-26) is contained in origin/dev. It
@@ -14755,7 +14761,7 @@ items:
     semver_reason: a display fix in the browser; no stored data or API changes
     register: [BF-124]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:lib/client/renderer.js && ! git -C externals/cgm-remote-monitor-official grep -qF "if (client.settings.units != client.ddata.profile.getUnits())" origin/dev -- lib/client/renderer.js'
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official cat-file -e official/dev:lib/client/renderer.js && ! git -C externals/cgm-remote-monitor-official grep -qF "if (client.settings.units != client.ddata.profile.getUnits())" official/dev -- lib/client/renderer.js'
         kind: static
         describe: >
           FAILS today: origin/dev's treatmentTooltip still decides the
@@ -14826,7 +14832,7 @@ items:
     semver_reason: restores the documented IFTTT event names; a site that renamed its applets to the translated names needs a release note
     register: [BF-125]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e759a989 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e759a989 official/dev
         kind: static
         describe: >
           #8773's merge e759a989 (2026-09-26) is contained in origin/dev. It
@@ -14910,7 +14916,7 @@ items:
     semver_reason: a malformed admin write is refused with a 400 instead of stored; valid requests are unchanged
     register: [BF-126]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fbaa4a2a origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fbaa4a2a official/dev
         kind: static
         describe: >
           #8769's merge fbaa4a2a (2026-09-25) is contained in origin/dev.
@@ -14969,7 +14975,7 @@ items:
     semver_reason: a bug fix; the menu links do not work today for token viewers
     register: [BF-127]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -q -E "clockcolorlink|bgclocklink|clocklink" origin/dev -- lib/client
+      - run: git -C externals/cgm-remote-monitor-official grep -q -E "clockcolorlink|bgclocklink|clocklink" official/dev -- lib/client
         kind: static
         describe: >
           FAILS today: nothing in origin/dev's lib/client touches the Clock
@@ -15077,7 +15083,7 @@ items:
     semver_reason: the delta and the Bolus Wizard Preview are returned in the units the request asked for; other responses are unchanged
     register: [BF-128, BF-138, BF-139]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d613c35f origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor d613c35f official/dev
         kind: static
         describe: >
           #8777's merge d613c35f (2026-09-26) is contained in origin/dev. It
@@ -15215,7 +15221,7 @@ items:
     semver_reason: a v3 write that was refused with 400 is accepted; nothing that was accepted changes
     register: [BF-136]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 13f235e9 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 13f235e9 official/dev
         kind: static
         describe: >
           #8776's merge 13f235e9 (2026-09-26) is contained in origin/dev. It
@@ -15326,7 +15332,7 @@ items:
     semver_reason: an anonymous /alarm subscribe is answered without the failed-login delay; every credentialed path is unchanged
     register: [BF-80]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 750801a9 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 750801a9 official/dev
         kind: static
         describe: >
           #8779's merge 750801a9 (2026-09-26) is contained in origin/dev. It
@@ -15625,11 +15631,11 @@ items:
     semver_reason: a delete that answered 404 for a record the API lists now deletes it; nothing else changes
     register: [BF-140]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor aa1111b2 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor aa1111b2 official/dev
         kind: static
         describe: >
           #8778's merge aa1111b2 (2026-09-26) is contained in origin/dev.
-      - run: git -C externals/cgm-remote-monitor-official grep -qF emptyIdentifier origin/dev -- lib/api3/storage/mongoCollection/utils.js
+      - run: git -C externals/cgm-remote-monitor-official grep -qF emptyIdentifier official/dev -- lib/api3/storage/mongoCollection/utils.js
         kind: static
         describe: >
           origin/dev's filterForEveryForm takes its _id fallback through
@@ -15707,7 +15713,7 @@ items:
     semver_reason: a report draws what it already loads; no API, setting or stored value changes
     register: [BF-148]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbc6e75e origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor bbc6e75e official/dev
         kind: static
         describe: >
           #8788's head bbc6e75e is contained in origin/dev (merged
@@ -15777,7 +15783,7 @@ items:
     semver_reason: a report band ends where the main chart already ends it
     register: [BF-149]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official show origin/dev:lib/report/reportclient.js | grep -Eq "processDurations\((datastorage\.)?treatments"'
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official show official/dev:lib/report/reportclient.js | grep -Eq "processDurations\((datastorage\.)?treatments"'
         kind: static
         describe: >
           FAILS while the report passes only tempbasalTreatments through
@@ -15820,7 +15826,7 @@ items:
     semver_reason: a page that could not be scrolled on touch screens now can; nothing else changes
     register: [BF-150]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1298c9ed origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 1298c9ed official/dev
         kind: static
         describe: >
           #8790's head 1298c9ed is contained in origin/dev (merged 2026-10-01
@@ -15862,7 +15868,7 @@ items:
     semver_reason: an unbounded request is refused; every request within the limit answers as before
     register: [BF-151]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fdf88f4e origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor fdf88f4e official/dev
         kind: static
         describe: >
           #8795's head fdf88f4e is contained in origin/dev (merged 2026-10-02
@@ -15928,7 +15934,7 @@ items:
     semver_reason: error replies keep their status and message and lose the stack trace
     register: [BF-73]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dc64e82d origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor dc64e82d official/dev
         kind: static
         describe: >
           #8793's head dc64e82d is contained in origin/dev (merged 2026-10-02
@@ -15987,7 +15993,7 @@ items:
     semver_reason: patch and minor dependency versions; no behaviour change intended
     register: [BF-153]
     gates:
-      - run: "git -C externals/cgm-remote-monitor-official show origin/dev:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'"
+      - run: "git -C externals/cgm-remote-monitor-official show official/dev:package.json | grep -qE 'ip-address.{3,4}10[.]7[.]1'"
         kind: static
         describe: >
           origin/dev's overrides carry the fixed ip-address (merged 2026-10-02
@@ -16150,7 +16156,7 @@ items:
     semver_reason: repository configuration
     register: []
     gates:
-      - run: sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:.github/dependabot.yml'
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e official/dev:.github/dependabot.yml'
         kind: static
         describe: >
           PASSES while dev has no .github/dependabot.yml (measured
@@ -16252,7 +16258,7 @@ items:
     semver_reason: a failed read answers an error instead of ending the process
     register: [BF-155]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e20b66ba origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e20b66ba official/dev
         kind: static
         describe: >
           #8796's head e20b66ba is contained in origin/dev (merged 2026-10-02
@@ -16388,7 +16394,7 @@ items:
     semver_reason: documentation and a deploy template parameter
     register: [BF-46, BF-48, BF-49, BF-50, BF-51, BF-74, BF-78, BF-81]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e42144ff origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e42144ff official/dev
         kind: static
         describe: >
           #8799's head e42144ff is contained in origin/dev (merged 2026-10-02
@@ -20189,21 +20195,21 @@ items:
     semver_reason: repairs three regressions that exist only on dev (none is on 15.0.8); no setting or migration
     register: [BF-141, BF-143, BF-144]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce7d754a origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce7d754a official/dev
         kind: static
         describe: >
           #8781's merge ce7d754a (2026-09-26) is contained in origin/dev.
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a28fcecb origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor a28fcecb official/dev
         kind: static
         describe: >
           #8781's fix commit a28fcecb is contained in origin/dev.
-      - run: git -C externals/cgm-remote-monitor-official grep -qF restoreHistoryClock origin/dev -- lib/server/bootevent.js
+      - run: git -C externals/cgm-remote-monitor-official grep -qF restoreHistoryClock official/dev -- lib/server/bootevent.js
         kind: static
         describe: >
           origin/dev's boot restores the history clock (BF-144; ff93fa94 has
           no restoreHistoryClock and fails this). A presence check;
           tests/api3.history-restart.test.js decides.
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "b === null && a === undefined" origin/dev -- lib/server/srv-dates.js
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "b === null && a === undefined" official/dev -- lib/server/srv-dates.js
         kind: static
         describe: >
           origin/dev's in-memory pre-read treats a wanted null as matching an
@@ -20267,7 +20273,7 @@ items:
     semver_reason: a resource leak fix; no API or setting changes
     register: [BF-134]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3adc91d origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e3adc91d official/dev
         kind: static
         describe: >
           #8770's merge e3adc91d (2026-09-25) is contained in origin/dev.
@@ -20518,7 +20524,7 @@ items:
     semver_reason: an error status for a read that finds nothing becomes 200 [], the answer every other v1 read gives
     register: [BF-129]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1151832 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor f1151832 official/dev
         kind: static
         describe: >
           #8772's merge f1151832 (2026-09-26) is contained in origin/dev. It
@@ -20684,7 +20690,7 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-130]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 6c3ccce6 official/dev
         kind: static
         describe: >
           Containment: 6c3ccce6 is in origin/dev since #8758 merged as 4d9ecc3b
@@ -20822,7 +20828,7 @@ items:
     semver_reason: a defect in an unmerged fix
     register: [BF-131]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/dev
         kind: static
         describe: >
           Containment: e9dbb1fb is in origin/dev since #8758 merged as 4d9ecc3b
@@ -20949,7 +20955,7 @@ items:
     semver_reason: a display detail names the newest carb entry
     register: [BF-133, BF-146]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce30a94d origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor ce30a94d official/dev
         kind: static
         describe: >
           #8784's merge ce30a94d (2026-09-26), which carries the fix
@@ -21013,7 +21019,7 @@ items:
     semver_reason: restores 15.0.8's single record for a re-sent v1 treatment with an empty identity
     register: [BF-141]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official grep -qF "[null, ''], \$not" origin/dev -- lib/server/treatment-fallback-key.js
+      - run: git -C externals/cgm-remote-monitor-official grep -qF "[null, ''], \$not" official/dev -- lib/server/treatment-fallback-key.js
         kind: static
         describe: >
           origin/dev's no-identity clause is #8781's
@@ -21086,7 +21092,7 @@ items:
     semver_reason: a v3 delete reaches a record whose _id v3 reads show as its identifier, as on 15.0.8
     register: [BF-142]
     gates:
-      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 699eb5fa origin/dev
+      - run: git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 699eb5fa official/dev
         kind: static
         describe: >
           #8783's merge 699eb5fa (2026-09-26) is contained in origin/dev.
@@ -21167,7 +21173,7 @@ items:
     semver_reason: treatments and device status written through API v3 are held with the same derived time fields as v1 writes
     register: [BF-146, BF-133]
     gates:
-      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" origin/dev -- lib/api3/storage/mongoCachedCollection/index.js'
+      - run: sh -c 'git -C externals/cgm-remote-monitor-official grep -q "processRawDataForRuntime" official/dev -- lib/api3/storage/mongoCachedCollection/index.js'
         kind: static
         describe: >
           origin/dev's v3 cache wrapper derives the v1 fields (#8784, merge
@@ -21260,7 +21266,7 @@ items:
     semver_reason: an edit of a record stored twice leaves one record instead of two
     register: []
     gates:
-      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" origin/dev -- lib/api3/storage/mongoCollection/modify.js'
+      - run: sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" official/dev -- lib/api3/storage/mongoCollection/modify.js'
         kind: static
         describe: >
           Holds while v3 replaceOne/updateOne remove no other stored form

@@ -38,7 +38,7 @@ maintainer
 
 ## What was measured
 
-**`sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e origin/dev:.github/dependabot.yml'`** &nbsp;·&nbsp; kind: `static`
+**`sh -c '! git -C externals/cgm-remote-monitor-official cat-file -e official/dev:.github/dependabot.yml'`** &nbsp;·&nbsp; kind: `static`
 
 PASSES while dev has no .github/dependabot.yml (measured 2026-10-01); it goes
 red once a configuration is added, at which point this item is done or

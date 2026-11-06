@@ -6,7 +6,7 @@
  * WHICH tarball decides two things an operator cannot see from their own
  * deployment, and this gate measures both.
  *
- * 1. THE v0.0.13 TAG LEAKS CREDENTIALS (BF-42, §1 — `origin/master` pins it,
+ * 1. THE v0.0.13 TAG LEAKS CREDENTIALS (BF-42, §1 — `official/master` pins it,
  *    so it is what every current operator runs; BF-65, §1b — cuts 1, 2 and 3
  *    pin it too, and the adopted train ships those first as the "low-risk"
  *    releases). In that tree `index.js:54` is
@@ -23,7 +23,7 @@
  *    narrows when the leaks happen but does not stop them" is inverted.
  *
  * 2. THE axios OVERRIDE VIOLATES THE CONNECTOR'S OWN CONSTRAINT (BF-43).
- *    `origin/master` sets `overrides['nightscout-connect'].axios = "1.16.0"`
+ *    `official/master` sets `overrides['nightscout-connect'].axios = "1.16.0"`
  *    while the connector declares `dependencies.axios = "^1.18.1"`.
  *    `overrides` exists precisely to suppress the ERESOLVE that would
  *    otherwise reject this, so nothing reports it — and master's lockfile
@@ -33,7 +33,7 @@
  * the connector uses and 1.16.0 lacks. The defect asserted is the silent
  * constraint violation, and the gate asserts exactly that and no more.
  *
- * NON-VACUITY. The control is built in and is not optional: `origin/dev`
+ * NON-VACUITY. The control is built in and is not optional: `official/dev`
  * passes arm 1 (it pins a redacted tree) while master and cuts 1-3 fail, and
  * every ref except master passes arm 2. A gate that reported every ref the
  * same way would be measuring the command, not the pins. If EVERY ref comes
@@ -57,7 +57,7 @@ function argValue(flag, fallback) {
   return at > -1 && process.argv[at + 1] ? process.argv[at + 1] : fallback;
 }
 
-const REFS = argValue('--refs', 'origin/master,origin/dev').split(',').map((s) => s.trim());
+const REFS = argValue('--refs', 'official/master,official/dev').split(',').map((s) => s.trim());
 const LEAKING_TAG = 'refs/tags/v0.0.13.tar.gz';
 
 /*
@@ -168,7 +168,7 @@ if (verdicts.length > 1 && verdicts.every((v) => v === verdicts[0])) {
   findings.push({
     ok: false,
     text: `all ${verdicts.length} refs returned the same pin verdict (${verdicts[0]}); this run `
-        + 'distinguished nothing. Include origin/dev, whose pin is redacted, as a control',
+        + 'distinguished nothing. Include official/dev, whose pin is redacted, as a control',
   });
 }
 

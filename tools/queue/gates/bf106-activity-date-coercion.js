@@ -15,9 +15,9 @@
  * storage module for its queryOpts, build the query a v1 request produces, and
  * look at the TYPE of the bound. Nothing is guessed from source text.
  *
- *   control  origin/master (15.0.8): the bound must be a number. If it is not,
+ *   control  official/master (15.0.8): the bound must be a number. If it is not,
  *            the harness is broken and the result for the ref means nothing.
- *   ref      origin/dev: the bound must be a number. A string is BF-106.
+ *   ref      official/dev: the bound must be a number. A string is BF-106.
  *
  * Reads only. No worktree is written to; node_modules is never modified.
  */
@@ -29,8 +29,8 @@ const path = require('path');
 const { CRM, report } = require('./_gate');
 
 const REF = process.argv.includes('--ref')
-  ? process.argv[process.argv.indexOf('--ref') + 1] : 'origin/dev';
-const CONTROL = 'origin/master';
+  ? process.argv[process.argv.indexOf('--ref') + 1] : 'official/dev';
+const CONTROL = 'official/master';
 const findings = [];
 
 function boundTypes (ref) {

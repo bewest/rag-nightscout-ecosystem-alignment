@@ -23,7 +23,7 @@
  * That made the premise stale without making the conclusion wrong -- the gate
  * stayed red, for a real reason its own comment then misstated. The register
  * grew a `merged <date>` status the same day and this gate counts the two halves
- * separately; `origin/master` is 299 commits behind `dev`, so nothing has
+ * separately; `official/master` is 299 commits behind `dev`, so nothing has
  * reached an operator and `landed` is still empty.
  *
  * This is a safety-relevant framing, not a bookkeeping nicety. Several §1
@@ -125,7 +125,7 @@ findings.push({
       + `the ${openS1.length} that the "open" count invites a reader to infer, and not the `
       + `${openS1.length + fixedS1.length} that treating \`merged\` as done would suggest. `
       + 'Merging to `dev` is not releasing: `dev` is a Docker Hub publication event and '
-      + '`origin/master` is what operators install. The column tracks WORK DONE, not exposure.'
+      + '`official/master` is what operators install. The column tracks WORK DONE, not exposure.'
     : 'at least one entry has landed, so the open count and operator exposure have '
       + 'started to converge',
 });

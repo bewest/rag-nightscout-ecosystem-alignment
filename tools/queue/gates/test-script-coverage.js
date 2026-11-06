@@ -3,7 +3,7 @@
  * test-script-coverage.js  — DOC-TESTSCRIPTS
  *
  * `npm run test:unit` and `npm run test:integration` are brace lists, not
- * globs. GT1 expanded them on origin/dev: 44 files and 89 files out of 159
+ * globs. GT1 expanded them on official/dev: 44 files and 89 files out of 159
  * `tests/*.test.js`, leaving 52 matched by NEITHER.
  *
  * This is not tidiness. Four of those 52 are the evidence for the current
@@ -25,7 +25,7 @@
 const { execFileSync } = require('child_process');
 const { CRM, show, git, report } = require('./_gate');
 
-const REF = 'origin/dev';
+const REF = 'official/dev';
 const findings = [];
 
 const scripts = JSON.parse(show(REF, 'package.json')).scripts || {};
