@@ -2547,6 +2547,8 @@
       
         
       
+        
+      
     
     
     
@@ -2896,6 +2898,34 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="owner-authority.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant owner authority and token verification
   
 
     
@@ -6189,11 +6219,13 @@
 <blockquote>
 <p><strong>Re-measured 2026-10-27 on dev <code>7abe1cf6</code>: 264 names, not 277</strong>, with twelve contested settings for the maintainer and a list of what is stale here: <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev-2026-10-27</a>.</p>
 </blockquote>
-<p><em>Contributor-facing.</em> <strong>Snapshot, 2026-09-15. Current: the only statement of the tenant-owner
-configuration surface (T3.0's research deliverable).</strong> A specification, not landed work: nothing in it is
-implemented, and the DDL in §A has <strong>not</strong> been executed against PostgreSQL (§G.1). Sections marked
-<strong>DECISION</strong> need the maintainer's yes before code is written; sections marked <strong>CONSEQUENCE</strong>
-follow from D13/D14/D15. Decisions: <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. Item state:
+<p><em>Contributor-facing.</em> <strong>Historical snapshot, 2026-09-15, on the pinned seam below.</strong>
+This retains the original census, proposed DDL and their evidence boundaries; it is
+not the current policy or application acceptance record. Current decisions live in
+<a href="nightscout-multitenancy-execution-plan-2026-09-14.html#213-d22--per-setting-policy-project-floors-and-secrets">execution-plan D22</a>
+and <a href="owner-authority.html">owner authority</a>; the <a href="tenant-config-schema-2026-10-27.html">schema candidate</a>
+records later bounded schema tests. Its original <strong>DECISION</strong> markers are historical
+questions, not proof those questions are still open. Item state:
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a> — <code>T30-RESEARCH</code>, <code>T30-SCHEMA-CRED</code>, <code>T30-SCHEMA-CONFIG</code>,
 <code>T30-WIRING</code>, <code>T30-ORY-PROOF</code>.</p>
 <p>The operator- and user-facing text this work implies — what a tenant owner is told when their

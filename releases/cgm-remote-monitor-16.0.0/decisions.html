@@ -2172,7 +2172,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>cdc41a331</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>75af70098</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -2876,7 +2876,44 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td>Prioritize architecture/seam contracts and composition, then measured consolidation and integration of existing PR #8891; defer SQLite/celld experiments at low priority.</td>
 <td>maintainer, 2026-11-05, architecture-review chat</td>
 <td><code>ARCH-SEAM-CONTRACT</code>, <code>ARCH-SEAM-COMPOSE</code>, <code>ARCH-SEAM-CONSOLIDATE</code>, <code>ST-VIEWS-PROFILE</code>, <code>ARCH-DERIVED-FRAME</code>, <code>MT-RUNTIME-PLAN</code>, <code>ARCH-SQLITE-SPIKE</code></td>
-<td><a href="../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.html">Execution plan</a> assigns work to current storage/composition, compatibility and execution-profile lanes. R42 accepts bounded port contracts and separate management HTTP; R43 independently accepts the refreshed prototype replay. R44 accepts current-domain/backend and failure/HTTP composition with direct imported-identity evidence; R45 independently extends actual-HTTP writer replay and fixes live fixture ownership. Proven adapter consolidation and shared frames remain next; no acceptance promotes a milestone. #8891 stays opt-in single/nonresident until its replay/alarm entry bar and placement decision; distributed evaluation retains M5 recovery/authority gates. No new 16.0.0 tag gate, candidate admission, provider selection or production role enablement.</td>
+<td><a href="../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.html">Execution plan</a> assigns work to current storage/composition, compatibility and execution-profile lanes. R42 accepts bounded port contracts and separate management HTTP; R43 independently accepts the refreshed prototype replay. R44 accepts current-domain/backend and failure/HTTP composition with direct imported-identity evidence; R45 independently extends actual-HTTP writer replay and fixes live fixture ownership. R46 accepts bounded identical PG mechanics and direct indexed-race compatibility; R47 independently adds test-composed v1 evaluator replay. Broader helper relocation and actual shared-frame characterization remain next; read-derived frame inventory is preparation, not convergence. No acceptance promotes a milestone. #8891 stays opt-in single/nonresident until its replay/alarm entry bar and placement decision; distributed evaluation retains M5 recovery/authority gates. No new 16.0.0 tag gate, candidate admission, provider selection or production role enablement.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="owner-authority-and-local-verification-2026-11-05">Owner authority and local verification (2026-11-05)<a class="headerlink" href="#owner-authority-and-local-verification-2026-11-05" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adopt explicit tenant-owner management authority, bounded delegation and reviewed roles; separate use from delegation. Enforce project catalogue, operator ceiling and actor delegation authority, including proposed role changes in the management transaction. No implicit elevation of data/root credentials.</td>
+<td>maintainer, 2026-11-05, owner-authority chat</td>
+<td><code>MT-CONFIG-MIN</code>, <code>T30-WIRING</code></td>
+<td><a href="../../docs/30-design/tenancy/owner-authority.html">Owner authority contract</a> is the state of record. Separate management audience/listener; explicitly provisioned headless credentials first, interchangeable human identity. Full ceiling/transfer/role implementation remains open.</td>
+</tr>
+<tr>
+<td>Adopt initial human management limits: 10-minute access token, 30-minute idle/12-hour absolute session, authentication within 5 minutes for reveal/ownership changes/privileged issuance. Preserve existing 8-hour device exchange and unattended machine renewal.</td>
+<td>maintainer, 2026-11-05, owner-authority chat</td>
+<td><code>MT-CONFIG-MIN</code>, <code>MT-IDENTITY-PLAN</code></td>
+<td>Current authorization on the next protected operation remains mandatory across workers; expiry is not revocation. Values are adopted policy, not measured production optima or implemented human sessions.</td>
+</tr>
+<tr>
+<td>Amend D22: new tokens are verified locally with public keys; non-exportable private signing keys stay in the secrets component. PostgreSQL holds current tenant/session/credential/grant/policy and key-acceptance state. Cache public keys, never stale grants.</td>
+<td>maintainer, 2026-11-05, owner-authority chat</td>
+<td><code>MT-SECRETS-CONTRACT</code>, <code>T30-WIRING</code></td>
+<td>Ordinary new-token operations do not call Vault. Existing tokens may continue during Vault outage only with trusted cached keys and current PostgreSQL authority; issuance/secret operations refuse; unavailable authority refuses reads/writes. Ed25519 is the prototype, pending production JOSE/provider interoperability.</td>
+</tr>
+<tr>
+<td>Distinguish first-party credential records from recoverable secrets: use PostgreSQL metadata/one-way verifiers where compatible; retain encrypted legacy derivation material while needed. Vendor/cloud/connect/APNs values remain recoverable by authorized consumers under the secrets component.</td>
+<td>maintainer, 2026-11-05, owner-authority chat</td>
+<td><code>MT-SECRETS-CONTRACT</code>, <code>T30-WIRING</code></td>
+<td>Transit protects keys; tenant-bound ciphertext/references remain in PostgreSQL. JWTs are credentials, not signing keys. No change to single-tenant MongoDB/legacy defaults, provider KV selection, release admission or production enablement.</td>
 </tr>
 </tbody>
 </table>

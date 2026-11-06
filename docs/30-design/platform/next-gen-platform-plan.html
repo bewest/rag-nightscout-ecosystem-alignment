@@ -3734,6 +3734,8 @@
       
         
       
+        
+      
     
     
     
@@ -5654,12 +5656,12 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>cdc41a331</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>3a27f5cd9</code>.</em></p>
 <p><em>Contributor-facing living plan. Tenancy progress reconciled 2026-11-05 against
-cgm-remote-monitor dev <code>4a482627</code>, published draft #8898 <code>d4570e58</code> (R42),
-local accepted REST composition <code>bc4ee1a9</code> (R44), and independent published
-single/nonresident refresh <code>925c9527</code> (R43), extended locally by test-only
-HTTP-writer replay <code>dff9a8d4</code> (R45).
+cgm-remote-monitor dev <code>4a482627</code>, published draft #8898 <code>bc4ee1a9</code> (R44),
+local frame continuation <code>1c55098a</code> (R49, full/browser regression accepted), published independent #8891 <code>dff9a8d4</code> (R45) and local evaluator acquisition
+<code>5173864d</code> (R50). R46/R47 remain the accepted preceding baseline. Actual frame
+acquisition/concurrent reads are characterized; shared implementation remains open.
 Storage/identity/registration measurements below retain their named historical
 pins. Full M0–M6 completion remains open; component states are not milestone
 promotion or a fresh measurement of every queue gate. Release placement is in
@@ -5674,27 +5676,46 @@ promotion or a fresh measurement of every queue gate. Release placement is in
 </ul>
 <p>It names each piece of work, what it needs first, where it goes in the code, and the check that pins it.</p>
 <h2 id="1-where-things-stand">1. Where things stand<a class="headerlink" href="#1-where-things-stand" title="Permanent link">&para;</a></h2>
-<p><strong>Current dev anchor, 2026-11-05: <code>4a482627</code>.</strong> The published multitenant
-preview is <code>d4570e58</code> on draft #8898, not merged to dev. Its head CI and CodeQL
-succeeded. <a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
-adds measured port contracts and standalone subject-management HTTP; no management
-listener is enabled. Local <a href="../remedial/rc-16.0.0-integration-record.html#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05">R44</a>
-accepts the current-domain/backend and failure/HTTP split with direct imported-identity
-Mongo/PG compatibility, full/default-browser regression and semantic controls. Independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>
-refreshes #8891 with current-head regression and selected trigger/freshness replay;
-it is not joined into #8898 and retains the current physical subscriber. Local
-<a href="../remedial/rc-16.0.0-integration-record.html#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05">R45</a>
-adds actual HTTP writer/resend evidence and corrects notification fixture ownership,
-with selected live handoff and semantic controls. The
-<a href="../tenancy/architecture-seams-execution-plan-2026-11-05.html">architecture execution plan</a>
-sequences remaining contract review, proven adapter consolidation and shared frames;
+<p><strong>Current dev anchor, 2026-11-05: <code>4a482627</code>.</strong> Published multitenant preview</p>
+<h1 id="8898-is-bc4ee1a9-r44-opendraft-and-not-merged-to-dev-at-the-prior-capture">8898 is <code>bc4ee1a9</code> (R44), OPEN/draft and not merged to dev at the prior capture;<a class="headerlink" href="#8898-is-bc4ee1a9-r44-opendraft-and-not-merged-to-dev-at-the-prior-capture" title="Permanent link">&para;</a></h1>
+<p>its CI/CodeQL success belongs to that captured head, not a fresh check. Local
+<a href="../remedial/rc-16.0.0-integration-record.html#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05">R46</a>
+accepts bounded identical PG projection, identifying-read and owned-commit/event
+mechanics plus real index-on Mongo/PG race compatibility. Full regression,
+expanded baseline/current port checks and semantic controls pass; source-specific
+translation/natural order and write policy remain explicit. Broader portable
+helper relocation and capabilities remain open.</p>
+<p>Independent published #8891 <code>dff9a8d4</code> (R45) retains the prior captured CI/CodeQL
+success. Local
+<a href="../remedial/rc-16.0.0-integration-record.html#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05">R47</a>
+adds shipping v1 configurators in a test-only app over the actual nonresident
+context, with batch/resend/hard-delete and live handoff checks. Production source,
+executable routes and physical subscriber are unchanged; no REST join follows.
+The <a href="../tenancy/architecture-seams-execution-plan-2026-11-05.html#reproduced-frame-acquisition-and-concurrent-reads">reproduced frame characterization</a>
+now distinguishes actual acquisition bounds, frame/future records, statistics,
+typed-identity union and private cache behavior. The local
+<a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05">R49 REST continuation</a>
+at <code>1c55098a</code> observes old entries/new treatments across held reads even
+when the independent writer commits both domains atomically; full/browser regression passes. Independent
+<a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-independent-evaluator-frame-characterization-2026-11-05">R50</a>
+at <code>5173864d</code> measures evaluator A/B acquisition, a real-trigger B/B refresh, prior
+cycle/time retention after a callback fault and subsequent recovery. Teardown
+proves no late fake-provider delivery only. Shared materialization, a common
+atomic revision, logical no-op admission and durable recovery remain open.</p>
+<p>The <a href="../tenancy/owner-authority.html">owner-authority contract</a> is adopted:
+explicit ownership/delegation, project/operator ceilings and a separate management
+issuer govern the target. Optional new-format data tokens locally verify Ed25519
+signatures with current PostgreSQL session/key/grants on each protected operation;
+<a href="../remedial/rc-16.0.0-integration-record.html#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05">R48</a> accepts the bounded local data-token path. Human management issuance/refresh,
+transactional ceiling enforcement, full catalogue and listener enablement remain
+unimplemented. Legacy issuance and single-tenant MongoDB compatibility are retained.
 SQLite stays deferred. Historical/current comparisons retain their own scope. See <a href="../tenancy/single-and-multitenant-architecture.html">single versus multitenant architecture and compatibility</a>
 for the shared-code changes, diagrams and evidence limits. The <code>497d08c9</code> labels
 below pin the storage/identity implementation and matrix measurements, not
 the latest dev head. #8895's callback repair and #8896's test hygiene are
 also merged. ID-BATCH is implemented across #8889/#8894; no whole-branch
 rebase or new feature PR is owed absent a specific uncovered case.
-Published preview CI and CodeQL succeeded on <code>d4570e58</code>; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
+Published preview CI and CodeQL succeeded at the prior <code>bc4ee1a9</code> capture; other recorded branch results retain their named pins. Final private-security integration, live alerts, completed
 cohort/rollback evidence and release approval remain pre-tag work.
 Informal cohort/real-rig testing is underway (maintainer reports over 24-48 hours).
 Master's absent 4.4 check has been removed; retained required lanes are green.
@@ -5716,8 +5737,8 @@ See <a href="../../10-domain/nightscout-v16-ecosystem-deep-dive.html">current re
 <tr>
 <td>Storage</td>
 <td><code>WRITE_VALIDATION</code> (#8841); the write boundary <code>lib/storage/write-step.js</code> (#8854); the filter tree and interface with v1 reads (#8861); v1, authorization and socket writes labelled by source (#8863); v1 count only through the interface (#8870). Every REST and socket record read, write and count goes through the storage interface (storage-interface stage). ST-V3-DECOUPLE (with #8865, 2026-10-30). <code>write(intent)</code> release 1, every write path through one step (#8874, <code>368e6c23</code>, 2026-10-31). <code>write(intent)</code> release 2 with ST-EVENT: filter writes resolved to ids in the step, one write shape for API v3, autoPrune through the step (fixes BF-226), and the per-write event (#8886, <code>51d38f9f</code>, 2026-11-01) . ST-VIEWS, unwired (#8875, <code>1fc6d8be</code>, 2026-11-01). ST-HARNESS: backend-selectable harness, backend selection, tenant scope (#8881, <code>f54941b5</code>, 2026-11-01)</td>
-<td>Published #8891 refresh925c9527/R43; published REST/port/management d4570e58/R42; local composition/direct identity bc4ee1a9/R44</td>
-<td>Complete PostgreSQL query/import/resource acceptance</td>
+<td>Published heads retain #8891dff9a8d4/R45 and RESTbc4ee1a9/R44. R46/R47 baseline extended by local R49 frame characterization (full/browser accepted) and independent evaluator5173864d/R50</td>
+<td>Shared acquisition extraction; complete PostgreSQL query/import/resource acceptance</td>
 </tr>
 <tr>
 <td>Identity</td>
@@ -5734,8 +5755,8 @@ See <a href="../../10-domain/nightscout-v16-ecosystem-deep-dive.html">current re
 <tr>
 <td>Tenancy</td>
 <td>#8865 PLAT-SERVE with ST-V3-DECOUPLE and PLAT-ENTRY (<code>991b0654</code>; #8862 closed as superseded); #8899 current <code>multitenant</code> namespace (<code>4a482627</code>)</td>
-<td>Published draft #8898 <code>d4570e58</code>: explicit API executable with selected legacy/API3 domains, tenant PostgreSQL/RLS, current authority/Vault, derived reads and pinned synthetic client patterns. R42 owns published acceptance; local R44 adds composition/direct identity. M0–M6 remain incomplete; see the <a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> for promotion gates and the <a href="../tenancy/single-and-multitenant-architecture.html">architecture comparison</a> for diagrams/evidence.</td>
-<td>Remaining REST administration/side effects; full route/client/import/resource coverage; production trust/lifecycle and M3 promotion</td>
+<td>Published draft #8898 <code>bc4ee1a9</code> retains R44 acceptance; local R49 extends R46 with frame acquisition and concurrent REST reads, full/browser accepted. Owner-authority policy is adopted; optional local data-token verification does not implement human management issuance/ceilings. M0–M6 remain incomplete; see the <a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> and <a href="../tenancy/single-and-multitenant-architecture.html">architecture comparison</a>.</td>
+<td>Remaining REST administration/side effects; owner issuer/catalogue/ceiling enforcement; full clients/import/resources, production trust/lifecycle and M3 promotion</td>
 </tr>
 </tbody>
 </table>
@@ -6204,7 +6225,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>T30-SCHEMA-CONFIG</td>
-<td>Full catalogue/owner API remains open; selected preview settings/current policy are accepted separately. Historical old-seam gate fails its D15 table predicate</td>
+<td>Adopted owner-authority policy still needs full permission/settings catalogue, transactional ceiling enforcement and owner API implementation. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate</td>
 <td>T30-RESEARCH</td>
 </tr>
 <tr>
@@ -6214,18 +6235,18 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>T30-WIRING</td>
-<td>Current persisted authority and scoped provider compose with actual CLI/REST; administration and production identity/lifecycle remain</td>
+<td>Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; management issuer/ceiling enforcement and production lifecycle remain unimplemented</td>
 <td>TEN-RESOLVE, MT-SECRETS-CONTRACT</td>
 </tr>
 <tr>
 <td>TEN-LAB</td>
-<td>R40 cumulative two-tenant HTTP/provider/CLI accepted; complete M3 remains blocked on full M1/M2</td>
+<td>R46 accepted baseline plus R49 actual frame/concurrent REST characterization, full/browser accepted; complete M3 remains blocked on full M1/M2</td>
 <td>ST-PG, T30-WIRING, MIG-RUNNER</td>
 </tr>
 </tbody>
 </table>
 <p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. Which listener and role owns each API is mapped in <a href="interface-ownership-2026-10-27.html">interface ownership</a>, with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D21 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>.</p>
-<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The explicit single/nonresident ST-VIEWS-PROFILE prototype materializes bounded views per evaluation and retains properties between cycles (R43). Its current cost is unmeasured; default single retains the resident path. A shared frame join must preserve each path's authorization and freshness policy.</p>
+<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. Extracting a common private acquisition primitive must preserve those policies; no shared implementation or atomic revision is accepted.</p>
 <h2 id="5-open-decisions">5. Open decisions<a class="headerlink" href="#5-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up. Release questions (the 16.0.0 quiet period, cohort requests, when dev reopens) are Q13–Q16 in the <a href="release-allocation-2026-10-27.html#5-open-decisions">release allocation</a>.</p>
 <!-- chart: decisions -->

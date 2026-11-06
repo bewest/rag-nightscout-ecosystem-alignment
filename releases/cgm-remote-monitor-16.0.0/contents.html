@@ -2172,7 +2172,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>ef800dabd</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>f7b555338</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -2222,6 +2222,41 @@ and production/service environments work. The maintainer dispositions #8829
 <p>See the <a href="../../docs/10-domain/nightscout-v16-ecosystem-deep-dive.html">current ecosystem/acceptance record</a>,
 <a href="release-notes.html">draft release notes</a> and <a href="testing-notes.html">cohort collection guide</a>.
 Historical status/measurement sections below retain their dates.</p>
+<h3 id="update-bounded-pg-consolidation-and-race-compatibility-independent-v1-evaluator-replay-2026-11-05">Update: bounded PG consolidation and race compatibility; independent v1 evaluator replay (2026-11-05)<a class="headerlink" href="#update-bounded-pg-consolidation-and-race-compatibility-independent-v1-evaluator-replay-2026-11-05" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Work / state</th>
+<th>Evidence and remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local cumulative REST <code>44331668038dca5bc23af24c4125052b9c8e5612</code> accepts bounded common PG mechanics and index-on race compatibility.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05">R46</a>: parent full7051/80pending/0failing, default browser684 on application-identical e5796b32, archived common contracts75. Expanded baseline/current ports and real Mongo/PG duplicate races preserve source-specific policy; shared order/projection/precommit and retry controls fail semantically. Initial legacy-ID and UTC fixture failures are preserved; final corrected full campaign passes. No broader portability or milestone claim.</td>
+</tr>
+<tr>
+<td>Independent local evaluator <code>0c98ad06f8e01114639d58e1bc0724499af97f1f</code> adds actual shipping v1 configurator replay in a test-only app.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05">R47</a>: agent full6688/3pending/0failing/default browser684, parent audited immutable logs and reproduced archived36 plus write-trigger/closed-service controls. Production source, executable routes and physical subscriber unchanged; no REST join or socket enablement.</td>
+</tr>
+<tr>
+<td>Four selected bounded gate/control pairs PASS/NON-VACUOUS; independent reviews find no blocking issue.</td>
+<td>Consolidation, earlier identity, new index-on race and expanded profile instruments. Complete M1/M2/M3 and wider M0-M6 remain open. Historical release comparison is not rerun or transitively expanded by direct current-backend race evidence.</td>
+</tr>
+<tr>
+<td>Published #8898 OPEN/draft at R44 bc4ee1a9; #8891 OPEN/draft at R45 dff9a8d4.</td>
+<td>Both published heads have successful CI/CodeQL at fresh read-back. New application continuations remain local/unpushed; final prchecks contain current dev. Local <code>externals/work/HANDOFF-pg-consolidation-integration-20261105.md</code> indexes heads, controls, logs, draft descriptions and maintainer-only publication commands.</td>
+</tr>
+<tr>
+<td>Next: runtime characterization of shared frame acquisition and continued compatibility/evaluator coverage.</td>
+<td><a href="../../docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.html#shared-frame-inventory-and-next-characterization">Read-derived frame inventory</a> starts ARCH-DERIVED-FRAME preparation without claiming convergence or snapshot consistency. Remaining helper relocation, settings/clients/side effects, owner identity/ceilings, import/resources, lifecycle and durable M5/M6 retain their gates. SQLite stays deferred.</td>
+</tr>
+<tr>
+<td>Dashboard and next-gen map validated locally.</td>
+<td>Queue validation/generation/check and links pass; selected bounded gates/control pairs remain PASS/NON-VACUOUS. Site-check passes scans/provenance/noindex/robots; headless map verifies R46, independent R47, read-derived frame preparation and incomplete M3 with zero page errors. Render source <code>75af70098fb4ea9c0204921803ddbd3e4447c4da</code> is recorded in pages.yaml; no publication or new runtime result follows from rendering.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="update-composition-and-direct-identity-accepted-independent-http-profile-replay-2026-11-05">Update: composition and direct identity accepted; independent HTTP profile replay (2026-11-05)<a class="headerlink" href="#update-composition-and-direct-identity-accepted-independent-http-profile-replay-2026-11-05" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -4857,7 +4892,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ef800dabdf66f893a6dc231a3b15c439bfd71db6/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -5146,6 +5181,102 @@ candidate is named.</p>
 <hr />
 <p><em>Draft, 2026-10-26. Prepared locally; nothing pushed, tagged, merged or published by this programme.
 Requires maintainer review before anything here is relied upon.</em></p>
+<h2 id="update--owner-authority-and-local-verification-2026-11-05">Update — owner authority and local verification, 2026-11-05<a class="headerlink" href="#update--owner-authority-and-local-verification-2026-11-05" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Scope / queue</th>
+<th>Recorded result</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maintainer decisions: <code>MT-CONFIG-MIN</code>, <code>MT-IDENTITY-PLAN</code>, <code>T30-WIRING</code>, <code>MT-SECRETS-CONTRACT</code></td>
+<td><a href="../../docs/30-design/tenancy/owner-authority.html">Owner authority</a> and <a href="decisions.html#owner-authority-and-local-verification-2026-11-05">decision rows</a> adopt bounded delegation, separate management authentication, human lifetime/freshness limits and the D22 local-verification amendment.</td>
+<td>Policy adopted; complete role/ceiling/session/transfer implementation and production interoperability remain open. No candidate admission, listener enablement or release change.</td>
+</tr>
+<tr>
+<td>Alignment-only prototype on committed instrument <code>e8c3c01ed</code>; actual CRM baseline <code>d4570e58</code></td>
+<td><a href="../../docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.html">Reproduced measurement</a>: 16 semantic checks, four non-vacuous controls, 24 cases / 2,880 timed operations. Current Vault-dependent and two local paths compared; same-token revocation across pools, tenant key isolation and settled outages exercised.</td>
+<td>Synthetic authorization pipeline only. New ordinary-token operations use zero Vault calls; full HTTP/client performance, production capacity, full ceilings/session issuer and in-flight shutdown races remain UNMEASURED. Local alignment branch only; no CRM source changed.</td>
+</tr>
+</tbody>
+</table>
+<p>Verification: <code>make queue-validate &amp;&amp; make queue</code>, <code>make queue-check</code>,
+<code>make docs-links</code> and <code>git diff --check</code> passed for this lane. The broader
+<code>make queue-status</code> baseline on main remains failing (for example
+<code>P0-C-REMEDIATE ... 0/1 FAIL</code>, <code>T30-SCHEMA-CONFIG ... 0/1 FAIL</code>);
+MT-CONFIG-MIN/MT-SECRETS-CONTRACT/T30-WIRING remain UNMEASURED in that run because
+integration gates are skipped. Those existing measurements do not promote this
+prototype. CRM full regression and site-check were skipped: no CRM application
+source, rich site page or pages.yaml changed.</p>
+<p>Lane worktree, anchors, next steps and peer ownership are in the machine-local,
+untracked handoff at <code>externals/work/HANDOFF-owner-authority-2026-11-05.md</code>.
+That local path is a maintainer reference and is excluded from the published site.</p>
+<h2 id="update--owner-authority-application-integration-2026-11-05">Update — owner authority application integration, 2026-11-05<a class="headerlink" href="#update--owner-authority-application-integration-2026-11-05" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Scope / queue</th>
+<th>Measured current result</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>T30-WIRING</code>, <code>MT-SECRETS-CONTRACT</code>: new-format API verification</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05">R48</a> accepts local CRM <code>3d5eac196256e447859373beadf7abf2efbfb2ce</code>: explicit API executable/config and shared handlers use the application verifier and one current PG snapshot. Full nonbrowser7058/80pending/0fail; browser684/0/0; full process16; archived new-format7 and four semantic red controls. Final prcheck OK.</td>
+<td>Fixed locally, not merged/released or published by this lane. Separate coordinator incorporated the source correction into its frame-integration branch; that cumulative tree needs its own acceptance. No parent failure is waived by this branch's passing run.</td>
+</tr>
+<tr>
+<td>Owner authority/QMS</td>
+<td><a href="../../docs/30-design/tenancy/owner-authority.html">Adopted contract</a>, current D22/plan corrections and historical census/schema provenance are reconciled. The lab imports application code; no standalone verifier duplicate remains. Actual revocation and Vault/PG outage behavior are recorded in R48.</td>
+<td>New-format state remains operator-provisioned; automatic legacy issuance migration, complete human/refresh sessions, proposed-grant ceilings, production provider/key distribution and M5 streams remain open. Legacy8h exchange/single behavior preserved. No RC admission, listener exposure or milestone promotion.</td>
+</tr>
+</tbody>
+</table>
+<p>This application acceptance supersedes the earlier prototype-only readiness boundary;
+the earlier immutable prototype measurement remains evidence for its own instrument.
+Queue/links/site checks for the joined QMS branch are recorded in the local handoff.
+The #8898 coordinator owns final queue/dashboard/next-gen-map reconciliation and
+maintainer-operated publication of the combined branch.</p>
+<h3 id="update--frame-acquisition-and-concurrent-read-characterization-2026-11-05">Update — frame acquisition and concurrent-read characterization (2026-11-05)<a class="headerlink" href="#update--frame-acquisition-and-concurrent-read-characterization-2026-11-05" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lane</th>
+<th>Tree and measured status</th>
+<th>Remaining boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cumulative REST frame / owner-authority join</td>
+<td><code>codex/frame-integration-20261105</code> at <code>1c55098a3d4bcf3d871bcd345f159ce444d6e458</code>; <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05">R49</a> records final full/browser and archived14 acquisition/4 concurrency positives, six semantic controls and test-fixture red/green correction. R48 source and evidence preserved.</td>
+<td>Existing bounds/frame/statistics/identity policies remain explicit; actual PG HTTP can combine old entries/new treatments across an atomic writer commit. Shared extraction and stronger consistency remain open.</td>
+</tr>
+<tr>
+<td>Independent evaluator frame</td>
+<td><code>codex/evaluator-frame-20261105</code> at <code>5173864da1835da7aecf1f73121b28463f6a6a70</code>; <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05">R50</a> records full6690/3pending/0failure, browser684, parent archived38 and two semantic controls.</td>
+<td>Actual A/B acquisition then real-trigger B/B, callback-error retention/recovery and no late fake-provider delivery. No DB cancellation/internal-handoff guarantee, logical subscriber change, REST join or multitenant evaluator admission.</td>
+</tr>
+<tr>
+<td>Owner authority</td>
+<td>Adopted contract and R48 optional data-token verification incorporated; owner gate registered with actual-HTTP signature control.</td>
+<td>Full human issuer/refresh, individual-setting catalogue, proposed-grant/delegation ceilings, production provider/key operations remain incomplete.</td>
+</tr>
+<tr>
+<td>Dashboard and next-gen map</td>
+<td>Source/dashboard regeneration, queue validation/check and document links pass. Map rendered from <code>3a27f5cd9eb8834e01c779d5fb862f19525ed6dd</code>; pages.yaml pins it. Site-check passes with zero warnings/unresolved links; headless Chromium card selection, all track toggles, keyboard dependency highlighting and decision/background selection pass with zero page errors (external HTTP(S) blocked).</td>
+<td>Runtime characterization remains in progress; no M0-M6 promotion, RC admission, publication or agent push.</td>
+</tr>
+</tbody>
+</table>
+<p>Machine-local lane detail: <code>externals/work/HANDOFF-frame-integration-20261105.md</code>.
+The earlier predecessor full run failed fixture setup; it is recorded in R49 and
+superseded only by the final cumulative measurement. Published drafts remain at
+their separately captured remote heads until the maintainer publishes this work.</p>
 
 
 

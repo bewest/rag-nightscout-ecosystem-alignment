@@ -1635,6 +1635,8 @@
       
         
       
+        
+      
     
     
     
@@ -2626,6 +2628,64 @@
     
   
     object-id/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../owner-authority/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    owner-authority/
   
 
     
@@ -4544,7 +4604,7 @@
 
 
 <h1 id="archived-storage-management-http-and-nonresident-replay-checks">Archived storage, management HTTP and nonresident replay checks<a class="headerlink" href="#archived-storage-management-http-and-nonresident-replay-checks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>cdc41a331</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>75af70098</code>.</em></p>
 <p>Contributor-facing synthetic integration instruments. Each suite archives an
 explicit CRM commit into scratch and uses private dependencies with an identical
 lockfile. No shipping checkout is changed. Source objects must be available
@@ -4554,9 +4614,11 @@ locally; an unpushed local head is not automatically restored by bootstrap.</p>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>node<span class="w"> </span>tools/queue/gates/multitenant-next-slices.js<span class="w"> </span>--suite<span class="w"> </span>profile<span class="w"> </span>--ref<span class="w"> </span>&lt;profile-commit&gt;
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>node<span class="w"> </span>tools/queue/gates/multitenant-next-slices.js<span class="w"> </span>--suite<span class="w"> </span>compose<span class="w"> </span>--ref<span class="w"> </span>&lt;REST-commit&gt;
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>node<span class="w"> </span>tools/queue/gates/multitenant-next-slices.js<span class="w"> </span>--suite<span class="w"> </span>identity<span class="w"> </span>--ref<span class="w"> </span>&lt;REST-commit&gt;
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>node<span class="w"> </span>tools/queue/gates/multitenant-next-slices.js<span class="w"> </span>--suite<span class="w"> </span>consolidation<span class="w"> </span>--ref<span class="w"> </span>&lt;REST-commit&gt;
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>node<span class="w"> </span>tools/queue/gates/multitenant-next-slices.js<span class="w"> </span>--suite<span class="w"> </span>race<span class="w"> </span>--ref<span class="w"> </span>&lt;REST-commit&gt;
 </code></pre></div>
 <p>The port, management and composition process fixtures own their disposable
-services. The identity gate owns PostgreSQL16 and MongoDB8 fixtures. The profile gate
+services. The identity and race gates own PostgreSQL16 and MongoDB8 fixtures. The profile gate
 creates and removes its own MongoDB 8.0.34 service with explicit descriptor limits
 and a random loopback port/test database. All suites archive the complete committed tree and link matching private
 dependencies only inside scratch, allowing actual CLI child execution.
@@ -4585,8 +4647,8 @@ the fixture images and installed private dependencies are prerequisites.</p>
 </tr>
 <tr>
 <td><code>profile</code></td>
-<td>Separate #8891 actual-trigger/timer/property and actual HTTP mutation/resend replay, request-signature parity, selected live notification handoff and teardown; external-socket guard</td>
-<td><code>tick</code>, <code>write</code>, <code>http</code>, <code>window</code>, <code>freshness</code>: fixture trigger/window/freshness controls; <code>closed</code>: close the actual HTTP cohort service while preserving request recording, so live emission must fail</td>
+<td>Separate #8891 actual-trigger/timer/property, API3 and test-composed shipping v1 mutation/resend replay, request-signature parity, selected live notification handoff and teardown; external-socket guard</td>
+<td><code>tick</code>, <code>write</code>, <code>http</code>, <code>v1</code>, <code>window</code>, <code>freshness</code>: fixture trigger/window/freshness controls; <code>closed</code> / <code>v1-closed</code>: close the selected actual HTTP cohort service while preserving request recording, so live emission must fail</td>
 </tr>
 <tr>
 <td><code>compose</code></td>
@@ -4597,6 +4659,16 @@ the fixture images and installed private dependencies are prerequisites.</p>
 <td><code>identity</code></td>
 <td>Actual Mongo/PG API3 imported raw identities with absent/falsy identifiers through GET/mutations/deletes, typed persistence and foreign-tenant invariance</td>
 <td><code>lookup</code>: remove PG raw-ID fallback, making actual GET404 after Mongo200</td>
+</tr>
+<tr>
+<td><code>consolidation</code></td>
+<td>Actual entries/general/legacy port projection/identifying order, mutating rollback/no-event, independent postcommit visibility and synchronous settle</td>
+<td><code>order</code>: reverse identifier/raw-ID priority; <code>projection</code>: omit included raw ID; <code>commit</code>: publish before forced failed commit</td>
+</tr>
+<tr>
+<td><code>race</code></td>
+<td>Actual Mongo/PG unique-index INSERT losers after two empty matches across four resend modes; raw outcomes, current grants and tenant invariance</td>
+<td><code>retry</code>: disable the single duplicate retry, producing HTTP500 instead of the admitted resend200</td>
 </tr>
 </tbody>
 </table>

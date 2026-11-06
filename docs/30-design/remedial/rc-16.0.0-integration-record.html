@@ -2770,6 +2770,8 @@
       
         
       
+        
+      
     
     
     
@@ -4671,7 +4673,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-05 at <code>cdc41a331</code>.</em></p>
+<p><em>Living document, last changed 2026-11-05 at <code>3a27f5cd9</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -7934,6 +7936,458 @@ alarm-field equality, live DB-stat freshness, concurrent-read consistency,
 quiet-hardware cost, logical subscriber policy, shared frames, release placement
 and durable multitenant recovery. Reporter durations under pinned clocks are not
 performance measurements.</p>
+<h3 id="r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05">R46 - bounded PG consolidation and identifier races on 44331668 (2026-11-05)<a class="headerlink" href="#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Parent-reproduced local cumulative acceptance</strong> at
+<code>44331668038dca5bc23af24c4125052b9c8e5612</code>,
+<code>codex/pg-consolidation-integration-20261105</code>, from published R44 <code>bc4ee1a9</code>.
+Fresh remote read-back reports #8898 OPEN/draft at R44 and independent #8891
+OPEN/draft at R45 <code>dff9a8d4</code>; both published heads have successful CI and CodeQL.
+Current fetched dev remains <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>.
+New continuations remain local; no upstream merge, release or milestone promotion.</p>
+<p><strong>Bounded production extraction:</strong> <code>postgres-intent-common</code> shares only identical
+projection/refusal mechanics, identifying-read order/options/normalization and
+after-owned-transaction logical-event publication plus synchronous settle.
+Entries and general-collection callers retain their independent translators,
+natural-order and source-specific validation/write paths. Error labels, typed
+identities, lower-versus-preview projection behavior, return shapes and swallowed
+postcommit observer failures remain unchanged. This does not relocate every
+Mongo compatibility helper or establish a universal portable backend interface.</p>
+<p>The expanded real-port corpus tests entries-v3, general-v3 and general-legacy
+selection/projection, actual mutation followed by rollback without publication,
+independent postcommit visibility, source-specific IDs and synchronous no-transaction
+settle. Identical corrected tests pass on the unchanged baseline and candidate in
+UTC. Current legacy generated ObjectIds and v3 supplied raw identities remain
+distinct rather than normalized into one policy.</p>
+<p><strong>Direct compatibility expansion:</strong> actual indexed Mongo/PG HTTP forces two
+empty identifying reads and holds two real INSERTs; the winner commits before the
+loser resumes. Actual duplicate errors11000/23505 must be observed. Four resend
+modes assert replies, nested merge/null/removal behavior, raw winner identity and
+independently allocated clocks against stored outcomes, one committed record,
+foreign-tenant invariance and next-operation write-grant refusal. Only allocated
+IDs/clocks are excluded across backends; stability/type are checked within each.
+The hidden fixture Mongo environment is selected through the exact shipping
+intent factory, not a new policy or deployment/config-parser acceptance. No
+storage reply or duplicate error is manufactured.</p>
+<table>
+<thead>
+<tr>
+<th>Parent-reproduced campaign</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complete nonbrowser, final44331668</td>
+<td style="text-align: right;">7051</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Complete default browser, e5796b32 with application source identical to final</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Archived current common-adapter contract and existing unit checks</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Groups overlap. Full nonbrowser tiers: unit2157, DOM205, dependency368/2pending,
+core319, harness93, integration3891/78pending, stress18. Node22.23.4,
+PostgreSQL16.15, Mongo8.0.34, Vault2.2.1, UTC, seed41574423920; owned cleanup
+finished. The nested port fixture separately measures Mongo7.0.43/PG16.15.
+Classification500files/8tiers and changed-file lint pass. Browser was not repeated
+for the final test-only timestamp correction; independent Git comparison confirms
+unchanged lib/scripts/bin/migrations/static/package inputs. Final prcheck is OK
+with the branch clean and current dev contained.</p>
+<p><strong>Parent-reproduced semantic controls:</strong> reverse shared identifying order and the
+legacy selected-row sequence fails; omit shared included raw ID and the assertion
+gets{}instead of the required identity; publish inside the transaction and a
+verified mutating rollback exposes one false logical event instead of none.
+Disable the duplicate retry and the indexed race loser returns500 instead of the
+admitted resend200. Each selected control is0passing/1semantic failure; restored
+positives pass. The selected consolidation, identity, race and independent profile
+instruments report PASS/NON-VACUOUS. Independent read-derived source/fixture review
+finds no blocking issue.</p>
+<p><strong>Diagnostic failures retained:</strong> the first added legacy commit fixtures assumed
+the supplied raw ID survives creation; unchanged baseline and extraction both
+failed68passing/2failing. Corrected assertions probe stable identifier and actual
+source-specific raw kind. UTC then exposed missing-date fallback producing an
+unsupported negative-zero utcOffset in the direct legacy fixture, also on the
+unchanged baseline. The first cumulative all campaign ended7049passing/80pending/
+2failing, not green. Explicit +01:00 synthetic timestamps with asserted legacy
+offset60 isolate commit mechanics; production negative-zero refusal is unchanged.
+Corrected baseline/candidate UTC ports pass70 repeatedly, and final full acceptance
+above passes. These fixture findings are not runtime refactor defect claims.</p>
+<p>Commands, controls, initial/final logs and source identity are indexed by local
+<code>externals/work/HANDOFF-pg-consolidation-integration-20261105.md</code>,
+<code>HANDOFF-pg-consolidate-20261105.md</code> and <code>HANDOFF-compat-consolidate-20261105.md</code>.
+<a href="../../../tools/lab/multitenant-next-slices/index.html">Archived suite contract</a>
+requires committed sources, matching dependencies and owned synthetic services.
+Historical release comparisons are not rerun or enlarged transitively by these
+direct race tests. Remaining portable capabilities/helpers, settings/clients,
+REST side effects, import/resources, owner identity/ceilings and production
+lifecycle/durable recovery retain separate acceptance. R47 remains independent.</p>
+<h3 id="r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05">R47 - independent shipping v1 evaluator replay on 0c98ad06 (2026-11-05)<a class="headerlink" href="#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Independent test-only acceptance</strong> at
+<code>0c98ad06f8e01114639d58e1bc0724499af97f1f</code>,
+<code>codex/evaluator-next-20261105</code>, over published #8891 R45 <code>dff9a8d4</code>.
+Production <code>lib</code>, <code>scripts</code>, <code>bin</code> and <code>migrations</code> are unchanged. The executable
+continues to expose its existing API3 prototype; shipping v1 entries/treatments
+configurators are mounted only in an explicit test application over the actual
+nonresident context. This is not production route/socket admission, a subscriber
+switch, an RC join or a multitenant evaluator implementation.</p>
+<p>Six new cases exercise real authorized v1 batch creation, identity resend,
+treatment PUT and physical deletes plus all entries resend modes. They observe
+actual persisted values/IDs, physical v1/internal and logical events, coalesced
+retained cycles, full retained-property JSON and resident alarm-request signatures.
+Selected BWP high alarms and treatment notifications must reach the live service.
+V1 hard deletion and refusal409 inside a200 batch reply remain distinct from API3
+soft deletion and HTTP409. V1 entries resend outcomes retain their existing merged
+classification; tests do not normalize these differences or select logical-event
+no-op admission. Acknowledged/refused resends keep zero physical cycles and the
+previous retained cycle. Provider delivery and complete alarm-field equality are
+outside this measurement.</p>
+<table>
+<thead>
+<tr>
+<th>Campaign / evidence owner</th>
+<th style="text-align: right;">Passing</th>
+<th style="text-align: right;">Pending</th>
+<th style="text-align: right;">Failing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent-reproduced complete nonbrowser, parent-audited immutable anchor and tier totals</td>
+<td style="text-align: right;">6688</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Agent-reproduced complete default browser, parent-audited immutable anchor and totals</td>
+<td style="text-align: right;">684</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Parent-reproduced archived whole profile replay</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Groups overlap. Parent did not repeat the complete profile campaigns. Nonbrowser
+tiers: unit2081, DOM205, dependency368/2pending, core319, harness92,
+integration3605/1pending, stress18. Node22.23.4/Mongo8.0.34, UTC,
+seed41574423920; shared runner PG16.15/Vault2.2.1 services are not evidence of PG
+or multitenant evaluation. Agent whole/new-only replay36/6, lint/classification,
+clean current-dev containment and final prcheck pass; owned services cleaned.</p>
+<p><strong>Parent-reproduced controls:</strong> suppressing actual write-trigger delivery leaves
+persistence and the physical event visible but misses the required retained cycle
+(0versus1); closing only the real notification service preserves request recording
+but misses the required live BWP high emission. Each0passing/1semantic failure;
+restored whole36passes. The declared expanded profile instrument is
+PASS/NON-VACUOUS. Independent read-derived review found no blocking fixture,
+handler/event or lifecycle issue.</p>
+<p>The first new v1 case expected the prior single-reading fixture's AR2 alarm and
+failed5passing/1failing. Actual resident/profile request signatures agreed: the
+new earlier batch reading selects BWP's urgent high. The final assertion names
+that observed producer and retains the prior API3 AR2 case; no production rule or
+input normalization changed. Pinned-clock reporter durations are not costs.</p>
+<p><a href="../tenancy/architecture-seams-execution-plan-2026-11-05.html#shared-frame-inventory-and-next-characterization">Source-pinned frame inventory</a>
+is read-derived: bounded acquisition, frame flags, error policy, tenant binding,
+statistics and retained versus request-local lifecycle differ. No concurrency
+experiment, database revision guarantee, shared-frame extraction or durable event
+acceptance follows. Socket transport still has resident data/read assumptions.
+Full writers/alarms, stats freshness, quiet cost, subscriber policy, shared frames,
+release placement and M5/M6 recovery remain open. Commands, logs, controls and
+inventory are in local <code>externals/work/HANDOFF-evaluator-next-20261105.md</code> and the
+parent consolidation handoff.</p>
+<h3 id="r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05">R48 - local public-token verification through actual API on 3d5eac19 (2026-11-05)<a class="headerlink" href="#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced local application acceptance</strong> on
+<code>3d5eac196256e447859373beadf7abf2efbfb2ce</code>, branch
+<code>codex/owner-local-auth-20261105</code>, a clean descendant of R46 <code>44331668</code>.
+The <a href="../tenancy/owner-authority.html">owner authority contract</a> owns the adopted
+policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
+retain the campaign summary. This is locally fixed code, not merged/released or
+published on #8898 by this lane. The coordinator has incorporated this clean
+application commit into its separate frame-integration tree, pending its own
+cumulative acceptance. No ancestry-based acceptance or milestone promotion.</p>
+<p><strong>Actual application wiring:</strong> explicit preview configuration admits trusted,
+per-tenant Ed25519 public keys and a separately migrated access-state namespace.
+The actual executable builds local authentication and the current read-only PG
+snapshot adapter. The existing shared data-access permission/handler path consumes
+that snapshot for every permission and current-name attribution in the operation.
+No second REST stack or retained cross-request permission cache. The lab now
+imports this application verifier; its original independent implementation is
+retained only in the earlier pinned instrument history.</p>
+<p>One tenant-bound SQL snapshot joins current tenant/session/credential-generation/
+key acceptance with existing subject/default/role permissions. Serving identities
+cannot mutate authority or own/bypass forced RLS. Public keys bind issuer, tenant,
+key ID and data purpose; unknown keys/invalid new tokens refuse without legacy
+fallback. Duplicate tenant key material, unsafe writer grants and disabled RLS
+refuse before binding. Existing eight-hour legacy exchange and default single
+behavior are unchanged. New-format data tokens remain capped at eight hours.</p>
+<table>
+<thead>
+<tr>
+<th>Campaign on this application code</th>
+<th>Reproduced result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CRM_REST_WORKTREE=&lt;owned CRM&gt; node tools/lab/multitenant-rest-preview/owned.js all</code>, descriptor limit 64000</td>
+<td>7058 passing / 80 pending / 0 failing; tiers 2157 unit, 205 DOM, 368 dependency (2 pending), 319 core, 93 harness, 3898 integration (78 pending), 18 stress</td>
+</tr>
+<tr>
+<td>Same runner <code>browser</code>, own services</td>
+<td>684 passing / 0 pending / 0 failing</td>
+</tr>
+<tr>
+<td>Complete executable process file, including existing compatibility/startup cases</td>
+<td>16 passing / 0 pending / 0 failing; this file also runs in the full integration campaign</td>
+</tr>
+<tr>
+<td>Immutable <code>owner-local-token.js --ref 3d5eac19...</code> archive</td>
+<td>7 actual configured-executable new-format cases passing, no pending/failing</td>
+</tr>
+<tr>
+<td>Actual-HTTP signature, audience, session and stale-snapshot mutations</td>
+<td>Each 0 passing / 1 semantic assertion failure; scratch-only, restored source untouched</td>
+</tr>
+<tr>
+<td>Tier/build/lint/final prcheck</td>
+<td>500 files / 8 tiers; own postinstall build passes; changed production lint has 0 errors and 4 inherited warnings; final prcheck OK after fetched official/dev merge reports already up to date</td>
+</tr>
+</tbody>
+</table>
+<p>Scopes overlap and are not summed. Node22.23.4, PG16.15, Mongo8.0.34,
+Vault2.2.1, UTC seed41574423920. Services/databases are synthetic, individually
+owned and cleaned. Full/browser runners verify unchanged source head and clean
+tracked tree after the campaign. Published remote continuation is not inferred
+from these local results.</p>
+<p><strong>HTTP semantics reproduced:</strong> own-tenant GET/POST/PATCH and v1 reads succeed;
+POST keeps shipping <code>subject</code> and PATCH keeps <code>modifiedBy</code>. Permission discovery
+still refuses an ordinary uploader without <code>admin:api:permissions:read</code>.
+Tenant A's token on B fails with TOKEN_SIGNATURE, with successful own-key arms.
+A new-token request leaves the real secrets audit count unchanged. The same
+previous token observes committed grants/session/credential/key/tenant status
+on the next read/write across independent API processes; refused writes produce
+no stored record. Uncommitted removal remains invisible until commit.</p>
+<p>With Vault paused, new-token reads/writes continue and current revocation still
+refuses, while legacy verification answers503. With PostgreSQL paused, protected
+new-token reads/writes answer503 before handler effects; after recovery the refused
+write is absent. These are bounded blackhole/refusal tests, not crash/HA recovery.</p>
+<p><strong>Break-it controls:</strong> removing signature comparison or audience checking makes an
+invalid token's actual POST answer201 instead of401. Removing session-active
+checking makes a revoked session's GET answer200 instead of403. Reusing an earlier
+snapshot makes committed grant removal's next GET answer200 instead of403. Every
+mutant fails at the intended HTTP assertion; setup failure is not accepted as red.
+See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
+<p><strong>Repeated authorization-pipeline lab using the actual application verifier:</strong>
+16 semantic checks, 4 non-vacuous verifier/state controls, 24 timing cases/2880
+operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f7b555338e150c5eabce81511bfc10b932cb9f1b/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
+pins instrument <code>f814f967c</code>, application <code>ab09297b</code> and application-module SHA256.
+A direct git comparison confirms unchanged verifier bytes at final <code>3d5eac19</code>;
+this carries the component measurement forward without relabeling its source head. At concurrency8, current
+median reads18.904/18.572ms versus combined2.795/2.251ms; current writes18.764/16.396ms
+versus combined2.152/2.153ms. Each pair is two repeats, not pooled percentiles.
+Instrumented ordinary operations retain 2 versus0 Vault calls; current write uses
+2 versus1 logical authority snapshots. The lab's combined candidate schema is
+simpler than the application's new access-state join; these timings do not measure
+that application's SQL adapter, end-to-end HTTP throughput or production capacity.
+The <a href="../../60-research/tenancy/owner-authority-local-verification-2026-11-05.html">original prototype measurement</a>
+remains immutable and distinct.</p>
+<p><strong>Acceptance boundary:</strong> new-format keys/credential/session state are explicitly
+operator-provisioned in this preview. Complete human/refresh-session issuance,
+automatic migration of existing legacy exchange to the new format, complete owner
+ceilings/ownership transfer and production key distribution/rotation/provider
+acceptance remain open. Ordinary new-token verification is wired; this does not
+mean all legacy clients now use that format or that M2/M6 is complete. No real
+identities, production traffic, management listener or RC admission is enabled.
+Protected stream/socket delivery and full multitenant producer/evaluator recovery
+remain their separate M5 gates.</p>
+<p>Initial new test expectations wrongly looked for <code>modifiedBy</code> on POST and allowed
+uploader permission discovery. Source characterization confirmed POST <code>subject</code>,
+PATCH <code>modifiedBy</code> and the separate admin permission; expectations were corrected
+without changing those shipping behaviors. The original pilot's synchronous PG
+shutdown race remains an unmeasured in-flight-recovery concern, as its record says.</p>
+<p>Two additional same-persisted-state HTTP cases reproduced predecessor snapshot
+compatibility gaps before correction: malformed duplicated defaults produced
+legacy503/new200; a NULL display name produced legacy-read200/new503. Both new
+cases failed on the predecessor application code (0 passing/2 failing). Final
+<code>3d5eac19</code> validates unique defaults, preserves authorized incomplete-name reads,
+and refuses unattributed PATCH401 before effects. The complete final file passes16,
+and fresh full/browser acceptance above supersedes predecessor readiness. Independent
+source review of the original integration and final delta found no additional
+trust/isolation/privilege issue; its duplicate-default finding was addressed.</p>
+<h3 id="r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05">R49 - cumulative frame acquisition and concurrent-read characterization on 1c55098a (2026-11-05)<a class="headerlink" href="#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Tree:</strong> <code>codex/frame-integration-20261105</code>
+<code>1c55098a3d4bcf3d871bcd345f159ce444d6e458</code>, over R46, with R48 owner-authority
+source and its compatibility corrections incorporated. Current <code>official/dev</code>
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code> fetched/merged before final campaigns;
+merge already up to date. Frame changes add two registered integration fixtures;
+no production shared-frame primitive or stronger consistency policy is introduced.
+R50 remains an independent evaluator branch.</p>
+<table>
+<thead>
+<tr>
+<th>Measurement</th>
+<th>Reproduced result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CRM_REST_WORKTREE=&lt;owned frame worktree&gt; node tools/lab/multitenant-rest-preview/owned.js all</code></td>
+<td>7076 passing / 80 pending / 0 failing; tiers2157 unit,205 DOM,368 dependency (2 pending),319 core,93 harness,3916 integration (78 pending),18 stress</td>
+</tr>
+<tr>
+<td>Same runner <code>browser</code></td>
+<td>684 passing / 0 pending / 0 failing</td>
+</tr>
+<tr>
+<td>Archived <code>multitenant-next-slices.js --suite frame-acquisition --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458</code></td>
+<td>14 passing / 0 pending / 0 failing</td>
+</tr>
+<tr>
+<td>Archived <code>multitenant-next-slices.js --suite frame-concurrency --ref 1c55098a3d4bcf3d871bcd345f159ce444d6e458</code></td>
+<td>4 passing / 0 pending / 0 failing</td>
+</tr>
+<tr>
+<td>Acquisition controls <code>tenant</code>, <code>bound</code>, <code>clinical</code>, <code>cache</code></td>
+<td>Each 0 passing / 1 semantic failure: foreign tenant200 instead of100; SGV alarm bound1 instead of12; clinical current-reading invariant; caller cache receives rows</td>
+</tr>
+<tr>
+<td>Concurrency controls <code>partial</code>, <code>egress</code></td>
+<td>Each 0 passing / 1 semantic failure: real SQL42501 produces HTTP200 instead of503; blocked extra provider connection raises denied count2 instead of1</td>
+</tr>
+<tr>
+<td>Changed-file ESLint; <code>node scripts/test-tiers.js check</code>; whitespace</td>
+<td>0 errors / 6 warnings; 502 files across 8 tiers; PASS</td>
+</tr>
+<tr>
+<td>Final <code>tools/review/prcheck/prcheck.sh</code></td>
+<td>PASS; clean exact final head still contains official/dev4a482627, no source merge needed</td>
+</tr>
+</tbody>
+</table>
+<p>Node22.23.4, PostgreSQL16.15, MongoDB8.0.34 and Vault2.2.1, UTC,
+<code>TEST_SHUFFLE_SEED=41574423920</code>; each broad campaign owns separate disposable
+services and verifies immutable clean source. Full commands and machine-local
+artifacts are in <code>externals/work/HANDOFF-frame-integration-20261105.md</code>.</p>
+<p>The six controls and restored14 acquisition/4 concurrency positives ran on
+<code>3285ca4042ca00fc1b72e595eca8b6ad248952a3</code>; final1c55098a differs only in the
+Mongo test-fixture cleanup described below. Control source boundaries and both
+frame fixture files are unchanged. Final archived positives bind the exact final
+head. No control is a setup error or a zero-test green.</p>
+<p><strong>Acquisition:</strong> actual shipping views, tenant snapshots and resident frame:false/
+frame:true loaders read real Mongo/PG inputs. Selected BG/direction/uploader
+battery/IOB agree on the admitted current cohort. Alarm/property SGV bounds,
+future-entry/treatment/status behavior, food/activity, old sensor/pump records and
+per-kind status bounds are explicitly compared. Real raw ObjectId and same-spelling
+string identities both fetch, while computed-view union keys collapse the spelling;
+framed loading retains both. This is a documented difference, not universal parity.
+Views/snapshot reject a statistics failure; resident loading logs and continues
+with empty statistics. Caller cache/ddata stay unchanged, tenant A/B row binding
+is real, and tenant statistics exclude shared index bytes.</p>
+<p><strong>Concurrent HTTP:</strong> a barrier completes real entries SELECT before treatment
+SELECT execution. An independent PostgreSQL client atomically commits new entries
+and treatments; the actual response combines old entries with new treatments.
+Before/after cohorts and foreign tenant B remain asserted. This reproduces the
+absence of a common database revision; no new snapshot guarantee follows.
+Actual permission revocation42501 returns503/TENANT_SNAPSHOT_UNAVAILABLE;
+a temporarily renamed relation42P01 returns500/TENANT_SNAPSHOT_INTERNAL, each
+as a complete error response with no partial data and restored200 afterward.
+An exact owned-port socket guard admits only fixture PG/Mongo/HTTP endpoints;
+its self-test and source control block provider connection attempts before any
+external connection. Synthetic fixture provider is not real CLI/Vault acceptance.</p>
+<p><strong>Diagnostic correction:</strong> predecessor21fade full regression had two setup errors
+in <code>storage.tenant-scope.test.js</code>: an earlier Mongo test left its deliberately
+invalid URI in a shared configuration object, then teardown found no store.
+The exact ordered pair reproduced24 passing/2 failing. A test-local environment
+clone and explicit <code>assert.rejects</code> replace the earlier self-swallowing assertion;
+corrected/restored pair25 passing/0 failing. A scratch success-return control
+fails <code>Missing expected rejection</code>. These are test-only changes; product parsing
+is unchanged. Other predecessor tiers/browser are historical scoped results,
+not final cumulative acceptance. Final full results above supersede that failed run.</p>
+<p>Fixture diagnostics also corrected a selector that accidentally intercepted stats
+rows, parallel query trace ordering, shared stats-facade mutation and a vacuous
+small-cache predicate. Final controls target actual document SELECTs, inspect all
+callback traces, isolate the facade and assert exact untouched cache contents.
+Owned-service cleanup runs on failure. Wider shared extraction, all clinical
+cohorts, settings/plugin version keys, live stats/cost, logical no-op policy,
+production human issuance/ceilings and M0-M6 completion remain open. No agent push.</p>
+<h3 id="r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05">R50 - independent evaluator frame characterization on 5173864d (2026-11-05)<a class="headerlink" href="#r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05" title="Permanent link">&para;</a></h3>
+<p><strong>Tree:</strong> <code>codex/evaluator-frame-20261105</code>
+<code>5173864da1835da7aecf1f73121b28463f6a6a70</code>, over R47. Test-only additions
+in <code>tests/views-profile.test.js</code> and its owned read-barrier helper; application
+source unchanged. Contains <code>official/dev</code> <code>4a482627</code>. Independent of R49 REST;
+no executable v1/socket admission, subscriber switch or release placement.</p>
+<table>
+<thead>
+<tr>
+<th>Measurement</th>
+<th>Reproduced result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent <code>npm run test:all</code>, owned MongoDB, <code>/tmp/evaluator-frame-full.log</code></td>
+<td>6690 passing / 3 pending / 0 failing; 2081 unit, 205 DOM, 368 dependency (2 pending), 319 core, 92 harness, 3607 integration (1 pending), 18 stress</td>
+</tr>
+<tr>
+<td>Agent default <code>npm run test:browser</code>, <code>/tmp/evaluator-frame-browser.log</code></td>
+<td>684 passing / 0 failing</td>
+</tr>
+<tr>
+<td>Parent archived <code>node tools/queue/gates/multitenant-next-slices.js --suite profile --ref 5173864da1835da7aecf1f73121b28463f6a6a70</code></td>
+<td>38 passing / 0 failing; restoration after both new controls also 38</td>
+</tr>
+<tr>
+<td>Same archived gate <code>--control frame-clinical</code></td>
+<td>0 passing / 1 semantic failure: next real-trigger BG241 instead of240</td>
+</tr>
+<tr>
+<td>Same archived gate <code>--control frame-retention</code></td>
+<td>0 passing / 1 semantic failure: null replaces exact prior kept properties/timestamp</td>
+</tr>
+<tr>
+<td>Agent final <code>tools/review/prcheck/prcheck.sh</code></td>
+<td>PASS; current dev contained, clean tree; parent read-only barrier/lifecycle review found no bounded-claim blocker</td>
+</tr>
+</tbody>
+</table>
+<p>Actual evaluator acquisition is triggered by <code>ctx.entries.create</code>, not a
+manufactured event. An after-read barrier holds actual Mongo entries A while a
+before-read barrier delays treatments. Independent raw writes commit entries B,
+then treatments B; these writes emit no process event. The retained cycle is A/B,
+not the explicitly observed intermediate B/A; the next real marker write triggers
+B/B. Selected retained BG/COB values are asserted at both cycles. This is one
+deterministic schedule, not a universal consistency or cross-process-delivery
+contract.</p>
+<p>A selected callback fault injected <strong>after real rows arrive</strong> increments the error
+counter, retains the entire successful prior result and timestamp and performs no
+notification handoff; the next real trigger recovers. It is not a real database
+outage. The late-read teardown case fetches a fresh synthetic row and proves no
+late fake-provider delivery/listener, not database cancellation, prevention of
+internal handoff, or immutability of closed evaluator state. Each new cohort owns
+and closes its notification service and restores clock/statistics fixtures.
+Live statistics freshness, runtime cost, logical no-op subscriber policy, complete
+alarm/writer cohorts and multitenant durable recovery remain open.</p>
+<p>Diagnostic correction: the existing late-read fixture used an aged fixed date
+and returned no rows under the restored real clock; a fresh raw synthetic row
+makes the intended late-row assertion meaningful. No production behavior changed.
+Commands, ownership and local artifacts:
+<code>externals/work/HANDOFF-evaluator-frame-20261105.md</code>.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
