@@ -1,7 +1,7 @@
 # Tenancy: what to read and maintain
 
-*Contributor-facing living reading guide. Reconciled 2026-11-06 to recorded R60
-acceptance. This guide owns document navigation; status, decisions and measurements
+*Contributor-facing living reading guide. Reconciled 2026-11-06 to recorded R62/R64
+published acceptance and bounded local R67/R68 evidence. This guide owns document navigation; status, decisions and measurements
 stay in their existing homes. Dates in filenames do not establish currency.*
 
 ## Start with the task
@@ -15,7 +15,7 @@ stay in their existing homes. Dates in filenames do not establish currency.*
 | Owner, delegation and token rules | [Owner authority](owner-authority.md) | Adopted amendment to the execution plan. Implementation acceptance remains separate. |
 | Durable consumers and recovery | [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | B7 direction adopted; experiments and implementation acceptance retain their own evidence. |
 | A picture of the system | [Platform map](../platform/next-gen-platform-plan.md#3-the-map), then [architecture comparison](single-and-multitenant-architecture.md) | Map summarizes current bounded components. Architecture diagrams explain their explicitly pinned source scope, rather than current milestone completion. |
-| What ran and on which tree | [R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06) and its linked captures | Preserve executed heads, failures and controls. A prior green campaign is not a new-head execution. |
+| What ran and on which tree | [R62–R68](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06) and their linked captures | Preserve executed heads, failures and controls. A prior green campaign is not a new-head execution. |
 | Release or publication state | [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--coherent-compatibility-batch-accepted-m0-promoted-2026-11-06) | Programme updates go here. PR acceptance, merge and release are separate facts. |
 
 For a new lane, read the dashboard, the current completion batch, and the specific
@@ -34,7 +34,7 @@ use the dashboard and batch plan for work state.
 | [Storage seam](nightscout-storage-seam-interface-2026-09-14.md) | Current admitted ports in §11; §§1–10 retain old-seam census/implementation evidence. |
 | [Write contract](write-contract-spec-2026-10-07.md) | Current admitted implementation in §9, decisions in §6; original matrices retain their captured baseline. |
 | [Tenant config schema](tenant-config-schema-2026-10-27.md) | Bounded schema candidate. Owner authority owns later management/session/delegation amendments. |
-| [Clock proof plan](postgres-tenant-clock-proof.md) | Invariants and experiment design. R60 owns joined correctness acceptance; benchmark remains pending. |
+| [Clock proof plan](postgres-tenant-clock-proof.md) | Invariants and experiment design. R60 owns joined correctness acceptance; R65 adds descriptive HTTP data. Capacity/budget acceptance remains unmeasured; the older corpus benchmark capture remains pending. |
 | [Deployable components](nightscout-deployable-components-2026-09-14.md) | Original decomposition/rationale. Apply later execution-plan decisions, CLI amendments and the durable event contract when implementing. |
 
 ## Retained evidence and earlier proposals

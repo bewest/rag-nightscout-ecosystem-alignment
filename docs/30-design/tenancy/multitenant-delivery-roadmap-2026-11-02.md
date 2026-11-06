@@ -29,12 +29,17 @@ existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination.
 
-**Current acceptance:** [R60](#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06)
-accepts `d89a44e1`, now published on open/draft #8898. **M0 foundations is promoted**
-and the bounded `M4-CLIENT-LAB` card is complete. The tenant clock is joined with
-bounded correctness acceptance; its performance benchmark remains pending.
-M1–M6 retain their own remaining criteria. Independent R55 profile `2ee8b493`
-and later dormant owner/replay/operations branches remain separate.
+**Current acceptance:** [R62/R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
+accept and verify the published open/draft #8898 dormant owner-reader/replay/recovery
+batch. **M0 foundations remains promoted** and bounded `M4-CLIENT-LAB` complete;
+M1–M6 retain their remaining criteria. R63 bounds selected actual subject-client
+compatibility; root refusal keeps universal activation disabled. R67 clinical and
+R68 fresh-schema DATA controls are local component evidence. The joined
+owner/clinical/DATA candidate is **local and in verification**, with joined
+full/browser acceptance pending. The whole independent R55 profile branch remains
+separate. R65's clock HTTP measurements are descriptive; capacity and performance
+budget acceptance remain unmeasured. Exact heads and current lane state belong to
+the dashboard, and the dated captures retain their original limits.
 
 Use the [reading guide](README.md) to select a current contract or a dated record.
 The detailed checkpoints below retain their captured heads and remaining work at
