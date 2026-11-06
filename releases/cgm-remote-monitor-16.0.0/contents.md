@@ -1661,3 +1661,12 @@ state. No comments, reviews or correspondence were sent.
 | Published #8898 | Read-derived GitHub metadata: OPEN/draft at `d89a44e182e771ef84aa99190ec166e6ff0d9772`, based on dev `4a482627bfdafb1fef8dcbe0ac6c484811cae563`. | [CI run](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42296422151) and [CodeQL](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42296422116) completed successfully at read-back. The opt-in PostgreSQL/MongoDB/Vault corpus and aggregate Tests pass jobs succeeded; publication jobs were skipped. No merge or release. |
 | Current documents | Reconciled next-gen map and delivery-roadmap summary to existing R60 acceptance: M0 promoted, bounded client lab complete, clock joined, benchmark pending; M1–M6 remain open. | No application campaign rerun or new promotion. Independent R55 profile and later dormant branches retain separate scope. Architecture diagrams remain pinned to their stated historical source. |
 | Reader path | Added [tenancy reading guide](../../docs/30-design/tenancy/README.md), linked from programme status/roadmap. | Classifies current coordination, decision owners, specialist contracts and retained evidence. Superseded platform checkpoints are retrievable through a pinned history row; older roadmap checkpoints are collapsed with anchors preserved. Larger decision/evidence documents retain unique content pending full-cluster consolidation. |
+
+Reproduced documentation verification: queue-check, docs-links, site-check and
+map interaction checks pass; the new guide's broken-link control fails on the
+missing target and passes after restoration. Map interactions expose R60, blocked
+M3 dependencies, adopted B7 and M0 foundation acceptance without page errors.
+The separate default `make queue-status` audit on the unchanged starting tree
+reports PASS=198 / FAIL=43 / UNMEASURED=124; integration gates are skipped there.
+Those wider gate failures are not repaired or represented as green by this
+documentation reconciliation. No application campaign was rerun.
