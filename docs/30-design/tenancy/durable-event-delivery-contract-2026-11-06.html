@@ -5771,7 +5771,7 @@ says so in its health report; it does not invent one.</p>
 <tr>
 <td>ack and snooze</td>
 <td><code>notifications.ack</code> at <code>lib/notifications.js:166-184</code> deletes <code>lastEmitTime</code>; <code>requestSnooze</code> at <code>:118-127</code></td>
-<td>same object; the web client's ack arrives over the socket</td>
+<td>same object; the web client's ack arrives over the socket. Under D23 (adopted 2026-11-06) the <code>/alarm</code> socket stays, <code>realtime</code> forwards the ack to <code>api</code>, and <code>api</code> writes the tenant-keyed ack row that the evaluator consumes from the feed</td>
 </tr>
 <tr>
 <td>the data the cycle evaluates</td>
@@ -5813,10 +5813,13 @@ and the seams plan's identity rule:</p>
 <li>A failed cycle retains the entire prior successful result and timestamp and
    performs no notification handoff; the next real trigger recovers (R50, R55
    <code>frame-retention</code> control: null replacing the kept properties is the red).</li>
-<li>Ack and snooze are <strong>per tenant</strong> and survive a consumer restart only if
-   they are stored with the tenant; the roadmap keeps "owner ack/snooze and
-   actual notification delivery" on their separate gates, so their storage
-   shape is not decided here, only their key.</li>
+<li>Ack and snooze are <strong>per tenant</strong> writes. D23 names their writer: the
+   client acks on the <code>/alarm</code> socket, <code>realtime</code> forwards to <code>api</code>, and <code>api</code>
+   persists a tenant-keyed ack row that the evaluator reads from the feed like
+   any other committed row, so an ack survives a consumer restart by replay and
+   <code>realtime</code> holds no storage write authority. The roadmap keeps "owner
+   ack/snooze and actual notification delivery" on their separate gates, so the
+   row's shape and retention are not decided here, only its key and its writer.</li>
 <li>The retained cycle's inputs are the tenant's rows at or below the
    consumer's checkpoint; the evaluation instant is recorded with the cycle and
    is not a database revision (R49).</li>
@@ -5918,8 +5921,8 @@ that goes red for a setup reason is not evidence (clock proof plan). All are
 <td><strong>deferred</strong>; §4 keeps hard deletes outside the spine</td>
 </tr>
 <tr>
-<td>the storage shape of per-tenant ack/snooze</td>
-<td>separate gate per the roadmap</td>
+<td>the storage shape and retention of per-tenant ack/snooze rows</td>
+<td>separate gate per the roadmap; the writer is settled by D23 (<code>api</code>, via the <code>realtime</code> forward)</td>
 </tr>
 <tr>
 <td>anything about single-tenant MongoDB</td>
