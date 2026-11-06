@@ -16,7 +16,7 @@
         <link rel="prev" href="multitenant-delivery-dashboard.html">
       
       
-        <link rel="next" href="multitenant-rest-api-delivery-plan-2026-11-04.html">
+        <link rel="next" href="multitenant-integration-batching-plan-2026-11-06.html">
       
       
         
@@ -2551,6 +2551,8 @@
       
         
       
+        
+      
     
     
     
@@ -3465,6 +3467,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="multitenant-integration-batching-plan-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant integration batching plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -6493,7 +6523,10 @@ milestone dependencies, parallel lanes, next gates and slice acceptance stages.<
 It is generated from queue claims plus dated acceptance metadata, not a live
 branch monitor. It distinguishes local acceptance, incorporation with testing
 pending, integrated acceptance and milestone promotion. Nothing is pushed or
-enabled merely because a dormant slice passes.</p>
+enabled merely because a dormant slice passes. The
+<a href="multitenant-integration-batching-plan-2026-11-06.html">integration batching plan</a>
+says how lanes join one frozen cumulative head per batch, what verification runs
+at each acceptance stage, and which batches are on the critical path.</p>
 <p>This page retains the adopted decisions and promotion criteria below. The
 <a href="#execution-evidence-2026-11-02">execution evidence</a> is collapsed under section 6;
 existing heading anchors are preserved. Older "next" instructions and relative
@@ -6527,8 +6560,8 @@ is retained. REST359 and PROFILE2ee are <strong>separate accepted branches, not 
 No runtime-role/subscriber/notification policy promotion. The R50–R54 captures and
 all milestone/queue states are unchanged; profile gate/current metadata now pin2ee.
 The <a href="../../../reports/private-acquisition-profile-2026-11-06/index.html">canonical profile report</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/private-acquisition-profile-2026-11-06/acceptance.json">acceptance capture</a>
-and additive <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18a9a5420c062aeb6cfe195d0fc0d5fd096509e2/reports/private-acquisition-profile-2026-11-06/acceptance.json">acceptance capture</a>
+and additive <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18a9a5420c062aeb6cfe195d0fc0d5fd096509e2/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
 record exact scope and source; all22indexed artifact lengths/hashes were independently
 verified, with original capture/README unchanged. Seven serial campaigns capture
 11containers/20volumes, all recorded absent; no global leak-freedom claim.</p>
@@ -6536,7 +6569,7 @@ verified, with original capture/README unchanged. Seven serial campaigns capture
 <p>The <a href="../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.html">original backend-abort diagnostic</a>
 retains faulted-worker exit1 despite its passing selected functional oracle.
 The separate <a href="../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.html">focused recovery report</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.json">capture</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18a9a5420c062aeb6cfe195d0fc0d5fd096509e2/reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.json">capture</a>
 measure source3532 with repair117: actual HTTP7passing/1benchmarkpending;
 listener-removal control0passing/2failing (primary ECONNRESET instead of required
 HTTP, secondary strict afterEach sees exit1); restored selected1passing receives
@@ -6556,7 +6589,7 @@ lint has0errors/0warnings. Final359 changes only a settings-test normalization
 helper to remove unused bindings; no product scope change. R51–R53 native and
 R49/R50 historical captures remain unchanged, not replaced by this cumulative run.</p>
 <p>The <a href="../../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.html">sanitized public cumulative record</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/reports/tenancy/serial-cumulative-acceptance-2026-11-06.json">machine capture</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18a9a5420c062aeb6cfe195d0fc0d5fd096509e2/reports/tenancy/serial-cumulative-acceptance-2026-11-06.json">machine capture</a>
 retain independently verified raw-output hashes, exact source pins, commands,
 counts and scope. Initial sandbox prcheck DNS failure is preserved separately;
 the successful final fresh check is the accepted one.
@@ -7949,7 +7982,7 @@ translation, write-contract/backend suite integration and the migration runner
 remain. The original PG backend availability remains false; no hosted role
 starts. The first regression attempt lacked the project's test environment and
 failed; the corrected run used <code>NODE_ENV=test</code> and an owned synthetic MongoDB.</p>
-<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/tools/lab/vault-transit/results.json">the persisted lab result</a>
+<p><strong>Vault:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18a9a5420c062aeb6cfe195d0fc0d5fd096509e2/tools/lab/vault-transit/results.json">the persisted lab result</a>
 records <strong>9/9 checks</strong> on Vault <strong>2.2.1</strong>, image
 <code>hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2</code>.
 Scoped encrypt/decrypt, HMAC verification (including wrong-tenant key),
@@ -7984,7 +8017,7 @@ and executable API cases; documenting the journey is not claiming that API
 already exists.</p>
 <h3 id="continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">Continuation: pooler proof and typed identity primitive (2026-11-02)<a class="headerlink" href="#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02" title="Permanent link">&para;</a></h3>
 <p>The reproducible <a href="../../../tools/lab/postgres-foundation/index.html">pooler/DDL lab</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c57589e9b553af0dafdcce49d96b3ad4b448a30c/tools/lab/postgres-foundation/results.json">sanitized results</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/18a9a5420c062aeb6cfe195d0fc0d5fd096509e2/tools/lab/postgres-foundation/results.json">sanitized results</a>
 exercise the actual connection module, not the September adapter. PostgreSQL
 <strong>16.15</strong>, PgBouncer <strong>1.25.2</strong>, transaction pooling with one backend and no
 per-transaction reset: <strong>9 foundation checks pass</strong>. Two independent clients
