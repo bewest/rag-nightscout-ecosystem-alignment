@@ -25,11 +25,11 @@ This page retains the adopted decisions and promotion criteria below. The
 existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination. No full M0-M6
-promotion is recorded. The latest local cumulative REST head is `1c55098a`
+promotion is recorded. The latest accepted local cumulative REST head is `1c55098a`
 ([R49](../remedial/rc-16.0.0-integration-record.md#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05));
 it remains unpushed. Published #8898 is OPEN/draft at R44 `bc4ee1a9`;
-independent #8891 is OPEN/draft at R45 `dff9a8d4`. Both published heads have
-successful CI and CodeQL at fresh read-back. Independent local R50 `5173864d`
+independent #8891 is OPEN/draft at R45 `dff9a8d4`. Both published heads retain successful CI/CodeQL at the prior capture; this
+capacity-hold update makes no fresh remote-check claim. Independent local R50 `5173864d`
 extends actual evaluator acquisition/retention characterization without joining REST or enabling a role.
 [R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 accepts derived reads, pinned-pattern replay and independent authority probes
@@ -43,6 +43,48 @@ authority, tenant isolation and restart persistence; it does not accept all REST
 or production readiness. The [latest accepted continuations](#accepted-post-provider-and-canonical-continuations-2026-11-04)
 and [completion checkpoints](#completion-checkpoints-and-publication-2026-11-04)
 separate measured integration from complete storage, runtime and preview acceptance.
+
+### Next lanes and shared capacity hold (2026-11-05)
+
+This is continuation/status upkeep, not a new numbered acceptance wave.
+The frozen accepted baseline remains REST `1c55098a` ([R49](../remedial/rc-16.0.0-integration-record.md#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05): full7076/80pending/0failure, browser684) and independent profile `5173864d`
+([R50](../remedial/rc-16.0.0-integration-record.md#r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05): full6690/3pending/0failure, browser684), within their recorded boundaries.
+The following **NEXT lanes are separate and not accepted**. Figures below are
+read-derived from lane handoffs and the immutable replica measurement, not new
+campaigns run for this upkeep. Counts overlap and are not completion percentages.
+
+| Lane | Candidate and bounded evidence | Status and next gate |
+|---|---|---|
+| A — private acquisition | CRM `e5fe0b5e` has bounded acquisition14/concurrency4, semantic controls, caller ownership/error checks and browser684. Alignment cache-control `334dc571` is separate and **NOT JOINED**. | Full campaign **UNACCEPTED**: exit7 during root ENOSPC, NUL/truncated output, no complete reliable summary. Do not assign every numbered failure to capacity without isolation. Final prcheck and separate evaluator adaptation **NOT RUN**. Hold new campaigns until capacity and a serialized slot are released. |
+| B — settings differential | Separate `0a4a7d59` has focused12 and predicate/projection semantic controls. Its only product edit raises the **global PostgreSQL sort cap4 to5**; six-term refusal remains explicit. | Full/browser, cross-binding and cap-restoration controls, and final prcheck **PENDING capacity**. This bounded compiler extension does not establish all-settings/query parity or measured resource cost. |
+| C — owner proposed-grant enforcement | Existing accepted R48 baseline retained. New transactional catalogue/operator-ceiling/actor-delegation enforcement has no accepted head. | **UNMEASURED**; source-preparation/runtime acceptance on HOLD. Prior token verification does not implement these ceilings, the human issuer/refresh or the complete owner catalogue. |
+| D — replica/history | [Immutable actual HTTP measurement](../../../reports/tenancy/rest-replica-history-characterization-2026-11-05.md) at `2a6eaf73` has five passing characterization assertions of a **FAILED history contract**. Latest test-only instrument/cleanup candidate is `714f6c8b`, superseding `d93b7fca`. | Two already-running processes assign equal raw `srvModified` to successive writes: exclusive history omits the later row despite successful addressed GET. Same-process advances1, restart hydration2, foreign tenant unchanged. Corrected controls/cleanup runtime, full/browser and prcheck remain **PENDING**; no general replica acceptance. |
+
+**Capacity HOLD, reproduced host snapshot:** `df -h / /home /tmp` reported root
+453G total/431G used/0 available, with96G available on /home. All new DB/full/browser
+campaigns remain held globally; source, rendering and static checks use /home
+scratch/TMPDIR. Incomplete campaigns retain their original failures and logs;
+ENOSPC plus incomplete output is not evidence that every failure is environmental.
+Old cleanup removed containers before anonymous volume IDs were captured, so it
+cannot attribute orphan ownership. The separate3779-entry unattached-anonymous-volume
+inventory awaits user approval; **no deletion is authorized or recorded here**.
+No peer/global resource cleanup follows from this status work.
+
+The clock investigation is **read-derived design work**: unique allocation alone
+cannot establish commit order if a lower timestamp can commit after a higher one
+has been exposed. Legacy paths also plan timestamps before their PG transaction.
+A same-data-commit/fencing design needs evaluation; **no production clock fix or
+workaround is selected or applied**. The user-selected single-machine-first
+expansion boundary remains; these tests do not admit multi-node/HA operation.
+No M0–M6 promotion, shared implementation acceptance, queue-state change or release
+admission follows from this continuation.
+
+Local untracked coordination detail (machine-local references, not public links):
+`externals/work/HANDOFF-next-lanes-20261105.md`,
+`externals/work/HANDOFF-private-acquisition-extraction-20261105.md`,
+`externals/work/HANDOFF-settings-differential-20261105.md` and
+`externals/work/HANDOFF-rest-replicas-20261105.md`. The coordinator owns additive
+joins; runner/gate cleanup is a separate branch, not part of these source records.
 
 ### Accepted adapter consolidation and index race continuation (2026-11-05)
 

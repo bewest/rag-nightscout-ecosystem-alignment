@@ -23,6 +23,29 @@ It names each piece of work, what it needs first, where it goes in the code, and
 
 ## 1. Where things stand
 
+### NEXT lanes under shared capacity HOLD (2026-11-05)
+
+Accepted REST `1c55098a` (R49: full7076/80pending/0failure, browser684) and
+independent profile `5173864d` (R50: full6690/3pending/0failure, browser684) stay
+frozen. The [dated continuation](../tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05)
+records separate proposals; **none is a new accepted integration or milestone**.
+
+| NEXT lane | Bounded evidence | Remaining acceptance |
+|---|---|---|
+| A — proposed private acquisition | CRM `e5fe0b5e`: acquisition14/concurrency4, semantic controls and browser684; separate alignment control `334dc571` **NOT JOINED** | Full exit7/ENOSPC/NUL/truncated campaign **UNACCEPTED**; individual failures need isolation. Final prcheck and independent evaluator adaptation **NOT RUN** |
+| B — settings | `0a4a7d59`: focused12 plus predicate/projection controls; global PG sort cap4→5 is the sole product edit | Full/browser, cross-binding and cap-restoration controls, prcheck **PENDING capacity** |
+| C — new owner proposed-grant enforcement | Accepted R48 baseline retained; new enforcement has no accepted head | **UNMEASURED**, source/runtime preparation on HOLD; no human issuer/refresh or full ceiling/catalogue completion |
+| D — replica history | [Five actual HTTP characterization assertions](../../../reports/tenancy/rest-replica-history-characterization-2026-11-05.md) at `2a6eaf73` confirm a **FAILED history contract**; latest test/cleanup candidate `714f6c8b` supersedes `d93b7fca` | Corrected controls/cleanup runtime, full/browser and prcheck PENDING. No general replica interchangeability or production clock fix |
+
+Root has zero available space in the captured host check; all new DB/full/browser
+campaigns remain on global HOLD. Use /home scratch for records and static checks.
+Unknown anonymous volumes are not owned merely because an earlier runner removed
+its containers; the separately inventoried3779 unattached anonymous volumes await
+user approval, with no deletion recorded here. Unique allocation alone is
+read-derived insufficient for commit ordering; the clock/fencing design remains
+under investigation. This update neither classifies every incomplete-run failure
+as environmental nor reruns an application campaign.
+
 **Current dev anchor, 2026-11-05: `4a482627`.** Published multitenant preview
 #8898 is `bc4ee1a9` (R44), OPEN/draft and not merged to dev at the prior capture;
 its CI/CodeQL success belongs to that captured head, not a fresh check. Local

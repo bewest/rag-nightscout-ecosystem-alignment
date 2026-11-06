@@ -1435,3 +1435,27 @@ Machine-local lane detail: `externals/work/HANDOFF-frame-integration-20261105.md
 The earlier predecessor full run failed fixture setup; it is recorded in R49 and
 superseded only by the final cumulative measurement. Published drafts remain at
 their separately captured remote heads until the maintainer publishes this work.
+
+
+### Update — next lanes and capacity hold (2026-11-05)
+
+| Scope | Recorded source and status | Acceptance boundary |
+|---|---|---|
+| Frozen accepted baseline | REST `1c55098a`, R49 full7076/80pending/0failure and browser684; independent profile `5173864d`, R50 full6690/3pending/0failure and browser684. | Existing measured scope retained; new lane candidates do not replace these heads. No fresh runtime or remote-CI result is produced by this records-only upkeep. |
+| NEXT A — private acquisition | Separate CRM `e5fe0b5e`: bounded14/4 plus semantic controls and browser684; alignment cache-control `334dc571` **NOT JOINED**. | Full exit7/ENOSPC/NUL/truncated campaign remains **UNACCEPTED** with individual failures unclassified. Final prcheck/evaluator adaptation **NOT RUN**. |
+| NEXT B — settings | Separate `0a4a7d59`: focused12/predicate/projection controls; only product change is global PG sort cap4→5. | Full/browser/cross-binding/sort-cap controls/prcheck **PENDING capacity**. No broader settings/query/resource acceptance. |
+| NEXT C — owner enforcement | Accepted R48 baseline retained; new proposed-grant/ceiling enforcement has no accepted head. | **UNMEASURED**, source preparation/runtime acceptance on HOLD; no issuer/refresh or full catalogue completion. |
+| NEXT D — replica history | [Immutable measurement](../../reports/tenancy/rest-replica-history-characterization-2026-11-05.md) at `2a6eaf73`: five actual HTTP characterization cases demonstrate the **FAILED exclusive-history guarantee**. Latest test/cleanup candidate `714f6c8b` supersedes `d93b7fca`. | Equal raw timestamps across successive process writes omit a later row from history despite addressed GET success. Same-process+1/restart+2/foreign unchanged are bounded controls. Corrected controls/cleanup/full/browser/prcheck remain PENDING; no clock fix or replica acceptance. |
+| Capacity and ownership | Reproduced root snapshot453G/431G/0available; /home96G available. All new DB/full/browser campaigns on global HOLD. Separately inventoried3779 unattached anonymous volumes await user approval; no deletion. | Own cleanup cannot reconstruct orphan ownership. No peer/global deletion, milestone promotion, queue-state/gate-reference change or new numbered acceptance allocation. Central joins and runner/gate cleanup have separate owners. |
+
+Lane figures are **read-derived** from the local handoffs and immutable replica
+capture; the accepted baseline remains in R49/R50. The [dated continuation](../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05)
+owns sequencing and limits. Unique timestamp allocation alone is read-derived
+insufficient for commit ordering; a same-data-commit/fencing design is still under
+investigation. No production clock fix, operator-visible runtime change, release
+admission or push was made by this upkeep.
+
+Machine-local untracked references: `externals/work/HANDOFF-next-lanes-20261105.md`,
+`externals/work/HANDOFF-private-acquisition-extraction-20261105.md`,
+`externals/work/HANDOFF-settings-differential-20261105.md`,
+`externals/work/HANDOFF-rest-replicas-20261105.md`.

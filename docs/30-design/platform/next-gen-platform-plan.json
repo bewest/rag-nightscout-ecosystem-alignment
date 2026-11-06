@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-05: R49 actual frame acquisition/concurrent REST reads at 1c55098a extends accepted R46; full7076/80pending/0failure and browser684 pass. Independent evaluator5173864d/R50 has full6690/3pending/0failure, default-browser684 and archived38 with semantic controls. Adopted owner-authority contract; R48 bounded local data-token verification accepted. Published draft heads #8898bc4ee1a9/#8891dff9a8d4 and CI belong to prior captures, not fresh checks. No shared implementation, atomic revision or M0\u2013M6 promotion.",
+ "measured": "2026-11-05: R49 actual frame acquisition/concurrent REST reads at 1c55098a extends accepted R46; full7076/80pending/0failure and browser684 pass. Independent evaluator5173864d/R50 has full6690/3pending/0failure, default-browser684 and archived38 with semantic controls. Adopted owner-authority contract; R48 bounded local data-token verification accepted. Published draft heads #8898bc4ee1a9/#8891dff9a8d4 and CI belong to prior captures, not fresh checks. No shared implementation, atomic revision or M0\u2013M6 promotion. NEXT A-D remain separate and UNACCEPTED/PENDING/UNMEASURED under root-capacity HOLD. A incomplete exit7/ENOSPC full is not accepted despite bounded/browser checks; B settings/global sort-cap extension awaits broader validation; C enforcement has no accepted head; D passing characterization confirms a FAILED cross-process history contract. No new numbered acceptance, queue state change or milestone promotion.",
  "tracks": [
   {
    "id": "storage",
@@ -309,8 +309,12 @@
     "ST-VIEWS"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8891",
-   "ref": "Independent local5173864d/R50 extends R47 and prior published #8891dff9a8d4/R45. Production runtime/routes/physical subscriber unchanged; no REST join, shared frame, cancellation guarantee or RC admission.",
+   "ref": "Independent local5173864d/R50 extends R47 and prior published #8891dff9a8d4/R45. Production runtime/routes/physical subscriber unchanged; no REST join, shared frame, cancellation guarantee or RC admission. NEXT A independent evaluator adaptation is NOT RUN; its unaccepted extraction candidate does not replace this accepted profile head.",
    "spec": [
+    {
+     "label": "Next separate lanes / capacity HOLD",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05"
+    },
     {
      "label": "R50 independent evaluator frame characterization",
      "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
@@ -341,12 +345,16 @@
    "short": "PG REST ports / import",
    "title": "Published preview reuses shipping legacy and API3 handlers over tenant-bound PostgreSQL/RLS, shared intent rules and explicit domain catalogues. R40 adds derived reads and pinned client patterns; complete storage/import/resource parity remains open.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
-   "check": "R46 common PG mechanics/indexed races remain accepted. R49 characterizes actual acquisition bounds/frame-future/statistics/typed-union/private-cache differences; final cumulative full7076/80pending/0failure and browser684 pass. Full query/import/resource/client coverage remains open.",
+   "check": "Accepted R49 remains scoped. NEXT B0a4a7d59 has actual settings focused12 and predicate/projection controls; only product edit raises the global PG sort cap4 to5. Full/browser/cross-binding/cap-restoration controls and prcheck PENDING capacity; no all-query/settings acceptance.",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Local 1c55098a/R49 extends44331668/R46; published #8898bc4ee1a9/R44 remains the prior capture. No all-backend portability, common atomic revision or shared-frame implementation claim.",
+   "ref": "Accepted REST1c55098a/R49 retained. Separate settings0a4a7d59 is not accepted or joined; six-term sort refusal stays explicit and resource cost remains unmeasured.",
    "spec": [
+    {
+     "label": "Next separate lanes / capacity HOLD",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05"
+    },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
      "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
@@ -828,8 +836,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "R49 actual acquisition and held concurrent REST reads extend accepted R46. Old entries/new treatments are observed despite an atomic independent writer commit; full/browser acceptance is recorded. Full M3 awaits complete M1/M2.",
-   "ref": "Local 1c55098a/R49; prior published #8898bc4ee1a9/R44. Independent evaluator5173864d/R50 is not joined. No common atomic revision/shared frame; wider REST/clients/import/resources/lifecycle remain open.",
+   "title": "Accepted R49 bounded HTTP/frame proof remains. NEXT settings/replica lanes are not accepted; actual replica characterization confirms a FAILED exclusive-history guarantee. Full M3 still awaits complete M1/M2.",
+   "ref": "Frozen REST1c55098a/R49 full7076/80pending/0failure/browser684 and profile5173864d/R50 remain scoped. D2a6eaf73 five passing characterization assertions expose equal raw timestamps/missed later history despite addressed GET success. Candidate714f6c8b controls/cleanup/full/browser/prcheck PENDING; no production clock fix.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -837,6 +845,14 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "Next separate lanes / capacity HOLD",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05"
+    },
+    {
+     "label": "Immutable failed replica-history characterization",
+     "href": "../../../reports/tenancy/rest-replica-history-characterization-2026-11-05.md"
+    },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
      "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
@@ -897,8 +913,12 @@
    "state": "progress",
    "short": "Current policy / settings",
    "title": "R42 persisted subject service and standalone authenticated HTTP remain bounded acceptance. Adopted explicit ownership/delegation/ceiling policy still needs human management issuer/refresh, transactional enforcement, full roles/settings catalogue and listener implementation.",
-   "ref": "Owner-authority contract is adopted; R48 bounded local data-token verification is accepted and does not implement owner ceilings. R42 subject/management gates do not establish full M2 or administration.",
+   "ref": "Accepted R48 data-token/subject baseline retained. NEXT C proposed-grant/ceiling enforcement is UNMEASURED, with no accepted head; source/runtime preparation on HOLD. Human management issuer/refresh and full catalogue remain unimplemented.",
    "spec": [
+    {
+     "label": "Next separate lanes / capacity HOLD",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05"
+    },
     {
      "label": "R48 bounded local data-token API acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
@@ -1013,14 +1033,19 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "Measured frame acquisition",
-   "title": "R49/R50 reproduce actual acquisition bounds, frame/future records, statistics, typed-identity union, private-cache behavior, concurrent reads and failed-cycle retention/recovery. Shared implementation and a common atomic revision remain unaccepted.",
+   "short": "Acquisition / full HOLD",
+   "title": "Accepted R49/R50 acquisition characterization remains the baseline. NEXT A proposes a shared private primitive at separate e5fe0b5e; its incomplete full campaign is UNACCEPTED under capacity HOLD. No new shared implementation or consistency/runtime admission is accepted.",
+   "check": "Candidate e5fe0b5e has bounded14/4, semantic controls and browser684; full exit7 during ENOSPC has NUL/truncated output and no reliable final summary. Individual numbered failures need isolation. Final prcheck/evaluator adaptation NOT RUN.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "Local REST 1c55098a/R49 full7076/80pending/0failure and browser684 pass; independent evaluator5173864d/R50 measured separately. Next extract only demonstrated private acquisition behind explicit path policies; no subscriber switch, versioned frame identity or durable recovery.",
+   "ref": "Accepted REST1c55098a/profile5173864d stay frozen. Proposed CRM e5fe0b5e and separate alignment control334dc571 are NOT JOINED. Next full campaign requires capacity and serialized slot approval.",
    "spec": [
+    {
+     "label": "Next separate lanes / capacity HOLD",
+     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#next-lanes-and-shared-capacity-hold-2026-11-05"
+    },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
      "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
