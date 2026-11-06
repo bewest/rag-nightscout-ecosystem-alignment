@@ -1,0 +1,5 @@
+queue-validate  queue/work-queue.yaml
+  364 items, 7 parcels, 429 runnable gates, 375 explicit no-gate markers
+FAIL  P0-F: gates[0] cwd 'externals/work/nc-jitter' does not exist
+FAIL  P0-F: gates[1] cwd 'externals/work/nc-jitter' does not exist
+make: *** [Makefile:989: queue-validate] Error 1

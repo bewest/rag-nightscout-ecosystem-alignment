@@ -1,0 +1,37 @@
+
+
+  bounded subject administration contract
+    ✔ requires management authority and never defaults a supplied data principal into management
+    ✔ copies bounded input, removes omitted roles, and leaves omitted notes/time for the stored merge
+    ✔ rejects invalid identity, derived credential fields, duplicate roles and malformed metadata
+
+  bounded subject administration (disposable PostgreSQL)
+    ✔ appends metadata/audit without changing applied migration bytes or inventing historical timestamps (153ms)
+    ✔ atomically renames stable identity and credential prefix while preserving omitted notes/time and foreign state
+    ✔ revokes omitted roles for the same earlier raw and JWT credentials on the next operation across workers
+    ✔ deletes credential metadata and authority together and denies the same earlier credential on both workers
+    ✔ refuses unknown and foreign-only roles, absent subjects and incomplete metadata without partial writes
+    ✔ preserves explicit empty notes, supplied creation time and exact known role assignment
+    ✔ rolls back rename, role links, credential prefix and deletion when final audit insertion fails
+    ✔ serializes concurrent subject replacements without mixing a name with another write prefix or grants
+    ✔ refuses serving credentials as writer and prevents raw serving-role mutations of every authority table
+    ✔ enforces tenant RLS on writer credentials and rejects disabled RLS at adapter startup
+
+  separate subject management HTTP (disposable PostgreSQL)
+    ✔ requires explicit composition dependencies before returning the dormant Express app
+    ✔ renames via shipping verb/body identity, preserves metadata and keeps the earlier JWT usable (59ms)
+    ✔ revokes omitted roles on the next protected HTTP operation using the same earlier token
+    ✔ deletes through HTTP and refuses the same JWT on independent serving pools without deleting a foreign twin
+    ✔ uses authenticated matching tenant identity and rejects missing, duplicate, wrong-plane and cross-tenant credentials
+    ✔ rejects malformed encoded paths before authentication without misclassifying callback failures
+    ✔ sanitizes prefixed and plain resolver outages as unavailable before any authentication or write
+    ✔ refuses body identity injection, derived tokens, malformed metadata and unavailable management authority without writes
+    ✔ bounds JSON and media types and reports unsupported methods/paths with protective response headers
+    ✔ preserves known-role-only and metadata refusal mappings without partial changes
+    ✔ clears notes explicitly, accepts creation time and serializes concurrent HTTP replacement/deletion
+    ✔ rolls back final-audit persistence failure and sanitizes the backend failure response
+    ✔ leaves management routes absent from both independent data apps and performs no network egress (38ms)
+
+
+  26 passing (5s)
+

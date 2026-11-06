@@ -1,0 +1,50 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-06T06:31:14.887Z",
+    "end": "2026-11-06T06:31:14.892Z",
+    "duration": 5
+  },
+  "tests": [
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-1PJyP1/tests/owner-policy-catalogue.test.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: Missing expected exception (TypeError).\n    at Context.<anonymous> (tests/owner-policy-catalogue.test.js:33:14)\n    at process.processImmediate (node:internal/timers:484:21)",
+        "message": "Missing expected exception (TypeError).",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "operator": "throws",
+        "diff": "simple"
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-1PJyP1/tests/owner-policy-catalogue.test.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: Missing expected exception (TypeError).\n    at Context.<anonymous> (tests/owner-policy-catalogue.test.js:33:14)\n    at process.processImmediate (node:internal/timers:484:21)",
+        "message": "Missing expected exception (TypeError).",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "operator": "throws",
+        "diff": "simple"
+      }
+    }
+  ],
+  "passes": []
+}{"instrument":"owner-subject-policy","tree":"3106f14d5b718e27e2a179e2d637f0d06c0642c8","node":"v22.23.4","database":false,"control":"universe","stats":{"suites":1,"tests":1,"passes":0,"pending":0,"failures":1,"start":"2026-11-06T06:31:14.887Z","end":"2026-11-06T06:31:14.892Z","duration":5},"outcome":"semantic-control-observed"}

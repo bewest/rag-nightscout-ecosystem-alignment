@@ -1,0 +1,540 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 29,
+    "passes": 29,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-11-06T06:31:02.799Z",
+    "end": "2026-11-06T06:31:02.807Z",
+    "duration": 8
+  },
+  "tests": [
+    {
+      "title": "accepts the explicitly bounded terminal shape api:entries:read",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:entries:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:treatments:create",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:treatments:create",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:profile:update",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:profile:update",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:devicestatus:delete",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:devicestatus:delete",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:settings:admin",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:settings:admin",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:status:read",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:status:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape admin:api:permissions:read",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape admin:api:permissions:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:descendant",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:descendant",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:future_resource-2:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:future_resource-2:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:invented",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:invented",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:READ",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:READ",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read,delete",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read,delete",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:*:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:*:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:*",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:*",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:*",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:*",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api::read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api::read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries.subresource:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries.subresource:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:child:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:child:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:create",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:create",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:read:descendant",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:read:descendant",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace other:entries:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace other:entries:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects empty, duplicate, and non-string catalogues",
+      "fullTitle": "owner policy reviewed operation catalogue rejects empty, duplicate, and non-string catalogues",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "digests an independent sorted copy and leaves the caller catalogue unchanged",
+      "fullTitle": "owner policy reviewed operation catalogue digests an independent sorted copy and leaves the caller catalogue unchanged",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "reproduces Shiro parent implication including a terminal-looking parent of a future operation",
+      "fullTitle": "owner policy reviewed operation catalogue reproduces Shiro parent implication including a terminal-looking parent of a future operation",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "bounds each accepted literal to itself within the independently reviewed REST operation universe",
+      "fullTitle": "owner policy reviewed operation catalogue bounds each accepted literal to itself within the independently reviewed REST operation universe",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "accepts the explicitly bounded terminal shape api:entries:read",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:entries:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:treatments:create",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:treatments:create",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:profile:update",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:profile:update",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:devicestatus:delete",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:devicestatus:delete",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:settings:admin",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:settings:admin",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape api:status:read",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape api:status:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "accepts the explicitly bounded terminal shape admin:api:permissions:read",
+      "fullTitle": "owner policy reviewed operation catalogue accepts the explicitly bounded terminal shape admin:api:permissions:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:descendant",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:descendant",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:future_resource-2:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:future_resource-2:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:invented",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:invented",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:READ",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:READ",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read,delete",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read,delete",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:*:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:*:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:*",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:*",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:*",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:read:*",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api::read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api::read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries.subresource:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries.subresource:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace api:entries:child:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace api:entries:child:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:create",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:create",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:read:descendant",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace admin:api:permissions:read:descendant",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects a prefix, wildcard, descendant, or unselected namespace other:entries:read",
+      "fullTitle": "owner policy reviewed operation catalogue rejects a prefix, wildcard, descendant, or unselected namespace other:entries:read",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "rejects empty, duplicate, and non-string catalogues",
+      "fullTitle": "owner policy reviewed operation catalogue rejects empty, duplicate, and non-string catalogues",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "digests an independent sorted copy and leaves the caller catalogue unchanged",
+      "fullTitle": "owner policy reviewed operation catalogue digests an independent sorted copy and leaves the caller catalogue unchanged",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "reproduces Shiro parent implication including a terminal-looking parent of a future operation",
+      "fullTitle": "owner policy reviewed operation catalogue reproduces Shiro parent implication including a terminal-looking parent of a future operation",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "bounds each accepted literal to itself within the independently reviewed REST operation universe",
+      "fullTitle": "owner policy reviewed operation catalogue bounds each accepted literal to itself within the independently reviewed REST operation universe",
+      "file": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/owner-policy-archive-5qy0UY/tests/owner-policy-catalogue.test.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ]
+}{"instrument":"owner-subject-policy","tree":"3106f14d5b718e27e2a179e2d637f0d06c0642c8","node":"v22.23.4","database":false,"control":null,"stats":{"suites":1,"tests":29,"passes":29,"pending":0,"failures":0,"start":"2026-11-06T06:31:02.799Z","end":"2026-11-06T06:31:02.807Z","duration":8},"outcome":"bounded-pass"}
