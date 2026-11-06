@@ -1160,9 +1160,15 @@ Two consequences for the options below. The AndroidAPS NSClient (v1) plugin ship
 third-party socket writer; under option (a) a user on that plugin must move to NSClient V3, which
 AndroidAPS `dev` already made the only plugin. And the alarm `ack` over `/alarm` is what AndroidAPS V3,
 `dev` and the multiplatform tree all send, so (a) cannot move the ack to REST without breaking them:
-`realtime` must keep accepting `ack` on the socket, and the sub-question is whether it records the ack
-itself through one narrow tenant-keyed write (the only write authority it would hold) or forwards it to
-`api` internally (option (c)'s hop, for the ack alone). Nocturne is a server with its own hubs, not a
+`realtime` must keep accepting `ack` on the socket. Who persists it is a maintenance and scalability
+choice, not a compatibility one, and the recommendation is **forward it to `api`** over an internal
+request carrying the socket's own tenant token. The alternative, `realtime` writing the ack row itself,
+is narrow only in schema: a replayable ack row needs the tenant write binding, the commit clock fence and
+the commit event, which is the write step, so `realtime` would carry the write machinery and a
+write-capable database role for one message type. Forwarding keeps one writer surface, a read-only role
+for `realtime` (a compromised reader cannot write), direct `LISTEN` connections without a write pool, and
+every write-side control in one place; its cost is one internal request per ack (human-rate, latency
+UNMEASURED) and acks waiting out an `api` outage while alarms keep arriving from the feed. Nocturne is a server with its own hubs, not a
 client of this socket.
 
 **The conflation.** If the write messages stay on `realtime`, it is not a reader: it needs the
@@ -1176,7 +1182,7 @@ the socket's writes to leave `realtime`.
 
 | option | what changes | long-term direction | compatibility | maintenance | reliability | performance |
 |---|---|---|---|---|---|---|
-| **(a) `realtime` is a reader** *(recommended)* | the browser's reports editor moves to REST on `api`; the alarm ack stays on the `/alarm` socket and becomes a tenant-keyed ack row (written by `realtime` as its one narrow write, or forwarded to `api`; sub-question above), which the evaluator consumes from the feed (contract §7); under `multitenant` the socket refuses `dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove` with a reply naming the route; `single` keeps today's socket writes | matches D5, D21 and {C}: one writer surface, readers stateless beyond connections | the web client's reports editor moves to REST; AndroidAPS 3.4.2.3's NSClient (v1) plugin stops working under `multitenant` and its users move to NSClient V3 (the only plugin on AndroidAPS `dev`); the alarm `ack` stays on `/alarm` for AndroidAPS V3 and LoopFollow-class clients | one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in `single` only | a stuck `realtime` can only make realtime stale ({C} §3.5.3); writes never wait on fan-out | fan-out cost unchanged; acks add one REST write per ack |
+| **(a) `realtime` is a reader** *(recommended)* | the browser's reports editor moves to REST on `api`; the alarm ack stays on the `/alarm` socket; `realtime` forwards it to `api`, which writes the tenant-keyed ack row the evaluator consumes from the feed (contract §7); under `multitenant` the socket refuses `dbAdd`/`dbUpdate`/`dbUpdateUnset`/`dbRemove` with a reply naming the route; `single` keeps today's socket writes | matches D5, D21 and {C}: one writer surface, readers stateless beyond connections | the web client's reports editor moves to REST; AndroidAPS 3.4.2.3's NSClient (v1) plugin stops working under `multitenant` and its users move to NSClient V3 (the only plugin on AndroidAPS `dev`); the alarm `ack` stays on `/alarm` for AndroidAPS V3 and LoopFollow-class clients | one write path to test and secure; the socket write-side controls (BF-75/76 lineage) stay in `single` only | a stuck `realtime` can only make realtime stale ({C} §3.5.3); writes never wait on fan-out | fan-out cost unchanged; acks add one REST write per ack |
 | **(b) `realtime` keeps the write path** | `realtime` embeds the write step and holds write authority; the commit event is emitted from two roles | contradicts D21's "no storage writes" and the matrix's r/o | client protocol unchanged | two writers to keep equal; every write-side control runs twice | socket connection and write availability coupled | none |
 | **(c) `realtime` brokers writes to `api`** | socket write messages are forwarded to `api` over an internal HTTP hop carrying the socket's tenant credential; the reply is relayed | keeps the reader/writer split; adds an internal role-to-role trust boundary (D7 planes) | client protocol unchanged | an internal client in `realtime`, its credential forwarding and its failure mapping to maintain | one more hop on the write path; an `api` outage is visible as socket write failures | one extra request per socket write |
 
