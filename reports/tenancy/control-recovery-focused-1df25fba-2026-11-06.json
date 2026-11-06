@@ -1,0 +1,188 @@
+{
+  "basis": "reproduced",
+  "captured_on": "2026-11-06",
+  "initial_head": "1df25fba593df8899d2a9468a74dc10fc369470b",
+  "repaired_head": "8713395992e07b4dd2cde61ee972e9a15c8ada8c",
+  "initial": {
+    "passing": 56,
+    "pending": 0,
+    "failing": 5,
+    "families": {
+      "PostgreSQL one-time entries import target": {
+        "passing": 1,
+        "failing": 0
+      },
+      "populated PostgreSQL recovery reference": {
+        "passing": 3,
+        "failing": 4
+      },
+      "dormant durable current-state replay actual PostgreSQL": {
+        "passing": 6,
+        "failing": 1
+      },
+      "tenant credential/current-authority actual GET": {
+        "passing": 34,
+        "failing": 0
+      },
+      "tenant authorization current state": {
+        "passing": 12,
+        "failing": 0
+      }
+    }
+  },
+  "affected_repaired_result": {
+    "status": 0,
+    "signal": null,
+    "passing": 15,
+    "pending": 0,
+    "failing": 0
+  },
+  "changed_paths": [
+    "tests/fixtures/populated-recovery/lab.js",
+    "tests/fixtures/tenant-durable-replay.js",
+    "tests/tenant-durable-replay.integration.test.js",
+    "tests/tenant-durable-replay.test.js"
+  ],
+  "artifacts": {
+    "initial": [
+      {
+        "path": "source.log",
+        "bytes": 5655,
+        "sha256": "5157225a94c9c127f34d9fbc8b57faa36d9bd4867b17ca106383faef31405103"
+      },
+      {
+        "path": "owner-selected.json",
+        "bytes": 3739,
+        "sha256": "009a1525774ede4bedc15fad073851133ac66d5682a220500e264c9a61656a42"
+      },
+      {
+        "path": "owner-unselected.json",
+        "bytes": 1791,
+        "sha256": "bbfc8b1309af719bc7274842bf1a13ab6fcae41e2cdd0b9440f26969da350a97"
+      },
+      {
+        "path": "tiers.log",
+        "bytes": 30,
+        "sha256": "8ad30f646d1cb40a9a9f95acd91e090e42dbc0fee2d1a9d342dd904a53026ffc"
+      },
+      {
+        "path": "inventory.log",
+        "bytes": 6993,
+        "sha256": "753b1a1a6b25df0f355f83984216be3dde3fc8aaeca314acef5b1359429347fd"
+      },
+      {
+        "path": "lint.log",
+        "bytes": 2854,
+        "sha256": "1fe1badf461b5319b486fca112ea455588b98f92c0f83f416b4f58d2632162b6"
+      },
+      {
+        "path": "focused.log",
+        "bytes": 41339,
+        "sha256": "6d909933ef1f673c7085e8205ac43e71dc7abdef42f746ca79566eeffda56819"
+      },
+      {
+        "path": "focused.json",
+        "bytes": 1799,
+        "sha256": "bb02dc3382c1ca9f891d996d11e1ea72382af33d19e02f477e2aa61149b258d4"
+      },
+      {
+        "path": "resources.json",
+        "bytes": 13057,
+        "sha256": "85891ea2ad9f347fed3aed74baa2baf6201ad069c65120178ec92bf9d9bfd5be"
+      },
+      {
+        "path": "resources-audit.json",
+        "bytes": 2065,
+        "sha256": "f378661c49caab514b773021b5ea32e8c7882d2c5054a2a0727274e916197e74"
+      },
+      {
+        "path": "suite-summary.json",
+        "bytes": 459,
+        "sha256": "c6ccee1a9a38ee7eee3d4824bd8a96c70b87b5679a3323548b3378643918cd03"
+      }
+    ],
+    "repair": [
+      {
+        "path": "repair-diagnostic-resources-audit.json",
+        "bytes": 369,
+        "sha256": "f27ec830ae45fcfc3f38e108a19b1a470d793328abdb746d6add4438fd0e2004"
+      },
+      {
+        "path": "repair-diagnostic-resources.json",
+        "bytes": 11897,
+        "sha256": "c8759fdf984e94f0f3130fd7e6ef674df5edae4f3089532d58431f5128ae362d"
+      },
+      {
+        "path": "repair-diagnostic.log",
+        "bytes": 1062,
+        "sha256": "0eeb1c8a3d40f378eec1f4f392ebea0edf7f527cf46c93415ec7bbf1294413e7"
+      },
+      {
+        "path": "repair-lint.log",
+        "bytes": 1311,
+        "sha256": "8462113db750b7881fcf5813999aab6bc4d398ded71db9d1c8d8702bc81a88b1"
+      },
+      {
+        "path": "repair-oracle-red.log",
+        "bytes": 548,
+        "sha256": "3e27ff80df0c33ea028b51335396ca509d570f5acb8bddda8817bd60ef562f6c"
+      },
+      {
+        "path": "repair-oracle-restored.log",
+        "bytes": 175,
+        "sha256": "d52136646876cf94ad9258802e03a092d519ac71bfa93f711edc76b56645228d"
+      },
+      {
+        "path": "repair-positive-resources-audit.json",
+        "bytes": 735,
+        "sha256": "600fece203bc6ad244e6ea4f64defa57337dfe95963b0a6e3537cbdea9b7ebbd"
+      },
+      {
+        "path": "repair-positive-resources.json",
+        "bytes": 12159,
+        "sha256": "6d7dd80ea038e71ade08c01000aaef6d85e2b9353a1364f819394d4799c0559b"
+      },
+      {
+        "path": "repair-positive.json",
+        "bytes": 993,
+        "sha256": "cad0b98c43945acaf8afb0165209056ce75ed8e69144c096a2542df4df0ab7a4"
+      },
+      {
+        "path": "repair-positive.log",
+        "bytes": 2840,
+        "sha256": "04a315b1737dc1aa2968d0880ef50691e070a7f1d6e71e2824de46a0d7e89a73"
+      },
+      {
+        "path": "repair-source.log",
+        "bytes": 1705,
+        "sha256": "5b3352229accac10e56d6aa59e75738b4da4ba09c4542f85393c8fd19832794d"
+      },
+      {
+        "path": "restore-diagnostic.json",
+        "bytes": 168,
+        "sha256": "afbdb64c5f5e3d7ab3da787193eafc4a264b783085566288f0bedcf87d1c69fc"
+      },
+      {
+        "path": "capture-restore-stderr.js",
+        "bytes": 1022,
+        "sha256": "cc603bac286af8ef9d24ba1f0fdc9d6a704e8babf3cd28f153e5c97441eaf719"
+      },
+      {
+        "path": "flatten-replay-oracle.js",
+        "bytes": 609,
+        "sha256": "dacf50441ce2c58729a3fcae2f0f0dc77b528ad573d279da8d980ae0fbae0f04"
+      },
+      {
+        "path": "artifact-index.json",
+        "bytes": 1717,
+        "sha256": "059369595974829c029b6980e70274912eb5ca5a4ce30479b8b668f24af6f6fb"
+      }
+    ]
+  },
+  "limits": [
+    "Focused execution only; no comprehensive acceptance or milestone promotion.",
+    "46 unaffected authority/HTTP cases retain initial-head attribution.",
+    "Selected-mode actual pinned clients remain unmeasured.",
+    "No production backup/key recovery, intermediate-event/exactly-once guarantee, provider or listener activation."
+  ]
+}
