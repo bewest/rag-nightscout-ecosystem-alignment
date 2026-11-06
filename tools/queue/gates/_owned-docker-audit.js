@@ -20,7 +20,8 @@ cp.execFileSync = function (command, args, options) {
   const result = original(command, args, options);
   if (command === 'docker' && args[0] === 'run') {
     const name = args[args.indexOf('--name') + 1];
-    if (/^ns-tenant-authority-pg-[0-9a-f]{16}$/.test(name)) {
+    if (/^ns-tenant-authority-pg-[0-9a-f]{16}$/.test(name) ||
+        process.env.NS_OWNER_GATE_PROOF && /^ns-preview-replicas-(pg|vault)-[0-9a-f]{16}$/.test(name)) {
       records.push({ container: name, volumeIds: null }); save();
     }
   }

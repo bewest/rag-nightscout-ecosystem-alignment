@@ -8,6 +8,7 @@ const { execFileSync, spawnSync } = require('node:child_process');
 const { REPO_ROOT, CRM } = require('./_gate');
 const bounded = require('./_control-recovery');
 const socketControl = require('./_socket-data-control');
+const ownerControl = require('./_owner-preview-control');
 const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const suite = option('--suite'), ref = option('--ref'), control = option('--control');
@@ -179,13 +180,19 @@ try {
   if (bounded.cases[suite]) {
     auditFile = path.join(scratch, '.docker-audit.json');
     runtime.NS_GATE_DOCKER_AUDIT = auditFile;
+    if (suite === 'owner-preview') {
+      runtime.NS_OWNER_GATE_PROOF = path.join(scratch, '.owner-physical-proof.json');
+      const file = path.join(scratch, selected.file);
+      fs.writeFileSync(file, ownerControl.adapt(fs.readFileSync(file, 'utf8')));
+      console.log('Scratch-only owner oracle hardening: two-worker active warmup; physical state/audit before status');
+    }
     if (suite === 'socket-data-forwarding') {
       runtime.NS_SOCKET_GATE_PROOF = path.join(scratch, '.socket-physical-proof.json');
       const file = path.join(scratch, selected.file);
       fs.writeFileSync(file, socketControl.adapt(fs.readFileSync(file, 'utf8')));
       console.log('Scratch-only socket oracle hardening: physical states precede callback assertions');
     }
-    if (suite === 'durable-replay' || suite === 'projection-evaluator' || suite === 'socket-data-forwarding') {
+    if (suite === 'durable-replay' || suite === 'projection-evaluator' || suite === 'socket-data-forwarding' || suite === 'owner-preview') {
       const container = 'ns-replay-gate-' + require('node:crypto').randomBytes(8).toString('hex');
       const password = require('node:crypto').randomBytes(24).toString('hex');
       containers.push(container);
@@ -327,6 +334,18 @@ try {
     if (fs.existsSync(ownerResult)) fs.writeFileSync(path.join(artifacts, 'mocha.json'), fs.readFileSync(ownerResult), { mode: 0o600 });
     console.log('Private bounded artifacts: ' + artifacts);
     let proofs;
+    if (suite === 'owner-preview') {
+      const proofFile = path.join(scratch, '.owner-physical-proof.json');
+      if (fs.existsSync(proofFile)) {
+        const raw = fs.readFileSync(proofFile);
+        fs.writeFileSync(path.join(artifacts, 'physical-proofs.json'), raw, { mode: 0o600 });
+        proofs = JSON.parse(raw);
+      }
+      fs.writeFileSync(path.join(artifacts, 'scratch-test.js'), fs.readFileSync(path.join(scratch, selected.file)), { mode: 0o600 });
+      const child = ownerControl.auditChildren(proofs || [], control);
+      fs.writeFileSync(path.join(artifacts, 'child-audit.json'), JSON.stringify(child, null, 2), { mode: 0o600 });
+      console.log('Owned owner CLI workers independently absent: ' + child.map(item => item.pid).join(','));
+    }
     if (suite === 'socket-data-forwarding') {
       const proofFile = path.join(scratch, '.socket-physical-proof.json');
       if (fs.existsSync(proofFile)) {
@@ -382,7 +401,7 @@ try {
 } finally {
   let cleanupFailed = false;
   const captured = auditFile && fs.existsSync(auditFile) ? JSON.parse(fs.readFileSync(auditFile, 'utf8')) : [];
-  try { bounded.validateAudit(suite, captured); }
+  try { bounded.validateAudit(suite, captured, control); }
   catch (error) { console.error(error.message); cleanupFailed = true; }
   const cleanup = [...containers].reverse().map(container => ({ container, volumeIds: null, containerRemoved: false })).concat(captured);
   let diagnostic;

@@ -2,7 +2,9 @@
 
 // Narrow properties only. Native fixtures and product modules come from one archive.
 const socket = require('./_socket-data-control');
+const ownerPreview = require('./_owner-preview-control');
 const cases = {
+  'owner-preview': ownerPreview.definition,
   'socket-data-forwarding': socket.definition,
   'owner-reader': {
     file: 'tests/tenant-authorization-postgres.integration.test.js',
@@ -38,6 +40,7 @@ function mutate (source, before, after) {
   return source.replace(before, after);
 }
 function verify (suite, report, status, control, proofs) {
+  if (suite === 'owner-preview') return ownerPreview.verify(report, status, control, proofs);
   if (suite === 'socket-data-forwarding') return socket.verify(report, status, control, proofs);
   const expected = cases[suite];
   if (!control) {
@@ -80,7 +83,8 @@ function verify (suite, report, status, control, proofs) {
   console.log('CONTROL-SEMANTIC: ' + (owner ? 'fresh tightened ceiling allowed all three protected operations' :
     'typed projection collapsed to one row while two stored identities remain'));
 }
-function validateAudit (suite, captured) {
+function validateAudit (suite, captured, control) {
+  if (suite === 'owner-preview') return ownerPreview.validateAudit(captured, control);
   if (suite !== 'owner-reader') return;
   if (!Array.isArray(captured) || captured.length !== 1 ||
       !/^ns-tenant-authority-pg-[0-9a-f]{16}$/.test(captured[0].container) ||
