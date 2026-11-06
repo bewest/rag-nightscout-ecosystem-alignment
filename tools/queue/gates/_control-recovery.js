@@ -9,6 +9,19 @@ const cases = {
       'project.has(permission) && ceiling.has(permission)', 'true',
       'bounds old subject grants on fresh selected PostgreSQL snapshots across independent pools'] }
   },
+  'projection-evaluator': {
+    file: 'tests/tenant-projection-evaluator.integration.test.js',
+    flag: 'NS_TENANT_PROJECTION_EVALUATOR_TEST', passes: 7,
+    controls: {
+      identity: ['lib/storage/postgres-durable-replay.js',
+        'JSON.stringify([row.domain, row.id_kind, row.doc._id])',
+        'JSON.stringify([row.domain, row.doc._id])',
+        'preserves typed twins in SQL and the current clinical reading after replay'],
+      bootstrap: ['lib/storage/postgres-durable-replay.js',
+        'bootstrapped ? -1 : previous', 'previous',
+        'bootstraps an advanced empty projection into the same current clinical reading']
+    }
+  },
   'durable-replay': {
     file: 'tests/tenant-durable-replay.integration.test.js',
     flag: 'NS_TENANT_DURABLE_REPLAY_TEST', passes: 7,
@@ -35,6 +48,23 @@ function verify (suite, report, status, control) {
     throw new Error('CONTROL-INVALID: setup failure is not a semantic control');
   }
   const err = failure.err;
+  if (suite === 'projection-evaluator') {
+    if (!Object.hasOwn(expected.controls, control) ||
+        !failure.fullTitle?.endsWith(expected.controls[control][3])) {
+      throw new Error('CONTROL-INVALID: unexpected clinical assertion case');
+    }
+    const exact = (actual, value) => actual === value || actual === String(value);
+    const valid = control === 'identity'
+      ? exact(err.actual, 111) && exact(err.expected, 222) &&
+        err.message?.includes('clinical newest reading survives typed replay')
+      : (err.actual === undefined || err.actual === 'undefined') && exact(err.expected, 123) &&
+        err.message?.includes('advanced empty cache must reconstruct clinical state');
+    if (!valid) throw new Error('CONTROL-INVALID: unexpected clinical assertion symptom');
+    console.log('CONTROL-SEMANTIC: ' + (control === 'identity'
+      ? 'clinical current reading111 instead222 while independent stored typed twins remain'
+      : 'clinical current reading missing instead123 after advanced empty bootstrap'));
+    return;
+  }
   const owner = suite === 'owner-reader';
   // Mocha's Base reporter stringifies assertion arrays before JSON emits them.
   // Admit only the exact three-boolean shape, never a truthy/fuzzy conversion.

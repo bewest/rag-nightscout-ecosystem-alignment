@@ -22,6 +22,30 @@ for (const [suite, item] of Object.entries(cases)) {
   verify(suite, green, 0);
   assert.throws(() => verify(suite, green, 1), /cohort/);
   assert.throws(() => verify(suite, green, 0, true), /setup failure/);
+  if (suite === 'projection-evaluator') {
+    for (const control of ['identity', 'bootstrap']) {
+      const failure = { stats: { tests: 1, passes: 0, failures: 1, pending: 0 }, failures: [{
+        fullTitle: 'native clinical suite ' + item.controls[control][3],
+        err: { code: 'ERR_ASSERTION', actual: control === 'identity' ? '111' : 'undefined',
+          expected: control === 'identity' ? '222' : '123', message: control === 'identity'
+            ? 'clinical newest reading survives typed replay' : 'advanced empty cache must reconstruct clinical state' }
+      }] };
+      verify(suite, failure, 1, control);
+      const original = { ...failure.failures[0].err };
+      for (const invalid of [null, false, '111extra', 'NaN', control === 'identity' ? '112' : '0']) {
+        failure.failures[0].err.actual = invalid;
+        assert.throws(() => verify(suite, failure, 1, control), /unexpected clinical assertion/);
+      }
+      failure.failures[0].err = { ...original, code: undefined, name: 'TypeError' };
+      assert.throws(() => verify(suite, failure, 1, control), /setup failure/);
+      failure.failures[0].err = { ...original, message: 'unrelated failure' };
+      assert.throws(() => verify(suite, failure, 1, control), /unexpected clinical assertion/);
+      failure.failures[0].err = original;
+      failure.failures[0].fullTitle = 'before hook setup';
+      assert.throws(() => verify(suite, failure, 1, control), /unexpected clinical assertion/);
+    }
+    continue;
+  }
   const failure = { stats: { tests: 1, passes: 0, failures: 1, pending: 0 },
     failures: [{ err: { code: 'ERR_ASSERTION', actual: suite === 'owner-reader' ? [true, true, true] : 1,
       expected: suite === 'owner-reader' ? [false, false, false] : 2 } }] };

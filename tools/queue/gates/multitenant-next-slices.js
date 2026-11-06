@@ -178,7 +178,7 @@ try {
   if (bounded.cases[suite]) {
     auditFile = path.join(scratch, '.docker-audit.json');
     runtime.NS_GATE_DOCKER_AUDIT = auditFile;
-    if (suite === 'durable-replay') {
+    if (suite === 'durable-replay' || suite === 'projection-evaluator') {
       const container = 'ns-replay-gate-' + require('node:crypto').randomBytes(8).toString('hex');
       const password = require('node:crypto').randomBytes(24).toString('hex');
       containers.push(container);
@@ -195,9 +195,16 @@ try {
       }
       runtime.NS_TEST_POSTGRES_ADMIN_URI = 'postgres://operator:' + password + '@127.0.0.1:' + port + '/nightscout_multitenant_test';
       const file = path.join(scratch, selected.file);
-      fs.writeFileSync(file, bounded.mutate(fs.readFileSync(file, 'utf8'),
-        "      const consumer = await lab.provision('evaluator', lab.A, null, modified);",
-        "      const stored = await lab.typedRows();\n      assert.equal(stored.length, 2);\n      assert.equal(new Set(stored.map(row => row.id_kind)).size, 2);\n      const consumer = await lab.provision('evaluator', lab.A, null, modified);"));
+      if (suite === 'durable-replay') {
+        fs.writeFileSync(file, bounded.mutate(fs.readFileSync(file, 'utf8'),
+          "      const consumer = await lab.provision('evaluator', lab.A, null, modified);",
+          "      const stored = await lab.typedRows();\n      assert.equal(stored.length, 2);\n      assert.equal(new Set(stored.map(row => row.id_kind)).size, 2);\n      const consumer = await lab.provision('evaluator', lab.A, null, modified);"));
+      } else {
+        fs.writeFileSync(file, bounded.mutate(fs.readFileSync(file, 'utf8'),
+          "assert.equal(result.properties.bgnow.mean, 123, 'advanced empty cache must reconstruct clinical state');",
+          "assert.equal(result.properties.bgnow?.mean, 123, 'advanced empty cache must reconstruct clinical state');"));
+        console.log('Scratch-only clinical oracle hardening: absent bgnow yields assertion, still expected123');
+      }
     }
   }
   if (suite === 'profile' || suite === 'identity' || suite === 'race' || suite === 'frame-concurrency' || suite === 'settings') {
