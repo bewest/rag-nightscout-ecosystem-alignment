@@ -132,8 +132,9 @@ async function main () {
   await vault('sys/mounts/transit', { type: 'transit' });
   for (const name of ['data', 'hmac']) await vault('transit/keys/' + name, { type: 'aes256-gcm96', exportable: false });
   await vault('transit/keys/asymmetric', { type: 'ed25519', exportable: false });
+  await vault('transit/keys/asymmetric-b', { type: 'ed25519', exportable: false });
   await vault('sys/policies/acl/owner_lab', { policy:
-    ['encrypt/data', 'decrypt/data', 'hmac/hmac', 'verify/hmac', 'sign/asymmetric'].map(p =>
+    ['encrypt/data', 'decrypt/data', 'hmac/hmac', 'verify/hmac', 'sign/asymmetric', 'sign/asymmetric-b'].map(p =>
       `path "transit/${p}" { capabilities = ["update"] }`).join('\n') });
   const scoped = (await vault('auth/token/create', { policies: ['owner_lab'], no_default_policy: true,
     ttl: '20m', renewable: false })).auth.client_token;
@@ -145,15 +146,21 @@ async function main () {
     kty: 'OKP', crv: 'Ed25519', x: publicBytes.toString('base64url')
   } });
   const key = { tenant: A, kid: 'key1', issuer, purpose: 'data', publicKey };
+  const bPublicInfo = await vault('transit/keys/asymmetric-b');
+  const bPublicBytes = Buffer.from(bPublicInfo.data.keys['1'].public_key, 'base64');
+  assert.equal(bPublicBytes.length, 32);
+  const bKey = { ...key, tenant: B, publicKey: crypto.createPublicKey({ format: 'jwk', key: {
+    kty: 'OKP', crv: 'Ed25519', x: bPublicBytes.toString('base64url')
+  } }) };
   const verifyToken = createVerifier({ issuer, audience, purpose: 'data', maxLifetimeSeconds: 600,
-    resolveKey: (tenant, kid) => tenant === A && kid === 'key1' ? key : undefined });
+    resolveKey: (tenant, kid) => kid === 'key1' ? (tenant === A ? key : tenant === B ? bKey : undefined) : undefined });
   const claims = { iss: issuer, aud: audience, tid: A, purpose: 'data', sub: subject,
     sid: 'session1', cv: 1, iat: now, nbf: now, exp: now + 600 };
-  async function issue (overrides = {}, headerOverrides = {}) {
+  async function issue (overrides = {}, headerOverrides = {}, signingKey = 'asymmetric') {
     const header = Buffer.from(JSON.stringify({ alg: 'EdDSA', typ: 'ns-access+jwt', kid: 'key1', ...headerOverrides })).toString('base64url');
     const body = Buffer.from(JSON.stringify({ ...claims, ...overrides })).toString('base64url');
     const input = header + '.' + body;
-    const data = await vault('transit/sign/asymmetric', { input: Buffer.from(input).toString('base64'), key_version: 1 }, scoped);
+    const data = await vault('transit/sign/' + signingKey, { input: Buffer.from(input).toString('base64'), key_version: 1 }, scoped);
     return input + '.' + Buffer.from(data.data.signature.split(':')[2], 'base64').toString('base64url');
   }
   const localToken = await issue();
@@ -238,6 +245,13 @@ async function main () {
     pieces[2] = signature.toString('base64url'); resetCounts();
     await assert.rejects(workers[0].authorize({ token: pieces.join('.'), tenant: A, permissions: [permission('read')] }));
     assert.equal(counts.combined, 0);
+  });
+  await check('both tenant keys work locally and cross-tenant presentation fails by signature', async () => {
+    const bToken = await issue({ tid: B }, {}, 'asymmetric-b');
+    assert.equal(verifyToken(bToken, B).tid, B);
+    assert.equal(verifyToken(localToken, A).tid, A);
+    assert.throws(() => verifyToken(localToken, B), { code: 'TOKEN_SIGNATURE' });
+    assert.throws(() => verifyToken(bToken, A), { code: 'TOKEN_SIGNATURE' });
   });
   await check('signed wrong issuer/audience/purpose/tenant and invalid times refuse', async () => {
     for (const overrides of [{ iss: 'other' }, { aud: 'management' }, { purpose: 'management' }, { tid: B },
@@ -343,6 +357,9 @@ async function main () {
     }
   });
   return { experiment: 'owner-authority-local-verification', capturedAt: new Date().toISOString(),
+    alignmentHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+    instrumentHashes: Object.fromEntries(['harness.js', 'local-token.js', 'controls.js'].map(file =>
+      [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname, file))).digest('hex')])),
     sourceHead: execFileSync('git', ['-C', tree, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     versions, checks, benchmarks, limits: [
       'Synthetic authorization pipeline only; no end-to-end API handler/data-write/client performance claim.',
