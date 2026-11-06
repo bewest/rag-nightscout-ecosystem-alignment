@@ -236,8 +236,12 @@ and executable proof, rather than another direction approval. The source-only
 prototype does not establish production recovery. A separate
 owner-clamping characterization and populated-import preflight are active early
 proofs; neither selects a new authority policy or establishes real database restore.
-Owner session/issuer lifecycle and the wider operational implementation are **unassigned**;
-the coordinator must allocate those before claiming A or C implementation complete.
+Owner session/issuer lifecycle and the first Batch C tooling proof were assigned by the
+maintainer on 2026-11-06 to session `-8c` (see section 6): the lifecycle item as a
+read-derived decision packet, no code; the tooling proof as a source-only lane with one
+focused run. The wider operational implementation (backup/restore, upgrade/rollback,
+resource and egress bounds, final-tree review) remains **unassigned**; the coordinator
+must allocate it before claiming C implementation complete.
 Local integration ownership and exact unpushed anchors are in
 `externals/work/HANDOFF-codex-completion-batches-20261106.md` (local, untracked).
 
@@ -255,7 +259,24 @@ Local integration ownership and exact unpushed anchors are in
   two controls red and restored, recorded in the execution plan's D23 row). The typed
   role-table source is already incorporated and published through R60/R64: its
   role and unit-test blobs match accepted835 exactly. The event-payload branch
-  remains separate pending its nested-floor characterization and a later batch join.
+  remains separate pending final-floor verification and a later batch join.
+  The maintainer closed the
+  contract's section 9 stamp question on 2026-11-06: the event carries the transaction's
+  **final floor**; the event-payload lane changes its capture point accordingly and runs
+  the Mongo-gated d-event case against a disposable MongoDB 8 (new head to be reported).
+- **Batch C tooling early proof** (session `-8c`, maintainer-assigned 2026-11-06, no slot
+  until its one focused run): tenant export/import fidelity and tenant deletion with
+  recoverable key material on a synthetic populated fixture. New CRM worktree off the
+  accepted head `83582e87`, branch `codex/tenant-export-delete-20261106`, handoff
+  `HANDOFF-tenant-export-delete-20261106.md`. Source-only until one focused run with its
+  own containers; it builds beside, not inside, R62's populated dump/restore lab. Checked
+  2026-11-06 23:40 UTC: no other lane, branch, worktree or document claims this work.
+- **Owner session/issuer lifecycle decision packet** (session `-8c`, maintainer-assigned
+  2026-11-06, no code, no slot): a read-derived packet for the maintainer at
+  `owner-lifecycle-decision-packet-2026-11-06.md` in this directory. It covers the human
+  issuer/refresh, existing-grant clamping, DELETE policy and provision/suspend/export/delete
+  questions that the promotion review lists as unimplemented. Checked 2026-11-06 23:40 UTC:
+  unclaimed by any Codex lane; the owner/evaluator batch explicitly excludes human issuer/refresh.
 - **Lane handoffs** are `externals/work/HANDOFF-<lane>-<date>.md`, local and
   untracked. The coordinating session's own notes are in
   `externals/work/HANDOFF-batching-coordinator-20261106.md`.
