@@ -136,6 +136,34 @@ BF-72: an unauthenticated query can occupy the database for minutes. It is live 
 disposition; the details are held outside this public repository while the defect is live on the
 shipping release, under the disclosure rule ([DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
 
+### `MT-CONFIG-MIN`, `MT-RUNTIME-PLAN`, `TEN-LAB` — the multitenant preview on #8898
+
+Draft #8898 is `83582e87` on 2026-11-06, open and mergeable, with all 15 CI jobs
+and CodeQL green on that head ([R64](../30-design/remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)).
+It is not in the generated table above because its items are `in-progress`: the
+preview is dormant and opt-in, placement was decided on 2026-10-30 (it may ship
+dormant and labelled alpha behind `nightscout multitenant`, or be deferred; it is
+not a single-tenant release gate), and taking it out of draft, review and merge are
+the maintainer's actions when the completion batches reach them. What waits on a
+person now:
+
+- **A disposition for the selected-reader mode's root clients.** Under the optional
+  subject-reader policy an actual cgmsim root upload gets 503 where the unselected
+  mode returns 200 ([R63](../30-design/remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06)).
+  Root exclusion is deliberate; whether 503 is the right refusal, and whether the
+  mode can ever be selected while any root client remains, is a maintainer decision.
+  Until then the mode stays unselected and nothing changes for any client.
+- **Numeric bounds and retention before they become pass thresholds** for M6 and
+  the clock: the batching plan's criterion matrix says a limit is approved first and
+  measured second; R65's workload is descriptive and sets no budget.
+- **Ownership of the owner session/issuer lifecycle and the wider operational
+  implementation**, which the batching plan lists as unassigned; the coordinator
+  allocates them, and the maintainer confirms the lane.
+
+The nested-write commit-stamp question logged in the durable event contract's §9
+is being resolved in the event-payload lane by implementation and test; it reaches
+this page only if the result needs a decision.
+
 ### `BFQ-09`, `A7A-7` — `unsettled`, which is not the same as open
 
 These are not yet established as defects. `unsettled` exists so that "we looked and could not settle

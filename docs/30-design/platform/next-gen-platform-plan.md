@@ -1,8 +1,10 @@
 # Next-gen platform: one write path, four tracks
 
 *Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
-[R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06)
-and draft #8898 `d89a44e1`, based on dev `4a482627`. Earlier storage,
+[R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
+and [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06):
+draft #8898 is `83582e87`, based on dev `4a482627`, with CI and CodeQL green on
+that head. Earlier storage,
 identity and registration measurements retain their named pins. Current milestone
 claims live in the [delivery dashboard](../tenancy/multitenant-delivery-dashboard.md);
 release placement lives in [release allocation](release-allocation-2026-10-27.md).*
@@ -26,16 +28,19 @@ use this map to see how the platform tracks meet.
 
 | Scope | Current recorded acceptance | What remains |
 |---|---|---|
-| Multitenant foundations | **M0 promoted** in R60; draft #8898 is `d89a44e1`. Restricted-role/RLS, isolation, rollback, pool reuse and startup refusal have bounded acceptance. | No default or production role enabled; the PR is open/draft, not merged or released. |
-| Data, authority and clients | R60 joins the tenant clock and selected client compatibility repairs. The bounded `M4-CLIENT-LAB` card is complete. | M1–M4 still need complete admitted backend/import/resource, deployable control-plane and wider client criteria. M3 depends on complete M1/M2. |
-| Durable runtime | B7 design direction is adopted; implementation and recovery experiments proceed separately. | M5/M6 need runtime consumers, replay/recovery, lifecycle and operational acceptance. The clock performance benchmark remains pending. |
+| Multitenant foundations | **M0 promoted** in R60; draft #8898 is `83582e87` (R62 accepted, R64 published and verified). Restricted-role/RLS, isolation, rollback, pool reuse and startup refusal have bounded acceptance. | No default or production role enabled; the PR is open/draft, not merged or released. |
+| Data, authority and clients | R60 joins the tenant clock and selected client compatibility repairs; the bounded `M4-CLIENT-LAB` card is complete. R62 adds the optional subject-reader policy and the populated PostgreSQL recovery lab; R63 measures it with actual oref0 and cgmsim clients. | M1–M4 still need complete admitted backend/import/resource, deployable control-plane and wider client criteria. M3 depends on complete M1/M2. The selected-reader mode stays unselected: an actual cgmsim root upload gets 503 under it, and that mapping awaits a disposition. |
+| Durable runtime | B7 design direction is adopted; R62 accepts the first dormant durable current-row replay (persisted typed projection and checkpoint, repeatable-read bootstrap, publish after commit) with real process death and semantic controls. | M5/M6 need realtime/evaluator consumers, socket forwarding (D23), ack/snooze, lifecycle and operational acceptance. The clock performance benchmark remains pending; R65 is a descriptive workload, not a budget. |
 | Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | Separate from #8898; no common read revision, stronger snapshot or distributed evaluator acceptance. |
 
-R60 and its [final capsule](../../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.md)
-own the measured figures and executed heads. Earlier full/browser/client/pooler
-campaigns are reused only after exact relevant source identity; they are not
-relabelled as final-head executions. Remote CI is separate from local acceptance.
-See the [release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--coherent-compatibility-batch-accepted-m0-promoted-2026-11-06)
+R62 and its [comprehensive capsule](../../../reports/tenancy/control-recovery-acceptance-87133959-2026-11-06.md)
+own the measured figures and executed heads (the campaigns ran on `87133959`;
+only the source-control runner differs on `83582e87`, whose final prcheck
+passed). R60 and its [capsule](../../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.md)
+own the M0 promotion. Earlier full/browser/client/pooler campaigns are reused
+only after exact relevant source identity; they are not relabelled as final-head
+executions. Remote CI is separate from local acceptance. See the
+[release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--multitenant-records-reconciled-to-published-8898-83582e87-2026-11-06)
 for the programme disposition.
 
 | Earlier overview | Retained evidence |

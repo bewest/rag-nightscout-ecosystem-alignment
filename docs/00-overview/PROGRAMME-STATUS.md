@@ -82,9 +82,14 @@ shows the dependencies and bounded acceptance stages. These records distinguish 
 branch acceptance, combined integration and milestone completion; `make queue-status`
 measures the queue's claims.
 
-Decisions D1–D22 live in the
+The preview itself is draft PR #8898 (`83582e87` on 2026-11-06, CI and CodeQL
+green, open, not merged or released); the
+[architecture comparison](../30-design/tenancy/single-and-multitenant-architecture.md)
+lists what it holds and which record governs each module.
+Decisions D1–D23 live in the
 [execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md),
-with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md).
+with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md)
+and the [durable event delivery contract](../30-design/tenancy/durable-event-delivery-contract-2026-11-06.md) (B7).
 Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is
 an additional deployment target. Release readiness follows the
 [release records](../../releases/cgm-remote-monitor-16.0.0/contents.md).

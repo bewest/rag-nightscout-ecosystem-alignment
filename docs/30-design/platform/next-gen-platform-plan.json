@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: reconciled to recorded R60 acceptance at d89a44e1, published draft #8898. M0 foundations promoted; bounded M4-CLIENT-LAB complete. Joined tenant clock has bounded correctness acceptance; performance benchmark pending. R60 preserves each campaign executed head and source-identity reuse. M1\u2013M6 remain open. R55 independent profile2ee remains separate. B7 direction adopted; dormant replay/owner/operations continuations are separate, without runtime or default enablement.",
+ "measured": "2026-11-06: reconciled to recorded R62 acceptance at 83582e87, published draft #8898 and verified by R64 (15 CI jobs and CodeQL green on that head). R60 promoted M0 foundations; bounded M4-CLIENT-LAB complete. R62 joins the optional subject-reader policy, dormant durable current-row replay and the populated PG recovery lab; R63 keeps the selected-reader mode unselected (actual cgmsim root 503 awaits disposition). Joined tenant clock has bounded correctness acceptance; performance benchmark pending. R60 preserves each campaign executed head and source-identity reuse. M1\u2013M6 remain open. R55 independent profile2ee remains separate. B7 direction adopted; dormant replay/owner/operations continuations are separate, without runtime or default enablement.",
  "tracks": [
   {
    "id": "storage",
@@ -353,7 +353,7 @@
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "R60 d89a44e1 is the accepted cumulative batch. See its capsule for actual executed heads and source-identity reuse; this component remains in progress.",
+   "ref": "R62 83582e87 is the accepted cumulative batch (published, R64); R60 d89a44e1 promoted M0. See the R62 capsule for actual executed heads (87133959) and source-identity reuse; this component remains in progress.",
    "spec": [
     {
      "label": "R60 current acceptance and milestone boundaries",
@@ -729,7 +729,7 @@
      "href": "../tenancy/single-and-multitenant-architecture.md"
     }
    ],
-   "ref": "Merged namespace: #8865 / 991b0654, amended by #8899 / 4a482627. Draft API preview: #8898 d89a44e1, R60; no default or production role enabled.",
+   "ref": "Merged namespace: #8865 / 991b0654, amended by #8899 / 4a482627. Draft API preview: #8898 83582e87, R62/R64; only the api role starts, the others refuse with exit 64; no default or production role enabled.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
@@ -784,7 +784,7 @@
    "state": "blocked",
    "short": "Resolution / lifecycle",
    "title": "Direct-alias and explicitly trusted canonical resolution run in the accepted API preview. Full tenant lifecycle and production transport/service identity remain blocked on their prerequisites.",
-   "ref": "R60 d89a44e1 retains configured two-tenant CLI/current authority composition. Static maps do not establish durable provisioning/publication or production owner/operator lifecycle.",
+   "ref": "R62 83582e87 retains configured two-tenant CLI/current authority composition (R60 d89a44e1 first accepted it). Static maps do not establish durable provisioning/publication or production owner/operator lifecycle.",
    "depends": [
     "MT-CONFIG-MIN",
     "MIG-RUNNER",
@@ -857,7 +857,7 @@
    "state": "blocked",
    "short": "Full M3 acceptance",
    "title": "R60 accepts the coherent CI/client/clock batch and promotes M0 foundations. The bounded client lab card is complete; full M3 still requires complete M1 and M2.",
-   "ref": "R60 d89a44e1: joined clock correctness, explicit corpus and final prcheck accepted. Broader client/import/resource/control-plane criteria remain open; performance benchmark pending. Independent R55 profile is separate.",
+   "ref": "R62 83582e87: joined clock, 35-suite corpus, actual default clients and final prcheck accepted; R60 d89a44e1 first accepted clock correctness. Broader client/import/resource/control-plane criteria remain open; performance benchmark pending (R65 is descriptive only). Independent R55 profile is separate.",
    "depends": [
     "ST-PG",
     "T30-WIRING",

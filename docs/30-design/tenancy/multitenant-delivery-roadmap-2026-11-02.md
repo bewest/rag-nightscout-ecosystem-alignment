@@ -29,12 +29,22 @@ existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination.
 
-**Current acceptance:** [R60](#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06)
-accepts `d89a44e1`, now published on open/draft #8898. **M0 foundations is promoted**
-and the bounded `M4-CLIENT-LAB` card is complete. The tenant clock is joined with
-bounded correctness acceptance; its performance benchmark remains pending.
-M1–M6 retain their own remaining criteria. Independent R55 profile `2ee8b493`
-and later dormant owner/replay/operations branches remain separate.
+**Current acceptance:** [R62](#accepted-bounded-owner-reader-and-recovery-batch-2026-11-06)
+accepts `83582e87`, the published head of open/draft #8898 since 2026-11-06
+([R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06):
+all 15 CI jobs and CodeQL passed on that exact head, three release-image jobs
+skipped). It joins the optional subject-reader policy, dormant durable current-row
+replay and the populated PostgreSQL recovery lab onto the
+[R60](#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06) batch
+`d89a44e1`. **M0 foundations is promoted** (R60) and the bounded `M4-CLIENT-LAB`
+card is complete. The tenant clock is joined with bounded correctness acceptance;
+its performance benchmark remains pending, and
+[R65](../remedial/rc-16.0.0-integration-record.md#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06)
+is descriptive only. [R63](../remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06)
+keeps the selected-reader mode unselected: an actual cgmsim root upload gets 503
+under it, and that mapping awaits a disposition. M1–M6 retain their own remaining
+criteria. Independent R55 profile `2ee8b493` and the later socket/evaluator source
+lanes remain separate.
 
 Use the [reading guide](README.md) to select a current contract or a dated record.
 The detailed checkpoints below retain their captured heads and remaining work at

@@ -229,6 +229,8 @@ items:
       - tools/lab/postgres-foundation/README.md
       - tools/lab/postgres-foundation/results.json
     notes: >
+      2026-11-06 (R62/R64): published #8898 head 83582e87 (172 commits, 245 files over dev 4a482627) is the accepted cumulative batch; R62 ran full 7226/99/0, browser 684, the 35-suite corpus 460/1/0 and the actual cgmsim/oref0 gate (82 checks, zero differences) on source-identical 87133959; CI and CodeQL green on 83582e87. The settings gate keeps its native pin 33870764; frozen-head replay UNMEASURED.
+
       R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
       browser684/settings12/freshprcheckOK; native gate captures retain their pins.
       No clock/profile2ee join, milestone promotion or expanded production scope.
@@ -534,6 +536,8 @@ items:
     evidence:
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      2026-11-06 (R62/R64): published #8898 head 83582e87 is the accepted cumulative batch with CI and CodeQL green; M3 stays blocked on M1/M2. The race and identity gates keep their native pins (44331668, bc4ee1a9); frozen-head replay UNMEASURED.
+
       M3; R41 accepts local subject service and strict compatibility tests
       at 94c57f1f; published draft is R42 d4570e58, not full preview.
       Local composition continuation adds bounded direct imported-identity coverage;
@@ -6917,6 +6921,8 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
+      2026-11-06 (R62/R64): published #8898 head 83582e87 accepts optional current subject-reader clamping in one SQL snapshot per selected operation; R63 measured three actual oref0 subject-token uploads matching reference and ceiling tightening refusing with no effects; the selected mode stays unselected. The rest-authority and owner-local-token gates keep their native pins (d4570e58, 3d5eac19); frozen-head replay UNMEASURED.
+
       2026-11-05 maintainer adopted owner authority and the D22 local-public-key
       verification amendment; owner-authority.md owns permission/delegation
       ceilings, separate management authentication, human token/session limits
@@ -6993,6 +6999,8 @@ items:
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      2026-11-06 (R62/R64): published #8898 head 83582e87 accepts the bounded proposed-grant policy and optional subject-reader clamping; an actual cgmsim root upload gets 503 under selected mode (R63) and awaits a disposition; DELETE policy, human issuer/refresh and production owner composition remain open. The management gate keeps its native pin d4570e58; frozen-head replay UNMEASURED.
+
       R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
       browser684/settings12/freshprcheckOK; native gate captures retain their pins.
       No clock/profile2ee join, milestone promotion or expanded production scope.
