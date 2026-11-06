@@ -1,0 +1,133 @@
+{
+  "classification": "reproduced focused synthetic prototype verification",
+  "date": "2026-11-06",
+  "alignmentBase": "60776e0859527c248ff24d041d65c56805f0a7bc",
+  "applicationHead": "3532c1a46d6fc3fb2100ed7704544d278f29357b",
+  "productFailureFix": "11770146b420a2aa1ccad587030bfee50a8ea0b3",
+  "clockOrigin": "3e76b2701538873e77c4bd461fbff3842fa9b443",
+  "startupFloorFix": "c52887d7eea054b0570c8ba8ce1dbce373856f19",
+  "fatalDiagnosticHome": "tenant-clock-http-backend-abort-diagnostic-2026-11-06.md",
+  "versions": {
+    "node": "v22.23.4",
+    "npm": "10.9.9",
+    "pgDriver": "8.23.1",
+    "postgresImage": "postgres:16",
+    "exactPostgresServerVersion": "not captured in this run"
+  },
+  "runs": [
+    {
+      "log": "fixed-functional-3532.log",
+      "sha256": "918abd46f3148ca1e930cb04fc6d7dc1c90fe552c32ba08861f711abfe534b3f",
+      "passing": 7,
+      "failing": 0,
+      "pending": 1,
+      "reportedSeconds": 11,
+      "cleanup": {
+        "independentlyAudited": true,
+        "allAbsent": true,
+        "containers": 2,
+        "volumes": 3
+      }
+    },
+    {
+      "log": "fixed-listener-removal-control-3532.log",
+      "sha256": "a16e47de42fdf92f9b4f6053b7d2626485cb83722772e655d0e7ee70210a0be1",
+      "passing": 0,
+      "failing": 2,
+      "pending": 0,
+      "reportedSeconds": 4,
+      "cleanup": {
+        "independentlyAudited": true,
+        "allAbsent": true,
+        "containers": 2,
+        "volumes": 3
+      }
+    },
+    {
+      "log": "fixed-restored-survival-3532.log",
+      "sha256": "2ac63e7a4cd0fbdb6237b67346f05ab8bb840ba687756f4de2bc68dcc59423ae",
+      "passing": 1,
+      "failing": 0,
+      "pending": 0,
+      "reportedSeconds": 4,
+      "cleanup": {
+        "independentlyAudited": true,
+        "allAbsent": true,
+        "containers": 2,
+        "volumes": 3
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "lib/storage/postgres-write-clock.js",
+      "sha256": "7a71bca4c38dcbc1b27369494324c6e8710ad31a800c978fc715c1c4ee0adf8b",
+      "restoredArchiveMatches": true,
+      "cleanWorktreeMatches": true
+    },
+    {
+      "path": "lib/server/serve/postgres-domains.js",
+      "sha256": "ccc61d96deb4445cea2485193990c423e4cbfa66343d047ad687c4ca37ab8fd0",
+      "restoredArchiveMatches": true,
+      "cleanWorktreeMatches": true
+    },
+    {
+      "path": "tests/tenant-commit-clock-http.integration.test.js",
+      "sha256": "5881a84fc082f1907aa62b121dea90076e33c5266cb8bfd94ce4ae62e887743d",
+      "restoredArchiveMatches": true,
+      "cleanWorktreeMatches": true
+    },
+    {
+      "path": "lib/storage/postgres-connection.js",
+      "sha256": "72b22da585c0e50180542b84cd5fba67d2cd78740496766bdf15b224940d92f5",
+      "restoredArchiveMatches": true,
+      "cleanWorktreeMatches": true
+    },
+    {
+      "path": "tests/fixtures/tenant-commit-clock-http.js",
+      "sha256": "1afb917f782bb2afda0f3f6c320538848c4be718155361d00b730942216a5e97",
+      "restoredArchiveMatches": true,
+      "cleanWorktreeMatches": true
+    }
+  ],
+  "monitor": {
+    "sha256": "3ec4c818a565b23d5ad8f61f076624e5dc1a739b600f90929fbb2911c0519ea5",
+    "kind": "passive uncaughtExceptionMonitor on W1 only"
+  },
+  "controlPreparerSha256": "4cd21b0e0d2ad4ece52b046bc3ef911ae157f32cdf98cf68aac9cee1a6968af5",
+  "backendRecovery": {
+    "httpStatus": 503,
+    "responseBody": {
+      "error": "STORAGE_UNAVAILABLE"
+    },
+    "sameWorkerRead": 200,
+    "sameWorkerWrite": 201,
+    "fatalMonitor": null,
+    "strictNormalShutdownPassed": true
+  },
+  "control": {
+    "change": "remove only checked-out client.on('error', connectionFailed)",
+    "primaryFailure": "ECONNRESET socket hang up violates required HTTP response",
+    "secondaryFailure": "strict afterEach cleanup detects worker exit1",
+    "exitCode": 1,
+    "signal": null,
+    "fatalOrigin": "uncaughtException",
+    "emitter": "Client",
+    "testAssertionsUnchanged": true
+  },
+  "unmeasured": [
+    "contention and ingestion-latency benchmark",
+    "full nonbrowser suite on assembled candidate",
+    "browser suite on assembled candidate",
+    "single/Mongo regression acceptance on assembled candidate",
+    "rapid backend recovery after Node SIGKILL",
+    "multi-machine deployment",
+    "default enablement",
+    "historical notification replay"
+  ],
+  "recordValidation": {
+    "docsLinks": "passed with new files staged",
+    "queueCheck": "failed at queue validation: inherited P0-F gates[0] and gates[1] cwd externals/work/nc-jitter absent in isolated worktree",
+    "manifestEdited": false
+  }
+}
