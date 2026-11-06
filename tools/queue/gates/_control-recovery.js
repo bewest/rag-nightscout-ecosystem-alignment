@@ -1,7 +1,9 @@
 'use strict';
 
 // Narrow properties only. Native fixtures and product modules come from one archive.
+const socket = require('./_socket-data-control');
 const cases = {
+  'socket-data-forwarding': socket.definition,
   'owner-reader': {
     file: 'tests/tenant-authorization-postgres.integration.test.js',
     flag: 'NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST', passes: 12,
@@ -35,7 +37,8 @@ function mutate (source, before, after) {
   if (source.split(before).length !== 2) throw new Error('CONTROL-INVALID: expected exactly one source match');
   return source.replace(before, after);
 }
-function verify (suite, report, status, control) {
+function verify (suite, report, status, control, proofs) {
+  if (suite === 'socket-data-forwarding') return socket.verify(report, status, control, proofs);
   const expected = cases[suite];
   if (!control) {
     if (status !== 0 || report.stats.tests !== expected.passes || report.stats.passes !== expected.passes ||

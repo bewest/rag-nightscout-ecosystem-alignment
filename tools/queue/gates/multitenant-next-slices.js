@@ -7,6 +7,7 @@ const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 const { REPO_ROOT, CRM } = require('./_gate');
 const bounded = require('./_control-recovery');
+const socketControl = require('./_socket-data-control');
 const args = process.argv.slice(2);
 const option = name => args.includes(name) ? args[args.indexOf(name) + 1] : undefined;
 const suite = option('--suite'), ref = option('--ref'), control = option('--control');
@@ -178,7 +179,13 @@ try {
   if (bounded.cases[suite]) {
     auditFile = path.join(scratch, '.docker-audit.json');
     runtime.NS_GATE_DOCKER_AUDIT = auditFile;
-    if (suite === 'durable-replay' || suite === 'projection-evaluator') {
+    if (suite === 'socket-data-forwarding') {
+      runtime.NS_SOCKET_GATE_PROOF = path.join(scratch, '.socket-physical-proof.json');
+      const file = path.join(scratch, selected.file);
+      fs.writeFileSync(file, socketControl.adapt(fs.readFileSync(file, 'utf8')));
+      console.log('Scratch-only socket oracle hardening: physical states precede callback assertions');
+    }
+    if (suite === 'durable-replay' || suite === 'projection-evaluator' || suite === 'socket-data-forwarding') {
       const container = 'ns-replay-gate-' + require('node:crypto').randomBytes(8).toString('hex');
       const password = require('node:crypto').randomBytes(24).toString('hex');
       containers.push(container);
@@ -199,7 +206,7 @@ try {
         fs.writeFileSync(file, bounded.mutate(fs.readFileSync(file, 'utf8'),
           "      const consumer = await lab.provision('evaluator', lab.A, null, modified);",
           "      const stored = await lab.typedRows();\n      assert.equal(stored.length, 2);\n      assert.equal(new Set(stored.map(row => row.id_kind)).size, 2);\n      const consumer = await lab.provision('evaluator', lab.A, null, modified);"));
-      } else {
+      } else if (suite === 'projection-evaluator') {
         fs.writeFileSync(file, bounded.mutate(fs.readFileSync(file, 'utf8'),
           "assert.equal(result.properties.bgnow.mean, 123, 'advanced empty cache must reconstruct clinical state');",
           "assert.equal(result.properties.bgnow?.mean, 123, 'advanced empty cache must reconstruct clinical state');"));
@@ -207,7 +214,7 @@ try {
       }
     }
   }
-  if (suite === 'profile' || suite === 'identity' || suite === 'race' || suite === 'frame-concurrency' || suite === 'settings') {
+  if (suite === 'profile' || suite === 'identity' || suite === 'race' || suite === 'frame-concurrency' || suite === 'settings' || suite === 'socket-data-forwarding') {
     const docker = values => execFileSync('docker', values,
       { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }).trim();
     const container = 'ns-profile-gate-' + require('node:crypto').randomBytes(8).toString('hex');
@@ -319,10 +326,24 @@ try {
       status: result.status, signal: result.signal, stdout: result.stdout, stderr: result.stderr }, null, 2), { mode: 0o600 });
     if (fs.existsSync(ownerResult)) fs.writeFileSync(path.join(artifacts, 'mocha.json'), fs.readFileSync(ownerResult), { mode: 0o600 });
     console.log('Private bounded artifacts: ' + artifacts);
+    let proofs;
+    if (suite === 'socket-data-forwarding') {
+      const proofFile = path.join(scratch, '.socket-physical-proof.json');
+      if (fs.existsSync(proofFile)) {
+        const raw = fs.readFileSync(proofFile);
+        fs.writeFileSync(path.join(artifacts, 'physical-proofs.json'), raw, { mode: 0o600 });
+        proofs = JSON.parse(raw);
+      }
+      fs.writeFileSync(path.join(artifacts, 'scratch-test.js'), fs.readFileSync(path.join(scratch, selected.file)), { mode: 0o600 });
+      const child = socketControl.auditChild(output);
+      fs.writeFileSync(path.join(artifacts, 'child-audit.json'), JSON.stringify(child, null, 2), { mode: 0o600 });
+      console.log('Owned socket child independently absent: ' + child.pid);
+    }
+
     if (!fs.existsSync(ownerResult)) throw new Error('Missing native Mocha result; setup failure is not evidence');
     const report = JSON.parse(fs.readFileSync(ownerResult, 'utf8'));
     console.log(JSON.stringify(report.stats));
-    bounded.verify(suite, report, result.status, control);
+    bounded.verify(suite, report, result.status, control, proofs);
     if (control) process.exitCode = 1;
     else console.log('PASS bounded ' + suite + '; activation, management and milestone acceptance remain separate');
   } else if (suite === 'owner-policy') {

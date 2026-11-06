@@ -12,6 +12,7 @@ const owned = { container: 'ns-tenant-authority-pg-0123456789abcdef', containerR
 assert.throws(() => validateAudit('owner-reader', [owned]), /missing or incomplete/);
 validateAudit('owner-reader', [{ ...owned, volumeIds: ['synthetic-volume'] }]);
 for (const [suite, item] of Object.entries(cases)) {
+  if (suite === 'socket-data-forwarding') continue; // Dedicated strict socket classifier/physical tests.
   for (const [file, before, after] of Object.values(item.controls)) {
     const source = execFileSync('git', ['-C', repository, 'show', ref + ':' + file], { encoding: 'utf8' });
     assert.notEqual(mutate(source, before, after), source);
