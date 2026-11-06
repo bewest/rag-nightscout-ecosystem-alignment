@@ -1,0 +1,346 @@
+{
+  "applicationTree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+  "instrumentAlignmentTree": "da25af1e0d972d60b294cf5c114da3ca75fdcdd4",
+  "runs": [
+    {
+      "name": "db-positive-1",
+      "instrument": "owner-subject-policy",
+      "tree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+      "node": "v22.23.4",
+      "database": true,
+      "control": null,
+      "stats": {
+        "suites": 1,
+        "tests": 22,
+        "passes": 22,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T16:45:27.024Z",
+        "end": "2026-11-06T16:45:41.984Z",
+        "duration": 14960
+      },
+      "outcome": "bounded-pass",
+      "versions": {
+        "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "node": "v22.23.4",
+        "ownershipVerified": true,
+        "ownedVolumeCount": 1
+      },
+      "rawSHA256": "946c54ff1db23176ad5422fbc634524fd86ef34e89a78eaa8c8e926ac21293ce",
+      "cleanup": {
+        "auditedContainers": 1,
+        "recordedVolumes": 1,
+        "allRecordedResourcesAbsent": true
+      },
+      "cases": [
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) persists the exact allowed roles/metadata with one audit and leaves the foreign tenant unchanged",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the code-catalogue intersection even if operator and actor lists both contain the outside permission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current operator-ceiling intersection independently of catalogue and actor delegation",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current actor-delegation intersection even when the actor can use that data permission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses inactive or non-management actors and never borrows another tenant actor/policy",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects data/root/foreign authentication and malicious tenant/actor proposal fields without effects",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) preserves unknown-role and malformed-body refusal while bounding wildcard roles/defaults and catalogue versions",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) includes concrete status-only defaults in the effective-grant ceiling and preserves metadata omission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) keeps selected DELETE refused and legacy/default update/remove behavior available",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) does not let a caller mutate a copied proposal while the transaction waits at the real target lock",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed policy narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds policy authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed actors narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds actors authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed roles narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds roles authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed config narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds config authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) acquires SHARE with fence-only privileges while real authority-column writes and serving writes are denied",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses unsafe extra authority grants and disabled RLS at startup, with restored positive controls",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rolls back all subject effects when the final real audit insert fails",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses unavailable current authority before effect and recovers after the owned database resumes"
+      ],
+      "failures": []
+    },
+    {
+      "name": "db-positive-2",
+      "instrument": "owner-subject-policy",
+      "tree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+      "node": "v22.23.4",
+      "database": true,
+      "control": null,
+      "stats": {
+        "suites": 1,
+        "tests": 22,
+        "passes": 22,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T16:47:04.848Z",
+        "end": "2026-11-06T16:47:19.672Z",
+        "duration": 14824
+      },
+      "outcome": "bounded-pass",
+      "versions": {
+        "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "node": "v22.23.4",
+        "ownershipVerified": true,
+        "ownedVolumeCount": 1
+      },
+      "rawSHA256": "f3d6c66b639cf0ba69ee4fa11e6b96d696e6cc40d58e01579e295e9cd8768976",
+      "cleanup": {
+        "auditedContainers": 1,
+        "recordedVolumes": 1,
+        "allRecordedResourcesAbsent": true
+      },
+      "cases": [
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) persists the exact allowed roles/metadata with one audit and leaves the foreign tenant unchanged",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the code-catalogue intersection even if operator and actor lists both contain the outside permission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current operator-ceiling intersection independently of catalogue and actor delegation",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current actor-delegation intersection even when the actor can use that data permission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses inactive or non-management actors and never borrows another tenant actor/policy",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects data/root/foreign authentication and malicious tenant/actor proposal fields without effects",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) preserves unknown-role and malformed-body refusal while bounding wildcard roles/defaults and catalogue versions",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) includes concrete status-only defaults in the effective-grant ceiling and preserves metadata omission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) keeps selected DELETE refused and legacy/default update/remove behavior available",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) does not let a caller mutate a copied proposal while the transaction waits at the real target lock",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed policy narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds policy authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed actors narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds actors authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed roles narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds roles authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed config narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds config authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) acquires SHARE with fence-only privileges while real authority-column writes and serving writes are denied",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses unsafe extra authority grants and disabled RLS at startup, with restored positive controls",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rolls back all subject effects when the final real audit insert fails",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses unavailable current authority before effect and recovers after the owned database resumes"
+      ],
+      "failures": []
+    },
+    {
+      "name": "control-catalogue",
+      "instrument": "owner-subject-policy",
+      "tree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+      "node": "v22.23.4",
+      "database": true,
+      "control": "catalogue",
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T16:48:08.763Z",
+        "end": "2026-11-06T16:48:10.795Z",
+        "duration": 2032
+      },
+      "outcome": "semantic-control-observed",
+      "versions": {
+        "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "node": "v22.23.4",
+        "ownershipVerified": true,
+        "ownedVolumeCount": 1
+      },
+      "rawSHA256": "183458c71209b0170000a939f42db1699468a04cef2f00002013468cd19926fd",
+      "cleanup": {
+        "auditedContainers": 1,
+        "recordedVolumes": 1,
+        "allRecordedResourcesAbsent": true
+      },
+      "cases": [
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the code-catalogue intersection even if operator and actor lists both contain the outside permission"
+      ],
+      "failures": [
+        {
+          "case": "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the code-catalogue intersection even if operator and actor lists both contain the outside permission",
+          "code": "ERR_ASSERTION",
+          "actual": "200",
+          "expected": "403",
+          "message": "{\"subjectId\":\"000000000000000000000001\",\"name\":\"Allowed Owner\",\"roles\":[\"outside\"],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}; persistent effects changed: true\n\n200 !== 403\n"
+        }
+      ]
+    },
+    {
+      "name": "control-ceiling",
+      "instrument": "owner-subject-policy",
+      "tree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+      "node": "v22.23.4",
+      "database": true,
+      "control": "ceiling",
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T16:48:11.318Z",
+        "end": "2026-11-06T16:48:13.347Z",
+        "duration": 2029
+      },
+      "outcome": "semantic-control-observed",
+      "versions": {
+        "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "node": "v22.23.4",
+        "ownershipVerified": true,
+        "ownedVolumeCount": 1
+      },
+      "rawSHA256": "f4e22d54469399fb005df0a34756f6aa9b0281fbda1565c611b291725f2e8457",
+      "cleanup": {
+        "auditedContainers": 1,
+        "recordedVolumes": 1,
+        "allRecordedResourcesAbsent": true
+      },
+      "cases": [
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current operator-ceiling intersection independently of catalogue and actor delegation"
+      ],
+      "failures": [
+        {
+          "case": "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current operator-ceiling intersection independently of catalogue and actor delegation",
+          "code": "ERR_ASSERTION",
+          "actual": "200",
+          "expected": "403",
+          "message": "{\"subjectId\":\"000000000000000000000001\",\"name\":\"Allowed Owner\",\"roles\":[\"uploader\"],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}; persistent effects changed: true\n\n200 !== 403\n"
+        }
+      ]
+    },
+    {
+      "name": "control-delegation",
+      "instrument": "owner-subject-policy",
+      "tree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+      "node": "v22.23.4",
+      "database": true,
+      "control": "delegation",
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T16:48:13.866Z",
+        "end": "2026-11-06T16:48:15.870Z",
+        "duration": 2004
+      },
+      "outcome": "semantic-control-observed",
+      "versions": {
+        "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "node": "v22.23.4",
+        "ownershipVerified": true,
+        "ownedVolumeCount": 1
+      },
+      "rawSHA256": "9cd46c20c85e55e0d0a30fe753bd6f20184d9edef24f5a0acb616991ac026b10",
+      "cleanup": {
+        "auditedContainers": 1,
+        "recordedVolumes": 1,
+        "allRecordedResourcesAbsent": true
+      },
+      "cases": [
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current actor-delegation intersection even when the actor can use that data permission"
+      ],
+      "failures": [
+        {
+          "case": "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current actor-delegation intersection even when the actor can use that data permission",
+          "code": "ERR_ASSERTION",
+          "actual": "200",
+          "expected": "403",
+          "message": "{\"subjectId\":\"000000000000000000000001\",\"name\":\"Allowed Owner\",\"roles\":[\"uploader\"],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}; persistent effects changed: true\n\n200 !== 403\n"
+        }
+      ]
+    },
+    {
+      "name": "control-actor",
+      "instrument": "owner-subject-policy",
+      "tree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+      "node": "v22.23.4",
+      "database": true,
+      "control": "actor",
+      "stats": {
+        "suites": 1,
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1,
+        "start": "2026-11-06T16:48:16.381Z",
+        "end": "2026-11-06T16:48:18.391Z",
+        "duration": 2010
+      },
+      "outcome": "semantic-control-observed",
+      "versions": {
+        "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "node": "v22.23.4",
+        "ownershipVerified": true,
+        "ownedVolumeCount": 1
+      },
+      "rawSHA256": "a5134b627c6e5877e50014ccf18b54348523c8e0edb88df3e41ee17d023e2184",
+      "cleanup": {
+        "auditedContainers": 1,
+        "recordedVolumes": 1,
+        "allRecordedResourcesAbsent": true
+      },
+      "cases": [
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses inactive or non-management actors and never borrows another tenant actor/policy"
+      ],
+      "failures": [
+        {
+          "case": "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses inactive or non-management actors and never borrows another tenant actor/policy",
+          "code": "ERR_ASSERTION",
+          "actual": "200",
+          "expected": "403",
+          "message": "{\"subjectId\":\"000000000000000000000001\",\"name\":\"Allowed Owner\",\"roles\":[\"reader\"],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}; persistent effects changed: true\n\n200 !== 403\n"
+        }
+      ]
+    },
+    {
+      "name": "db-restored-3",
+      "instrument": "owner-subject-policy",
+      "tree": "3106f14d5b718e27e2a179e2d637f0d06c0642c8",
+      "node": "v22.23.4",
+      "database": true,
+      "control": null,
+      "stats": {
+        "suites": 1,
+        "tests": 22,
+        "passes": 22,
+        "pending": 0,
+        "failures": 0,
+        "start": "2026-11-06T16:48:18.909Z",
+        "end": "2026-11-06T16:48:33.618Z",
+        "duration": 14709
+      },
+      "outcome": "bounded-pass",
+      "versions": {
+        "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "node": "v22.23.4",
+        "ownershipVerified": true,
+        "ownedVolumeCount": 1
+      },
+      "rawSHA256": "2493e62f29bfa46cede1213ccf9179882d645591db15fd2772a9f0e1ceff8c69",
+      "cleanup": {
+        "auditedContainers": 1,
+        "recordedVolumes": 1,
+        "allRecordedResourcesAbsent": true
+      },
+      "cases": [
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) persists the exact allowed roles/metadata with one audit and leaves the foreign tenant unchanged",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the code-catalogue intersection even if operator and actor lists both contain the outside permission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current operator-ceiling intersection independently of catalogue and actor delegation",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects the current actor-delegation intersection even when the actor can use that data permission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses inactive or non-management actors and never borrows another tenant actor/policy",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rejects data/root/foreign authentication and malicious tenant/actor proposal fields without effects",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) preserves unknown-role and malformed-body refusal while bounding wildcard roles/defaults and catalogue versions",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) includes concrete status-only defaults in the effective-grant ceiling and preserves metadata omission",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) keeps selected DELETE refused and legacy/default update/remove behavior available",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) does not let a caller mutate a copied proposal while the transaction waits at the real target lock",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed policy narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds policy authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed actors narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds actors authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed roles narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds roles authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) fences a prior committed config narrowing before the waiting proposal can mutate",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) holds config authority stable through commit and refuses the next proposal after narrowing",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) acquires SHARE with fence-only privileges while real authority-column writes and serving writes are denied",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses unsafe extra authority grants and disabled RLS at startup, with restored positive controls",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) rolls back all subject effects when the final real audit insert fails",
+        "owner subject proposed-grant policy (owned PostgreSQL HTTP) refuses unavailable current authority before effect and recovers after the owned database resumes"
+      ],
+      "failures": []
+    }
+  ]
+}
