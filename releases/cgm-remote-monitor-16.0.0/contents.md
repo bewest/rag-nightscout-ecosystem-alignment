@@ -1536,3 +1536,13 @@ retain exact scopes. No new numbered clock acceptance, milestone/RC promotion,
 production enablement or application push; no policy decision changed.
 
 Local continuation and next frozen clock batch: `externals/work/HANDOFF-serial-verification-20261106.md` (local, untracked).
+
+
+### Update — frozen-head B4a controls stopped on instrument mismatch (2026-11-06)
+
+| Scope | Reproduced captured evidence | Remaining boundary |
+|---|---|---|
+| Frozen `65bb8456`, R57 partial | 11/12 positive instruments; 27 semantic controls; 8/12 restored instruments. | Authority control invalid before Mocha: expected source boundary missing. B4a incomplete; B5 acceptance prerequisite unsatisfied. Missing controls/restores and subject-admin UNMEASURED. |
+| Ownership and limits | Runtime released after stop; recorded gate-owned mounts audited absent. Prior captures preserved. | Older fixture anonymous volumes preserved; no global leak-freedom claim. No gate/app repair, queue ref moves, promotion, default enablement or push. |
+
+[Partial report](../../reports/tenancy/gate-controls-65bb8456-2026-11-06.md) and [machine capture](../../reports/tenancy/gate-controls-65bb8456-2026-11-06.json). Lane detail: `externals/work/HANDOFF-codex-b4a-20261106.md` (local). No maintainer policy decision changed. Root coordinator owns disposition and queue ref moves.

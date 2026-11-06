@@ -1,0 +1,1500 @@
+{
+  "record": "R57",
+  "status": "INCOMPLETE: instrument mismatch; no acceptance",
+  "basis": "reproduced captured execution, independently read; original owner-policy/settings captures resumed without rerun",
+  "date": "2026-11-06",
+  "alignment_base": "88902eba2532c42bf83a91a8104f9ea64da2ca18",
+  "target": "65bb8456618df9816106692a32f0dd5c76e216d1",
+  "b5_join_unmeasured_here": "34aa6b89cbc73a689407ca0fcf55ab83cfba5dbc",
+  "totals": {
+    "positive_instruments": 11,
+    "planned_instruments": 12,
+    "semantic_controls": 27,
+    "invalid_controls": 1,
+    "restored_instruments": 8
+  },
+  "runtime": {
+    "claimed": "2026-11-06T19:34:34Z",
+    "released": "2026-11-06T19:39:33Z",
+    "node": "v22.23.4",
+    "postgres": "16.15",
+    "mongo": "8.0.34",
+    "TZ": "UTC",
+    "nofile": 64000,
+    "volume_count_before": 388,
+    "volume_count_after": 454,
+    "home_available_before": "84G",
+    "home_available_after": "83G"
+  },
+  "suites": [
+    {
+      "suite": "owner-policy",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 22,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-positive.log",
+        "sha256": "47638f905565be2e471ab6f80532366bf1c769f7f2d08ec7067a84f5c9aae679",
+        "bytes": 1197,
+        "start": "2026-11-06T19:28:08Z",
+        "end": "2026-11-06T19:28:23Z"
+      },
+      "controls": {
+        "catalogue": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-catalogue.log",
+          "sha256": "94f2c3354f62bbd18af2297c99247db6651aedd0e148472b74a55356686d4cd9",
+          "bytes": 1245,
+          "start": "2026-11-06T19:28:28Z",
+          "end": "2026-11-06T19:28:30Z"
+        },
+        "ceiling": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-ceiling.log",
+          "sha256": "b5caafb90e583e5b54286e03b3d9dc4a47c671a8dcf288e226b4b6932a4ad60a",
+          "bytes": 1241,
+          "start": "2026-11-06T19:28:30Z",
+          "end": "2026-11-06T19:28:32Z"
+        },
+        "delegation": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-delegation.log",
+          "sha256": "28174ac4cc0a2bcd312429d42beffc9d491ae1e5ce73cd1822a974796b4f2d34",
+          "bytes": 1247,
+          "start": "2026-11-06T19:28:32Z",
+          "end": "2026-11-06T19:28:35Z"
+        },
+        "actor": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "CONTROL-SEMANTIC: unauthorized HTTP 200 versus 403 with persisted effects",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-actor.log",
+          "sha256": "9033ab25ad569e6ceb6f98b2c03b7e94908c56c64adb6ec499e1bdb19ef5927e",
+          "bytes": 1237,
+          "start": "2026-11-06T19:28:35Z",
+          "end": "2026-11-06T19:28:37Z"
+        }
+      },
+      "restored": {
+        "status": "UNMEASURED"
+      }
+    },
+    {
+      "suite": "settings",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 12,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-positive.log",
+        "sha256": "c171a216584a3338e9a2d015b53b9dfb3f361570c00632ee04cdebfe7f7ad733",
+        "bytes": 6391,
+        "start": "2026-11-06T19:28:55Z",
+        "end": "2026-11-06T19:29:00Z"
+      },
+      "controls": {
+        "sortcap": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: PG get /api/v3/settings?sort=rank {\"status\":500,\"message\":\"Database error\"}\n\n500 !== 200\n\n      + expected - actual\n\n      -500\n      +200",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-sortcap.log",
+          "sha256": "5557270f7ad38f4b95a7f9e8180a50dfdfa873b53c090488b3445ad93e3a09ea",
+          "bytes": 2905,
+          "start": "2026-11-06T19:29:11Z",
+          "end": "2026-11-06T19:29:16Z"
+        },
+        "predicate": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: /api/v3/settings?rank$eq=2&sort=identifier&limit=10\n+ actual - expected\n... Skipped lines\n\n  {\n    result: [\n      {\n        app: 'synthetic',\n        date: 1793664000123,\n...\n      },\n+     {\n+       app: 'synthetic',\n+       date: 1793664000123,\n+       extension: {\n+         removed: true,\n+         secret: 'synthetic-private',\n+         visible: 2\n+       },\n+       identifier: 'synthetic-distractor',\n+       isValid: true,\n+       markup: '<b>client settings retained verbatim</b>',\n+       rank: 9,\n+       tenantMarker: '11111111-1111-4111-8111-111111111111',\n+       utcOffset: 0\n+     }\n    ],\n    status: 200\n  }\n\n      + expected - actual\n\n             \"rank\": 2\n             \"tenantMarker\": \"11111111-1111-4111-8111-111111111111\"\n             \"utcOffset\": 0\n           }\n      -    {\n      -      \"app\": \"synthetic\"\n      -      \"date\": 1793664000123\n      -      \"extension\": {\n      -        \"removed\": true\n      -        \"secret\": \"synthetic-private\"\n      -        \"visible\": 2\n      -      }\n      -      \"identifier\": \"synthetic-distractor\"\n      -      \"isValid\": true\n      -      \"markup\": \"<b>client settings retained verbatim</b>\"\n      -      \"rank\": 9\n      -      \"tenantMarker\": \"11111111-1111-4111-8111-111111111111\"\n      -      \"utcOffset\": 0\n      -    }\n         ]\n         \"status\": 200\n       }",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-predicate.log",
+          "sha256": "9bbbd423f896005392aa0535a0bb34e5c80bf8f5c123267366ec48c454fb70da",
+          "bytes": 3294,
+          "start": "2026-11-06T19:29:16Z",
+          "end": "2026-11-06T19:29:20Z"
+        },
+        "projection": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   removed: true,\n+   secret: 'synthetic-private',\n    visible: 2\n  }\n\n      + expected - actual\n\n       {\n      -  \"removed\": true\n      -  \"secret\": \"synthetic-private\"\n         \"visible\": 2\n       }",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-projection.log",
+          "sha256": "3d1d08ccb2f56c7b13b285eefdc6fd30d1290d6bce82a1369702e28b6ba9a7ae",
+          "bytes": 1950,
+          "start": "2026-11-06T19:29:20Z",
+          "end": "2026-11-06T19:29:25Z"
+        }
+      },
+      "restored": {
+        "status": "UNMEASURED"
+      }
+    },
+    {
+      "suite": "frame-acquisition",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 14,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-positive.log",
+        "sha256": "9dcf614e13de35387c507aab44c0e03e8bbd1aad24a310ab94d678348c7b8f15",
+        "bytes": 5472,
+        "start": "2026-11-06T19:35:15Z",
+        "end": "2026-11-06T19:35:21Z"
+      },
+      "controls": {
+        "tenant": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: a frame labelled tenant A must contain actual PG tenant A clinical values\n\n200 !== 100\n\n      + expected - actual\n\n      -200\n      +100",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-tenant.log",
+          "sha256": "ba3c860816fa4d3036f229162f63081db0d0be620a8da9d289b5429802083400",
+          "bytes": 1916,
+          "start": "2026-11-06T19:36:00Z",
+          "end": "2026-11-06T19:36:03Z"
+        },
+        "bound": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: actual alarms must acquire twelve newest sgv records\n\n1 !== 12\n\n      + expected - actual\n\n      -1\n      +12",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-bound.log",
+          "sha256": "65a560476a348c821a0dbaf7593dfef393cca7b34915cd6c3b2d483e5edf36db",
+          "bytes": 1938,
+          "start": "2026-11-06T19:36:03Z",
+          "end": "2026-11-06T19:36:06Z"
+        },
+        "clinical": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: shipping bgnow must retain the synthetic current reading\n      + expected - actual\n\n      -false\n      +true",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-clinical.log",
+          "sha256": "1ff8321f566c34d86a3274b2eb7801741ac19f404f6baf3c7b0d9c1761e57439",
+          "bytes": 1955,
+          "start": "2026-11-06T19:36:06Z",
+          "end": "2026-11-06T19:36:09Z"
+        },
+        "cache": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: private view loader must leave the supplied resident cache untouched\n+ actual - expected\n\n+ [\n+   {\n+     _id: '65a1b2c3d4e5f60718293a4b',\n+     direction: 'Flat',\n+     mgdl: 100,\n+     mills: 1793663940123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'typed-string',\n+     direction: 'Flat',\n+     mgdl: 101,\n+     mills: 1793663640123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-2',\n+     direction: 'Flat',\n+     mgdl: 102,\n+     mills: 1793663340123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-3',\n+     direction: 'Flat',\n+     mgdl: 103,\n+     mills: 1793663040123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-4',\n+     direction: 'Flat',\n+     mgdl: 104,\n+     mills: 1793662740123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-5',\n+     direction: 'Flat',\n+     mgdl: 105,\n+     mills: 1793662440123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-6',\n+     direction: 'Flat',\n+     mgdl: 106,\n+     mills: 1793662140123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-7',\n+     direction: 'Flat',\n+     mgdl: 107,\n+     mills: 1793661840123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-8',\n+     direction: 'Flat',\n+     mgdl: 108,\n+     mills: 1793661540123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-9',\n+     direction: 'Flat',\n+     mgdl: 109,\n+     mills: 1793661240123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-10',\n+     direction: 'Flat',\n+     mgdl: 110,\n+     mills: 1793660940123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-11',\n+     direction: 'Flat',\n+     mgdl: 111,\n+     mills: 1793660640123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-12',\n+     direction: 'Flat',\n+     mgdl: 112,\n+     mills: 1793660340123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-13',\n+     direction: 'Flat',\n+     mgdl: 113,\n+     mills: 1793660040123,\n+     type: 'sgv'\n+   },\n+   {\n+     _id: 'sgv-14',\n+     direction: 'Flat',\n+     mgdl: 114,\n+     mills: 1793659740123,\n+     type: 'sgv'\n+   }\n+ ]\n- []\n\n      + expected - actual\n\n      -[\n      -  {\n      -    \"_id\": \"65a1b2c3d4e5f60718293a4b\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 100\n      -    \"mills\": 1793663940123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"typed-string\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 101\n      -    \"mills\": 1793663640123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-2\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 102\n      -    \"mills\": 1793663340123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-3\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 103\n      -    \"mills\": 1793663040123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-4\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 104\n      -    \"mills\": 1793662740123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-5\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 105\n      -    \"mills\": 1793662440123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-6\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 106\n      -    \"mills\": 1793662140123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-7\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 107\n      -    \"mills\": 1793661840123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-8\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 108\n      -    \"mills\": 1793661540123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-9\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 109\n      -    \"mills\": 1793661240123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-10\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 110\n      -    \"mills\": 1793660940123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-11\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 111\n      -    \"mills\": 1793660640123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-12\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 112\n      -    \"mills\": 1793660340123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-13\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 113\n      -    \"mills\": 1793660040123\n      -    \"type\": \"sgv\"\n      -  }\n      -  {\n      -    \"_id\": \"sgv-14\"\n      -    \"direction\": \"Flat\"\n      -    \"mgdl\": 114\n      -    \"mills\": 1793659740123\n      -    \"type\": \"sgv\"\n      -  }\n      -]\n      +[]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-cache.log",
+          "sha256": "1e2441a1f6a1da84ecc700b75064343f85473468a4333d43d8638ef3cab5247f",
+          "bytes": 6283,
+          "start": "2026-11-06T19:36:09Z",
+          "end": "2026-11-06T19:36:12Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 14,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-restored.log",
+        "sha256": "0f3df2fb2bebcbab3854a5bc10ef177fac2fba8482504f7a1a6359701e7690df",
+        "bytes": 5471,
+        "start": "2026-11-06T19:36:12Z",
+        "end": "2026-11-06T19:36:18Z"
+      }
+    },
+    {
+      "suite": "frame-concurrency",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-positive.log",
+        "sha256": "d9dc4132a69e8c118f584555fe940e2a8eb2ad4b2de8e21a218b8bb36ec3c548",
+        "bytes": 5155,
+        "start": "2026-11-06T19:36:18Z",
+        "end": "2026-11-06T19:36:22Z"
+      },
+      "controls": {
+        "partial": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: a failed collection read must refuse the whole HTTP frame\n\n200 !== 503\n\n      + expected - actual\n\n      -200\n      +503",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-partial.log",
+          "sha256": "e569c5e4c064ecc85bd4abd13a2d0cee4266a5e5981ccb44d05f3f1f98987d63",
+          "bytes": 3185,
+          "start": "2026-11-06T19:36:22Z",
+          "end": "2026-11-06T19:36:26Z"
+        },
+        "egress": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: the actual derived read must not attempt a non-dependency socket\n\n2 !== 1\n\n      + expected - actual\n\n      -2\n      +1",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-egress.log",
+          "sha256": "168e24034a5ec4e8488946fb77c8c206efb99b7ab25f0dcc6da1cd7bc90b6594",
+          "bytes": 1991,
+          "start": "2026-11-06T19:36:26Z",
+          "end": "2026-11-06T19:36:30Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-restored.log",
+        "sha256": "4796b73970676e8677fbb1d5985c7f1143e561b510de0f7fcf6be26a38853a08",
+        "bytes": 3989,
+        "start": "2026-11-06T19:36:30Z",
+        "end": "2026-11-06T19:36:34Z"
+      }
+    },
+    {
+      "suite": "consolidation",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 75,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-positive.log",
+        "sha256": "f2833318c50b5a336e089e3602815751685f21a539112f74ac6828fa24a91b72",
+        "bytes": 7599,
+        "start": "2026-11-06T19:36:35Z",
+        "end": "2026-11-06T19:36:39Z"
+      },
+      "controls": {
+        "order": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'string',\n+   'objectid',\n    'identifier',\n-   'objectid',\n-   'string'\n  ]\n\n      + expected - actual\n\n       [\n      -  \"string\"\n      -  \"objectid\"\n         \"identifier\"\n      +  \"objectid\"\n      +  \"string\"\n       ]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-order.log",
+          "sha256": "1e232e0d7ec3d871581d0a19bbedca5b70abc82c576b7496545a99c785062e33",
+          "bytes": 1877,
+          "start": "2026-11-06T19:36:39Z",
+          "end": "2026-11-06T19:36:41Z"
+        },
+        "projection": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   {}\n-   {\n-     _id: 'missing'\n-   }\n  ]\n\n      + expected - actual\n\n       [\n      -  {}\n      +  {\n      +    \"_id\": \"missing\"\n      +  }\n       ]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-projection.log",
+          "sha256": "204514a1b3a3b1790a6354cac2b5e589563009ab827b4653473befe9b41fe2b3",
+          "bytes": 1804,
+          "start": "2026-11-06T19:36:41Z",
+          "end": "2026-11-06T19:36:43Z"
+        },
+        "commit": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: a failed commit must not publish a logical event\n\n1 !== 0\n\n      + expected - actual\n\n      -1\n      +0",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-commit.log",
+          "sha256": "6060ab4327b8383c596b0d27aff3bfa5d260ba768c36f92419139f74cddb0558",
+          "bytes": 1660,
+          "start": "2026-11-06T19:36:43Z",
+          "end": "2026-11-06T19:36:46Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 75,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-restored.log",
+        "sha256": "9d45b4cf11006a0746461ec8f45b5bffd134f5fda14745a6d69274dd685b924c",
+        "bytes": 7599,
+        "start": "2026-11-06T19:36:46Z",
+        "end": "2026-11-06T19:36:50Z"
+      }
+    },
+    {
+      "suite": "race",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-race-positive.log",
+        "sha256": "a4dc00073c34ba96179989855bb9c9b7fa484355c36bf06f4b92af562e7c2da0",
+        "bytes": 2902,
+        "start": "2026-11-06T19:36:50Z",
+        "end": "2026-11-06T19:36:54Z"
+      },
+      "controls": {
+        "retry": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: loser must follow the configured resend contract\n\n500 !== 200\n\n      + expected - actual\n\n      -500\n      +200",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-race-retry.log",
+          "sha256": "b6be94be8b5f451d675a7158b36058fc036c5a4a339c280cd6bdcceac79c6b48",
+          "bytes": 4355,
+          "start": "2026-11-06T19:36:54Z",
+          "end": "2026-11-06T19:36:57Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 4,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-race-restored.log",
+        "sha256": "8b8bbfbfe70ac01e827924097e258cb61a5f9ed3356b87077ccddba8a97d9132",
+        "bytes": 2902,
+        "start": "2026-11-06T19:36:58Z",
+        "end": "2026-11-06T19:37:01Z"
+      }
+    },
+    {
+      "suite": "compose",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 22,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-positive.log",
+        "sha256": "a907d140195ece7be101f1ea811587d716df54a47ac5eca4d98ada996ee659cf",
+        "bytes": 5449,
+        "start": "2026-11-06T19:37:02Z",
+        "end": "2026-11-06T19:37:27Z"
+      },
+      "controls": {
+        "unavailable": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "Error: expected 503 \"Service Unavailable\", got 500 \"Internal Server Error\"",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-unavailable.log",
+          "sha256": "32b6fdf65fae5089e0141f910b01b368486d9e5e71b8eecb629c748e01cf0aca",
+          "bytes": 4577,
+          "start": "2026-11-06T19:37:27Z",
+          "end": "2026-11-06T19:37:28Z"
+        },
+        "capability": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: refused configuration must never bind",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-capability.log",
+          "sha256": "f9d0e3705369bdf565066d9984f0256eea2b450a7043571047d6c33e7c600a65",
+          "bytes": 1561,
+          "start": "2026-11-06T19:37:51Z",
+          "end": "2026-11-06T19:37:55Z"
+        },
+        "catalogue": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: refused configuration must never bind",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-catalogue.log",
+          "sha256": "257de443054059ee739c4a54e77483fe012731dc1a85c5fb1b5b6887f9b1b368",
+          "bytes": 1551,
+          "start": "2026-11-06T19:37:55Z",
+          "end": "2026-11-06T19:37:59Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 22,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-restored.log",
+        "sha256": "87d95d0fca9037d029a8f7a8156f2a3123e693751d23c869ce4eeee272ab17be",
+        "bytes": 5449,
+        "start": "2026-11-06T19:37:59Z",
+        "end": "2026-11-06T19:38:25Z"
+      }
+    },
+    {
+      "suite": "identity",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 15,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-positive.log",
+        "sha256": "f3442df00a3e123c088202a137cc2b4ba2ce6d0da027cfe39b910f25dca6623e",
+        "bytes": 3079,
+        "start": "2026-11-06T19:38:25Z",
+        "end": "2026-11-06T19:38:31Z"
+      },
+      "controls": {
+        "lookup": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "Error: expected 200 \"OK\", got 404 \"Not Found\"",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-lookup.log",
+          "sha256": "d2b2b929ae2533896d3e946736fa1c1ce268357babc7c739609aa8a1fd2b16d2",
+          "bytes": 3363,
+          "start": "2026-11-06T19:38:31Z",
+          "end": "2026-11-06T19:38:35Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 15,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-restored.log",
+        "sha256": "0697c45671f05e71bfd658e24eca80419728a96cfe999038de18a857500a82da",
+        "bytes": 3078,
+        "start": "2026-11-06T19:38:35Z",
+        "end": "2026-11-06T19:38:41Z"
+      }
+    },
+    {
+      "suite": "port",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 70,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-positive.log",
+        "sha256": "d411b02011b7c087c1a815beebb4eae04874327532d6827fed5186d5cd4bbba6",
+        "bytes": 7139,
+        "start": "2026-11-06T19:38:41Z",
+        "end": "2026-11-06T19:38:46Z"
+      },
+      "controls": {
+        "projection": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  [\n    {\n      _id: ObjectId {\n        i0: 6660530,\n        i1: 12834021,\n...\n      },\n+     label: null\n-     label: 'objectid'\n    }\n  ]\n\n      + expected - actual\n\n             \"i1\": 12834021\n             \"i2\": 16123672\n             \"i3\": 2701899\n           }\n      -    \"label\": [null]\n      +    \"label\": \"objectid\"\n         }\n       ]",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-projection.log",
+          "sha256": "65960a627404e436ce929b0927b7e35028f52fd0bd062d61b460bd7115815d08",
+          "bytes": 1990,
+          "start": "2026-11-06T19:38:46Z",
+          "end": "2026-11-06T19:38:49Z"
+        },
+        "tenant": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok((await reader.findFiltered(and(), raw)).every(doc => doc.owner === undefined))\n\n      + expected - actual\n\n      -false\n      +true",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-tenant.log",
+          "sha256": "955c91a1fef57fde2723b7d56391d038e751571b52cf7fba5ba1cbdb284a61fb",
+          "bytes": 1902,
+          "start": "2026-11-06T19:38:49Z",
+          "end": "2026-11-06T19:38:51Z"
+        },
+        "outcome": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   updated: 0\n-   updated: 1\n  }\n\n      + expected - actual\n\n       {\n      -  \"updated\": 0\n      +  \"updated\": 1\n       }",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-outcome.log",
+          "sha256": "0d14309432c123da96c748083404a9e194d6073b9ac737fb2e1e613cc1a6a403",
+          "bytes": 1782,
+          "start": "2026-11-06T19:38:51Z",
+          "end": "2026-11-06T19:38:53Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 70,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-port-restored.log",
+        "sha256": "00eab4bbd60e24541993aa760b4e8d7b4bf10bdb177085665b2601defe03693a",
+        "bytes": 7139,
+        "start": "2026-11-06T19:38:53Z",
+        "end": "2026-11-06T19:38:59Z"
+      }
+    },
+    {
+      "suite": "management",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 13,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-positive.log",
+        "sha256": "4b99cf4861142811ab7e8c9c2ba20010b256858988270f5521fda516b4912870",
+        "bytes": 2455,
+        "start": "2026-11-06T19:38:59Z",
+        "end": "2026-11-06T19:39:02Z"
+      },
+      "controls": {
+        "auth": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: {\"subjectId\":\"000000000000000000000001\",\"name\":\"Refused\",\"roles\":[],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}\n\n200 !== 401\n\n      + expected - actual\n\n      -200\n      +401",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-auth.log",
+          "sha256": "7852e94b4c42ef6a3b63a7efa047679086e22847247a6907f6749ea63fe2fed1",
+          "bytes": 1861,
+          "start": "2026-11-06T19:39:02Z",
+          "end": "2026-11-06T19:39:04Z"
+        },
+        "tenant": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: {\"subjectId\":\"000000000000000000000001\",\"name\":\"Refused\",\"roles\":[],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}\n\n200 !== 401\n\n      + expected - actual\n\n      -200\n      +401",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-tenant.log",
+          "sha256": "ed287c2f4154f8938875700071e0701be11e0d48f4a0214ee7b2a874175f7fee",
+          "bytes": 1865,
+          "start": "2026-11-06T19:39:04Z",
+          "end": "2026-11-06T19:39:06Z"
+        },
+        "exposure": {
+          "status": "SEMANTIC-RED",
+          "exit": 1,
+          "passing": 0,
+          "failing": 1,
+          "pending": 0,
+          "symptom": "AssertionError [ERR_ASSERTION]: {\"subjectId\":\"000000000000000000000001\",\"name\":\"Not Mounted\",\"roles\":[],\"notes\":\"preserved\",\"created_at\":\"2026-01-01T00:00:00.000Z\"}\n      + expected - actual\n\n      -false\n      +true",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-exposure.log",
+          "sha256": "7f5ad05966c3ff92f8884fec6b5c9ddd4a9254a8cf827d6795266bd92238f465",
+          "bytes": 1736,
+          "start": "2026-11-06T19:39:06Z",
+          "end": "2026-11-06T19:39:08Z"
+        }
+      },
+      "restored": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 13,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/next-slices-management-restored.log",
+        "sha256": "5b04f2c0f18c4de3289059d88c8497f628684a849cf995da1737763f2b331c0d",
+        "bytes": 2448,
+        "start": "2026-11-06T19:39:08Z",
+        "end": "2026-11-06T19:39:10Z"
+      }
+    },
+    {
+      "suite": "rest-authority",
+      "positive": {
+        "status": "POSITIVE",
+        "exit": 0,
+        "passing": 5,
+        "failing": 0,
+        "pending": 0,
+        "symptom": null,
+        "local_log": "externals/work/b4a-controls-scratch-20261106/rest-authority-positive.log",
+        "sha256": "c7589a0769721e46015df21bc5a86a838a675a0103c26c282efcc92a7a6e487c",
+        "bytes": 1666,
+        "start": "2026-11-06T19:39:11Z",
+        "end": "2026-11-06T19:39:13Z"
+      },
+      "controls": {
+        "authority": {
+          "status": "CONTROL-INVALID",
+          "exit": 1,
+          "passing": null,
+          "failing": 0,
+          "pending": 0,
+          "symptom": "CONTROL-INVALID: expected source boundary missing",
+          "local_log": "externals/work/b4a-controls-scratch-20261106/rest-authority-authority.log",
+          "sha256": "92011fbf36601db5be6aa47d504d2ef05831b1d189de8e4c52401bd69a72ffe1",
+          "bytes": 886,
+          "start": "2026-11-06T19:39:13Z",
+          "end": "2026-11-06T19:39:13Z"
+        },
+        "audience": {
+          "status": "UNMEASURED"
+        }
+      },
+      "restored": {
+        "status": "UNMEASURED"
+      }
+    },
+    {
+      "suite": "subject-admin",
+      "positive": {
+        "status": "UNMEASURED"
+      },
+      "controls": {
+        "current": {
+          "status": "UNMEASURED"
+        },
+        "tenant": {
+          "status": "UNMEASURED"
+        },
+        "atomic": {
+          "status": "UNMEASURED"
+        }
+      },
+      "restored": {
+        "status": "UNMEASURED"
+      }
+    }
+  ],
+  "cleanup_audits": [
+    {
+      "run": "next-slices-compose-capability",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-compose-catalogue",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-compose-positive",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-compose-restored",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-compose-unavailable",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-consolidation-commit",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-consolidation-order",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-consolidation-positive",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-consolidation-projection",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-consolidation-restored",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-acquisition-bound",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-acquisition-cache",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-acquisition-clinical",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-acquisition-restored",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-acquisition-tenant",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-concurrency-egress",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-concurrency-partial",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-concurrency-positive",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-frame-concurrency-restored",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-identity-lookup",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-identity-positive",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-identity-restored",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-management-auth",
+      "new_volume_count": 1,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-management-exposure",
+      "new_volume_count": 1,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-management-positive",
+      "new_volume_count": 1,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-management-restored",
+      "new_volume_count": 1,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-management-tenant",
+      "new_volume_count": 1,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-port-outcome",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-port-positive",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-port-projection",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-port-restored",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-port-tenant",
+      "new_volume_count": 3,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-race-positive",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-race-restored",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "next-slices-race-retry",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 2,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "rest-authority-authority",
+      "new_volume_count": 0,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    },
+    {
+      "run": "rest-authority-positive",
+      "new_volume_count": 1,
+      "new_container_count": 0,
+      "diagnostic_entries": 0,
+      "recorded_containers_absent": true,
+      "recorded_volumes_absent": true
+    }
+  ],
+  "cleanup_limit": "Diagnostics cover only explicitly recorded gate-owned mounts. Older internal fixtures retained anonymous volumes without mount identity capture; all unknown volumes preserved. Initial frame-acquisition positive has no before/after audit. Global count delta is observation, not proven ownership. No global leak-freedom or SIGKILL cleanup claim.",
+  "artifacts": [
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/00-baseline-before.txt",
+      "bytes": 730,
+      "sha256": "86aeaab35025506a6c329034cf5c283b550efbf54788c56e664ee10b341c6fac"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/audit-diag.sh",
+      "bytes": 768,
+      "sha256": "41474989903a31d25021adc7c2bb19de8d7a74cb4f8fe7ddf3e8e716f3f3a0ef"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/codex-captured-sha256.txt",
+      "bytes": 12699,
+      "sha256": "bed1625c8b9a2fee1fe378ad9129d9bcc4149b50920b645d7092559bc0436e9b"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/codex-continue.py",
+      "bytes": 3675,
+      "sha256": "02960001fcb307e163932eba84e1ecf8db797acd49ab7c7f5943f549aaa1f142"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/codex-initial-sha256.txt",
+      "bytes": 1664,
+      "sha256": "cd56107570ad538704e6ab39c3e803fa23164989604c1c4a9c053e96940a4d7a"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/codex-queue-status.log",
+      "bytes": 30756,
+      "sha256": "950e71a3e9cfb8e375e0e00aada0e6f6f053157789f6df72acc20d0d6ecbf365"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/codex-resume-stop.txt",
+      "bytes": 51,
+      "sha256": "f0964c37db42fb6d78315e1a88093a9ca802018fee9577af2b9b50a03319d588"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/codex-resume.py",
+      "bytes": 3760,
+      "sha256": "e8c851e7709909e113d8c819933fb2af05c92de29b0f5f6a547aadeec34ff7a5"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/codex-stop.txt",
+      "bytes": 58,
+      "sha256": "0cce19ed39524eaa1f30d6ac75a00bf6c0ce66611d12a8ed105d87790e280930"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-capability.audit.json",
+      "bytes": 71248,
+      "sha256": "ac038effcdf3e9dc66fb74636e8ef99c459c2a6bdf40ab485dbaace6240f51b0"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-capability.log",
+      "bytes": 1561,
+      "sha256": "f9d0e3705369bdf565066d9984f0256eea2b450a7043571047d6c33e7c600a65"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-catalogue.audit.json",
+      "bytes": 71692,
+      "sha256": "40fe5255b800c31d7d2236a83d0016b7281a415ca7a952c59fb0cfd2097d5591"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-catalogue.log",
+      "bytes": 1551,
+      "sha256": "257de443054059ee739c4a54e77483fe012731dc1a85c5fb1b5b6887f9b1b368"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-positive.audit.json",
+      "bytes": 70804,
+      "sha256": "cc6a46d924bec3a884971af8cdc4509216df344b1409448de7ad919dd991a068"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-positive.log",
+      "bytes": 5449,
+      "sha256": "a907d140195ece7be101f1ea811587d716df54a47ac5eca4d98ada996ee659cf"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-restored.audit.json",
+      "bytes": 72136,
+      "sha256": "51f140ae0cc3a6bb49e64717cd08662e158c2c112bb31ccaf458e645ffddbae4"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-restored.log",
+      "bytes": 5449,
+      "sha256": "87d95d0fca9037d029a8f7a8156f2a3123e693751d23c869ce4eeee272ab17be"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-unavailable.audit.json",
+      "bytes": 70808,
+      "sha256": "4c0c2e5f53142674a94d5ca2dab9efe657ac362c54d9c548d8f3c98db69c19ae"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-compose-unavailable.log",
+      "bytes": 4577,
+      "sha256": "32b6fdf65fae5089e0141f910b01b368486d9e5e71b8eecb629c748e01cf0aca"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-commit.audit.json",
+      "bytes": 69916,
+      "sha256": "d85206206b9267fd09bd4dfe2c5d18adc3cbaf70f95e710c93b67a71b3a72c53"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-commit.log",
+      "bytes": 1660,
+      "sha256": "6060ab4327b8383c596b0d27aff3bfa5d260ba768c36f92419139f74cddb0558"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-order.audit.json",
+      "bytes": 69028,
+      "sha256": "b68d5e5f0cab6c9ff8ebd855d6efc03621a2cf90bf0bd57c56b4345cd1965381"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-order.log",
+      "bytes": 1877,
+      "sha256": "1e232e0d7ec3d871581d0a19bbedca5b70abc82c576b7496545a99c785062e33"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-positive.audit.json",
+      "bytes": 68584,
+      "sha256": "e52575c29192a3debdd84d8721b6dd10487b467c2cc15a34a854a7d136ce4132"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-positive.log",
+      "bytes": 7599,
+      "sha256": "f2833318c50b5a336e089e3602815751685f21a539112f74ac6828fa24a91b72"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-projection.audit.json",
+      "bytes": 69472,
+      "sha256": "76ea0dd6b53c029559e14b9541721c3939e1e33e111f5b5b0535a4a06a2f3341"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-projection.log",
+      "bytes": 1804,
+      "sha256": "204514a1b3a3b1790a6354cac2b5e589563009ab827b4653473befe9b41fe2b3"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-restored.audit.json",
+      "bytes": 70360,
+      "sha256": "9d378bf552579a84ad00d8235a3eb81143cddab25d48ca0fd59ffd8a60949663"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-consolidation-restored.log",
+      "bytes": 7599,
+      "sha256": "9d45b4cf11006a0746461ec8f45b5bffd134f5fda14745a6d69274dd685b924c"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-bound.audit.json",
+      "bytes": 66808,
+      "sha256": "300d80f742a6d9d90db883620c92e11cadd4cc9412d1a6fd0302c0e66d7db1ee"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-bound.log",
+      "bytes": 1938,
+      "sha256": "65a560476a348c821a0dbaf7593dfef393cca7b34915cd6c3b2d483e5edf36db"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-cache.audit.json",
+      "bytes": 67696,
+      "sha256": "3f32d2edf9279d847630937aceb72cb26f5abb147cd8e17755a772daca8cb85e"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-cache.log",
+      "bytes": 6283,
+      "sha256": "1e2441a1f6a1da84ecc700b75064343f85473468a4333d43d8638ef3cab5247f"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-clinical.audit.json",
+      "bytes": 67252,
+      "sha256": "8e953bf4c728b5dd8fa73672211f6bcd9d0abeee656b36edfc28fc8b85519632"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-clinical.log",
+      "bytes": 1955,
+      "sha256": "1ff8321f566c34d86a3274b2eb7801741ac19f404f6baf3c7b0d9c1761e57439"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-positive.log",
+      "bytes": 5472,
+      "sha256": "9dcf614e13de35387c507aab44c0e03e8bbd1aad24a310ab94d678348c7b8f15"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-restored.audit.json",
+      "bytes": 68140,
+      "sha256": "672df6fb2ae67460a9fdec7e0e8f8b39b52d6ad410ad8f71fe6baf79c1908401"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-restored.log",
+      "bytes": 5471,
+      "sha256": "0f3df2fb2bebcbab3854a5bc10ef177fac2fba8482504f7a1a6359701e7690df"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-tenant.audit.json",
+      "bytes": 66364,
+      "sha256": "e615de43c83e84775efaf54af4ebc06f852d1d7ef4f52149cfb3021a7c9f6c5b"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-acquisition-tenant.log",
+      "bytes": 1916,
+      "sha256": "ba3c860816fa4d3036f229162f63081db0d0be620a8da9d289b5429802083400"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-egress.audit.json",
+      "bytes": 68943,
+      "sha256": "d36ad1374d2baddc7aa09059634dd0f98139874d416eea1150ec55c12fff58d1"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-egress.log",
+      "bytes": 1991,
+      "sha256": "168e24034a5ec4e8488946fb77c8c206efb99b7ab25f0dcc6da1cd7bc90b6594"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-partial.audit.json",
+      "bytes": 68943,
+      "sha256": "239298e5a84f9dbbc10c8b9e8c081463dbc80a6578f1fa080c796479435c3075"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-partial.log",
+      "bytes": 3185,
+      "sha256": "e569c5e4c064ecc85bd4abd13a2d0cee4266a5e5981ccb44d05f3f1f98987d63"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-positive.audit.json",
+      "bytes": 68943,
+      "sha256": "843e9c9aa800999d01379b0c679e13e7575217a1a69df570906f5ba280c83c88"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-positive.log",
+      "bytes": 5155,
+      "sha256": "d9dc4132a69e8c118f584555fe940e2a8eb2ad4b2de8e21a218b8bb36ec3c548"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-restored.audit.json",
+      "bytes": 68943,
+      "sha256": "4236ec3a8819b2dcdf39e78b2fb37d1fe1e7b4e560be622247716c1762f21ab5"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-frame-concurrency-restored.log",
+      "bytes": 3989,
+      "sha256": "4796b73970676e8677fbb1d5985c7f1143e561b510de0f7fcf6be26a38853a08"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-lookup.audit.json",
+      "bytes": 72939,
+      "sha256": "4707749292878a92caf42ee30ba2437d8058022a7838435ddbaa16f307d2c757"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-lookup.log",
+      "bytes": 3363,
+      "sha256": "d2b2b929ae2533896d3e946736fa1c1ce268357babc7c739609aa8a1fd2b16d2"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-positive.audit.json",
+      "bytes": 72939,
+      "sha256": "1b463abd47471930090079ba069aadde6a2fabcb3dcd55d881de3f91bd67df90"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-positive.log",
+      "bytes": 3079,
+      "sha256": "f3442df00a3e123c088202a137cc2b4ba2ce6d0da027cfe39b910f25dca6623e"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-restored.audit.json",
+      "bytes": 72939,
+      "sha256": "e45a36e9ca682eabd312c3533c0833f9edbc0fdf8b7aa2f07a63ca7aef0b0ad8"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-identity-restored.log",
+      "bytes": 3078,
+      "sha256": "0697c45671f05e71bfd658e24eca80419728a96cfe999038de18a857500a82da"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-auth.audit.json",
+      "bytes": 74656,
+      "sha256": "27e8bf0a408d29e648533cab84897b3ab60e827c29c70c432f18b2e3dbe4341d"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-auth.log",
+      "bytes": 1861,
+      "sha256": "7852e94b4c42ef6a3b63a7efa047679086e22847247a6907f6749ea63fe2fed1"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-exposure.audit.json",
+      "bytes": 74952,
+      "sha256": "91d3df083020ce87a1bf189a7f96d311c2b7a06db4fc3c60fad1676236f8fe93"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-exposure.log",
+      "bytes": 1736,
+      "sha256": "7f5ad05966c3ff92f8884fec6b5c9ddd4a9254a8cf827d6795266bd92238f465"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-positive.audit.json",
+      "bytes": 74508,
+      "sha256": "57276b44c2f167dce11e3a4ef0f5763907f49eeae7452dc54c0009f89bbf9714"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-positive.log",
+      "bytes": 2455,
+      "sha256": "4b99cf4861142811ab7e8c9c2ba20010b256858988270f5521fda516b4912870"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-restored.audit.json",
+      "bytes": 75100,
+      "sha256": "45786ac8a87aa602edd7651123b76ddd87fa6bcfcf97ebb8dead6ac7020c267d"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-restored.log",
+      "bytes": 2448,
+      "sha256": "5b04f2c0f18c4de3289059d88c8497f628684a849cf995da1737763f2b331c0d"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-tenant.audit.json",
+      "bytes": 74804,
+      "sha256": "6e0efd41d69ba64111624e958f903417667322dab40ee8a735c59938192e9e6e"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-management-tenant.log",
+      "bytes": 1865,
+      "sha256": "ed287c2f4154f8938875700071e0701be11e0d48f4a0214ee7b2a874175f7fee"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-actor.log",
+      "bytes": 1237,
+      "sha256": "9033ab25ad569e6ceb6f98b2c03b7e94908c56c64adb6ec499e1bdb19ef5927e"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-catalogue.log",
+      "bytes": 1245,
+      "sha256": "94f2c3354f62bbd18af2297c99247db6651aedd0e148472b74a55356686d4cd9"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-ceiling.log",
+      "bytes": 1241,
+      "sha256": "b5caafb90e583e5b54286e03b3d9dc4a47c671a8dcf288e226b4b6932a4ad60a"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-delegation.log",
+      "bytes": 1247,
+      "sha256": "28174ac4cc0a2bcd312429d42beffc9d491ae1e5ce73cd1822a974796b4f2d34"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-owner-policy-positive.log",
+      "bytes": 1197,
+      "sha256": "47638f905565be2e471ab6f80532366bf1c769f7f2d08ec7067a84f5c9aae679"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-outcome.audit.json",
+      "bytes": 73912,
+      "sha256": "9540f3942495c8cc41df6eb6f1d948884dae3e0483f6b6ec7c5d256786bae70c"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-outcome.log",
+      "bytes": 1782,
+      "sha256": "0d14309432c123da96c748083404a9e194d6073b9ac737fb2e1e613cc1a6a403"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-positive.audit.json",
+      "bytes": 72580,
+      "sha256": "801882b43f8616f36801e3fd061c655d28275ed19b252f85a94d61153a0402da"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-positive.log",
+      "bytes": 7139,
+      "sha256": "d411b02011b7c087c1a815beebb4eae04874327532d6827fed5186d5cd4bbba6"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-projection.audit.json",
+      "bytes": 73024,
+      "sha256": "17cdbe1d2f02392b81c1ac3d694142c4115fa62df5dbc3eacc382001df9a8731"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-projection.log",
+      "bytes": 1990,
+      "sha256": "65960a627404e436ce929b0927b7e35028f52fd0bd062d61b460bd7115815d08"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-restored.audit.json",
+      "bytes": 74356,
+      "sha256": "b2fef18684704f60b344ce93105e0210349a2159e9e77874f6b74c9eab295c5f"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-restored.log",
+      "bytes": 7139,
+      "sha256": "00eab4bbd60e24541993aa760b4e8d7b4bf10bdb177085665b2601defe03693a"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-tenant.audit.json",
+      "bytes": 73468,
+      "sha256": "be1c9f40c505d2f82b9432a8cc31f25d191ce4ad019eeb1724867fc93f7e8d9a"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-port-tenant.log",
+      "bytes": 1902,
+      "sha256": "955c91a1fef57fde2723b7d56391d038e751571b52cf7fba5ba1cbdb284a61fb"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-race-positive.audit.json",
+      "bytes": 71163,
+      "sha256": "06704c6a7bd8176c0e7676dd41d9db0a7da48d8370d2adb95589bcd90539e848"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-race-positive.log",
+      "bytes": 2902,
+      "sha256": "a4dc00073c34ba96179989855bb9c9b7fa484355c36bf06f4b92af562e7c2da0"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-race-restored.audit.json",
+      "bytes": 71163,
+      "sha256": "c626f9577c3b52a5f8e5e5e81f2c73d347c3cd03c47971bb7b5a2120d421935e"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-race-restored.log",
+      "bytes": 2902,
+      "sha256": "8b8bbfbfe70ac01e827924097e258cb61a5f9ed3356b87077ccddba8a97d9132"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-race-retry.audit.json",
+      "bytes": 71163,
+      "sha256": "d71a0d77ee51cdbde5b49b7b589ce68a5d7593a1e8a7ee5f8e35e2383893a8c8"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-race-retry.log",
+      "bytes": 4355,
+      "sha256": "b6be94be8b5f451d675a7158b36058fc036c5a4a339c280cd6bdcceac79c6b48"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-positive.log",
+      "bytes": 6391,
+      "sha256": "c171a216584a3338e9a2d015b53b9dfb3f361570c00632ee04cdebfe7f7ad733"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-predicate.log",
+      "bytes": 3294,
+      "sha256": "9bbbd423f896005392aa0535a0bb34e5c80bf8f5c123267366ec48c454fb70da"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-projection.log",
+      "bytes": 1950,
+      "sha256": "3d1d08ccb2f56c7b13b285eefdc6fd30d1290d6bce82a1369702e28b6ba9a7ae"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/next-slices-settings-sortcap.log",
+      "bytes": 2905,
+      "sha256": "5557270f7ad38f4b95a7f9e8180a50dfdfa873b53c090488b3445ad93e3a09ea"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/rest-authority-authority.audit.json",
+      "bytes": 75248,
+      "sha256": "5893f5bd428bbf3301b0660f96aa70b20148633bf67ba38950fc99155e84bb16"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/rest-authority-authority.log",
+      "bytes": 886,
+      "sha256": "92011fbf36601db5be6aa47d504d2ef05831b1d189de8e4c52401bd69a72ffe1"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/rest-authority-positive.audit.json",
+      "bytes": 75248,
+      "sha256": "aa6af0b4bd3f39dde36227a5c0d9db3c1b79b7b137b4dde53fed761886e36aac"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/rest-authority-positive.log",
+      "bytes": 1666,
+      "sha256": "c7589a0769721e46015df21bc5a86a838a675a0103c26c282efcc92a7a6e487c"
+    },
+    {
+      "local_path": "externals/work/b4a-controls-scratch-20261106/run.sh",
+      "bytes": 779,
+      "sha256": "abc475846895485522d0fc1e20b0559078e9921d29e90284f6029a8a53b40f15"
+    }
+  ]
+}
