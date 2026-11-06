@@ -1,0 +1,147 @@
+{
+  "captured_date": "2026-11-06",
+  "classification": "reproduced remote read-back",
+  "repository": "nightscout/cgm-remote-monitor",
+  "pull_request": 8898,
+  "head": "d89a44e182e771ef84aa99190ec166e6ff0d9772",
+  "draft": true,
+  "merged": false,
+  "alignment_acceptance_head": "ed18a7bceb096fc52e155fc5a005106f7e91263d",
+  "alignment_run": {
+    "id": 42296363495,
+    "conclusion": "success",
+    "site_conclusion": "success"
+  },
+  "workflows": [
+    {
+      "id": 42296422116,
+      "name": "CodeQL",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/nightscout/cgm-remote-monitor/actions/runs/42296422116"
+    },
+    {
+      "id": 42296422151,
+      "name": "CI test and publish Docker image",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/nightscout/cgm-remote-monitor/actions/runs/42296422151"
+    }
+  ],
+  "jobs": [
+    {
+      "id": 128162733751,
+      "name": "Maintained MongoDB (26, 8.0.29)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162733837,
+      "name": "Browser tests (26, firefox)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162733895,
+      "name": "Multitenant opt-in corpus (PostgreSQL, MongoDB, Vault)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162733907,
+      "name": "Validate Docker image (arm64)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162733940,
+      "name": "Validate npm 12 install and build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162733955,
+      "name": "Tests without a database (22.23.4)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162733957,
+      "name": "Tests without a database (26)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162734042,
+      "name": "Run Tests (26, 5.0)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162734070,
+      "name": "Run Tests (24, 6)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162734086,
+      "name": "Browser tests (26, chromium)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162734103,
+      "name": "Run Tests (22.23.4, 8.0)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162734270,
+      "name": "Validate Docker image (amd64)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162734278,
+      "name": "Run Tests (22, 6)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128162734308,
+      "name": "Browser tests (26, webkit)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128166999424,
+      "name": "Tests pass",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128167063933,
+      "name": "Build Docker image (${{ matrix.arch }})",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128167064022,
+      "name": "Publish the release image",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128167064849,
+      "name": "Publish to Docker Hub",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "limits": [
+    "No merge to dev or release/tag/default enablement",
+    "Benchmark remains explicitly pending in local corpus",
+    "M0 promotion and bounded M4 card closure only; M1–M6 criteria remain",
+    "Separate owner/replay/operations branches are not included"
+  ]
+}

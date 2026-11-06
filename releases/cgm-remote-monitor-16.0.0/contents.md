@@ -1639,3 +1639,17 @@ The [final acceptance capsule](../../reports/tenancy/batch-a-acceptance-d89a44e1
 and [client capture](../../reports/m4-client-binaries/2026-11-06-revised-freeze/README.md)
 own figures and limits. Publication and remote checks follow separately.
 Lane detail: `externals/work/HANDOFF-codex-completion-coordination-20261106.md` (local, untracked).
+
+
+### Update — accepted batch published and remote verification complete (2026-11-06)
+
+| Scope | Reproduced publication/read-back | Remaining boundary |
+|---|---|---|
+| Draft #8898 | Normal fast-forward to exact accepted `d89a44e1`; description refreshed with R60 scope and successful [CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42296422151)/[CodeQL](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42296422116) links. | Draft remains open; no merge to dev, release/tag or serving-default change. |
+| Remote verification | [R61](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r61---published-batch-remote-ci-and-codeql-verification-2026-11-06) records 15 successful CI jobs, three expected release-publication skips and CodeQL success on d89. | Benchmark remains pending; remote green does not close M1–M6 or enable later dormant code. |
+| Alignment records | Accepted main `ed18a7bce` published; CI and site build/check/publication passed. Paused M4 draft was retired only after exact archive verification and takeover-owner confirmation. | Both November draft correspondence files preserved. Later owner/replay/operations work proceeds in a separate integration lane. |
+
+The [publication snapshot](../../reports/tenancy/batch-a-publication-d89a44e1-2026-11-06.json)
+owns exact remote job state. The connector lacked PR metadata-write permission;
+the verified author CLI applied the prepared description while retaining draft
+state. No comments, reviews or correspondence were sent.
