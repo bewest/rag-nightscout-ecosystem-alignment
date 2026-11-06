@@ -1,0 +1,162 @@
+{
+  "recordDate": "2026-11-06",
+  "measurementBasis": "Existing reproduced captures independently read; no runtime rerun by report lane",
+  "alignmentBase": "e739c46673bb7d908180dcabfa12ef5c8462a195",
+  "productPrototype": "3e76b2701538873e77c4bd461fbff3842fa9b443",
+  "correctedLowerFixtureHead": "887c4aad76dc14b85eba5d909e6a7b71396cfdfe",
+  "portableReadinessSource": "c52887d7eea054b0570c8ba8ce1dbce373856f19",
+  "allDomainTestHead": "a8d9af9c9f1b4b227d8fc8feb3e23c2fa5139bbf",
+  "postgresVersion": "16.15 (Debian 16.15-1.pgdg13+2)",
+  "captures": [
+    {
+      "phase": "initial",
+      "capture": "lower-port-first.log",
+      "sha256": "85aec713331636de4f004ef42a1a6d350ef42d1b585eadcb3f5c7457c93b8659",
+      "passing": 7,
+      "failing": 1
+    },
+    {
+      "phase": "initial",
+      "capture": "cleanup.log",
+      "sha256": "f2ccda7f49ddfe26b22dff020b393c7f9452828eca621b6c819485863cd2716a",
+      "containerAbsenceCaptured": true,
+      "volumeAbsenceCaptured": true
+    },
+    {
+      "phase": "lower-port",
+      "capture": "versions.log",
+      "sha256": "d76022ce61cca65f4834db54941f9020f4ae7f2452a269b11de76081fd0f4268"
+    },
+    {
+      "phase": "lower-port",
+      "capture": "lower-port-rerun.log",
+      "sha256": "3ef12d1bc9c2a6ef4536d6fa79fe67de70d8ea04dfe6d758cb1cff6913db89ab",
+      "passing": 8
+    },
+    {
+      "phase": "lower-port",
+      "capture": "without-fence-control.log",
+      "sha256": "ae26c53674d7b8ec95ab61a4dc6ddb3d76ef805bf13cdc7b2ad2fd55047cd9c1",
+      "passing": 0,
+      "failing": 1
+    },
+    {
+      "phase": "lower-port",
+      "capture": "fence-restored.log",
+      "sha256": "cb6eb189ab583fdbda32e66bab0bc492df82110c8445f91e2addb3e4c05807f8",
+      "passing": 1
+    },
+    {
+      "phase": "lower-port",
+      "capture": "without-finalizer-control.log",
+      "sha256": "9e96c6de0d3d58127e69423918f9c56251a81049000ba7fb3c06f33e0d8d878c",
+      "passing": 0,
+      "failing": 1
+    },
+    {
+      "phase": "lower-port",
+      "capture": "finalizer-restored.log",
+      "sha256": "e54f10e79e9a8f9f16e084b9a5c89145c835bf5e94970bd3ab723efd191014d3",
+      "passing": 1
+    },
+    {
+      "phase": "lower-port",
+      "capture": "precommit-events-control.log",
+      "sha256": "9f958a0d772ab8d31166e7aae9077059fa20e40f3ab128151f44a57a2fe38269",
+      "passing": 0,
+      "failing": 1
+    },
+    {
+      "phase": "lower-port",
+      "capture": "lower-port-restored.log",
+      "sha256": "de2ff1b744d49008524a7751cd268cfc86350242b85b0d0c07ee7f79c5db36b9",
+      "passing": 8
+    },
+    {
+      "phase": "lower-port",
+      "capture": "final-db-audit.log",
+      "sha256": "f9232936d131a4326bebcf5da1f53e7dadbd6c9a8d169d8b32b4e406e6e7d3b5",
+      "ownedRolesRemaining": 0,
+      "ownedSchemasRemaining": 0
+    },
+    {
+      "phase": "lower-port",
+      "capture": "cleanup.log",
+      "sha256": "784497b8f5551fc31fd1c52a66a7c846f24bff0006cc40c4a4eb9d0dc18a5237",
+      "containerAbsenceCaptured": true,
+      "volumeAbsenceCaptured": true
+    },
+    {
+      "phase": "readiness",
+      "capture": "versions.log",
+      "sha256": "86d0a522d8ce6c62eedf5c1b4cf67d58848bce37d17361b15a1451058c55ccc8"
+    },
+    {
+      "phase": "readiness",
+      "capture": "old-query-driver-control.log",
+      "sha256": "53f570db428ff0848b60d527cffdfad3f743c7121f2fc45e37ccd1f1ae471561",
+      "passing": 0,
+      "failing": 1
+    },
+    {
+      "phase": "readiness",
+      "capture": "new-query-positive.log",
+      "sha256": "e7b7eb474077883a9b7320581a2336d6ff6b64eee3d9e553a18cf41a4b194317",
+      "passing": 1
+    },
+    {
+      "phase": "readiness",
+      "capture": "lower-nine-restored.log",
+      "sha256": "8c9be839f3d308adb79d77c790b1f4727c330c77a43ba57f25b3a50cb1746416",
+      "passing": 9
+    },
+    {
+      "phase": "readiness",
+      "capture": "final-db-audit.log",
+      "sha256": "f9232936d131a4326bebcf5da1f53e7dadbd6c9a8d169d8b32b4e406e6e7d3b5",
+      "ownedRolesRemaining": 0,
+      "ownedSchemasRemaining": 0
+    },
+    {
+      "phase": "readiness",
+      "capture": "cleanup.log",
+      "sha256": "370c5636916978f4932513a503a7c135dbf26f50f0235810a1e686dc863ad50a",
+      "containerAbsenceCaptured": true,
+      "volumeAbsenceCaptured": true
+    },
+    {
+      "phase": "source-only",
+      "capture": "tenant-clock-readiness-focused.log",
+      "sha256": "612901aa98366cd5debbee8b1aaf75ccb9d34dc19bafdd4238a934b361d7c1d9",
+      "passing": 111
+    },
+    {
+      "phase": "source-only",
+      "capture": "tenant-clock-readiness-source.log",
+      "sha256": "391f2b66ab0506d31a7c3f152906aadd03859ea9f82825399e10675882679800",
+      "passing": 12,
+      "pending": 9
+    },
+    {
+      "phase": "source-only",
+      "capture": "tenant-clock-readiness-old-source-control.log",
+      "sha256": "204080d1ee47d7f480ec43dc75b158f7f90e4df11ec459e9d830194d9a5901ec",
+      "passing": 4,
+      "failing": 1
+    },
+    {
+      "phase": "source-only",
+      "capture": "tenant-clock-readiness-restored-source.log",
+      "sha256": "1aac6af63f76c48f6af0a24ff54aa97571c5de350e9086dce5e833fcebdd1d20",
+      "passing": 5
+    },
+    {
+      "phase": "http-startup",
+      "capture": "functional-2619.log",
+      "sha256": "2fba3ca28d020e6cb0777042e6894dd98cf2f2eda7a9b27d1786e6180a6f9b15",
+      "passing": 0,
+      "failing": 2
+    }
+  ],
+  "acceptance": "Bounded lower-port and SQL-readiness proof only; no full CLI/HTTP acceptance"
+}
