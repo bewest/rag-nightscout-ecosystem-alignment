@@ -724,14 +724,18 @@
    "phase": "dev",
    "state": "done",
    "short": "Multitenant CLI namespace",
-   "title": "D21 namespace and role split are merged to dev. #8899 renamed serve to multitenant; the explicit API preview is implemented separately on draft #8898. This component being done does not promote M2 or production roles.",
+   "title": "D21 namespace and role split are merged to dev. #8899 renamed serve to multitenant; R72 accepts the bounded M1\u2013M4 preview contracts on draft #8898. Namespace completion and production/default role enablement are separate claims.",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
-   "check": "Merged namespace preserves single/legacy starts; preview API separately requires explicit configuration, prebind read-only readiness and owned shutdown. Owner/operator/realtime/evaluator remain unenabled.",
+   "check": "Merged namespace preserves single/legacy starts. R72 accepts admitted API/configuration route contracts with explicit configuration, prebind read-only readiness and owned shutdown; M5 runtime and M6 lifecycle acceptance remain separate.",
    "depends": [
     "PLAT-ENTRY",
     "ST-READS"
    ],
    "spec": [
+    {
+     "label": "R72 accepted M1\u2013M4 criterion disposition",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -749,7 +753,7 @@
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
-   "ref": "Merged namespace #8865/#8899 and published API preview retained. Headless owner candidate remains in verification with writer config.ownerPolicy retained; authorization reader option is withdrawn. No M2 promotion.",
+   "ref": "R72 accepts M1\u2013M4 on draft #8898. Writer owner policy and current-authority fences are retained; reader clamping is withdrawn. M5/M6 remain open.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
@@ -1222,7 +1226,7 @@
    "id": "D-EVENT",
    "short": "Commit event (decided 2026-10-31)",
    "owner": "maintainer; decided 2026-10-31",
-   "question": "Decided by the maintainer on 2026-10-31, walked through with session -81. Reopen condition (4), a count of replica-set sites, was dropped because a replica set is optional, so the event's source is the write's own result. (1) Scope: an in-process event, with records named from the write step's WriteResult.items[]. It is complete because every supported write goes through Nightscout (direct writers to MongoDB are unsupported; xDrip+'s MongoDB upload is deprecated). Delivery between processes is decided with the serve roles. A timer runs only for time-driven alarms, never to catch up on writes. The event stays internal and unstable until a subscriber outside lib/ exists. (2) Two events: one per write(intent), equal to its WriteResult, for subscribers; and the per-database-call event kept as backend instrumentation for differential analysis across backends, which is not a contract. (3) Each record entry carries _id, identifier, outcome, and the problems list for refused records, plus collection, source and counts. There are no document contents and no filter. Above the 1,000 cap the event lists no records and says so, and readers reload. Under multitenancy each event also carries the tenant. (4) It ships with write(intent) release 2, aimed at 16.0.0 through the entry bar (nothing is ruled out of 16.0.0). Subscribers are added as each clears its gates: the one-person profile's alarm check, then the cache, then the socket's dataUpdate. Follow-up, separate: the CLI pattern for roles under each tenancy (nightscout single [roles,...] vs nightscout multitenant [roles,...]). The aim is one theory of operations for single-tenant and multitenant sites, since a single-tenant site already runs a headless API v3, with the monolithic single-tenant site staying the default (see D-EXEC-PROFILE).",
+   "question": "Decided by the maintainer on 2026-10-31, walked through with session -81. Reopen condition (4), a count of replica-set sites, was dropped because a replica set is optional, so the event's source is the write's own result. (1) Scope: an in-process event, with records named from the write step's WriteResult.items[]. It is complete because every supported write goes through Nightscout (direct writers to MongoDB are unsupported; xDrip+'s MongoDB upload is deprecated). The later multitenant direction uses the adopted B7 durable delivery contract and bounded full current-state snapshot reconciliation. The time-only alarm tick is separate from the reconciliation schedule; a wake or tick alone establishes no recovery guarantee. The event stays internal and unstable until a subscriber outside lib/ exists. (2) Two events: one per write(intent), equal to its WriteResult, for subscribers; and the per-database-call event kept as backend instrumentation for differential analysis across backends, which is not a contract. (3) Each record entry carries _id, identifier, outcome, and the problems list for refused records, plus collection, source and counts. There are no document contents and no filter. Above the 1,000 cap the event lists no records and says so, and readers reload. Under multitenancy each event also carries the tenant. (4) It ships with write(intent) release 2, aimed at 16.0.0 through the entry bar (nothing is ruled out of 16.0.0). Subscribers are added as each clears its gates: the one-person profile's alarm check, then the cache, then the socket's dataUpdate. Follow-up, separate: the CLI pattern for roles under each tenancy (nightscout single [roles,...] vs nightscout multitenant [roles,...]). The aim is one theory of operations for single-tenant and multitenant sites, since a single-tenant site already runs a headless API v3, with the monolithic single-tenant site staying the default (see D-EXEC-PROFILE).",
    "holds": [
     "ST-EVENT"
    ],
@@ -1231,7 +1235,7 @@
      "label": "Per-write event from items[], in-process; per-call kept as instrumentation",
      "recommended": true,
      "gains": "exact on every site with no extra read (release 2 already resolves ids); one fact per write that a later transport can carry; backend comparison through the per-call event",
-     "risks": "delivery between processes is still to be decided with the serve roles"
+     "risks": "durable runtime recovery needs its own bounded acceptance; live provider/device delivery remains separately gated"
     }
    ]
   },
@@ -1239,7 +1243,7 @@
    "id": "D-EXEC-PROFILE",
    "short": "Tenancy \u00d7 execution: three profiles",
    "owner": "maintainer; framed 2026-10-31, evidence from the profile prototype",
-   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata; the explicit multitenant API preview now builds request-local loader frames. Evaluator/realtime and the separate computed-profile prototype remain distinct work. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. single keeps its resident path either way. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan \u00a77b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
+   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata; the explicit multitenant API preview now builds request-local loader frames. M5/M6 track multitenant evaluator/realtime acceptance; the independent computed-single prototype has a separate entry bar. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. single keeps its resident path either way. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan \u00a77b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
    "holds": [
     "ST-VIEWS-PROFILE"
    ],
@@ -1247,7 +1251,7 @@
     {
      "label": "Prototype and measure, then choose per profile",
      "recommended": true,
-     "gains": "the execution mode is picked from measured cost and equality; the same views serve single-tenant and multitenant hosting",
+     "gains": "the execution mode is picked from measured cost and equality; the same views serve single-tenant and multitenant deployment",
      "risks": "a third start profile to document and test"
     },
     {
