@@ -3,14 +3,10 @@
 // Instrument/parser checks only; these are not application runtime evidence.
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
-const { cases, mutate, verify, validateAudit } = require('./gates/_control-recovery');
+const { cases, mutate, verify } = require('./gates/_control-recovery');
 const repository = process.argv[2];
 const ref = process.argv[3];
 assert.ok(repository && ref, 'Pass the frozen application repository and commit');
-assert.throws(() => validateAudit('owner-reader', []), /missing or incomplete/);
-const owned = { container: 'ns-tenant-authority-pg-0123456789abcdef', containerRemoved: true, volumeIds: null };
-assert.throws(() => validateAudit('owner-reader', [owned]), /missing or incomplete/);
-validateAudit('owner-reader', [{ ...owned, volumeIds: ['synthetic-volume'] }]);
 for (const [suite, item] of Object.entries(cases)) {
   if (suite === 'socket-data-forwarding' || suite === 'owner-preview') continue; // Dedicated strict socket/owner classifier and physical tests.
   for (const [file, before, after] of Object.values(item.controls)) {
@@ -48,18 +44,8 @@ for (const [suite, item] of Object.entries(cases)) {
     continue;
   }
   const failure = { stats: { tests: 1, passes: 0, failures: 1, pending: 0 },
-    failures: [{ err: { code: 'ERR_ASSERTION', actual: suite === 'owner-reader' ? [true, true, true] : 1,
-      expected: suite === 'owner-reader' ? [false, false, false] : 2 } }] };
+    failures: [{ err: { code: 'ERR_ASSERTION', actual: 1, expected: 2 } }] };
   verify(suite, failure, 1, true);
-  if (suite === 'owner-reader') {
-    failure.failures[0].err.actual = '[\n  true\n  true\n  true\n]';
-    failure.failures[0].err.expected = '[\n  false\n  false\n  false\n]';
-    verify(suite, failure, 1, true);
-    for (const invalid of ['[true true]', '[true false true]', '[true true true] extra', [true, true], [true, false, true]]) {
-      failure.failures[0].err.actual = invalid;
-      assert.throws(() => verify(suite, failure, 1, true), /unexpected assertion/);
-    }
-  }
   failure.failures[0].err.code = 'ECONNREFUSED';
   assert.throws(() => verify(suite, failure, 1, true), /setup failure/);
   failure.failures[0].err.code = 'ERR_ASSERTION';

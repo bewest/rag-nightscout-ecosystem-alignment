@@ -1,0 +1,59 @@
+{
+  "instrumentHead": "f0e53977ae2bad89c0402f722d203c499bede65f",
+  "executedCandidate": "1acb4eee76adf229bfa04f0e9c1fbc51ba3edcc9",
+  "privateIndexSha256": "8f2dccb2a2e5c42388ff0169505b4c70cb4e0464b2bf099754cf885fcd737d6e",
+  "publishedInstrument": [
+    {
+      "file": "instrument/docs/event-floor-characterization.md",
+      "bytes": 4511,
+      "sha256": "5250590a1f920975988429fd24e8483f714da383e68c491d37a9c58ebd5737d4"
+    },
+    {
+      "file": "instrument/scripts/event-floor-characterization/lab.js",
+      "bytes": 7690,
+      "sha256": "80c46148c3c8cbad322ff0b153493e4dd0f0e4996b1170c5ccd1512262dea0fc"
+    },
+    {
+      "file": "instrument/scripts/event-floor-characterization/native.spec.js",
+      "bytes": 10276,
+      "sha256": "b35493f778ae1b3dd4e933d1defaaa28f37b9603c641e4ce2c9e521850f18c0c"
+    },
+    {
+      "file": "instrument/scripts/event-floor-characterization/oracles.js",
+      "bytes": 842,
+      "sha256": "7ad0f61736db8279809d743ad3c56d3f1bdc9ddeda8607c2dc5a419142d83130"
+    },
+    {
+      "file": "instrument/scripts/event-floor-characterization/run.js",
+      "bytes": 14032,
+      "sha256": "33b38b76b278bd9ccef2da3578bc17df6100b342421708b540c5d213f878cc22"
+    }
+  ],
+  "privateRawHashReferences": [
+    {
+      "file": "independent-cleanup-audit.json",
+      "sha256": "e57a41e15f53abbbdb0d9cebe07575be5a4d356fae8cb919c49a7581f33dba52",
+      "bytes": 540
+    },
+    {
+      "file": "ordinary/mocha.json",
+      "sha256": "3d77576e1a48d95e2fd8a5852623c6f180b30e1b5261a49a4909afc5dfcf4ddb",
+      "bytes": 5651
+    },
+    {
+      "file": "restored/mocha.json",
+      "sha256": "7c3d0c40aebf14c963b46b925fffa8b0e80f29013af4a2a7b9ba1bf3211c2437",
+      "bytes": 5649
+    },
+    {
+      "file": "sanitized-aggregate-normalized.json",
+      "sha256": "b241f0719d188312843f258aadb0dc1a479427745e1827dc0451e4aaf03f1036",
+      "bytes": 950
+    },
+    {
+      "file": "stamp-omission/mocha.json",
+      "sha256": "88a10f27068e188d334a95ece108ecc79c606a7f04c7390ef5cce59a2b4351fe",
+      "bytes": 2689
+    }
+  ]
+}

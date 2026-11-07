@@ -1755,3 +1755,14 @@ own source attribution, proof/observation changes, raw hashes and resource absen
 
 Lane detail for the open source lanes stays in their local handoffs
 (`externals/work/HANDOFF-*-20261106.md`, untracked).
+
+### Update — headless owner and final-floor controls, compatible reader removal (2026-11-06)
+
+| Scope | Reproduced outcome | Remaining boundary |
+|---|---|---|
+| Headless owner | [R70](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r70---headless-owner-native-wire-and-authority-controls-2026-11-06): actual4cd owner9, current-snapshot and listener physical red controls, fresh strict restoration9. Original Host-fixture and lifecycle-classifier failures preserved. | Operator-provisioned management credentials only; no human issuer/refresh or M2 promotion. |
+| Final-floor event | [R71](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r71---transaction-final-floor-postgresql-component-control-2026-11-06): actual1acb core6, omitted final argument semantic red, fresh6. Independent physical rows/floor/precommit/foreign oracles. | Physical-marker component, no all-intent or M5/M6 claim; scoped core identity on e2 verified. |
+| Local completion candidate | `e2a760bc326fca5ecf255f35a88bec229f13fb43` joins final-floor payload, fixes two real source-gate registrations after socket extraction, and removes reader clamping per maintainer. Full unit2304; corpus inventory39 retained. Writer owner-policy fences and existing credentials remain. | Fresh default clients, affected pooler, full/browser/whole-corpus and final prcheck underway; published draft #8898 remains835 until acceptance/publication. |
+| Active instruments | Withdrawn reader-clamp gate/controls and executable selected-client lab retired. R62/R63 immutable captures retained, with a historical navigation stub and hash-matched published source snapshot. New bounded owner gate registered. | No default enablement, release admission or milestone-state promotion. |
+
+Lane ownership and runtime phase: `externals/work/HANDOFF-codex-completion-coordination-20261106.md` (local, untracked). The final-floor source snapshot is preserved beside its public measurement; raw credential/state traces remain private.

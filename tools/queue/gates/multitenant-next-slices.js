@@ -406,7 +406,7 @@ try {
   const cleanup = [...containers].reverse().map(container => ({ container, volumeIds: null, containerRemoved: false })).concat(captured);
   let diagnostic;
   try {
-    if (cleanup.length || suite === 'owner-reader') {
+    if (cleanup.length) {
       const directory = path.join(REPO_ROOT, 'externals/work/cleanup-diagnostics');
       fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
       diagnostic = path.join(fs.mkdtempSync(path.join(directory, 'next-slice-')), 'containers.json');

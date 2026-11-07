@@ -1,0 +1,35 @@
+{
+  "ordinary": {
+    "passes": 6,
+    "failures": 0,
+    "pending": 0,
+    "exit": 0
+  },
+  "stamp-omission": {
+    "passes": 0,
+    "failures": 1,
+    "pending": 0,
+    "exit": 1
+  },
+  "restored": {
+    "passes": 6,
+    "failures": 0,
+    "pending": 0,
+    "exit": 0
+  },
+  "semanticControl": {
+    "ERR_ASSERTION": true,
+    "message": "EVENT_FINAL_FLOOR_MISMATCH",
+    "actualMatchesStoredS1": true,
+    "expectedMatchesIndependentS3": true,
+    "physicalAllocationOrdering": true,
+    "fourEventStampsMatchOldCapture": true,
+    "allDeliveriesAfterCommit": true,
+    "foreignRowsEmpty": true,
+    "precommitRowsInvisible": true,
+    "reporterScalarEncoding": "decimal string; checked against independent numeric stored values"
+  },
+  "instrumentHead": "f0e53977ae2bad89c0402f722d203c499bede65f",
+  "candidate": "1acb4eee76adf229bfa04f0e9c1fbc51ba3edcc9",
+  "scope": "Actual PG FINAL-floor physical-marker component only; no broad acceptance"
+}

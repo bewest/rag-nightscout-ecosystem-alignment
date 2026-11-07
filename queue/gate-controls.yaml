@@ -3175,13 +3175,6 @@ controls:
       reaches A. The registered positive retains both default clients; the focused
       control proves the independent oracle notices the wrong tenant.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
-    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c --control intersection
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
-    control-kind: integration
-    proves: >
-      Remove only selected reader catalogue/current-ceiling intersection; three fresh protected operations wrongly admit after tightening. Native assertion red, exact Mocha representation validated, fresh restoration green.
-
   - gate: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
     control: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c --control identity
     positive-control: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
@@ -3216,3 +3209,17 @@ controls:
     control-kind: integration
     proves: >
       Replace only current socket subject authority with a transport-role actor; actual tenant-A row commits and callback/event appear while tenant-B rows stay unchanged. Native count1 versus0 and physical proof, not refusal timeout; fresh restoration passes.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702
+    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702 --control snapshot
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702
+    control-kind: integration
+    proves: >
+      Cache the archived worker current snapshot after two valid warmups; committed credential revocation then wrongly permits target mutation and audit+1. Exact physical assertion red, fresh ordinary9 restored.
+
+  - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702
+    control: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702 --control listener
+    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702
+    control-kind: integration
+    proves: >
+      Bind owner app on DATA in the real combined CLI; management request wrongly mutates target and audit+1. Exact physical assertion red, fresh ordinary9 restored; lifecycle fault disposal remains explicit.

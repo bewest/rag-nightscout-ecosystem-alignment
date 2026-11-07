@@ -1,0 +1,123 @@
+{
+  "measurement": "reproduced source checks only; comprehensive acceptance pending",
+  "joinedPayload": "1acb4eee76adf229bfa04f0e9c1fbc51ba3edcc9",
+  "readerRemovalCandidate": "e2a760bc326fca5ecf255f35a88bec229f13fb43",
+  "priorCandidate": "4cd95d069675b650e1173779057a7927f4873702",
+  "sourceResults": {
+    "joinedInitialPure": {
+      "passing": 521,
+      "failing": 21
+    },
+    "independentPriorG2Baseline": {
+      "passing": 72,
+      "failing": 21
+    },
+    "joinedFirstUnit": {
+      "passing": 2304,
+      "failing": 1
+    },
+    "independentPriorBoundaryBaseline": {
+      "passing": 20,
+      "failing": 1
+    },
+    "joinedRepairedUnit": {
+      "passing": 2306,
+      "failing": 0
+    },
+    "removalUnit": {
+      "passing": 2304,
+      "failing": 0
+    },
+    "removalPure": {
+      "passing": 550,
+      "failing": 0
+    },
+    "removalAffected": {
+      "passing": 39,
+      "pending": 63,
+      "failing": 0
+    },
+    "testFiles": 523,
+    "tiers": 8,
+    "corpusSuites": 39,
+    "ownContainerSuites": 22
+  },
+  "mechanism": "Two real source gates still enrolled websocket.js after canonical handler extraction. Both now inspect actual handler acquisition/writers and retain wrapper delegation and bypass checks. All original mutation guards retained.",
+  "removal": "Optional subject-reader catalogue/current-ceiling clamping removed per maintainer; existing root/default/subject authorization remains. Writer-side current actor/proposed-grant catalogue/ceiling fencing retained.",
+  "scopeLimits": [
+    "Five reader-only native cases were embedded in regular suites; those suites and their regular RLS/root/revocation assertions remain. Inventory stays39.",
+    "Headless owner config.ownerPolicy is writer-only and retained.",
+    "Native cases pending in source checks are not passed tests.",
+    "Source final-floor/owner/DATA/schema/default identity enables only specifically reviewed component reuse, never new-head full/browser attribution.",
+    "Default clients, affected pooler, full/browser/corpus/final prcheck remain separate exact-e2 acceptance."
+  ],
+  "protectedIdentity": {
+    "base": "1acb4eee76adf229bfa04f0e9c1fbc51ba3edcc9",
+    "writer_factory_prefix_identical": true,
+    "unchanged_paths": {
+      "lib/storage/postgres-intent-common.js": "b447bfcf1ec8d76dc4337a64832086d11cf99190",
+      "lib/storage/postgres-write-clock.js": "75cf08ddd00a976672accdd7fa4fc29e7870cdbd",
+      "lib/storage/write-intent.js": "4b8a97f7143f88a3ee6320c496875e6870d2f4b5",
+      "lib/storage/PORT-CONTRACT.md": "998b938a6e427cdb08bb30360f0f6741ac70bcd0",
+      "tests/write-intent.d-event.test.js": "29d5254249395567e04e9deebfc2c20d8cb15895",
+      "tests/write-intent.event-payload.test.js": "60ebbcda300bc0c3ea0388da49e68461930489b7",
+      "lib/server": "1631f47fc0a15b072d92d356d6daaef6e0ee2a0f",
+      "lib/api": "0eeaf159a50faac5225c5e8bb2188625349bd30d",
+      "lib/api2": "d631148d3cb26f63711e40931eb9017a98d78dba",
+      "lib/api3": "19988808187e8317b36e65b9507d611373b77ba9",
+      "lib/secrets": "e65a30ed4c32fd2afcab87a18f275f038069aab8",
+      "migrations": "7ee5d98fcc0fd5a5422e8a5d9c1d179d603bbdf2",
+      "bin": "a0afba03b03b47e1e21f68a9b5638e19995a31df",
+      "package.json": "051cb0fb137d68d60006fd77a87d7474276d0ad1",
+      "package-lock.json": "b1e43282911354e0c5dcf8f0c62bc4402f7b6346",
+      "scripts/test-multitenant.js": "d0c7c793ae76fbf1efa7a1ae70d178089ed311f0",
+      "tests/tiers.json": "ed4dc46e79b8189208422bdeb61747fb183179d5",
+      "tests/owner-preview.integration.test.js": "28bf85c8a3e01bb0a16f0ab9c930ce7642a194cf",
+      "tests/owner-preview.test.js": "3e1e02a211631137d2a42e94584e18ece48e4cf0",
+      "tests/owner-subject-policy.integration.test.js": "7d2f3b0fdf49f381181a2f84b2f3dc9c9dca45ec",
+      "lib/subject-admin/postgres.js": "c92f73c0d72048fef05c0fad885a876a0650ca07",
+      "lib/subject-admin/component.js": "198ce1832284b4eb396beaf2f6cf5286ccda6618",
+      "scripts/check-write-intent.js": "e38afbb15eb95707aa148349fd5ddd468727d4d3",
+      "scripts/check-write-boundary.js": "05049f3a2dc2b150daab537310433ac65fe1149b",
+      "tests/write-intent.test.js": "84621d16f8699e3271098a52fcb3e89c1aec0e07",
+      "tests/write-step.test.js": "6694832e48fd34bf2849a4a5e2512185e78f8b9d"
+    },
+    "reader_mode_census": {
+      "lib/tenant-authorization/postgres.js": "no option, policy join, intersection or principal restriction",
+      "lib/tenant-authorization/access-postgres.js": "no option, policy join, intersection or principal restriction"
+    },
+    "remaining_ownerPolicy_files": [
+      "lib/subject-admin/postgres.js",
+      "lib/server/serve/owner-preview.js",
+      "lib/server/serve/owner-preview-config.js",
+      "tests/owner-preview.integration.test.js",
+      "tests/owner-subject-policy.integration.test.js",
+      "tests/owner-preview.test.js",
+      "tests/fixtures/owner-subject-policy.js"
+    ],
+    "remaining_ownerPolicy_scope": "writer only: config/parser \u2192 subject-admin store; owner readers omit option",
+    "head": "e2a760bc326fca5ecf255f35a88bec229f13fb43",
+    "committed_scope": [
+      "M\tdocs/headless-owner-preview.md",
+      "M\tlib/subject-admin/owner-policy.js",
+      "M\tlib/tenant-authorization/README.md",
+      "M\tlib/tenant-authorization/access-postgres.js",
+      "M\tlib/tenant-authorization/postgres.js",
+      "R062\tscripts/probe-owner-policy-clamping.js\tscripts/probe-tenant-authorization-compatibility.js",
+      "D\ttests/fixtures/owner-clamping-acceptance.js",
+      "M\ttests/owner-policy-catalogue.test.js",
+      "M\ttests/tenant-authorization-postgres.integration.test.js",
+      "M\ttests/tenant-credential-http.integration.test.js"
+    ]
+  },
+  "captures": [
+    {
+      "privateCapture": "event-owner-join-scratch-20261106",
+      "indexSha256": "8c3c29590fcfc1c167f530de3ead3929a111ff042d73a41eaf69f67b210157ff"
+    },
+    {
+      "privateCapture": "reader-policy-removal-source-20261106",
+      "indexSha256": "54ef70abb03f1f541db0829702205e81b7f202af6b6fe1155bb0193cc3fc0824"
+    }
+  ]
+}

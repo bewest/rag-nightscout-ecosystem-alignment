@@ -6,13 +6,6 @@ const ownerPreview = require('./_owner-preview-control');
 const cases = {
   'owner-preview': ownerPreview.definition,
   'socket-data-forwarding': socket.definition,
-  'owner-reader': {
-    file: 'tests/tenant-authorization-postgres.integration.test.js',
-    flag: 'NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST', passes: 12,
-    controls: { intersection: ['lib/subject-admin/owner-policy.js',
-      'project.has(permission) && ceiling.has(permission)', 'true',
-      'bounds old subject grants on fresh selected PostgreSQL snapshots across independent pools'] }
-  },
   'projection-evaluator': {
     file: 'tests/tenant-projection-evaluator.integration.test.js',
     flag: 'NS_TENANT_PROJECTION_EVALUATOR_TEST', passes: 7,
@@ -71,25 +64,13 @@ function verify (suite, report, status, control, proofs) {
       : 'clinical current reading missing instead123 after advanced empty bootstrap'));
     return;
   }
-  const owner = suite === 'owner-reader';
-  // Mocha's Base reporter stringifies assertion arrays before JSON emits them.
-  // Admit only the exact three-boolean shape, never a truthy/fuzzy conversion.
-  const triplet = (value, boolean) => JSON.stringify(value) === JSON.stringify([boolean, boolean, boolean]) ||
-    (typeof value === 'string' && value.replace(/\s/g, '') === '[' + [boolean, boolean, boolean].join('') + ']');
-  if (owner ? !triplet(err.actual, true) || !triplet(err.expected, false) :
-    Number(err.actual) !== 1 || Number(err.expected) !== 2) {
+  if (Number(err.actual) !== 1 || Number(err.expected) !== 2) {
     throw new Error('CONTROL-INVALID: unexpected assertion symptom');
   }
-  console.log('CONTROL-SEMANTIC: ' + (owner ? 'fresh tightened ceiling allowed all three protected operations' :
-    'typed projection collapsed to one row while two stored identities remain'));
+  console.log('CONTROL-SEMANTIC: typed projection collapsed to one row while two stored identities remain');
 }
 function validateAudit (suite, captured, control) {
   if (suite === 'owner-preview') return ownerPreview.validateAudit(captured, control);
-  if (suite !== 'owner-reader') return;
-  if (!Array.isArray(captured) || captured.length !== 1 ||
-      !/^ns-tenant-authority-pg-[0-9a-f]{16}$/.test(captured[0].container) ||
-      (captured[0].containerRemoved && !Array.isArray(captured[0].volumeIds))) {
-    throw new Error('Owned owner-reader lifecycle audit missing or incomplete');
-  }
+
 }
 module.exports = { cases, mutate, verify, validateAudit };

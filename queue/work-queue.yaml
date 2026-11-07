@@ -313,13 +313,6 @@ items:
     semver_reason: design and lab contract
     register: []
     gates:
-      - run: node tools/queue/gates/multitenant-next-slices.js --suite owner-reader --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
-        kind: integration
-        describe: >
-          R62 archived current selected subject-reader catalogue/ceiling:12 native
-          PostgreSQL checks, fresh independent pools and synthetic-token HTTP.
-          Tightened ceiling ablation admits three protected operations; restored
-          reader refuses. Optional mode only; unselected/default clients separate.
       - run: node tools/queue/gates/multitenant-next-slices.js --suite owner-policy --ref 17f9a4577e649208ada6b0aa8f83c51026459875
         kind: integration
         describe: >
@@ -349,7 +342,9 @@ items:
     notes: >
       R63 measures three actual oref0 subject-token upload summary/value pairs
       and next-operation tightening401/noeffects; source-ablation red/restored.
-      Actual cgmsim root503 requires disposition; universal activation blocked.
+      Maintainer withdrew the reader-clamping mode on2026-11-06: own-tenant
+      API_SECRET compatibility is retained. R62/R63 remain historical captures;
+      reader selection and its active gate/lab are retired, not default behavior.
       R62 accepts optional current subject-reader clamping on83582e87 with
       actual871 native12/intersection semantic red/restored12; comprehensive
       full7226/99pending/0failure/browser684/corpus460/1benchmarkpending/0failure.
@@ -7008,6 +7003,14 @@ items:
     semver_reason: a new listener in multi mode, which is developer-only; single unchanged
     register: []
     gates:
+      - run: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702
+        kind: integration
+        describe: >
+          R70 archived headless management-purpose owner CLI: nine native cases,
+          real PG/Vault separate OWNER/DATA sockets and canary, current snapshots,
+          proposed-grant fences and SQL-permission refusal. Cached-snapshot and
+          listener substitutions fail with independently observed target/audit
+          effects; fresh restoration passes. No human issuer or M2 promotion.
       - run: node tools/queue/gates/multitenant-next-slices.js --suite management --ref d4570e585d0e12e46386ed26772790b269b2b736
         kind: integration
         describe: >
@@ -7015,18 +7018,23 @@ items:
           current grants, matching tenant, request/error/header bounds and
           data-plane refusal. Not a bound owner listener or identity policy.
       - no-gate: >
-          Full listener admission remains unmeasured. The gate must show owner routes answer
-          on the second socket and not on the data socket (red when a route
-          answers on both; control: the same request on its own socket),
-          that a request resolves only its own tenant (red across tenants;
-          control: the owner's own tenant), and that single mode's
-          listeners are byte-identical to before.
+          Exact joined-candidate versioned-write and comprehensive admission
+          remain pending. Human issuer/refresh, existing-grant lifecycle and
+          production trust belong to M6 under the maintainer's promotion-bar
+          decision; bounded headless operator credentials do not complete them.
     blocks_on: [T30-WIRING]
     evidence:
+      - reports/tenancy/owner-preview-native-controls-4cd95d06-2026-11-06/README.md
       - tools/lab/multitenant-next-slices/README.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      R70 accepts bounded actual4cd native owner9 and two physical semantic
+      controls, with the first lifecycle-classifier failure preserved. The
+      optional reader-clamp mode is withdrawn by maintainer decision; writer
+      ownerPolicy fences remain. New e2 candidate is in comprehensive
+      verification; no M2 promotion or human lifecycle acceptance.
+
       2026-11-06 (R62/R64): published #8898 head 83582e87 accepts the bounded proposed-grant policy and optional subject-reader clamping; an actual cgmsim root upload gets 503 under selected mode (R63) and awaits a disposition; DELETE policy, human issuer/refresh and production owner composition remain open. The management gate keeps its native pin d4570e58; frozen-head replay UNMEASURED.
 
       R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
