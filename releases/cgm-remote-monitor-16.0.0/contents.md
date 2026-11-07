@@ -1840,3 +1840,12 @@ Tenant-wide alarm suppression was also adopted during this review: [decision](de
 | Execution | Existing lifecycle, durable alarm and handoff capability owners continue under root source review and native grants. | No provider choice, exactly-once external guarantee, retry cadence/capacity or default/production enablement follows. |
 
 Validation: queue-check, docs-links, changed Markdown fragment targets and whitespace checks pass. Application/site suites were skipped for this prose-only update. The joined consumer matrix must select actual browser alarm/ack, notification cache and controlled adapter contracts; mobile pattern replay and live provider/device delivery retain explicit limits.
+
+### Update — first-preview deletion ceremony (2026-11-06)
+
+| Scope | Adopted direction | Acceptance boundary |
+|---|---|---|
+| Deletion | [Explicit request, operator confirmation and cancellation before execution; no mandatory wait](decisions.md#preview-deletion-confirmation). Existing post-deletion key/artifact retention remains 30 days. | Current authority and verified artifact required; owner interface cannot execute deletion. Prove confirmation binding, cancellation/execution race, no effect after cancellation and interruption rollback. Native acceptance remains UNMEASURED. |
+| Execution | M5 runtime integration/acceptance continues independently; C can prepare this lifecycle contract while waiting for the final M5 schema inventory. | No M5/M6 promotion or actual tenant deletion is performed by this decision update. Earlier 14-day proposal is not a preview requirement. |
+
+Validation: queue-check, docs-links, changed Markdown fragment targets and whitespace checks pass. Application/site suites were skipped for this prose-only policy update. No actual deletion or lifecycle acceptance was run.

@@ -370,8 +370,11 @@ are sufficient initially. Self-service co-owner/transfer proposals below are lat
 enhancements, not first-preview gates. The operator path still needs current
 authority, last-owner protection, audit and recovery without secret disclosure.
 The earlier recommendation (a) below is retained as a future proposal, not the
-adopted preview implementation. Deletion confirmation/cancellation policy is a
-separate open question; the adopted 30-day key/artifact retention does not settle it.
+adopted preview implementation. The later [deletion ceremony decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-deletion-confirmation)
+requires explicit request and operator confirmation, cancellation until execution
+starts, and no mandatory waiting period. It supersedes the proposed 14-day
+pre-execution window below. The adopted 30-day post-deletion key/artifact retention
+remains separate; other future invitation/self-service proposals are not adopted.
 
 **Later decision, separate from this draft's recommendations:** the maintainer's
 [promotion-bar decision record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
@@ -445,7 +448,7 @@ delete a site in one sitting; (d) means a lost phone is a support request. Opera
 two commands (`recover-owner`, `execute-deletion`) and a request queue to watch; (b) gives them every
 request. **Multitenant only.**
 
-**Values the maintainer must set.** Deletion retention window between `requested` and `scheduled`:
+**Historical proposed values, not current preview requirements.** The later deletion-ceremony decision above selects no mandatory pre-execution wait. The original alternative was a deletion retention window between `requested` and `scheduled`:
 recommended **14 days**, basis: long enough for an owner who did not intend it to notice and cancel,
 short enough that R62's populated restore lab (the only recovery instrument) bounds what must be
 kept; **unmeasured**, and an operator policy may lengthen it. Invitation validity: recommended
