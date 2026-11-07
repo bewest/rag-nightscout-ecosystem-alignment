@@ -2186,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>09f6b75dc</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>e3ad7d6de</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3157,6 +3157,18 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td>maintainer, 2026-11-06 ("Operator-assisted ownership changes are fine for the first preview"; incremental enhancement from a simpler base is acceptable)</td>
 <td><code>T30-TENANT-ADMIN</code>, M6</td>
 <td>Operator-assisted transaction/recovery and native acceptance remain UNMEASURED. The <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap.html#m5m6-acceptance-families">roadmap acceptance families</a> specify required evidence. Human session, alarm delivery and resource policies are separate decisions.</td>
+</tr>
+<tr>
+<td><a id="shared-oidc-provider-renewal"></a><strong>Use one shared optional OIDC integration for single-tenant and multitenant Nightscout, with provider-backed renewal first and separate authorization adapters.</strong> Provide equivalent human-authentication/renewal support in both modes; single-tenant opt-in should use <code>ENABLE=oidc</code> or an equivalent explicit feature flag, with <code>ENABLE=oidc</code> the preferred interface. Identity verification/session integration is shared; local single-tenant authority and current tenant-scoped multitenant authority remain distinct. Preserve existing data/machine credentials and do not infer root or management authority from login.</td>
+<td>maintainer, 2026-11-06 (shared OIDC, provider-backed renewal, equivalent optional single/multitenant support)</td>
+<td><code>MT-IDENTITY-PLAN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td><a href="../../docs/30-design/tenancy/owner-authority.html#shared-oidc-integration">Shared integration contract</a> owns placement and parity acceptance. No Nightscout-owned rotating refresh credential is required initially. Login/callback/exchange/renewal, cookie transport, upstream logout, idle activity and outage acceptance remain UNIMPLEMENTED/UNMEASURED; no provider, route spelling, browser UI or production enablement is selected by this decision.</td>
+</tr>
+<tr>
+<td><a id="tenant-wide-alarm-suppression"></a><strong>Alarm acknowledgement/snooze suppresses the alarm group/level tenant-wide for the first preview, preserving single-tenant behavior.</strong> Retain the original absolute expiry across restart; ignore repeats during the active suppression window rather than extending it. Per-user/per-device suppression is a separate enhancement.</td>
+<td>maintainer, 2026-11-06 ("Tenant-wide suppression (recommended)", answering the scope/expiry/retry question)</td>
+<td><code>MT-RUNTIME-PLAN</code>, M5</td>
+<td><a href="../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.html#7-evaluator-and-notification-state">B7 alarm contract</a> retains API persistence/D23 forwarding and existing level/default semantics. Actual persisted/restart acceptance remains UNMEASURED. The existing client protocol has no durable request identity; this decision does not promise deduplication of a delayed retry after expiry or exactly-once external delivery. Historical row retention remains separate operational work.</td>
 </tr>
 </tbody>
 </table>

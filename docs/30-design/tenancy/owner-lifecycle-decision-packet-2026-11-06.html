@@ -5628,6 +5628,10 @@ option below (D1, D4; owner-authority.md:32-34).</p>
 person is); Q4 and Q5 sit on top. They are presented Q1 → Q5 as briefed, with the dependency named in
 each.</p>
 <h3 id="q1-human-identity-provider-for-owners">Q1. Human identity provider for owners<a class="headerlink" href="#q1-human-identity-provider-for-owners" title="Permanent link">&para;</a></h3>
+<p><strong>Later direction adopted:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">shared optional OIDC integration</a>
+serves equivalent single/multitenant human authentication through separate authority
+adapters. No provider-specific deployment or callback/cookie contract is selected
+by that direction. The source survey and alternatives below retain their scope.</p>
 <p><strong>Mechanism.</strong> D17 row 2 as adopted in principle (2026-10-12): Kratos, one cohort-wide pool, cookie
 scope E, four production conditions, no real identities until the compliance question has an owner.
 D17 as amended (2026-10-27): the provider is interchangeable ("bring your own auth": Kratos, Clerk or
@@ -5731,6 +5735,12 @@ unchanged by this choice and remains a maintainer gate before any real identity 
 <strong>Unmeasured:</strong> any provider other than Kratos; the adapter against Nightscout's actual listener;
 E's edge over https and through socket.io.</p>
 <h3 id="q2-session-model-and-lifetimes">Q2. Session model and lifetimes<a class="headerlink" href="#q2-session-model-and-lifetimes" title="Permanent link">&para;</a></h3>
+<p><strong>Renewal direction adopted:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">provider-backed renewal first</a>,
+with existing Nightscout current authority and adopted limits. This supersedes the
+earlier recommendation (a) as the initial implementation selection. Nightscout-owned
+rotating refresh is not an initial requirement. Logout/idle/outage/concurrency and
+transport contracts still need acceptance; none of the numeric proposals below is
+approved by this direction.</p>
 <p><strong>Mechanism.</strong> The contract's table row (owner-authority.md:27): "Refresh/session credential:
 PostgreSQL session record and one-way verifier; rotation/reuse detection or provider-supported
 session equivalent." Adopted initial limits (<code>:97-102</code>): human management access token <strong>10 min</strong>;

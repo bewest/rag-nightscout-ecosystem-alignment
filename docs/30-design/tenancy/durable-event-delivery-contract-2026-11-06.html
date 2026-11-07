@@ -5893,6 +5893,14 @@ time-based alarms; it never silently repairs lost write events. A consumer that
 finds its checkpoint missing starts from the floor the operator provisioned, and
 says so in its health report; it does not invent one.</p>
 <h2 id="7-evaluator-and-notification-state">7. Evaluator and notification state<a class="headerlink" href="#7-evaluator-and-notification-state" title="Permanent link">&para;</a></h2>
+<p>The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-wide-alarm-suppression">tenant-wide suppression decision</a>
+settles first-preview ack/snooze effects: shared within the tenant for the alarm
+group/level, original absolute expiry retained through restart, and no extension
+from repeats during the active window. Preserve the existing default duration and
+level-2-to-level-1 effect. Per-user/device suppression is separate. Storage shape
+and historical retention are engineering/operational work; the unchanged client
+protocol supplies no durable request identity for indefinite post-expiry deduplication.
+Persistence, crash/retry and cross-tenant acceptance remain unmeasured.</p>
 <p>Where that state lives <strong>today</strong> at <code>35903069</code>, <strong>read-derived</strong>:</p>
 <table>
 <thead>
@@ -5961,7 +5969,8 @@ and the seams plan's identity rule:</p>
    replay and <code>realtime</code> holds no storage write authority. A forward that fails
    yields no acknowledgement, so the client's existing no-ack retry applies. The roadmap keeps "owner
    ack/snooze and actual notification delivery" on their separate gates, so the
-   row's shape and retention are not decided here, only its key and its writer.</li>
+   row's shape and historical retention remain implementation/operational work; the
+   later decision above settles suppression scope, original expiry and active-window repeats.</li>
 <li>The retained cycle's inputs are the tenant's rows at or below the
    consumer's checkpoint; the evaluation instant is recorded with the cycle and
    is not a database revision (R49).</li>

@@ -3195,6 +3195,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#shared-oidc-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared OIDC integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#management-authentication-and-lifetime-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5308,6 +5319,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#shared-oidc-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared OIDC integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#management-authentication-and-lifetime-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5358,7 +5380,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>09f6b75dc</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>7f872707e</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5451,6 +5473,46 @@ unimplemented. R48 data-token readers are unchanged.</p>
 <a href="../remedial/rc-16.0.0-integration-record.html#r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06">R53</a>.
 This selected transaction does not make an operation/target-only management
 callback sufficient for general proposed-grant enforcement.</p>
+<h2 id="shared-oidc-integration">Shared OIDC integration<a class="headerlink" href="#shared-oidc-integration" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">shared OIDC decision</a>
+adopts one optional integration for single-tenant and multitenant Nightscout,
+provider-backed renewal first, and separate authorization adapters. Human login,
+renewal and logout support should be equivalent for comparable capabilities in
+both modes; storage and tenant-resolution differences remain explicit. The intended
+single-tenant opt-in is <code>ENABLE=oidc</code>, or an equivalent explicit flag if integration
+measurement refutes that spelling. Default-off behavior preserves current startup,
+web/data authentication and unattended clients. No OIDC feature is implemented or
+enabled merely by setting that value today.</p>
+<p>Share the provider-facing protocol and session integration. Single-tenant maps
+verified provider/subject to local current authority; multitenant resolves the
+selected tenant and maps it to current membership, session and grants under RLS.
+A provider identity or ID token is not automatically an accepted Nightscout data
+credential, root grant or management credential. Human data access and management
+access can share login plumbing while retaining explicit permissions/audiences.
+Keep native API_SECRET, subject/device tokens and machine renewal compatible.</p>
+<p>The existing <code>single</code> application supplies the single-tenant HTTP boundary.
+Multitenant owner operations use <code>tenant-admin</code> on its own listener, initially
+co-locatable with <code>api</code>; DATA <code>api</code>, <code>realtime</code> and the private operator <code>admin</code>
+retain their existing responsibilities. Login/callback/exchange/renewal routes
+are not yet implemented or placed by this direction. Prefer composing the common
+adapter into the applicable existing boundary over requiring a new process.
+No first-party browser UI is required by this integration decision.</p>
+<p>Provider-backed renewal obtains new short-lived Nightscout management access from
+valid provider authentication and current Nightscout authority. It does not require
+Nightscout-owned rotating refresh credentials initially. The provider's login
+cookie/session, any Nightscout browser-session cookie, the current server-side
+Nightscout session and access bearer token are distinct. Cookie scope/transport,
+local and provider logout propagation, idle activity, concurrent renewal and outage
+behavior need explicit contracts before acceptance. Adopted lifetimes below remain;
+provider activity alone cannot bypass current Nightscout authority.</p>
+<p>Acceptance must exercise the same synthetic provider/login/renewal contract on
+both supported modes, enabled and disabled. Cover missing/wrong issuer/audience,
+invalid signatures, identity-to-permission mapping, revocation/expiry, logout,
+provider outage and ordinary legacy data-client compatibility. Multitenant adds
+foreign-tenant/selector refusal and isolated current authority; single-tenant must
+not require multitenant PostgreSQL, a cohort identity service or extra role listeners.
+Record unsupported provider capabilities rather than silently weakening guarantees.
+Choose browser cookie versus direct-token transport through its own bounded review.</p>
 <h2 id="management-authentication-and-lifetime-policy">Management authentication and lifetime policy<a class="headerlink" href="#management-authentication-and-lifetime-policy" title="Permanent link">&para;</a></h2>
 <p>The owner listener stays separate from data/private-operator listeners. Human
 authentication uses an interchangeable identity provider; Nightscout maps verified
