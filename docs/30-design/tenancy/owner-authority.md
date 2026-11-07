@@ -190,9 +190,16 @@ With a trusted cached public key and available current PostgreSQL authority, exi
 new-format tokens continue ordinary data operations during a Vault outage. New
 issuance, reveal and secret consumption that requires Vault refuse. Unknown keys
 refuse rather than fall back. PostgreSQL authority outages refuse protected reads
-and writes even when the token signature verifies. Provider/identity outages and
-session renewal behavior need their own explicit acceptance; no indefinite renewal
-or new authority is granted by this outage policy.
+and writes even when the token signature verifies. The [human-session outage/logout decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-outage-and-logout)
+allows existing human access only within its adopted lifetime and current
+Nightscout authority during an identity-provider outage. Provider-dependent
+renewal refuses. Local logout/revocation takes effect on the next protected
+operation across workers; unavailable current authority refuses even with an
+unexpired token. No grace extension or Nightscout-owned refresh system is added.
+Provider logout propagation, qualifying idle activity, concurrent renewal and
+browser transport still require explicit implementation/acceptance. Upstream
+logout cannot take immediate local effect until it is known locally. Human
+login/session implementation remains UNIMPLEMENTED/UNMEASURED.
 
 The [lab](../../../tools/lab/owner-authority/README.md) compares the actual current
 credential component/authority adapter with local verification and a bounded combined

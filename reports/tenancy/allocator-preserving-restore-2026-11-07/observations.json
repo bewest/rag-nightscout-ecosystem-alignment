@@ -1,0 +1,173 @@
+{
+  "completed": true,
+  "observations": [
+    {
+      "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+      "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+      "scope": "entries SQL feasibility; controlled A fixture quiescence; no serving fence"
+    },
+    {
+      "label": "ordinary",
+      "verdict": "PASS",
+      "A": [
+        {
+          "id": "a1",
+          "ordinal": "1"
+        },
+        {
+          "id": "a2",
+          "ordinal": "3"
+        },
+        {
+          "id": "a_after",
+          "ordinal": "6"
+        }
+      ],
+      "B": [
+        {
+          "id": "b1",
+          "ordinal": "2"
+        },
+        {
+          "id": "b_before",
+          "ordinal": "4"
+        },
+        {
+          "id": "b_during",
+          "ordinal": "5"
+        },
+        {
+          "id": "b_after",
+          "ordinal": "7"
+        }
+      ],
+      "allocatorBefore": "4",
+      "allocatorAfterRestore": "5",
+      "originalBExact": true,
+      "allocatorMaintenanceStatements": 0
+    },
+    {
+      "label": "high-floor",
+      "verdict": "EXPECTED_REFUSAL",
+      "zeroAEffects": true,
+      "sequenceUnchanged": true,
+      "BUnchanged": true
+    },
+    {
+      "label": "wrong-binding",
+      "verdict": "EXPECTED_REFUSAL",
+      "zeroAEffects": true,
+      "sequenceUnchanged": true,
+      "BUnchanged": true
+    },
+    {
+      "label": "interrupted-restore",
+      "verdict": "PASS",
+      "allARowsRolledBack": true,
+      "concurrentBCommitted": true
+    },
+    {
+      "label": "floor-guard-removed",
+      "verdict": "EXPECTED_SEMANTIC_RED",
+      "symptom": "new A insertion sorts before restored old A rows",
+      "A": [
+        {
+          "id": "a_after",
+          "ordinal": "5"
+        },
+        {
+          "id": "a1",
+          "ordinal": "1001"
+        },
+        {
+          "id": "a2",
+          "ordinal": "1003"
+        }
+      ]
+    },
+    {
+      "label": "foreign-row-corruption",
+      "verdict": "EXPECTED_SEMANTIC_RED",
+      "symptom": "independent exact prior-B comparison rejects changed stored document"
+    },
+    {
+      "label": "fresh-private-ordinals-alternative",
+      "verdict": "PASS_PROPOSAL_ONLY",
+      "publicDocumentValuesAndRelativeOrderPreserved": true,
+      "originalRawOrdinalsPreserved": false,
+      "originalBExact": true,
+      "A": [
+        {
+          "id": "a1",
+          "ordinal": "5"
+        },
+        {
+          "id": "a2",
+          "ordinal": "7"
+        }
+      ],
+      "artifactOrdinals": [
+        "1001",
+        "1003"
+      ],
+      "B": [
+        {
+          "id": "b1",
+          "ordinal": "2"
+        },
+        {
+          "id": "b_before",
+          "ordinal": "4"
+        },
+        {
+          "id": "b_during",
+          "ordinal": "6"
+        },
+        {
+          "id": "b_after",
+          "ordinal": "9"
+        }
+      ]
+    },
+    {
+      "label": "fresh-restoration",
+      "verdict": "PASS",
+      "A": [
+        {
+          "id": "a1",
+          "ordinal": "1"
+        },
+        {
+          "id": "a2",
+          "ordinal": "3"
+        },
+        {
+          "id": "a_after",
+          "ordinal": "6"
+        }
+      ],
+      "B": [
+        {
+          "id": "b1",
+          "ordinal": "2"
+        },
+        {
+          "id": "b_before",
+          "ordinal": "4"
+        },
+        {
+          "id": "b_during",
+          "ordinal": "5"
+        },
+        {
+          "id": "b_after",
+          "ordinal": "7"
+        }
+      ],
+      "allocatorBefore": "4",
+      "allocatorAfterRestore": "5",
+      "originalBExact": true,
+      "allocatorMaintenanceStatements": 0
+    }
+  ]
+}

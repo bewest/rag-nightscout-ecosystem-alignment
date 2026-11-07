@@ -1884,3 +1884,16 @@ Local exact cleanup captures and current ownership are recorded in
 `externals/work/HANDOFF-m5-publication-m6-continuation-20261107.md`.
 
 Validation: queue-check, docs-links and whitespace checks pass for this completed record batch. Application acceptance suites and site rendering were skipped because application/rich-page sources did not change.
+
+
+### Update — human sessions and simplest tenant restore proof (2026-11-07)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| Session policy | Maintainer adopted [existing access/current authority, provider-dependent renewal refusal and next-operation local logout](decisions.md#human-session-outage-and-logout). | Provider logout propagation/activity/transport/concurrency and human implementation remain open; no new refresh system. |
+| Restore direction | [Allocator preservation first; conditional preview pause](decisions.md#allocator-preserving-restore-first). A pause's deadline cannot authorize unsafe reopening. | Prefer narrower A exclusion and equivalent logical representation before shared interruption; no deterministic outage budget adopted. |
+| Bounded native proof | **Reproduced:** [allocator-preserving entries restore](../../reports/tenancy/allocator-preserving-restore-2026-11-07/README.md) on published f0 source preserves original A ordinals and exact prior B rows while B writes during restore. Interrupted A rolls back without undoing B. Physical floor/foreign-corruption controls fail as intended; fresh ordinary restoration passes. A separate fresh-ordinal logical proposal also preserves synthetic document values/relative order. | Controlled A quiescence only; product import guard unchanged. No complete lifecycle/fence, history/cursor/client, full catalogue, production, timing budget or M6 admission claim. |
+| Architecture comparison | [Counters and restore options](../../docs/30-design/tenancy/counter-and-restore-options.md) distinguishes tenant-local transactional history from shared insertion identity and compares Kubernetes/etcd, CDC, logical restore and generation-switch options. | Source-derived analysis; no replacement allocator/cursor/schema adopted. |
+
+Local ownership and exact private captures:
+`externals/work/HANDOFF-session-restore-policy-20261107.md`.

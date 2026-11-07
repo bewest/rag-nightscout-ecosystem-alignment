@@ -39,6 +39,8 @@ enhancements; that preference grants no production permission or criterion waive
 | First-preview ownership changes | [Operator-assisted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-operator-assisted-ownership); self-service co-owner/transfer follows separately. Last-owner, current authority, audit and secret boundaries remain required. |
 | Restore versus cloning | [Restore original tenant ID; clone establishes new secrets/credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning). Clinical sync does not transfer credential authority. |
 | Deleted-tenant keys/artifact | [Retain 30 days, then operator destroys keys](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention). Destroy/after-window refusal still needs evidence; this does not set a deletion cancellation period. |
+| Human session outage and local logout | [Existing access within lifetime/current authority; provider-dependent renewal refuses; local revocation on the next protected operation](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-outage-and-logout). Provider propagation/activity/transport/concurrency still need explicit contracts. |
+| First tenant-restore experiment | [Preserve the existing allocator first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#allocator-preserving-restore-first); preserve foreign tenants' current state. A shared preview write pause is conditional on necessity and explicit safe recovery, not automatic deadline-based resumption. |
 | Legacy authority and management split | [Reader clamp withdrawn; preserve own-tenant credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06); [owner authority](owner-authority.md) governs separate management audience, current authority and adopted lifetimes. |
 | Socket writer and recovery direction | [D23](multitenancy-decisions.md#d23): realtime forwards to API with existing protocol/source; failure gives no acknowledgement. First runtime proof uses separate roles on one machine. No multi-node lease claim. |
 
@@ -54,7 +56,7 @@ bounded proofs do not resolve live-provider admission or wider M6 identity/trust
 | Topic | Decision needed | Work that need not wait |
 |---|---|---|
 | Live notification provider admission | Select the live adapter/provider and operating bounds before live use. Durable intent/same-identity retry is settled; an acceptance receipt does not prove device delivery. | Controlled joined-consumer proof is recorded. Live egress, retry/retention budgets and selected provider/device delivery keep separate gates. |
-| M6 human session effects | Shared OIDC/provider-backed renewal is settled. Specify local versus provider logout, propagation, provider outage, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain. | Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh. |
+| M6 human session effects | Shared OIDC/provider-backed renewal is settled. Existing access/current-authority and local logout/provider-outage rules are adopted. Specify upstream logout propagation, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain. | Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh. |
 | M6 bounded owner surface | Approve the exact first-preview settings, credentials and enabled integrations; identify unsupported names/operations. Operator-assisted ownership is settled. | Census and proposed catalogue with consuming-runtime tests; do not silently declare the full catalogue implemented. |
 | M6 deployment/trust | Review concrete trusted-ingress and secrets/identity adapter contracts for the reference deployment before production use. | Synthetic spoof/conflict/outage probes and provider-neutral interfaces. |
 
@@ -63,6 +65,11 @@ retains source surveys and alternatives; its recommended grace periods, invitati
 lifetimes and self-service operations are not approved defaults. The [earlier
 open-decision note](multitenant-open-decisions-2026-11-06.md) preserves already
 answered A questions, not the current backlog.
+
+The [counter and restore options analysis](counter-and-restore-options.md)
+separates the tenant-local history clock from internal insertion order. Test
+allocator preservation first; fresh internal ordinals with preserved relative
+order remain a logical-restore proposal, not a weakened physical artifact oracle.
 
 ## Measure before setting limits
 

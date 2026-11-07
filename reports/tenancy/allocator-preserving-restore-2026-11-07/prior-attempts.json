@@ -1,0 +1,25 @@
+[
+  {
+    "instrumentSha256": "ef216ff685af464a28594f1cb8939689818e7637ab1a40c7bbc7687afc9a6b27",
+    "childExit": 1,
+    "nativeCompleted": false,
+    "error": {
+      "message": "a single-tenant Nightscout cannot bind a tenant id"
+    },
+    "containerAbsent": true,
+    "volumeAbsent": true,
+    "inventoryUnchanged": true
+  },
+  {
+    "instrumentSha256": "6bc6c0e72eaec60c61f5592114417e59860ed7176e58ab9fe255c52e40717425",
+    "childExit": 1,
+    "nativeCompleted": false,
+    "error": {
+      "message": "Expected \"actual\" to be strictly unequal to:\n\n'a_after'",
+      "code": "ERR_ASSERTION"
+    },
+    "containerAbsent": true,
+    "volumeAbsent": true,
+    "inventoryUnchanged": true
+  }
+]
