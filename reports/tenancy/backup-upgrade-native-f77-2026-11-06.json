@@ -1,0 +1,466 @@
+{
+  "date": "2026-11-06",
+  "basis": "reproduced",
+  "verdict": "representative PostgreSQL capability proof passed",
+  "applicationHead": "f77c025f8e797775faca0e179cc84fc3ca9c5874",
+  "instrumentHead": "c3f9e6270de75c44e54b6864059437305854a3a2",
+  "supportedInventory": {
+    "kinds": [
+      "entries",
+      "clock"
+    ],
+    "tables": [
+      "entries",
+      "tenant_write_clock"
+    ],
+    "tenants": 2,
+    "sourceEntryRows": 3,
+    "sourceClockRows": 2
+  },
+  "captures": {
+    "invalidSetup": {
+      "manifestSha256": "1b82c72f1c4863aca8191e75cf7871fb7d2d994a78a43c6695a311501a9f4e1f",
+      "result": "stopped",
+      "stages": [
+        {
+          "label": "initial",
+          "exit": 1,
+          "stats": null,
+          "classification": null,
+          "ownedContainersAbsent": 0,
+          "ownedMountedVolumesAbsent": 0,
+          "baselineUnchanged": true
+        }
+      ],
+      "artifactHashes": {
+        "initial.stdout.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "initial.stderr.txt": "5bcccf08f1025fa66320cb424eb4a7e16d1ae65c5f762253e23bc5db471c8bc8",
+        "manifest.json": "1b82c72f1c4863aca8191e75cf7871fb7d2d994a78a43c6695a311501a9f4e1f",
+        "children.jsonl": "1f43c53bc2324c3e9058d2635fb5c453fa4c03cc2c39a39a749eca8134ee74d2",
+        "initial.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7"
+      }
+    },
+    "initial": {
+      "manifestSha256": "46903637d18b98cd7f1ac91fece4f8a351eadda649b49dcc233c522a760fa861",
+      "result": "passed",
+      "stages": [
+        {
+          "label": "initial",
+          "exit": 0,
+          "stats": {
+            "suites": 1,
+            "tests": 5,
+            "passes": 5,
+            "pending": 0,
+            "failures": 0,
+            "start": "2026-11-07T00:57:21.990Z",
+            "end": "2026-11-07T00:57:25.793Z",
+            "duration": 3803
+          },
+          "classification": "positive-green",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        }
+      ],
+      "artifactHashes": {
+        "initial.stdout.json": "6d00cc2de2943fd9e9534c7121127abef90844a324874f78469c45a3deec40c5",
+        "initial.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "manifest.json": "46903637d18b98cd7f1ac91fece4f8a351eadda649b49dcc233c522a760fa861",
+        "initial.audit.jsonl": "1dcdda14df408480dd7d952c0abe0417b8d8972151bfe767ef61f9578d3c638d",
+        "initial.docker.jsonl": "211d9800096603f3641e7d3d437cc963f10fd8b353b217f226faff0e580f9662",
+        "children.jsonl": "c17a1e1c037d20d409e5defc245d1ec690689202350877be8bcca03cde148720",
+        "initial.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7"
+      }
+    },
+    "controls": {
+      "manifestSha256": "59e8e4407457c77d2e8dc6e61a017eec126ebbfb2cd79bcc4797d9fcce028db9",
+      "result": "passed",
+      "stages": [
+        {
+          "label": "digest-red",
+          "exit": 1,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 0,
+            "pending": 0,
+            "failures": 1,
+            "start": "2026-11-07T00:58:09.532Z",
+            "end": "2026-11-07T00:58:11.520Z",
+            "duration": 1988
+          },
+          "classification": "semantic-red",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        },
+        {
+          "label": "digest-restored",
+          "exit": 0,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 1,
+            "pending": 0,
+            "failures": 0,
+            "start": "2026-11-07T00:58:11.970Z",
+            "end": "2026-11-07T00:58:13.892Z",
+            "duration": 1922
+          },
+          "classification": "restored-green",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        },
+        {
+          "label": "oracle-red",
+          "exit": 1,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 0,
+            "pending": 0,
+            "failures": 1,
+            "start": "2026-11-07T00:58:14.386Z",
+            "end": "2026-11-07T00:58:16.432Z",
+            "duration": 2046
+          },
+          "classification": "semantic-red",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        },
+        {
+          "label": "oracle-restored",
+          "exit": 0,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 1,
+            "pending": 0,
+            "failures": 0,
+            "start": "2026-11-07T00:58:16.907Z",
+            "end": "2026-11-07T00:58:18.874Z",
+            "duration": 1967
+          },
+          "classification": "restored-green",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        },
+        {
+          "label": "interruption-red",
+          "exit": 1,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 0,
+            "pending": 0,
+            "failures": 1,
+            "start": "2026-11-07T00:58:19.341Z",
+            "end": "2026-11-07T00:58:21.293Z",
+            "duration": 1952
+          },
+          "classification": "semantic-red",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        },
+        {
+          "label": "interruption-restored",
+          "exit": 0,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 1,
+            "pending": 0,
+            "failures": 0,
+            "start": "2026-11-07T00:58:21.804Z",
+            "end": "2026-11-07T00:58:23.905Z",
+            "duration": 2101
+          },
+          "classification": "restored-green",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        },
+        {
+          "label": "independent-oracle-red",
+          "exit": 1,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 0,
+            "pending": 0,
+            "failures": 1,
+            "start": "2026-11-07T00:58:24.370Z",
+            "end": "2026-11-07T00:58:26.394Z",
+            "duration": 2024
+          },
+          "classification": "semantic-red",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        },
+        {
+          "label": "independent-oracle-restored",
+          "exit": 0,
+          "stats": {
+            "suites": 1,
+            "tests": 1,
+            "passes": 1,
+            "pending": 0,
+            "failures": 0,
+            "start": "2026-11-07T00:58:26.834Z",
+            "end": "2026-11-07T00:58:28.937Z",
+            "duration": 2103
+          },
+          "classification": "restored-green",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        }
+      ],
+      "artifactHashes": {
+        "interruption-red.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "oracle-restored.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "oracle-restored.docker.jsonl": "a853137bb52177670be6e6267af4bbbd99c0189209f83f6c5dc589b7fb7f0831",
+        "oracle-red.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "independent-oracle-red.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "interruption-restored.stdout.json": "47ee47f88bd471bf4086c45fbb1b5ceb549c367b9e4d914d78825892f35b5093",
+        "interruption-restored.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "digest-restored.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "digest-restored.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "digest-restored.docker.jsonl": "2ed22974837cff3b0b6e5c41a43a94adf0a8da8d9ecdc087bd6bcccaa77e0309",
+        "oracle-restored.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "oracle-red.audit.jsonl": "a18043cccc12e4c22b0153af064a1ac69159b25f37e27e3a40bcc19516a021da",
+        "digest-red.docker.jsonl": "cee69f340fd8b15861d83389da2bb2e9808e9d4b2203c4142a0fd6759962a767",
+        "digest-red.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "digest-red.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "independent-oracle-restored.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "oracle-restored.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "independent-oracle-restored.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "interruption-restored.docker.jsonl": "c41c16152dbbeb2dcf81ae9cbc210ebc56c0c8a37196c26300937a591c6c3bfe",
+        "interruption-red.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "interruption-restored.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "oracle-red.docker.jsonl": "42ed54fce2006febef4ea7464dd56c7ad508fbd5290a68940b5f7677cb0ca252",
+        "oracle-red.stdout.json": "0833199faa6b9144f69a0254fb46dacf39187ec705526c70954661c496e771cd",
+        "independent-oracle-restored.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "independent-oracle-restored.audit.jsonl": "53d4217ec32cfcf1e7b95d1e0af3ac0d046290b58d7bd128cd65144c7fbecbc8",
+        "oracle-red.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "digest-red.audit.jsonl": "7b21ec593361f51c200c540e1d7f4b72910fb0cf88f0edd9066df561b8f7e036",
+        "independent-oracle-restored.docker.jsonl": "7cedeb51246fb245a07d1c20b60ac46d96fbf71c30692a5fdba697f947dabbb6",
+        "digest-red.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "independent-oracle-red.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "digest-restored.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "oracle-red.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "interruption-red.docker.jsonl": "55954244ae2c097c851ccbc4d37479c9bfc325e8457a50f003647334fa1de590",
+        "manifest.json": "59e8e4407457c77d2e8dc6e61a017eec126ebbfb2cd79bcc4797d9fcce028db9",
+        "independent-oracle-red.audit.jsonl": "372e7d3952f28d094cecb97de37e355b49e224e8805ab7ce1c1d9f6a3ebe94b3",
+        "digest-restored.audit.jsonl": "ca320a40f07dff14e589a0b9d1e225edfc157bd29841a0c775552d72d85f905b",
+        "independent-oracle-red.docker.jsonl": "7ead674bdfee97158ff342aec4e5b8448944de8f2a1107f66cc2aeb78cd75317",
+        "oracle-restored.audit.jsonl": "ceddcc02299311d7eafe1e58a37e2d4b651e8164cfd851aaa660d706c17e37f7",
+        "oracle-restored.stdout.json": "218eb66ffc023ba6615e13bfc6621639524b3cd5a1cd9ecd598bb2ccb61e66c1",
+        "independent-oracle-red.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "interruption-red.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "interruption-red.audit.jsonl": "5fa8c59b0339aae9a178bd796567a7ec0efd8f788c69c8d26773435867bfdb01",
+        "digest-red.stdout.json": "083495be49237dd2955fa04d56d69af019443c5dd5679e4060cbcac7ca80ec5b",
+        "interruption-restored.audit.jsonl": "1f087be35c77a02d307d7e23fd0310b4753183a4ee5e240a2c2ad9421bc79366",
+        "interruption-red.stdout.json": "fce870b70e02730f7b316af45ddbe600d2276613316cb8e7513ef9e565bc70a4",
+        "independent-oracle-restored.stdout.json": "3e19ef774bbee4f07309b222942c3a8244ad3f2fe57448795e6a0d46f25cd9ea",
+        "children.jsonl": "cd3d78cc6d592faa42d38ed998c4042abfc7733f21ce196f146905299a5ae352",
+        "interruption-restored.probe.patch": "c40a9c579f8151657ccafcc51b744973e9e76af1489f260ebb4f2c8f18a69e41",
+        "independent-oracle-red.stdout.json": "5776b44a9b9c9a40bfd4b48231418581e1da6d7af6ee2f213dd063f62aab7135",
+        "digest-restored.stdout.json": "2d5f251bbd3950a49618bd2683ac01e25d9f24db61efe2c60e6b80bce262bb05"
+      }
+    },
+    "restored": {
+      "manifestSha256": "e6235514d5d252b6d68d8609fedc45d1eeba22cbac8a4684d17fe4da15f31868",
+      "result": "passed",
+      "stages": [
+        {
+          "label": "restored",
+          "exit": 0,
+          "stats": {
+            "suites": 1,
+            "tests": 5,
+            "passes": 5,
+            "pending": 0,
+            "failures": 0,
+            "start": "2026-11-07T00:58:52.578Z",
+            "end": "2026-11-07T00:58:56.602Z",
+            "duration": 4024
+          },
+          "classification": "positive-green",
+          "ownedContainersAbsent": 1,
+          "ownedMountedVolumesAbsent": 1,
+          "baselineUnchanged": true
+        }
+      ],
+      "artifactHashes": {
+        "restored.stdout.json": "a22ecbc89eb9364ba9d62d744cc0804dc0d74b1b3a6a0bbd9d8fcb16e7015ba3",
+        "restored.docker.jsonl": "425ef34be640c60946df1506adb4b56c3240e7b004c95e6d79bc8c1e3bdb2dec",
+        "restored.audit.jsonl": "aa06be793c5398ba2c3933e26162c24cc8b88f9a5b5c1c487c7d0105e9e4da95",
+        "restored.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "restored.tar": "abae5cecd2dc2935c9bba2d74881b7711b5fee9ab62795372f832112292680e7",
+        "manifest.json": "e6235514d5d252b6d68d8609fedc45d1eeba22cbac8a4684d17fe4da15f31868",
+        "children.jsonl": "2bfb088f3818a7bc42e0631cd6138048a3b4d412d58dc5f6ced8b5a9b6fb6f04"
+      }
+    }
+  },
+  "controls": [
+    {
+      "name": "digest",
+      "classification": "semantic-red",
+      "physicalProof": {
+        "source": {
+          "entries": {
+            "total": 3,
+            "a": 2,
+            "b": 1
+          },
+          "clock": {
+            "total": 2,
+            "a": 1,
+            "b": 1
+          }
+        },
+        "target": {
+          "entries": {
+            "total": 0,
+            "a": 0,
+            "b": 0
+          },
+          "clock": {
+            "total": 0,
+            "a": 0,
+            "b": 0
+          }
+        },
+        "refusal": "RESTORE_ORACLE_MISMATCH",
+        "inserts": 5,
+        "sequenceWrites": 1,
+        "rolledBack": true
+      }
+    },
+    {
+      "name": "oracle",
+      "classification": "semantic-red",
+      "physicalProof": {
+        "source": {
+          "entries": {
+            "total": 3,
+            "a": 2,
+            "b": 1
+          },
+          "clock": {
+            "total": 2,
+            "a": 1,
+            "b": 1
+          }
+        },
+        "target": {
+          "entries": {
+            "total": 3,
+            "a": 2,
+            "b": 1
+          },
+          "clock": {
+            "total": 0,
+            "a": 0,
+            "b": 0
+          }
+        },
+        "accepted": true,
+        "reportedTotal": 5
+      }
+    },
+    {
+      "name": "interruption",
+      "classification": "semantic-red",
+      "physicalProof": {
+        "source": {
+          "entries": {
+            "total": 3,
+            "a": 2,
+            "b": 1
+          },
+          "clock": {
+            "total": 2,
+            "a": 1,
+            "b": 1
+          }
+        },
+        "target": {
+          "entries": {
+            "total": 2,
+            "a": 2,
+            "b": 0
+          },
+          "clock": {
+            "total": 0,
+            "a": 0,
+            "b": 0
+          }
+        },
+        "interrupted": true
+      }
+    },
+    {
+      "name": "independent-oracle",
+      "classification": "semantic-red",
+      "physicalProof": {
+        "source": {
+          "entries": {
+            "total": 3,
+            "a": 2,
+            "b": 1
+          },
+          "clock": {
+            "total": 2,
+            "a": 1,
+            "b": 1
+          }
+        },
+        "target": {
+          "entries": {
+            "total": 2,
+            "a": 2,
+            "b": 0
+          },
+          "clock": {
+            "total": 2,
+            "a": 1,
+            "b": 1
+          }
+        }
+      }
+    }
+  ],
+  "runtime": {
+    "node": "v22.23.4",
+    "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+    "image": {
+      "Id": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "RepoDigests": [
+        "postgres@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
+      ]
+    },
+    "dependencyLockSha256": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+    "baselineCounts": {
+      "containers": 159,
+      "volumes": 462,
+      "networks": 8
+    }
+  },
+  "releasedAt": "2026-11-07T00:58:56.719204+00:00",
+  "limits": [
+    "Representative entries/clock only; no full assembled lifecycle/catalogue restoration.",
+    "No durable backup-storage or process-crash recovery guarantee; default backup callback is memory-only.",
+    "No Vault/provider key recovery, retention, populated policy/FK coverage, size bound or performance acceptance.",
+    "No application listener, actual-client/journey, full/browser/whole-corpus or default enablement.",
+    "Catalogue/DDL behavior is attributed to exact f77; newer assembled candidates require affected validation."
+  ],
+  "nextBoundary": "Coordinator selects coherent Batch C inventory/assembly, then bounded journey/client equivalence after recovery."
+}
