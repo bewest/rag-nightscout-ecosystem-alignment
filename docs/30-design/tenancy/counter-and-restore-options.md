@@ -69,9 +69,12 @@ not a repair to the existing exact physical backup oracle. Whole-deployment
 physical restore keeps its separate fidelity contract.
 
 A logical prototype must sort captured rows explicitly by BigInt ordinal;
-export array order is not an ordering contract. It preserves public IDs, typed
-values and original history timestamps by direct validated restoration, rather
-than ordinary clinical create handlers that may stamp/deduplicate/publish again.
+export array order is not an ordering contract. Preserve public IDs and typed
+clinical values. The later adopted [forward history correction policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
+supersedes exact history-timestamp copying for same-ID logical restore: retain
+the live issued floor, advertise changed/restored values and deletions above it,
+and publish effects only after the actual restore commit. Exact raw metadata
+remains the physical-backup contract.
 Admit exact positive noncycling CACHE 1 behavior first; larger allocator caches
 and stale writer sessions require independent ordering proof.
 
