@@ -256,9 +256,12 @@ and the seams plan's identity rule:
    `(tenant, settings version, plugin set)`** with a bounded lifetime; a key
    change discards the retained cycle rather than carrying it across versions.
    There is no process-global mutable clinical frame.
-2. A failed cycle retains the entire prior successful result and timestamp and
-   performs no notification handoff; the next real trigger recovers (R50, R55
-   `frame-retention` control: null replacing the kept properties is the red).
+2. A failed clinical cycle retains the prior successful result and timestamp
+   and creates no new ordinary/alarm notification request; the next real trigger
+   recovers (R50, R55 `frame-retention` control: null replacing the kept properties
+   is the red). Independently committed, authorized ACK/snooze controls under D23
+   remain effective and may produce a control-clear while acquisition fails.
+   That control effect does not mark the clinical cycle successful.
 3. Ack and snooze are **per tenant** writes. D23 names their writer: the
    client acks on the `/alarm` socket as today, `realtime` forwards the ack,
    like every other socket write, unchanged to `api`'s internal write endpoint,
@@ -293,7 +296,10 @@ for retry; joined implementation acceptance remains separate.
 3. Preserve existing normal alarm/snooze/repeat-window behavior and tenant-wide
    suppression/original expiry. Current authority, configuration identity and
    suppression must govern dispatch/retry; a queued request cannot bypass them.
-   Failed cycles enqueue no new handoff. Shutdown fences late dispatch/publication.
+   Failed clinical cycles enqueue no new ordinary/alarm request. Independently
+   committed, authorized ACK/snooze controls may enqueue a control-clear; their
+   effects are distinct from clinical-cycle success. Shutdown fences late
+   dispatch/publication.
 4. Preserve the single-tenant path and existing client/wire shapes. New durable
    preview recovery is not evidence of equivalent external failure behavior:
    retrying an uncertain send can repeat an alert. Reuse shared seams only with
