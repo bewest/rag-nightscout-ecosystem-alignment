@@ -1,0 +1,3979 @@
+{
+  "version": 1,
+  "evidenceClass": "RECORDED-EVIDENCE",
+  "scope": {
+    "boundary": "bounded synthetic SQL core C1-C5",
+    "freshNativeExecution": false,
+    "currentHeadAcceptance": false,
+    "wholeM6Acceptance": false,
+    "journeyClientAcceptance": false,
+    "providerAcceptance": false,
+    "sameIdTenantRestore": "OPEN/UNSUPPORTED",
+    "productionAvailability": "UNMEASURED",
+    "optionalAllocatorResearch": "OMITTED"
+  },
+  "sources": {
+    "9298d79305e941fcfd36effa594e0e0bccf79994": {
+      "tree": "65346f0a8ffdf78737137647072e674d344e7ba2",
+      "files": {
+        "lib/operator-policy/postgres-candidate.json": "aa7c3cb883f2e1b6ae6288d2e3c3c4e0df5e48847cac8302f9513425b27f5e1d",
+        "lib/secrets/legacy-credentials-candidate.json": "7cb01273d2d7b9d944ec0c9036a25c99cf04b6feba8d4eab418916bccbb7141f",
+        "lib/secrets/postgres-candidate.json": "6aa96b3b4f87d620f3df76a517782980237cf9454afa945300ce32b8b8411028",
+        "lib/subject-policy/postgres-candidate.json": "c44b6244e9c688f49bcc8292c799be3efcbc3811c280453b76727e193eee0fed",
+        "lib/tenant-authorization/access-candidate.json": "6214441b85cffecd393af502ffe82db77a00160bc5e920b775322c7a8f7c7100",
+        "lib/tenant-authorization/postgres-candidate.json": "ff77fa53ac5dcab733775c89149eda39fc8966374ba6b0c39abf9a4161b7b19c",
+        "lib/tenant-lifecycle/postgres-candidate.json": "ab229a93177a8598f62214f33e75cbfecfe87fb1e3416c955d3d405a2bd1fb1a",
+        "lib/tenant-notifications/postgres-candidate.json": "0d998333640f4415dfb93edd789edb0277c1067ccd79f8583f902b3e1b0e1ec2",
+        "lib/tenant-settings/owner-authority-candidate.json": "777d18a7af2cf0910ba41c4655cb26bd423894abc497c4073c35641966d8964c",
+        "lib/tenant-settings/postgres-candidate.json": "6c8d578b6403cbc6a5ac66efabf01ae1fb319bee684e25586d90d16f345d2c41",
+        "migrations/candidates/postgres-activity-v1.json": "610a2d4200f4a8f587e7a3d445f13cfa0b1308f818dc2c731d5395b80f9d91fd",
+        "migrations/candidates/postgres-alarm-suppression-v1.json": "c7e6ed04da17ffe0acc01ed399b2caec540e016b2eb14e78fd51baa0149a5258",
+        "migrations/candidates/postgres-consumer-checkpoint-v1.json": "24700dcd9f198764e31c533e33e2f3b02de1b4b4347fd45ffaf15733a533b4b7",
+        "migrations/candidates/postgres-devicestatus-socket-order-v1.json": "c8c70dfd86cf1f0c396eac0ffacaa14566b97b8ed95c23611fdf4ac98d00671c",
+        "migrations/candidates/postgres-devicestatus-v1.json": "50138ef8ea9fe452a01c5a13f91a58d4aae321d9f2a0f13e2df6affd320f8841",
+        "migrations/candidates/postgres-entries-v1.json": "2d2168ec4bbff69f3e002c7e23fde3e7eca2271ae094a68234d57b43ad8ca19f",
+        "migrations/candidates/postgres-food-v1.json": "495c9640fd247d96cc078be3b84e42a43bbe6d6d8204feee4538939a47a58cae",
+        "migrations/candidates/postgres-profile-socket-order-v1.json": "3838b60a7fd4cedbd3297dba6022ddff1ba998895bcf113dc85a4339e295bb08",
+        "migrations/candidates/postgres-profile-v1.json": "d1830054c7d2ffcc726c5e2c4a86fb5a31de79cdb63612dc02ba3474b0497fd8",
+        "migrations/candidates/postgres-settings-v1.json": "f0665f02b1a099e5c6e42040b0d08d48a2a8fb992f6ebdd2dc0ecc31d8ac4e56",
+        "migrations/candidates/postgres-treatments-socket-order-v1.json": "16a9a1977a9d385b15539d654f0236575534c51fe72d9abe2b8632114f2c7b99",
+        "migrations/candidates/postgres-treatments-v1.json": "fbe0c0c6ebd4014fb3d91f7f0d44c1ffb1cb510a54d63c3c00ff0e1990f12aa2",
+        "migrations/candidates/postgres-write-clock-v1.json": "fe0ae72ae28af530868aff6d3f5c2069b113072fe5cff0dba5ff2d4ccf348978",
+        "lib/tenant-lifecycle/artifact.js": "b517d78b33e4495a01adddc6790a07f19ef814fda23dee4182f2ad8aab4027ed",
+        "lib/tenant-lifecycle/ceremony.js": "3e660be39f4346723294e08c8768cf35605bba3514783cefe8e38a3b991241bd",
+        "lib/tenant-lifecycle/filesystem-artifact.js": "6e8b61131b074681f23901b1f8c9662b7c81dcc92eb901b9cda2a7c6069cdf54",
+        "lib/tenant-lifecycle/index.js": "8b242b20567eedd6fc37e3f26b3cbaf4546e615dc77ceca78ca8ab3c576bc1b7",
+        "lib/tenant-operations/backup.js": "8811223d2f46b28800ccd47e05b884819cc2fdca0913ba8eb05dcc955ae404cf",
+        "lib/tenant-operations/catalogues.js": "51fb723cb1f46582636bc7a5ce4cfbdf0000422847ff837a9abc43815662fc0a",
+        "lib/tenant-operations/common.js": "8c8c67ca7fa37075acf67c9f3f519f1fc493fa22f1242bcc3b80b7edd55fd9c5",
+        "lib/tenant-operations/deployment.js": "f34a261cec6a8c2a1d7530075bfcf91f52049918792262b32ed92025f82d525f",
+        "lib/tenant-operations/filesystem.js": "ffd7cfb5a8a74b3f7173031567432fb0932d9d95077ad39f76ba82bd928f2d03",
+        "lib/tenant-operations/index.js": "1b9980ac67d183877ffd3ccadafdbff8ff3992900f7380f8dddedf9283f5ea28",
+        "lib/tenant-operations/restore.js": "40d250f630b3c24db737cf02d04f32ed82f6085017b33609b9d9d0896cb0f951",
+        "lib/tenant-operations/upgrade.js": "d41f6df4b6c3b7ca9f80202a665878899e5c8df6c812df73eb4bb6d1235013eb",
+        "tests/fixtures/tenant-deployment-alarm.js": "6a4ea77b39c039d3d0a92dbfdbc0c76cb388c25382ad37001dea981ebd47469b",
+        "tests/fixtures/tenant-deployment-checkpoints.js": "32cb352dcc140fd07a9e2ede640f7a3f95420a55f6683f73ad80724466c1f979",
+        "tests/fixtures/tenant-deployment-data.js": "8a35b535d2dbbb2a5e590a001fc2e706b1720f12db3334954fbc6009711ea485",
+        "tests/fixtures/tenant-deployment-notifications.js": "96e5a6ec337a8a8227c424ccbf55dce0a80c32e0e0316aad892586adf8f03096",
+        "tests/fixtures/tenant-deployment-profile.js": "66e6bf26c04d92148e14ec54539b7707dbb53da831031b5de974bcdf1e0dde80",
+        "tools/lab/tenant-whole-c/allocator-research.js": "4256fe56334acbe66f1a6efd0818a2eb3d65a08d2d68bb6a2f263a2e66227061",
+        "tools/lab/tenant-whole-c/authority.js": "4b2616d7926c8ab4a8d6d3e829d2e5f306b539f9307bf5b48a889dbea8f3baa9",
+        "tools/lab/tenant-whole-c/config.js": "c62ac1f44f4722d1211b2ee729ab98512f1dd1ed40280a612415de532f8c0cb0",
+        "tools/lab/tenant-whole-c/controls.json": "e45e3bbde21524fd1ebf4644ced980020cace1af61f7d9a675c628cdc76c29bc",
+        "tools/lab/tenant-whole-c/core.js": "fb240d991c67cebe908fc63156a47ea4d055c07a25b965bb46bbebc16a0fcbe2",
+        "tools/lab/tenant-whole-c/manifest.json": "1e3d9e0d4e1979dfcdbf762d894b64dd54f93ce838d59009d62502cca3c630ee",
+        "tools/lab/tenant-whole-c/observer.js": "f23e8645b5d1c99595b98d6d94e4418a39997c464097ea855e1c95ecb427dd9a",
+        "tools/lab/tenant-whole-c/oracle.js": "5b1108d67e0dd2730f3306a4734241656b861eddef8754ca47bbb207f6513ea2",
+        "tools/lab/tenant-whole-c/probe.js": "7a752f80d8463be6f3b5a8d6b7f43ec79576c50cc2bd96bd473bc77ed604ba91",
+        "tools/lab/tenant-whole-c/run.py": "c18024ff6351d26d2e68f312fc3d2e683a3fadc03013dd095a78b042f082c085",
+        "tools/lab/tenant-whole-c/versioned-acl.js": "ff0adf2d214f0b0602189c8137ab190d9bf6cc0d2f8dadef13643a35201bbf69",
+        "tools/lab/tenant-whole-c/window.js": "8b59dee9a2e997e3d8adddfcaad41c1b9f180b28fe4ef530cc7366787ad6fb17",
+        "tools/lab/tenant-whole-c/writer.js": "82d7110e7cb27d1a8cbadffac22ac04bc82c44abbab92e72216458efa3036cff",
+        "lib/storage/postgres-relation-inventory.js": "f03ff0af7e46fafdb0f6f698e04a2d85431fc8253b6c43ff7b05c0537f6d4cc8",
+        "lib/storage/tenant-scope.js": "12a515502366c2fa7b2cb54983f8106861606ff96355defa6ce9425d76d9b295",
+        "lib/storage/postgres-connection.js": "dbd527353eb0b01f98e75e04b38df44358cdd3727a555892693a0276a21aa97e",
+        "lib/operator-policy/fence.js": "a3f4135bb9433ff1228278f7c27d7ae70ce5a8e85c69221d91b2d57c213197ab",
+        "lib/migrations/postgres.js": "4eaa07185611e52c38ac0635b0a9bf04aaabd501e07467696411413f397bd5a5",
+        "lib/migrations/catalogue.js": "a2df641934848d3bda6ad538878977d2fc174831e1b4ee7e1dcbbf9e1dca4f74",
+        "tests/fixtures/realtime-preview/bootstrap-grants.js": "47fee06aafdfe1207873ce5ea37ffde982231e9d02e84daa7de142ca000945f1",
+        "tests/fixtures/realtime-preview/bootstrap-plan.js": "6f06a2d4eab37d39d2ea2e4f377eac9130d7b54344af6ea4ca94e11825474287"
+      },
+      "classification": "actual native source"
+    },
+    "a7f5cbf71ab9016855976fae74730727d0a78024": {
+      "tree": "461b9a291e37372616101e1c9c6295a2b0d5e68c",
+      "files": {
+        "lib/operator-policy/postgres-candidate.json": "aa7c3cb883f2e1b6ae6288d2e3c3c4e0df5e48847cac8302f9513425b27f5e1d",
+        "lib/secrets/legacy-credentials-candidate.json": "7cb01273d2d7b9d944ec0c9036a25c99cf04b6feba8d4eab418916bccbb7141f",
+        "lib/secrets/postgres-candidate.json": "6aa96b3b4f87d620f3df76a517782980237cf9454afa945300ce32b8b8411028",
+        "lib/subject-policy/postgres-candidate.json": "c44b6244e9c688f49bcc8292c799be3efcbc3811c280453b76727e193eee0fed",
+        "lib/tenant-authorization/access-candidate.json": "6214441b85cffecd393af502ffe82db77a00160bc5e920b775322c7a8f7c7100",
+        "lib/tenant-authorization/postgres-candidate.json": "ff77fa53ac5dcab733775c89149eda39fc8966374ba6b0c39abf9a4161b7b19c",
+        "lib/tenant-lifecycle/postgres-candidate.json": "22af98aa535ed7ae4bcfc602bfefd0213773fba670f02a914ecdddab866ecebf",
+        "lib/tenant-settings/owner-authority-candidate.json": "777d18a7af2cf0910ba41c4655cb26bd423894abc497c4073c35641966d8964c",
+        "lib/tenant-settings/postgres-candidate.json": "6c8d578b6403cbc6a5ac66efabf01ae1fb319bee684e25586d90d16f345d2c41",
+        "migrations/candidates/postgres-activity-v1.json": "610a2d4200f4a8f587e7a3d445f13cfa0b1308f818dc2c731d5395b80f9d91fd",
+        "migrations/candidates/postgres-consumer-checkpoint-v1.json": "24700dcd9f198764e31c533e33e2f3b02de1b4b4347fd45ffaf15733a533b4b7",
+        "migrations/candidates/postgres-devicestatus-socket-order-v1.json": "c8c70dfd86cf1f0c396eac0ffacaa14566b97b8ed95c23611fdf4ac98d00671c",
+        "migrations/candidates/postgres-devicestatus-v1.json": "50138ef8ea9fe452a01c5a13f91a58d4aae321d9f2a0f13e2df6affd320f8841",
+        "migrations/candidates/postgres-entries-v1.json": "2d2168ec4bbff69f3e002c7e23fde3e7eca2271ae094a68234d57b43ad8ca19f",
+        "migrations/candidates/postgres-food-v1.json": "495c9640fd247d96cc078be3b84e42a43bbe6d6d8204feee4538939a47a58cae",
+        "migrations/candidates/postgres-profile-v1.json": "d1830054c7d2ffcc726c5e2c4a86fb5a31de79cdb63612dc02ba3474b0497fd8",
+        "migrations/candidates/postgres-settings-v1.json": "f0665f02b1a099e5c6e42040b0d08d48a2a8fb992f6ebdd2dc0ecc31d8ac4e56",
+        "migrations/candidates/postgres-treatments-socket-order-v1.json": "16a9a1977a9d385b15539d654f0236575534c51fe72d9abe2b8632114f2c7b99",
+        "migrations/candidates/postgres-treatments-v1.json": "fbe0c0c6ebd4014fb3d91f7f0d44c1ffb1cb510a54d63c3c00ff0e1990f12aa2",
+        "migrations/candidates/postgres-write-clock-v1.json": "fe0ae72ae28af530868aff6d3f5c2069b113072fe5cff0dba5ff2d4ccf348978",
+        "lib/tenant-operations/restore.js": "2bc929996a54cf3bcf74dad022d41858dbf3878121cfb553f74c5a70d7aa714d",
+        "lib/tenant-operations/upgrade.js": "d41f6df4b6c3b7ca9f80202a665878899e5c8df6c812df73eb4bb6d1235013eb",
+        "lib/tenant-operations/catalogues.js": "3e50631145b4044fcd844b7c5c6566ccc9ae37ff404a634ce8113d1c1473b49d",
+        "lib/migrations/postgres.js": "4eaa07185611e52c38ac0635b0a9bf04aaabd501e07467696411413f397bd5a5"
+      },
+      "classification": "actual native source"
+    },
+    "ec0f4afdcef235a3ea3717a076ca6e36a0ef81af": {
+      "tree": "8c3853e4ddcd11d8b70684e0c2d64e3cad649c3f",
+      "files": {
+        "tools/lab/tenant-whole-c/run.py": "b674caafc0e2979647c762853d1bfa82a5ef0fd8ac844de6972fed173a0c8a19",
+        "tools/lab/tenant-whole-c/test-process-births.py": "e20b23d45f60b0f5accbca5f1cff7c4b1e5a199ac6e50e7b6320740529871f1b"
+      },
+      "classification": "source-only collector repair"
+    }
+  },
+  "nativeHead": "9298d79305e941fcfd36effa594e0e0bccf79994",
+  "oldHead": "a7f5cbf71ab9016855976fae74730727d0a78024",
+  "collectorFixHead": "ec0f4afdcef235a3ea3717a076ca6e36a0ef81af",
+  "controls": [
+    {
+      "id": "second-checkpoint-loss",
+      "phase": "C1",
+      "path": "lib/tenant-operations/backup.js",
+      "before": "const rows = await common.readRows(connection, step.namespace, table, columns);",
+      "after": "const rows = step.kind === 'evaluator_checkpoint' ? [] : await common.readRows(connection, step.namespace, table, columns);",
+      "assertion": "WHOLE_C_ARTIFACT_SQL_ROWS evaluator_checkpoint",
+      "physical": "external observer source contains evaluator checkpoint rows, but independently read durable self-consistent artifact file is empty before any restore"
+    },
+    {
+      "id": "skip-identity-sequence",
+      "phase": "C1",
+      "path": "lib/tenant-operations/restore.js",
+      "before": "await advanceIdentity(connection, item);",
+      "after": "/* controlled sequence recovery omission */",
+      "assertion": "WHOLE_C_NEXT_IDENTITY",
+      "physical": "actual restricted API insert returns ordinal not above restored maximum"
+    },
+    {
+      "id": "realtime-write-broadening",
+      "phase": "C1",
+      "path": "lib/tenant-operations/restore.js",
+      "before": "scopedPrivileges.join(', ')",
+      "after": "(grant.role.endsWith('_realtime') && ['entries','treatments','devicestatus','profile','food','activity'].includes(grant.table) ? scopedPrivileges.concat('INSERT') : scopedPrivileges).join(', ')",
+      "assertion": "WHOLE_C_ROLE_DENIAL realtime",
+      "physical": "actual RT INSERT rowCount positive instead of42501; transaction then rolled back"
+    },
+    {
+      "id": "tampered-digest-bypass",
+      "phase": "C2",
+      "path": "lib/tenant-operations/restore.js",
+      "before": "if (common.sha256(text) !== entry.digest) throw refuse('RESTORE_DIGEST_MISMATCH', key);",
+      "after": "/* controlled digest refusal omission */",
+      "assertion": "WHOLE_C_REFUSAL tampered-file",
+      "physical": "actual successful INSERT/setval before later oracle rollback; independent target stays empty, documenting the second defense rather than claiming durable tampered data"
+    },
+    {
+      "id": "commit-interrupted-restore",
+      "phase": "C2",
+      "path": "lib/tenant-operations/common.js",
+      "before": "await connection.query('ROLLBACK');",
+      "after": "await connection.query('COMMIT');",
+      "assertion": "WHOLE_C_PHYSICAL_ROWS",
+      "physical": "partial restored rows visible to external observer after onRow interruption"
+    },
+    {
+      "id": "profile-populated-guard",
+      "phase": "C4",
+      "candidate": "migrations/candidates/postgres-profile-socket-order-v1.json",
+      "remove": [
+        "ALTER TABLE profile ADD CONSTRAINT socket_order_requires_empty CHECK (false) NOT VALID",
+        "ALTER TABLE profile VALIDATE CONSTRAINT socket_order_requires_empty",
+        "ALTER TABLE profile DROP CONSTRAINT socket_order_requires_empty"
+      ],
+      "assertion": "WHOLE_C_POPULATED_GUARD profile",
+      "physical": "actual guarded migration instead adds ordinal and advances ledger on populated profile; original probe unchanged"
+    },
+    {
+      "id": "running-writer-window",
+      "phase": "C5",
+      "path": "tools/lab/tenant-whole-c/window.js",
+      "before": "const held = observations.every(",
+      "after": "const held = true || observations.every(",
+      "assertion": "WHOLE_C_RUNNING_WRITER_REFUSED",
+      "physical": "recorded real writer pid is running/S notT and has performed actual bound clock update, but proof wrongly reports quiesced"
+    },
+    {
+      "id": "unknown-lifecycle-ledger",
+      "phase": "C5",
+      "path": "lib/tenant-lifecycle/index.js",
+      "before": "function assertCurrentLedger (entry, ledger) {",
+      "after": "function assertCurrentLedger (entry, ledger) { return;",
+      "assertion": "WHOLE_C_UNKNOWN_EXPORT_REFUSED",
+      "physical": "unknown-ledger-only witness: actual knownA erased despite otherwise exact physical relation set; physical guard remains enabled"
+    },
+    {
+      "id": "unadmitted-physical-relation",
+      "phase": "C5",
+      "path": "lib/storage/postgres-relation-inventory.js",
+      "before": "if (!expected.has(row.name)) throw fail('UNADMITTED', row.name);",
+      "after": "if (!expected.has(row.name)) continue;",
+      "assertion": "WHOLE_C_PHYSICAL_DRIFT_EXPORT_REFUSED",
+      "physical": "Ignore only extra relation names, retain inheritance predicate; known ledger hidden witness causes actual knownA erasure/hiddenA retained/false whole backup acceptance"
+    },
+    {
+      "id": "ordinary-inheritance",
+      "phase": "C5",
+      "path": "lib/storage/postgres-relation-inventory.js",
+      "before": " || row.inherited !== false",
+      "after": "",
+      "assertion": "WHOLE_C_INHERITANCE_EXPORT_REFUSED",
+      "physical": "actual parent projection omits outside-descendant extra column; parent DELETE removes descendantA and its extra data while foreignB remains"
+    },
+    {
+      "id": "execute-cancel-lock-order",
+      "phase": "C5",
+      "path": "lib/tenant-lifecycle/ceremony.js",
+      "before": "      // Same global order as confirm/cancel/claim: current authority fence,\n      // parent request, then ceremony. Later checks retain this same-tx fence.\n      await authority(connection, options, 'execute');",
+      "after": "      /* controlled execute row-before-policy inversion */",
+      "assertion": "WHOLE_C_EXECUTE_CANCEL_NO_DEADLOCK",
+      "physical": "actual execute/cancel lock contention barriers and PostgreSQL40P01 under inversion, with separately committed claim and clinical rows retained after rollback"
+    }
+  ],
+  "contexts": {
+    "CURRENT": {
+      "sourceHead": "9298d79305e941fcfd36effa594e0e0bccf79994",
+      "catalogues": [
+        {
+          "kind": "entries",
+          "candidateDigest": "a1ef63d9d4a5616de7606dca4943cf6878b8c8c09bedda44ab0b9b8b877629e9",
+          "tables": [
+            "entries"
+          ]
+        },
+        {
+          "kind": "treatments",
+          "candidateDigest": "4d694e5b80cfeb2248941ec08466b114ec546a6d683011f4f106ec34cabd4509",
+          "tables": [
+            "treatments"
+          ]
+        },
+        {
+          "kind": "devicestatus",
+          "candidateDigest": "d190491ff5de66190668392abfb7004c94c76028c2b94490a2c515d643481207",
+          "tables": [
+            "devicestatus"
+          ]
+        },
+        {
+          "kind": "profile",
+          "candidateDigest": "605d47f194b161279c76eb77261e821c7bb5ed1a251497e84ab6e5dadcd44778",
+          "tables": [
+            "profile"
+          ]
+        },
+        {
+          "kind": "food",
+          "candidateDigest": "a84c240028b94569b7c5712f1927b583e0ca355aaa79e38cc2863167a12687d4",
+          "tables": [
+            "food"
+          ]
+        },
+        {
+          "kind": "activity",
+          "candidateDigest": "0650ea7168e2d908ef2e62930a93b5bd35bfab742855481249b692a3d687744e",
+          "tables": [
+            "activity"
+          ]
+        },
+        {
+          "kind": "settings",
+          "candidateDigest": "adab6da185434de1e05fe8dfd6ce7edd79c18265cc4bad65d46a87c0682a0eaa",
+          "tables": [
+            "settings"
+          ]
+        },
+        {
+          "kind": "clock",
+          "candidateDigest": "8a1a2107e548d45f04a767a31968a1ca98c3b30e96198f2f7c9c4367325e4aa2",
+          "tables": [
+            "tenant_write_clock"
+          ]
+        },
+        {
+          "kind": "checkpoint",
+          "candidateDigest": "16b8a6279cfa82a1092d9b4b81bece27e47fa20b78c5bdedf76d6f63b1ade18f",
+          "tables": [
+            "tenant_consumer_checkpoint"
+          ]
+        },
+        {
+          "kind": "authorization",
+          "candidateDigest": "666127ae1e79f99931b0b4d7b478c2497c1ab9869890134dc002642a41a4d500",
+          "tables": [
+            "tenant_authorization_config",
+            "tenant_authorization_roles",
+            "tenant_authorization_subjects",
+            "tenant_authorization_subject_roles",
+            "tenant_subject_admin_audit",
+            "tenant_owner_policy",
+            "tenant_owner_actors"
+          ]
+        },
+        {
+          "kind": "access",
+          "candidateDigest": "dd8505fe5be5eb897c58cddc1b3dd38bfc7d61e63c36e9c0ddc52143cc8b8064",
+          "tables": [
+            "access_tenants",
+            "access_credentials",
+            "access_sessions",
+            "access_keys"
+          ]
+        },
+        {
+          "kind": "subject_policy",
+          "candidateDigest": "7aa3919ae90c0cdef5f45571a4b20f3c06e06f56ca5e2d5b4f8e96578884e3a9",
+          "tables": [
+            "subject_policy",
+            "subject_policy_audit"
+          ]
+        },
+        {
+          "kind": "operator_policy",
+          "candidateDigest": "8fd6c3cda6d33f791740fa8a6c1f84a7c57f4b99f8fbbfee36289ac0007f030c",
+          "tables": [
+            "tenant_operator_policy"
+          ]
+        },
+        {
+          "kind": "tenant_settings",
+          "candidateDigest": "6eaac59d8e0fcd9f6db5517faf1abe2174d3aa9ca2bb093872703076edf6e537",
+          "tables": [
+            "tenant_settings",
+            "tenant_settings_history"
+          ]
+        },
+        {
+          "kind": "owner_configuration",
+          "candidateDigest": "ee90adb3c9ecef9724d2ba15f9a9b13a6073e246be22f5dd9cf6f0598a3a63d4",
+          "tables": [
+            "tenant_owner_configuration_authority"
+          ]
+        },
+        {
+          "kind": "legacy",
+          "candidateDigest": "aee68408f7df02a6466fb719d8a16941ede1b277d4d88a352145b2968523f6fa",
+          "tables": [
+            "legacy_credential_config",
+            "legacy_credential_subjects"
+          ]
+        },
+        {
+          "kind": "secrets",
+          "candidateDigest": "5a9ab6de0eab1e6e8f9a3a7bc7517d7551e8ba7c4091c3a5a0c41c5b7fb97e3b",
+          "tables": [
+            "secret_records",
+            "secret_audit"
+          ]
+        },
+        {
+          "kind": "lifecycle",
+          "candidateDigest": "120b1ea167102f59670a1e57f16a771398051ee71b1c1c63260cb92bc837e798",
+          "tables": [
+            "tenant_lifecycle_requests",
+            "tenant_lifecycle_ceremony"
+          ]
+        },
+        {
+          "kind": "alarm_suppression",
+          "candidateDigest": "3283a1639af5a43df024a10b72afb550243438eadc4c9b79aaa93021c3d828c8",
+          "tables": [
+            "tenant_alarm_suppression"
+          ]
+        },
+        {
+          "kind": "notification_outbox",
+          "candidateDigest": "6373384e7e3c7e4059d2d1bd01cd36d29a38964bd96a1a239f28438d598d563b",
+          "tables": [
+            "tenant_notification_heads",
+            "tenant_notification_requests",
+            "tenant_notification_state"
+          ]
+        },
+        {
+          "kind": "evaluator_checkpoint",
+          "candidateDigest": "16b8a6279cfa82a1092d9b4b81bece27e47fa20b78c5bdedf76d6f63b1ade18f",
+          "tables": [
+            "tenant_consumer_checkpoint"
+          ]
+        }
+      ],
+      "grants": [
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_credentials",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_keys",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_sessions",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_tenants",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "alarm_suppression",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "alarm_suppression",
+          "table": "tenant_alarm_suppression",
+          "privileges": [
+            "INSERT",
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "acked_at",
+              "expires_at"
+            ]
+          }
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_config",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_subject_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_subjects",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_owner_actors",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_owner_policy",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_subject_admin_audit",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "notification_outbox",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "notification_outbox",
+          "table": "tenant_notification_state",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_credentials",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_keys",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_sessions",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_tenants",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "activity",
+          "table": "activity",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_config",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_subject_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_subjects",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_owner_actors",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_owner_policy",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_subject_admin_audit",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "clock",
+          "table": "tenant_write_clock",
+          "privileges": [
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "last_stamp"
+            ]
+          }
+        },
+        {
+          "role": "api",
+          "kind": "devicestatus",
+          "table": "devicestatus",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "entries",
+          "table": "entries",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "food",
+          "table": "food",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "legacy",
+          "table": "legacy_credential_config",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "legacy",
+          "table": "legacy_credential_subjects",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "legacy",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "profile",
+          "table": "profile",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "secrets",
+          "table": "secret_audit",
+          "privileges": [
+            "INSERT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "secrets",
+          "table": "secret_records",
+          "privileges": [
+            "INSERT",
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "settings",
+          "table": "settings",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "treatments",
+          "table": "treatments",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "activity",
+          "table": "activity",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "activity",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "clock",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "clock",
+          "table": "tenant_write_clock",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "devicestatus",
+          "table": "devicestatus",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "devicestatus",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "entries",
+          "table": "entries",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "entries",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "evaluator_checkpoint",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "evaluator_checkpoint",
+          "table": "tenant_consumer_checkpoint",
+          "privileges": [
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "checkpoint",
+              "contract_digest",
+              "projection"
+            ]
+          }
+        },
+        {
+          "role": "evaluator",
+          "kind": "food",
+          "table": "food",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "food",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "profile",
+          "table": "profile",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "profile",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "treatments",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "treatments",
+          "table": "treatments",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "outbox",
+          "kind": "notification_outbox",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "outbox",
+          "kind": "notification_outbox",
+          "table": "tenant_notification_heads",
+          "privileges": [
+            "INSERT",
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "blocked_until",
+              "request_id"
+            ]
+          }
+        },
+        {
+          "role": "outbox",
+          "kind": "notification_outbox",
+          "table": "tenant_notification_requests",
+          "privileges": [
+            "INSERT",
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "accepted_at",
+              "attempt",
+              "attempt_token",
+              "attempt_until",
+              "cleared_at",
+              "next_at",
+              "receipt",
+              "state"
+            ]
+          }
+        },
+        {
+          "role": "outbox",
+          "kind": "notification_outbox",
+          "table": "tenant_notification_state",
+          "privileges": [
+            "INSERT",
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "config_identity",
+              "producer",
+              "revision"
+            ]
+          }
+        },
+        {
+          "role": "readiness",
+          "kind": "access",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "activity",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "alarm_suppression",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "authorization",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "clock",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "devicestatus",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "entries",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "food",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "legacy",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "profile",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "secrets",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "settings",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "treatments",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "activity",
+          "table": "activity",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "activity",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "checkpoint",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "checkpoint",
+          "table": "tenant_consumer_checkpoint",
+          "privileges": [
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "checkpoint",
+              "contract_digest",
+              "projection"
+            ]
+          }
+        },
+        {
+          "role": "realtime",
+          "kind": "clock",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "clock",
+          "table": "tenant_write_clock",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "devicestatus",
+          "table": "devicestatus",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "devicestatus",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "entries",
+          "table": "entries",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "entries",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "food",
+          "table": "food",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "food",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "profile",
+          "table": "profile",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "profile",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "treatments",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "treatments",
+          "table": "treatments",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "suppression",
+          "kind": "alarm_suppression",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "suppression",
+          "kind": "alarm_suppression",
+          "table": "tenant_alarm_suppression",
+          "privileges": [
+            "SELECT"
+          ]
+        }
+      ]
+    },
+    "OLD": {
+      "sourceHead": "a7f5cbf71ab9016855976fae74730727d0a78024",
+      "catalogues": [
+        {
+          "kind": "entries",
+          "candidateDigest": "a1ef63d9d4a5616de7606dca4943cf6878b8c8c09bedda44ab0b9b8b877629e9",
+          "tables": [
+            "entries"
+          ]
+        },
+        {
+          "kind": "treatments",
+          "candidateDigest": "4d694e5b80cfeb2248941ec08466b114ec546a6d683011f4f106ec34cabd4509",
+          "tables": [
+            "treatments"
+          ]
+        },
+        {
+          "kind": "devicestatus",
+          "candidateDigest": "d190491ff5de66190668392abfb7004c94c76028c2b94490a2c515d643481207",
+          "tables": [
+            "devicestatus"
+          ]
+        },
+        {
+          "kind": "profile",
+          "candidateDigest": "35d035bc302c7c54496ac9e5dc5fa1877ea1de58322fb80d11ec679c224794d2",
+          "tables": [
+            "profile"
+          ]
+        },
+        {
+          "kind": "food",
+          "candidateDigest": "a84c240028b94569b7c5712f1927b583e0ca355aaa79e38cc2863167a12687d4",
+          "tables": [
+            "food"
+          ]
+        },
+        {
+          "kind": "activity",
+          "candidateDigest": "0650ea7168e2d908ef2e62930a93b5bd35bfab742855481249b692a3d687744e",
+          "tables": [
+            "activity"
+          ]
+        },
+        {
+          "kind": "settings",
+          "candidateDigest": "adab6da185434de1e05fe8dfd6ce7edd79c18265cc4bad65d46a87c0682a0eaa",
+          "tables": [
+            "settings"
+          ]
+        },
+        {
+          "kind": "clock",
+          "candidateDigest": "8a1a2107e548d45f04a767a31968a1ca98c3b30e96198f2f7c9c4367325e4aa2",
+          "tables": [
+            "tenant_write_clock"
+          ]
+        },
+        {
+          "kind": "checkpoint",
+          "candidateDigest": "16b8a6279cfa82a1092d9b4b81bece27e47fa20b78c5bdedf76d6f63b1ade18f",
+          "tables": [
+            "tenant_consumer_checkpoint"
+          ]
+        },
+        {
+          "kind": "authorization",
+          "candidateDigest": "666127ae1e79f99931b0b4d7b478c2497c1ab9869890134dc002642a41a4d500",
+          "tables": [
+            "tenant_authorization_config",
+            "tenant_authorization_roles",
+            "tenant_authorization_subjects",
+            "tenant_authorization_subject_roles",
+            "tenant_subject_admin_audit",
+            "tenant_owner_policy",
+            "tenant_owner_actors"
+          ]
+        },
+        {
+          "kind": "access",
+          "candidateDigest": "dd8505fe5be5eb897c58cddc1b3dd38bfc7d61e63c36e9c0ddc52143cc8b8064",
+          "tables": [
+            "access_tenants",
+            "access_credentials",
+            "access_sessions",
+            "access_keys"
+          ]
+        },
+        {
+          "kind": "subject_policy",
+          "candidateDigest": "7aa3919ae90c0cdef5f45571a4b20f3c06e06f56ca5e2d5b4f8e96578884e3a9",
+          "tables": [
+            "subject_policy",
+            "subject_policy_audit"
+          ]
+        },
+        {
+          "kind": "operator_policy",
+          "candidateDigest": "8fd6c3cda6d33f791740fa8a6c1f84a7c57f4b99f8fbbfee36289ac0007f030c",
+          "tables": [
+            "tenant_operator_policy"
+          ]
+        },
+        {
+          "kind": "tenant_settings",
+          "candidateDigest": "6eaac59d8e0fcd9f6db5517faf1abe2174d3aa9ca2bb093872703076edf6e537",
+          "tables": [
+            "tenant_settings",
+            "tenant_settings_history"
+          ]
+        },
+        {
+          "kind": "owner_configuration",
+          "candidateDigest": "ee90adb3c9ecef9724d2ba15f9a9b13a6073e246be22f5dd9cf6f0598a3a63d4",
+          "tables": [
+            "tenant_owner_configuration_authority"
+          ]
+        },
+        {
+          "kind": "legacy",
+          "candidateDigest": "aee68408f7df02a6466fb719d8a16941ede1b277d4d88a352145b2968523f6fa",
+          "tables": [
+            "legacy_credential_config",
+            "legacy_credential_subjects"
+          ]
+        },
+        {
+          "kind": "secrets",
+          "candidateDigest": "5a9ab6de0eab1e6e8f9a3a7bc7517d7551e8ba7c4091c3a5a0c41c5b7fb97e3b",
+          "tables": [
+            "secret_records",
+            "secret_audit"
+          ]
+        },
+        {
+          "kind": "lifecycle",
+          "candidateDigest": "e239c7f79cdc113c84e43c63a4cdc1fad50f4fbfb47bee8e5386edca51ee8305",
+          "tables": [
+            "tenant_lifecycle_requests"
+          ]
+        }
+      ],
+      "grants": [
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_credentials",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_keys",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_sessions",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "access_tenants",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "access",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_config",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_subject_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_authorization_subjects",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_owner_actors",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_owner_policy",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "alarm",
+          "kind": "authorization",
+          "table": "tenant_subject_admin_audit",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_credentials",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_keys",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_sessions",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "access_tenants",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "access",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "activity",
+          "table": "activity",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_config",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_subject_roles",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_authorization_subjects",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_owner_actors",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_owner_policy",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "authorization",
+          "table": "tenant_subject_admin_audit",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "clock",
+          "table": "tenant_write_clock",
+          "privileges": [
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "last_stamp"
+            ]
+          }
+        },
+        {
+          "role": "api",
+          "kind": "devicestatus",
+          "table": "devicestatus",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "entries",
+          "table": "entries",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "food",
+          "table": "food",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "legacy",
+          "table": "legacy_credential_config",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "legacy",
+          "table": "legacy_credential_subjects",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "legacy",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "profile",
+          "table": "profile",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "secrets",
+          "table": "secret_audit",
+          "privileges": [
+            "INSERT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "secrets",
+          "table": "secret_records",
+          "privileges": [
+            "INSERT",
+            "SELECT"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "settings",
+          "table": "settings",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ]
+        },
+        {
+          "role": "api",
+          "kind": "treatments",
+          "table": "treatments",
+          "privileges": [
+            "DELETE",
+            "INSERT",
+            "SELECT",
+            "UPDATE"
+          ],
+          "sequencePrivileges": [
+            "USAGE"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "activity",
+          "table": "activity",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "activity",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "clock",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "clock",
+          "table": "tenant_write_clock",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "devicestatus",
+          "table": "devicestatus",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "devicestatus",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "entries",
+          "table": "entries",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "entries",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "food",
+          "table": "food",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "food",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "profile",
+          "table": "profile",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "profile",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "treatments",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "evaluator",
+          "kind": "treatments",
+          "table": "treatments",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "access",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "activity",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "authorization",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "clock",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "devicestatus",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "entries",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "food",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "legacy",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "profile",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "secrets",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "settings",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "readiness",
+          "kind": "treatments",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "activity",
+          "table": "activity",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "activity",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "checkpoint",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "checkpoint",
+          "table": "tenant_consumer_checkpoint",
+          "privileges": [
+            "SELECT"
+          ],
+          "columnPrivileges": {
+            "UPDATE": [
+              "checkpoint",
+              "contract_digest",
+              "projection"
+            ]
+          }
+        },
+        {
+          "role": "realtime",
+          "kind": "clock",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "clock",
+          "table": "tenant_write_clock",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "devicestatus",
+          "table": "devicestatus",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "devicestatus",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "entries",
+          "table": "entries",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "entries",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "food",
+          "table": "food",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "food",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "profile",
+          "table": "profile",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "profile",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "treatments",
+          "table": "schema_migrations",
+          "privileges": [
+            "SELECT"
+          ]
+        },
+        {
+          "role": "realtime",
+          "kind": "treatments",
+          "table": "treatments",
+          "privileges": [
+            "SELECT"
+          ]
+        }
+      ]
+    }
+  },
+  "tables": {
+    "CURRENT": [
+      "access.access_credentials",
+      "access.access_keys",
+      "access.access_sessions",
+      "access.access_tenants",
+      "activity.activity",
+      "alarm_suppression.tenant_alarm_suppression",
+      "authorization.tenant_authorization_config",
+      "authorization.tenant_authorization_roles",
+      "authorization.tenant_authorization_subject_roles",
+      "authorization.tenant_authorization_subjects",
+      "authorization.tenant_owner_actors",
+      "authorization.tenant_owner_policy",
+      "authorization.tenant_subject_admin_audit",
+      "checkpoint.tenant_consumer_checkpoint",
+      "clock.tenant_write_clock",
+      "devicestatus.devicestatus",
+      "entries.entries",
+      "evaluator_checkpoint.tenant_consumer_checkpoint",
+      "food.food",
+      "legacy.legacy_credential_config",
+      "legacy.legacy_credential_subjects",
+      "lifecycle.tenant_lifecycle_ceremony",
+      "lifecycle.tenant_lifecycle_requests",
+      "notification_outbox.tenant_notification_heads",
+      "notification_outbox.tenant_notification_requests",
+      "notification_outbox.tenant_notification_state",
+      "operator_policy.tenant_operator_policy",
+      "owner_configuration.tenant_owner_configuration_authority",
+      "profile.profile",
+      "secrets.secret_audit",
+      "secrets.secret_records",
+      "settings.settings",
+      "subject_policy.subject_policy",
+      "subject_policy.subject_policy_audit",
+      "tenant_settings.tenant_settings",
+      "tenant_settings.tenant_settings_history",
+      "treatments.treatments"
+    ],
+    "OLD": [
+      "access.access_credentials",
+      "access.access_keys",
+      "access.access_sessions",
+      "access.access_tenants",
+      "activity.activity",
+      "authorization.tenant_authorization_config",
+      "authorization.tenant_authorization_roles",
+      "authorization.tenant_authorization_subject_roles",
+      "authorization.tenant_authorization_subjects",
+      "authorization.tenant_owner_actors",
+      "authorization.tenant_owner_policy",
+      "authorization.tenant_subject_admin_audit",
+      "checkpoint.tenant_consumer_checkpoint",
+      "clock.tenant_write_clock",
+      "devicestatus.devicestatus",
+      "entries.entries",
+      "food.food",
+      "legacy.legacy_credential_config",
+      "legacy.legacy_credential_subjects",
+      "lifecycle.tenant_lifecycle_requests",
+      "operator_policy.tenant_operator_policy",
+      "owner_configuration.tenant_owner_configuration_authority",
+      "profile.profile",
+      "secrets.secret_audit",
+      "secrets.secret_records",
+      "settings.settings",
+      "subject_policy.subject_policy",
+      "subject_policy.subject_policy_audit",
+      "tenant_settings.tenant_settings",
+      "tenant_settings.tenant_settings_history",
+      "treatments.treatments"
+    ]
+  },
+  "selectedCandidates": {
+    "CURRENT": [
+      {
+        "kind": "entries",
+        "namespace": "wc_718023283717_1_entries",
+        "candidatePath": "migrations/candidates/postgres-entries-v1.json",
+        "catalogueChecksum": "dcad39b7d643430db9bbc829186cc1ec8ac446052173d86cc97bcdbee8f4e407",
+        "candidateDigest": "a1ef63d9d4a5616de7606dca4943cf6878b8c8c09bedda44ab0b9b8b877629e9",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "entries"
+        ]
+      },
+      {
+        "kind": "treatments",
+        "namespace": "wc_718023283717_1_treatments",
+        "candidatePath": "migrations/candidates/postgres-treatments-socket-order-v1.json",
+        "catalogueChecksum": "e8741a131ba8b92c1745474f1f28edda2aa459eee790c20f40748aa6b56816d5",
+        "candidateDigest": "4d694e5b80cfeb2248941ec08466b114ec546a6d683011f4f106ec34cabd4509",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "treatments"
+        ]
+      },
+      {
+        "kind": "devicestatus",
+        "namespace": "wc_718023283717_1_devicestatus",
+        "candidatePath": "migrations/candidates/postgres-devicestatus-socket-order-v1.json",
+        "catalogueChecksum": "bf747d47881a590f07cba09a9cc9a1b08ee22aa31ae1e2fb754494d75b8db7a7",
+        "candidateDigest": "d190491ff5de66190668392abfb7004c94c76028c2b94490a2c515d643481207",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "devicestatus"
+        ]
+      },
+      {
+        "kind": "profile",
+        "namespace": "wc_718023283717_1_profile",
+        "candidatePath": "migrations/candidates/postgres-profile-socket-order-v1.json",
+        "catalogueChecksum": "de437a60e6c8cb7d6873241a1b5cd03f19c12f0813f82ac9331c349b80c50a5f",
+        "candidateDigest": "605d47f194b161279c76eb77261e821c7bb5ed1a251497e84ab6e5dadcd44778",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "profile"
+        ]
+      },
+      {
+        "kind": "food",
+        "namespace": "wc_718023283717_1_food",
+        "candidatePath": "migrations/candidates/postgres-food-v1.json",
+        "catalogueChecksum": "7b8e5cff45f2dea8ad22a960f5ec76d192186ea7dcf67ac500513865fb46b29a",
+        "candidateDigest": "a84c240028b94569b7c5712f1927b583e0ca355aaa79e38cc2863167a12687d4",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "food"
+        ]
+      },
+      {
+        "kind": "activity",
+        "namespace": "wc_718023283717_1_activity",
+        "candidatePath": "migrations/candidates/postgres-activity-v1.json",
+        "catalogueChecksum": "94298b421f6a47549d4f4f550403d185e41cb0df816065c3ee16339e85d68208",
+        "candidateDigest": "0650ea7168e2d908ef2e62930a93b5bd35bfab742855481249b692a3d687744e",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "activity"
+        ]
+      },
+      {
+        "kind": "settings",
+        "namespace": "wc_718023283717_1_settings",
+        "candidatePath": "migrations/candidates/postgres-settings-v1.json",
+        "catalogueChecksum": "85c03312210c9ecfc241b5bc476adbadd00e1280ce09f2766c1b1c11c3b8ad8f",
+        "candidateDigest": "adab6da185434de1e05fe8dfd6ce7edd79c18265cc4bad65d46a87c0682a0eaa",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "settings"
+        ]
+      },
+      {
+        "kind": "clock",
+        "namespace": "wc_718023283717_1_clock",
+        "candidatePath": "migrations/candidates/postgres-write-clock-v1.json",
+        "catalogueChecksum": "55fb7a7dd4cc986223c98923860a2774f8bcc3c0fee0f97c0e26b6bc802446e0",
+        "candidateDigest": "8a1a2107e548d45f04a767a31968a1ca98c3b30e96198f2f7c9c4367325e4aa2",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_write_clock"
+        ]
+      },
+      {
+        "kind": "checkpoint",
+        "namespace": "wc_718023283717_1_checkpoint",
+        "candidatePath": "migrations/candidates/postgres-consumer-checkpoint-v1.json",
+        "catalogueChecksum": "a0b7e0249bf885be19036f71ac662cfde42670f782efe3e24ca1cd206436c500",
+        "candidateDigest": "16b8a6279cfa82a1092d9b4b81bece27e47fa20b78c5bdedf76d6f63b1ade18f",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_consumer_checkpoint"
+        ]
+      },
+      {
+        "kind": "authorization",
+        "namespace": "wc_718023283717_1_authorization",
+        "candidatePath": "lib/tenant-authorization/postgres-candidate.json",
+        "catalogueChecksum": "1d122ab16cdab5de41360e834c6d97c5d087a69b3551c85d89891a3f783340d8",
+        "candidateDigest": "666127ae1e79f99931b0b4d7b478c2497c1ab9869890134dc002642a41a4d500",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_authorization_config",
+          "tenant_authorization_roles",
+          "tenant_authorization_subjects",
+          "tenant_authorization_subject_roles",
+          "tenant_subject_admin_audit",
+          "tenant_owner_policy",
+          "tenant_owner_actors"
+        ]
+      },
+      {
+        "kind": "access",
+        "namespace": "wc_718023283717_1_access",
+        "candidatePath": "lib/tenant-authorization/access-candidate.json",
+        "catalogueChecksum": "e35adde78d92235b1143d3602140c87c545807af425d56052b75009fc778654a",
+        "candidateDigest": "dd8505fe5be5eb897c58cddc1b3dd38bfc7d61e63c36e9c0ddc52143cc8b8064",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "access_tenants",
+          "access_credentials",
+          "access_sessions",
+          "access_keys"
+        ]
+      },
+      {
+        "kind": "subject_policy",
+        "namespace": "wc_718023283717_1_subject_policy",
+        "candidatePath": "lib/subject-policy/postgres-candidate.json",
+        "catalogueChecksum": "ea477dd0c35080372e32b78b401c145958db74362a4e4f0c8199e5290656a0c1",
+        "candidateDigest": "7aa3919ae90c0cdef5f45571a4b20f3c06e06f56ca5e2d5b4f8e96578884e3a9",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "subject_policy",
+          "subject_policy_audit"
+        ]
+      },
+      {
+        "kind": "operator_policy",
+        "namespace": "wc_718023283717_1_operator_policy",
+        "candidatePath": "lib/operator-policy/postgres-candidate.json",
+        "catalogueChecksum": "6c5c44777de9f6930e4080442990d0b62bce4bc227b377c160b1022634c6c77c",
+        "candidateDigest": "8fd6c3cda6d33f791740fa8a6c1f84a7c57f4b99f8fbbfee36289ac0007f030c",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_operator_policy"
+        ]
+      },
+      {
+        "kind": "tenant_settings",
+        "namespace": "wc_718023283717_1_tenant_settings",
+        "candidatePath": "lib/tenant-settings/postgres-candidate.json",
+        "catalogueChecksum": "9dc9b65caef2122228c4b3465d4224a10ab90547f79a0729a276c50bc2f1458f",
+        "candidateDigest": "6eaac59d8e0fcd9f6db5517faf1abe2174d3aa9ca2bb093872703076edf6e537",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_settings",
+          "tenant_settings_history"
+        ]
+      },
+      {
+        "kind": "owner_configuration",
+        "namespace": "wc_718023283717_1_owner_configuration",
+        "candidatePath": "lib/tenant-settings/owner-authority-candidate.json",
+        "catalogueChecksum": "24b43038470bd6538da591a14492a026ef465ad554a53017afd89a6f06a6c248",
+        "candidateDigest": "ee90adb3c9ecef9724d2ba15f9a9b13a6073e246be22f5dd9cf6f0598a3a63d4",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_owner_configuration_authority"
+        ]
+      },
+      {
+        "kind": "legacy",
+        "namespace": "wc_718023283717_1_legacy",
+        "candidatePath": "lib/secrets/legacy-credentials-candidate.json",
+        "catalogueChecksum": "5691bee738d95ce2448f01dae6da708573d5051c9e432ab9e1737ced76c154e6",
+        "candidateDigest": "aee68408f7df02a6466fb719d8a16941ede1b277d4d88a352145b2968523f6fa",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "legacy_credential_config",
+          "legacy_credential_subjects"
+        ]
+      },
+      {
+        "kind": "secrets",
+        "namespace": "wc_718023283717_1_secrets",
+        "candidatePath": "lib/secrets/postgres-candidate.json",
+        "catalogueChecksum": "f7c8d24e0ee7db2e71f4085614020d7f138e4d1a5b5979ad2a9e984b4d38be85",
+        "candidateDigest": "5a9ab6de0eab1e6e8f9a3a7bc7517d7551e8ba7c4091c3a5a0c41c5b7fb97e3b",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "secret_records",
+          "secret_audit"
+        ]
+      },
+      {
+        "kind": "lifecycle",
+        "namespace": "wc_718023283717_1_lifecycle",
+        "candidatePath": "lib/tenant-lifecycle/postgres-candidate.json",
+        "catalogueChecksum": "cc45a73bd8590ddcef1216c4860906560dd0f6129099978f8c8016db9bec1213",
+        "candidateDigest": "120b1ea167102f59670a1e57f16a771398051ee71b1c1c63260cb92bc837e798",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_lifecycle_requests",
+          "tenant_lifecycle_ceremony"
+        ]
+      },
+      {
+        "kind": "alarm_suppression",
+        "namespace": "wc_718023283717_1_alarm_suppression",
+        "candidatePath": "migrations/candidates/postgres-alarm-suppression-v1.json",
+        "catalogueChecksum": "9d5752a32059256200061f94e2cc13feb3d882b9ce3ab5378eb598c3bb3b503f",
+        "candidateDigest": "3283a1639af5a43df024a10b72afb550243438eadc4c9b79aaa93021c3d828c8",
+        "admissionSourceCommit": "e9121a6e2e4b857701df8e443d831e794b68c03c",
+        "instanceOf": null,
+        "tables": [
+          "tenant_alarm_suppression"
+        ]
+      },
+      {
+        "kind": "notification_outbox",
+        "namespace": "wc_718023283717_1_notification_outbox",
+        "candidatePath": "lib/tenant-notifications/postgres-candidate.json",
+        "catalogueChecksum": "e95216f0313381545ed81fcfd7b99d6b1ae0cd74d775351b84209d170250c6c8",
+        "candidateDigest": "6373384e7e3c7e4059d2d1bd01cd36d29a38964bd96a1a239f28438d598d563b",
+        "admissionSourceCommit": "5600192558a10462c159d00ef53ba770a647765d",
+        "instanceOf": null,
+        "tables": [
+          "tenant_notification_heads",
+          "tenant_notification_requests",
+          "tenant_notification_state"
+        ]
+      },
+      {
+        "kind": "evaluator_checkpoint",
+        "namespace": "wc_718023283717_1_evaluator_checkpoint",
+        "candidatePath": "migrations/candidates/postgres-consumer-checkpoint-v1.json",
+        "catalogueChecksum": "a0b7e0249bf885be19036f71ac662cfde42670f782efe3e24ca1cd206436c500",
+        "candidateDigest": "16b8a6279cfa82a1092d9b4b81bece27e47fa20b78c5bdedf76d6f63b1ade18f",
+        "admissionSourceCommit": null,
+        "instanceOf": "checkpoint",
+        "tables": [
+          "tenant_consumer_checkpoint"
+        ]
+      }
+    ],
+    "OLD": [
+      {
+        "kind": "entries",
+        "namespace": "wc_718023283717_5_entries",
+        "candidatePath": "migrations/candidates/postgres-entries-v1.json",
+        "catalogueChecksum": "dcad39b7d643430db9bbc829186cc1ec8ac446052173d86cc97bcdbee8f4e407",
+        "candidateDigest": "a1ef63d9d4a5616de7606dca4943cf6878b8c8c09bedda44ab0b9b8b877629e9",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "entries"
+        ]
+      },
+      {
+        "kind": "treatments",
+        "namespace": "wc_718023283717_5_treatments",
+        "candidatePath": "migrations/candidates/postgres-treatments-socket-order-v1.json",
+        "catalogueChecksum": "e8741a131ba8b92c1745474f1f28edda2aa459eee790c20f40748aa6b56816d5",
+        "candidateDigest": "4d694e5b80cfeb2248941ec08466b114ec546a6d683011f4f106ec34cabd4509",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "treatments"
+        ]
+      },
+      {
+        "kind": "devicestatus",
+        "namespace": "wc_718023283717_5_devicestatus",
+        "candidatePath": "migrations/candidates/postgres-devicestatus-socket-order-v1.json",
+        "catalogueChecksum": "bf747d47881a590f07cba09a9cc9a1b08ee22aa31ae1e2fb754494d75b8db7a7",
+        "candidateDigest": "d190491ff5de66190668392abfb7004c94c76028c2b94490a2c515d643481207",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "devicestatus"
+        ]
+      },
+      {
+        "kind": "profile",
+        "namespace": "wc_718023283717_5_profile",
+        "candidatePath": "migrations/candidates/postgres-profile-v1.json",
+        "catalogueChecksum": "2b7e85e78cea306108043a36e15c6a1692aee66b9b754ae5b1841b166eb6ba16",
+        "candidateDigest": "35d035bc302c7c54496ac9e5dc5fa1877ea1de58322fb80d11ec679c224794d2",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "profile"
+        ]
+      },
+      {
+        "kind": "food",
+        "namespace": "wc_718023283717_5_food",
+        "candidatePath": "migrations/candidates/postgres-food-v1.json",
+        "catalogueChecksum": "7b8e5cff45f2dea8ad22a960f5ec76d192186ea7dcf67ac500513865fb46b29a",
+        "candidateDigest": "a84c240028b94569b7c5712f1927b583e0ca355aaa79e38cc2863167a12687d4",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "food"
+        ]
+      },
+      {
+        "kind": "activity",
+        "namespace": "wc_718023283717_5_activity",
+        "candidatePath": "migrations/candidates/postgres-activity-v1.json",
+        "catalogueChecksum": "94298b421f6a47549d4f4f550403d185e41cb0df816065c3ee16339e85d68208",
+        "candidateDigest": "0650ea7168e2d908ef2e62930a93b5bd35bfab742855481249b692a3d687744e",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "activity"
+        ]
+      },
+      {
+        "kind": "settings",
+        "namespace": "wc_718023283717_5_settings",
+        "candidatePath": "migrations/candidates/postgres-settings-v1.json",
+        "catalogueChecksum": "85c03312210c9ecfc241b5bc476adbadd00e1280ce09f2766c1b1c11c3b8ad8f",
+        "candidateDigest": "adab6da185434de1e05fe8dfd6ce7edd79c18265cc4bad65d46a87c0682a0eaa",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "settings"
+        ]
+      },
+      {
+        "kind": "clock",
+        "namespace": "wc_718023283717_5_clock",
+        "candidatePath": "migrations/candidates/postgres-write-clock-v1.json",
+        "catalogueChecksum": "55fb7a7dd4cc986223c98923860a2774f8bcc3c0fee0f97c0e26b6bc802446e0",
+        "candidateDigest": "8a1a2107e548d45f04a767a31968a1ca98c3b30e96198f2f7c9c4367325e4aa2",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_write_clock"
+        ]
+      },
+      {
+        "kind": "checkpoint",
+        "namespace": "wc_718023283717_5_checkpoint",
+        "candidatePath": "migrations/candidates/postgres-consumer-checkpoint-v1.json",
+        "catalogueChecksum": "a0b7e0249bf885be19036f71ac662cfde42670f782efe3e24ca1cd206436c500",
+        "candidateDigest": "16b8a6279cfa82a1092d9b4b81bece27e47fa20b78c5bdedf76d6f63b1ade18f",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_consumer_checkpoint"
+        ]
+      },
+      {
+        "kind": "authorization",
+        "namespace": "wc_718023283717_5_authorization",
+        "candidatePath": "lib/tenant-authorization/postgres-candidate.json",
+        "catalogueChecksum": "1d122ab16cdab5de41360e834c6d97c5d087a69b3551c85d89891a3f783340d8",
+        "candidateDigest": "666127ae1e79f99931b0b4d7b478c2497c1ab9869890134dc002642a41a4d500",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_authorization_config",
+          "tenant_authorization_roles",
+          "tenant_authorization_subjects",
+          "tenant_authorization_subject_roles",
+          "tenant_subject_admin_audit",
+          "tenant_owner_policy",
+          "tenant_owner_actors"
+        ]
+      },
+      {
+        "kind": "access",
+        "namespace": "wc_718023283717_5_access",
+        "candidatePath": "lib/tenant-authorization/access-candidate.json",
+        "catalogueChecksum": "e35adde78d92235b1143d3602140c87c545807af425d56052b75009fc778654a",
+        "candidateDigest": "dd8505fe5be5eb897c58cddc1b3dd38bfc7d61e63c36e9c0ddc52143cc8b8064",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "access_tenants",
+          "access_credentials",
+          "access_sessions",
+          "access_keys"
+        ]
+      },
+      {
+        "kind": "subject_policy",
+        "namespace": "wc_718023283717_5_subject_policy",
+        "candidatePath": "lib/subject-policy/postgres-candidate.json",
+        "catalogueChecksum": "ea477dd0c35080372e32b78b401c145958db74362a4e4f0c8199e5290656a0c1",
+        "candidateDigest": "7aa3919ae90c0cdef5f45571a4b20f3c06e06f56ca5e2d5b4f8e96578884e3a9",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "subject_policy",
+          "subject_policy_audit"
+        ]
+      },
+      {
+        "kind": "operator_policy",
+        "namespace": "wc_718023283717_5_operator_policy",
+        "candidatePath": "lib/operator-policy/postgres-candidate.json",
+        "catalogueChecksum": "6c5c44777de9f6930e4080442990d0b62bce4bc227b377c160b1022634c6c77c",
+        "candidateDigest": "8fd6c3cda6d33f791740fa8a6c1f84a7c57f4b99f8fbbfee36289ac0007f030c",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_operator_policy"
+        ]
+      },
+      {
+        "kind": "tenant_settings",
+        "namespace": "wc_718023283717_5_tenant_settings",
+        "candidatePath": "lib/tenant-settings/postgres-candidate.json",
+        "catalogueChecksum": "9dc9b65caef2122228c4b3465d4224a10ab90547f79a0729a276c50bc2f1458f",
+        "candidateDigest": "6eaac59d8e0fcd9f6db5517faf1abe2174d3aa9ca2bb093872703076edf6e537",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_settings",
+          "tenant_settings_history"
+        ]
+      },
+      {
+        "kind": "owner_configuration",
+        "namespace": "wc_718023283717_5_owner_configuration",
+        "candidatePath": "lib/tenant-settings/owner-authority-candidate.json",
+        "catalogueChecksum": "24b43038470bd6538da591a14492a026ef465ad554a53017afd89a6f06a6c248",
+        "candidateDigest": "ee90adb3c9ecef9724d2ba15f9a9b13a6073e246be22f5dd9cf6f0598a3a63d4",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_owner_configuration_authority"
+        ]
+      },
+      {
+        "kind": "legacy",
+        "namespace": "wc_718023283717_5_legacy",
+        "candidatePath": "lib/secrets/legacy-credentials-candidate.json",
+        "catalogueChecksum": "5691bee738d95ce2448f01dae6da708573d5051c9e432ab9e1737ced76c154e6",
+        "candidateDigest": "aee68408f7df02a6466fb719d8a16941ede1b277d4d88a352145b2968523f6fa",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "legacy_credential_config",
+          "legacy_credential_subjects"
+        ]
+      },
+      {
+        "kind": "secrets",
+        "namespace": "wc_718023283717_5_secrets",
+        "candidatePath": "lib/secrets/postgres-candidate.json",
+        "catalogueChecksum": "f7c8d24e0ee7db2e71f4085614020d7f138e4d1a5b5979ad2a9e984b4d38be85",
+        "candidateDigest": "5a9ab6de0eab1e6e8f9a3a7bc7517d7551e8ba7c4091c3a5a0c41c5b7fb97e3b",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "secret_records",
+          "secret_audit"
+        ]
+      },
+      {
+        "kind": "lifecycle",
+        "namespace": "wc_718023283717_5_lifecycle",
+        "candidatePath": "lib/tenant-lifecycle/postgres-candidate.json",
+        "catalogueChecksum": "c8880b72a09a4cdc71c1e76d26ee1f65423a91b01d74e5b90a4ba5b9f5ff3ea2",
+        "candidateDigest": "e239c7f79cdc113c84e43c63a4cdc1fad50f4fbfb47bee8e5386edca51ee8305",
+        "admissionSourceCommit": null,
+        "instanceOf": null,
+        "tables": [
+          "tenant_lifecycle_requests"
+        ]
+      }
+    ]
+  },
+  "births": {
+    "initial.probe": {
+      "kind": "probe",
+      "stage": "initial",
+      "identitySha256": "775c9fd984da135601871ad70823b3e32ea501a3a9bbc262f177ca49b03ccc90",
+      "expectedLiveCommandSha256": "40ff08c929f86d6936b399b04c1f4f1c82fdd84f7556489f4136b330f4c8f740",
+      "terminalException": true
+    },
+    "initial.observer": {
+      "kind": "observer",
+      "stage": "initial",
+      "identitySha256": "2f41293234413866b9c9b8c1b8a88005426ea99142e83672cd0a9a25314abc54",
+      "expectedLiveCommandSha256": "79bc11394ded380b02a582d78d93d8af99dd483501c6c3b7bdc6d16c525e3ded",
+      "terminalException": false
+    },
+    "initial.writer.1": {
+      "kind": "writer",
+      "stage": "initial",
+      "identitySha256": "9459dc597b32ac2d7d393d18218ed6ae6a13350dc3ed87aacdab80458dc88d78",
+      "expectedLiveCommandSha256": "72fbc3cdb4bfe7a749268ec53945e8b0b2a8b3317e7cd001467e5c70e32caef7",
+      "terminalException": false
+    },
+    "initial.writer.2": {
+      "kind": "writer",
+      "stage": "initial",
+      "identitySha256": "598e8670533d95e378837c341205879d0115857231d4bb8ef95d1a7538624d85",
+      "expectedLiveCommandSha256": "b904045b26862488f5391599f20f2c8507ea8ec350f603179dda9ed5646e31ed",
+      "terminalException": false
+    },
+    "initial.writer.3": {
+      "kind": "writer",
+      "stage": "initial",
+      "identitySha256": "c30a794f91759c36f62c84220f74b06037a63ebb39097688b132bdc9e24fde9a",
+      "expectedLiveCommandSha256": "1f073451899e6528bdaadc6adfe7e8044f41d4f6704487ab89f29ad8ff8f967f",
+      "terminalException": false
+    },
+    "second-checkpoint-loss-red.probe": {
+      "kind": "probe",
+      "stage": "second-checkpoint-loss-red",
+      "identitySha256": "5e8a67a606cdb3826cabda49bb67e85d73ec4a46755809ea67942972b23d5185",
+      "expectedLiveCommandSha256": "a93637149062a392ebbecd59379edbe0f33d3f328075b137b75d0585bc70a119",
+      "terminalException": true
+    },
+    "second-checkpoint-loss-red.observer": {
+      "kind": "observer",
+      "stage": "second-checkpoint-loss-red",
+      "identitySha256": "205ce27a9771ff12f3b3aaa13efc0162bb605e6127258f37b957cc0a686c8791",
+      "expectedLiveCommandSha256": "a8387d8d550b19adc508ba995c3f7f1cb9dd4f5f0d216265bd6a4e55ec25838c",
+      "terminalException": false
+    },
+    "second-checkpoint-loss-restored.probe": {
+      "kind": "probe",
+      "stage": "second-checkpoint-loss-restored",
+      "identitySha256": "fde601ff57242a2a381d470c5dc7e5126b8dd7c5fc509843a2983c86d9c14c22",
+      "expectedLiveCommandSha256": "c63147d69c90e9ec9e13ddf954c8d4143b85e0bab7b261a6c41e328775e8e9c7",
+      "terminalException": true
+    },
+    "second-checkpoint-loss-restored.observer": {
+      "kind": "observer",
+      "stage": "second-checkpoint-loss-restored",
+      "identitySha256": "caa914478008cf8111b7bbd4ecedea937a942e7d325d7f80913a834f5ae76b0e",
+      "expectedLiveCommandSha256": "5070c56598aed05376363a54904ede87e43c30ce071f2762586f80736f10fe2c",
+      "terminalException": false
+    },
+    "skip-identity-sequence-red.probe": {
+      "kind": "probe",
+      "stage": "skip-identity-sequence-red",
+      "identitySha256": "ed7af36b30d1919547adc41af3fbfdd2b10758f23d6d62cde84a4cb2c3d43ef8",
+      "expectedLiveCommandSha256": "8da938169117ee9ee40b7dc9a086c6cf59a1c62cbe1e311a3735e8f367e506c3",
+      "terminalException": true
+    },
+    "skip-identity-sequence-red.observer": {
+      "kind": "observer",
+      "stage": "skip-identity-sequence-red",
+      "identitySha256": "e401486c08ffe2dc439242fbb8e62ad15351575b0c3e9399491141aa7551e809",
+      "expectedLiveCommandSha256": "3bdeb9cb11af52970ac91fb60b2f1f1604ad40ca24e70f07bb1c637d8d0f6e54",
+      "terminalException": false
+    },
+    "skip-identity-sequence-restored.probe": {
+      "kind": "probe",
+      "stage": "skip-identity-sequence-restored",
+      "identitySha256": "d3e0ea55a8b539875b077e5d2f08c915a9f02755ad97f2e2648081a735a2c849",
+      "expectedLiveCommandSha256": "23226a81d1a2d4e43fc0b653e07776540b7acb492621dbd3159317def0cc6d08",
+      "terminalException": true
+    },
+    "skip-identity-sequence-restored.observer": {
+      "kind": "observer",
+      "stage": "skip-identity-sequence-restored",
+      "identitySha256": "cb7a9be82f7483227d68a4ee611e2a78473412bd0ec326c914b33ea4080fea90",
+      "expectedLiveCommandSha256": "f7e7f37e7c8169a04b2f77565bd2565c4a64de752a38a06f2dd1589c1c538e06",
+      "terminalException": false
+    },
+    "realtime-write-broadening-red.probe": {
+      "kind": "probe",
+      "stage": "realtime-write-broadening-red",
+      "identitySha256": "7aee6afb1bb73fc2541e422ff19e94083bef3a5c82bcd30c2a23d228be128fe2",
+      "expectedLiveCommandSha256": "0aa6cef7122a66b2baf801773c9f91c6cb2c909d7d8e6cba84ab08541e8fd1dc",
+      "terminalException": false
+    },
+    "realtime-write-broadening-red.observer": {
+      "kind": "observer",
+      "stage": "realtime-write-broadening-red",
+      "identitySha256": "6e8f612644c1ff913edc18dc829a3030e1a9dfadec567e88d6697b571ef1f53a",
+      "expectedLiveCommandSha256": "6cfa8e64fd673a14f16f7338312c8a4786931e3f6fbc9a9bec5ad46cbdf0c5ba",
+      "terminalException": false
+    },
+    "realtime-write-broadening-restored.probe": {
+      "kind": "probe",
+      "stage": "realtime-write-broadening-restored",
+      "identitySha256": "cd23d18380c3762ea65486137f33d18db083a027b6d34ff8cbc6f2e66109e9b6",
+      "expectedLiveCommandSha256": "c97cf52291b8af958710a9d3d6d840757fe40f46d47a45f761f226924c349bc8",
+      "terminalException": false
+    },
+    "realtime-write-broadening-restored.observer": {
+      "kind": "observer",
+      "stage": "realtime-write-broadening-restored",
+      "identitySha256": "5a3a738fef330378e9dc56cf2ab1db27570b61e66640e13b8946b8ef937e073b",
+      "expectedLiveCommandSha256": "95ac265cc09e8e0c152b674ad0d18af4c486501cd2c85980544abe6f0dd226a6",
+      "terminalException": false
+    },
+    "tampered-digest-bypass-red.probe": {
+      "kind": "probe",
+      "stage": "tampered-digest-bypass-red",
+      "identitySha256": "6255e18cee902328c5ed688dbf0895296cbcb1f7850b6b86d6a93735f575c1bd",
+      "expectedLiveCommandSha256": "1f397e73025f44683a1ac12b620610f0ed08933a26c217437dca0b36ab22ff24",
+      "terminalException": false
+    },
+    "tampered-digest-bypass-red.observer": {
+      "kind": "observer",
+      "stage": "tampered-digest-bypass-red",
+      "identitySha256": "b1da6d3c62477ff42bfd06a847aa21be1139af3a6cd4e05848cd81d4997b4656",
+      "expectedLiveCommandSha256": "92e1cfca16006884c1a851daf168769e620f52684b97e42be7af4cb86c9671a8",
+      "terminalException": false
+    },
+    "tampered-digest-bypass-restored.probe": {
+      "kind": "probe",
+      "stage": "tampered-digest-bypass-restored",
+      "identitySha256": "d71bf4ef55212141bab390436da3f19e56a235d77f94b5e9b696c0b7c3396dae",
+      "expectedLiveCommandSha256": "284301365c82a4d61fcc262a02a6887876c719e9a81b6e3c208ecc042d558dc7",
+      "terminalException": false
+    },
+    "tampered-digest-bypass-restored.observer": {
+      "kind": "observer",
+      "stage": "tampered-digest-bypass-restored",
+      "identitySha256": "6a5db56b693e023dea990122b52880dd66eba3a29c6e09519844b6c44ea57fb2",
+      "expectedLiveCommandSha256": "3b5a8363af04362bca2d0972ced7bb2a07235f08361e99642147ebfd5f0237b8",
+      "terminalException": false
+    },
+    "commit-interrupted-restore-red.probe": {
+      "kind": "probe",
+      "stage": "commit-interrupted-restore-red",
+      "identitySha256": "9dbd2addc96a765ea28bd429331ec389e28f931e5f2706da82211dd9ad97898a",
+      "expectedLiveCommandSha256": "37782efed4d7b1b69391e29d26f7c354764f637074fd8349d9a889bb3ef4c2bb",
+      "terminalException": false
+    },
+    "commit-interrupted-restore-red.observer": {
+      "kind": "observer",
+      "stage": "commit-interrupted-restore-red",
+      "identitySha256": "9af877fb083d1ffa2d934256ae46185c57173deb355699b93e221b163a0ef3d4",
+      "expectedLiveCommandSha256": "f71731a421a8889ad32c27587ab12849353664c0feaf972bc9b9c6e65b088ce7",
+      "terminalException": false
+    },
+    "commit-interrupted-restore-restored.probe": {
+      "kind": "probe",
+      "stage": "commit-interrupted-restore-restored",
+      "identitySha256": "409c49bf0df285b307e48538f6a1dc431bc0d942b889d312a3a624f99b133f58",
+      "expectedLiveCommandSha256": "8c400f1e3a001b8014951cfb5e8576715aae7269c2b06d4c704f741cd3d274c2",
+      "terminalException": false
+    },
+    "commit-interrupted-restore-restored.observer": {
+      "kind": "observer",
+      "stage": "commit-interrupted-restore-restored",
+      "identitySha256": "60d66536558ef9a96ec74bde0a618da10399bd7f99893d7b95ad8b6d29588383",
+      "expectedLiveCommandSha256": "443686a242309b3992ac3a1bfeabc0d8598540ba0a6ae09bc93f321a40fc9810",
+      "terminalException": false
+    },
+    "profile-populated-guard-red.probe": {
+      "kind": "probe",
+      "stage": "profile-populated-guard-red",
+      "identitySha256": "7cd09ca8673c05f64e4f4c07d13e275f492a14b71eeb79d25484d11aed4970ef",
+      "expectedLiveCommandSha256": "d6098a446dde214c68f43246a7e6db972c6bd8648f97f8c275f1bde57f473d92",
+      "terminalException": false
+    },
+    "profile-populated-guard-red.observer": {
+      "kind": "observer",
+      "stage": "profile-populated-guard-red",
+      "identitySha256": "cf1847b228106430d3f80cd17df87fbf3035ac1e4836243f7676eca18372823d",
+      "expectedLiveCommandSha256": "b07234add2ce0440fff084f32ee8cf1bbf6ed8bd8538b981dfdf6ffead378fe8",
+      "terminalException": false
+    },
+    "profile-populated-guard-restored.probe": {
+      "kind": "probe",
+      "stage": "profile-populated-guard-restored",
+      "identitySha256": "38d0a61bc7d0251ea059dcd8e26d070f85f00bb307a0d97ed57416f43158aaec",
+      "expectedLiveCommandSha256": "6172876da6b5a83cd1dce98a832e1e4919e2c07ed82fba6756d323eccdc8a84f",
+      "terminalException": false
+    },
+    "profile-populated-guard-restored.observer": {
+      "kind": "observer",
+      "stage": "profile-populated-guard-restored",
+      "identitySha256": "f47d6d7c5f22592aa4b05364a94184d63c2157731b02fffbda2db0e634371724",
+      "expectedLiveCommandSha256": "c96804058ee843c96faed4cf3ae9125c5db9da7943b66ac1dc2ed4d0ab8e5fa7",
+      "terminalException": false
+    },
+    "running-writer-window-red.probe": {
+      "kind": "probe",
+      "stage": "running-writer-window-red",
+      "identitySha256": "79bc48e97f5ccc6108ab206782a10cc89e54fb94f319b43e8b1db9fc96134283",
+      "expectedLiveCommandSha256": "5a574dbc52605152458be4822961357cf0cff7edd32ccaef5175d49708f94927",
+      "terminalException": false
+    },
+    "running-writer-window-red.observer": {
+      "kind": "observer",
+      "stage": "running-writer-window-red",
+      "identitySha256": "ab38078c3e04746a44ec2016e90db70be8b7846199ad03984371e801def3d859",
+      "expectedLiveCommandSha256": "42ca6907c05db7518c30e1a12ea5071a0ad61aceb2ac0a0930e3b797d8c4db8f",
+      "terminalException": false
+    },
+    "running-writer-window-restored.probe": {
+      "kind": "probe",
+      "stage": "running-writer-window-restored",
+      "identitySha256": "b71e87ac9bf227cffb9fdc952c5ae4857915f835f2562ea2c95a6811772a337b",
+      "expectedLiveCommandSha256": "077873b4f38091e1baa8ab7cfd88ff34e184532e180b1271e26980d1fb14d4c6",
+      "terminalException": false
+    },
+    "running-writer-window-restored.observer": {
+      "kind": "observer",
+      "stage": "running-writer-window-restored",
+      "identitySha256": "a3e0fb468bf03a4e10e1b248ab9364ec964516eba4dfbe738a5b55f8f1032e8b",
+      "expectedLiveCommandSha256": "d2a3dacb1ac80fb20114215fa93c7f58915eb9f1447348c9cf03e7fbe217419e",
+      "terminalException": false
+    },
+    "running-writer-window-restored.writer.1": {
+      "kind": "writer",
+      "stage": "running-writer-window-restored",
+      "identitySha256": "0b64399e5308ef888deeefb220b209d51064ac01fcb5d65db6f56f90bace3a60",
+      "expectedLiveCommandSha256": "9b0857583a0af431ae6119263ca0b82844cf55af87fa773617f74fb78f5cdb2e",
+      "terminalException": false
+    },
+    "running-writer-window-restored.writer.2": {
+      "kind": "writer",
+      "stage": "running-writer-window-restored",
+      "identitySha256": "74fe407ca8904f9b6d515a9d7111662c2866379ccdac0f5a2f38a4601ee8488b",
+      "expectedLiveCommandSha256": "f4a52577b8f04cae0de327af19241d27e70f23c9398b539dea66094ca5a3c13c",
+      "terminalException": false
+    },
+    "running-writer-window-restored.writer.3": {
+      "kind": "writer",
+      "stage": "running-writer-window-restored",
+      "identitySha256": "924127350beedea840481a2e0228a48cb3274a1487aff02019e0d3bd0dfdc71e",
+      "expectedLiveCommandSha256": "4ce258cb1973b11109c59fbc42793b79694f3f36733edfcb39094b3072ee736f",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-red.probe": {
+      "kind": "probe",
+      "stage": "unknown-lifecycle-ledger-red",
+      "identitySha256": "8c2f87ce4c9dcbc1d18173bffd6d966d68593ec29b956c102428181132262772",
+      "expectedLiveCommandSha256": "ccd9c94d777ddacf31a6d98ac2c13264fda2173fb4ada0c1794f401442ba68dc",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-red.observer": {
+      "kind": "observer",
+      "stage": "unknown-lifecycle-ledger-red",
+      "identitySha256": "e26d262fc6248ddcfeca4a039f102515515674416292f5b2e9f2e2594cdf0a23",
+      "expectedLiveCommandSha256": "e8025207827870a998afccb37561ea7c997f386ef68b3d1ea4d96ef50cc030b7",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-red.writer.1": {
+      "kind": "writer",
+      "stage": "unknown-lifecycle-ledger-red",
+      "identitySha256": "79899c9c31e1879aa5368c3955604680604554d1ccfb1f381cde7c5354cfecc6",
+      "expectedLiveCommandSha256": "f942ee43112d5ab5dd1640385b722bef436ddd6c508774618b84c998bc71c4e6",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-restored.probe": {
+      "kind": "probe",
+      "stage": "unknown-lifecycle-ledger-restored",
+      "identitySha256": "a7a83ecaff39a1bc5e574b1bbe81420098afb35bc4747b444f905fc5d638d238",
+      "expectedLiveCommandSha256": "2d41a27ceb2519beadbd95fd509859e99ff3a1b68890e5cde66f791796d457f0",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-restored.observer": {
+      "kind": "observer",
+      "stage": "unknown-lifecycle-ledger-restored",
+      "identitySha256": "6c48996344ee71148a9e4f971a507fb6e6a34596b0f7a763561aa945364f5de6",
+      "expectedLiveCommandSha256": "541380df16d7fd35fe66efb5972a0bcba060d069d292790928f5181a75c86d30",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-restored.writer.1": {
+      "kind": "writer",
+      "stage": "unknown-lifecycle-ledger-restored",
+      "identitySha256": "3f3d271ffef13c139a5f5623a5799d198da13cec37980981af7e22984a65ddc0",
+      "expectedLiveCommandSha256": "d90e9e07daa7f749083f4cad18c8e98bfeb2920e32d2f561cb6797493191f529",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-restored.writer.2": {
+      "kind": "writer",
+      "stage": "unknown-lifecycle-ledger-restored",
+      "identitySha256": "08b723b756a0dd31235d273f78215a4be8d4ca9df89930b2c63186fc59cc0330",
+      "expectedLiveCommandSha256": "11226c8a1d056bb8bba0b08abdaade32a4b7f0a787777fd6846a689c063859fd",
+      "terminalException": false
+    },
+    "unknown-lifecycle-ledger-restored.writer.3": {
+      "kind": "writer",
+      "stage": "unknown-lifecycle-ledger-restored",
+      "identitySha256": "ad58eb84b37a5e6aea6dea7b8cc39e25585db8336f9f40fb266db408110b3825",
+      "expectedLiveCommandSha256": "8a2bd144cfd07aa7c8a3381fc877d09163ef42523fefecadab661c555015d20b",
+      "terminalException": false
+    },
+    "unadmitted-physical-relation-red.probe": {
+      "kind": "probe",
+      "stage": "unadmitted-physical-relation-red",
+      "identitySha256": "3dad77e1268d332e4f298d836fbe4b45038f5546efc64f15b52ce88c802da979",
+      "expectedLiveCommandSha256": "1110da9bdfbbf24a40ae018c7c438d387680173dc1168996309444acae342a67",
+      "terminalException": false
+    },
+    "unadmitted-physical-relation-red.observer": {
+      "kind": "observer",
+      "stage": "unadmitted-physical-relation-red",
+      "identitySha256": "5d57a908f475c6d43d2ef2076b67baf928a0a5fad026956cb243300b4e88737a",
+      "expectedLiveCommandSha256": "540eac3abd03d61621dfc2c3293e1ae9d801987b49e04dce7af202bae2993f2f",
+      "terminalException": false
+    },
+    "unadmitted-physical-relation-red.writer.1": {
+      "kind": "writer",
+      "stage": "unadmitted-physical-relation-red",
+      "identitySha256": "19ccb07f2a2914a1ebd35c941c00ba2d4481971abb0947851bf2e1ab1cf0eb24",
+      "expectedLiveCommandSha256": "bcacdb16d42814ae14d6b95db9fd541b100fed1f9c6faec87917b6e578c32ed5",
+      "terminalException": false
+    },
+    "unadmitted-physical-relation-restored.probe": {
+      "kind": "probe",
+      "stage": "unadmitted-physical-relation-restored",
+      "identitySha256": "1dcd520d1a58dc50c1f80d2d2fceeeacdb3d13e14ae5bd4d4d477a294ff76f5c",
+      "expectedLiveCommandSha256": "64ee55051482536ff5d3d85c1b36dbb228fbb08b828e93d83622617d3503fd49",
+      "terminalException": true
+    },
+    "unadmitted-physical-relation-restored.observer": {
+      "kind": "observer",
+      "stage": "unadmitted-physical-relation-restored",
+      "identitySha256": "39f9df28959b1d72ee94e89b6e23d2b63bbc942ea34b86719e8c70304eab5f28",
+      "expectedLiveCommandSha256": "3cc535b602d881e4a985e21af27a1aaea61b61c0c7098550fd7b173d90fa75a9",
+      "terminalException": false
+    },
+    "unadmitted-physical-relation-restored.writer.1": {
+      "kind": "writer",
+      "stage": "unadmitted-physical-relation-restored",
+      "identitySha256": "fd85d93f1e70bed0aba753e8f04557dc745aaa8836099ae751092b98e81b990c",
+      "expectedLiveCommandSha256": "92f082992d944b2a4d8566be874c711bc184e845994d37d40e76d83c43447c50",
+      "terminalException": false
+    },
+    "unadmitted-physical-relation-restored.writer.2": {
+      "kind": "writer",
+      "stage": "unadmitted-physical-relation-restored",
+      "identitySha256": "2dc17a4429273604e090e3a6491a8eb26fc3ff71fc1a0c62b391686b8d260531",
+      "expectedLiveCommandSha256": "04125b976baa0b2c4e6d2c488d18ac9caaf98bcf36295134830f8a470006a271",
+      "terminalException": false
+    },
+    "unadmitted-physical-relation-restored.writer.3": {
+      "kind": "writer",
+      "stage": "unadmitted-physical-relation-restored",
+      "identitySha256": "c4b6c2a5c6823672052bdc3c182487210248beb86d0301765089a47dea7e07b4",
+      "expectedLiveCommandSha256": "445a6b2aaa0d00c9f4d8fd8b0612bbc947f6c308ca5120b803c5061e4c4d42e4",
+      "terminalException": false
+    },
+    "ordinary-inheritance-red.probe": {
+      "kind": "probe",
+      "stage": "ordinary-inheritance-red",
+      "identitySha256": "86b7b810717b006fd1a9d3b833249e415a4759e0ddc89be653b323790c0c28e2",
+      "expectedLiveCommandSha256": "3e14e957694c792c5bcd8e707857a3b76a9fed172f2bd4780d3ed5f0425967f9",
+      "terminalException": true
+    },
+    "ordinary-inheritance-red.observer": {
+      "kind": "observer",
+      "stage": "ordinary-inheritance-red",
+      "identitySha256": "baad1ba1554d674557f774d29447fc879d94bf7458646b04c296faa5566a28e0",
+      "expectedLiveCommandSha256": "f0f1246cc81fdb9b5a6d7206c06ebff646cc245d2d657f87758dcb6262d89499",
+      "terminalException": false
+    },
+    "ordinary-inheritance-red.writer.1": {
+      "kind": "writer",
+      "stage": "ordinary-inheritance-red",
+      "identitySha256": "af21bbb26ad5224caef2e8cde887c2cfca30959be3e5e6622f5951a704f7c92f",
+      "expectedLiveCommandSha256": "5afc4fb75d98b03eee6c0220e7fd4f7aa501734c9600ef43570c12ac3e647fe1",
+      "terminalException": false
+    },
+    "ordinary-inheritance-restored.probe": {
+      "kind": "probe",
+      "stage": "ordinary-inheritance-restored",
+      "identitySha256": "08bdf178ce8d34cf438c4d4162926e89e6b8db50b60ae526ca150e4630cd8bc6",
+      "expectedLiveCommandSha256": "28a5d2db5e4d535dc9b2ad87d391d60f4e2d38464a5fbca7b1b30a70014fef2e",
+      "terminalException": true
+    },
+    "ordinary-inheritance-restored.observer": {
+      "kind": "observer",
+      "stage": "ordinary-inheritance-restored",
+      "identitySha256": "63e598a073569bbf0c624c2adc9251b6fba621023ac723709a597b871efbaadf",
+      "expectedLiveCommandSha256": "863e9e3691c0f891ca918ba6b7f863e89486d0ddb2e42318a86f29e9d3bb74e5",
+      "terminalException": false
+    },
+    "ordinary-inheritance-restored.writer.1": {
+      "kind": "writer",
+      "stage": "ordinary-inheritance-restored",
+      "identitySha256": "67ce2993b749b650076ff5e9d4bb07ce7e495ab2679f4bb22e25574c1084e80f",
+      "expectedLiveCommandSha256": "58b244c312cc6fd6b898353b8477fc58ef6914e77f08e93f9c147154da548837",
+      "terminalException": false
+    },
+    "ordinary-inheritance-restored.writer.2": {
+      "kind": "writer",
+      "stage": "ordinary-inheritance-restored",
+      "identitySha256": "60caa23c3c49a8bddacc4304acf68d27075887f8a2fdf89734b368d562e0c4ef",
+      "expectedLiveCommandSha256": "eddbcb409c1e80ac25b4cb70e27e08c3c3e063dc4a75ea8253155015508e6cac",
+      "terminalException": false
+    },
+    "ordinary-inheritance-restored.writer.3": {
+      "kind": "writer",
+      "stage": "ordinary-inheritance-restored",
+      "identitySha256": "8c439b2e9f37e38fb544e1846b159c3838dcb49ae2bbf46770144f9d0487f96c",
+      "expectedLiveCommandSha256": "10d3c0511da65a36c23ec94e5d4cfcd7937a7fd454afd53e1e958258da323be9",
+      "terminalException": false
+    },
+    "execute-cancel-lock-order-red.probe": {
+      "kind": "probe",
+      "stage": "execute-cancel-lock-order-red",
+      "identitySha256": "db952dbfd469d2bc9b8a721a20cfedc809d8d1234e0aa5c441018502a3fed8a8",
+      "expectedLiveCommandSha256": "42c13b70deab1467c57768a11f16881a8d0c08a2c864d4b22c5ec190884ea741",
+      "terminalException": false
+    },
+    "execute-cancel-lock-order-red.observer": {
+      "kind": "observer",
+      "stage": "execute-cancel-lock-order-red",
+      "identitySha256": "c263c62da3c65c72046d958591b45343d9ec10f743a3b270954f9023f2a05a8e",
+      "expectedLiveCommandSha256": "4a65055941c851b95efe934278636e76a1179c55a7f5949cb5a95d63cf5e6c00",
+      "terminalException": false
+    },
+    "execute-cancel-lock-order-red.writer.1": {
+      "kind": "writer",
+      "stage": "execute-cancel-lock-order-red",
+      "identitySha256": "f6777f5d78e4c702cbc658e24cc7c066a0fc5aa7f44ba4828cadda43881a9f19",
+      "expectedLiveCommandSha256": "6e2f44c86487dfc153f88316810b692457601fd8a0eeb2c76f1d08201d6a07cf",
+      "terminalException": false
+    },
+    "execute-cancel-lock-order-restored.probe": {
+      "kind": "probe",
+      "stage": "execute-cancel-lock-order-restored",
+      "identitySha256": "8b1d39ff5839e490f57a93e5261cc423b62b06d48030664021e46305e75132f0",
+      "expectedLiveCommandSha256": "6452b251162052fb95f137d6dc481a1a73e5bce7e53120ad8474d31f70185017",
+      "terminalException": true
+    },
+    "execute-cancel-lock-order-restored.observer": {
+      "kind": "observer",
+      "stage": "execute-cancel-lock-order-restored",
+      "identitySha256": "1224cccb39d955a5aee5b74d56035a32af43b0537fbe981ad7678374cb27554d",
+      "expectedLiveCommandSha256": "dba63199d98e6f359bd9bebe8cec7879a2b3507b4493d9e117f3b7ff310c0ef3",
+      "terminalException": false
+    },
+    "execute-cancel-lock-order-restored.writer.1": {
+      "kind": "writer",
+      "stage": "execute-cancel-lock-order-restored",
+      "identitySha256": "c5a73638cab0e6a719aaf75a0735d038a07ccb6c6c595372b1e3de3b09d2750b",
+      "expectedLiveCommandSha256": "98c14e503becb244cfc42eb354c3c42a2e41d1784fbad5b9dddb5079e9d38a82",
+      "terminalException": false
+    },
+    "execute-cancel-lock-order-restored.writer.2": {
+      "kind": "writer",
+      "stage": "execute-cancel-lock-order-restored",
+      "identitySha256": "e007b304afdf454cf026105566cdfdfe75e18dc29c12b4bbcd9efcc225efcc03",
+      "expectedLiveCommandSha256": "b0fb7fb20d06cb4194701d318cd11c112ebeb39ebcea64484b4e504d244e7db3",
+      "terminalException": false
+    },
+    "execute-cancel-lock-order-restored.writer.3": {
+      "kind": "writer",
+      "stage": "execute-cancel-lock-order-restored",
+      "identitySha256": "2799b7693d314088a69482dc553a6885a165e7b7743fa8eb638d0b26b3b9aa7b",
+      "expectedLiveCommandSha256": "25fdbe065ce045cbea0d1a5c8b7f409b3962eb47e6ae688fdf2796a8fea2285a",
+      "terminalException": false
+    },
+    "final.probe": {
+      "kind": "probe",
+      "stage": "final",
+      "identitySha256": "7bb838461df30c476ed9748b02c74119d88962950aaf9d18c854472c6d194c66",
+      "expectedLiveCommandSha256": "ef26da115714d991180aecf634abcf31613ee33b2a4fe8cee3cddf52f205f06a",
+      "terminalException": false
+    },
+    "final.observer": {
+      "kind": "observer",
+      "stage": "final",
+      "identitySha256": "3ca350208fc5ab01a89f7fa9e61c5ef3b2711299cc731a531fe6c617f7c0837a",
+      "expectedLiveCommandSha256": "4c90014023231a7f486961ec3eea86142c52e1dea1011f9a9d11049857f8db9a",
+      "terminalException": false
+    },
+    "final.writer.1": {
+      "kind": "writer",
+      "stage": "final",
+      "identitySha256": "358d11f16b9264a38d66659d4db7479a7af8c467faa6ce92a6fc0f446afb3a36",
+      "expectedLiveCommandSha256": "75b27fbc7f3d61a92c38d65834dfa75a0fdd5a103b8c7a988097667ed4c32b93",
+      "terminalException": false
+    },
+    "final.writer.2": {
+      "kind": "writer",
+      "stage": "final",
+      "identitySha256": "0afe3aa4c339b50c4374e8009747593d1d4a304a39937c4df15f5fd3afaa5457",
+      "expectedLiveCommandSha256": "c739221f288b3a684b7517cead83db5cc3f573d1ff13b81b3ac6d23464943242",
+      "terminalException": false
+    },
+    "final.writer.3": {
+      "kind": "writer",
+      "stage": "final",
+      "identitySha256": "43e77c4ee9dd5962afe57bc238ff2f323a81871faec9bad9c9082a98522bb3eb",
+      "expectedLiveCommandSha256": "c8f9dbebbb53c5445a97815ecbb02b64a23efc21de33a1063d9c056741e52f34",
+      "terminalException": false
+    }
+  },
+  "phaseOrder": [
+    "initial",
+    "second-checkpoint-loss-red",
+    "second-checkpoint-loss-restored",
+    "skip-identity-sequence-red",
+    "skip-identity-sequence-restored",
+    "realtime-write-broadening-red",
+    "realtime-write-broadening-restored",
+    "tampered-digest-bypass-red",
+    "tampered-digest-bypass-restored",
+    "commit-interrupted-restore-red",
+    "commit-interrupted-restore-restored",
+    "profile-populated-guard-red",
+    "profile-populated-guard-restored",
+    "running-writer-window-red",
+    "running-writer-window-restored",
+    "unknown-lifecycle-ledger-red",
+    "unknown-lifecycle-ledger-restored",
+    "unadmitted-physical-relation-red",
+    "unadmitted-physical-relation-restored",
+    "ordinary-inheritance-red",
+    "ordinary-inheritance-restored",
+    "execute-cancel-lock-order-red",
+    "execute-cancel-lock-order-restored",
+    "final"
+  ],
+  "phaseContracts": {
+    "initial": {
+      "phase": "all",
+      "kind": "ordinary",
+      "cleanup": {
+        "count": 326,
+        "byKind": {
+          "namespace": 214,
+          "role": 108,
+          "child": 4
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "a6cc058dcb2288d4bd6e4730f6cdcf24095230082203d9824628eb521e329945",
+      "rawObservationsSha256": "b44c8b13d7d121b84a21e88e2d716ab0ea9b7cc769a311629c976f09cbae8009"
+    },
+    "second-checkpoint-loss-red": {
+      "phase": "C1",
+      "kind": "control",
+      "cleanup": {
+        "count": 31,
+        "byKind": {
+          "namespace": 21,
+          "role": 9,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "df57b2fba641fb784191e24c0e899aded145d161c1c1301ab03b923a2f13600f",
+      "rawObservationsSha256": "496f526cae37f825a821ba3a09c9447c5f45bc40776ddf7014dd93fd1bf35575"
+    },
+    "second-checkpoint-loss-restored": {
+      "phase": "C1",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "447aa15c6e3772a655c11e129d1463ac2a4629d64c12427a5fec47a1598bf1b5",
+      "rawObservationsSha256": "841e0e74829ee890a4147f5f9debad2519f652f63a7920205449f88a4550560e"
+    },
+    "skip-identity-sequence-red": {
+      "phase": "C1",
+      "kind": "control",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "ec152fe50ddab664e8b9f044110012f874478f1759f22cb8fc762c88589ec5e6",
+      "rawObservationsSha256": "13a6e183b8d8cff24e44e2ed8e42b51c16975b942e3178cfb070df090aaa94e5"
+    },
+    "skip-identity-sequence-restored": {
+      "phase": "C1",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "e64dbec01b97d7c75b705563ccf1383b5c9255b81b75573714e29ad2ad59e576",
+      "rawObservationsSha256": "fa3bfa3d5cc1130eaabb0b3c518e22b6894cce4a246dfe7cc266ccbda8de0516"
+    },
+    "realtime-write-broadening-red": {
+      "phase": "C1",
+      "kind": "control",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "027ed783f511f9ce823cab7a41193b9ed7c89d9afe898c7d4eee8a0f2da0e5b8",
+      "rawObservationsSha256": "6f608647258f8be879323eb66a7c4cd8310ac3d56cfbda0dafe9c51bf0f383b3"
+    },
+    "realtime-write-broadening-restored": {
+      "phase": "C1",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "ba39eebc9940e115612731d200115f247344ebaf617380dd02c0e64f05b43078",
+      "rawObservationsSha256": "c00b15335657e7fd4d273ad93c12a36a079172ceed20b3093c98c45a62acc414"
+    },
+    "tampered-digest-bypass-red": {
+      "phase": "C2",
+      "kind": "control",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "4927894b30c382212e1c1264b134848730d5408d32bf02f437f2c7e8b8d2a826",
+      "rawObservationsSha256": "63e01fc24c8e456f1beeca5d38ac2d2b566507643fd1c9af6de6bf4ca7f4c637"
+    },
+    "tampered-digest-bypass-restored": {
+      "phase": "C2",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "90d00aee2fdaf08f7a9794622274ed1ffeac0299ebdb3eba6fab66714f8d1bcd",
+      "rawObservationsSha256": "0fab734c4f860f78ed0ba48e3675151a97d8471d47431b6b62a3ee77199dac2b"
+    },
+    "commit-interrupted-restore-red": {
+      "phase": "C2",
+      "kind": "control",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "ad203d8b1fa079a100bd3f984421b2de4213d80c2cec72d35f13a0ab2940dc04",
+      "rawObservationsSha256": "8f9df1e1a03125d9676dc56ba9ed36c536876b71f1718eb117ca2fa8ac896285"
+    },
+    "commit-interrupted-restore-restored": {
+      "phase": "C2",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 61,
+        "byKind": {
+          "namespace": 42,
+          "role": 18,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "f926089cde9ced31baf0dc94ff7d5995547ff1978a11013db823998b1cb2199e",
+      "rawObservationsSha256": "5a16daeb7d46e1e3223b093b0a1d45f68d1e0c1cfb4368f41c9780b27aff176a"
+    },
+    "profile-populated-guard-red": {
+      "phase": "C4",
+      "kind": "control",
+      "cleanup": {
+        "count": 107,
+        "byKind": {
+          "namespace": 61,
+          "role": 45,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "611e43b806bc91179c4806c31a1f267038e63cb31b9439e489b768576fa71a9b",
+      "rawObservationsSha256": "f6bbe54b0cda580265bdad71a6402d1dfb945ecb9e96ea82f06e5b3cca79b630"
+    },
+    "profile-populated-guard-restored": {
+      "phase": "C4",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 112,
+        "byKind": {
+          "namespace": 66,
+          "role": 45,
+          "child": 1
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "f12b9a850ea4ebe609d1aeea82ebaeeec8baf9d983a13d234cc6a2bc18e64889",
+      "rawObservationsSha256": "1f6f5d9c1118393ab326220973569ae2123df84b910c51c3505c1150f50418cf"
+    },
+    "running-writer-window-red": {
+      "phase": "C5",
+      "kind": "control",
+      "cleanup": {
+        "count": 32,
+        "byKind": {
+          "namespace": 21,
+          "role": 9,
+          "child": 2
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "6177bfe66c9a92756b45fb88646d7991440e1ded6fa0e90b15d4b482366d8650",
+      "rawObservationsSha256": "eca696ff11e8cb2c5d4886b5fd2d9bbf90cb4a17523683d13699fd9b6e673b5c"
+    },
+    "running-writer-window-restored": {
+      "phase": "C5",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 95,
+        "byKind": {
+          "namespace": 64,
+          "role": 27,
+          "child": 4
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "a9feac49cd3ef42dc17fce5d7ed7fe9a8cf4907bb048e51924600b358b65a4f4",
+      "rawObservationsSha256": "129b94a1f4dce25bbf64d21909c5c296ab156439837924f19ca74aeb1bd5423b"
+    },
+    "unknown-lifecycle-ledger-red": {
+      "phase": "C5",
+      "kind": "control",
+      "cleanup": {
+        "count": 33,
+        "byKind": {
+          "namespace": 22,
+          "role": 9,
+          "child": 2
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "17dc4d4098dec3c9793d62dd2cd6d85ae36f947f501848d8a8cd9dddaa9ceaf6",
+      "rawObservationsSha256": "210998884cb2c145d6d097e1ada848fc3c187a79b7c1e34370decb940e71679b"
+    },
+    "unknown-lifecycle-ledger-restored": {
+      "phase": "C5",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 95,
+        "byKind": {
+          "namespace": 64,
+          "role": 27,
+          "child": 4
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "e99f3cc0f1ef70e5c3e6a88c54f26fa8d9c5c1f4026c27ef626da1d02b93d15d",
+      "rawObservationsSha256": "60e5d4f231fdf516e9fc4f42fbb797a2de7de058109fb682cac4983e099f0a8a"
+    },
+    "unadmitted-physical-relation-red": {
+      "phase": "C5",
+      "kind": "control",
+      "cleanup": {
+        "count": 33,
+        "byKind": {
+          "namespace": 22,
+          "role": 9,
+          "child": 2
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "ae0dbe2e79b7de8600713f2841e5d3816029785831528796e2baeb82c87b9d84",
+      "rawObservationsSha256": "bd90ddda0d72941245219971ea0d1dfb7aa24cfbb7f141630e69ef3eb6978799"
+    },
+    "unadmitted-physical-relation-restored": {
+      "phase": "C5",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 95,
+        "byKind": {
+          "namespace": 64,
+          "role": 27,
+          "child": 4
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "096bae7d971af262e10588f3e9a8bce23b83daed08a8a758f61f6de94c1ba7ee",
+      "rawObservationsSha256": "a293f4e58a9e6d8033afc57338362c88998f0ab506c6e589fa36159ef948ace1"
+    },
+    "ordinary-inheritance-red": {
+      "phase": "C5",
+      "kind": "control",
+      "cleanup": {
+        "count": 33,
+        "byKind": {
+          "namespace": 22,
+          "role": 9,
+          "child": 2
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "081e0ca1279bb290f701dcb001570e0d667e058e3d466051870272ff3e94b4fa",
+      "rawObservationsSha256": "9fd79bbe2d65cd6946d0eb5fd17a403647d1234324dbe1c2261605301af304be"
+    },
+    "ordinary-inheritance-restored": {
+      "phase": "C5",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 95,
+        "byKind": {
+          "namespace": 64,
+          "role": 27,
+          "child": 4
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "de17aaaaaa9fe667be58a50489812d187ae5673b7dfe397c2581576aec6c964c",
+      "rawObservationsSha256": "5c93d9ef57499dceb49d1e725736fe5da081f628415b3ba946d13cdcbcad9ed9"
+    },
+    "execute-cancel-lock-order-red": {
+      "phase": "C5",
+      "kind": "control",
+      "cleanup": {
+        "count": 33,
+        "byKind": {
+          "namespace": 22,
+          "role": 9,
+          "child": 2
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "66b648a7ccaa7e07b81d808f345821aa02a902fdf8c9e112bc34ee12f73c73bf",
+      "rawObservationsSha256": "d4517365a7775c2f786754f905fca5d4afa49d571eb81a43085a1f08ae136660"
+    },
+    "execute-cancel-lock-order-restored": {
+      "phase": "C5",
+      "kind": "restoration",
+      "cleanup": {
+        "count": 95,
+        "byKind": {
+          "namespace": 64,
+          "role": 27,
+          "child": 4
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "cae7e971aca616fe270270e30c8b663d7d6ad431617833e4d5ba9c3452c0472c",
+      "rawObservationsSha256": "8c8e61845760d1105385e2ab633cf3bc97a47397139cec2a312eb2287c0b1fda"
+    },
+    "final": {
+      "phase": "all",
+      "kind": "ordinary",
+      "cleanup": {
+        "count": 326,
+        "byKind": {
+          "namespace": 214,
+          "role": 108,
+          "child": 4
+        },
+        "normal": true,
+        "allAbsent": true
+      },
+      "rawResultSha256": "041f3a4a688811f73544372d7bc251cc899ce66f24def070d91a1022b1bfa015",
+      "rawObservationsSha256": "5ef135372d750437031b1f4b30fe2b1af83ea19195103faf23b7c24167b643fd"
+    }
+  },
+  "opaqueFields": {
+    "secrets.secret_records": [
+      "ciphertext",
+      "id"
+    ],
+    "secrets.secret_audit": [
+      "secret_id"
+    ],
+    "legacy.legacy_credential_config": [
+      "root_reference_id"
+    ],
+    "legacy.legacy_credential_subjects": [
+      "token_prefix"
+    ],
+    "access.access_credentials": [
+      "credential_id"
+    ],
+    "access.access_sessions": [
+      "credential_id",
+      "session_id"
+    ],
+    "access.access_keys": [
+      "kid"
+    ]
+  },
+  "privateEvidence": {
+    "nativeCapsuleIndexSha256": "9c94e45c28e9f00af5077484315a32966fbe4b404305df79e6d98bd876b35537",
+    "reconciliationIndexSha256": "ed7a9f42d5c165f774fdb84e250e42674b35ed3fe748c05e1d62d4ebd70aa716",
+    "rootReleaseIndexSha256": "df62e483c42752cb33095e8995b257236bc5ed51507638f31b4d70ab15868cc7"
+  },
+  "valueKeys": [
+    "DISPLAY_UNITS",
+    "SHOW_SECONDS",
+    "_id",
+    "accepted_at",
+    "acked_at",
+    "acks",
+    "actions",
+    "active",
+    "after",
+    "alarm_group",
+    "alarm_level",
+    "alarms",
+    "anonymous_roles",
+    "artifact_digest",
+    "attempt",
+    "attempt_token",
+    "attempt_until",
+    "attgenerated",
+    "attidentity",
+    "attname",
+    "attnotnull",
+    "backupAccepted",
+    "before",
+    "blocked_until",
+    "boundary",
+    "can_configure",
+    "can_update",
+    "cancelled",
+    "cancelledAt",
+    "cancelled_at",
+    "cancelled_by",
+    "cancelled_consumer",
+    "catalogue_digest",
+    "ceiling",
+    "check",
+    "checkpoint",
+    "checksum",
+    "childAfter",
+    "childBefore",
+    "child_name",
+    "child_namespace",
+    "ciphertext",
+    "claimFirst",
+    "claimId",
+    "claim_id",
+    "clear",
+    "cleared_at",
+    "clinicalIdentity",
+    "code",
+    "codes",
+    "column",
+    "columns",
+    "command",
+    "config_identity",
+    "confirmed_at",
+    "confirmed_by",
+    "confirmed_consumer",
+    "conname",
+    "constraints",
+    "consumer",
+    "contract_digest",
+    "count",
+    "created_at",
+    "credential_id",
+    "current",
+    "date",
+    "dateString",
+    "dedup_key",
+    "definition",
+    "delegable",
+    "descendant_only",
+    "device",
+    "display_name",
+    "doc",
+    "duration",
+    "effects",
+    "enabled",
+    "eraseCodes",
+    "eventType",
+    "event_id",
+    "event_time",
+    "execute",
+    "executed_at",
+    "executed_by",
+    "executed_consumer",
+    "expires_at",
+    "exportAccepted",
+    "extension",
+    "extraOmitted",
+    "family",
+    "files",
+    "flag",
+    "format",
+    "generation",
+    "grants",
+    "group",
+    "hiddenRows",
+    "id",
+    "id_kind",
+    "identifier",
+    "identity",
+    "increment_by",
+    "inheritance",
+    "inserted",
+    "insertion_ordinal",
+    "isValid",
+    "isolation",
+    "kid",
+    "kind",
+    "label",
+    "lastAckTime",
+    "lastEmitTime",
+    "last_stamp",
+    "last_value",
+    "ledger",
+    "level",
+    "max",
+    "mbg",
+    "message",
+    "name",
+    "next",
+    "next_at",
+    "notes",
+    "nullable",
+    "ok",
+    "operation",
+    "ordered",
+    "origin",
+    "outcomes",
+    "output",
+    "owner_fence",
+    "parent_name",
+    "parent_namespace",
+    "payload",
+    "permissions",
+    "phase",
+    "plane",
+    "plugin",
+    "polcmd",
+    "policies",
+    "policy",
+    "polpermissive",
+    "polroles",
+    "populated",
+    "principal",
+    "priorCounter",
+    "producer",
+    "projection",
+    "purpose",
+    "quiesced",
+    "receipt",
+    "reference",
+    "refusal",
+    "relations",
+    "relforcerowsecurity",
+    "relispartition",
+    "relkind",
+    "relname",
+    "relrowsecurity",
+    "renamed",
+    "requestId",
+    "request_id",
+    "requested_at",
+    "requested_by",
+    "requested_consumer",
+    "restored_from",
+    "resumed",
+    "retainedArtifact",
+    "revision",
+    "roleClass",
+    "role_name",
+    "root_reference_id",
+    "rowCount",
+    "schemaname",
+    "scope",
+    "secret_id",
+    "sequencename",
+    "sequences",
+    "session_id",
+    "sgv",
+    "silenceTime",
+    "srvCreated",
+    "srvModified",
+    "start_value",
+    "startedAt",
+    "started_at",
+    "started_by",
+    "started_consumer",
+    "state",
+    "subject_id",
+    "synthetic",
+    "sysTime",
+    "table",
+    "target_version",
+    "tenant",
+    "tenantRestoreComplete",
+    "tenant_id",
+    "title",
+    "token_prefix",
+    "type",
+    "using",
+    "value",
+    "values",
+    "version",
+    "wholeCFixtureActors",
+    "zero"
+  ],
+  "regradeControls": [
+    {
+      "id": "wrong-uid",
+      "rejected": true,
+      "symptom": "EXACT_PID_START_UID_GROUP",
+      "recomputedInputDigests": [
+        "f855799e977f12ac427e268b40d0fdc257e552c63019ef0b9ef70eb53b219668"
+      ],
+      "rawReceiptSha256": "570da6d95870941b6eb58970ed14438cd6eb7bce57bade15c99d0cc34e237ceb"
+    },
+    {
+      "id": "wrong-startTicks",
+      "rejected": true,
+      "symptom": "NO_MISSING_OR_DUPLICATE_DRIVER_BIRTH",
+      "recomputedInputDigests": [
+        "094a1f57b4c14b525b12482d73ce4e85bf9a3cf7db53d39489c3bb84239263fe"
+      ],
+      "rawReceiptSha256": "67704d4e9ab04972f2d4dba3dc71fd1800366deeb064d23f9bcd80672eb4abad"
+    },
+    {
+      "id": "wrong-group",
+      "rejected": true,
+      "symptom": "EXACT_PID_START_UID_GROUP",
+      "recomputedInputDigests": [
+        "fa5a52072d7b1f3b3ee0ec7a50ffde5e078e88ab637f4115b47a2da5c1682b79"
+      ],
+      "rawReceiptSha256": "2e451b6c0ad30efa44cf8aa7459b28fec058e593b527caeba52808f59d795689"
+    },
+    {
+      "id": "wrong-state",
+      "rejected": true,
+      "symptom": "ONLY_ZOMBIE_EMPTY_HASH_EXCEPTION",
+      "recomputedInputDigests": [
+        "cb866244c604a4b0a00b8d0d348a51d694e9f67885b9e2b850d06af751971052"
+      ],
+      "rawReceiptSha256": "92043fb7ae7d12569e735229a6c470c01b847251d07aed3eb46a0e883206ed62"
+    },
+    {
+      "id": "wrong-commandDigest",
+      "rejected": true,
+      "symptom": "ONLY_ZOMBIE_EMPTY_HASH_EXCEPTION",
+      "recomputedInputDigests": [
+        "fc0fa4ec0d5c6b10a1a8bcfbbff0875c767127881f1cc782017fe2e4be247ed8"
+      ],
+      "rawReceiptSha256": "b108bd4b672fc95b350372f5219cfb8d588125fadfaaf0396f5e3df631eddb1c"
+    },
+    {
+      "id": "wrong-exact-argv",
+      "rejected": true,
+      "symptom": "EXACT_SOURCE_ARGV_HASH_AND_PROBE_GROUP",
+      "recomputedInputDigests": [
+        "804927012dee23cae1f65e89fff44978111192825292f2e5458a2e76ec95ccfc"
+      ],
+      "rawReceiptSha256": "1a1a257e2a1df09b5f3c0f77530d2984a02601a744c9f1093731b5fcb1a8215e"
+    },
+    {
+      "id": "wrong-probe-stage",
+      "rejected": true,
+      "symptom": "ONE_EXPECTED_PROBE_PER_STAGE",
+      "recomputedInputDigests": [
+        "1a433e411bd2368e843aa13f8696c27ea26f8ef45386a3cd0893ef02c9844de2"
+      ],
+      "rawReceiptSha256": "2c7dde5e68735b3d1003becfd313c3ca733c78c9b224faaf04a08b6de6d0b6dd"
+    },
+    {
+      "id": "outer-birth-still-live",
+      "rejected": true,
+      "symptom": "OUTER_LIVE_OWNED_BIRTH_AND_FINAL_ABSENCE",
+      "recomputedInputDigests": [
+        "f484a818f550e77ec847d9964d75c5b506e67a8472c50600706db14ef05046f5"
+      ],
+      "rawReceiptSha256": "ab689b6b9e07b47bc209176fefac8f7595225540dadbd89ef5bb35120ca63e73"
+    },
+    {
+      "id": "post-child-birth-still-live",
+      "rejected": true,
+      "symptom": "POST_CHILD_ABSENCE",
+      "recomputedInputDigests": [
+        "84863b92442f3d97a375fccca2ea9d4d359bc6b6a0e796d1bc7914eb4ed54f87"
+      ],
+      "rawReceiptSha256": "582896fc6791b5e1b4b8a9ceba59fe5dff2c24386fe4aef23bf0876ea852bf02"
+    },
+    {
+      "id": "missing-control",
+      "rejected": true,
+      "symptom": "ALL_24_SQL_STAGES_REQUIRED",
+      "recomputedInputDigests": [
+        "d47ad5ac51e85681a945813d78a5a28e89aeb11645efa48755145ae987918b8c"
+      ],
+      "rawReceiptSha256": "d94f01bde366a52159dd7ad3c3dfe49f95f94efe79fcab4698426794906e9f88"
+    },
+    {
+      "id": "additional-cleanup-error",
+      "rejected": true,
+      "symptom": "NO_OTHER_CLEANUP_ERROR",
+      "recomputedInputDigests": [
+        "b4b22c5765e075bf8ead4593810b62d05fdb985fca205d880a4c9d9825f8062f"
+      ],
+      "rawReceiptSha256": "4ecc91089f571ae18cff05a5797032eebea743ddacbf74e06a834466e9db5678"
+    },
+    {
+      "id": "extra-unowned-birth",
+      "rejected": true,
+      "symptom": "OUTER_LIVE_OWNED_BIRTH_AND_FINAL_ABSENCE",
+      "recomputedInputDigests": [
+        "98a7e33fcd398615e43744bfef3e127f6d8bc1bd0bbd5d6a24610f272e2b0d1c"
+      ],
+      "rawReceiptSha256": "fb88f2acc3d997a09ea7caef9d4fdd878f6922866425b9b0f9037c16b1ace180"
+    },
+    {
+      "id": "wrong-group-even-both-records-agree",
+      "rejected": true,
+      "symptom": "EXACT_SOURCE_ARGV_HASH_AND_PROBE_GROUP",
+      "recomputedInputDigests": [
+        "079ff4a092002ea4b87e80ff9697f9c684df987e136258ff2716fab6ea34bf10",
+        "fa5a52072d7b1f3b3ee0ec7a50ffde5e078e88ab637f4115b47a2da5c1682b79"
+      ],
+      "rawReceiptSha256": "f09ca90c23f05e3836bbddb46d79b3710bc6ccb85f59b553944191baa841854d"
+    },
+    {
+      "id": "wrong-uid-even-both-records-agree",
+      "rejected": true,
+      "symptom": "OUTER_LIVE_OWNED_BIRTH_AND_FINAL_ABSENCE",
+      "recomputedInputDigests": [
+        "f4fd91711df69dfcf552ee39cbb942b785d09b1c180c30001bbb3f0e6fff65dd",
+        "f855799e977f12ac427e268b40d0fdc257e552c63019ef0b9ef70eb53b219668"
+      ],
+      "rawReceiptSha256": "29a0a51d7afc040e1c1b14598592492f1761551cc947de15771af6fc579938e3"
+    },
+    {
+      "id": "initial-four-births-even-matching-keysets",
+      "rejected": true,
+      "symptom": "EXACT_FIVE_INITIAL_FINAL_NODE_CENSUS",
+      "recomputedInputDigests": [
+        "063d59e76c1c052f8c032114b6560c9d51cb0407f017160795fcdeaae143d676",
+        "b5f3dd70b22eed6f01dac082195f64e913a2dbf340e788ec1d78d1def0188fa1"
+      ],
+      "rawReceiptSha256": "380479ecda945ab1045652234059390f7089afc9118b22ceb0da6facbceb16c2"
+    },
+    {
+      "id": "non-zombie-command-change",
+      "rejected": true,
+      "symptom": "ONLY_ZOMBIE_EMPTY_HASH_EXCEPTION",
+      "recomputedInputDigests": [
+        "15830df548954528114287ca3426ab9b0024d81cbfb1ab6f247156c57fd9803d"
+      ],
+      "rawReceiptSha256": "980e6c11e87bb51c1e19463b0462d42ca8344b881ef9ee5f2f4609890d7b96ab"
+    }
+  ],
+  "adapterHashes": {
+    "schema.cjs": "edb6f630cd570990d2475e472cb9ca3e91a9652dd9937755434d633d55b8da36",
+    "physical.cjs": "e1438f58537100bf242b7fcf4d8fca421e7550d29caae0fd2ef89fc04251a980",
+    "validate.cjs": "f01375072896c7d8b0dd43b23d4ffdfa3138cdd713b102c95b0d41680ec5766e"
+  },
+  "recordedPayloadSha256": "f8bbcc04f4ea1729532db92bd0a4b41deb156bbde40b8bee54e64251a4f468ce"
+}
