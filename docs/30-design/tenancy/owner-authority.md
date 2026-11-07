@@ -116,9 +116,11 @@ valid provider authentication and current Nightscout authority. It does not requ
 Nightscout-owned rotating refresh credentials initially. The provider's login
 cookie/session, any Nightscout browser-session cookie, the current server-side
 Nightscout session and access bearer token are distinct. Cookie scope/transport,
-local and provider logout propagation, idle activity, concurrent renewal and outage
-behavior need explicit contracts before acceptance. Adopted lifetimes below remain;
-provider activity alone cannot bypass current Nightscout authority.
+local and provider logout propagation, idle activity and concurrent renewal need
+explicit contracts before acceptance. The [adopted provider-outage policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#oidc-provider-outage-existing-access)
+allows existing valid access only until existing expiry under current local
+checks, with no new login/renewal or relaxed freshness. Adopted lifetimes below
+remain; provider activity alone cannot bypass current Nightscout authority.
 
 Acceptance must exercise the same synthetic provider/login/renewal contract on
 both supported modes, enabled and disabled. Cover missing/wrong issuer/audience,
