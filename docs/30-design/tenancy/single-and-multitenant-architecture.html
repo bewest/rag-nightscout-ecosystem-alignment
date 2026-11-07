@@ -3306,6 +3306,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#current-service-composition-and-restore-integration-2026-11-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current service composition and restore integration (2026-11-07)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-the-write-seam-made-possible" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5391,6 +5402,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#current-service-composition-and-restore-integration-2026-11-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current service composition and restore integration (2026-11-07)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-the-write-seam-made-possible" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5530,7 +5552,7 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>552772567</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>908f8a916</code>.</em></p>
 <p><em>Contributor-facing living explanation. Source inspection is </em><em>read-derived</em><em> at
 cgm-remote-monitor <code>83582e876dd193f4448f44c28e379fb5464a26c7</code>, the published head
 of draft PR #8898 on 2026-11-06, based on dev <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
@@ -5548,6 +5570,80 @@ preview acceptance on <code>ded254b9</code>, <a href="../remedial/rc-16.0.0-inte
 and independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>
 are retained as history where this page cites them. PR #8898 is open/draft, not
 merged or released.</em></p>
+<h2 id="current-service-composition-and-restore-integration-2026-11-07">Current service composition and restore integration (2026-11-07)<a class="headerlink" href="#current-service-composition-and-restore-integration-2026-11-07" title="Permanent link">&para;</a></h2>
+<p>This amendment supersedes the older API-only runtime description below for service
+availability. The earlier source survey remains pinned to <code>83582e87</code>. Runtime
+composition at <code>f0fac99a2fccee259c9a76eba0123058bf288d96</code> is recorded in
+<a href="../remedial/rc-16.0.0-integration-record.html#r73---durable-runtime-and-bounded-operations-batch-2026-11-07">R73</a>.
+The maintainer <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">reaffirmed separate service processes</a>,
+including containers with shared private sockets where appropriate. Compose and
+jsonnet are packaging options; no generator is selected.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Responsibility</th>
+<th>Communication in the bounded reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API</td>
+<td>Existing tenant REST handlers, authorization and clinical writes</td>
+<td>PostgreSQL, scoped secret provider, private socket-write endpoint</td>
+</tr>
+<tr>
+<td>Realtime</td>
+<td>Browser/socket connections and record frames</td>
+<td>Reads PostgreSQL; forwards socket mutations to API over private IPC</td>
+</tr>
+<tr>
+<td>Evaluator</td>
+<td>Clinical evaluation, durable notification intent and retries</td>
+<td>Reads PostgreSQL; selected notification handoff to realtime over private IPC</td>
+</tr>
+<tr>
+<td>Tenant-admin</td>
+<td>Tenant management and owner configuration</td>
+<td>Separate audience/listener and current persisted management authority</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>flowchart LR
+  Rig["Existing rigs and clients"] --&gt; API["API process / container"]
+  Browser["Browser and socket clients"] --&gt; RT["Realtime process / container"]
+  Owner["Tenant management client"] --&gt; Admin["Tenant-admin process / container"]
+  RT --&gt;|"Private socket mutations"| API
+  Eval["Evaluator process / container"] --&gt;|"Private notification handoff"| RT
+  API --&gt; PG["PostgreSQL: tenant data and durable state"]
+  RT --&gt; PG
+  Eval --&gt; PG
+  Admin --&gt; PG
+  API --&gt; Keys["Scoped secret provider"]
+  Maintenance["Private restore controller"] -. "Proposed participant / invalidation control" .-&gt; API
+  Maintenance -.-&gt; RT
+  Maintenance -.-&gt; Eval
+  Maintenance -.-&gt; Admin
+  Maintenance --&gt; PG</code></pre>
+<p>Solid component paths describe the reference source; dotted maintenance
+coordination is implementation work, not accepted cross-process restore.
+Realtime's raw record frames and evaluator-derived values are distinct products;
+see the <a href="../../../reports/tenancy/derived-output-2026-11-07/index.html">characterization</a>.
+Existing client protocols do not change when these roles move into containers.
+The default single-tenant process retains its existing composition.</p>
+<p>During tenant A restoration, each participating process must stop admitting A's
+new work, finish admitted work, and acknowledge clearing A's retained state before
+reactivation. Tenant B continues. The current local cohort prototype aggregates
+contexts inside one process; the next integration replaces that limitation with
+configured private participant endpoints. A PostgreSQL advisory lock protects
+participating code. A database-enforced fence would reject bypassing operations
+in PostgreSQL itself. Process separation and that stronger fence are separate
+questions; neither a process list nor a configuration assertion proves exclusive
+credential custody. Native tests must exercise actual separate processes,
+restart/lost acknowledgement and late-connection behavior under the declared
+trust boundary.</p>
+<p>The remaining deployment/runbook and detailed communication work is queued as
+MT-DOC-DEPLOY and MT-DOC-REALTIME; this overview does not close those items.</p>
 <h2 id="what-the-write-seam-made-possible">What the write seam made possible<a class="headerlink" href="#what-the-write-seam-made-possible" title="Permanent link">&para;</a></h2>
 <p><strong>Shared single-tenant code did change.</strong> The storage/write seams let the
 multitenant preview reuse shipping domain rules and version-specific handlers
@@ -5848,8 +5944,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/57bc4736ba1efd2c3a581ae25aa22b259b05c49b/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/57bc4736ba1efd2c3a581ae25aa22b259b05c49b/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/908f8a91681911222e884fd138dd35c63899532e/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/908f8a91681911222e884fd138dd35c63899532e/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof
