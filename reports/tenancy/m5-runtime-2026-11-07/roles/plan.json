@@ -1,0 +1,489 @@
+{
+  "version": 1,
+  "reviewed": true,
+  "pending": [],
+  "scope": {
+    "evidenceClass": "RECORDED-EVIDENCE",
+    "freshNativeExecution": false,
+    "boundary": "synthetic joined API realtime evaluator and controlled unchanged-client browser",
+    "externalProviders": "UNMEASURED",
+    "deviceDelivery": "UNMEASURED",
+    "performance": "UNMEASURED",
+    "wholeProgramme": "UNMEASURED"
+  },
+  "head": "b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952",
+  "tree": "b87eb6d625c0f1261bd80fe7164350c593617570",
+  "causalFiles": {
+    "lib/api3/storage/mongoCollection/utils.js": "d92ad5d7afc8de44cf0b937af075419eb01cbc0fce3280d473e9d2e1a2295e7a",
+    "lib/api3/storageSocket.js": "aa9492c852966a61897f2da4896f71e6067a5f1e200f78d78baa5f4dcefb1980",
+    "lib/migrations/catalogue.js": "a2df641934848d3bda6ad538878977d2fc174831e1b4ee7e1dcbbf9e1dca4f74",
+    "lib/migrations/postgres.js": "4eaa07185611e52c38ac0635b0a9bf04aaabd501e07467696411413f397bd5a5",
+    "lib/server/profile.js": "bc8f66774ef96cf37c335593a65a3f7748cf02e7783b9b5787c4262036b74a3b",
+    "lib/server/realtime/README.md": "69fed48152140bcd47adf5ffa8ba55ddd256d40f838a856f3ea16a06a7338959",
+    "lib/server/realtime/admission.js": "d99cb414d58117425bc4f07c1a5e838b37be46c4f733ccae7d27322bef90b657",
+    "lib/server/realtime/alarm-transport.js": "9c34fc8501e522320fca353d8567c7b2cb71e3e0295b1c2081055e8c61c4a02f",
+    "lib/server/realtime/authority.js": "7c0a76160d9b45d1cf13d0abb3aceb98421d89cc7315d8d1c3ab9761c153529c",
+    "lib/server/realtime/config.js": "c24c46804dfce61f3548ad5289d132dd87461d9700a170fff7e98f2048c210f0",
+    "lib/server/realtime/contract.js": "93e63dac0c00f1d3217fb1fb670d1fdb60e4c229b597330ec7a0ce050e0e8a17",
+    "lib/server/realtime/ipc.js": "824355ff407ebd6b8dfc9a97d6b4846c8a547c4b2acbfa948be45a78f1e4834d",
+    "lib/server/realtime/notification-state-config.js": "232b3322ab01316f9f0bb4bb59f5385285807638fa5a3a83a6fb5b8894a61489",
+    "lib/server/realtime/private-api.js": "97d6cf1a85c2f768a285f598082bccaffcc2bf279d52000ac191e02073c18c1a",
+    "lib/server/realtime/private-config.js": "b42fa3da120cddaf757702c38dfd623282d05a7e8dd5ffd4c6fba17f8c00b259",
+    "lib/server/realtime/projection.js": "8f2ac005ca605750488194e8e3599b52645a90f81bd4439ce4db814d6ab0e871",
+    "lib/server/realtime/protocol.js": "b1e75bf471485d4a88cc7d0314d49f4f16146c54a994582fa03f3ae102f0de83",
+    "lib/server/realtime/runtime.js": "50c3903ae378a95632afd98f9b99ee4815f4749b8e334b88df0eba072071fa95",
+    "lib/server/serve/api.js": "3d9b5f065040783aed76c9084d1fd68a926e9b83dd1a34fc381915eab691b585",
+    "lib/server/serve/evaluator-config.js": "da804c3bc333d17a5f4de5c82cc6b93a4cddcaae3ff562a8843cbab3068145bf",
+    "lib/server/serve/evaluator-consumer-config.js": "7c91fbe62a92183f1b45bbe1510461590367a0b10c0f3793376a1c63a373a5ca",
+    "lib/server/serve/evaluator-consumer-readiness.js": "d48ec47f4233de2c14a0787c81f182bf9659efb0ecba59cf25140d8cf8da7b9d",
+    "lib/server/serve/evaluator-consumers-NATIVE-PLAN.md": "497315b979af9b41446eca4eb19513f1c1b0714cc56526f901f292a97905dec7",
+    "lib/server/serve/evaluator-consumers.js": "2b380259fd9bba426a04adb3aaf1b445468975125db774f89a58da0cc7c7b957",
+    "lib/server/serve/evaluator-preview.js": "394be37e5787c37ffa2761510e2b4143f2051eeccbae57a2930692c5bc7a88df",
+    "lib/server/serve/evaluator-readiness.js": "4b057d81ce71720ecbf1bfc5245c51b545b933ec092b762dcae0f2173f36a93f",
+    "lib/server/serve/evaluator-runtime.js": "523604cb96efdd0e09adfead906140d9c8a4df17cae8aa60d49224ad5d2ce0fa",
+    "lib/server/serve/index.js": "89e738e49a441236747c322e3665919d264fed5f9c89fe5f9d939a3671b3e3ca",
+    "lib/server/serve/listeners.js": "ba20da0d989f2a70d69348f2120df3754cb9ab10b20b06d40add5ceeda2bcf31",
+    "lib/server/serve/owner-preview-authentication.js": "b0924df5a4dd0ee51c38d681bbcaddef0c283805c66436439e7f04931481b4b9",
+    "lib/server/serve/owner-preview-config.js": "b410652d2165e3b06d24fe5378e5e5ad8a35e96260d8ff0b1f67348d44b5fff2",
+    "lib/server/serve/owner-preview.js": "3138d68253e3f87b4be0938791c807d791120f14cfdf24015c6e9414b3c98fd9",
+    "lib/server/serve/postgres-domains.js": "a8d4fac4ba88417cd943215c94408f1d5fe3ad3133287eba209552913d13fc70",
+    "lib/server/serve/preview-api.js": "85f0a833a35d0ed0c2caf2da857f5a6586f910af65f7ca23fb966c10e9e43c10",
+    "lib/server/serve/preview-config.js": "20f7ddbefc3dea2e9a66cd7d17702ba99941d96479a5cc39eccd8a01f68b3542",
+    "lib/server/serve/preview-domains.js": "0a8c67758f6547240ef3899682311a2db473415a8baffcd696dee4ffe2bffba9",
+    "lib/server/serve/preview-realtime.js": "8288e27aee7c84c980d36b6004888cf62b0bc9477752e30b84dec24a6d8a513d",
+    "lib/server/serve/roles.js": "e04d1d3001aff909c7881edafae579e1f54e0475b5df0546d064faef2d857971",
+    "lib/server/serve/settings-config.js": "d80413e541c8af562beb9234b18eb92ac98ab1622d79c2a618ace32ed9ecc027",
+    "lib/server/socket-write-handlers.js": "ac99c3590dd12f99ad176d45e8981aabfbbcd8fa72822dca188446558cc44778",
+    "lib/server/srv-dates.js": "1d8fc968fdeb7d41fef9aea6a7b917780dd02e1954c1a38449e585c1e0a5516a",
+    "lib/server/tenant-app/profile.js": "cfc5968363a5ee134581b2d4ddfc42b6204d8f944d5eb9653811c302292164ef",
+    "lib/server/tenant-socket-order-port.js": "92184c3236257077048f1c53382c3ee8f49385f0ece234e9db1b95c9b9121e2e",
+    "lib/server/tenant-socket-write-executor.js": "9f8da9aaea3a5666cd57ac14d7e63e185eb28fe49a0abeb0945f9079e7c38bbb",
+    "lib/storage/postgres-collection-intent.js": "c7a3d201e34d646af05ce16bfee0ebcdc6ec3e5700c9e2e0d0fd6c7d43a3833f",
+    "lib/storage/postgres-entries-read.js": "84500870645469558f25698e37ea5fd50f7431b770d42088a511536e376efd54",
+    "lib/storage/postgres-identity.js": "bbed55dc0da348f99ff1c23623493dbebfaa2ab6b1d783c05ff0d45e0621438c",
+    "lib/storage/write-intent.js": "87ebee979939c2bbcdc6850bea58366a2088041ad5fb43ad08e5a44d72691c3f",
+    "lib/tenant-alarms/README.md": "dbb08778054de44c98213a4a938ae7bb2f29cfd419118fa1bb8db1fad26903fb",
+    "lib/tenant-alarms/ack-executor.js": "9146fd84e5de3e0a6c26787d99912dd8eaa390bace4e6aea4c61660354b7f4e3",
+    "lib/tenant-alarms/composition.js": "bfb5b06a4081c16d48cc806b8e84bcdacdb244e0db74c426fbb686672efb04bb",
+    "lib/tenant-alarms/contract.js": "0449415b151e722b6e6ddff426807abd79fb482009e863c5bc043c1ce8dc1ec7",
+    "lib/tenant-alarms/cycle.js": "65dafa1e82b8d283ee7106b9a87e62d4a333a91bf967b3e73d1f674fccc2907c",
+    "lib/tenant-alarms/postgres.js": "81aa0e4a332d7f2137dfbf05e1a37438ce8ba9cf34a0a727fbde395562bd0093",
+    "lib/tenant-notifications/NATIVE-PLAN.md": "5c217fb058af86a58239c62a2e445e1920b9df8264515cb309d47fca027a955e",
+    "lib/tenant-notifications/README.md": "006c36811ddad7c947e8d49f0d41e609e64961e81f45f1dc2338070b97b2bbe9",
+    "lib/tenant-notifications/ack-admission.js": "aa337df1bf07f0ccefc6dffeaa1bcf98845682b48541f19e66228812885f9dd3",
+    "lib/tenant-notifications/component.js": "0250eaf7e2346b5e7e83dbad45ff0df651d574caa65c82cecf7b594420597fb9",
+    "lib/tenant-notifications/contract.js": "b9fa5d252bed31bc94b5a0424dba84672af3a52f7b3b76ffdb02ccad011cffe6",
+    "lib/tenant-notifications/postgres-candidate.json": "0d998333640f4415dfb93edd789edb0277c1067ccd79f8583f902b3e1b0e1ec2",
+    "lib/tenant-notifications/postgres.js": "4a16996d31240b8c52beb121d4920d017d7efb2a0f65d13d0614abbc4d624f0a",
+    "lib/tenant-notifications/producer-state.js": "5bc12786b8bbb129a7bdbcc5f0491823d7a4431ea6b4d3cafd230cdfeed96fd8",
+    "lib/tenant-notifications/producer.js": "c72c675adb24cd9605281dffb6f241ea078eff13e6e7752c594ffcf800e3ec30",
+    "lib/tenant-notifications/readiness.js": "db3df0e90e65a60782676f2ea28b93bdd6cf98d73d2ab26fcf89174e67c33f2b",
+    "migrations/candidates/postgres-profile-socket-order-v1.json": "3838b60a7fd4cedbd3297dba6022ddff1ba998895bcf113dc85a4339e295bb08",
+    "migrations/candidates/postgres-profile-v1.json": "d1830054c7d2ffcc726c5e2c4a86fb5a31de79cdb63612dc02ba3474b0497fd8",
+    "package-lock.json": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+    "tests/browser/fixture.js": "2e6ab9a910bcb20757b54b02888c4b61941690126c408a5f28989ff74840c1cf",
+    "tests/browser/hooks.js": "8cd80bae30269af8c3f637e69a439ec1054615ed811143cf32c9b14b8ff74734",
+    "tests/data-timestamp-oracle.test.js": "01a324025762bdc9be3fc988d350d069a84c6aa3052018d73a0ca0f45bfa46c7",
+    "tests/fixtures/default-server-settings.js": "40a7464cdfbaddb249392b33c9db925194cda3e0a6a105bb2c8252ff6203a618",
+    "tests/fixtures/realtime-preview/BOOTSTRAP.md": "cc4156bcfd4577aaf3c2900005a72caa699952b5305d4982355b6aadde8f7336",
+    "tests/fixtures/realtime-preview/CONSUMER-EPOCH.md": "c4bcb576468cc9c35e90b015362f36cd1e45ae84a1137623b73ae7bd3de3987e",
+    "tests/fixtures/realtime-preview/NAMED-TRANSPORT.md": "5bdf640fc0d58807075f16bb8e3b3ef638c128e59a4f35d9e21f6b8414789a80",
+    "tests/fixtures/realtime-preview/PROFILE-ORDER.md": "e83b6452d465542deffad00ca76cf4cfeddb272a3858580eded39f77f1b61fcc",
+    "tests/fixtures/realtime-preview/PROFILE-TIMESTAMPS.md": "5d3dab283f43616cd53bea76da2e97924213aff2a9375db8bfb4a26c42729d6c",
+    "tests/fixtures/realtime-preview/README.md": "f97b998e38d0c6147686f1837c5dee4afed6e7f0592a88345ec30efcffa71858",
+    "tests/fixtures/realtime-preview/authority-epoch.js": "4e1fde64f1d56b7ea42df1d60969edc423df0c55bfca84a5ad27b1ccdd7658f7",
+    "tests/fixtures/realtime-preview/bootstrap-grants.js": "47fee06aafdfe1207873ce5ea37ffde982231e9d02e84daa7de142ca000945f1",
+    "tests/fixtures/realtime-preview/bootstrap-plan.js": "6f06a2d4eab37d39d2ea2e4f377eac9130d7b54344af6ea4ca94e11825474287",
+    "tests/fixtures/realtime-preview/bootstrap.js": "919b3f6aeaeb714d797a1635a40bf53026f723acdfb0631be5256197470ba88a",
+    "tests/fixtures/realtime-preview/browser.js": "54f0578fccb59e98458f08503dda9a2c782ee9835ba8beb4bfb1b5e43e8eed7c",
+    "tests/fixtures/realtime-preview/cold-acquisition.js": "f724831393b64f62bd758cf76f3444392c5b67b91bd519074b3a5448ef8019e8",
+    "tests/fixtures/realtime-preview/consumer-oracles.js": "666045a5bb4de7b7559feddfb03b17f79d1f2a61f50c8ea28ea3aa891aaa61e8",
+    "tests/fixtures/realtime-preview/consumer.js": "cea42a919da6c75548617d5f93467bb93a18bd74b0ad0dd38f6c5a259766660c",
+    "tests/fixtures/realtime-preview/data-parity.js": "daf70b42d803806f34432856b9db99aa7f8a792d10179ef89c55b55e14d0a1d8",
+    "tests/fixtures/realtime-preview/data-timestamps.js": "f17ce13b20581189a5b1023c54e5382a7ce53a78563b779fdd8f3cc3fbcab725",
+    "tests/fixtures/realtime-preview/early.js": "15fddb6a787a8c4f9224eff4823e000faea9fe85a9a3d5342bc7092e3f83a02a",
+    "tests/fixtures/realtime-preview/ingress.js": "b6931f28f7bc5b0e12047adf2c00157fdaa11b9d036e4ce2da57638f1abf0416",
+    "tests/fixtures/realtime-preview/joined.js": "e5175d9a32906fc7c840230c6df415b64f557b66c39603d44c639c3f50480491",
+    "tests/fixtures/realtime-preview/named-client.js": "fba83e60ea2a68285fb7e742a65e635a0e65a4aec598216f4a277322e9a726fd",
+    "tests/fixtures/realtime-preview/observe-api-startup.js": "364e2a35515106aab37f31faef4afdb73617b2f80b73886f9ae2d88ae87a2cae",
+    "tests/fixtures/realtime-preview/observe-evaluator.js": "dc5a9454c94dbc9a9ec21d4f4f6d7c583f9c4d1bf8520d0a5b07d3a7b8fb599a",
+    "tests/fixtures/realtime-preview/plugin-ack.js": "454177ade52483f1ad1c17fc19698544be6311ee3d6c40f50900c80b4aa6c66c",
+    "tests/fixtures/realtime-preview/profile-differential.js": "3838fc26a098740efff48a60da4c5d31b497ebaf2b27886e9de7d019693bf23f",
+    "tests/fixtures/realtime-preview/profile-port.js": "6d4f6243efd8fafef9bb43e56121bf6bbfad2011167008ba17111554d7c6c831",
+    "tests/fixtures/realtime-preview/profile-timestamps.js": "fd60a2398ca5acab9572ca0abce275f4a4d616d19f0674448754e88f010f3fd5",
+    "tests/fixtures/realtime-preview/profile-upgrade.js": "423381eda9524e12e7b26f490a60898e020327e0f7e6fe2a6822dfcc1709efb3",
+    "tests/fixtures/realtime-preview/reader-grants.js": "19c378ffab636d8f1392b99d3388a73e1cce0815b4808e3b99f89e085eae08ba",
+    "tests/fixtures/realtime-preview/roles.js": "54dfc53d41e3d73ac343d8fd98e7348f45a1ed1233771afa348a51d619a85c0f",
+    "tests/fixtures/realtime-preview/runtime-directory.js": "4b0c1bf1890012849af7b02b126a9ff89b589905d59beca4e039d5e608d56372",
+    "tests/fixtures/realtime-preview/storage-oracle.js": "f8c28746ea19721462d520825d892ffdf8aa4f8d39014c8ff840feaa3a3e3d77",
+    "tests/fixtures/realtime-preview/storage-proof.js": "6196592cc0ad92adb6d4a8bef1278f4a5138f31937696d0cbda9ef0aaa740925",
+    "tests/fixtures/realtime-preview/transport-diagnostics.js": "5f5ed75d1e2157fa87bd61c63d783b4f25014b603706d3595f38dad1664b3889",
+    "tests/fixtures/realtime-preview/ui.js": "8af56018aaa7fa845ab46395e509cace03bd5e659f7c2a085d6ca3586e47b935",
+    "tests/fixtures/realtime-preview/wire-call.js": "795c2c7ae285884eb4652c2e2c65abe8caad01f6a27ea0d4063dbe7448cb6f44",
+    "tests/fixtures/realtime-preview/wire-response.js": "ed6b782567aa1ddc66f5a96c808e6faf4d53becbaf51b5c6263e1376b70c6689",
+    "tests/fixtures/socket-forwarding/mongo-reference.js": "5242704c263a5d55d7c42856ecff665bec006c272d9895c5140b7529a6b226e6",
+    "tests/fixtures/socket-forwarding/recording-context.js": "f0bd97528ed2e281e76c1faad1953d238769bcc3e015d2ffb82a7ccdbf793113",
+    "tests/realtime-api-startup-observer.test.js": "164b8edb7d2a8d47e7c3ed677a77bf2ca867f28e7e4164232659e541b0070a3f",
+    "tests/realtime-named-fixture-transport.test.js": "7608b9dfbc9d1844ae431a78d18041bb0fd671abc071e61b1a5e464ca2498150",
+    "tests/realtime-storage-proof.test.js": "6a1e9cfe5d53c5b61f606c162d2cb5eb4837cf1d929560136fedd2412f3a4f38",
+    "tests/tiers.json": "d6e87168ba92379c3e5c5c740533b290eb15d16a0e11b3c8e5aaf85e29b4a0b4",
+    "webpack/webpack.config.js": "f00ef4a44d0d95c8f602f5e55872f076fa6137badc8db052fffa7720f7ff9631",
+    "tests/preview-socket-port-composition.test.js": "b0d9523fb4acaab5318e5061f029f3fa787f2aceafd181fa1db567f490513fd1",
+    "tests/fixtures/realtime-preview/browser-diagnostics.js": "a5d0dd658c4fa4ddc04454f2da10a2581d372afc36aef475f195a2937c08888e",
+    "tests/realtime-browser-diagnostics.test.js": "9e4874b458c344ca7febab8b4a6658a688ddfdf4fc727795f58136b1f14f6ae0",
+    "lib/server/tenant-app/rest-context.js": "fbfac7e1158142a9d4a8872ae36b734b1cc72d53c9fdf4f8794ff1ffc01697fb",
+    "tests/preview-serving-status.test.js": "a7c25082826710c01445dcbc7498462b77f24732b5d7999d5fbb37d7011547bf"
+  },
+  "lockSha256": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+  "phases": [
+    "joined-role-recovery",
+    "joined-data-parity",
+    "joined-consumer-handoff",
+    "joined-consumer-plugin-ack",
+    "joined-socket-epoch",
+    "joined-browser-consumer"
+  ],
+  "controls": [
+    {
+      "id": "control-actual-socket-epoch",
+      "phase": "joined-socket-epoch",
+      "sourceHead": "b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952",
+      "reviewed": true,
+      "oracle": "socket-epoch",
+      "verifier": "verify-epoch.cjs",
+      "patches": [
+        {
+          "file": "lib/server/realtime/protocol.js",
+          "before": "    if (closed || state.closed || state.revision !== revision || primed && !state.primed) c.fail('REALTIME_SOCKET_EPOCH_CHANGED');",
+          "after": "    // Archived control: omit actual socket generation fence."
+        }
+      ],
+      "expected": "ERR_ASSERTION plus recorded old-authority dataUpdate after same-socket valid status-only reauthorization; completed real API hold/release; cleanup/restoration exact"
+    },
+    {
+      "id": "control-actual-config-epoch",
+      "phase": "joined-socket-epoch",
+      "sourceHead": "b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952",
+      "reviewed": true,
+      "oracle": "config-epoch",
+      "verifier": "verify-epoch.cjs",
+      "patches": [
+        {
+          "file": "lib/server/realtime/protocol.js",
+          "before": "    if (closed || state.closed || !config || config.identity !== next.identity) c.fail('REALTIME_CYCLE_CHANGED');",
+          "after": "    // Archived control: omit current config identity fence."
+        }
+      ],
+      "expected": "ERR_ASSERTION plus recorded old frame after actual shared allowlist tightening, all three real authority barriers reached; restore original owned config"
+    },
+    {
+      "id": "control-actual-plugin-admission",
+      "phase": "joined-consumer-plugin-ack",
+      "sourceHead": "b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952",
+      "reviewed": true,
+      "oracle": "plugin-owner-write",
+      "verifier": "verify-plugin.cjs",
+      "patches": [
+        {
+          "file": "lib/tenant-alarms/postgres.js",
+          "before": "          if (!decision.accepted) return Object.freeze({accepted:false,rows:Object.freeze([])});",
+          "after": "          // Archived control: ignore selected private plugin snooze refusal."
+        }
+      ],
+      "expected": "ERR_ASSERTION plus physically committed owner suppression during active actual default10min private plugin window; original canonical treatment and private committed window recorded"
+    },
+    {
+      "id": "control-actual-retry-fresh-uuid",
+      "phase": "joined-consumer-handoff",
+      "sourceHead": "b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952",
+      "reviewed": true,
+      "oracle": "retry-identity",
+      "verifier": "verify-consumer-control.cjs",
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/component.js",
+          "before": "id: row.request_id, attempt: row.attempt,",
+          "after": "id: row.attempt > 1 ? require('node:crypto').randomUUID() : row.request_id, attempt: row.attempt,"
+        }
+      ],
+      "expected": "CONSUMER_UNCERTAIN_SAME_ID; same tenant/original durable origin+config+dedup/payload; actual accepted relay retry attempt>=2; independent persisted request rows",
+      "instrumentSource": "b92b0875578eb35f272fb5836d3efdb8cb354be7"
+    },
+    {
+      "id": "control-omit-cold-control-clear-intent",
+      "phase": "joined-consumer-handoff",
+      "sourceHead": "b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952",
+      "reviewed": true,
+      "oracle": "cold-clear-intent",
+      "verifier": "verify-consumer-control.cjs",
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/producer.js",
+          "before": "const eligible = effects.filter(effect => source.eligible || effect.payload.clear);",
+          "after": "const eligible = effects.filter(effect => source.eligible);"
+        }
+      ],
+      "expected": "CONSUMER_COLD_ACK_CLEAR_INTENT_MISSING; both exact original-expiry suppression keys in committed producer.acks, revision advanced, actual cold CLI refused/lastnull; full requests/effects captured",
+      "instrumentSource": "b92b0875578eb35f272fb5836d3efdb8cb354be7"
+    },
+    {
+      "id": "control-omit-storage-current-collection-filter",
+      "phase": "joined-role-recovery",
+      "sourceHead": "b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952",
+      "reviewed": true,
+      "oracle": "storage-current-collection",
+      "verifier": "verify-storage.cjs",
+      "patches": [
+        {
+          "file": "lib/server/realtime/protocol.js",
+          "before": "          state.collections = state.collections.filter(col => rights.collections.includes(col));",
+          "after": "          // controlled omission: retain previously selected collections"
+        }
+      ],
+      "expected": "STORAGE_CURRENT_COLLECTION_REVOKED; authenticated signedactor remainsvalid, collections empty/grants0; newphysicalmarker committed+RTprojectionatunchangedfloor; bounded observation then noprotectedAevents",
+      "instrumentSource": "257cb5c4ad915d8f6886f60606243befe4a1b35a"
+    }
+  ],
+  "requiredRaw": {
+    "joined-role-recovery": [
+      "joined-recovery-observations.json",
+      "realtime-reader-denials.json",
+      "actual-storage-proof.json"
+    ],
+    "joined-data-parity": [
+      "socket-data-physical-parity.json"
+    ],
+    "joined-consumer-handoff": [
+      "actual-consumer-handoff.json"
+    ],
+    "joined-consumer-plugin-ack": [
+      "actual-plugin-ack.json"
+    ],
+    "joined-socket-epoch": [
+      "actual-socket-epoch.json"
+    ],
+    "joined-browser-consumer": [
+      "actual-browser-consumer.json",
+      "actual-browser-diagnostics.json"
+    ]
+  },
+  "phaseVerifiers": {
+    "joined-role-recovery": "verify-recovery-storage.cjs",
+    "joined-data-parity": "verify-data.cjs",
+    "joined-consumer-handoff": "verify-consumer.cjs",
+    "joined-consumer-plugin-ack": "verify-plugin.cjs",
+    "joined-socket-epoch": "verify-epoch.cjs",
+    "joined-browser-consumer": "verify-browser-diagnostic.cjs"
+  },
+  "adapterHashes": {
+    "verify-recovery.cjs": "87b0cecea8fee8d5c3b90307fa9d62946e275a4a81867fb8eeaa6aa537897ca2",
+    "verify-recovery-storage.cjs": "5742bc6ddd148fa3bfe5c315e2b22949b755101c1ed4bc793fd49873911209e3",
+    "verify-storage.cjs": "d4c2e37531908326983d1a9b016dad6edbb48a5f46e27e7435e280d523e25689",
+    "verify-data.cjs": "b404841045f24f76dea8a9843a092a331c99f9edc9230ca1d7441aeda74f7a33",
+    "verify-consumer.cjs": "c41ca75a2faf5f7d9eb61b012f8522afafc7d135661569fb5a276115257e1592",
+    "verify-consumer-control.cjs": "252e682b3fe7a4acb055ba308a1592f70cd79fcdb1525f486e769bf61d249024",
+    "verify-plugin.cjs": "793e7baed46dd11b8c9b440d260fc360a3fdcc0bcf881c6ac6b618f87d4c48a0",
+    "verify-epoch.cjs": "6f3e145c20f33553e35f7e0224d1c6996c911a0a00903811289871bab1478b2d",
+    "verify-browser.cjs": "4a3a8482e1e70e7f5d6e5779a3b0cf43b655b79fd8fd20f5a7a1c4c038b0b059",
+    "verify-browser-diagnostic.cjs": "77464feea5b8a2176e9a816c6d4e34b4450b8aee8c22e0863e987c49883b0340",
+    "phase-verdict.cjs": "98b743bc88e32f1b21e81c534c88cee4e8cf74a11c9ae396810b33034eeabfd0",
+    "campaign-sequence.cjs": "f4240ff10e1b469b931ff6679b0d05bb4b528e13f78cecadace6147afcb18c0b"
+  },
+  "oracleFiles": [
+    "tests/fixtures/realtime-preview/data-timestamps.js",
+    "tests/fixtures/realtime-preview/profile-timestamps.js",
+    "tests/fixtures/realtime-preview/browser-diagnostics.js",
+    "lib/storage/postgres-identity.js"
+  ],
+  "bundleSha256": "bfb971e9e7702d645e00662b364a3672df01303e4b63c6ddabb8aa9fb240d93e",
+  "chromiumSha256": "8c599d43aec53f2460a31ae2f4af6bd863f8258b34ff519564bc5d4726bfaa1e",
+  "capsule": {
+    "id": "roles-full-b6bb",
+    "indexSha256": "6dffa55d4de77f2b8f3c2704d4f23523445899cdc2ce405a1f5fa59416709935",
+    "indexCount": 635,
+    "observerIndexSha256": "0292a21439b39a393bb5751528dbaa8a9d5ee5a54fbae867dd743581a0f679bf",
+    "observerIndexCount": 7,
+    "archiveSha256": "93969b8e59f8491647ffb4354cb62c21886d433d4d0a01ffe978e35529a9ecb1",
+    "containers": 54,
+    "volumes": 90,
+    "observedBirths": 87,
+    "manifestSha256": "33cab5b9bddb1ca2dd7e2d9dfaf83c0e2a5785a993ceb404d8289fcf4fcacef0",
+    "verifiedArtifactsSha256": "ff918965acfc326f58de55602336aeac427d2ce1d97725c0f945f04c59950b9d"
+  },
+  "pgRecord": {
+    "gate": "m5-runtime-recorded.js",
+    "scope": "separate recorded source attributions; no aggregate application head"
+  },
+  "mongodbVersion": "7.7.0",
+  "phasePins": {
+    "ordinary-joined-role-recovery": {
+      "configurationSha256": "d7163c22323433d9087bcd9241a2c26167b4a20f277f6d3e330b1f70c08f7763",
+      "raw": {
+        "joined-recovery-observations.json": "fc1e2a95b609817e4267551cfa90f8e96462b6cbe9b97fe459459b9bf1a58497",
+        "realtime-reader-denials.json": "6ecb84b94a6d602446020eb1a3ccd46e60a31e4622bf1b0401dde5fbb3500054",
+        "actual-storage-proof.json": "c0733c70651004f16bc04f176153119c7a58c86b48310db938579eefb5afcf92"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "ordinary-joined-data-parity": {
+      "configurationSha256": "db923a98c920e995c7bac4fcef11b0b07d1411eaec5adc7262d7ac9d0163914b",
+      "raw": {
+        "socket-data-physical-parity.json": "e8448d8746f712bd2d73a7e8e07408e226cdd00ec3d1665670bb5a59f1db10d8"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "ordinary-joined-consumer-handoff": {
+      "configurationSha256": "975952baf8d9c0a376d64a9dca99f54bd6ad5e529e8c8cdfe1718558ea67d4ea",
+      "raw": {
+        "actual-consumer-handoff.json": "efd29ce50f9f02cc8465dca9b5aa519a94c78a54f250fc87b32f1f25665587c4"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "ordinary-joined-consumer-plugin-ack": {
+      "configurationSha256": "d75cde4dcbccd43437340b4aba5eccc7f3c9a25456c34a7ee597e331d26bd599",
+      "raw": {
+        "actual-plugin-ack.json": "aaa1f41a666a825f69dd4bead8a3ba0db526efbeeee492e588e451d17272de54"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "ordinary-joined-socket-epoch": {
+      "configurationSha256": "d75cde4dcbccd43437340b4aba5eccc7f3c9a25456c34a7ee597e331d26bd599",
+      "raw": {
+        "actual-socket-epoch.json": "01b38a7f17bfd44d521e5a86aca788e058967bb1e6ed06c4d06915156de21ede"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "ordinary-joined-browser-consumer": {
+      "configurationSha256": "f6dca08e1a1fd23cc5c3ab931d65665959e9a208057871f46f0d428e0cb599c8",
+      "raw": {
+        "actual-browser-consumer.json": "34c430fa53132980b69dabc725edff3506e2fc684add9badb2fec9fb3822722e",
+        "actual-browser-diagnostics.json": "c34f11fdaf87577b5ff08cb9bbc68a3ed29e4bac392a591801ebb8e0e338b37b"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "control-actual-socket-epoch": {
+      "configurationSha256": "d75cde4dcbccd43437340b4aba5eccc7f3c9a25456c34a7ee597e331d26bd599",
+      "raw": {
+        "actual-socket-epoch.json": "91a45c0246528223eae0c843cda9004dcfbe81b13c58cbe649685a3954d9053d"
+      },
+      "assertionRawSha256": "add808b2acbb2de0bdd51e4a6880b4e73621f085595b11ce3ddfe02f4244c8dc",
+      "processSha256": "c5be5bd24e1201db20196f7f10efa717b903859d1224add68fe07172fd274e42"
+    },
+    "control-actual-config-epoch": {
+      "configurationSha256": "d75cde4dcbccd43437340b4aba5eccc7f3c9a25456c34a7ee597e331d26bd599",
+      "raw": {
+        "actual-socket-epoch.json": "8d77f6c5562c9fb8acf57dddff65894df0cd8f8622f08c831d7ef8dcb6d77343"
+      },
+      "assertionRawSha256": "add808b2acbb2de0bdd51e4a6880b4e73621f085595b11ce3ddfe02f4244c8dc",
+      "processSha256": "c5be5bd24e1201db20196f7f10efa717b903859d1224add68fe07172fd274e42"
+    },
+    "control-actual-plugin-admission": {
+      "configurationSha256": "d75cde4dcbccd43437340b4aba5eccc7f3c9a25456c34a7ee597e331d26bd599",
+      "raw": {
+        "actual-plugin-ack.json": "c97421203d88d44ea29dc0e44c4c7e3bbcd1a55617de44f97713e1a5eb3d07ce"
+      },
+      "assertionRawSha256": "add808b2acbb2de0bdd51e4a6880b4e73621f085595b11ce3ddfe02f4244c8dc",
+      "processSha256": "c5be5bd24e1201db20196f7f10efa717b903859d1224add68fe07172fd274e42"
+    },
+    "control-actual-retry-fresh-uuid": {
+      "configurationSha256": "975952baf8d9c0a376d64a9dca99f54bd6ad5e529e8c8cdfe1718558ea67d4ea",
+      "raw": {
+        "actual-consumer-handoff.json": "27f7d8169e8a1cf2dced4a318ac550f48c857b73ce624dc6279049ecd44f2e06"
+      },
+      "assertionRawSha256": "add808b2acbb2de0bdd51e4a6880b4e73621f085595b11ce3ddfe02f4244c8dc",
+      "processSha256": "c5be5bd24e1201db20196f7f10efa717b903859d1224add68fe07172fd274e42"
+    },
+    "control-omit-cold-control-clear-intent": {
+      "configurationSha256": "975952baf8d9c0a376d64a9dca99f54bd6ad5e529e8c8cdfe1718558ea67d4ea",
+      "raw": {
+        "actual-consumer-handoff.json": "52b1a3fd9cbfe167f3fba49a9cc868ba47377eb5cac7f6527fa9ddec40ef09be"
+      },
+      "assertionRawSha256": "add808b2acbb2de0bdd51e4a6880b4e73621f085595b11ce3ddfe02f4244c8dc",
+      "processSha256": "c5be5bd24e1201db20196f7f10efa717b903859d1224add68fe07172fd274e42"
+    },
+    "control-omit-storage-current-collection-filter": {
+      "configurationSha256": "a96c99bb528037fdc847c68515f15d95c199ac97bb8510415e0508ee481c7d43",
+      "raw": {
+        "joined-recovery-observations.json": "348c62540f6e0f04449cb07a522edbd89896da931fb4118a31038bd958886e4a",
+        "realtime-reader-denials.json": "6ecb84b94a6d602446020eb1a3ccd46e60a31e4622bf1b0401dde5fbb3500054",
+        "actual-storage-proof.json": "9c0c4fe338da3935e3b3a393dc5cc59932fa3d4a0bda35bc7cd5359e9d3f2110"
+      },
+      "assertionRawSha256": "add808b2acbb2de0bdd51e4a6880b4e73621f085595b11ce3ddfe02f4244c8dc",
+      "processSha256": "c5be5bd24e1201db20196f7f10efa717b903859d1224add68fe07172fd274e42"
+    },
+    "restored-joined-role-recovery": {
+      "configurationSha256": "65ee8722692ff15cd24c292e06cd39744817e680a0b2113a998e78864c08bfa8",
+      "raw": {
+        "joined-recovery-observations.json": "34dd95aa23575bd32e3b1067c9e392c9a19e6398f963b474754bb72d544bcfac",
+        "realtime-reader-denials.json": "6ecb84b94a6d602446020eb1a3ccd46e60a31e4622bf1b0401dde5fbb3500054",
+        "actual-storage-proof.json": "dd7fb8621f548b0649cf822dfd39d65a1e601f839e2a6e2c0bd56c8bbab7a5d5"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "restored-joined-data-parity": {
+      "configurationSha256": "db923a98c920e995c7bac4fcef11b0b07d1411eaec5adc7262d7ac9d0163914b",
+      "raw": {
+        "socket-data-physical-parity.json": "7d683658152dc2f6481724cc51c6588d8dc44367c095e85d216600cf11b5a3f4"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "restored-joined-consumer-handoff": {
+      "configurationSha256": "975952baf8d9c0a376d64a9dca99f54bd6ad5e529e8c8cdfe1718558ea67d4ea",
+      "raw": {
+        "actual-consumer-handoff.json": "8409dabb89a11dabe23a0a3fa8ed334ed80ce2a0a400b36fbe09f181f7d491fe"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "restored-joined-consumer-plugin-ack": {
+      "configurationSha256": "d75cde4dcbccd43437340b4aba5eccc7f3c9a25456c34a7ee597e331d26bd599",
+      "raw": {
+        "actual-plugin-ack.json": "5886335a3b92e0e34a673e7c80fef46d0dd1c15b6778f24e5114ac8b0e73e3cd"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "restored-joined-socket-epoch": {
+      "configurationSha256": "d75cde4dcbccd43437340b4aba5eccc7f3c9a25456c34a7ee597e331d26bd599",
+      "raw": {
+        "actual-socket-epoch.json": "cb3ece5ef2f5e6f72fb81af1ba9cfb867a4c50817f051ef46b67b63b90d22a5a"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    },
+    "restored-joined-browser-consumer": {
+      "configurationSha256": "f6dca08e1a1fd23cc5c3ab931d65665959e9a208057871f46f0d428e0cb599c8",
+      "raw": {
+        "actual-browser-consumer.json": "b71b74023061f18b23fdfefe0addf3b58caea6be5013540579bf1ebf37cb3b58",
+        "actual-browser-diagnostics.json": "5848d5f297332f60a02660c5be509122e804cb1f510a1c64404df1efba0ea154"
+      },
+      "processSha256": "ab6f2e497127dc1cce57a06de83eac94ad7c5f91f7837ece076d5e9f468370ec"
+    }
+  },
+  "images": {
+    "postgres": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+    "mongo": "sha256:09f940d01e0c09abbfd246a2b10965cbf86a87c9c1dad86b374f925a084976c8",
+    "vault": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8"
+  },
+  "nativeToolHashes": {
+    "phase-verdict.cjs": "98b743bc88e32f1b21e81c534c88cee4e8cf74a11c9ae396810b33034eeabfd0",
+    "verify-data.cjs": "b404841045f24f76dea8a9843a092a331c99f9edc9230ca1d7441aeda74f7a33",
+    "validate-source.cjs": "6d6764d60ae443765fbdecdfbb6c6ee54d7f63f34a8fcafb3184a2b504ee9b3d",
+    "cleanup-children.py": "b317f35d2df4e1707941bb15ab0884ea17cc43c1b081346ddd198f7a066c3807",
+    "verify-browser.cjs": "4a3a8482e1e70e7f5d6e5779a3b0cf43b655b79fd8fd20f5a7a1c4c038b0b059",
+    "runner.cjs": "81f49d958ec088b8dbb3737b7fd9f98b4895482d1e2f6b532edc2fe04023c382",
+    "verify-consumer.cjs": "c41ca75a2faf5f7d9eb61b012f8522afafc7d135661569fb5a276115257e1592",
+    "mount-identity.cjs": "c59326dfe41e7a0807365a5e9bbef9ed35b6ae2b796406b5f4c57ae807f5786c",
+    "verify-consumer-control.cjs": "252e682b3fe7a4acb055ba308a1592f70cd79fcdb1525f486e769bf61d249024",
+    "api-observer-env.cjs": "551b08217fd71675317902a72102042c07c7f087c196d351a9d4162002264002",
+    "storage-verifier-source.cjs": "bd34854a9d8812b183ab4371a46d7e6520a29f0e660e08efa8e03bd9e0228e95",
+    "verify-storage.cjs": "d4c2e37531908326983d1a9b016dad6edbb48a5f46e27e7435e280d523e25689",
+    "verify-recovery.cjs": "87b0cecea8fee8d5c3b90307fa9d62946e275a4a81867fb8eeaa6aa537897ca2",
+    "observe.py": "780017d0ae86f0dbf9399eae2dfa99d74955dc3e9b34445eb8838622f7dfd00a",
+    "build-assets.cjs": "818c185ce70bed66f3c38a51fbbbe1eb963ff396fe509554c3dd2904202cf29b",
+    "pins.cjs": "d1c6e8654905b623000bc5cfabd82829eaaeeff8a5d9b4193091ff596ea1a3c4",
+    "startup-parent.test.cjs": "7aad45ff30f7f4e050216014d521a12cf37462363b2c2ee8d114df1d3897124c",
+    "verify-recovery-storage.cjs": "5742bc6ddd148fa3bfe5c315e2b22949b755101c1ed4bc793fd49873911209e3",
+    "verify-epoch.cjs": "6f3e145c20f33553e35f7e0224d1c6996c911a0a00903811289871bab1478b2d",
+    "verify-plugin.cjs": "793e7baed46dd11b8c9b440d260fc360a3fdcc0bcf881c6ac6b618f87d4c48a0",
+    "campaign-sequence.cjs": "f4240ff10e1b469b931ff6679b0d05bb4b528e13f78cecadace6147afcb18c0b",
+    "verify-browser-diagnostic.cjs": "77464feea5b8a2176e9a816c6d4e34b4450b8aee8c22e0863e987c49883b0340"
+  }
+}
