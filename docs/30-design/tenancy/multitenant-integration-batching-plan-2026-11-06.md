@@ -315,7 +315,14 @@ Local integration ownership and exact unpushed anchors are in
   oracle control red as predicted; record in `claude-owner-evaluator-campaign-20261106/`), then
   reruns the whole campaign on the repaired head; `claude/drop-reader-clamping-20261106` off
   `4cd95d06` removes the subject-reader clamping mode per the decision of 2026-11-06
-  (source-only, no slot); `claude/tenant-backup-upgrade-20261106` off `83582e87` is the batch C
+  (source-only, no slot; **done at `98118fb2`**, 9 files, +51 / −589: `createOwnerReadPolicy`
+  and both readers' `ownerPolicy` branches gone, the management proposed-grant policy and its
+  opt-in suite kept whole; unit 39 / 0 on the three touching files, three controls red and
+  restored, eslint 0, tiers 522 ok; the two edited Docker suites are lint/syntax-checked only,
+  UNMEASURED at runtime; the alignment items that now describe a removed mode are the
+  `owner-reader` gate and controls in `queue/work-queue.yaml` and `queue/gate-controls.yaml`,
+  `tools/lab/selected-owner-clients/` and `reports/selected-owner-clients/2026-11-06/`, to be
+  marked historical by the coordinator when the lane joins); `claude/tenant-backup-upgrade-20261106` off `83582e87` is the batch C
   backup/restore and upgrade/rollback lane (source-only until one focused run). Each joins
   #8898 at a batch boundary through the integration coordinator; none is pushed on its own.
 - **Lane handoffs** are `externals/work/HANDOFF-<lane>-<date>.md`, local and
