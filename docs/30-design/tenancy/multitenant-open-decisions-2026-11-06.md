@@ -182,6 +182,19 @@ export/delete lands; (c) hand it to the Codex root coordinator after the A freez
 **Recommendation: (a).** It is the one C item that can start today without a decision
 pending, and it is the one an operator would ask for first.
 
+## 6. Added 2026-11-07: five lifecycle decision lines from R69 (pointer)
+
+The tenant export/import/deletion early proof
+([R69](../remedial/rc-16.0.0-integration-record.md#r69---tenant-export-import-and-two-phase-deletion-early-proof-on-fd827e35-2026-11-07))
+records five decision lines for the maintainer in its lane README (`lib/tenant-lifecycle/README.md`
+on `codex/tenant-export-delete-20261106`) and the
+[lab README](../../../tools/lab/tenant-export-delete/README.md): Vault key destruction and
+artifact/tombstone retention after deletion; re-homing an artifact under a new tenant id
+(the secrets envelope binds the tenant); `food.insertion_ordinal` preservation across tenants;
+artifact size and transaction bounds; and which plane calls `requestDeletion` versus
+`executeDeletion`. They are not restated here; session -8c owns the lane and asks them one at
+a time with mechanism and trade-off, as items 1–5 were asked.
+
 ---
 
 *Draft for maintainer review. Decisions taken go into decisions.md as rows; the queue and
