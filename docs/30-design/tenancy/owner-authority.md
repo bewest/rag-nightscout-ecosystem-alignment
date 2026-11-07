@@ -40,7 +40,10 @@ Initial capabilities cover reading effective configuration/provenance, changing
 permitted settings, managing uploader/follower credentials and grants, configuring
 enabled integrations, export and deletion requests. Operator provisioning,
 suspension, policy changes and execution of lifecycle deletion remain on the private
-operator plane. Controller commands require their own reviewed authority.
+operator plane. The [preview deletion ceremony](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-deletion-confirmation)
+requires an explicit request/operator confirmation, permits cancellation before
+execution starts and imposes no mandatory waiting period. Current authority and
+verified artifact/recovery prerequisites still apply. Controller commands require their own reviewed authority.
 
 Secret reveal is a separate permission with recent reauthentication. Ownership
 transfer and adding co-owners are sensitive explicit operations; last-owner removal
