@@ -366,7 +366,10 @@ Local integration ownership and exact unpushed anchors are in
   the unit tier goes 22 red → 0 with either enrolment; its rerun then hit 8 legacy REST
   differential failures at 00:10 UTC on 2026-11-07 that had passed at 23:45 UTC the day
   before, which R72's `386dba33` "anchor legacy REST differential fixtures to a captured UTC
-  day" addresses; a focused classification run on `c2000084` is recorded in
+  day" addresses; a focused classification run on `c2000084` (two `owned.js focused` runs,
+  03:54–04:02 UTC, same lab services and seed) reproduced exactly the same eight titles both
+  times, 396 / 1 / 8 each, so the failure is deterministic on that branch at that date; the
+  comparison on the parent head was not run because that worktree had moved; record in
   `externals/work/claude-flake-classification-20261107/`); `claude/drop-reader-clamping-20261106` off
   `4cd95d06` removes the subject-reader clamping mode per the decision of 2026-11-06
   (source-only, no slot; **done at `98118fb2`**, 9 files, +51 / −589: `createOwnerReadPolicy`
