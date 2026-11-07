@@ -18,6 +18,64 @@ and independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independ
 are retained as history where this page cites them. PR #8898 is open/draft, not
 merged or released.*
 
+## Current service composition and restore integration (2026-11-07)
+
+This amendment supersedes the older API-only runtime description below for service
+availability. The earlier source survey remains pinned to `83582e87`. Runtime
+composition at `f0fac99a2fccee259c9a76eba0123058bf288d96` is recorded in
+[R73](../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07).
+The maintainer [reaffirmed separate service processes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes),
+including containers with shared private sockets where appropriate. Compose and
+jsonnet are packaging options; no generator is selected.
+
+| Role | Responsibility | Communication in the bounded reference |
+|---|---|---|
+| API | Existing tenant REST handlers, authorization and clinical writes | PostgreSQL, scoped secret provider, private socket-write endpoint |
+| Realtime | Browser/socket connections and record frames | Reads PostgreSQL; forwards socket mutations to API over private IPC |
+| Evaluator | Clinical evaluation, durable notification intent and retries | Reads PostgreSQL; selected notification handoff to realtime over private IPC |
+| Tenant-admin | Tenant management and owner configuration | Separate audience/listener and current persisted management authority |
+
+```mermaid
+flowchart LR
+  Rig["Existing rigs and clients"] --> API["API process / container"]
+  Browser["Browser and socket clients"] --> RT["Realtime process / container"]
+  Owner["Tenant management client"] --> Admin["Tenant-admin process / container"]
+  RT -->|"Private socket mutations"| API
+  Eval["Evaluator process / container"] -->|"Private notification handoff"| RT
+  API --> PG["PostgreSQL: tenant data and durable state"]
+  RT --> PG
+  Eval --> PG
+  Admin --> PG
+  API --> Keys["Scoped secret provider"]
+  Maintenance["Private restore controller"] -. "Proposed participant / invalidation control" .-> API
+  Maintenance -.-> RT
+  Maintenance -.-> Eval
+  Maintenance -.-> Admin
+  Maintenance --> PG
+```
+
+Solid component paths describe the reference source; dotted maintenance
+coordination is implementation work, not accepted cross-process restore.
+Realtime's raw record frames and evaluator-derived values are distinct products;
+see the [characterization](../../../reports/tenancy/derived-output-2026-11-07/README.md).
+Existing client protocols do not change when these roles move into containers.
+The default single-tenant process retains its existing composition.
+
+During tenant A restoration, each participating process must stop admitting A's
+new work, finish admitted work, and acknowledge clearing A's retained state before
+reactivation. Tenant B continues. The current local cohort prototype aggregates
+contexts inside one process; the next integration replaces that limitation with
+configured private participant endpoints. A PostgreSQL advisory lock protects
+participating code. A database-enforced fence would reject bypassing operations
+in PostgreSQL itself. Process separation and that stronger fence are separate
+questions; neither a process list nor a configuration assertion proves exclusive
+credential custody. Native tests must exercise actual separate processes,
+restart/lost acknowledgement and late-connection behavior under the declared
+trust boundary.
+
+The remaining deployment/runbook and detailed communication work is queued as
+MT-DOC-DEPLOY and MT-DOC-REALTIME; this overview does not close those items.
+
 ## What the write seam made possible
 
 **Shared single-tenant code did change.** The storage/write seams let the

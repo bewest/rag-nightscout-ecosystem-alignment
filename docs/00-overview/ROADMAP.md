@@ -182,8 +182,8 @@ process change ([execution plan §7a](../30-design/tenancy/multitenancy-decision
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
 | 1 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and Mongo | `in-progress` | &mdash; |
 | 1 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | &mdash; |
-| 1 | `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `not-started` | &mdash; |
-| 1 | `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `not-started` | &mdash; |
+| 1 | `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `in-progress` | &mdash; |
+| 1 | `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `in-progress` | &mdash; |
 | 1 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `not-started` | &mdash; |
 | 1 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | &mdash; |
 | 1 | `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | &mdash; |

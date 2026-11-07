@@ -25571,7 +25571,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: codex/session-restore-policy-20261107
     base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
-    state: not-started
+    state: in-progress
     blast_radius: >
       Alignment documentation and diagrams. Single-site compatibility baseline; bounded one-host multitenant preview; split API/evaluator/realtime roles; restart and tenant-local restore scenarios.
     review: maintainer; tenancy, compatibility and operations review
@@ -25588,7 +25588,10 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/README.md
+      - docs/30-design/tenancy/single-and-multitenant-architecture.md
     notes: >
+      Current composition overview/diagram added 2026-11-07; detailed runbooks,
+      rig execution and communication sequence acceptance remain pending.
       Integrate into existing current contract homes after the joined migration,
       readiness and lifecycle candidate settles. Preserve one home per fact and
       source/instrument attribution. This item does not block implementation or
@@ -25600,7 +25603,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: codex/session-restore-policy-20261107
     base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
-    state: not-started
+    state: in-progress
     blast_radius: >
       Alignment documentation and diagrams. Evaluator output, durable checkpoints and notifications; realtime acquisition, browser sockets, private API forwarding and alarm acknowledgement.
     review: maintainer; tenancy, compatibility and operations review
@@ -25617,7 +25620,10 @@ items:
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/README.md
+      - docs/30-design/tenancy/single-and-multitenant-architecture.md
     notes: >
+      Current composition overview/diagram added 2026-11-07; detailed runbooks,
+      rig execution and communication sequence acceptance remain pending.
       Integrate into existing current contract homes after the joined migration,
       readiness and lifecycle candidate settles. Preserve one home per fact and
       source/instrument attribution. This item does not block implementation or

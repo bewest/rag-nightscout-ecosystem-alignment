@@ -41,8 +41,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 77 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL |
-| `in-progress` | 23 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
+| `not-started` | 75 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-DOC-SQL |
+| `in-progress` | 25 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-DOC-DEPLOY, MT-DOC-REALTIME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | T30-AUTH, WS-LAB |
 | `blocked` | 13 | TEN-RESOLVE, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8442,8 +8442,8 @@ alarm-readiness items, and the seam branch refresh.
 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/serial-integration-20261106` | n/a | 2 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `M4-CLIENT-LAB` | M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo | `done` | `main` | n/a | 1 run + 1 no-gate |
-| `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `not-started` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
-| `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `not-started` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
+| `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `in-progress` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
+| `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `in-progress` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `not-started` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
@@ -10523,7 +10523,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `codex/session-restore-policy-20261107` |
 | base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
@@ -10544,14 +10544,15 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/30-design/tenancy/README.md`
+- `docs/30-design/tenancy/single-and-multitenant-architecture.md`
 
-**Notes.** Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
+**Notes.** Current composition overview/diagram added 2026-11-07; detailed runbooks, rig execution and communication sequence acceptance remain pending. Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
 
 ### `MT-DOC-REALTIME` &mdash; Evaluator and realtime communication architecture
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `codex/session-restore-policy-20261107` |
 | base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
@@ -10572,8 +10573,9 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/30-design/tenancy/README.md`
+- `docs/30-design/tenancy/single-and-multitenant-architecture.md`
 
-**Notes.** Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
+**Notes.** Current composition overview/diagram added 2026-11-07; detailed runbooks, rig execution and communication sequence acceptance remain pending. Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
 
 ### `MT-DOC-SQL` &mdash; SQL tables, migrations and recovery architecture
 
