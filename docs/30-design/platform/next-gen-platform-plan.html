@@ -5750,7 +5750,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>552772567</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>97594198c</code>.</em></p>
 <p><em>Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
 <a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>
 and <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>:
@@ -5788,8 +5788,8 @@ use this map to see how the platform tracks meet.</p>
 </tr>
 <tr>
 <td>Data, authority and clients</td>
-<td>R62 accepts optional current-subject grant clamping, persisted typed current-row replay and populated PG recovery LAB. The bounded <code>M4-CLIENT-LAB</code> card remains complete.</td>
-<td>M1–M4 retain backend/import/resource, control-plane and wider client criteria; M3 depends on complete M1/M2. R63's actual oref0 workflows pass, but the cgmsim root refusal keeps universal selected-mode activation disabled.</td>
+<td>R62/R63 retain historical reader-mode/client measurements; R62 also accepts persisted typed current-row replay and populated PG recovery LAB. The bounded <code>M4-CLIENT-LAB</code> card remains complete.</td>
+<td><strong>Optional subject-reader clamping is withdrawn</strong> for backward compatibility; reader option is removed in the local candidate; comprehensive verification is pending. A tenant's own legacy <code>api-secret</code> must keep authorized access (200). M2 uses the roadmap cell; human issuer/refresh, existing-grant lifecycle clamping and production resolution trust move to M6.</td>
 </tr>
 <tr>
 <td>Durable runtime</td>
@@ -5799,7 +5799,7 @@ use this map to see how the platform tracks meet.</p>
 <tr>
 <td>Local joined candidate</td>
 <td>Owner CLI, clinical projection and experimental DATA components are joined in a <strong>local candidate in verification</strong>.</td>
-<td>Native component evidence does not accept the joined full/browser campaign or promote M2/M5. Current head and lane state belong to the dashboard.</td>
+<td>Reader option is removed in the local candidate; comprehensive verification is pending; native component evidence does not accept a fresh joined full/browser campaign or promote M2/M5. Current head and lane state belong to the dashboard.</td>
 </tr>
 <tr>
 <td>Independent single/nonresident profile</td>
@@ -5814,7 +5814,7 @@ checks separately from local acceptance. <a href="../remedial/rc-16.0.0-integrat
 and <a href="../remedial/rc-16.0.0-integration-record.html#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06">R68</a>
 are bounded local component evidence, not whole-candidate acceptance. R66's original
 socket failure remains recorded. R65 supplies descriptive small clock HTTP data;
-capacity, steady-state performance and budget acceptance remain unmeasured. The
+resource bounds and performance budgets are explicitly <strong>deferred to batch C</strong>, with no approved numeric threshold. The
 older corpus benchmark remains pending in its capture. See the
 <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a> for programme disposition.</p>
 <table>
@@ -6127,7 +6127,7 @@ overview intentionally summarizes rather than duplicates those tenancy gates.</p
 </tr>
 <tr>
 <td>ST-PG</td>
-<td>Published selected-domain PostgreSQL/RLS API preview, R40; complete query/import/resource acceptance remains open</td>
+<td>Published selected-domain PostgreSQL/RLS API preview; complete admitted backend/import acceptance remains open. Resource bounds are deferred to batch C by decision</td>
 <td>ST-HARNESS</td>
 <td>actual HTTP/Mongo differentials and source controls; full M1 gates in the delivery dashboard</td>
 </tr>
@@ -6268,7 +6268,16 @@ overview intentionally summarizes rather than duplicates those tenancy gates.</p
 Its blocked markers preserve unmet acceptance prerequisites even where a useful
 preview already passes. The <a href="../tenancy/multitenant-delivery-dashboard.html">M0–M6 dashboard</a>
 is authoritative for milestone gates; accepted slices are not completion percentages.
-The <a href="../tenancy/single-and-multitenant-architecture.html">architecture and compatibility comparison</a>
+The adopted M2 bar is tenant-local config/versioned writes, unknown-tenant refusal,
+A's token failing on B by signature, no environment/root/key leakage, and separate
+owner/data/operator routes. Versioned-write re-execution and comprehensive
+listener-separation acceptance remain pending. M4's bar is executed headless clients
+plus source-pattern replay for the rest, with <strong>no all-client claim</strong>; Android
+emulator work moves to C and iOS is outside the automated lab. M4 still depends on M3.
+The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion decisions</a>
+own these scope changes. Headless owner <code>config.ownerPolicy</code> is retained writer
+policy, distinct from the withdrawn authorization reader option.</p>
+<p>The <a href="../tenancy/single-and-multitenant-architecture.html">architecture and compatibility comparison</a>
 contains request-flow, isolation and historical-comparison diagrams.</p>
 <table>
 <thead>
@@ -6296,7 +6305,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>T30-SCHEMA-CONFIG</td>
-<td>Adopted owner-authority policy and selected transactional proposed-grant fencing and optional current-subject reader clamping are accepted; full permission/settings catalogue and deployable owner API remain open. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate</td>
+<td>Adopted owner-authority writer policy and transactional proposed-grant fencing are retained. Optional subject-reader clamping is withdrawn; removed in the local candidate; comprehensive verification pending. M2 requires tenant-local config/versioned writes and route separation; wider lifecycle belongs to M6. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate</td>
 <td>T30-RESEARCH</td>
 </tr>
 <tr>
@@ -6306,7 +6315,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>T30-WIRING</td>
-<td>Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; selected proposed-grant fencing and optional current-subject clamping are accepted; management issuer/refresh, full catalogue and production lifecycle remain open</td>
+<td>Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; writer proposed-grant fencing is retained; optional reader clamping is withdrawn. Management issuer/refresh, existing-grant lifecycle policy and production trust are M6 work</td>
 <td>TEN-RESOLVE, MT-SECRETS-CONTRACT</td>
 </tr>
 <tr>

@@ -27,7 +27,7 @@
     
     
       
-        <title>Selected-owner actual-client preparation - Nightscout ecosystem alignment</title>
+        <title>Retired selected-subject client experiment - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#selected-owner-actual-client-preparation" class="md-skip">
+        <a href="#retired-selected-subject-client-experiment" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Selected-owner actual-client preparation
+              Retired selected-subject client experiment
             
           </span>
         </div>
@@ -4979,30 +4979,11 @@
 
 
 
-<h1 id="selected-owner-actual-client-preparation">Selected-owner actual-client preparation<a class="headerlink" href="#selected-owner-actual-client-preparation" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>b249a7e08</code>.</em></p>
-<p>This separate, unregistered instrument is prepared for frozen CRM <code>8713395992e07b4dd2cde61ee972e9a15c8ada8c</code>. Its database/client acceptance is <strong>UNMEASURED</strong>. It changes no application entry point, production configuration, registered gate or default M4 instrument. The accepted unselected default-client capture remains separate in evidence commit <code>1408dac5c39638cc7b5d261923e1bb0a2c0eda19</code>.</p>
-<p><code>bootstrap.js</code> is a lab-only copy of the source preview composition at that head. It uses the existing tenant app, data-access, secrets and PostgreSQL reader constructors. Its explicit <code>selected</code> boolean supplies <code>ownerPolicy</code> to the legacy subject reader; its readiness reads the provisioned subject snapshot and checks each initial admitted operation. It refuses access-token configuration because this bounded lab measures the existing legacy subject token carrier. The regular preview bootstrap is unchanged: its anonymous readiness probe cannot select this subject-only reader.</p>
-<p><code>server.js</code> verifies the existing SQL fixture has exactly <code>anonymous_roles=['denied']</code>, provisions a concrete viewer role and owner-policy row under the initial ceiling in actual PostgreSQL, then closes its operator connection before serving. The six reviewed catalogue terminals are read/create on entries, treatments and devicestatus. These concrete rows are existing supported policy grammar, also used by the source owner-clamping acceptance fixture. Anonymous, wildcard and default grants are outside this selection.</p>
-<p>The future runtime measurement uses the pinned, unchanged oref0 binary through its supported <code>token=</code> argument. It runs three admitted upload workflows on separate unselected-reference and selected fixtures, compares replies and stored values with no classification exemptions, empties tenant A's ceiling, then invokes another real client upload. Selected mode must return the existing v1 denial status <strong>401</strong> and leave independent SQL snapshots of every domain on tenants A and B unchanged. Unselected reference must retain its grant and store the second synthetic input. Client exit codes remain separate because oref0 curl lacks <code>--fail</code>.</p>
-<p>Pinned cgmsim always SHA1-hashes its input into an <code>api-secret</code> header (<code>src/setupParams.ts</code>); it cannot present an existing subject/token carrier. The instrument therefore measures its root-carrier boundary separately. Root exclusion is deliberate. The current source predicts <strong>503</strong> for the unmapped non-subject authority error; that status is read-derived until runtime observation and requires a separate compatibility disposition. It is not an adopted response contract or waiver. No credential translation or cgmsim modification is introduced, and admitted selected cgmsim compatibility cannot be claimed. Universal selected-mode activation remains blocked.</p>
-<p>The <code>intersection</code> control changes only an archived scratch copy of <code>owner-policy.js</code>, replacing the catalogue-and-ceiling intersection with catalogue projection. This must allow the tightened real client write, producing both a wrong HTTP status and changed independent stored state in <code>tightening-oracle.json</code>; the run must fail. A fresh normal run then must pass. No source worktree or old capture is modified. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/656caac2add78c25a5e39ce045b7a65166029c6c/tools/lab/selected-owner-clients/test-contract.js">contract tests</a> independently reject HTTP corruption, stored-state corruption and admitted payload corruption; their ablation simulation checks source policy/oracle composition, not actual SQL or HTTP execution.</p>
-<p>Preparation checks (no Docker or database):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">SELECTED_OWNER_SOURCE</span><span class="o">=</span><span class="s2">"</span><span class="nv">$CRM</span><span class="s2">"</span><span class="w"> </span>node<span class="w"> </span>tools/lab/selected-owner-clients/test-contract.js
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>node<span class="w"> </span>--check<span class="w"> </span>tools/lab/selected-owner-clients/bootstrap.js
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>node<span class="w"> </span>--check<span class="w"> </span>tools/lab/selected-owner-clients/runner.js
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>node<span class="w"> </span>--check<span class="w"> </span>tools/lab/selected-owner-clients/server.js
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>node<span class="w"> </span>--check<span class="w"> </span>tools/lab/selected-owner-clients/gate.js
-</code></pre></div>
-<p>Only after explicit runtime coordination/release, invoke the standalone gate with absolute paths. Dependencies must be a private physical installation matching the frozen lock. Use the dedicated pinned client root; shared stale cgmsim output is refused by the canonical build-provenance checker, including all 94 compiled JavaScript files. Output paths must be fresh. Run the control first and preserve its exact red symptom; restoration uses another fresh output directory.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">NS_M4_EXTERNALS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PINNED_CLIENT_ROOT</span><span class="s2">"</span><span class="w"> </span><span class="nv">TZ</span><span class="o">=</span>UTC<span class="w"> </span>node<span class="w"> </span>tools/lab/selected-owner-clients/gate.js<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>--repo<span class="w"> </span><span class="s2">"</span><span class="nv">$CRM</span><span class="s2">"</span><span class="w"> </span>--dependencies<span class="w"> </span><span class="s2">"</span><span class="nv">$PRIVATE_NODE_MODULES</span><span class="s2">"</span><span class="w"> </span>--out<span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_CONTROL_OUTPUT</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--ref<span class="w"> </span>8713395992e07b4dd2cde61ee972e9a15c8ada8c<span class="w"> </span>--control<span class="w"> </span>intersection
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nv">NS_M4_EXTERNALS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PINNED_CLIENT_ROOT</span><span class="s2">"</span><span class="w"> </span><span class="nv">TZ</span><span class="o">=</span>UTC<span class="w"> </span>node<span class="w"> </span>tools/lab/selected-owner-clients/gate.js<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>--repo<span class="w"> </span><span class="s2">"</span><span class="nv">$CRM</span><span class="s2">"</span><span class="w"> </span>--dependencies<span class="w"> </span><span class="s2">"</span><span class="nv">$PRIVATE_NODE_MODULES</span><span class="s2">"</span><span class="w"> </span>--out<span class="w"> </span><span class="s2">"</span><span class="nv">$FRESH_POSITIVE_OUTPUT</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--ref<span class="w"> </span>8713395992e07b4dd2cde61ee972e9a15c8ada8c
-</code></pre></div>
-<p>Expect control exit 1 with selected status 200 and both refusal predicates false; normal exit 0 with admitted parity and both selected tightening predicates true. Setup errors exit 2. Runtime owns random loopback ports and canonical uniquely named fixtures. Capture exact container IDs/mounted volumes independently before teardown; audit their absence and preserve pre-existing resources. This prepared instrument has not yet measured those predictions and must not delay the current batch publication.</p>
+<h1 id="retired-selected-subject-client-experiment">Retired selected-subject client experiment<a class="headerlink" href="#retired-selected-subject-client-experiment" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-06 at <code>6be7e6dc1</code>.</em></p>
+<p>The maintainer withdrew optional reader clamping on 2026-11-06 because existing tenant API secrets must retain access to their own tenant resources. The executable experiment has been removed. Writer-side owner-policy fences remain separate.</p>
+<p><a href="../../../reports/selected-owner-clients/2026-11-06/index.html">R63 evidence</a> remains an immutable record of the earlier experiment, including its client difference. Its exact source is preserved in the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/74d273225a4a9c50854c905c73a6dafb9347dc85/tools/lab/selected-owner-clients">published source snapshot</a>; the recorded source hashes match that snapshot. This navigation stub keeps historical evidence links valid.</p>
+<p>Current behavior and acceptance belong to the <a href="../../../docs/30-design/tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a> and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">maintainer decisions</a>.</p>
 
 
 
