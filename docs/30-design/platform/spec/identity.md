@@ -6,7 +6,7 @@ Status: the single-tenant identity path is implemented across #8879/#8890/#8889/
 including the unique index; registration, typed identity and tenant-scoped uniqueness remain
 specification work. §6 is a historical baseline, not a description of current `dev`.
 Decisions:
-[D20](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+[D20](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility),
 the [write contract's §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)
 and the [16.0.0 decisions](../../../../releases/cgm-remote-monitor-16.0.0/decisions.md) (I2 on API
 v3, BF-170; the null rule of §3, Q1b), and D-LOOP-ID

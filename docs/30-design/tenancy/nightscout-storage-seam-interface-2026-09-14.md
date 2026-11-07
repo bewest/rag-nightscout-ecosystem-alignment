@@ -2,7 +2,7 @@
 
 *Contributor-facing living interface definition. Sections 1–10 retain their dated
 historical census and implementation captures; §11 records current admitted ports.*
-Task T1.1 of the [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md); decisions it rests on: D3, D4, D8, D9 — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+Task T1.1 of the [execution plan](multitenancy-decisions.md); decisions it rests on: D3, D4, D8, D9 — [plan §1](multitenancy-decisions.md#1-decisions).
 §1–§7 were measured 2026-09-14 against `origin/chore/nightscout-modernization` @ `0a4109f6`;
 §8–§10 describe what was built on the `seam/*` branch chain (tip `seam/t1-2-storage-interface`
 @ `81a1f6ce`, `externals/work/crm-seam`), which is **unpublished**. That base has since moved

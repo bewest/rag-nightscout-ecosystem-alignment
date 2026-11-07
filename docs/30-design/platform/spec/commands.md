@@ -2,7 +2,7 @@
 
 *Contributor-facing. Living specification, current at `main` `9736bd65` (2026-10-18). Layers L3
 and L5 of the [platform index](../README.md); terms are in the [glossary](glossary.md). Decisions:
-[D18 and D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)
+[D18 and D19](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them; the proposal
 record was folded into this item on 2026-10-18. Queue: `SPEC-REG-COMMANDS`.*
 

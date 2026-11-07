@@ -2,7 +2,7 @@
 
 *What this is: a measurement (contributor-facing). Read after the [records
 specification](spec/records.md); leads to [primitive
-coverage](nightscout-primitive-coverage-2026-09-11.md).* **Snapshot — describes 2026-09-10. Status: current — the measurements stand.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+coverage](nightscout-primitive-coverage-2026-09-11.md).* **Snapshot — describes 2026-09-10. Status: current — the measurements stand.** Current decisions: [execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 Date: 2026-09-10. Companion to
 [Nightscout multitenancy: evidence and options](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md)

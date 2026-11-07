@@ -3,7 +3,7 @@
 *What this is: a **read-derived review**, batch B4 of the
 [integration batching plan](multitenant-integration-batching-plan-2026-11-06.md).
 It maps every criterion in the "Acceptance before promotion" column of the
-[roadmap's section 4 table](multitenant-delivery-roadmap-2026-11-02.md#4-milestones-and-continuous-integration)
+[roadmap's section 4 table](multitenant-delivery-roadmap.md#milestones-and-continuous-integration)
 for M0, M1, M2 and M3 to the evidence in the
 [RC 16.0.0 integration record](../remedial/rc-16.0.0-integration-record.md)
 entries R24–R55 and the

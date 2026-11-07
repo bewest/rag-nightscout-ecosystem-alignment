@@ -253,7 +253,7 @@ Files modified in the last three hours (all committed):
 |---|---|---|
 | `docs/30-design/remedial/phase0-pr-sequencing-2026-09-15.md` | **17:06** | `8c379476` — added branches G/H/I |
 | `docs/30-design/remedial/nightscout-backfix-register.md` | **17:04** | `9fc55eaa` — BF-35…BF-38 |
-| `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md` | 16:42 | `4382d8f8` |
+| `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md` | 16:42 | `4382d8f8` |
 | `docs/60-research/tenancy/multitenancy-k-and-residency-2026-09-14.md` | 15:19 | |
 | `tools/mt-bench/vcherd.js` + `tools/mt-bench/results/exp-mt-048b-*.json` | 14:50–15:18 | T0.4 |
 | `tools/nsschema/emit/coercion_emit.py`, `specs/jsonschema/generated/**` | 14:45 | T0.5 |

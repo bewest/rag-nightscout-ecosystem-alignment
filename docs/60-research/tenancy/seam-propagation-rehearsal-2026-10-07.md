@@ -1,6 +1,6 @@
 # Seam propagation rehearsal: the Phase 1 prefix by merge and by rebase
 
-> **Snapshot — measured 2026-10-07 against `official/dev` `43289dde`, `official/chore/nightscout-modernization` `b1bdaca0` and `seam/t1-2-e` `a2690bd4`. Status: evidence for queue item `RT-PROPAGATION`, not the decision. Throwaway rehearsal: the two `prop/*` branches are local, unpushed, and are not the real refresh. Plan: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §5, §5.1.**
+> **Snapshot — measured 2026-10-07 against `official/dev` `43289dde`, `official/chore/nightscout-modernization` `b1bdaca0` and `seam/t1-2-e` `a2690bd4`. Status: evidence for queue item `RT-PROPAGATION`, not the decision. Throwaway rehearsal: the two `prop/*` branches are local, unpushed, and are not the real refresh. Plan: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §5, §5.1.**
 
 *Audience: contributors and the maintainer deciding `RT-PROPAGATION`.*
 

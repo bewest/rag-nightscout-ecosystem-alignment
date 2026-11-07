@@ -4,7 +4,7 @@
 the [platform index](../README.md); terms are in the [glossary](glossary.md); how a re-send is
 matched is in the [identity specification](identity.md) §3. Decisions: the
 [write contract's §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)
-(2026-10-12) and [D6](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
+(2026-10-12) and [D6](../../tenancy/multitenancy-decisions.md#1-decisions)
 (the change feed under multi). Queue: `SPEC-SYNC-TRANSPORT`.*
 
 *Specification 7 of 8 in the [reading order](../README.md#reading-order); after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T16), and the conformance cases.*

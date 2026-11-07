@@ -181,7 +181,7 @@ quirks:
       Send the record's own id as `identifier` and no `_id`; the hub assigns
       `_id` and returns both (D20 rule 5).
     references:
-      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16
+      - docs/30-design/tenancy/multitenancy-decisions.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md#23-order-of-the-rules
       - docs/backlogs/uuid-identifier-lookup.md
       - externals/cgm-remote-monitor-official/lib/server/treatments.js:394-411 @a8888f0d (normalizeTreatmentId)
@@ -256,7 +256,7 @@ quirks:
       Send the record's own id as `identifier` and no `_id`; the hub assigns
       `_id` and returns both (D20 rule 5).
     references:
-      - docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16
+      - docs/30-design/tenancy/multitenancy-decisions.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16
       - docs/30-design/tenancy/write-contract-spec-2026-10-07.md
       - docs/10-domain/client-id-analysis/TRIO_ID_ANALYSIS.md
       - externals/work/crm-write/lib/server/treatments.js:383-405 @239f8c25 (upsertQueryFor)

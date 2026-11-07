@@ -5,7 +5,7 @@
 *2026-09-15. Closes BF-02 and BF-11, closes BF-03 in part, closes BF-12 as
 not-a-defect, and opens BF-32.*
 
-Plan task: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
+Plan task: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
 Phase 0, T0.5, with the argument in §3.4.
 Register: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).
 

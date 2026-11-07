@@ -8,7 +8,7 @@ controller-description proposal.** Status: proposed to the named projects; the p
 projects is `PROPOSAL-REG-CONTROLLERS`. **Corrected in place 2026-10-18:** §4 says what the proposal
 is and which ideas it takes from Kubernetes, mapped to D18–D20 as specified.
 Its §5 `decomposesTo` mechanism is the direction adopted for `devicestatus` storage by
-**D11** — [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+**D11** — [execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). §2.2 was added
 2026-09-27, checked against Nocturne `42275c81`. **One page of proposal, then a worked example, then
 the evidence.**
@@ -249,7 +249,7 @@ no description, and a reader that cannot fetch one, behave as they do today. The
 analogy is a browser's list of known user agents served at a `.well-known` path: a description of
 something that already exists, which the thing described may correct.
 
-**The controller-owned tier ([D18](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)).**
+**The controller-owned tier ([D18](../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)).**
 A controller that wants typed support for its own features submits a registration, and the hub
 derives typed API from it. Several ideas in that tier come from what Kubernetes does well for
 declared, typed resources:
@@ -270,7 +270,7 @@ declared, typed resources:
 dosing state. It records what controllers report, routes a command to the instance that holds the
 role ([commands](spec/commands.md), proposed), and refuses what its checks refuse; the controller decides, enacts and validates (D18).
 Version-scoped quirks record how stored documents from a given controller version deviate, and the
-mapping the hub applies to each ([D20](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+mapping the hub applies to each ([D20](../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility),
 [registration §16](spec/registration.md#16-version-scoped-quirks)).
 
 ## 5. Worked example

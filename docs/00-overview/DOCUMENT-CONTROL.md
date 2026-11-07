@@ -121,7 +121,9 @@ follows the procedure piloted on 2026-09-25:
    already out of date and was dropped.
 4. **Move design content that has no other home** to the document that owns that topic (for
    example, tenancy designs to the execution plan) instead of deleting it.
-5. **Add a history row** for each superseded version, linking to it at a pushed commit.
+5. **Add a retention entry** for each retired document or thematic journal archive, naming its
+   period, scope and current successor. Git retains intermediate revisions; a per-commit listing
+   is not required for the reading path.
 6. **Rewrite every inbound link**, including queue evidence paths, generated views, reviewer
    packets and copies of posted PR bodies.
 7. **Remove the superseded files** from the working tree.
@@ -130,10 +132,14 @@ follows the procedure piloted on 2026-09-25:
 
 ### 3.6 Obsolete documents
 
-- A superseded document is **removed from the working tree**, not kept beside the current one with a
-  "superseded" banner.
-- It stays **retrievable**: through the history row of its successor, by `git show <commit>:<path>`,
-  or at a GitHub URL pinned to a pushed commit.
+- A superseded document is **removed from the active reading path**, not kept beside the current
+  one with a "superseded" banner. Consolidate useful decisions, contracts and findings by topic.
+- Execution journals may be retained under a thematic `docs/archive/` index, with their captured
+  scope, successor and evidence boundaries stated. Preserve the original narrative, failures and
+  measurements; relocation may rewrite links without changing the claims. The archive is not an
+  alternative current plan. This is the maintainer's tenancy consolidation direction of 2026-11-06.
+- Retired material stays **retrievable** through that index, a successor's retention entry,
+  `git show <commit>:<path>`, or a GitHub URL pinned to a pushed commit.
 - **Snapshots that quote a removed file** (a dated research note citing a line of an old readiness
   document) keep the citation, repointed to the pinned URL, so the quotation stays checkable.
 - **Proposed:** a pushed annotated tag at each consolidation (`archive/<date>`), so retrieval does

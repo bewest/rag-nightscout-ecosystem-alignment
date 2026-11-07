@@ -6,7 +6,7 @@ for the project named in its column to correct.** Repository facts are read at t
 branch head through the GitHub API on 2026-10-18. Every cell is marked **R** (read-derived: from
 source; a hypothesis about behaviour), **M** (measured: the 11-site
 corpus) or **H** (history: a release, tag or branch fact from the GitHub API). Current decisions:
-[execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+[execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 **The question.** `docs/proposals/integration-questionnaire.md` is part of the earlier draft in
 cgm-remote-monitor's `docs/proposals` (with `agent-control-plane-rfc.md`, `bridge-rules.md` and

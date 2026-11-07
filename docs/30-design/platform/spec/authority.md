@@ -2,9 +2,9 @@
 
 *Contributor-facing. Living specification, current at `main` `1b69c295` (2026-10-18). Layer L5 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md). Decisions:
-[D7 and D13–D17](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
+[D7 and D13–D17](../../tenancy/multitenancy-decisions.md#1-decisions)
 (the admin plane, the credential root, the three listeners, the auth plane by audience),
-[D18 and D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)
+[D18 and D19](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 and the maintainer's decisions of 2026-10-14 to 2026-10-18 recorded with them. Queue:
 `SPEC-AUTHORITY`.*
 

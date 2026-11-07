@@ -5,7 +5,7 @@ specification](../30-design/platform/spec/authority.md); leads to [agents in the
 ecosystem](../30-design/platform/agent-trust-boundaries-2026-10-18.md).* **Status 2026-10-18:
 proposed. The rules are in the authority and commands specifications; this page keeps what they
 do not carry: why identity is federated rather than stored, and a worked delegation grant.**
-Current decisions: [execution plan §1](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+Current decisions: [execution plan §1](../30-design/tenancy/multitenancy-decisions.md#1-decisions).
 The page's longer text, with authority levels, conflict scenarios and safety invariants, is in
 git: [full text at `85c645c8`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/10-domain/authority-model.md).
 

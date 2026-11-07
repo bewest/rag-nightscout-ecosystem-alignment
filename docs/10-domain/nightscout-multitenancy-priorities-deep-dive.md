@@ -6,7 +6,7 @@ the local `official/dev` ref at `61eb37335954ae42c91345a0823bd67331025165`.
 No database, Celld fleet, client or failure experiment was run for this assessment.
 
 **Maintainer follow-up:** Celld is now out of scope. The adopted
-[delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+[delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap.md)
 supersedes the experimental recommendations below: storage first, one local
 integration branch, headless owner API with UI deferred, operator-only lifecycle,
 legacy per-tenant credentials, a reviewed settings subset and early Vault
@@ -14,7 +14,7 @@ feasibility work. Human identity and next-generation execution have separate
 gates. The Celld section remains evidence of the evaluated alternative, not
 scheduled work.
 
-**Measured continuation:** the [roadmap's execution follow-up](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02)
+**Measured continuation:** the [roadmap's execution follow-up](../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02)
 now records 9 current-connection PgBouncer/DDL checks and 4 typed-identity
 checks. The historical JSON key collapses ObjectId/string copies; the opt-in
 typed-key candidate and dormant codec preserve both. This does not certify
@@ -28,7 +28,7 @@ the new codec is at
 PostgreSQL-only operator runner, with atomic SQL/ledger commits, a pinned-client
 advisory lock and read-only compatibility inspection. **39 migration/CLI checks
 pass**, including 12 disposable-PG acceptance checks and failure controls.
-See the [execution record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-explicit-postgresql-operator-migrations-2026-11-02).
+See the [execution record](../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-explicit-postgresql-operator-migrations-2026-11-02).
 MongoDB leases/resumability, production catalogues and serving-role wiring
 remain open; the command does not change default server boot.
 
@@ -46,7 +46,7 @@ four unit checks run in the **145-passing combined regression**; this is not
 full M1. Regex/v1/dotted paths/projections, unsupported operands/types and
 array/object sorting refuse, and results are materialized without cursor caps.
 Writes/events/current indexes and backend registration remain absent. The
-[bounded acceptance and reproduction record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-readfilter-subset-2026-11-02)
+[bounded acceptance and reproduction record](../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-readfilter-subset-2026-11-02)
 distinguishes this measured slice from full client/API compatibility.
 
 **Write continuation:** local upstream `7bcfc8b0` adds dormant inserts, scalar
@@ -58,7 +58,7 @@ that run remain regression evidence, not PG write-intent integration. A
 stale-snapshot no-op comparison was corrected and three actual mutations fail.
 Bulk/replace/every-form writes, constraint-specific retries and commit-event
 integration remain; no backend is enabled. See the
-[write acceptance record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-dormant-entries-writes-2026-11-02).
+[write acceptance record](../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-dormant-entries-writes-2026-11-02).
 The other session owns migrations, settings/subject policy and provider-neutral
 secrets/Vault-facing work; this slice leaves those files unchanged.
 
@@ -70,7 +70,7 @@ without pending**, including real Vault/PG, migration and entries checks
 together; all **465 test files** classify. Unit/DOM/core/harness tiers pass
 after building local bundles. The dependency tier remains non-green because
 its unchanged `har-validator` assertion resolves old AJV outside the worktree.
-See the [integration acceptance and parallel handoff](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02).
+See the [integration acceptance and parallel handoff](../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02).
 The next isolated secrets objective is backup/restore and actual process-crash
 acceptance; owner-policy APIs, MongoDB migrations and runtime consumers remain
 unfinished. This is no backend promotion or production-Vault acceptance.
@@ -83,7 +83,7 @@ V3 resend POST retains replacement behavior, not v1's merge behavior.
 JSON-equal replacements owing exact modification counts refuse because JSONB
 does not preserve BSON field order. Production DDL/import, full v1/socket and
 route authorization/validation/current-grant wiring, bounds and backend suites
-remain open. See the [bounded acceptance record](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
+remain open. See the [bounded acceptance record](../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
 
 **Latest recovery integration:** merge `0de90852` imports `78b915ab` without
 runtime/migration/entries-source changes. The combined command passes **879
@@ -91,7 +91,7 @@ checks, zero pending**, including 34 secrets checks and actual PG dump/restore,
 encrypted single-node Vault snapshot recovery and before-CAS/after-commit
 worker SIGKILL/retry. Production recovery remains open. The next parallel
 slice is the minimum policy/current-authority service, not more provider
-features; see the [acceptance and handoff](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
+features; see the [acceptance and handoff](../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
 
 ## 1. Bottom line
 

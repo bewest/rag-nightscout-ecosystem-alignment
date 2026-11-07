@@ -1,6 +1,6 @@
 # EXP-MT-026: a real database in the loop
 
-> **Snapshot — research as of 2026-09-14, measured against MongoDB 7.0.43 with driver 5.9.2 and queries transcribed from `lib/data/dataloader.js` (the doc names no `cgm-remote-monitor` commit). Status: superseded in part — tenancy research, not on a shipping path; §8's feed-poll sweep bound was revised by T4.2 (2026-09-15, in place below) and pgbouncer is now measured in [pgbouncer and the D3 binding](pgbouncer-tenant-binding-2026-09-15.md). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
+> **Snapshot — research as of 2026-09-14, measured against MongoDB 7.0.43 with driver 5.9.2 and queries transcribed from `lib/data/dataloader.js` (the doc names no `cgm-remote-monitor` commit). Status: superseded in part — tenancy research, not on a shipping path; §8's feed-poll sweep bound was revised by T4.2 (2026-09-15, in place below) and pgbouncer is now measured in [pgbouncer and the D3 binding](pgbouncer-tenant-binding-2026-09-15.md). Current facts: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
 
 *Audience: contributors.*
 
@@ -23,7 +23,7 @@ anything.
 database container — kernel-level delay, not a userspace shim.
 
 Decisions taken on the strength of this report are recorded in
-[the execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
+[the execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 
 Answers the question every other experiment in this programme deferred: **all of them ran
 with no database.** That was tolerable while the question was how much CPU the resident path

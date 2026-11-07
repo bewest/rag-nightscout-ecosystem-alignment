@@ -4,7 +4,7 @@ This document is an index of gaps organized by domain.
 
 ## Hosted-tenancy integration follow-up (2026-11-02)
 
-The maintainer's [delivery roadmap](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+The maintainer's [delivery roadmap](../docs/30-design/tenancy/multitenant-delivery-roadmap.md)
 removes Celld from scope and adopts storage-first/current-dev integration,
 headless owner API with UI deferred, operator-only provisioning, legacy
 per-tenant credentials and a reviewed settings subset. Early Vault feasibility
@@ -66,7 +66,7 @@ passing, no pending. Exact JSON-equal replacement modification counts remain
 unsupported: BSON field order is absent from JSONB. Reviewed DDL/import,
 full v1/socket and route authorization/validation/current-grant integration,
 resource bounds and backend suites remain gaps. The
-[bounded continuation record](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02)
+[bounded continuation record](../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02)
 does not promote M1/M2.
 
 Merge `0de90852` then incorporates secrets recovery `78b915ab`: the combined
@@ -76,7 +76,7 @@ measured, replacing those bounded unknowns. Production roles/auth/TLS/HA,
 coordinated online recovery, current grants/consumer cutover and operational
 recovery targets remain open. The next parallel dependency is a dormant
 minimum subject-policy/current-authority service; its checks cannot establish
-unwired data/socket revocation. See the [recovery boundary and handoff](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
+unwired data/socket revocation. See the [recovery boundary and handoff](../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
 
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 maps existing ST-PG, TEN-RESOLVE, T30-WIRING and TEN-LAB planning gaps to current

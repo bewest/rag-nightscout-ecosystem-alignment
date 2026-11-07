@@ -3,7 +3,7 @@
 *What this is: an analysis (contributor-facing). Read after the [platform index](README.md) and
 [glossary](spec/glossary.md) (§2 and §9 first); leads to the [identity specification](spec/identity.md).* **Snapshot — describes 2026-10-09. Status: current; the evidence for D18.** Every claim is **read-derived** (from source, a hypothesis about behaviour) unless marked
 **measured**. Sources and commits are in §1. Current decisions: [execution plan
-§1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+§1](../tenancy/multitenancy-decisions.md#1-decisions).
 **Corrected in place 2026-10-12:** §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and `specs/sync/registrations/` record what the
 registrations now declare and what remains; the registrations row also records the D18 addendum grammar (`SCHEMA-REG-EXT`, 2026-10-12). **Also 2026-10-18:** §2 records the maintainer's decision on agent initiators (P5); the AndroidAPS items marked **4.0.0 prerelease** ship in `4.0.0-beta1` and `4.0.0-rc1` (§1); §4 and §5 carry figures generated from the registrations and the lab results (`tools/diagrams`), and §4 an animation (`tools/animations`) of the instances changing as records arrive. §6.1 draws the remote-command paths of §6 as sequences (channels and acknowledgements only). The rules this evidence supports are maintained in the [state and intent specification](spec/state-intent.md).
 
@@ -72,7 +72,7 @@ Six properties. A controller's intent model has each of them; an entity collecti
 
 *P5, decided 2026-10-18 (maintainer):* no `agent` value is added to any initiator vocabulary; an
 agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}`, as the
-registration specification ([§9](spec/registration.md#9-channels-roles-and-provenance)) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. ([execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16),
+registration specification ([§9](spec/registration.md#9-channels-roles-and-provenance)) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. ([execution plan](../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility),
 row 17; [agents in the ecosystem §4.2](agent-trust-boundaries-2026-10-18.md#42-the-earlier-draft-and-the-rules-proposed-to-supersede-it)).
 
 ## 3. Per-controller matrix

@@ -1,9 +1,9 @@
 # What API v1 operators clients actually send — the census behind T2.4's allowlist
 
-> **Snapshot — research as of 2026-09-14; no cgm-remote-monitor commit anchor named (client-source census over the workspace's checked-out projects; seam commit `7c645f3c` cited). Status: census current; BF-04 (the allowlist) is merged to dev in PR #8743 and BF-01 in PR #8738 — both unreleased, still live on 15.0.8. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
+> **Snapshot — research as of 2026-09-14; no cgm-remote-monitor commit anchor named (client-source census over the workspace's checked-out projects; seam commit `7c645f3c` cited). Status: census current; BF-04 (the allowlist) is merged to dev in PR #8743 and BF-01 in PR #8738 — both unreleased, still live on 15.0.8. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md), [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
 
 Date: 2026-09-14. Status: findings + tooling. Task **T2.4** of the
-[execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
+[execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 **Read-only — no shipping code changed.**
 
 T2.4 says: *derive the operators clients actually send from the corpus; support those, reject the

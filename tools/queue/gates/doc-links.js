@@ -47,6 +47,7 @@ const { REPO_ROOT, report } = require('./_gate');
 const SCOPE = [
   'docs/00-overview',
   'docs/30-design',
+  'docs/archive/tenancy',
   'docs/40-migration',
   'docs/guides',
   'docs/60-research/remedial',

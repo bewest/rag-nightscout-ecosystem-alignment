@@ -76,7 +76,7 @@ by merge or by rebase is open (`RT-PROPAGATION`); so far every propagation has b
 Use the [tenancy reading guide](../30-design/tenancy/README.md) to select a document.
 Current delivery progress, accepted evidence and remaining gates live in the
 [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md) and
-[delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md).
+[delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap.md).
 The [next-generation platform map](../../site/pages/nightscout-next-gen-platform.html)
 shows the dependencies and bounded acceptance stages. These records distinguish local
 branch acceptance, combined integration and milestone completion; `make queue-status`
@@ -87,7 +87,7 @@ green, open, not merged or released); the
 [architecture comparison](../30-design/tenancy/single-and-multitenant-architecture.md)
 lists what it holds and which record governs each module.
 Decisions D1–D23 live in the
-[execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md),
+[execution plan](../30-design/tenancy/multitenancy-decisions.md),
 with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md)
 and the [durable event delivery contract](../30-design/tenancy/durable-event-delivery-contract-2026-11-06.md) (B7).
 Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is
@@ -358,7 +358,7 @@ measurement.
 | how 15.0.9 was released, and what is left | [`ROADMAP.md` §1](ROADMAP.md#1-1509-is-released-the-next-development-cycle) (generated) |
 | Phase 0 PR ordering and coupling | [`../30-design/remedial/phase0-pr-sequencing-2026-09-15.md`](../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) |
 | the release train and its order | [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md) |
-| tenancy decisions D1–D22 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| tenancy decisions D1–D22 | [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/multitenancy-decisions.md) |
 | the governance / zero-reviews finding | [`../30-design/remedial/maintainer-release-brief-2026-09-15.md`](../30-design/remedial/maintainer-release-brief-2026-09-15.md) |
 
 <!-- BEGIN GENERATED: provenance -->

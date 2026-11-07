@@ -577,5 +577,5 @@ release soaks them; and how does that weigh against releasing as soon as the can
 - [16.0.0 contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) and
   [decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md).
 - [Semver policy](../modernization/semver-and-release-versioning-policy-2026-09-15.md) §2.
-- [Execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md), D1–D21.
+- [Execution plan](../tenancy/multitenancy-decisions.md), D1–D21.
 - [API v4 surface](v4-surface-and-nocturne-2026-10-26.md) §7.

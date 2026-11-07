@@ -31,13 +31,13 @@ the independent evaluator's retained-cycle policy (R50, R55, seams plan).
 - The event as built at `35903069` is `storage-intent-committed`
   (`lib/storage/write-intent.js:4635`), documented at `:4622-4634` as
   "INTERNAL: nothing in lib/ listens". **Read-derived.**
-- D6 ([execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md) §1,
+- D6 ([execution plan](multitenancy-decisions.md) §1,
   row D6): change feed = replication slot (spine) + `NOTIFY` (latency) + bounded
   aggregate poll (backstop), `NOTIFY` emitted by the slot reader, never by a
   trigger. T4.1 (same plan, Phase 4) **reproduced** 200/200 rows delivered after
   a stopped reader returned, 0 on re-consume, and a 0.000000% notification-queue
   gauge with reader-emitted `NOTIFY` against 0.019073% from a trigger.
-- The [roadmap](multitenant-delivery-roadmap-2026-11-02.md) §4 names this
+- The [roadmap](multitenant-delivery-roadmap.md) §4 names this
   reconciliation as a design task, and its MT-RUNTIME-PLAN packet asks for
   durable checkpoint ownership, commit coupling, ordering, duplicates, hard and
   soft deletes, configuration invalidation and restart boundaries, with
@@ -368,9 +368,9 @@ choices remain revisitable when experiments refute their assumptions.
 
 - [decisions.md](../../../releases/cgm-remote-monitor-16.0.0/decisions.md), D-EVENT rows (2026-10-31) and Q9 release-2 row
 - [write-intent guide](../platform/guides/write-intent.md) "What the step does not do"; [wc-step design note](../platform/wc-step-design-note-2026-10-27.md) Q-B, Q-C, Q-F and the D-EVENT bench reference
-- [execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md) D4, D6, D15, D22, §7b and Phase 4 T4.1; [storage seam interface](nightscout-storage-seam-interface-2026-09-14.md) §9 and §11
+- [execution plan](multitenancy-decisions.md) D4, D6, D15, D22, §7b and Phase 4 T4.1; [storage seam interface](nightscout-storage-seam-interface-2026-09-14.md) §9 and §11
 - [clock proof plan](postgres-tenant-clock-proof.md); [lower-port proof](../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.md); [HTTP fixed recovery](../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md); [backend-abort diagnostic](../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.md)
 - [integration record](../remedial/rc-16.0.0-integration-record.md) R48, R49, R50, R51, R55
 - [seams plan](architecture-seams-execution-plan-2026-11-05.md) "Shared frame join and multitenant recovery", "Shared-frame inventory", "Reproduced frame acquisition and concurrent reads"
-- [roadmap](multitenant-delivery-roadmap-2026-11-02.md) §4 and the MT-RUNTIME-PLAN packet; [batching plan](multitenant-integration-batching-plan-2026-11-06.md) B2 and B7
+- [roadmap](multitenant-delivery-roadmap.md) §4 and the MT-RUNTIME-PLAN packet; [batching plan](multitenant-integration-batching-plan-2026-11-06.md) B2 and B7
 - CRM `35903069`: `lib/storage/write-intent.js`, `lib/storage/postgres-intent-common.js`, `lib/storage/postgres-connection.js`, `lib/storage/postgres-entries-intent.js:56`, `lib/storage/postgres-collection-intent.js:114`, `lib/storage/PORT-CONTRACT.md`, `lib/notifications.js`, `lib/server/bootevent.js`, `lib/server/websocket.js`, `lib/server/serve/roles.js`

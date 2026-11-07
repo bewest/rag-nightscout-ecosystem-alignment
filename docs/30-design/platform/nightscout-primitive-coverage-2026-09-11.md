@@ -2,7 +2,7 @@
 
 *What this is: a measurement (contributor-facing). Read after [typed
 schemas](nightscout-typed-schema-evidence-2026-09-10.md); leads to [`devicestatus` and `profile`
-replay](nightscout-devicestatus-profile-fidelity-2026-09-10.md).* **Snapshot — describes 2026-09-11. Status: current — the catalogue it assesses is `specs/sync/primitives.yaml`; the rules built on it are maintained in the [records specification](spec/records.md).** *Corrected 2026-10-18:* §2's per-primitive table predates the catalogue's regrading; the totals (84 measured, 50 declared) stand, and the current per-primitive counts are generated in the records specification §3 (for example `ApsSnapshot` 23 measured and 2 declared, not 14 and 11). Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+replay](nightscout-devicestatus-profile-fidelity-2026-09-10.md).* **Snapshot — describes 2026-09-11. Status: current — the catalogue it assesses is `specs/sync/primitives.yaml`; the rules built on it are maintained in the [records specification](spec/records.md).** *Corrected 2026-10-18:* §2's per-primitive table predates the catalogue's regrading; the totals (84 measured, 50 declared) stand, and the current per-primitive counts are generated in the records specification §3 (for example `ApsSnapshot` 23 measured and 2 declared, not 14 and 11). Current decisions: [execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 Date: 2026-09-11.
 

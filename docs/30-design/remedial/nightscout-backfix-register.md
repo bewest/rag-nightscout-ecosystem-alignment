@@ -1,7 +1,7 @@
 # Backfix register — defects that ship to existing operators, independent of multitenancy
 
 *Contributor-facing. Living document, maintained alongside the
-[multitenancy execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
+[multitenancy execution plan](../tenancy/multitenancy-decisions.md).
 Entries name the refs they were measured on. Status and the counts below are as of 2026-10-01,
 cgm-remote-monitor `origin/dev` `50bc1084` and `origin/master` `92d08342` (= tag `15.0.8`, the
 shipping release), nightscout-connect `0.1.0`. Nothing here is medical advice.*
@@ -454,7 +454,7 @@ last. Two harnesses, two fixtures, one defect.
 flags no ambiguous field on `entries`, the only collection T2.5 implements. `NSCLIENT_ID` is
 flagged on `devicestatus`, `profile` and `treatments` — so the exposure arrives **with T2.6**,
 which is defined, deliberately unscheduled, in the
-[execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) Phase 2.
+[execution plan](../tenancy/multitenancy-decisions.md) Phase 2.
 
 *Fix* — **PRESCRIBED, NEVER RUN. Read this as a proposal, not a solution.** See
 [the ordering design](../tenancy/nightscout-seam-ordering-translation.md) §3. Restricting sortable fields to
@@ -716,7 +716,7 @@ The long-standing reputation of this as a swamp is not borne out; the sites are 
 **This is a single-tenant capability and it is the wrong tool for tenant discrimination.** Getting
 sub-path mounting right does not make path-prefix *tenancy* work over websockets, because a
 Socket.IO handshake carries the engine path and that path is a client option — see T3.5 in the
-[execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md). Path-as-tenant needs the
+[execution plan](../tenancy/multitenancy-decisions.md). Path-as-tenant needs the
 proxy to assert the tenant in a header regardless of how good base-URL support becomes. Keeping
 the two apart is what makes each of them small.
 
@@ -864,7 +864,7 @@ question asked.**
 against 2,791 integer ones** across 11 sites — 98 % of its non-null values are fractional. So
 `parseInt` on the bound is not a rounding nicety.
 
-*Evidence*: [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §3.4, and
+*Evidence*: [execution plan](../tenancy/multitenancy-decisions.md) §3.4, and
 [the coercion drift measurement](../../60-research/remedial/query-coercion-drift-2026-09-14.md) §2 Tier 1.
 
 ### BF-03 · Numeric filters that silently match nothing
@@ -7461,7 +7461,7 @@ both. Fixed in ID-FIRST-MATCH slice 2 (#8879) with the placeholder list decided 
 
 | document | relationship |
 |---|---|
-| [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) | the reasoning, the decisions and the task definitions. Its §0 is the map of every other document |
+| [execution plan](../tenancy/multitenancy-decisions.md) | the reasoning, the decisions and the task definitions. Its §0 is the map of every other document |
 | `queue/work-queue.yaml`, [`queue/QUEUE.md`](../../../queue/QUEUE.md), [`queue/README.md`](../../../queue/README.md) | **authoritative for item STATE**, because its state is measured by a gate rather than asserted by an editor. This register is authoritative for **defect facts and ids** |
 | [PR sequencing](phase0-pr-sequencing-2026-09-15.md) | how the ten Phase 0 branches land |
 | [maintainer release brief](maintainer-release-brief-2026-09-15.md) | the same batch, presented as one decision |

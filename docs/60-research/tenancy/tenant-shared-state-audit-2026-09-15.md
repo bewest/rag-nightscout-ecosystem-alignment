@@ -1,6 +1,6 @@
 # Module-level shared state: what T3.3 has to fix before it can exist
 
-> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `7cc03cda` (Phase 2 complete). Status: current — tenancy research, not on a shipping path; §3 is latent (no shipping caller initialises storage twice). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-27 records the `env` singleton), [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `7cc03cda` (Phase 2 complete). Status: current — tenancy research, not on a shipping path; §3 is latent (no shipping caller initialises storage twice). Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-27 records the `env` singleton), [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
 
 **2026-09-15.** Measured with `tools/qc/tenant-shared-state.js`, output in
 `reports/tenant-shared-state/crm-seam.json`, against

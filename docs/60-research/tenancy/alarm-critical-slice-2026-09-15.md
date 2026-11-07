@@ -1,6 +1,6 @@
 # The alarm-critical slice, measured: 32.7 KB and 1.94 ms, not 852 KB and 27.5 ms
 
-> **Snapshot — research as of 2026-09-15, measured against `cgm-remote-monitor` `29749d92` (`seam/t3-k`). Status: current — tenancy research, not on a shipping path; the `insulinage` defect it found is register BF-28, merged to dev in PR #8739 (2026-09-20, unreleased — 15.0.8 still has it). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) phase 4 / D5, [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot — research as of 2026-09-15, measured against `cgm-remote-monitor` `29749d92` (`seam/t3-k`). Status: current — tenancy research, not on a shipping path; the `insulinage` defect it found is register BF-28, merged to dev in PR #8739 (2026-09-20, unreleased — 15.0.8 still has it). Current facts: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) phase 4 / D5, [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 *Audience: contributors.*
 

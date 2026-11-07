@@ -1,7 +1,7 @@
 # Tenant-configuration call-path lab
 
 *Contributor-facing. Lab approved by the maintainer on 2026-10-27 to inform the open question in
-[execution plan §2.13](../../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
+[execution plan §2.13](../../../docs/30-design/tenancy/multitenancy-decisions.md)
 (D22, "Not decided"): how does a hosted owner dashboard reach the tenant-owner listener? The lab
 informs that decision. It does not make it. Synthetic tenants, owners and credentials only.*
 

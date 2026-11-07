@@ -7,7 +7,7 @@ bounded R42 contract/management, R43 profile and R44 current-domain composition
 evidence is recorded; broader consolidation/frame acceptance remains UNMEASURED.
 Item states, gates and blockers
 live in [the work queue](../../../queue/work-queue.yaml). This plan supplements
-the [REST delivery roadmap](multitenant-delivery-roadmap-2026-11-02.md), without
+the [REST delivery roadmap](multitenant-delivery-roadmap.md), without
 changing release placement or promoting M0–M6. Batching and verification depth
 per acceptance stage are set by the
 [integration batching plan](multitenant-integration-batching-plan-2026-11-06.md).*

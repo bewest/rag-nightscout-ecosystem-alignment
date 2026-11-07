@@ -8,7 +8,7 @@ claim that the application token path already uses the new verifier.*
 
 *Contributor-facing. Draft of 2026-10-27, for the maintainer's review. Queue item
 `T30-SCHEMA-CONFIG`. It builds on D22 ([execution plan
-§2.13](nightscout-multitenancy-execution-plan-2026-09-14.md)), the [census re-measured on
+§2.13](multitenancy-decisions.md)), the [census re-measured on
 dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md) (§3a), and the [configuration-surface
 document](tenant-owner-config-surface-2026-09-15.md) (§A, §A.3, §B.3, §C, §E, §F.1). The schema
 runs in [`tools/lab/tenant-config-schema/`](../../../tools/lab/tenant-config-schema/README.md),

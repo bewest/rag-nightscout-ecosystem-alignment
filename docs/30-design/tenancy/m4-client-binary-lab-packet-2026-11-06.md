@@ -19,7 +19,7 @@ to this repository. `file:line` cites the lines actually read.
 
 ## 1. What M4 asks for, and what today's evidence is
 
-The [roadmap §4](multitenant-delivery-roadmap-2026-11-02.md) criterion for M4: *v1 and v3
+The [roadmap §4](multitenant-delivery-roadmap.md) criterion for M4: *v1 and v3
 uploader/follower shapes exercised on pinned versions; no coordinated app upgrade
 requirement; tenant-local identity and correct batch/retry/refusal semantics.* The
 [dashboard](multitenant-delivery-dashboard.md) adds: *actual client execution distinguished

@@ -3,7 +3,7 @@
 > **Snapshot, 2026-09-14, walkers transcribed from `chore/nightscout-modernization` `0a4109f6`. Historical: the coercion fix (T0.5: BF-02, BF-03, BF-11, BF-32, BF-40) is merged into `dev` as PR #8737, not released; the drift counts are as of 2026-09-14. Contributor-facing. Current facts: [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 Date: 2026-09-14. Status: findings + tooling. Task **T0.5** of the
-[execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
+[execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).
 **No shipping code changed** — this builds the generator and measures the gap.
 
 **Tooling**: `tools/nsschema/emit/coercion_emit.py` (the sixth emitter),

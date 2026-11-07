@@ -34,7 +34,7 @@ task is explicitly cross-project research; do not update those facets for progra
 | one pull request, bounded for review | `reports/reviewer-packets/` |
 | how documents are written and controlled | [DEFINITION-OF-DONE](docs/00-overview/DEFINITION-OF-DONE.md), [DOCUMENT-CONTROL](docs/00-overview/DOCUMENT-CONTROL.md) |
 | the next-generation platform plan | `docs/30-design/platform/next-gen-platform-plan.{md,json}` |
-| multitenant delivery | `docs/30-design/tenancy/multitenant-delivery-dashboard.md` and the execution plan beside it |
+| multitenant delivery | `docs/30-design/tenancy/README.md`, then the delivery dashboard and current contracts |
 
 ```bash
 make queue-status      # run the gates. THE measurement; `state` in the manifest is a claim
@@ -53,7 +53,7 @@ place to go stale.
 | an item's claimed state, gates, blockers | `queue/work-queue.yaml` | editing the YAML, then `make queue-validate && make queue` |
 | a decision that shapes a release | `releases/<product>-<version>/decisions.md` | one row per decision, stated as it stands |
 | what merged, what was tested, what is left | `releases/<product>-<version>/contents.md` update tables | appending a dated table; the file is the state of record for a cycle |
-| a tenancy decision (D1–D22) | the multitenancy execution plan | editing the decision; the roadmap links to it |
+| a tenancy decision (D1–D23) | `docs/30-design/tenancy/multitenancy-decisions.md` | editing the decision; the roadmap links to it |
 | a measurement | a dated record under `docs/60-research/<horizon>/` or `reports/` | never edited after capture |
 
 `progress.md` is the dated journal of the **research** facets (section 1, second row). Programme

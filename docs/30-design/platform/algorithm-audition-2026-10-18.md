@@ -7,7 +7,7 @@ Status: current. The harness in §4 is proposed, not specified; no decision rest
 facts are read at this repository's `ef29293a`; counts marked **measured** were taken that day with
 the command or method named beside them. Facts about an independent implementation (§3) are
 **read-derived from its source and documents, 2026-10-18; not reproduced here**. Current decisions:
-[execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+[execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 **The question.** Can a dosing algorithm be compared with others on the same recorded inputs, in
 shadow — computing what it would do, with no path to the pump — and what would the ecosystem need
@@ -44,7 +44,7 @@ to its code. An audition is about the first two; it must never change the third 
 
 ### 1.2 What D19 covers, and what it does not
 
-D19 ([execution plan §2.6.2](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14);
+D19 ([execution plan §2.6.2](../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility);
 specified in [registration specification §7–§9](spec/registration.md#7-definitions),
 not implemented) has the same three-way split, for **controllers**:
 
@@ -240,7 +240,7 @@ and re-sends, as in the
 The harness has no path to a pump and no way to change which algorithm a controller enacts.
 Execution authority is a separate, recorded decision outside it. Under D18 the controller
 validates and enacts
-([execution plan §2.6.1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)),
+([execution plan §2.6.1](../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)),
 and a proposed change reaches it only through a lifecycle such as
 [agents in the ecosystem §4.3](agent-trust-boundaries-2026-10-18.md#43-what-a-proposal-lifecycle-would-add--proposed-not-specified):
 propose, validate, approve against the exact payload, command, outcome. An audition result is

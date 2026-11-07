@@ -1,6 +1,6 @@
 # Transactional PostgreSQL tenant clock: proof plan
 
-*Current-use guide, 2026-11-06: R60 accepts the joined clock with bounded correctness evidence. [R65 descriptive HTTP workload](../remedial/rc-16.0.0-integration-record.md#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06) adds four small fresh cohorts; no performance budget or acceptance follows. Earlier corpus benchmark-pending captures remain unchanged. This page retains the original proof plan and invariants. Use the [current dashboard](multitenant-delivery-dashboard.md) and [R60 disposition](multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06) for implementation acceptance.*
+*Current-use guide, 2026-11-06: R60 accepts the joined clock with bounded correctness evidence. [R65 descriptive HTTP workload](../remedial/rc-16.0.0-integration-record.md#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06) adds four small fresh cohorts; no performance budget or acceptance follows. Earlier corpus benchmark-pending captures remain unchanged. This page retains the original proof plan and invariants. Use the [current dashboard](multitenant-delivery-dashboard.md) and [R60 disposition](../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06) for implementation acceptance.*
 
 *Contributor-facing design/proof plan, 2026-11-06. The maintainer selects this
 proof direction; implementation and performance acceptance remain UNMEASURED.

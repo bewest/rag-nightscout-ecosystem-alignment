@@ -7,7 +7,7 @@ and act. The proposal lifecycle in §4.3 is proposed, not specified.** **Also 20
 facts are read at this repository's `5a9a49cc`; facts about other repositories and publications were
 checked 2026-10-18 through the GitHub API or the publisher's page, and each names its commit or
 date. Every claim is **read-derived** (from source or documents) unless marked **measured**. Current
-decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+decisions: [execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 **The question.** Software agents built on language models now touch this ecosystem in three
 different ways: they write and change the code of apps and servers, they read a person's data and
@@ -189,7 +189,7 @@ agent as initiator today. The registrations are built for needs that are latent 
 demonstrated — in the corpus, in controller source and in the labs — not only for what apps send
 now; the open form lets a controller, simulator or lab record an agent initiator today, and a
 shared value can be named once the corpus or a lab shows one in use. Recorded in the [execution
-plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
+plan](../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 (row 17).
 
 ### 4.3 What a proposal lifecycle would add — proposed, not specified

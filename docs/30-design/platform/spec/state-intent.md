@@ -3,9 +3,9 @@
 *Contributor-facing. Living specification, current at `main` `92a7d31b` (2026-10-18). Layer L3 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md). The grammar members
 named here are part of the [registration specification](registration.md) §3; how a hub accepts
-them is there too. Decisions: [D18](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)
+them is there too. Decisions: [D18](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 (the hub observes, the controller composes) and the maintainer's 2026-10-18 decision on agent
-initiators ([execution plan §2.6.3](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
+initiators ([execution plan §2.6.3](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 row 17). Queue: `SPEC-STATE-INTENT`.*
 
 *Specification 4 of 8 in the [reading order](../README.md#reading-order); after registration, whose grammar it uses, and before commands. Expect rules S1–S12 and A1–A13, the declared kinds per controller, composition, what is active at a time, and the conformance cases.*

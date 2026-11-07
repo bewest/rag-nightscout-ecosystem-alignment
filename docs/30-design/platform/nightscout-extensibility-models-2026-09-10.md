@@ -2,7 +2,7 @@
 
 *What this is: an analysis (contributor-facing). Read after [`devicestatus` and `profile`
 replay](nightscout-devicestatus-profile-fidelity-2026-09-10.md); leads to [therapy effects and
-versioning](nightscout-effects-and-versioning-2026-09-11.md) and to the design it chose.* **Snapshot, 2026-09-10. Superseded as a design by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md); the measurements stand.** Current decisions: [execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+versioning](nightscout-effects-and-versioning-2026-09-11.md) and to the design it chose.* **Snapshot, 2026-09-10. Superseded as a design by [PROPOSAL-controller-descriptions](PROPOSAL-controller-descriptions-2026-09-11.md); the measurements stand.** Current decisions: [execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 Date: 2026-09-10. Companion to
 [Typed schemas for Nightscout](./nightscout-typed-schema-evidence-2026-09-10.md)

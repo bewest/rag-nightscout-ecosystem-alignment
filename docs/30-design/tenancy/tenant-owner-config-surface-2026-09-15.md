@@ -5,7 +5,7 @@
 *Contributor-facing.* **Historical snapshot, 2026-09-15, on the pinned seam below.**
 This retains the original census, proposed DDL and their evidence boundaries; it is
 not the current policy or application acceptance record. Current decisions live in
-[execution-plan D22](nightscout-multitenancy-execution-plan-2026-09-14.md#213-d22--per-setting-policy-project-floors-and-secrets)
+[execution-plan D22](multitenancy-decisions.md#d22)
 and [owner authority](owner-authority.md); the [schema candidate](tenant-config-schema-2026-10-27.md)
 records later bounded schema tests. Its original **DECISION** markers are historical
 questions, not proof those questions are still open. Item state:

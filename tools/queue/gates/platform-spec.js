@@ -36,13 +36,13 @@ const SOURCES = {
   ],
   registration: [
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
-    'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
+    'docs/30-design/tenancy/multitenancy-decisions.md',
   ],
   records: [
     'docs/30-design/platform/nightscout-primitive-coverage-2026-09-11.md',
     'docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md',
     'docs/30-design/platform/nightscout-devicestatus-profile-fidelity-2026-09-10.md',
-    'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
+    'docs/30-design/tenancy/multitenancy-decisions.md',
   ],
   'sync-transport': [
     'docs/30-design/tenancy/write-contract-spec-2026-10-07.md',
@@ -53,7 +53,7 @@ const SOURCES = {
     'docs/30-design/platform/spec/registration.md',
     'docs/30-design/tenancy/nightscout-configuration-and-delegation-2026-09-10.md',
     'docs/30-design/platform/agent-trust-boundaries-2026-10-18.md',
-    'docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md',
+    'docs/30-design/tenancy/multitenancy-decisions.md',
   ],
   commands: [
     'docs/30-design/platform/spec/registration.md',

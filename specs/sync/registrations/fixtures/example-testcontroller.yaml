@@ -2,7 +2,7 @@
 #
 # A controller-owned registration for a fictional controller ("Example"
 # TestController) that exercises every rule of the D18 addendum
-# (docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+# (docs/30-design/tenancy/multitenancy-decisions.md
 # §2.6.1). It is read by tools/nsschema/test_registration_grammar.py and
 # validated, never regenerated, by `python -m nsschema.sync_model --check`.
 #

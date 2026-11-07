@@ -3,10 +3,10 @@
 *Contributor-facing. Living specification, current at `main` `8d2b93ed` (2026-10-18). Layer L2 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md); ids are defined in
 the [identity specification](identity.md). Status: specified, not implemented; the first hub implementation is `HUB-REG-CRM`.
-Decisions: [D18](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)
-and its [addendum](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#d18-addendum--an-extensible-grammar-maintainer-2026-10-12),
-[D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14),
-[D20](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
+Decisions: [D18](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
+and its [addendum](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility),
+[D19](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility),
+[D20](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 and the maintainer's decisions of 2026-10-14, 2026-10-16 and 2026-10-17 recorded there. Queue:
 `SPEC-REGISTRATION`.*
 

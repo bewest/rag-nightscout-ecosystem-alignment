@@ -1,6 +1,6 @@
 # pgbouncer and the D3 tenant binding — isolation holds, and two of the three modes are usable
 
-> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `239f8c25` (modules unchanged at `29749d92`). Status: current — tenancy research, not on a shipping path; the three pooler defects in §6/§9 are open on the seam branch and are not in the register (their proposed ids collide — see §9). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §7.**
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam` `239f8c25` (modules unchanged at `29749d92`). Status: current — tenancy research, not on a shipping path; the three pooler defects in §6/§9 are open on the seam branch and are not in the register (their proposed ids collide — see §9). Current facts: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §7.**
 
 *Audience: contributors.*
 
@@ -26,7 +26,7 @@ This closes one row of the execution plan's *"What is still unmeasured"* table:
 
 | ref | document |
 |---|---|
-| **{P}** | [multitenancy execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) — §7 the unmeasured table, and the `is_local` vacuity note above it |
+| **{P}** | [multitenancy execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) — §7 the unmeasured table, and the `is_local` vacuity note above it |
 | **{T}** | [T2.5 PostgreSQL backend verification](t25-postgres-backend-verification-2026-09-15.md) — house style, and the run this one follows |
 | **{M}** | [Nightscout multitenancy: evidence and options](../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) — §6.7, the claim this checks |
 | **{B}** | [backfix register](../../30-design/remedial/nightscout-backfix-register.md) |

@@ -147,7 +147,7 @@ and hosting. The work on it runs in three horizons ([PROGRAMME-STATUS](PROGRAMME
   ([ROADMAP §2](ROADMAP.md#2-modernization-the-release-train)).
 - **Multitenancy.** A second deployment target for hosting providers, on PostgreSQL. Self-hosted,
   single-tenant Nightscout on MongoDB stays first-class permanently (decisions D1 and D4,
-  [execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)).
+  [execution plan](../30-design/tenancy/multitenancy-decisions.md)).
 
 Accepting controller registrations (§4) is queued for it as `HUB-REG-CRM`, single-tenant first.
 
@@ -184,7 +184,7 @@ registers. D19 separates the immutable, content-addressed definition from each r
 (a phone, simulator, lab rig or agent), which holds a lease and declares whether it is a device or
 simulated. The roles are fixed: the hub is responsible for observability, the controller for
 sending data accurately and for syncing and reconciling, and the hub decides nothing about dosing
-([execution plan §1](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)).
+([execution plan §1](../30-design/tenancy/multitenancy-decisions.md#1-decisions)).
 The evidence behind D18 is the
 [intent and workflow landscape](../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md),
 which measured where the controllers and hubs disagree about what is active.

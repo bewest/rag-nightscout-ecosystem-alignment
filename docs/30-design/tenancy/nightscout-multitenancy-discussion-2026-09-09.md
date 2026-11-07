@@ -1,6 +1,6 @@
 # Nightscout multitenancy: evidence and options
 
-*Contributor-facing.* **Snapshot — describes 2026-09-09, revised through 2026-09-14. Status: superseded for decisions; retained as the evidence base.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). Where a recommendation below contradicts a decision, a bracketed note says so in place.
+*Contributor-facing.* **Snapshot — describes 2026-09-09, revised through 2026-09-14. Status: superseded for decisions; retained as the evidence base.** Current decisions: [execution plan §1](multitenancy-decisions.md#1-decisions). Where a recommendation below contradicts a decision, a bracketed note says so in place.
 
 Date: 2026-09-09. Companion to
 [Nightscout modernization review and proposed next steps](../../60-research/modernization/nightscout-modernization-next-steps-2026-09-09.md);
@@ -54,7 +54,7 @@ and §7.5.
 **Recommendation: extend cgm-remote-monitor to hold many tenants in one process; adopt
 Postgres RLS (or an equivalent storage-enforced predicate) as the isolation primitive; stay
 on Node.** [Decided since: D2 shared storage with a tenant discriminator and D3 PostgreSQL + RLS
-for the multitenant service; D4 keeps MongoDB permanently for single-tenant — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).] Confident on the architecture axis; "10 000 tenants" is a target to design
+for the multitenant service; D4 keeps MongoDB permanently for single-tenant — [plan §1](multitenancy-decisions.md#1-decisions).] Confident on the architecture axis; "10 000 tenants" is a target to design
 towards and then verify, not a number demonstrated (§10.1).
 
 **Five findings that should change the intuition** — all reproduced on a re-verification
@@ -1772,7 +1772,7 @@ Two things follow that are worth more than the recommendation itself:
 
 > [Not adopted. D2 rejected database-per-tenant (stage 2 / A′) on the EXP-MT-040b measurement
 > above, and D3 made stage 3 — PostgreSQL + RLS — the multitenant target rather than an
-> optional end state. See [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).]
+> optional end state. See [plan §1](multitenancy-decisions.md#1-decisions).]
 
 **Stage 2 is the recommendation for what to build next**, and stage 3 is the recommendation
 for where to end up. Splitting them is the point: stage 2 delivers the density result that
@@ -2631,7 +2631,7 @@ feature currently in production use gets silently dropped by that migration.
 permanently; Hydra is deferred; one cohort-wide Ory Kratos pool for human identity is direction
 of travel, **held** pending `T30-ORY-PROOF`; NRG's unfinished `nsjwt` exchange — minting a
 per-tenant Nightscout token after authentication (D14) — is the bridge under any outcome.
-See [plan §2.9](nightscout-multitenancy-execution-plan-2026-09-14.md).]
+See [plan §2.9](multitenancy-decisions.md).]
 
 ---
 
@@ -2738,7 +2738,7 @@ does not need to be stateful at all.**
 ### 10.3 Can it support both MongoDB and Postgres?
 
 [Decided since as D4: MongoDB is permanent for the single-tenant target, so the storage seam carries
-two mature backends permanently and both stay in CI — [plan §1, §4](nightscout-multitenancy-execution-plan-2026-09-14.md).
+two mature backends permanently and both stay in CI — [plan §1, §4](multitenancy-decisions.md).
 The heading's "permanently no" applies only to MongoDB *inside the multitenant service*.]
 
 **Temporarily yes; permanently no — and this document is not recommending the latter.**
@@ -2967,14 +2967,14 @@ gates the most expensive work.
    property, which is an honest resting place for non-hostile tenants and **cannot truthfully
    promise "the database refuses"**. The remaining question is therefore not *whether* but
    *when* that promise is made, and to whom. [Settled since: D2 rejected stage 2; D3 makes the
-   storage-enforced promise the multitenant design — [plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).]
+   storage-enforced promise the multitenant design — [plan §1](multitenancy-decisions.md#1-decisions).]
 3. ~~**Host-based routing** or path prefix?~~ **ANSWERED: leaning host-based**, to avoid
    forcing configuration changes on edge devices and mobile uploaders — which is the same
    reasoning that makes it Nocturne-compatible. The cost to accept explicitly is wildcard
    TLS and per-tenant hostname provisioning. This should be treated as decided for design
    purposes, because every uploader configured in the field is a change that cannot be
    recalled later. [Settled since as D10: the slug is a host label resolved by a configured rule
-   with one capture group — [plan §2.5](nightscout-multitenancy-execution-plan-2026-09-14.md).]
+   with one capture group — [plan §2.5](multitenancy-decisions.md).]
 4. Do we accept a **hard dependency on Nocturne**, or align on shared contracts and shared
    algorithm cores (§4.1)?
 5. Who owns per-tenant **safety**? Alarm delivery for idle tenants is the requirement most

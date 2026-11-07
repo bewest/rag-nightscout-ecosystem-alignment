@@ -1,0 +1,30 @@
+{
+  "source_commit": "072ef9e37b6643d66d00248308fa6979d75f559b",
+  "kind": "read-derived document consolidation; no application measurement",
+  "journals": [
+    {
+      "archive_path": "docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md",
+      "current_path": "docs/30-design/tenancy/multitenant-delivery-roadmap.md",
+      "original_sha256": "1a0343b16aeecbe5812df79f74261e9565888b965928cf77246b6f19535abdac",
+      "original_bytes": 166588,
+      "original_lines": 2439,
+      "body_preserved_except_markdown_link_destinations": true,
+      "headings_retained": true,
+      "archive_sha256": "a0d9bed02fb10f16606fcd4a33b28f65a595708a7e24500495c3544c8eee363e",
+      "source_url": "https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md"
+    },
+    {
+      "archive_path": "docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md",
+      "current_path": "docs/30-design/tenancy/multitenancy-decisions.md",
+      "original_sha256": "fe55b301d2b6447f04640e6ff0b020b94184db73faf2b3f2b5aecc043688b905",
+      "original_bytes": 190863,
+      "original_lines": 2256,
+      "body_preserved_except_markdown_link_destinations": true,
+      "headings_retained": true,
+      "archive_sha256": "c567aee2877b0a6a6748650c719fb91cec4ffc320b685c76c079a9723974b0d5",
+      "source_url": "https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md"
+    }
+  ],
+  "peer_acceptance_metadata_preserved_except_evidence_destinations": true,
+  "peer_release_record_preserved_except_link_destinations": true
+}

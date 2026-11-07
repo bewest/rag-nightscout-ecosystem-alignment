@@ -115,7 +115,7 @@ Documentation follows source code analysis → research synthesis → domain und
 
 **Current discussion proposals**:
 
-- [Multitenant delivery roadmap](30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+- [Multitenant delivery roadmap](30-design/tenancy/multitenant-delivery-roadmap.md)
   — Adopted storage-first integration sequence, headless owner API and tenant
   configuration, early Vault feasibility, continuous v1/v3/socket/evaluator
   acceptance and parallel next-generation contracts. Celld is out of scope.

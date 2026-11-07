@@ -5,7 +5,7 @@ specifications](../platform/README.md#reading-order); leads to [integration ques
 defaults](../platform/integration-questionnaire-defaults-2026-10-18.md).* **Snapshot — describes the
 earlier draft at cgm-remote-monitor `a8888f0d` and this repository's specifications at `main`
 `df93608c` (2026-10-18). Status: current; no decision rests on it.** Current decisions: [execution
-plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). The 2026-09-11 analysis
+plan §1](multitenancy-decisions.md#1-decisions). The 2026-09-11 analysis
 of the same draft is in git: [full text at
 `85c645c8`](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/85c645c8b003b61dc07ea31f8a7002711493b18a/docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md).
 

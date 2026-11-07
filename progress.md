@@ -109,7 +109,7 @@ pass on 5.0.32 and 8.3.9. Lint: zero errors/two filesystem-path warnings;
 are integrated at `436ef543`. Single-node process recovery is not HA,
 host/disk failure or production RPO/RTO acceptance.
 
-See the [acceptance/handoff record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02).
+See the [acceptance/handoff record](docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02).
 
 ## Parallel Transactional MongoDB Operator Migrations (2026-11-02)
 
@@ -133,7 +133,7 @@ the CLI, **15 passing** on MongoDB 5.0.32, ESLint zero errors/two filesystem-pat
 warnings, and **466 test files** classified. No upstream push or serving
 enablement. Standalone/index fencing, catalogues and full runner acceptance
 remain open.
-See the [acceptance and handoff](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-transactional-mongodb-slice-2026-11-02).
+See the [acceptance and handoff](docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-transactional-mongodb-slice-2026-11-02).
 
 ## Parallel Current Authority and Scalar Settings Acceptance (2026-11-02)
 
@@ -151,7 +151,7 @@ Persistent operator policy and atomic policy/write fencing, tenant resolution,
 management authentication and runtime wiring remain open; the full M2
 milestone is not promoted.
 
-See the [acceptance and handoff record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02).
+See the [acceptance and handoff record](docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02).
 
 ## Multitenancy Secrets Recovery Integration (2026-11-02)
 
@@ -173,7 +173,7 @@ MT-CONFIG-MIN and implement a dormant tenant-local subject-policy/current-
 authority slice. Prove fresh cross-worker checks, revocation/outage refusal,
 version conflicts and floors using real persistence; do not enable routes or
 claim socket/data enforcement. This session keeps entries schema/import/
-compatibility work. See the [integration and bounded handoff](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
+compatibility work. See the [integration and bounded handoff](docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
 
 ## Multitenancy Entries Upserts and Post-Commit v3 Intents (2026-11-02)
 
@@ -198,7 +198,7 @@ resource bounds and backend suites remain open. M1/M2 are not promoted; the
 previous broad no-database AJV failure is not waived. Parallel secrets/
 control-plane ownership is unchanged.
 
-See the [acceptance and continuation record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
+See the [acceptance and continuation record](docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
 
 ## Multitenancy Entries and Secrets Integration (2026-11-02)
 
@@ -220,7 +220,7 @@ green. Owned lab containers removed; other sessions' resources preserved.
 baseline, then pursue synthetic backup/restore and actual process-crash/retry
 acceptance without runtime consumer enablement. Entries upsert/batch/retry,
 MongoDB MIG-RUNNER and settings/subject policy remain separate unfinished work.
-See the [integration record and commands](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02).
+See the [integration record and commands](docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02).
 
 **Source references:**
 `externals/work/crm-multitenant-20261102/lib/secrets/component.js:16-140`,
@@ -245,7 +245,7 @@ existing write-boundary check pass. Owned lab containers removed.
 **Remaining:** complete upsert/resend/batch/every-form outcomes,
 constraint-specific retry, events/source/validation integration and full M1.
 The parallel session owns MIG-RUNNER, settings/subject policy and secrets.
-See the [acceptance and reproduction record](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-dormant-entries-writes-2026-11-02).
+See the [acceptance and reproduction record](docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-dormant-entries-writes-2026-11-02).
 
 **Source references:**
 `externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:65-155`,
@@ -260,7 +260,7 @@ integration branch; **no upstream push or hosted enablement**.
 |-------------|----------|--------------|
 | Explicit PG operator runner | Local upstream `68828b8d`; `lib/migrations/`, `nightscout migrate` | Umzug 3.8.3, pinned-client advisory lock, atomic SQL/ledger, read-only status/check; no production catalogue or boot hook. |
 | Entries read/filter subset | Local upstream `7d4f3872`; `lib/storage/postgres-{filter,entries-read}.js` | Actual tenant-bound connection/typed identities; six real PG/MongoDB differential checks plus four refusal/parameterization checks. |
-| Decisions, gates and limits | [Delivery roadmap](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md), `queue/work-queue.yaml` | MIG-RUNNER now in progress, not complete; next-operation current authorization selected across workers, failing closed when unavailable. |
+| Decisions, gates and limits | [Delivery roadmap](docs/30-design/tenancy/multitenant-delivery-roadmap.md), `queue/work-queue.yaml` | MIG-RUNNER now in progress, not complete; next-operation current authorization selected across workers, failing closed when unavailable. |
 
 **Validation:** **145 passing, no pending** across 12 focused upstream files
 with owned disposable PostgreSQL/MongoDB and project hooks. Migration-only run:
@@ -292,7 +292,7 @@ No upstream push or hosted backend enablement.
 |-------------|----------|--------------|
 | Current-connection pooler/DDL lab | `tools/lab/postgres-foundation/{harness.js,results.json}` | 9 checks on PostgreSQL 16.15/PgBouncer 1.25.2; two clients share one backend across 24 interleaved tenant transactions; actual binding mutation leaks to an unbound client. |
 | Typed identity primitive | Local upstream `6b1bf889`; `tools/lab/postgres-foundation/generated/` | Historical JSON serialization collapses ObjectId/string copies; opt-in typed key plus actual codec pass 4 PG checks, including kind-flattening control. |
-| Decisions and remaining acceptance | `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md` | Owner grants/bounded token lifetimes included under pinned floors; explicit operator-run hosted migrations; recommend Vault-facing adapter next. |
+| Decisions and remaining acceptance | `docs/30-design/tenancy/multitenant-delivery-roadmap.md` | Owner grants/bounded token lifetimes included under pinned floors; explicit operator-run hosted migrations; recommend Vault-facing adapter next. |
 
 **Validation:** 65 focused upstream checks, ESLint and test-tier classification
 pass; 291 schema-pipeline tests pass. A first regression invocation omitted
@@ -313,7 +313,7 @@ normal generated files and single-site behavior remain unchanged.
 ## Multitenancy Priorities and Celld Assessment (2026-11-02)
 
 **Subsequent maintainer decisions and execution:** Celld removed from scope.
-Adopted [the multitenant delivery roadmap](docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md):
+Adopted [the multitenant delivery roadmap](docs/30-design/tenancy/multitenant-delivery-roadmap.md):
 storage first, one local upstream integration branch; headless owner API,
 UI deferred; operator-only provisioning; legacy per-tenant credentials; small
 reviewed config catalogue; human identity separately planned; registration/

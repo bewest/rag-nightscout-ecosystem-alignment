@@ -14,7 +14,7 @@ live in these places, and this page links to them:
 | what | where it is decided |
 |---|---|
 | the release train and each release's number | [versioning policy §8.3](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train) |
-| tenancy decisions D1–D22 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| tenancy decisions D1–D22 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/multitenancy-decisions.md) |
 | defect facts, and what ships to operators today | [backfix register](../30-design/remedial/nightscout-backfix-register.md) |
 | each item's state, gate and blockers | `queue/work-queue.yaml`; `make queue-status` measures it |
 
@@ -149,7 +149,7 @@ harness cut 1 keeps is retired later under scope B (`RT-JSDOM-REST`, decided 202
 Self-hosted single-tenant Nightscout stays first-class permanently (D1, D4).
 Multitenant is an additional deployment target.
 
-The [multitenant delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+The [multitenant delivery roadmap](../30-design/tenancy/multitenant-delivery-roadmap.md)
 owns milestone acceptance criteria; the [batching plan §5](../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
 owns the current completion sequence. Start with the
 [tenancy reading guide](../30-design/tenancy/README.md). Use the
@@ -165,7 +165,7 @@ Single-tenant compatibility, tenant isolation, current authority, realtime and e
 behavior each retain their acceptance gates in that roadmap. Alarms under
 `TENANCY_MODE=multi` remain off until `A7A-GATE` proves delivery through the real
 producer path to the correct tenant, with snooze state surviving a restart and
-process change ([execution plan §7a](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#7a-what-stands-between-here-and-alarms-being-on-under-multi)).
+process change ([execution plan §7a](../30-design/tenancy/multitenancy-decisions.md#5-runtime-isolation-and-clinical-acceptance)).
 
 <!-- BEGIN GENERATED: road-tenancy -->
 

@@ -4,7 +4,7 @@ This document is an index of requirements organized by domain.
 
 ## Hosted-tenancy experiment verification (2026-11-02)
 
-The adopted [delivery roadmap](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+The adopted [delivery roadmap](../docs/30-design/tenancy/multitenant-delivery-roadmap.md)
 adds milestone-specific checks under the existing decisions, not new protocol
 IDs. Preserve legacy per-tenant header/token/socket forms. Owner configuration
 uses the supported headless API and project floors even when a vendor supplies
@@ -72,7 +72,7 @@ boundaries and failed writes publish nothing. JSONB must not fabricate
 BSON-order-dependent replacement counts: equal replacements owing those counts
 refuse until a reviewed representation exists. These 878 integrated checks
 do not establish full v1/socket, route validation/current grants or backend
-acceptance; see the [measured boundary](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
+acceptance; see the [measured boundary](../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02).
 
 The subsequent 879-test merge proves synthetic PG ciphertext/audit restoration
 with migration-state inspection, required Vault data/signing-version recovery,
@@ -81,7 +81,7 @@ and after its commit. It does not substitute for production recovery. The
 parallel current-authority slice must define its read linearization point and
 demonstrate fresh cross-worker revocation/outage refusal, version conflicts and
 operator/code floors before any route or runtime adoption; see the
-[reconciled acceptance](../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
+[reconciled acceptance](../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02).
 
 The [multitenancy priorities assessment](../docs/10-domain/nightscout-multitenancy-priorities-deep-dive.md)
 clarifies existing D1-D4, ST-PG and TEN-LAB acceptance rather than inventing new

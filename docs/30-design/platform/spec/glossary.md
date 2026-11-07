@@ -63,7 +63,7 @@ A *carrier* is the composite shape an element is written in when it is not writt
 encoded).
 
 **Decomposition.** Turning a composite document into observation primitives on write, keeping the
-composite as well. [D11](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem).
+composite as well. [D11](../../tenancy/multitenancy-decisions.md#2-storage-resolution-and-profiles).
 
 **Evidence grade.** `measured` (a wire path in the corpus populates it), `declared` (a typed model
 has it and the corpus does not show it), `proposed` (asked for). In registrations, evidence is
@@ -86,7 +86,7 @@ or `aggregate`, each with its own cadence and retention.
 `retired`, `blocked`), the etag and the per-element results. [REG §5](registration.md#5-the-product-resource).
 
 **Tier.** *Well-known*: registrations the hub ships for controllers that declare nothing, so
-legacy writers need no change. *Controller-owned*: registrations a controller submits. [D18](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration).
+legacy writers need no change. *Controller-owned*: registrations a controller submits. [D18](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility).
 
 **Capability document.** `GET /.well-known/nightscout/sync`: unauthenticated and cacheable. It says
 which grammar majors, members, type keywords, horizons, limits, roles and shared slots the hub
@@ -101,7 +101,7 @@ extension namespace, a typed settings field or a typed replay input. The result 
 Decided per element, from the response to this registration only.
 
 **Definition.** An immutable, content-addressed statement of what a controller's data means. Many
-coexist under one product; ten simulators on one build share one. [D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14).
+coexist under one product; ten simulators on one build share one. [D19](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility).
 
 **Meaning members, `version-conflict`.** The members of a kind, extension or field that define
 what it means ([REG §7](registration.md#7-definitions)'s table). Within one product, one element at one version has one meaning. A

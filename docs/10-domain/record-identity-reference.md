@@ -347,4 +347,4 @@ Related: [identity specification](../30-design/platform/spec/identity.md) (the L
 [write contract](../30-design/tenancy/write-contract-spec-2026-10-07.md) (its §1.4 measures
 cross-path re-sends at dev `43289dde`),
 [consumer-impact survey of #8758](../../reports/consumer-impact-15.0.9/clients-8758.md) (which
-clients send which id), [D20](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16).
+clients send which id), [D20](../30-design/tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility).

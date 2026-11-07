@@ -1,6 +1,6 @@
 # Settings, extensibility, new data, and delegated access: four open questions
 
-*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current as analysis; its auth-related framing predates D13–D17.** Current decisions: [execution plan §1](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions). §5's delegation requirements are carried as DR1–DR7 in the [authority specification §7](../platform/spec/authority.md#7-delegation-not-decided), which is proposed to supersede the delegation parts of the earlier draft in cgm-remote-monitor's `docs/proposals`.
+*Contributor-facing.* **Snapshot — describes 2026-09-10. Status: current as analysis; its auth-related framing predates D13–D17.** Current decisions: [execution plan §1](multitenancy-decisions.md#1-decisions). §5's delegation requirements are carried as DR1–DR7 in the [authority specification §7](../platform/spec/authority.md#7-delegation-not-decided), which is proposed to supersede the delegation parts of the earlier draft in cgm-remote-monitor's `docs/proposals`.
 
 Date: 2026-09-10. Fourth in a
 series with
@@ -258,7 +258,7 @@ access as consent-granted rather than credential-proven. So delegation has
 to ride on an external identity provider — which is what the roles gateway's
 Mode B does — and cannot become a bespoke auth system.
 
-[Decided since for the hosted target (D13, D17 — [plan §2.8–§2.9](nightscout-multitenancy-execution-plan-2026-09-14.md)):
+[Decided since for the hosted target (D13, D17 — [plan §2.8–§2.9](multitenancy-decisions.md)):
 each tenant holds its own root credential and devices keep a native per-tenant credential
 permanently; an external identity provider for *human* identity (one cohort-wide Ory Kratos pool)
 is direction of travel, **held** pending `T30-ORY-PROOF`; Hydra is deferred.]

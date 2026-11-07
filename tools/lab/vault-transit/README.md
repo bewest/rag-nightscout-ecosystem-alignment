@@ -1,7 +1,7 @@
 # Vault Transit feasibility lab
 
 Implements the first bounded check for `MT-SECRETS-CONTRACT`, under the
-[multitenant roadmap](../../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md).
+[multitenant roadmap](../../../docs/30-design/tenancy/multitenant-delivery-roadmap.md).
 Synthetic payloads and disposable loopback Vault only. The harness creates
 an isolated random mount, policies and consumer tokens, and removes only those
 resources on completion. It does not inspect existing secrets.

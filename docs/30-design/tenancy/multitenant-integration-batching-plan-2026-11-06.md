@@ -7,7 +7,7 @@ Item states, gates and
 blockers live in [the work queue](../../../queue/work-queue.yaml); acceptance
 evidence lives in the [integration record](../remedial/rc-16.0.0-integration-record.md)
 and the [working dashboard](multitenant-delivery-dashboard.md). This plan
-supplements the [REST delivery roadmap](multitenant-delivery-roadmap-2026-11-02.md)
+supplements the [REST delivery roadmap](multitenant-delivery-roadmap.md)
 and the [architecture seams plan](architecture-seams-execution-plan-2026-11-05.md)
 without changing release placement or promoting M0–M6.*
 

@@ -117,7 +117,7 @@ model is generally workable; the previous, longer version is in git history at `
 | xDrip+ | sends `uuid` on treatments [R] | xDrip `1ed760048`: `NightscoutUploader.java:784` |
 | AndroidAPS | keeps the server `identifier` as `nightscoutId`, plus `pumpId`/`pumpType`/`pumpSerial` [R] | AndroidAPS `7e1d537d49`: `BolusExtension.kt:26, 44-45` |
 
-Decisions cited: [D20 rule 5 and rule 7](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
+Decisions cited: [D20 rule 5 and rule 7](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 (`18397441`, 2026-10-16); [write contract §3 (U4, U6) and §6.1](../../tenancy/write-contract-spec-2026-10-07.md#61-decided-2026-10-12)
 (2026-10-12); [hub-sync design §3.7](../nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids)
 (`write.ids`, `matchedBy`); cases in [`specs/sync/conformance/quirks/`](../../../../specs/sync/conformance/quirks/);

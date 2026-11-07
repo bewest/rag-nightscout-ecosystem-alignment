@@ -2,7 +2,7 @@
 
 *Contributor-facing. Living specification analysis, current at `main` `85c645c8` (2026-10-18).
 Covers layers L2–L5 of the [platform index](../README.md); terms are in the
-[glossary](glossary.md). Decisions: [D18 and D19](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration).
+[glossary](glossary.md). Decisions: [D18 and D19](../../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility).
 Queue: `SPEC-STPA-PLATFORM`.*
 
 *An analysis across the eight specifications in the [reading order](../README.md#reading-order);

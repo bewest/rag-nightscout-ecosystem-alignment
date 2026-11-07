@@ -1,5 +1,10 @@
 # Multitenant delivery roadmap: current-dev integration
 
+> **Archived execution journal, captured 2026-11-06.** This preserves the original
+> narrative and evidence; its status and next-step wording is historical.
+> Current rules: [delivery roadmap](../../30-design/tenancy/multitenant-delivery-roadmap.md).
+> [Archive scope and retention](README.md). Only links were relocated below this notice.
+
 **Adopted direction, 2026-11-02.** One local upstream integration branch,
 `workspace/multitenant-20261102`, starts at official dev `61eb3733`.
 No upstream push is authorized in this session. Keep merging later dev changes
@@ -13,13 +18,13 @@ v16's release merge list.
 
 ## Current status and parallel ownership (2026-11-06)
 
-**Use the [working dashboard](multitenant-delivery-dashboard.md) for current
+**Use the [working dashboard](../../30-design/tenancy/multitenant-delivery-dashboard.md) for current
 milestone dependencies, parallel lanes, next gates and slice acceptance stages.**
 It is generated from queue claims plus dated acceptance metadata, not a live
 branch monitor. It distinguishes local acceptance, incorporation with testing
 pending, integrated acceptance and milestone promotion. Nothing is pushed or
 enabled merely because a dormant slice passes. The
-[integration batching plan](multitenant-integration-batching-plan-2026-11-06.md)
+[integration batching plan](../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md)
 says how lanes join one frozen cumulative head per batch, what verification runs
 at each acceptance stage, and which batches are on the critical path.
 
@@ -49,7 +54,7 @@ bounded local evidence; final-floor actual-PG component proof is running and a
 fresh full campaign has not started. Current exact source/lane state belongs to
 the dashboard; no decision above is a milestone promotion.
 
-Use the [reading guide](README.md) to select a current contract or a dated record.
+Use the [reading guide](../../30-design/tenancy/README.md) to select a current contract or a dated record.
 The detailed checkpoints below retain their captured heads and remaining work at
 that time. Read them as evidence, rather than as current dispatch instructions.
 Current PR publication and remote checks are separate from local acceptance and
@@ -153,7 +158,7 @@ Initial affected25/1 exposed stale migration003-only expectation; fixture-only17
 expects003+004, applies prior3 then004 and preserves all prior3 stored checksums.
 Affected26 then pass; no production guard was weakened. See the immutable
 [public C record](../../../reports/owner-subject-policy-acceptance-2026-11-06.md)
-and [R53](../remedial/rc-16.0.0-integration-record.md#r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06).
+and [R53](../../30-design/remedial/rc-16.0.0-integration-record.md#r53---selected-owner-proposed-grant-policy-on-17f9a457-2026-11-06).
 
 The [sanitized clock lower record](../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.md)
 separates originalPG8/controls from corrected all-domain9. Restoring old readiness
@@ -194,10 +199,10 @@ New-head profile38/controls/full/browser/prcheck are **UNMEASURED**, pending a
 separate slot. It is not joined into REST and changes no subscriber/notification
 or production runtime admission. A step is finished; D/clock lower PG proof and
 controls are active, HTTP/full/bench acceptance pending, C queued. The adopted
-[clock proof direction](postgres-tenant-clock-proof.md) has no production clock fix
+[clock proof direction](../../30-design/tenancy/postgres-tenant-clock-proof.md) has no production clock fix
 or accepted contention/fresh-ingestion latency result yet.
 
-Exact native commands/counts/limits are in [R52](../remedial/rc-16.0.0-integration-record.md#r52---native-private-acquisition-extraction-on-e5fe0b5e-2026-11-06).
+Exact native commands/counts/limits are in [R52](../../30-design/remedial/rc-16.0.0-integration-record.md#r52---native-private-acquisition-extraction-on-e5fe0b5e-2026-11-06).
 Evidence was independently read from the local updated
 `HANDOFF-private-acquisition-extraction-20261105.md` and
 `private-acquisition-evidence-20261105/full-recovery-summary-20261106.json`.
@@ -244,7 +249,7 @@ D `714f6c8b` remains unaccepted and its [measured history gap](../../../reports/
 at `2a6eaf73` is unfixed. C `3106f14d` has static preparation only, with new
 DB/full/browser/prcheck pending. Existing accepted R48 is retained.
 
-The maintainer adopted the [transactional tenant-clock proof direction](postgres-tenant-clock-proof.md).
+The maintainer adopted the [transactional tenant-clock proof direction](../../30-design/tenancy/postgres-tenant-clock-proof.md).
 Separate source prototypes, independent HTTP proof and contention/fresh-ingestion
 latency measurements are unmeasured; no clock implementation is production enabled.
 Root owns joins and final cumulative acceptance. R51 and its bounded ST-PG gate
@@ -257,8 +262,8 @@ The2026-11-05 HOLD table below is a historical capture, not current slot status.
 ### Next lanes and shared capacity hold (2026-11-05)
 
 This is continuation/status upkeep, not a new numbered acceptance wave.
-The frozen accepted baseline remains REST `1c55098a` ([R49](../remedial/rc-16.0.0-integration-record.md#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05): full7076/80pending/0failure, browser684) and independent profile `5173864d`
-([R50](../remedial/rc-16.0.0-integration-record.md#r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05): full6690/3pending/0failure, browser684), within their recorded boundaries.
+The frozen accepted baseline remains REST `1c55098a` ([R49](../../30-design/remedial/rc-16.0.0-integration-record.md#r49---cumulative-frame-acquisition-and-concurrent-read-characterization-on-1c55098a-2026-11-05): full7076/80pending/0failure, browser684) and independent profile `5173864d`
+([R50](../../30-design/remedial/rc-16.0.0-integration-record.md#r50---independent-evaluator-frame-characterization-on-5173864d-2026-11-05): full6690/3pending/0failure, browser684), within their recorded boundaries.
 The following **NEXT lanes are separate and not accepted**. Figures below are
 read-derived from lane handoffs and the immutable replica measurement, not new
 campaigns run for this upkeep. Counts overlap and are not completion percentages.
@@ -298,7 +303,7 @@ joins; runner/gate cleanup is a separate branch, not part of these source record
 
 ### Accepted adapter consolidation and index race continuation (2026-11-05)
 
-[R46](../remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05)
+[R46](../../30-design/remedial/rc-16.0.0-integration-record.md#r46---bounded-pg-consolidation-and-identifier-races-on-44331668-2026-11-05)
 accepts local cumulative `44331668038dca5bc23af24c4125052b9c8e5612`:
 identical PG projection, identifying-read and owned-commit/event mechanics are
 shared while source-specific translation/natural-order policy remains explicit.
@@ -318,7 +323,7 @@ decisions; durable events/recovery remain M5/M6. No milestone or RC promotion.
 
 ### Accepted independent v1 evaluator continuation (2026-11-05)
 
-[R47](../remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05)
+[R47](../../30-design/remedial/rc-16.0.0-integration-record.md#r47---independent-shipping-v1-evaluator-replay-on-0c98ad06-2026-11-05)
 accepts independent local test-only `0c98ad06f8e01114639d58e1bc0724499af97f1f`:
 shipping v1 configurators over the real nonresident context now exercise batches,
 resends, hard deletes, retained properties, request signatures and selected live
@@ -326,7 +331,7 @@ notification handoff. Whole/full/default-browser and trigger/closed-service
 controls pass. Production source, subscriber and executable routes are unchanged;
 no socket admission, REST join or durable multitenant evaluator follows.
 
-The [source-pinned frame inventory](architecture-seams-execution-plan-2026-11-05.md#shared-frame-inventory-and-next-characterization)
+The [source-pinned frame inventory](../../30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md#shared-frame-inventory-and-next-characterization)
 prepares `ARCH-DERIVED-FRAME` with read-derived policy/lifecycle boundaries.
 Runtime convergence and cross-collection consistency remain UNMEASURED. Broaden
 remaining writer/alarm cohorts alongside direct frame characterization; retained
@@ -334,7 +339,7 @@ freshness and request-local HTTP semantics keep their own policies.
 
 ### Accepted composition and direct identity continuation (2026-11-05)
 
-[R44](../remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05)
+[R44](../../30-design/remedial/rc-16.0.0-integration-record.md#r44---explicit-backend-composition-and-imported-identity-on-bc4ee1a9-2026-11-05)
 accepts local cumulative `bc4ee1a91b84a657012dbb77ee835fdeb78ef707`:
 logical domain metadata is separate from explicit PG factories/catalogues and
 read-only readiness; dependency recognition is separate from HTTP rendering.
@@ -355,7 +360,7 @@ accepted current-port/direct compatibility baseline. Keep source-specific
 ordering, representation, projection and write outcomes explicit; controls must
 detect ordering changes and pre-commit publication. Continue remaining REST
 receipts/egress, identity/settings/index races, actual clients, import/resource
-and lifecycle acceptance. Owner authority is adopted in the [current contract](owner-authority.md);
+and lifecycle acceptance. Owner authority is adopted in the [current contract](../../30-design/tenancy/owner-authority.md);
 application integration and full ceiling/session enforcement remain open. Logical-event
 no-op admission remains a separate decision; these do not block this bounded
 consolidation. Shared frame and durable M5/M6 work retain their separate gates.
@@ -363,7 +368,7 @@ No milestone promotion, production role enablement or SQLite dispatch follows.
 
 ### Accepted independent HTTP profile continuation (2026-11-05)
 
-[R45](../remedial/rc-16.0.0-integration-record.md#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05)
+[R45](../../30-design/remedial/rc-16.0.0-integration-record.md#r45---independent-actual-http-profile-writers-on-dff9a8d4-2026-11-05)
 accepts local test-only `dff9a8d42860be09c7f187f5e3d0527d6eb31d80` over
 published #8891 R43 `925c9527`. Actual API3 mutations/resends now observe
 persistence, physical/logical event cadence, retained-property and request-signature
@@ -381,7 +386,7 @@ multitenant runtime is accepted.
 ### Architecture and execution-profile priority (2026-11-05)
 
 The maintainer requests seam improvements and PR #8891 integration alongside
-existing REST/compatibility lanes. The [architecture execution plan](architecture-seams-execution-plan-2026-11-05.md)
+existing REST/compatibility lanes. The [architecture execution plan](../../30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md)
 owns packet scope, ordering and controls: portable contracts and backend/domain
 composition first; measured adapter consolidation and refreshed single/nonresident
 profile next; shared derived frames then join M5 durable evaluator/recovery.
@@ -413,7 +418,7 @@ FAIL remains visible. No milestone is promoted by this dispatch.
 | Now: M2 authority; MT-CONFIG-MIN / T30-WIRING | `codex/tenant-subject-admin-20261105`: persisted subject update/delete and known-role assignment, stable IDs, metadata/omission/rename semantics; separately authorized writer and append-only migration. | Actual PG persistence/rollback/isolation, shipping semantic characterization, same earlier credential denied on the next operation after deletion/grant removal; serving role cannot write authority. Paired controls, then cumulative integration. No HTTP management admission in this packet. |
 | Parallel: M1/M4 compatibility; ST-PG / TEN-LAB | `codex/tenant-cross-compat-20261105`: expand shared Mongo/PG HTTP corpus for mixed legacy/v3 treatment edits, omitted versus null fields, retries, replacement and tombstone/history. | Compare replies AND stored results, stable identity, exact retained/removed fields and tenant isolation. Only incidental time/opaque-ID normalization, with explicit refusal rows. Source-pinned client patterns remain distinct from client binaries. |
 | Parallel: RC backwards compatibility; TEN-LAB | `codex/rc-compat-refresh-20261105`: fresh same-corpus old release, current dev and PR-single comparison, with repeated runs and classified intended changes. | Preserve immutable prior captures; every semantic difference needs an existing decision/bugfix/client-contract basis or remains unexpected. A classifier control must detect a planted unapproved difference. No old-release-to-PG transitivity claim. |
-| Next: M2/M4 administration | Join the accepted subject service to a separately authenticated owner/management boundary; characterize stable role IDs and unresolved/default roles before full roles CRUD. | Actual owner requests and persisted effects, no management route on the data listener, permission ceilings/current grants and cross-worker revocation controls. Implement the [adopted owner authority](owner-authority.md); provider deployment, permission catalogue and transactionally enforced proposed-grant checks remain acceptance work. |
+| Next: M2/M4 administration | Join the accepted subject service to a separately authenticated owner/management boundary; characterize stable role IDs and unresolved/default roles before full roles CRUD. | Actual owner requests and persisted effects, no management route on the data listener, permission ceilings/current grants and cross-worker revocation controls. Implement the [adopted owner authority](../../30-design/tenancy/owner-authority.md); provider deployment, permission catalogue and transactionally enforced proposed-grant checks remain acceptance work. |
 | Next: M1/M4 remaining REST/client/import | Complete one missing route/domain workflow at a time, including notices/debug and notification/assistant receipts/egress; extend import/rerun fidelity and populated-data/query bounds. | Fake-provider no-egress/cross-tenant controls, supported-shape/refusal inventory, bounded failures/reruns; execute actual clients where tooling permits, otherwise keep binary acceptance UNMEASURED. Numeric bounds and new lifecycle semantics require explicit decisions. |
 | Integration: M3; TEN-LAB | Coordinator joins clean lanes into the existing PR continuation and reruns exact-head focused/provider/migration, full nonbrowser/browser campaigns and final prcheck after dev merge. | No unexplained compatibility deltas, meaningful restored controls, owned-service cleanup and current QMS/dashboard. M3 promotion still requires complete M1/M2; partial M4 work may proceed in parallel. |
 | Then: M5/M6 | Durable events/replay, realtime/evaluator and synthetic operational recovery on accepted authority/storage contracts. | Commit-coupled recovery, tenant-local caches/current socket authority, restart replay, backup/restore/upgrade/rollback and resource/egress evidence. No in-process event substitutes for durability. |
@@ -446,14 +451,14 @@ evidence or publication authorization.
 
 ### Accepted contract management and independent profile wave (2026-11-05)
 
-[R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
+[R42](../../30-design/remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
 accepts local REST `d4570e585d0e12e46386ed26772790b269b2b736`: actual
 Mongo/PG lower/preview port contracts, shared subject validation and a standalone
 authenticated JSON management facade. Full/focused acceptance, direct bounded
 historical comparison and semantic controls pass. This is a factory, not an
 enabled owner listener or selected management identity/grant-ceiling policy.
 
-Independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)
+Independent [R43](../../30-design/remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)
 accepts local #8891 refresh `925c95278ed04954d1181201da79ae5d6c48c095`
 with full/default-browser regression and selected actual-trigger/timer/property
 replay. It stays separate from #8898. Current physical subscriber remains;
@@ -467,12 +472,12 @@ identity characterization, remaining REST receipts/egress, identity/index/race
 and actual clients, import/rerun/resource bounds, then M1/M2 completion and M3
 promotion review. Broaden #8891 writer/outcome replay before selecting logical
 event admission or joining shared derived frames. Durable M5/M6 acceptance and
-SQLite deferral remain unchanged. Current [dashboard](multitenant-delivery-dashboard.md)
+SQLite deferral remain unchanged. Current [dashboard](../../30-design/tenancy/multitenant-delivery-dashboard.md)
 and the R42/R43 records supersede the delivered dispatch instructions below.
 
 ### Accepted subject administration and compatibility continuation (2026-11-05)
 
-[R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
+[R41](../../30-design/remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05)
 accepts local `94c57f1f37370215ef25b69691ef63918c876db3`, joining the persisted
 subject packet and test-only mixed-version/rename corpus. The three dispatch
 lanes above have delivered their bounded slices; their wider milestone gates
@@ -490,7 +495,7 @@ figures and limitations rather than treating the comparison matrix as transitive
 1. Compose subject management behind a separately authenticated management HTTP
    boundary, preserving data-listener refusal. Reuse the accepted service;
    characterize stable role IDs and unknown/default role behavior before full
-   roles CRUD. Implement the [adopted owner authority](owner-authority.md) rather
+   roles CRUD. Implement the [adopted owner authority](../../30-design/tenancy/owner-authority.md) rather
    than treating policy as undecided. The injected callback remains a test seam
    until real authentication, proposed-grant ceilings and current-policy fencing
    pass actual management-request tests.
@@ -514,8 +519,8 @@ there is no automatic upstream push or alert dismissal.
 
 **Current delivery wave, authorized by the maintainer.** Continue from accepted
 and published `ae471ac7`, retaining the already incorporated domain deliveries.
-[R38](../remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
-and [R39](../remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
+[R38](../../30-design/remedial/rc-16.0.0-integration-record.md#r38---executable-entries-crud-cumulative-acceptance-on-21145d0d-2026-11-04)
+and [R39](../../30-design/remedial/rc-16.0.0-integration-record.md#r39---explicitly-selected-rest-domains-on-ae471ac7-2026-11-04)
 are the prior acceptance records; their historical publication observations retain
 capture-time meaning. Current-head CI and CodeQL succeeded. The PR body and
 older dashboard metadata require reconciliation with the published implementation.
@@ -527,7 +532,7 @@ older dashboard metadata require reconciliation with the published implementatio
 | `codex/rest-authority-review-20261104` | Independent adversarial review and reproduction of credential/current-authority, snapshot isolation and listener boundaries; findings are read-derived until reproduced. |
 | `codex/rest-integration-20261104` and `codex/rest-qms-20261104` | Clean cumulative joins, repeatable queue instruments, full enabled-provider/nonbrowser/browser acceptance, final prcheck, release records and generated views. |
 
-[R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
+[R40](../../30-design/remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
 records acceptance of this bounded wave at published `ded254b9`; full REST and
 production milestone criteria remain open. Implementation/replay use
 GPT-6.1 Sol with high reasoning; independent review uses GPT-6 Astra. Each lane
@@ -573,16 +578,16 @@ preview keep the existing M5/M6 gates.
 ### Accepted POST provider and canonical continuations (2026-11-04)
 
 The state of record is the release
-[integration record](../remedial/rc-16.0.0-integration-record.md):
-[R29](../remedial/rc-16.0.0-integration-record.md#r29---dormant-tenant-entries-post-on-6cad7a42-2026-11-04)
+[integration record](../../30-design/remedial/rc-16.0.0-integration-record.md):
+[R29](../../30-design/remedial/rc-16.0.0-integration-record.md#r29---dormant-tenant-entries-post-on-6cad7a42-2026-11-04)
 accepts actual POST/create/resend at `6cad7a42`;
-[R30](../remedial/rc-16.0.0-integration-record.md#r30---real-provider-runtime-lab-on-e410b163-2026-11-04)
+[R30](../../30-design/remedial/rc-16.0.0-integration-record.md#r30---real-provider-runtime-lab-on-e410b163-2026-11-04)
 accepts the real Vault/PG HTTP lab at `e410b163`;
-[R32](../remedial/rc-16.0.0-integration-record.md#r32---real-provider-post-composition-on-4621d5c4-2026-11-04)
+[R32](../../30-design/remedial/rc-16.0.0-integration-record.md#r32---real-provider-post-composition-on-4621d5c4-2026-11-04)
 joins their actual write path at `4621d5c4`;
-[R33](../remedial/rc-16.0.0-integration-record.md#r33---canonical-ingress-on-468c41dc-2026-11-04)
+[R33](../../30-design/remedial/rc-16.0.0-integration-record.md#r33---canonical-ingress-on-468c41dc-2026-11-04)
 accepts explicit canonical ingress at `468c41dc`; and
-[R34](../remedial/rc-16.0.0-integration-record.md#r34---cumulative-canonical-provider-post-on-c527fb7e-2026-11-04)
+[R34](../../30-design/remedial/rc-16.0.0-integration-record.md#r34---cumulative-canonical-provider-post-on-c527fb7e-2026-11-04)
 accepts their cumulative composition at `c527fb7e`.
 The generated dashboard carries dated slice stages, not independently rerun
 results. These local acceptances preserve direct aliases and single/Mongo;
@@ -611,7 +616,7 @@ owner capabilities prerequisites for implementing the clearly bounded runtime.
 The checkpoints below retain full-programme completion criteria, not an
 instruction to create separate administrative tasks or block independent code.
 
-The [REST v1-v3 delivery plan](multitenant-rest-api-delivery-plan-2026-11-04.md)
+The [REST v1-v3 delivery plan](../../30-design/tenancy/multitenant-rest-api-delivery-plan-2026-11-04.md)
 inventories actual mounted routes and divides follow-on implementation by
 collection/domain across versions. Its shared-port owner coordinates legacy
 storage/auth/context injection; entries, treatments, devicestatus/activity,
@@ -677,7 +682,7 @@ their runtime is already implemented.
 ## 2. Configuration and authentication decisions
 
 **Owner authority amendment, November 5:** the maintainer adopted the
-[owner authority contract](owner-authority.md): explicit management authority and
+[owner authority contract](../../30-design/tenancy/owner-authority.md): explicit management authority and
 delegation ceilings, initial human session limits, recent reauthentication for
 sensitive operations, local public-key verification for new tokens and one current
 PostgreSQL authority snapshot per operation. Private signing keys and recoverable
@@ -1071,7 +1076,7 @@ automatic Consul dependency is selected by this direction.
 
 ### Accepted read and authority continuations (2026-11-04)
 
-The [integration record](../remedial/rc-16.0.0-integration-record.md)
+The [integration record](../../30-design/remedial/rc-16.0.0-integration-record.md)
 is the measurement home: R24 records combined projection/current authority
 at `8b193e18`; R25 records legacy credential/current-authority GET at
 `7eb76c71`; R26 records compatible exchange/GET at `81bc71e6`; R27 records
@@ -2324,7 +2329,7 @@ opt-ins and the remaining PostgreSQL migration/secrets campaigns were not
 rerun. These results do not promote M1-M6 or establish fresh remote CI
 success. No agent push was performed.
 Exact run commands and acceptance limits are recorded in
-[R23](../remedial/rc-16.0.0-integration-record.md#r23---8898-opt-in-ci-accounting-on-0afdb87f-2026-11-03).
+[R23](../../30-design/remedial/rc-16.0.0-integration-record.md#r23---8898-opt-in-ci-accounting-on-0afdb87f-2026-11-03).
 
 
 ### Accepted frame acquisition and concurrent-read characterization (2026-11-05)
@@ -2332,13 +2337,13 @@ Exact run commands and acceptance limits are recorded in
 R49 records cumulative runtime characterization over R46 and the adopted R48
 owner-authority data-token integration. Actual Mongo/PG acquisition and actual PG
 HTTP concurrent reads now have bounded executable gates and semantic controls.
-The [architecture plan](architecture-seams-execution-plan-2026-11-05.md#reproduced-frame-acquisition-and-concurrent-reads)
+The [architecture plan](../../30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md#reproduced-frame-acquisition-and-concurrent-reads)
 owns the measured bounds/frame/statistics/identity differences and mixed-frame
 observation. No common revision or shared production implementation is inferred.
 Next extract private acquisition behind the explicit path policies and rerun
 these gates; durable realtime/evaluator recovery remains MT-RUNTIME-PLAN work.
 Exact tree, regression and control results live in R49 of the
-[integration record](../remedial/rc-16.0.0-integration-record.md).
+[integration record](../../30-design/remedial/rc-16.0.0-integration-record.md).
 
 ### Accepted independent evaluator frame characterization (2026-11-05)
 
@@ -2355,8 +2360,8 @@ profile is not joined into REST or admitted as a multitenant evaluator.
 
 ### Accepted optional local data-token authority (2026-11-05)
 
-The adopted [owner authority contract](owner-authority.md) and its D22 amendment
-own the policy. [R48](../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05)
+The adopted [owner authority contract](../../30-design/tenancy/owner-authority.md) and its D22 amendment
+own the policy. [R48](../../30-design/remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05)
 accepts optional new-format data-token Ed25519 local verification through the
 actual API, with current PostgreSQL tenant/session/credential/key/grants on each
 operation and same-state legacy compatibility. The signature, audience, session
@@ -2367,7 +2372,7 @@ production provider/key distribution and protected streams remain incomplete.
 
 ### Accepted coherent CI client batch and M0 foundations (2026-11-06)
 
-[R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06)
+[R60](../../30-design/remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06)
 accepts the coherent compatibility/CI batch at `d89a44e1`. Its
 [final capsule](../../../reports/tenancy/batch-a-acceptance-d89a44e1-2026-11-06.md)
 records the final corpus/prcheck and the exact product/test/dependency identity
@@ -2398,21 +2403,21 @@ issuer/refresh and full owner capabilities retain the roadmap's M6 gates.
 M3 retains complete M1/M2 dependencies even though its bounded HTTP lab passes.
 
 B7 direction approval is recorded in the
-[adopted contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments).
+[adopted contract](../../30-design/tenancy/durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments).
 The first dormant replay implementation and recovery experiments proceed under
 that approval. Dormant owner-ceiling readers and populated PostgreSQL recovery
 labs also proceed on separate branches; their source tests are not runtime
 acceptance or activation. M5/M6 remain open. Work continues in larger completion
-packages under the [batching plan](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06).
+packages under the [batching plan](../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06).
 
 Programme figures live in R60 and its linked immutable captures. Current milestone
-claims live in the [dashboard source](multitenant-delivery-status.json), and queue
+claims live in the [dashboard source](../../30-design/tenancy/multitenant-delivery-status.json), and queue
 claims remain in the manifest. Publication/remote CI is recorded after execution;
 local acceptance does not imply release or production enablement.
 
 ### Accepted bounded owner reader and recovery batch 2026-11-06
 
-[R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
+[R62](../../30-design/remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
 accepts candidate `83582e87`: optional current subject-grant clamping, dormant
 persisted typed replay and populated PostgreSQL recovery lab. Comprehensive
 campaigns executed on 871; the descendant changes only the source-control runner
@@ -2422,7 +2427,7 @@ Selected actual-client, full runtime/management and operational criteria remain.
 
 ### Accepted bounded clinical projection controls 2026-11-06
 
-[R67](../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06)
+[R67](../../30-design/remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06)
 measures dormant current-row clinical recovery on unpublished1990: actual typed
 identity/bootstrap assertion controls and seven restored native cases. This is
 local component evidence, not whole1990 acceptance, live evaluator scheduling,
@@ -2431,7 +2436,7 @@ current published835 retains its verified R64 scope.
 
 ### Measured fresh schema socket DATA controls 2026-11-06
 
-[R68](../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06)
+[R68](../../30-design/remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06)
 measures optional fresh-schema DATA pattern/transaction/current-authority controls
 and restored four native cases. Catalogue matrix retains its original source.
 No populated import, downgrade, production transport/rollout, protected stream,

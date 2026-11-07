@@ -1,6 +1,6 @@
 # T2.3 — the nine operators in SQL, and what turning `re` on found
 
-> **Snapshot — research as of 2026-09-14, measured against the `externals/work/crm-seam/` checkout (the doc names no commit), mongod 7.0.43, PostgreSQL 16.14. Status: current — tenancy research, not on a shipping path; §5's "mongod is flat" result is narrower than it reads (see the correction there). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) T2.3; shipping `$regex` exposure: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) BF-72.**
+> **Snapshot — research as of 2026-09-14, measured against the `externals/work/crm-seam/` checkout (the doc names no commit), mongod 7.0.43, PostgreSQL 16.14. Status: current — tenancy research, not on a shipping path; §5's "mongod is flat" result is narrower than it reads (see the correction there). Current facts: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) T2.3; shipping `$regex` exposure: [backfix register](../../30-design/remedial/nightscout-backfix-register.md) BF-72.**
 
 Date: 2026-09-14. Status: findings, for whoever lands the seam's PostgreSQL adapter.
 **Verification only — no shipping code was changed by this work.** `externals/work/crm-seam/`
@@ -8,7 +8,7 @@ belongs to another branch and was read, never written.
 
 | ref | document |
 |---|---|
-| **{P}** | [Multitenancy execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) — T2.3 |
+| **{P}** | [Multitenancy execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) — T2.3 |
 | **{S}** | [T1.1 — the storage seam](../../30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md) — §8.5, §10.5 |
 | **{3A}** | [Three-arm validation of the filter AST](seam-filter-ast-three-arm-validation-2026-09-14.md) |
 

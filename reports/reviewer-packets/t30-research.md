@@ -91,7 +91,7 @@ the enumeration is complete or correct.
 - [`docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`](../../docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md)
 - [`docs/30-design/tenancy/owner-authority.md`](../../docs/30-design/tenancy/owner-authority.md)
 - [`docs/30-design/remedial/rc-16.0.0-integration-record.md`](../../docs/30-design/remedial/rc-16.0.0-integration-record.md)
-- [`docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
+- [`docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../../docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
 - [`docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`](../../docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md)
 
 ## Notes carried on the item

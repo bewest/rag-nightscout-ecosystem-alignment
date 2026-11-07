@@ -1,5 +1,10 @@
 # Multitenancy execution plan: decisions, tasks, and the context each one needs
 
+> **Archived execution journal, captured 2026-11-06.** This preserves the original
+> narrative and evidence; its status and next-step wording is historical.
+> Current rules: [tenancy decisions](../../30-design/tenancy/multitenancy-decisions.md).
+> [Archive scope and retention](README.md). Only links were relocated below this notice.
+
 *Contributor- and maintainer-facing.*
 
 **Status: living document — the decision record.** Decisions D1–D23 are the maintainer's
@@ -9,14 +14,14 @@ gated** on the edge's production conditions and the compliance question (`T30-OR
 decision carries the evidence that settled it. Task definitions follow in §6. **Item state lives
 in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml)** (rendered as
 [`queue/QUEUE.md`](../../../queue/QUEUE.md), measured by `make queue-status`); defect facts live
-in the [backfix register](../remedial/nightscout-backfix-register.md). Measured facts below name
+in the [backfix register](../../30-design/remedial/nightscout-backfix-register.md). Measured facts below name
 their date and commit.
 
 | ref | document |
 |---|---|
-| **{M}** | [Nightscout multitenancy: evidence and options](nightscout-multitenancy-discussion-2026-09-09.md) (snapshot) |
-| **{C}** | [Deployable components](nightscout-deployable-components-2026-09-14.md) |
-| **{S}** | [Storage seam interface](nightscout-storage-seam-interface-2026-09-14.md) |
+| **{M}** | [Nightscout multitenancy: evidence and options](../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) (snapshot) |
+| **{C}** | [Deployable components](../../30-design/tenancy/nightscout-deployable-components-2026-09-14.md) |
+| **{S}** | [Storage seam interface](../../30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md) |
 | **{R}** | [What sets K](../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.md) |
 | **{DB}** | [A real database in the loop](../../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.md) |
 
@@ -44,7 +49,7 @@ Measured 2026-09-27 against `cgm-remote-monitor` `official/dev` `295f1177` and
   and the same with `--first-parent`). Nothing past 15.0.8 is released. The release is queue
   `RT-0`; release PR #8598 is at `295f1177`, approved (at `e3adc91d`). The last full test run is run 020
   on `ce30a94d`, one merge earlier. #8785 changes one test file and no file a site runs, so run 020
-  stands for `295f1177` ([integration record](../remedial/rc-15.0.9-integration-record.md)).
+  stands for `295f1177` ([integration record](../../30-design/remedial/rc-15.0.9-integration-record.md)).
 - **Phase 0 and the 15.0.9 additions, `cgm-remote-monitor` half: merged, not released.** T0.1
   (#8733), T0.2/T0.3 (`bf/cache`, #8740), T0.5 (`bf/coercion`, #8737), T2.4's allowlist (#8743),
   `bf/auth` (BF-17) and `bf/throttle` (BF-30) inside #8754, #8758 (records keep their own
@@ -90,7 +95,7 @@ not; the reason is recorded). Register statuses use the DoD words `open` · `fix
    job `docker-build`, gated on those two refs). Treat it as shipping. Other branches on `origin`
    run nothing on push; `chore/nightscout-modernization` runs full CI on PRs targeting it. On
    `nightscout-connect` every branch and tag is safe — its one workflow runs tests and
-   `npm publish` is manual. Detail: [PR sequencing](../remedial/phase0-pr-sequencing-2026-09-15.md) §0.
+   `npm publish` is manual. Detail: [PR sequencing](../../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) §0.
 7. **Where things go (D12).** Shipping fixes and their tests go in `cgm-remote-monitor` as clean
    reviewable commits — no scaffolding, no findings in code comments. Harnesses, measurements and
    findings go in this repository.
@@ -115,14 +120,14 @@ decision was, this plan wins.**
 |---|---|---|
 | [`queue/README.md`](../../../queue/README.md), [`queue/QUEUE.md`](../../../queue/QUEUE.md), `queue/work-queue.yaml` | the live index of every work item, with a gate per item | **item state** |
 | this plan | decisions, their evidence, and task definitions | **decisions**, and what a task means |
-| [owner authority](owner-authority.md) | adopted D17/D22 amendment | **owner permissions/delegation, management authentication and new-token verification**; application wiring is measured separately |
-| [backfix register](../remedial/nightscout-backfix-register.md) | every defect found, with provenance | **defect facts and ids** |
+| [owner authority](../../30-design/tenancy/owner-authority.md) | adopted D17/D22 amendment | **owner permissions/delegation, management authentication and new-token verification**; application wiring is measured separately |
+| [backfix register](../../30-design/remedial/nightscout-backfix-register.md) | every defect found, with provenance | **defect facts and ids** |
 | [roadmap](../../00-overview/ROADMAP.md) | the order of the work ahead, generated from the queue's blockers | nothing; it links to where each order is decided |
-| [maintainer release brief](../remedial/maintainer-release-brief-2026-09-15.md) | the Phase 0 batch, branch by branch | what a maintainer needs to say yes or no |
-| [PR sequencing](../remedial/phase0-pr-sequencing-2026-09-15.md) | how the Phase 0 branches land | branch mechanics |
-| [semver and release versioning policy](../modernization/semver-and-release-versioning-policy-2026-09-15.md) | the surface ladder, the version procedure, the adopted release train | **what number a change gets; the train** |
+| [maintainer release brief](../../30-design/remedial/maintainer-release-brief-2026-09-15.md) | the Phase 0 batch, branch by branch | what a maintainer needs to say yes or no |
+| [PR sequencing](../../30-design/remedial/phase0-pr-sequencing-2026-09-15.md) | how the Phase 0 branches land | branch mechanics |
+| [semver and release versioning policy](../../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md) | the surface ladder, the version procedure, the adopted release train | **what number a change gets; the train** |
 | [16.0.0 contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) and [decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md) | current development-cycle contents, acceptance and release decisions | the current release cycle; [15.0.9](../../../releases/cgm-remote-monitor-15.0.9/contents.md) is the released historical cycle |
-| [tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md) | historical T3.0 census and proposed DDL | its pinned research; current policy is D22 and the owner-authority amendment, current census is linked from the snapshot |
+| [tenant-owner configuration surface](../../30-design/tenancy/tenant-owner-config-surface-2026-09-15.md) | historical T3.0 census and proposed DDL | its pinned research; current policy is D22 and the owner-authority amendment, current census is linked from the snapshot |
 | [operator upgrade path](../../40-migration/operator-upgrade-path-2026-09-15.md) | what each release means for someone running a site | operator-facing upgrade guidance |
 | [legacy CGM ingestion → Connect](../../40-migration/legacy-cgm-ingestion-to-connect-2026-09-15.md) | the Dexcom and MiniMed retirement | the legacy-bridge migration, which is on cut 1 (queue `RT-1`) |
 | [connector pin consolidation](../../40-migration/connector-pin-consolidation-2026-09-15.md) | the `nightscout-connect` pins across `dev` and the cuts | background to the pin decision; item state in `P0-PIN` and `RT-CONNECT-PIN-CUTS` |
@@ -158,7 +163,7 @@ preference.
 | **D19** | **A registration separates the definition from the instance.** A *definition* says what a controller's data means; it is immutable, identified by the hash of its content, and many coexist under one `(vendor, product)`. An *instance* is one connected copy of a controller (phone, simulator, lab rig, agent): it names the definition it runs, holds a lease, declares a provenance (`device` or `simulated`) on each channel role it plays, and carries typed labels. Among `device`-provenance instances each channel role has one source of record, handed off by release, lease lapse or owner transfer; an overlapping writer is flagged, never silently resolved, and a command has one destination. Registered instances write typed records only for accepted elements; older readers get a declared, read-only view in today's shapes. The hub still decides nothing about dosing. *(corrected 2026-10-15: reverse-DNS, `dev.nightscout/` — the well-known label prefix of rule 7; specified 2026-10-15, `SPEC-REG-INSTANCE`, hub-sync design §3.6)* | maintainer, 2026-10-14 — §2.6.2 |
 | **D20** | **Quirks are scoped to the versions that produce them, and identity has two fields under one rule.** A quirk names the `(vendor, product, versions)` it affects, for stored documents and for declarations alike; versions released before registration get their mapping from the catalogue, newer versions declare it themselves, the hub records each mapping it applies, and a quirk moves to historical and then retired as measurement shows the affected versions gone. `identifier` is the sync identity the client assigns; `_id` is the storage key the hub assigns and returns; in single-tenant legacy mode `_id` is an ObjectId. *(amended 2026-10-16: every legacy surface serves 24-hex `_id` values; the opaque option is dropped — §2.6.3 walk-through)* | maintainer, 2026-10-16 — §2.6.3 |
 | **D21** | **One executable; `single` and `multitenant` name the tenancy profiles.** `bin/nightscout.js` (Node, not a shell script) is the container `ENTRYPOINT` and dispatches subcommands. `nightscout single` remains today's server, and every existing way of starting it (`Procfile`, `npm start`, `server.js`, iisnode's `web.config`, `start.sh`, the image's `CMD`) stays equal to it (D1). The multitenant roles — D5's `api`, `evaluator`, `realtime`, `vcpool` and D16's `tenant-admin` and `admin` — are invoked as `nightscout multitenant <role>[,<role>…]`; several roles may share one process, and each listener has its own bind address, so `admin` stays off the consumer interface (D7). `serve` describes an HTTP operation, not a tenancy mode, and is not the selected CLI namespace. Subcommands an operator runs against a deployed site (`diagnose data`, `healthcheck`, `version`, `env`, later `migrate`) live in the same dispatcher; developer and test tooling stays in `scripts/`. The dispatcher selects the bootstrap and keeps D15's configuration split. Reorganising the repository into packages ({C} §3) is a separate, later track. **Open:** whether a composed invocation of every multitenant role is part of the target or only a small-operator convenience | maintainer, 2026-10-26, amended 2026-11-03 — §2.12 |
-| **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them. The [owner authority amendment](owner-authority.md) governs delegation, management sessions and local public-key verification; private keys stay in the secrets component | maintainer, 2026-10-27; amended 2026-11-05 — §2.13 |
+| **D22** | **Tenant configuration is a per-setting policy over owner values, under project floors.** The effective value of a setting is the code default, then the operator's default, then the owner's value where the operator's policy allows it; an operator pin overrides the owner. The operator's policy, written on the operator plane (D7), gives each setting a default, a mode (open, bounded or pinned) and a constraint (an allowed list, a range, a floor or a host allow-list). Above the policy, a short list of **project floors** is enforced in code under `multi`, and no operator can loosen them. Secrets are a component of their own: encrypted at rest, decrypted only by the process that uses them. The [owner authority amendment](../../30-design/tenancy/owner-authority.md) governs delegation, management sessions and local public-key verification; private keys stay in the secrets component | maintainer, 2026-10-27; amended 2026-11-05 — §2.13 |
 | **D23** | **`realtime` is a reader: fan-out from the change feed, socket rooms and one `LISTEN` per held tenant, with no storage write authority. The socket's write messages (`dbAdd`, `dbUpdate`, `dbUpdateUnset`, `dbRemove`) and the alarm ack and snooze are writes: under `multitenant`, `realtime` forwards every one of them unchanged, with the socket's own authorization, to an internal write endpoint on `api` that runs the same write step with the same `socket` source label, and relays the result into the socket's acknowledgement. No client changes. `single` is unchanged.** Roles stay arguments of one subcommand (D21); the database feed is the only path between roles for data (D6); the forward is a request from a reader to the writer, not a second path between roles, and a direct `api` → `realtime` stream is not adopted (§2.14, revisit triggers from {C} §3.5.3.1) | maintainer, 2026-11-06, via session -8c ("websocket forwarding to the API, as it simplifies the matrix and maintenance and architecture"); amended the same day to forward all socket writes, not only the ack ("amend D23 to forward all socket writes to the API") — §2.14 |
 
 **Amendment carried with D13, true however D17 row 2 lands:** *credentials are per-tenant,
@@ -288,7 +293,7 @@ answered**, because it assumed the document shape is the thing being stored.
 
 **The direction:** `devicestatus` is decomposed into idiomatic, normalised time series, and *what*
 it decomposes into is declared by a registered controller description rather than hardcoded
-([controller descriptions](../platform/PROPOSAL-controller-descriptions-2026-09-11.md) §5):
+([controller descriptions](../../30-design/platform/PROPOSAL-controller-descriptions-2026-09-11.md) §5):
 
 ```yaml
 documents:
@@ -308,7 +313,7 @@ OpenAPI spec, `indexedFields`, the nsschema model and the `walker` (§3.4).
 - **Do not widen the column list to anticipate decomposition.** The normalised series are separate
   relations with their own schemas.
 - **Decomposition must sit above the seam, like coercion** (§3.4). The record rules are maintained
-  in the [records specification](../platform/spec/records.md). The 56-of-166 dropped-path
+  in the [records specification](../../30-design/platform/spec/records.md). The 56-of-166 dropped-path
   finding that motivates it ({M} motivation (a)) is a fidelity problem; fixing it in the multitenant
   backend only would leave single-tenant behind, which D4 forbids.
 
@@ -316,8 +321,8 @@ OpenAPI spec, `indexedFields`, the nsschema model and the `walker` (§3.4).
 
 D11 says *what* `devicestatus` decomposes into is declared by a registered controller description.
 D18 says who may declare it and what a declaration may carry. The contract that implements D18, D19
-and D20 is maintained in the [registration](../platform/spec/registration.md) and
-[identity](../platform/spec/identity.md) specifications.
+and D20 is maintained in the [registration](../../30-design/platform/spec/registration.md) and
+[identity](../../30-design/platform/spec/identity.md) specifications.
 
 | tier | who writes it | purpose | what changes for the controller |
 |---|---|---|---|
@@ -325,7 +330,7 @@ and D20 is maintained in the [registration](../platform/spec/registration.md) an
 | **controller-owned** | the controller, per release | extensibility: typed definitions for features unique to that controller, and the hub API derived from them | publishes a registration when it wants typed support for a feature |
 
 **What a registration has to be able to declare** is measured across Loop, Trio, iAPS, AAPS and
-both hubs in [intent and workflow across the landscape](../platform/nightscout-intent-workflow-landscape-2026-10-09.md)
+both hubs in [intent and workflow across the landscape](../../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md)
 §9: definitions with stable ids, intent slots and which coexist, states and end reasons, the wire
 carrier for today's documents, requested vs applied, the controller's composition result, its
 initiator vocabulary, its command contract, and which hub-originated intent it accepts.
@@ -336,7 +341,7 @@ settings), so the hub records the result the controller reports and never derive
 composition rule, such as the override composition in `conflict-resolution.md` of the earlier draft in cgm-remote-monitor's `docs/proposals`, is
 outside the hub's role.
 
-**What D18 supersedes:** [controller descriptions](../platform/PROPOSAL-controller-descriptions-2026-09-11.md)
+**What D18 supersedes:** [controller descriptions](../../30-design/platform/PROPOSAL-controller-descriptions-2026-09-11.md)
 §4 ("static descriptions, not CRD-style, no new endpoints"). The well-known tier keeps every
 property §4 lists; the controller-owned tier is the addition.
 
@@ -386,7 +391,7 @@ registration is `HUB-REG-CRM` for cgm-remote-monitor and `HUB-REG-NOCTURNE`, a s
 proposal to Nocturne. All three follow `SCHEMA-REG-EXT`. *(2026-10-12: rules 1–5 are in the
 schema and generator; "where the grammar stands" above describes the grammar before them, and
 the hub-sync design §3.1 lists the result.)* *(2026-10-12: rule 6 is specified —
-[hub-sync design §3.5](../platform/nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation),
+[hub-sync design §3.5](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation),
 `specs/sync/hub-capabilities.schema.json` (served at `/.well-known/nightscout/sync`),
 `specs/sync/registration-submit.schema.json` and 21 conformance cases under
 `specs/sync/conformance/`, checked by `tools/nsschema/test_registration_negotiation.py`.
@@ -428,12 +433,12 @@ separates the two.
 **The earlier draft.** `docs/proposals/agent-control-plane-rfc.md`, part of the earlier draft in
 cgm-remote-monitor's `docs/proposals` (read at official `b5ddd662`), splits `ControllerKindDefinition` from
 `ControllerInstanceRegistration`, with `lastSeenAt` as liveness, and plans agents as a later
-phase. The [hub-sync design §5.2](../platform/nightscout-hub-sync-architecture-2026-09-11.md#52-liveness-and-channel-ownership--open-here-already-drafted-upstream)
+phase. The [hub-sync design §5.2](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#52-liveness-and-channel-ownership--open-here-already-drafted-upstream)
 maps it. Instance identity does not come from the free-text `devicestatus.device`, which is
 recorded only as an observed alias ([control-plane supersession map
-§3.3](nightscout-control-plane-reconciliation-2026-09-11.md#33-instance-identity-and-the-device-string)).
+§3.3](../../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md#33-instance-identity-and-the-device-string)).
 D19 takes that split with that identity rule, and says what happens when two instances write to
-one site; the [supersession map](nightscout-control-plane-reconciliation-2026-09-11.md) names the
+one site; the [supersession map](../../30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md) names the
 specification rule proposed to supersede each object of the draft.
 
 **Rules.**
@@ -454,7 +459,7 @@ specification rule proposed to supersede each object of the draft.
 controller still owns what it declares and how it doses (D18).
 
 **Status.** Specified as `SPEC-REG-INSTANCE`; the hub work (`HUB-REG-CRM`, `HUB-REG-NOCTURNE`)
-follows it. *(2026-10-15: `SPEC-REG-INSTANCE` is done — [hub-sync design §3.6](../platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances),
+follows it. *(2026-10-15: `SPEC-REG-INSTANCE` is done — [hub-sync design §3.6](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances),
 `specs/sync/controller-instance.schema.json`, the capability document's `instances`, the grammar's
 `wellKnownRef`, and 86 cases under `specs/sync/conformance/instances/`, checked by
 `tools/nsschema/test_registration_instances.py`. Rules 1–9 are specified as written, with the label
@@ -480,7 +485,7 @@ other values, which produced undefined behaviour and the quirk handling that fol
 intent was always that the data store assigns it. Separately, controllers gain from assigning a
 record's identity on the phone, so a record created offline or re-sent after a lost reply syncs
 without duplicating. Those are two jobs. Today's controllers, read-derived from the
-[client id analyses](../../10-domain/client-id-analysis/) and the
+[client id analyses](../../10-domain/client-id-analysis) and the
 [UUID identifier backlog](../../backlogs/uuid-identifier-lookup.md), not re-checked against
 source: Loop sends no `_id` and caches the ObjectId the server returns, so a lost cache
 duplicates on re-send; Trio sends a UUID it generated in `_id`, which `UUID_HANDLING` moves to
@@ -507,11 +512,11 @@ the controller still owns its declarations and its records (D18).
 
 **Status.** To be specified as `SPEC-REG-QUIRKS`; `HUB-REG-CRM`, `HUB-REG-NOCTURNE` and
 `PROPOSAL-REG-CONTROLLERS` follow it. Rule 8 replaces the
-[hub-sync design §3.6](../platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)
+[hub-sync design §3.6](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)
 choice of the typed id verbatim in v1 `_id`, for `objectId` hubs. The contents of the shared slot
 list are not decided here: which slots mean the same thing is evidence for the controller authors
 to confirm (`PROPOSAL-REG-CONTROLLERS`). *(2026-10-16: `SPEC-REG-QUIRKS` is done —
-[hub-sync design §3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
+[hub-sync design §3.7](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
 `specs/quirks/quirk.schema.json`, QUIRK-TREATMENTS-006 and QUIRK-ENTRIES-004, `specs/sync/shared-slots.yaml`,
 the grammar's `sameAs`, the capability document's `legacyIdForm`, `wellKnown.slots` and
 `wellKnown.mappings`, the write reply's `ids`, and 29 cases under `specs/sync/conformance/quirks/`,
@@ -555,7 +560,7 @@ of the compatibility backlog; `SPEC-REG-AMEND` applies them to the contract and 
 | 16 | a rebind | **when a product's `boundTo` changes, `device` command-sink roles held by instances that no longer match it are dropped at once**, except roles the owner granted by `transfer-role`; a command sent before the new instance claims the role is refused `no-command-destination` |
 
 *(2026-10-16: `SPEC-REG-AMEND` is done — rows 1–9 applied to the
-[hub-sync design §3.5–§3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
+[hub-sync design §3.5–§3.7](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids),
 the schemas, the reference and the cases: `legacyIdForm` and the two `opaque` cases removed; a
 slot shared only through the list or `sameAs`, with `slotNameObservations` on the owner's
 listing and two new cases; QUIRK-TREATMENTS-007 for Trio's `id`, re-measured at 55,939
@@ -566,7 +571,7 @@ the owner's listing, with one new case. The choices made beyond the rows are lis
 item.)*
 
 *(2026-10-17: `SPEC-REG-AMEND-2` is done — rows 13–16 applied to the
-[hub-sync design §3.6–§3.7](../platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances),
+[hub-sync design §3.6–§3.7](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances),
 the submit schema, the reference and the cases: row 13 stated as decided; row 14's inference and
 the reason code `ambiguous-command-destination`, with four new cases; row 15's exemption, with
 `instance-create-other-subject` back to `accepted` and one new case; row 16's drop on a change of
@@ -575,11 +580,11 @@ the reason code `ambiguous-command-destination`, with four new cases; row 15's e
 instance cases. The choices made beyond the rows are listed in the queue item.)*
 
 **Decided 2026-10-18 (maintainer)**, on how an agent is recorded as initiator (D18's initiator
-vocabularies; [intent landscape](../platform/nightscout-intent-workflow-landscape-2026-10-09.md) P5).
+vocabularies; [intent landscape](../../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md) P5).
 
 | # | point | decision |
 |---|---|---|
-| 17 | an agent as initiator | **no `agent` value is added.** An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}` (addendum rule 3), as the registration specification §9 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's `initiators.values` take strings in each controller's own vocabulary, with no shared list, or the `other` form ([state and intent S8](../platform/spec/state-intent.md#2-rules)). Map: [agents in the ecosystem](../platform/agent-trust-boundaries-2026-10-18.md) |
+| 17 | an agent as initiator | **no `agent` value is added.** An agent initiator is written in the open-vocabulary form `{value: other, controllerTerm}` (addendum rule 3), as the registration specification §9 does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. The grammar's `initiators.values` take strings in each controller's own vocabulary, with no shared list, or the `other` form ([state and intent S8](../../30-design/platform/spec/state-intent.md#2-rules)). Map: [agents in the ecosystem](../../30-design/platform/agent-trust-boundaries-2026-10-18.md) |
 
 ### 2.7 D12 — what each repository is for
 
@@ -651,7 +656,7 @@ first half of T3.0.
 
 Queue: `T30-RESEARCH`, `T30-SCHEMA-CRED`, `T30-SCHEMA-CONFIG`, `T30-WIRING`; amends T3.1, T3.2,
 T3.3 (`T31-REM`, `T32-REM`, `T33-REM`). Specification:
-[tenant-owner configuration surface](tenant-owner-config-surface-2026-09-15.md).
+[tenant-owner configuration surface](../../30-design/tenancy/tenant-owner-config-surface-2026-09-15.md).
 
 1. **Research** — delivered as the specification above. Findings it rests on:
    - **Nightscout's configuration variables have no common prefix.** There is no `SETTINGS_*`
@@ -739,7 +744,7 @@ lands on `T30-WIRING`.
 
 #### D17 — by audience
 
-*The rules that follow from D13–D17 for registrations, owners and commands are maintained in the [authority specification](../platform/spec/authority.md).*
+*The rules that follow from D13–D17 for registrations, owners and commands are maintained in the [authority specification](../../30-design/platform/spec/authority.md).*
 
 | audience | decision | status |
 |---|---|---|
@@ -953,7 +958,7 @@ Rules that follow:
 Work items: PLAT-ENTRY (the dispatcher with `single` and the operator tools, no behaviour
 change) and PLAT-SERVE (the multitenant roles, carved one at a time from `bootevent`'s factory chain,
 starting with `api`) in [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) and the
-[next-gen platform plan](../platform/next-gen-platform-plan.md) §4.4.
+[next-gen platform plan](../../30-design/platform/next-gen-platform-plan.md) §4.4.
 
 **Amended 2026-10-27 (maintainer; CLI name amended 2026-11-03): the subcommand selects
 tenancy.** `nightscout single` is single-tenant and every `nightscout multitenant` role is
@@ -972,7 +977,7 @@ delaying the single-tenant release.
 
 **Merged 2026-11-03:** #8899 carries the naming amendment in `dev`
 `4a482627` (head `75fb4cdf`). The merged tree equals the locally tested head;
-release acceptance is separate ([integration record R21/R22](../remedial/rc-16.0.0-integration-record.md)).
+release acceptance is separate ([integration record R21/R22](../../30-design/remedial/rc-16.0.0-integration-record.md)).
 No multitenant role is enabled.
 
 ### 2.13 D22 — per-setting policy, project floors and secrets (maintainer, 2026-10-27)
@@ -1019,7 +1024,7 @@ connector logins, push keys and webhook signing secrets. Each is encrypted at re
 (a cloud key service, Vault, or an encrypted column whose key is held outside the database) follows D17's
 "bring your own" shape. Only the process that uses a secret decrypts it. The owner dashboard never holds a
 decryption key: it calls a separate, logged **reveal** operation. Reveal requires explicit authority and
-recent reauthentication under the [owner authority contract](owner-authority.md). The operator plane
+recent reauthentication under the [owner authority contract](../../30-design/tenancy/owner-authority.md). The operator plane
 never reveals. The production provider remains pluggable; Vault Transit feasibility and the later
 local-verification prototype are bounded measurements, not provider operations acceptance.
 
@@ -1054,7 +1059,7 @@ the dashboard's path read, write and reveal over every tenant, and an audit log 
 verified human. Under A, a token used on another tenant fails as a signature failure. Remaining
 all-tenant components require distinct trust review. In the adopted new-token contract, the listener
 receives public verification keys, never private signing keys; the identity provider, private operator
-plane and secrets component retain their separately scoped trust. See [owner authority](owner-authority.md).
+plane and secrets component retain their separately scoped trust. See [owner authority](../../30-design/tenancy/owner-authority.md).
 
 **Alarm settings, decided 2026-10-27 (maintainer):** hidden from the owner, with a plain-language
 explanation, until multi-mode alarms pass the gate in §7a. Settings that do nothing on an alarm path
@@ -1067,7 +1072,7 @@ first two adapters. Both can sign without exporting a key.
 **Private keys stay inside the secrets component (maintainer, 2026-10-27; amended 2026-11-05).**
 The component signs tokens under trusted lifetime policy. New-format tokens use local public-key
 verification in serving workers, with current PostgreSQL authority on each protected operation.
-The [owner authority contract](owner-authority.md) owns permissions, grant ceilings,
+The [owner authority contract](../../30-design/tenancy/owner-authority.md) owns permissions, grant ceilings,
 token/session limits, management authentication and outage semantics. Existing HS256/legacy
 paths remain compatible until separately measured migration. The call-path lab's earlier
 remote-verification keys-stay arm remains historical evidence:
@@ -1083,7 +1088,7 @@ container, for development and small operators; in Docker Compose it is one more
 secret. Vault transit and a cloud key service are the production adapters, behind the same interface.
 
 **Two schema answers, decided 2026-10-27 (maintainer), from the T30-SCHEMA-CONFIG lab's questions
-([schema spec](tenant-config-schema-2026-10-27.md) §10b, §11):**
+([schema spec](../../30-design/tenancy/tenant-config-schema-2026-10-27.md) §10b, §11):**
 
 - **Deployment-level (class D) values live in each role's environment**, not in `deployment_policy`.
   `TRUST_PROXY`, `DEBUG_LOGGING`, ports, storage URIs and the release-driven compatibility switches are
@@ -1142,7 +1147,7 @@ becomes of the socket's write messages.
 - writes: the messages `dbAdd`, `dbUpdate`, `dbUpdateUnset` and `dbRemove` (`websocket.js:394-417,
   470, 552, 662`), each through the write step via `socketStep` (`websocket.js:54-56`), and the alarm
   `ack` on the `/alarm` namespace (`alarmSocket.js:168, 239`), which reaches `notifications.ack`
-  (`lib/notifications.js:166-184`, per the [durable-delivery contract](durable-event-delivery-contract-2026-11-06.md) §7).
+  (`lib/notifications.js:166-184`, per the [durable-delivery contract](../../30-design/tenancy/durable-event-delivery-contract-2026-11-06.md) §7).
 
 **Socket writers in the pinned client corpus (searched 2026-11-06, read-derived).** Every checkout
 under `externals/` outside the server's own trees was searched for the four write message names and
@@ -1395,7 +1400,7 @@ collection and by path today, so a client that relies on one path's behaviour wi
 It needs a semver decision (at least minor), a consumer-replay arm and the existing regression nets:
 #8758's CRUD-by-id matrix, `tools/qc/write-arm.js` and `tools/lab/rc-soak`.
 
-**Measured 2026-10-07 on `dev` `43289dde`** ([write-contract spec](write-contract-spec-2026-10-07.md),
+**Measured 2026-10-07 on `dev` `43289dde`** ([write-contract spec](../../30-design/tenancy/write-contract-spec-2026-10-07.md),
 `tools/qc/write-contract-matrix.js`). The counts above re-measure as stated. The paths are four, not
 three: in-process `ctx.<collection>` writes behave differently from v1 HTTP in some cells. Stored
 state differs between paths in 33 of 66 collection-and-form groups (47 on 15.0.8), and a record

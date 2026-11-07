@@ -36,7 +36,7 @@ Related: the classification draft this policy builds on,
 [15.0.9 contents](../../../releases/cgm-remote-monitor-15.0.9/contents.md);
 [backfix register](../remedial/nightscout-backfix-register.md) (defect facts);
 [`queue/work-queue.yaml`](../../../queue/work-queue.yaml) (item state);
-[execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
+[execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions)
 (decisions D1–D17, cited here by number).
 
 ---

@@ -1,6 +1,6 @@
 # `ns-evaluator`: what a per-tenant evaluation loop actually needs
 
-> **Snapshot — research as of 2026-09-15, measured against `crm-seam-n` `c8b456a7`. Status: current — tenancy research, not on a shipping path; the three shipping defects it touched (register BF-31 `levels`, BF-28 `insulinage`, BF-29 `ENABLE`) are merged to dev in PR #8739 (2026-09-20, unreleased). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) T4.4, [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
+> **Snapshot — research as of 2026-09-15, measured against `crm-seam-n` `c8b456a7`. Status: current — tenancy research, not on a shipping path; the three shipping defects it touched (register BF-31 `levels`, BF-28 `insulinage`, BF-29 `ENABLE`) are merged to dev in PR #8739 (2026-09-20, unreleased). Current facts: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) T4.4, [backfix register](../../30-design/remedial/nightscout-backfix-register.md).**
 
 *Audience: contributors.*
 

@@ -290,7 +290,7 @@ with 15.0.9. None of these needs a tenancy decision.
 **Evidence.**
 
 - `docs/60-research/remedial/t02-t03-cache-clone-2026-09-15.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `tools/mt-bench/apitier.js`
 
 **Notes.** 2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the merge of #8598; tree c53c2c7f = dev 4bca2ac2). Merged into dev by #8740 (49f562d8, 2026-09-20); not released. It reaches operators with 15.0.9 (RT-0). Nothing is owed on this item. Sequencing letter B. T0.2 passed its gate (0.837 -> 0.025 ms, asserted identical over HTTP). T0.3 did not, and the branch shipped without it by decision: 98% of the remainder is devicestatus, and taking it needs a proof nobody has produced (see the no-gate). The branch says so in its operator-facing text. A dead `mills` write at dataloader.js:203 was removed with a test that goes red if it returns. This item reports FAIL under INTEGRATION=1 by design: the T0.3 gate asserts under 1 ms and the branch ships at 2.66 ms. The red records that decision; the gate's first line of output says so. T0.2's gate sits beside it and is green, so the pair moves if either target does. Both performance gates are kind: integration (they run a benchmark), so use `make queue-status ID=P0-B INTEGRATION=1` before drawing a conclusion from this row.
@@ -527,7 +527,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** 2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the merge of #8598; tree c53c2c7f = dev 4bca2ac2). Merged into connector dev by #68 (3f73288, 2026-09-22) and released in nightscout-connect 0.1.0 (2026-09-24, P0-TAG). Nightscout dev installs 0.1.0 exactly (#8762, P0-PIN); it reaches Nightscout operators with 15.0.9 (RT-0). Nothing is owed on this item. Sequencing letter F. The branch carried the merge of #64's head 19af0c3 (ffe5fb0), so c1cce2a is unchanged. dev's LibreLinkUp v4 code had its own jitter (CONNECT_LINK_UP_STARTUP_JITTER_MS, CONNECT_LINK_UP_INTERVAL_JITTER_MS); the two are one mechanism in lib/machines/cycle.js: one start delay on Init over the wider of the deployment and source windows; the wider of the two on the unaligned interval; only the source window on the aligned interval; every window capped at five minutes. LibreLinkUp's fixed frame retry, noRetryStatuses and the 429 throttle path are unchanged and are still checked before the backoff. LibreLinkUp's configured cycle backoff (2.5 minutes x 2^attempt, capped at six poll intervals) is honoured; its recovery test asserts that (676b80e). The LibreLinkUp real-Nightscout lab passed locally and in CI at 635cc9f. Not re- measured on the merged tree: the pool figures in c1cce2a's message (100 actors, 800 requests across 3 s before and 67 s after under refused authentication; 400 actors, busiest second 400 to 15 with 60 s of start jitter) were taken on the pre-dev base b77e5bb.
 
@@ -890,7 +890,7 @@ with 15.0.9. None of these needs a tenancy decision.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** 2026-10-21 - released in 15.0.9 (tag v15.0.9, master c6a0d8ed, the merge of #8598; tree c53c2c7f = dev 4bca2ac2). Merged into dev by #8733 (77d153d2, 2026-09-17); not released. It reaches operators with 15.0.9 (RT-0). The plan says "everything downstream assumes it".
 
@@ -1768,7 +1768,7 @@ that costs.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md`
 
 **Notes.** Merge keeps the seam's base, so SEAM-REFRESH is one merge into the seam tip, keeping the history of its 16 branches. Rebase rewrites the base, so the seam is re-parented onto dev instead: the Phase 1 prefix (seam/t1-2-e) after RT-3, which brings MongoDB driver 7, and the rest after RT-5, which carries 9e869662. Recorded as open at the maintainer's request, 2026-09-27. Rehearsed 2026-10-07 on the Phase 1 prefix (seam/t1-2-e a2690bd4; docs/60-research/tenancy/seam-propagation-rehearsal-2026-10-07.md; local branches prop/merge-prefix 16222c97 and prop/rebase-prefix b894ec76). Merge into modernization b1bdaca0: 8 paths, 14 hunks, 0 write-rule files, 2 design calls; suite 2476/4 against its base 2426/0. Rebase with `git rebase --rebase- merges --onto 43289dde 0a4109f6` (a plain rebase replays modernization's own commits and stops at 37 conflicting paths): 11 lib and 8 test paths, 58 hunks, 7 write-rule files, 11 design calls, 3 seam write sites left on the raw driver, 5 silent auto-merge hazards of which the suite misses one kind; suite 3611/5 against its base 3564/0. The prefix runs on driver 5.9.2 and Node 20 and 22, so the driver does not force the prefix after RT-3. Under merge, the 15.0.9 write rules, including treatment-fallback-key's $not/$type that the seam AST cannot express, arrive with the modernization branch's next merge of dev. Recommendation from session -69, for the maintainer to decide: merge. Decided by the maintainer 2026-10-12: merge. dev is merged into the cuts and into chore/nightscout-modernization, keeping their commits, and SEAM-REFRESH is one merge of the moved base into the seam tip. RT-REBASE catches the cuts up by merging dev into each, despite its name.
@@ -8479,7 +8479,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 - `tools/lab/postgres-foundation/README.md`
 - `tools/lab/postgres-foundation/results.json`
 
@@ -8519,7 +8519,7 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/control-recovery-gates/2026-11-06/README.md`
 - `reports/selected-owner-clients/2026-11-06/README.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
 **Notes.** R63 measures three actual oref0 subject-token upload summary/value pairs and next-operation tightening401/noeffects; source-ablation red/restored. Maintainer withdrew the reader-clamping mode on2026-11-06: own-tenant API_SECRET compatibility is retained. R62/R63 remain historical captures; reader selection and its active gate/lab are retired, not default behavior. R62 accepts optional current subject-reader clamping on83582e87 with actual871 native12/intersection semantic red/restored12; comprehensive full7226/99pending/0failure/browser684/corpus460/1benchmarkpending/0failure. Runner-only descendant identity preserves actual execution attribution. Selected root/anonymous/wildcard cases refuse; no default enablement, delegator lineage, complete owner catalogue or production lifecycle claim. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK; parent archived22/four semantic guards/restored22. R53 native17f scope is retained in cumulativeR54. T30-TENANT-ADMIN uses this canonical bounded gate; full owner lifecycle/listener/issuer remain open. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.
 
@@ -8553,7 +8553,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/owner-authority.md`
 - `docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md`
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 - `tools/lab/vault-transit/README.md`
 - `tools/lab/vault-transit/results.json`
 
@@ -8584,7 +8584,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
 **Notes.** M2; canonical resolver, real-provider HTTP and explicit API runtime compose at published draft ae471ac7 (R38/R39). Test-only credential fidelity is incorporated; supported provisioning/import, production identity and lifecycle remain open. Dependencies remain open; operator-only lifecycle, single unchanged.
 
@@ -8617,7 +8617,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
 **Notes.** 2026-11-06 (R62/R64): published #8898 head 83582e87 is the accepted cumulative batch with CI and CodeQL green; M3 stays blocked on M1/M2. The race and identity gates keep their native pins (44331668, bc4ee1a9); frozen-head replay UNMEASURED. M3; R41 accepts local subject service and strict compatibility tests at 94c57f1f; published draft is R42 d4570e58, not full preview. Local composition continuation adds bounded direct imported-identity coverage; the historical release comparison retains its separately scoped omissions. Maintainer priority 2026-11-05: management HTTP and wider REST, with parallel current Mongo/PG and historical release/dev/PR-single compatibility. Existing RC corrections/client quirks need explicit expected-change bases; unexplained differences fail acceptance. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion.
 
@@ -8656,7 +8656,7 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/projection-evaluator-gates/2026-11-06/README.md`
 - `reports/control-recovery-gates/2026-11-06/README.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
 **Notes.** R68 native DATA prototype controls/restored4 measured on12919; matrix3 retains0d628 attribution by product/schema identity. Old-catalogue checker rejects upgraded ledger; populated/import order and downgrade unsupported. Experimental selection only; original failures preserved and no rollout, production transport/current stream or alarm ack semantics inferred. R67 measures dormant clinical projection recovery on unpublished1990: native7 positive, identity111vs222 and missing123 explicit assertion reds, restored7. Scratch-only optional-chain oracle keeps expected123 and physical inputs precede clinical assertions. No full-batch/role promotion; R66's independent socket ordering failure is preserved, not waived. R62 accepts dormant persisted replay in83582e87; real871 native7/typed-key semantic red/restored7 plus full/browser/enabled-corpus acceptance. Source-control-runner-only continuation retains exact execution attribution. No realtime/evaluator role or provider/default selected; no M5 promotion. M4-M6; no clinical notification delivery acceptance inferred. Architecture plan joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator acceptance; contract design continues independently. Durable commit/checkpoint replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current authority after reconnect require paired controls. No SQLite dispatch.
 
@@ -8686,7 +8686,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/owner-authority.md`
 - `docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md`
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
 **Notes.** 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer 2026-11-02: device/token/API-secret first; identity needs additional planning. Prior Ory/edge proofs remain dated evidence, not production approval. Planning can proceed without blocking ST-PG.
 
@@ -8723,7 +8723,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 - `docs/30-design/tenancy/owner-authority.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`
 
 **Notes.** 2026-10-27 (maintainer, recorded by session -4f): D22 decided. Tenant configuration is a per-setting operator policy (default, mode open / bounded / pinned, constraint) over owner values, under project floors enforced in code under multi (four groups: no deployment secrets, no anonymous writes, network safety, data and log safety). Secrets are a component: encrypted at rest, decrypted only by the consuming process, a logged reveal operation (initial policy: an owner session; target: re-authentication). Policy by plan or cohort and the complete settings catalogue remain open; the call-path and owner- authority decisions below supersede the earlier lab-only state. The twelve contested settings are re-stated under D22. Execution plan §2.13; census §3. Second round, same day: integrations (connectors, webhooks, push) are typed records with a credential reference and status; a change takes effect live, versioned with rollback, at the tenant's next request or loop cycle; operator policy varies per tenant by operator override, floors over all. Call path decided (maintainer, same day): owner token end to end to ns-tenant-admin, provisioning and suspension through an orchestrator on the operator plane only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and §F.1 / D17 wording contradictions the lab found are noted in place. T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it includes the remaining catalogue and per-plan policy decisions plus their acceptance harnesses. The maintainer adopted the owner authority and D22 local-public-key verification contract in owner-authority.md: separate management authentication/listener and the private operator plane are the direction. R48 accepts optional new- format data-token wiring and current authority in the actual API preview. Full human issuer/refresh-session integration, the complete settings/role catalogue, explicit delegation-ceiling enforcement and production provider enforcement remain incomplete; adopted policy does not imply those implementations or milestone completion. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).
@@ -8750,7 +8750,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `[static]` `test -f docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
   - the deliverable exists. A presence check and nothing more - it cannot say whether the recommendation is right, only that it was written.
-- `[static]` `grep -q '\*\*D16\*\*' docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md && grep -q '\*\*D17\*\*' docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `[static]` `grep -q '\*\*D16\*\*' docs/30-design/tenancy/multitenancy-decisions.md && grep -q '\*\*D17\*\*' docs/30-design/tenancy/multitenancy-decisions.md`
   - the decision reached the execution plan's decisions table, not just a research document - the place a later reader looks first. It cannot tell whether the rows say the right thing.
 - **NO GATE** &mdash; Every Ory claim in the deliverable is read-derived, not run. No Kratos and no Hydra instance was started. Read-derived claims in this programme have failed on contact with running code before, so this is a hypothesis. The discharge is specific: stand up Kratos 1.x and Hydra 2.x, register two tenants against one pool, and confirm a session for tenant A cannot be exchanged for a Nightscout token on tenant B (T30-ORY-PROOF).
 - **NO GATE** &mdash; nightscout-roles-gateway was read, not executed. Its dependencies are 2022-era - @ory/kratos-client 0.9.0-alpha.3 and @ory/hydra-client 1.11.8 - and V0alpha2Api, which lib/privy/index.js:20 constructs, no longer exists under that name in Kratos 1.x. Whether its decision pipeline still works is unknown, and it is the first thing a port would measure.
@@ -8889,9 +8889,9 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 - `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Parallel 562f6206 adds replica-set-only transactional scalar-set steps with an atomic shared fence and renewable server-time lease. Data and ledger commit together. Mutations removing the fence/data session fail; restored checks pass. 466 files classify; lint has zero errors/two path warnings. Ready to integrate, not full MIG-RUNNER or standalone support. No entries, serving, dependencies or existing migration checksum changes. Follow-up 436ef543 is tests/fixture/README only: expired renewal after actual database pause refuses without data or reacquisition; primary SIGKILL/restart rolls back uncommitted state or preserves exact committed ledger, followed by new-process retry. 56 combined/15 MongoDB checks pass; expiry-removal and split-data-session mutations fail. Both runner commits are now incorporated at peer tip 436ef543; integrated acceptance remains pending in these records. No HA/host/power recovery claim. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 
@@ -8961,9 +8961,9 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/owner-authority.md`
 - `docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md`
 - `tools/lab/multitenant-rest-authority/README.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
 **Notes.** 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts optional current subject-reader clamping in one SQL snapshot per selected operation; R63 measured three actual oref0 subject-token uploads matching reference and ceiling tightening refusing with no effects; the selected mode stays unselected. The rest-authority and owner-local-token gates keep their native pins (d4570e58, 3d5eac19); frozen-head replay UNMEASURED. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. R48 accepts actual optional new-format data-token wiring through the configured API executable with local public-key verification and current PostgreSQL authority. This is local application acceptance, not complete human/refresh-session issuance, management listener admission, full settings/role catalogue, delegation-ceiling or production provider enforcement, nor milestone promotion. Current 2026-11-04: R40 accepts derived reads and source-pinned client patterns with parent-run cumulative evidence at published ded254b9; PR title/description read back correctly; current-head CI and CodeQL succeeded at the visualization read-back. Archived authority probe is a bounded PASS with NON-VACUOUS control; complete production runtime is open. Test-only credential fidelity is incorporated; no supported credential importer or atomic tenant activation is implied. This in-progress claim does not complete TEN-RESOLVE dependencies or promote M2/M3; production provisioning, runtime identity and listeners remain open. No OIDC, client protocol or role enablement is inferred. 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS-CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current-dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
 
@@ -8999,7 +8999,7 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/owner-preview-native-controls-4cd95d06-2026-11-06/README.md`
 - `tools/lab/multitenant-next-slices/README.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** R70 accepts bounded actual4cd native owner9 and two physical semantic controls, with the first lifecycle-classifier failure preserved. The optional reader-clamp mode is withdrawn by maintainer decision; writer ownerPolicy fences remain. New e2 candidate is in comprehensive verification; no M2 promotion or human lifecycle acceptance. 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts the bounded proposed-grant policy and optional subject- reader clamping; an actual cgmsim root upload gets 503 under selected mode (R63) and awaits a disposition; DELETE policy, human issuer/refresh and production owner composition remain open. The management gate keeps its native pin d4570e58; frozen-head replay UNMEASURED. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 selected ownerPolicy accepted native17f9a457; canonical bounded owner- policy runtime gate and four controls live on MT-CONFIG-MIN. R54 cumulative acceptance adds no complete owner/listener admission. Current 2026-11-06: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. R53 adds explicitly selected ownerPolicy proposed-grant enforcement for REST37. CLI binding, new identity provider and production owner listener remain unimplemented; selected store/factory acceptance is not full D16 completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
 
@@ -9029,7 +9029,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** Everything else in T3.1 stands: 18 guards broken one at a time, three changed nothing and all three were the tests' fault. Only the credential assumption is wrong.
 
@@ -9120,7 +9120,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 ### `T44` &mdash; T4.4 - ns-evaluator, the per-tenant evaluation loop
 
@@ -9180,7 +9180,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** Named by the T4.4 spike.
 
@@ -9209,7 +9209,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 ### `A7A-7` &mdash; §7a item 7 - the clock question
 
@@ -9235,7 +9235,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** DECIDED 2026-09-23 (maintainer) - the maintainer owns this question. Answers already given with BF-41: snooze runs on the wall clock, and an evaluator may own its clock, but never for live alarms. Still unsettled until the maintainer writes up the rest.
 
@@ -9265,7 +9265,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 
 ### `SEAM-REFRESH` &mdash; Refresh the seam chain once after 15.0.9, onto the base the release train leaves
@@ -9329,7 +9329,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md`
 - `docs/30-design/remedial/nightscout-backfix-register.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
@@ -9789,7 +9789,7 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/30-design/platform/upstream-asks-loop-identifier/reply.body.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** Decided 2026-10-29 (maintainer, D-LOOP-ID; next-gen plan §4.2): a client may still send an ObjectId _id over API v1 (legacy). Going forward the server sets _id and the client sets identifier. API v3 keeps refusing a client _id (I2, BF-170). Recorded in the identity spec §5 and the Loop dialogue page's conversation table. 2026-10-26: identity rule I2 is amended (docs/30-design/platform/spec/identity.md): on API v3 a client-supplied _id is refused with 400, with no quirk (maintainer, 2026-10-25, BF-170, merged in #8845); on API v1 the I9 quirk stays. The tie-break (2) was decided on 2026-10-18 (identifier decides). What is left is question (1) for API v1 only: whether the Loop reply's simple contract recommends a client-created ObjectId as _id over v1. That half stays with ID-SIMPLE-MATCH and waits on Loop's answer (LOOP-ID-REPLY). 2026-10-26, earlier: the API v3 half is settled in dev: #8845 (900abf7a) refuses any body _id on API v3 create, PUT and PATCH with 400 (BF-170, BFQ-170). API v1 keeps its legacy _id handling as a version- scoped quirk (#8845's body). The v1 question is unchanged. Read at the tags: no release up to 15.0.6 converted a client _id on POST (it was passed to MongoDB as sent, so 24-hex values were stored as strings, BF-99..102); only PUT and by-id reads and deletes converted with ObjectID(). MongoDB never required _id to be an ObjectId. Since #8758 (dev) a re-sent 24-hex _id is matched. A client-set _id cannot serve the phone-and-watch case (two devices create two ObjectIds), so identifier is needed either way. Maintainer, 2026-10-18: (2) identifier decides when the two match different records, keeping D20 rule 5's identifier-first order and v1 treatments' behaviour today (lib/server/treatments.js:356-362 at 15.0.8); the reply's earlier _id-first proposal is reversed. (1) still recommended, pending Loop's answer: a client may send an ObjectId it creates as _id over v1 (API v3 stores it as a string, BF-170); any other _id value is not valid (UUID_HANDLING keeps moving a non-24-hex string _id to identifier).
 
@@ -9881,7 +9881,7 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `docs/10-domain/record-identity-reference.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/identifier-duplicates-2026-10-17.md`
 
 **Notes.** Decided 2026-10-27 (maintainer): identifier uniqueness is enforced per collection (with the tenant in the key under TENANCY_MODE=multi); values are kept globally unique by convention through the URL kind segment (identifier- conventions.md §1). This sets ID-UNIQUE-INDEX's key and the PostgreSQL constraint. Today no index on identifier is unique (entries.js:224,226, treatments.js:430,432, devicestatus.js:168, api3 mongoCollection/index.js:21 at 15.0.8), and every match is within one collection, so uniqueness is per collection by construction and only by convention. Cross-references: D2 (shared logical storage with a tenant discriminator) and D3 (PostgreSQL with RLS) mean a per-tenant scope is a column in the key, not a separate database; D20 rule 5 ("one identifier names one record") does not say per what. The simple contract (reply.body.md rule 2) says "one identifier names one record" without a scope. 2026-10-18, recommended (not decided): enforcement per collection, values globally unique by convention. The URL form's kind segment (loop://carbs/..., loop://devicestatus/..., or the model in a source scheme) keeps two collections from holding the same value (identifier-conventions.md §1).
@@ -10584,7 +10584,7 @@ differently is a live hazard, not untidiness. GT1/GT3/GT4 enumerated these.
 | semver | `n/a` |
 | review | whoever edits it next |
 
-**Blast radius.** docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md at L7, L8, L351, L1189, and the T3.0 amendment table.
+**Blast radius.** docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md at L7, L8, L351, L1189, and the T3.0 amendment table.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -11306,7 +11306,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
 **Notes.** Contract work stays parallel; command execution and delegation gated.
 
@@ -11396,7 +11396,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
 
 **Notes.** Implements the D18 addendum (execution plan §2.6.1, maintainer 2026-10-12), rules 1-5. Every extensible field is typed: controller data is accepted only with a type declaration. (1) must-ignore for unknown grammar fields within v1, plus `extensions` keyed by a reverse-DNS namespace, each with a type declaration. (2) settings.fields[], replayInputs[] and extension fields become objects: a restricted JSON Schema fragment for the type (fix the subset and say why), unit, range, horizon, sensitivity label, evidence; reuse the typed field descriptions already in controller-settings.schema.json rather than restating them. (3) endedEncoding, command transport, replayInputs[].status and the discriminator test take a shared value or other + controllerTerm. (4) per-kind version, served versions, one stored version, optional lossless mapping; no conversion without one. (5) horizon per document, kind and field (cycle, span, effective-dated, definition, aggregate) with cadence and retention; availability gains experimental. Keep every change additive to v1 unless a rule cannot be, and if so stop and report. The generated registrations should gain types only where the evidence gives them; omit rather than guess. Update the hub-sync architecture doc's schema field list and the landscape §10 row. Rule 6 (negotiation) and the hub-derived API are hub implementation and are out of scope here. Done 2026-10-12, additively: every registration valid before is valid after. Must-ignore is an open schema (no object closed) plus sync_model.unknown_grammar_fields, which reports what a v1 reader keeps without interpreting; --check holds the generator to known members. Type fragments are a closed subset (type, enum, minimum, maximum, format, items, properties, required). The registrations gained typeRef to controller-settings.schema.json only where the definition was read from the controller's own family (suspendThreshold and per-cycle state stay untyped), a cycle horizon on the devicestatus document and an effective-dated horizon on settings. endReasons also gained `other`. Fixture: specs/sync/registrations/fixtures/example-testcontroller.yaml.
@@ -11427,7 +11427,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `specs/sync/hub-capabilities.schema.json`
 - `specs/sync/registration-submit.schema.json`
@@ -11492,7 +11492,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md`
 - `specs/sync/controller-instance.schema.json`
@@ -11526,7 +11526,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `specs/quirks/README.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
@@ -11561,7 +11561,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 
 **Notes.** The decisions are the table "Decided in the 2026-10-16 walk-through" in the execution plan §2.6.3, rows 1-9; rows 10-12 need no contract change here (12 belongs to SPEC-REG-MODES and SPEC-REG-MIGRATE). Done 2026-10-16; hub-sync design §3.5-§3.7. Choices made beyond the table, for the maintainer to confirm: an unlisted slot is the product's own channel under its slot name (instances of one product still contend on it), not an element-path channel; a command for a channel that is not shared names its product (request.identity); the observation is computed on the listing from stored definitions (current registrations and stored definitions, any state), member slotNameObservations [{slot, products}], absent when empty; the command-sink binding check applies to simulated claims too, runs after the channel checks and before role-held, compares the instance's binding with the product's boundTo (so a released product grants no new command-sink role), and keeps a command-sink role the instance already holds on renewal (so a transfer survives and a product transfer does not strip existing holders); the binding event is a stored member bindingEvent (only next-writer for now, kept by updates under the same binding, cleared by release and transfer, not in the etag), and the owner's listing gains registrations, every stored product's summary; normalise_sent_id and projected_ids lost their capability argument.
@@ -11594,7 +11594,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 
 **Notes.** Rows 13-16 of the execution plan §2.6.3 walk-through tables (maintainer, 2026-10-17). Done 2026-10-17; hub-sync design §3.6-§3.7. Choices made beyond the rows, for the maintainer to confirm: a transfer-role grant is recorded on the stored role result as grantedBy: transfer-role, also returned in the instance's renewal role results, not in the etag, set on any role transfer- role moves (source too), kept on renewal while the role stays granted and gone when the role is moved away; "declares" for row 14 reads every product's current registration and stored definitions in any state (the set slotNameObservations reads), is not limited to channels that accept commands, and applies to element channels too; the ambiguous refusal is 409 with path channel and lists no candidates; an inferred route's response has no inference marker; a dropped role is stored refused not-registration-owner (what the next renewal answers), with no distinct code, so the listing shows it as refused; the drop covers the product's stored instances whether or not their lease is live; the drop also runs on a next-writer bind, where in a reachable state nothing is left to drop; the owner's release and transfer responses do not list dropped roles; release and transfer are modelled as instance-case requests; for row 13 the channel's wire name stays the bare slot name, scoped to the product; command-no-destination-simulated keeps its meaning by listing override (as its control does) rather than naming the product; rebind- transfer-keeps-matching-instance's prior state (the new subject's instance holding an unmarked device command-sink while the product is bound to another subject) is constructed and is not reachable under rows 7 and 16.
@@ -11626,7 +11626,7 @@ reproduced ones.
 
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `specs/sync/registration-submit.schema.json`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md`
 
@@ -11658,7 +11658,7 @@ reproduced ones.
 **Evidence.**
 
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 - `specs/sync/registration-submit.schema.json`
 - `specs/sync/hub-capabilities.schema.json`
@@ -11691,7 +11691,7 @@ reproduced ones.
 **Evidence.**
 
 - `docs/30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/write-contract-spec-2026-10-07.md`
 - `docs/30-design/platform/nightscout-extensibility-models-2026-09-10.md`
 
@@ -11722,7 +11722,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 
 **Notes.** No queue item builds ns-tenant-admin itself (searched 2026-10-16: the queue names it only in the notes of T30-AUTH and SPEC-REG-DECISIONS). The D16 process-topology question is for the maintainer before this starts. The owner's authentication there is native today (the tenant root credential) and D17 row 2 if it lands.
@@ -11759,7 +11759,7 @@ reproduced ones.
 - `docs/30-design/platform/spec/commands.md`
 - `docs/30-design/platform/agent-trust-boundaries-2026-10-18.md`
 - `docs/30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.md`
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
 **Notes.** The maintainer asked for this item on 2026-10-18 while SPEC-REG-MODES was not started; what a mode changes beyond fetch, push and push credentials (the storage key and credential kinds a record names) is left to that item, so blocks_on is cleared and the dependency is stated in commands §7 and §9. Everything from §4 on is proposed. The 87 command cases were hand-authored by an agent that read only the spec text, not the reference; the two sides first disagreed on 3 of 394 checks, each resolved in the spec text; 17 ambiguities it reported were settled in the rules (order of checks, CM2 covering sent, reports from a destination that lost its role, late reports replacing hub- inferred states, invalid-reason, payload-too-large, destination-changed). Adversarial review, 2026-10-18, applied: a command handed over and then past its expiry or its destination's lease reads `unconfirmed`, never `expired` or `undeliverable`, which a sender would read as safe to re-send (the high finding); the legacy Loop route is stated to be outside the rules; CM10 says the hash detects change in transit only; a proposal is routed when made and an approval refused when the destination changed, whether or not an instance was named; basedOn is required; a refused approval leaves the proposal open; the re-send key covers channel and product; proposals obey the size limit; 404 for another tenant's instance; A12 and S11 repointed; §8 cells corrected; the controller check before approval listed as open. The case author added 22 cases for these. Non-vacuity, 2026-10-18: 43 weakenings of commands.py, one per rule or check, each red (two first written were CONTROL-INVALID or an equivalent mutant and were rewritten); the narration, case, count and pointer breaks of the platform-spec control each red with their own finding, the test break CONTROL-INVALID. Compatibility findings that bear on the rules are listed in §8 and §9 (AndroidAPS's late delivery failure after success, Trio's part-enacted meal command). A credential-exposure mechanism found while reading controller source is kept out of this repository and reported to the maintainer directly.
 
@@ -12025,7 +12025,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md`
 - `specs/sync/registrations/`
 - `docs/30-design/tenancy/nightscout-control-plane-reconciliation-2026-09-11.md`
@@ -12449,7 +12449,7 @@ reproduced ones.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
+- `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`
 
 **Notes.** 2026-10-26, later: draft #8862 opened at 4c7d678d; b63d9b7f removed the image HEALTHCHECK after the maintainer asked whether it would hide the boot-error page. It would: a site that boots with errors serves that page as a 500, and swarm or autoheal would restart it in a loop. `nightscout healthcheck` stays as an opt-in command and names the boot-error page. Open in the PR: PATH passthrough outside the image, `docker run <image> env`, SIGTERM handling, 307-to-https as healthy. 2026-10-26: the maintainer chose one executable with subcommands, the Consul / node-multienv start_container.sh / Ory `serve` pattern, and `serve <roles>` for hosted roles (D21, execution plan section 2.12). Node, not bash: self-hosters run on Windows, IIS and Azure, and the final image has no npm. The dispatcher require()s the role in-process so SIGTERM reaches the server.

@@ -3,7 +3,7 @@
 Contributor-facing research instrument, 2026-11-06. This is the Batch C early proof the
 [completion plan](../../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
 names in its "Populated restore/import and contention" row and the roadmap's
-[M6 packet](../../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md)
+[M6 packet](../../../docs/30-design/tenancy/multitenant-delivery-roadmap.md)
 row C8. It builds beside, not inside, the source-only
 [populated recovery preflight](../populated-recovery-proof/README.md) and R62's schema-level
 `pg_dump`/`pg_restore` laboratory (`tests/fixtures/populated-recovery/lab.js` in the

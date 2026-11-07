@@ -7,7 +7,7 @@ replay-fidelity change list.** Change A (§1) is carried, with its cursor rule, 
 [sync-transport specification](spec/sync-transport.md). Status: proposed to each named project; each change is independent of the others.
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26) and the source
 trees as of 2026-09-11. It is a **change list rather than an analysis.** Decisions it touches:
-[execution plan §1](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions).
+[execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 > **Two things this document refuses to concede.** That sync has to be
 > inefficient, and that fidelity has to be traded against it. §1 shows the

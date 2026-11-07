@@ -35,7 +35,7 @@ changed or whom to believe.
    described by mechanism only. No request, payload or pattern that would work
    against a deployed instance appears in this public repository.
 7. **One home per fact.** Defect facts live in the backfix register, item state
-   in `queue/work-queue.yaml`, decisions in the execution plan. Other documents
+   in `queue/work-queue.yaml`, decisions in the tenancy decision reference and release decision records. Other documents
    link rather than restate, so there is one place to correct.
 8. **Links resolve.** `make docs-links` passes; generated views pass
    `make views-check` and `make packets-check`.
@@ -61,10 +61,12 @@ discover.
 **A series is one living document.** When the same deliverable is produced
 repeatedly — successive test runs of one release candidate, revisions of one
 plan — it lives in one file with no date in its name. The current version is
-given in full. Each earlier version is one row in a history table that links to
-the file at the commit holding it. Checks that the current version did not repeat
-are carried forward, each naming the tree it ran on. Superseded files are removed
-from the working tree rather than kept beside the current one. The first such
+given in full. Retired documents or journals have a brief retention entry naming
+their scope and successor, linking to a thematic archive or pinned revision. Git
+retains intermediate versions; the reader does not need a commit-by-commit listing.
+Checks that the current version did not repeat retain the tree each ran on.
+Superseded files leave the active reading path rather than staying beside the
+current one. The first such
 record is [the 15.0.9 integration record](../30-design/remedial/rc-15.0.9-integration-record.md).
 
 ## What this is not

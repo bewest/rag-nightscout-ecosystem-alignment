@@ -140,7 +140,7 @@ at `PUT` and `DELETE /api/v4/registrations/{vendor}/{product}/instances/{instanc
 | plan operations | [plans](spec/plans.md) PN1–PN18: propose a plan, approve in parts, report occurrences, skip, end, read the mirror | every path |
 | marking the subject who acts for the person | [commands CM14, CM25](spec/commands.md#6-proposals-and-approvals-proposed) | the owner sets it (decision 5); the path for setting it is part of the tenant-owner configuration surface, not yet given |
 | the tenant-owner configuration surface | [tenant-owner surface §F.1](../tenancy/tenant-owner-config-surface-2026-09-15.md#f1-the-line): settings, plugin config, thresholds, subjects and roles, credential rotation, own export | every path; specified as a schema, not built |
-| the operator's tenant lifecycle | [execution plan §2.3](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#23-design) (D7): create, list, get, suspend, activate, delete, export | built at `/tenants` on `bin/admin.js` on the seam chain, not on `dev`, and not a v4 path |
+| the operator's tenant lifecycle | [execution plan §2.3](../tenancy/multitenancy-decisions.md#operator-owner-and-data-authority) (D7): create, list, get, suspend, activate, delete, export | built at `/tenants` on `bin/admin.js` on the seam chain, not on `dev`, and not a v4 path |
 | the fetch-now subscription | [sync-transport T16](spec/sync-transport.md#5-typed-records-on-the-socket-proposed) | a socket event, not a REST path |
 
 ## 3. Nocturne's surface at `89dcaf1dd`, in groups
@@ -227,7 +227,7 @@ is how a hub with listeners runs them.
 **Decided.** D18 (two tiers: well-known and controller-owned), its addendum (the extensible
 grammar), D19 (definitions and instances) and D20 (version-scoped quirks and the two-id rule), with
 the maintainer's decisions of 2026-10-14 to 2026-10-17
-([execution plan §2.6](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration));
+([execution plan §2.6](../tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility));
 the owner's actions on `ns-tenant-admin` and `API_SECRET` as owner on `single` (AU2, decided
 2026-10-14 and 2026-10-16). The product resource is `<submit.href>/<vendor>/<product>`; the
 capability document says where `submit.href` is. On 2026-10-26 the maintainer decided that

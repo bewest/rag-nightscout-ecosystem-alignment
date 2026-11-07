@@ -317,11 +317,11 @@
     },
     {
      "label": "R55 independent profile / scope limits",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-private-acquisition-profile-2026-11-06"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-private-acquisition-profile-2026-11-06"
     },
     {
      "label": "R50 independent evaluator frame characterization",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
     },
     {
      "label": "R47 independent v1 evaluator replay",
@@ -361,11 +361,11 @@
     },
     {
      "label": "R54 cumulative / native scope limits",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
     },
     {
      "label": "R46 bounded PG consolidation and indexed races",
@@ -692,7 +692,7 @@
    "spec": [
     {
      "label": "execution plan",
-     "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md"
+     "href": "../tenancy/multitenancy-decisions.md"
     }
    ]
   },
@@ -708,7 +708,7 @@
    "spec": [
     {
      "label": "D21",
-     "href": "../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#212-d21--one-entrypoint-serve-roles-maintainer-2026-10-26"
+     "href": "../tenancy/multitenancy-decisions.md#d21"
     }
    ],
    "ref": "#8862 closed 2026-10-28 01:12Z as superseded; its four commits are in #8865",
@@ -903,7 +903,7 @@
     },
     {
      "label": "R54 cumulative / native scope limits",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "Immutable failed replica-history characterization",
@@ -911,11 +911,11 @@
     },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
     },
     {
      "label": "R50 independent evaluator frame characterization",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
     },
     {
      "label": "R46 bounded PG consolidation and indexed races",
@@ -958,7 +958,7 @@
    "spec": [
     {
      "label": "R60 current acceptance and milestone boundaries",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
     },
     {
      "label": "runner gates",
@@ -985,7 +985,7 @@
     },
     {
      "label": "R54 cumulative / native scope limits",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "R48 bounded local data-token API acceptance",
@@ -1120,15 +1120,15 @@
     },
     {
      "label": "R54 cumulative / native scope limits",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06"
     },
     {
      "label": "R49 actual frame acquisition and concurrent reads",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05"
     },
     {
      "label": "R50 independent evaluator frame characterization",
-     "href": "../tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
+     "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05"
     },
     {
      "label": "Reproduced frame acquisition and concurrent reads",

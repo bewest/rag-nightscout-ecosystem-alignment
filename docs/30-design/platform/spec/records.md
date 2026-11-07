@@ -3,7 +3,7 @@
 *Contributor-facing. Living specification, current at `main` `92a7d31b` (2026-10-18). Layer L1 of
 the [platform index](../README.md); terms are in the [glossary](glossary.md); record ids are in the
 [identity specification](identity.md). Status: evidenced, not implemented: the catalogue is
-generated from a shipped typed model and the corpus. Decision: [D11](../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem),
+generated from a shipped typed model and the corpus. Decision: [D11](../../tenancy/multitenancy-decisions.md#2-storage-resolution-and-profiles),
 for `devicestatus`; the rest of this page is proposed (§2).
 Queue: `SPEC-RECORDS`.*
 

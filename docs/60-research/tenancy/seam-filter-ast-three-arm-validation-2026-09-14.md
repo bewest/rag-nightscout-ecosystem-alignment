@@ -1,6 +1,6 @@
 # Three-arm validation of the storage seam's filter AST: closing §8.5
 
-**Snapshot — research as of 2026-09-14, measured against the seam worktree's `lib/storage/filter.js` (the doc names no commit), mongod 7.0.43, PostgreSQL 16.14. Status: superseded in part — tenancy research, not on a shipping path; classes A–D are closed in the shipped seam adapter (block below). Current facts: [T2.5 backend verification](t25-postgres-backend-verification-2026-09-15.md), [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
+**Snapshot — research as of 2026-09-14, measured against the seam worktree's `lib/storage/filter.js` (the doc names no commit), mongod 7.0.43, PostgreSQL 16.14. Status: superseded in part — tenancy research, not on a shipping path; classes A–D are closed in the shipped seam adapter (block below). Current facts: [T2.5 backend verification](t25-postgres-backend-verification-2026-09-15.md), [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).**
 
 > ## Superseded in part, 2026-09-15 — read this first
 >
@@ -41,7 +41,7 @@ Closes the open item the seam interface document records in its own §8.5:
 | ref | document |
 |---|---|
 | **{S}** | [T1.1 — the storage seam: interface and call-site classification](../../30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md) |
-| **{P}** | [Multitenancy execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
+| **{P}** | [Multitenancy execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) |
 
 **Tooling**: `tools/qc/three-arm.js` (randomised, three arms) and `tools/qc/classes.js`
 (deterministic minimal reproductions). Both validate the **shipping** module at

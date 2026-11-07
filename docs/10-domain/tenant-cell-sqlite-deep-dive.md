@@ -21,10 +21,10 @@ it does not establish a supported third backend or production cost advantage.
 | Maintain three backends eventually? | **Plausible, conditional.** One shared NS behavior contract, explicit capability coverage and an owner for each implementation; not three divergent server products. |
 | Declare a cheapest or fastest option? | **Not yet.** The experiments differ in runtime, payloads, endpoints, replication and age. There is no matched three-way benchmark. |
 
-The existing D1-D4 [decision record](../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)
+The existing D1-D4 [decision record](../30-design/tenancy/multitenancy-decisions.md#1-decisions)
 retains single-tenant MongoDB and shared hosted PG/RLS. The later delivery
 roadmap explicitly excludes celld from that integration stream (alignment
-`ae4ad1827`, `docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md:1-12`).
+`ae4ad1827`, `docs/30-design/tenancy/multitenant-delivery-roadmap.md:1-12`).
 The user's request here authorizes investigation, not a silent amendment of
 those decisions or an extra v16 dependency.
 
@@ -102,7 +102,7 @@ provider credentials were used.
 | **RUNTIME-DOCS**, November 2 | Celld guarantees/limitations and database documentation linked below | Documented contracts and caveats, not independently measured failover or capacity. |
 
 PG-FOUNDATION provenance: alignment `ae4ad1827`,
-`docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md:150-178`;
+`docs/30-design/tenancy/multitenant-delivery-roadmap.md:150-178`;
 NS `ce14d637`,
 `externals/cgm-remote-monitor-official/lib/storage/postgres-connection.js:9-29,48-89`
 and `externals/cgm-remote-monitor-official/tests/postgres-connection.test.js:97-205`.

@@ -1,6 +1,6 @@
 # The auth plane: Ory Kratos/Hydra against building it ourselves
 
-> **Snapshot — research as of 2026-09-16, measured against `nightscout-roles-gateway` `90840ac`, `nocturne` `d9e143097`, `crm-seam` `81a1f6ce`. Status: current — decided in part (D16 adopted; D17 rows 1, 3, 4 adopted; row 2 still open, pending `T30-ORY-PROOF`), tenancy research, not on a shipping path. Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §1 and §2.9 (D16, D17).**
+> **Snapshot — research as of 2026-09-16, measured against `nightscout-roles-gateway` `90840ac`, `nocturne` `d9e143097`, `crm-seam` `81a1f6ce`. Status: current — decided in part (D16 adopted; D17 rows 1, 3, 4 adopted; row 2 still open, pending `T30-ORY-PROOF`), tenancy research, not on a shipping path. Current facts: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §1 and §2.9 (D16, D17).**
 
 **Status: DECIDED 2026-09-16, IN PART.** This began as research for a maintainer decision and got
 one the same day. **D16 was adopted whole. D17 was adopted in three rows of four** — devices keep a
@@ -9,7 +9,7 @@ as one cohort-wide pool for human identity, is direction of travel and NOT adopt
 on `T30-ORY-PROOF`: stand the stack up and measure the isolation property, because §8's first
 bullet is the reason and a shared identity pool is irreversible once identities exist. The
 decisions as adopted live in the
-[execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §1
+[execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) §1
 and §2.9, which is authoritative; this document is the reasoning behind them. Nothing here is
 landed work and nothing here proposes code yet. It exists to answer two questions asked on 2026-09-16 — whether planning on
 three separate interfaces is the reversible choice, and whether to lean on Ory rather than build

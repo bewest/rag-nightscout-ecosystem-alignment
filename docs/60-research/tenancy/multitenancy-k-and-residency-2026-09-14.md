@@ -1,6 +1,6 @@
 # What sets K: residency, the load cycle, and two quadratics
 
-> **Snapshot — research as of 2026-09-14, measured against `cgm-remote-monitor` `origin/dev` `a8888f0d`. Status: superseded in part — tenancy research, not on a shipping path; §12 revises §2/§5/§7 (read it first), the alarm slice is re-measured at 32.7 KB in [the alarm-critical slice](alarm-critical-slice-2026-09-15.md), and the quadratic fixes are PR #8733 (merged to dev 2026-09-17, unreleased). Current facts: [execution plan](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md), [EXP-MT-026](exp-mt-026-database-in-the-loop-2026-09-14.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-08, BF-34).**
+> **Snapshot — research as of 2026-09-14, measured against `cgm-remote-monitor` `origin/dev` `a8888f0d`. Status: superseded in part — tenancy research, not on a shipping path; §12 revises §2/§5/§7 (read it first), the alarm slice is re-measured at 32.7 KB in [the alarm-critical slice](alarm-critical-slice-2026-09-15.md), and the quadratic fixes are PR #8733 (merged to dev 2026-09-17, unreleased). Current facts: [execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md), [EXP-MT-026](exp-mt-026-database-in-the-loop-2026-09-14.md), [backfix register](../../30-design/remedial/nightscout-backfix-register.md) (BF-08, BF-34).**
 
 *Audience: contributors.*
 

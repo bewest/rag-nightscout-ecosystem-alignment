@@ -8,7 +8,7 @@ The original proposal/implementation statements describe that captured baseline;
 `cgm-remote-monitor` `official/dev` `43289dde` (the merge of #8806) and `official/master` `92d08342`
 (tag `15.0.8`); the as-built storage interface is `seam/t1-2-storage-interface` `81a1f6ce`. The
 decisions this builds on are in the
-[execution plan §4.1](nightscout-multitenancy-execution-plan-2026-09-14.md#41-the-write-contract-belongs-behind-the-seam)
+[execution plan §4.1](multitenancy-decisions.md#2-storage-resolution-and-profiles)
 and the [storage seam interface §4.4, §5 and §10](nightscout-storage-seam-interface-2026-09-14.md).
 Item state: [`queue/QUEUE.md`](../../../queue/QUEUE.md). The match order per collection and the
 two-id reply are maintained in the [identity specification](../platform/spec/identity.md); the write

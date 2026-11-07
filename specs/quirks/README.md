@@ -79,7 +79,7 @@ Entries are validated at load against [`quirk.schema.json`](quirk.schema.json).
 
 ## Versions (D20)
 
-[D20](../../docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16)
+[D20](../../docs/30-design/tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)
 (maintainer, 2026-10-16) lets an entry name what it affects. The member is additive: an entry
 without it keeps its project-level `attribution`.
 

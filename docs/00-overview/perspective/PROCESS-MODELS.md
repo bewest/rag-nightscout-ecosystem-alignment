@@ -484,7 +484,7 @@ Commercial offerings would show they track the shared contract with the same pub
 suite, CNCF's model ([ECOSYSTEM-PROGRAMME §2](../ECOSYSTEM-PROGRAMME.md#2-the-picture)). And the
 multitenancy design takes bulk hosting as its target, with one operator running many tenants while
 "self-hosted single-tenant stays first-class permanently" (D1, with per-tenant credentials in D13;
-[execution plan §1](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions)); adopted, not released.
+[execution plan §1](../../30-design/tenancy/multitenancy-decisions.md#1-decisions)); adopted, not released.
 
 *Interpretation.* Properties the three panels show:
 
@@ -562,7 +562,7 @@ of any release, and it does not show how well each part of the server enforces i
 ![3·identity as proposed: a hosting operator mints the tenant root credential from ns-admin on an unreachable port; the owner holds and rotates it and acts on ns-tenant-admin, a second socket; devices hold native per-subject credentials and per-tenant signed tokens; people log in through Ory Kratos (gated); a controller registration is bound to the subject that created it, and the owner can retire, block, release or transfer it](diagrams/3-identity--proposed.svg)
 
 **As proposed** (hosted, `TENANCY_MODE=multi`; self-hosted single-tenant keeps `API_SECRET`, D1).
-The decisions are in the [execution plan §1](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions),
+The decisions are in the [execution plan §1](../../30-design/tenancy/multitenancy-decisions.md#1-decisions),
 §2.8 and §2.9:
 - **D13**: there is no deployment-wide secret. Each tenant holds its own root credential, which the
   hosting operator mints through `ns-admin`. That port is unreachable from outside (**D7**), and
@@ -691,14 +691,14 @@ grants are "not implemented" ([authority model](../../10-domain/authority-model.
 **As decided (D18–D20): specified, not built.** D18: well-known declarations ship with the hub for
 today's writers, and controllers own typed registrations; the hub is responsible for observability,
 the controller for sending accurately and reconciling, and the hub records composition results
-rather than computing them ([plan §2.6.1](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#261-d18--two-tier-controller-registration)).
+rather than computing them ([plan §2.6.1](../../30-design/tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility)).
 A registration is bound to the subject that created it, not to a token; the owner may block, retire,
 release or transfer it, never edit it ([hub-sync §3.5](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation)).
 D19 separates the definition (what data means, identified by its content hash) from the instance
 (one connected copy with a lease and `device` or `simulated` provenance per role). Each role has one
 source of record, an overlap is flagged, and a command goes only to the live `device` command sink,
 or is refused `no-command-destination`; that role needs the product's binding or the owner's
-transfer ([plan §2.6.2](../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#262-d19--definitions-and-instances-maintainer-2026-10-14),
+transfer ([plan §2.6.2](../../30-design/tenancy/multitenancy-decisions.md#4-typed-controllers-provenance-and-compatibility),
 [hub-sync §3.6](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#36-definitions-and-instances)).
 D20 scopes quirks to the versions that produce them and splits the client-assigned `identifier`
 from the hub-assigned `_id` ([hub-sync §3.7](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#37-version-scoped-quirks-and-the-two-ids)).

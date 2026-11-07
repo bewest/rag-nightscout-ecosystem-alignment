@@ -11,13 +11,13 @@ framework, production registry, owner lifecycle or a chain of administrative pac
 
 Current delivery status lives in the [dashboard](multitenant-delivery-dashboard.md)
 and [release acceptance record](../remedial/rc-16.0.0-integration-record.md).
-The [November 5 priority packets and compatibility matrix](multitenant-delivery-roadmap-2026-11-02.md#prioritized-rest-and-compatibility-execution-2026-11-05)
+The [November 5 priority packets and compatibility matrix](../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#prioritized-rest-and-compatibility-execution-2026-11-05)
 sequence current administration, wider REST and parallel historical/current
 compatibility execution. Their expected-change rules preserve intended RC fixes
 and measured client quirks; the historical source inventory is not current admission.
 The source inventory and initial package assignments below retain their captured
 baseline; already accepted domain implementations must not be rebuilt from those
-historical missing/pending labels. The [continuation lanes](multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04)
+historical missing/pending labels. The [continuation lanes](../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04)
 carry derived reads, pinned-pattern replay and independent authority review.
 
 ## 1. Basis and boundaries
@@ -42,8 +42,8 @@ Anchors verified before writing:
 The [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#runnable-preview-and-parallel-crud-delivery-2026-11-04)
 authorize a bounded runnable preview and entries CRUD in parallel. They do not authorize
 an all-REST capability claim. Candidate 16.0.0 release acceptance is a separate process.
-The [delivery roadmap](multitenant-delivery-roadmap-2026-11-02.md),
-[execution plan](nightscout-multitenancy-execution-plan-2026-09-14.md),
+The [delivery roadmap](multitenant-delivery-roadmap.md),
+[execution plan](multitenancy-decisions.md),
 [storage seam](nightscout-storage-seam-interface-2026-09-14.md) and
 [write contract](write-contract-spec-2026-10-07.md) supply prior art. Historical census
 figures in those documents are not a current count or a reason to redo work already in source.

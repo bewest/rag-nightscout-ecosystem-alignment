@@ -49,7 +49,7 @@ amendment.
 the deliverable exists. A presence check and nothing more - it cannot say
 whether the recommendation is right, only that it was written.
 
-**`grep -q '\*\*D16\*\*' docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md && grep -q '`** &nbsp;·&nbsp; kind: `static`
+**`grep -q '\*\*D16\*\*' docs/30-design/tenancy/multitenancy-decisions.md && grep -q '\*\*D17\*\*' docs/30-design`** &nbsp;·&nbsp; kind: `static`
 
 the decision reached the execution plan's decisions table, not just a research
 document - the place a later reader looks first. It cannot tell whether the
