@@ -1897,3 +1897,17 @@ Validation: queue-check, docs-links and whitespace checks pass for this complete
 
 Local ownership and exact private captures:
 `externals/work/HANDOFF-session-restore-policy-20261107.md`.
+
+
+### Update — tenant-local insertion simplification and consumed proof (2026-11-07)
+
+| Scope | Recorded result | Next boundary / owner |
+|---|---|---|
+| Adopted contract | [Per-tenant/collection ordering only](decisions.md#tenant-local-insertion-semantics); private ordinal has no examined public identity consumer. Shared OIDC policy reconciles to its canonical main row, preserving original lane commits. | Preserve public IDs/documents/history and actual relative-order consumers. |
+| Consumer impact | **Reproduced:** real profile reader changes only when relative duplicate-match order changes; renumbering with order intact is equivalent, explicit date-sorted entries unchanged. [R77](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r77---tenant-local-insertion-direction-and-consumed-native-proof-2026-11-07). | Released AndroidAPS v1 source path traced; no mobile binary/HTTP journey or all-client claim. |
+| Tenant-local implementation | Local original-source branch `codex/tenant-local-insertion-20261107`, head07f8c27d. **Reproduced:** all five populated conversions preserve rows and remove sequences; A exact restore/rollback retains old B state while B commits; entries held-A lock does not block B, actual profile choice remains identical. [Proof](../../reports/tenancy/tenant-local-insertion-2026-11-07/README.md). | Coordinator joins runner-compatible migration, effective grants/readiness, counter lifecycle/backup inventory and A-scoped restore authority. No catalogue/default change or application push. |
+| Residual fault boundary | **Reproduced:** deliberate direct own-counter corruption damages A ordering; independent oracle detects it, rollback restores all rows/counters and B stays exact. Inherited unsafe ordinal grant refuses. | Shared pool/DB and privileged all-tenant workers remain separate; no Byzantine-tolerance or numeric recovery/capacity budget claimed. |
+| Verification | Root source tests4 pass, prior planner/lifecycle45 pass; native semantic controls/restorations and exact cleanup recorded under their own heads. Failed context fixture retained. | Full/browser/enabled-corpus/prcheck/whole-M6 acceptance waits for coherent source integration; no repeated leaf-wide campaign. |
+
+Local evolving ownership and exact private captures:
+`externals/work/HANDOFF-session-restore-policy-20261107.md`.

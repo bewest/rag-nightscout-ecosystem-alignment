@@ -147,3 +147,11 @@ Do not hide those controls in an unreviewed migration function to make validatio
 pass. Lifecycle inventories, role grants, read-only trigger/counter readiness,
 old/new upgrade/rollback and final client/cursor/cache acceptance also remain.
 A normal one-time schema DDL lock is distinct from a recurring shared restore pause.
+
+
+The [native tenant-local proof](../../../reports/tenancy/tenant-local-insertion-2026-11-07/README.md)
+now establishes all-five populated conversion and A restore/B preservation under
+restricted roles, entries A-lock/B-progress and the real profile first-match result.
+It also demonstrates that direct own-floor corruption can damage A ordering while
+B remains exact; it is not Byzantine tolerance of privileged multi-tenant workers.
+Migration-runner, readiness and lifecycle integration remain open.

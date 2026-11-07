@@ -1,0 +1,299 @@
+{
+  "completed": true,
+  "observations": [
+    {
+      "phase": "populated-conversion",
+      "domain": "entries",
+      "rowsExact": true,
+      "identityRemoved": true,
+      "globalSequences": [],
+      "security": {
+        "relrowsecurity": true,
+        "relforcerowsecurity": true,
+        "prosecdef": false
+      },
+      "counters": [
+        {
+          "tenant_id": "11111111-1111-4111-8111-111111111111",
+          "last_ordinal": "3"
+        },
+        {
+          "tenant_id": "22222222-2222-4222-8222-222222222222",
+          "last_ordinal": "2"
+        }
+      ]
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "food",
+      "rowsExact": true,
+      "identityRemoved": true,
+      "globalSequences": [],
+      "security": {
+        "relrowsecurity": true,
+        "relforcerowsecurity": true,
+        "prosecdef": false
+      },
+      "counters": [
+        {
+          "tenant_id": "11111111-1111-4111-8111-111111111111",
+          "last_ordinal": "3"
+        },
+        {
+          "tenant_id": "22222222-2222-4222-8222-222222222222",
+          "last_ordinal": "2"
+        }
+      ]
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "treatments",
+      "rowsExact": true,
+      "identityRemoved": true,
+      "globalSequences": [],
+      "security": {
+        "relrowsecurity": true,
+        "relforcerowsecurity": true,
+        "prosecdef": false
+      },
+      "counters": [
+        {
+          "tenant_id": "11111111-1111-4111-8111-111111111111",
+          "last_ordinal": "3"
+        },
+        {
+          "tenant_id": "22222222-2222-4222-8222-222222222222",
+          "last_ordinal": "2"
+        }
+      ]
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "devicestatus",
+      "rowsExact": true,
+      "identityRemoved": true,
+      "globalSequences": [],
+      "security": {
+        "relrowsecurity": true,
+        "relforcerowsecurity": true,
+        "prosecdef": false
+      },
+      "counters": [
+        {
+          "tenant_id": "11111111-1111-4111-8111-111111111111",
+          "last_ordinal": "3"
+        },
+        {
+          "tenant_id": "22222222-2222-4222-8222-222222222222",
+          "last_ordinal": "2"
+        }
+      ]
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "profile",
+      "rowsExact": true,
+      "identityRemoved": true,
+      "globalSequences": [],
+      "security": {
+        "relrowsecurity": true,
+        "relforcerowsecurity": true,
+        "prosecdef": false
+      },
+      "counters": [
+        {
+          "tenant_id": "11111111-1111-4111-8111-111111111111",
+          "last_ordinal": "3"
+        },
+        {
+          "tenant_id": "22222222-2222-4222-8222-222222222222",
+          "last_ordinal": "2"
+        }
+      ]
+    },
+    {
+      "phase": "ordinary-rollback-acl-binding",
+      "domain": "entries",
+      "counterRollbackExact": true,
+      "rowsRollbackExact": true,
+      "ordinaryExplicitOrdinalRefused": "42501",
+      "foreignBindingRefused": "TENANT_ORDINAL_BINDING_REQUIRED",
+      "ordinalUpdateRefused": "TENANT_ORDINAL_IMMUTABLE"
+    },
+    {
+      "phase": "A-rows-counter-restore",
+      "domain": "entries",
+      "restrictedRestoreConnection": true,
+      "counterRestoredBeforeRows": true,
+      "rowsAndCounterExact": true,
+      "BPreexistingRowsExact": true,
+      "BCommitsDuringInterruptedAndSuccessfulRestore": true,
+      "BAppendCount": 2,
+      "BCounterIncrement": 2,
+      "interruptedRestoreRolledBack": true,
+      "nextASortsLast": true,
+      "sharedAllocatorMaintenance": false
+    },
+    {
+      "phase": "ordinary-rollback-acl-binding",
+      "domain": "food",
+      "counterRollbackExact": true,
+      "rowsRollbackExact": true,
+      "ordinaryExplicitOrdinalRefused": "42501",
+      "foreignBindingRefused": "TENANT_ORDINAL_BINDING_REQUIRED",
+      "ordinalUpdateRefused": "TENANT_ORDINAL_IMMUTABLE"
+    },
+    {
+      "phase": "A-rows-counter-restore",
+      "domain": "food",
+      "restrictedRestoreConnection": true,
+      "counterRestoredBeforeRows": true,
+      "rowsAndCounterExact": true,
+      "BPreexistingRowsExact": true,
+      "BCommitsDuringInterruptedAndSuccessfulRestore": true,
+      "BAppendCount": 2,
+      "BCounterIncrement": 2,
+      "interruptedRestoreRolledBack": true,
+      "nextASortsLast": true,
+      "sharedAllocatorMaintenance": false
+    },
+    {
+      "phase": "ordinary-rollback-acl-binding",
+      "domain": "treatments",
+      "counterRollbackExact": true,
+      "rowsRollbackExact": true,
+      "ordinaryExplicitOrdinalRefused": "42501",
+      "foreignBindingRefused": "TENANT_ORDINAL_BINDING_REQUIRED",
+      "ordinalUpdateRefused": "TENANT_ORDINAL_IMMUTABLE"
+    },
+    {
+      "phase": "A-rows-counter-restore",
+      "domain": "treatments",
+      "restrictedRestoreConnection": true,
+      "counterRestoredBeforeRows": true,
+      "rowsAndCounterExact": true,
+      "BPreexistingRowsExact": true,
+      "BCommitsDuringInterruptedAndSuccessfulRestore": true,
+      "BAppendCount": 2,
+      "BCounterIncrement": 2,
+      "interruptedRestoreRolledBack": true,
+      "nextASortsLast": true,
+      "sharedAllocatorMaintenance": false
+    },
+    {
+      "phase": "ordinary-rollback-acl-binding",
+      "domain": "devicestatus",
+      "counterRollbackExact": true,
+      "rowsRollbackExact": true,
+      "ordinaryExplicitOrdinalRefused": "42501",
+      "foreignBindingRefused": "TENANT_ORDINAL_BINDING_REQUIRED",
+      "ordinalUpdateRefused": "TENANT_ORDINAL_IMMUTABLE"
+    },
+    {
+      "phase": "A-rows-counter-restore",
+      "domain": "devicestatus",
+      "restrictedRestoreConnection": true,
+      "counterRestoredBeforeRows": true,
+      "rowsAndCounterExact": true,
+      "BPreexistingRowsExact": true,
+      "BCommitsDuringInterruptedAndSuccessfulRestore": true,
+      "BAppendCount": 2,
+      "BCounterIncrement": 2,
+      "interruptedRestoreRolledBack": true,
+      "nextASortsLast": true,
+      "sharedAllocatorMaintenance": false
+    },
+    {
+      "phase": "ordinary-rollback-acl-binding",
+      "domain": "profile",
+      "counterRollbackExact": true,
+      "rowsRollbackExact": true,
+      "ordinaryExplicitOrdinalRefused": "42501",
+      "foreignBindingRefused": "TENANT_ORDINAL_BINDING_REQUIRED",
+      "ordinalUpdateRefused": "TENANT_ORDINAL_IMMUTABLE"
+    },
+    {
+      "phase": "A-rows-counter-restore",
+      "domain": "profile",
+      "restrictedRestoreConnection": true,
+      "counterRestoredBeforeRows": true,
+      "rowsAndCounterExact": true,
+      "BPreexistingRowsExact": true,
+      "BCommitsDuringInterruptedAndSuccessfulRestore": true,
+      "BAppendCount": 2,
+      "BCounterIncrement": 2,
+      "interruptedRestoreRolledBack": true,
+      "nextASortsLast": true,
+      "sharedAllocatorMaintenance": false
+    },
+    {
+      "phase": "same-A-serializes-B-progresses",
+      "domain": "entries",
+      "exactBlockerObserved": true,
+      "BCommittedWhileAHeld": true,
+      "globalPause": false
+    },
+    {
+      "phase": "control-restoration",
+      "domain": "entries",
+      "inheritedGrantVerifierRefused": "TENANT_ORDINAL_EXPLICIT_INSERT_UNSAFE",
+      "ownCounterCorruptionExpectedNewLastRed": true,
+      "brokenOrder": [
+        {
+          "id": "a-first",
+          "insertion_ordinal": "1"
+        },
+        {
+          "id": "a-counter-corruption",
+          "insertion_ordinal": "2"
+        },
+        {
+          "id": "a-second",
+          "insertion_ordinal": "3"
+        },
+        {
+          "id": "a-ordinary",
+          "insertion_ordinal": "4"
+        },
+        {
+          "id": "a-after-rollback",
+          "insertion_ordinal": "5"
+        },
+        {
+          "id": "a-after-restore",
+          "insertion_ordinal": "6"
+        },
+        {
+          "id": "a-held",
+          "insertion_ordinal": "7"
+        },
+        {
+          "id": "a-competing",
+          "insertion_ordinal": "8"
+        }
+      ],
+      "controlRollbackRestoresAllTenantRowsAndCounters": true,
+      "BExact": true,
+      "freshOrdinaryRestored": true
+    },
+    {
+      "phase": "actual-profile-first-match",
+      "documentExactlyPreserved": true,
+      "selected": {
+        "_id": "z-first",
+        "store": {
+          "Synthetic": {
+            "dia": 3
+          }
+        },
+        "startDate": "2026-11-06",
+        "NSCLIENT_ID": "synthetic"
+      }
+    },
+    {
+      "sourceHead": "07f8c27d1c2c2cab1b65cd17fa4995d0bdf7f816",
+      "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+      "scope": "Standalone source SQL builder native proof; no runtime/default/lifecycle integration"
+    }
+  ]
+}

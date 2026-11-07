@@ -1,0 +1,39 @@
+{
+  "completed": false,
+  "phasesCompleted": [
+    {
+      "phase": "populated-conversion",
+      "domain": "entries"
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "food"
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "treatments"
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "devicestatus"
+    },
+    {
+      "phase": "populated-conversion",
+      "domain": "profile"
+    },
+    {
+      "phase": "ordinary-rollback-acl-binding",
+      "domain": "entries"
+    }
+  ],
+  "error": {
+    "message": "The input did not match the regular expression /RESTORE_INTERRUPTED/. Input:\n\n'Error: cannot rebind the tenant inside an existing tenant scope'\n",
+    "code": "ERR_ASSERTION"
+  },
+  "instrumentSha256": "046b6978d54f68e29cba40a03b03f0f69b46ce05039cbd21c6f8bdf4ea1b0a5b",
+  "childExit": 1,
+  "nativeCompleted": false,
+  "containerAbsent": true,
+  "volumeAbsent": true,
+  "inventoryUnchanged": true
+}
