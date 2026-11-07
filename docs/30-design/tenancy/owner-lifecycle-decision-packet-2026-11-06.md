@@ -8,7 +8,7 @@ unimplemented (rows "Human management issuer/refresh", "Existing-grant clamping"
 lifecycle"; ranked item 7). Nothing here is a decision: a decision taken from this packet is one row
 in `releases/cgm-remote-monitor-16.0.0/decisions.md`, after which this packet points at it. No code
 was written; no gate was run. Companion: [the five critical-path decisions](multitenant-open-decisions-2026-11-06.md),
-whose items 1 and 2 overlap Q4 below and are cited rather than re-asked; item 1 was decided on 2026-11-06 after this packet was drafted, and Q4 records that decision.*
+whose items 1 and 2 now have maintainer decisions, linked below rather than re-asked.*
 
 **Anchors, read from `git` at the moment of writing.**
 
@@ -22,9 +22,29 @@ Every `file:line` below is on `83582e87` unless marked otherwise. Figures are qu
 text named beside them, never from memory. **Measured** means a record says a probe or suite ran it;
 **read** means it comes from reading code or a document.
 
+**Correction scope.** The original source survey below remains anchored to `83582e87`.
+The [promotion-bar decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+now settle the M2/M6 boundary and withdraw the optional subject-reader clamping mode.
+These are maintainer decisions; the remaining recommendations in this packet are proposals,
+not adopted policy. Numeric bounds deferred there remain unapproved here.
+
+**Newer bounded implementation, separate from human identity.** The actual owner native run
+on `4cd95d069675b650e1173779057a7927f4873702` exercised operator-provisioned management
+keys/sessions and a management verifier capped at **600 seconds**, credential/purpose/tenant
+refusals and current credential/session/key/tenant revocation across independent workers.
+The [open-decisions note, item 2](multitenant-open-decisions-2026-11-06.md#2-what-m2-is-held-to-the-roadmap-cell-or-the-dashboards-additions)
+is the record pointer for its two-listener scope; this is not a human issuer or refresh proof.
+Those owner-preview source and native assertions are unchanged in local candidate
+`e2a760bc326fca5ecf255f35a88bec229f13fb43` (source comparison, not a new native run).
+At that head, `lib/server/serve/owner-preview-authentication.js:7` enforces the management
+purpose/lifetime, `owner-preview-config.js:56-74` provisions public-key verification, and
+`tests/owner-preview.integration.test.js:133-180` supplies synthetic operator state and checks
+refusal/revocation. Human login issuance, refresh, rotation/reuse detection and idle expiry
+remain **UNIMPLEMENTED**. No M2 or M6 completion is claimed here.
+
 ---
 
-## 1. What exists today, measured against read
+## 1. Original published-source survey, measured against read
 
 The data-path credential is built and measured; the owner plane has a policy transaction and a
 dormant HTTP factory; everything that *issues* a human credential, keeps a session alive, or
@@ -35,7 +55,7 @@ changes who owns a tenant does not exist in code.
 | Native per-tenant **data** token, new format | Ed25519 `ns-access+jwt` verified locally: header `alg/typ/kid` only (`lib/tenant-authorization/access-token.js:36-37`); key resolved by `(tenant, kid)` and must bind issuer and purpose (`:39-41`); claims `iss, aud, tid, purpose, sub, sid, cv, iat, nbf, exp`, lifetime capped by policy (`:47-55`); one PostgreSQL snapshot per operation joins tenant, session, credential generation, key acceptance and roles (`access-postgres.js:44-58`); the token is refused unless the tenant is active, the session is active and its generation equals the credential's, the key is active, `cv` matches, and the session outlives the token (`access-token.js:66-68`). Policy in the preview: purpose `data`, `maxLifetimeSeconds: 28800` (`lib/server/serve/preview-config.js:160`) | **R48**: actual API, 7 new-format cases, A's token on B `TOKEN_SIGNATURE`, next-read revocation across processes, Vault paused: new-token reads continue; controls red at the HTTP assertion | measured, unselected by default (`accessTokens` absent preserves existing behaviour, `access-tokens.md:27`) |
 | Legacy per-tenant data credential (root secret, raw subject token, HS256 JWT) | `exchangeLegacyCredential` signs inside the secrets component, exactly 28800 s (`lib/secrets/component.js:121-129`); HS256 with a version `kid` (`:175-177`); root and subject derivation reproduce `enclave.js` (`lib/secrets/legacy-credentials.md:63-67`) | R25/R26 (dashboard rows `7eb76c71`, `81bc71e6`); re-run inside R48's full campaign (7058 / 80 / 0) | measured |
 | Management **actor** and selected proposed-grant policy | Actor = `{tenant, principal, consumer}` authenticated by an injected `authenticateManagement` callback (`lib/server/subject-management-app.js:79-83`); the store locks config, operator policy and the actor row `FOR SHARE`, then requires every proposed permission to be in catalogue ∩ ceiling ∩ the actor's `delegable` (`lib/subject-admin/owner-policy.js:81-110`); audit row per mutation (`postgres.js:96-100`). Tables `tenant_owner_policy(catalogue_digest, ceiling)` and `tenant_owner_actors(principal, consumer, active, can_update, delegable)` from migration `0004_owner_policy_fencing` (`lib/tenant-authorization/postgres-candidate.json`) | **R53** on `17f9a457`: 22 real PostgreSQL checks; catalogue, ceiling, delegation and actor controls each 0 passing / 1 assertion with actual HTTP 200 vs 403; full 7127 / 80 / 0 | measured; REST37 subset only (PUT subject); not composed on any listener |
-| Optional existing-grant **clamping** (reader side) | Both readers accept `ownerPolicy: { catalogue }`; when set, the snapshot joins the operator ceiling and filters every stored permission group to catalogue ∩ ceiling (`access-postgres.js:18, :24-25, :76`; `owner-policy.js:129-140`); wildcard roles, the `readable` default and non-subject principals refuse (`owner-policy.js:131-137`; `tenant-authorization/postgres.js:136, :178`) | **R62** on `87133959`: owner-reader gate 12 / 0 / 0, intersection ablation admits three protected operations, restored 12; **R63**: oref0 subject-token uploads match the reference; emptied ceiling → 401 no effect; cgmsim root upload → **503** no effect | measured; **unselected**: `preview-api.js:43-46` composes the reader without `ownerPolicy` |
+| Historical optional existing-grant **clamping** (reader side; withdrawn) | Both readers accept `ownerPolicy: { catalogue }`; when set, the snapshot joins the operator ceiling and filters every stored permission group to catalogue ∩ ceiling (`access-postgres.js:18, :24-25, :76`; `owner-policy.js:129-140`); wildcard roles, the `readable` default and non-subject principals refuse (`owner-policy.js:131-137`; `tenant-authorization/postgres.js:136, :178`) | **R62** on `87133959`: owner-reader gate 12 / 0 / 0, intersection ablation admits three protected operations, restored 12; **R63**: oref0 subject-token uploads match the reference; emptied ceiling → 401 no effect; cgmsim root upload → **503** no effect | historical unselected implementation on this anchor; withdrawn by the promotion-bar decision and removed in local candidate `e2a760bc`; Q4 below |
 | Dormant owner HTTP factory | `createSubjectManagementApp` returns an Express app and opens no socket (`subject-management-app.js:56-61`; README `:92-95`); routes `PUT /api/v2/authorization/subjects`, `DELETE .../:_id` (`:94-110`) | R42 standalone management gate (dashboard T30-TENANT-ADMIN row) | measured at factory level; no listener |
 | Secrets component: sign, verify, reveal | `sign` is tenant-wide minting authority for a trusted issuer (`lib/secrets/README.md:43`); `reveal` is its own permission and audit event, "the eventual owner policy must refuse operator reveal and enforce its selected re-authentication policy" (`:42`); private keys never leave Vault (`:89`) | 34 passing combined secrets/Vault/PG suite (`README.md:406-407`); Vault outage refuses decrypt | measured; no owner route calls `reveal` |
 | CLI roles | only `api` is runnable: `multitenant <role>` "run explicit PG/Vault preview api; other roles unavailable" (`lib/cli/index.js:26-29`) | R37/R38 executable boot (dashboard) | measured for `api` only |
@@ -48,7 +68,7 @@ test fixtures, `tests/fixtures/owner-clamping-acceptance.js` and `tests/fixtures
 |---|---|---|
 | human **issuer** (login → management token) | R48 "Complete human/refresh-session issuance ... remain open"; R53 "human issuer/refresh ... unimplemented" | `access-token.js:22-26` accepts a verifier with purpose `management`; nothing composes one; `access_keys.purpose` and `access_sessions.purpose` already admit `'management'` (`access-candidate.json`, migration `0001_access_state`) |
 | **refresh / session credential** | owner-authority.md:27 "PostgreSQL session record and one-way verifier; rotation/reuse detection" | `access_sessions(session_id, subject_id, credential_id, generation, expires_at, active, purpose)`: a presence-and-expiry row that `sid` references; **no verifier column, no idle timestamp, no refresh secret**; rows are "explicitly operator-provisioned in this preview" (R48) |
-| existing-grant clamping **on** | R62 "All options remain unselected" | the reader option exists; no runtime configuration selects it (`tenant-authorization/README.md:84-86`) |
+| historical existing-grant clamping option | R62 "All options remain unselected" | present only on this original source anchor; activation is withdrawn, not a remaining implementation task (Q4) |
 | **DELETE policy** in selected mode | R53 "DELETE refuses"; dashboard T30-TENANT-ADMIN "DELETE policy ... remain open" | `postgres.js:133` `if (owner) throw failure('SUBJECT_ADMIN_FORBIDDEN')`; unselected remove deletes links, legacy metadata and the subject row with no guard (`:136-141`) |
 | production **owner listener** (`ns-tenant-admin`) | R53/R54 "production listener unimplemented"; queue T30-TENANT-ADMIN no-gate: "Full listener admission remains unmeasured" | factory only; decided topology is a second bound socket inside `ns-api` (execution plan §2.9, 2026-10-16). The open-decisions note (item 2) reports an actual two-listener run on candidate `4cd95d06`, which is **not** on `83582e87` and is in its own campaign |
 | **ownership transfer, co-owner, last-owner protection** | owner-authority.md:45-48 "sensitive explicit operations; last-owner removal must not orphan the tenant"; subject-admin README `:259-262` | `tenant_owner_actors` is read `FOR SHARE` only (`owner-policy.js:85-87`); no code inserts, transfers or counts actors |
@@ -162,30 +182,41 @@ detection and idle expiry; none of it exists in code.
 **Options.**
 
 - (a) **PostgreSQL session row is the session of record, extended** with a refresh verifier
-  (one-way hash of a random refresh secret), `last_refreshed_at`, and a rotation family id.
-  Refresh is a write performed only by the issuer (Q3); every refresh rotates the secret; a
-  presented secret that is not the current one revokes the whole family (reuse detection). Idle
-  expiry is enforced **at refresh**: the issuer refuses a refresh when `now − last_refreshed_at`
-  exceeds the idle limit. Data and owner readers stay SELECT-only and keep checking
-  `active`, `expires_at` (absolute) and generation per operation.
+  (one-way hash of a random refresh secret), refresh rotation state, an idle deadline and a
+  rotation family id. Only the issuer writes authority state (Q3). Every refresh rotates the
+  secret; reuse handling still needs the separately proposed retry/grace contract. Each reader
+  remains SELECT-only and checks the current idle deadline, absolute expiry, active state and
+  generation on every protected operation; the issuer checks both deadlines before refresh.
+  Checking idle only at refresh would let an already-issued token operate after idle expiry.
+
+  **Proposed, not adopted or implemented:** qualifying human activity is an authenticated,
+  explicit owner interaction delivered to the issuer for a current session. The issuer alone
+  advances that session's idle deadline after validating the interaction and current authority.
+  Automatic refresh, background polling and receipt of stream traffic do **not** extend human
+  activity. The activity-reporting route, ordering relative to a protected operation, cross-worker
+  propagation and treatment of activity arriving at/after the deadline require a bounded contract
+  and measurement. No asynchronous stale-acceptance window is adopted by this proposal.
 - (b) **Provider-held sessions**: no refresh of our own; the browser re-exchanges the provider
   session for a new 10-minute token; our `access_sessions` row mirrors the provider's session id.
-- (c) **Per-operation idle enforcement** in the readers: each operation updates `last_used_at`.
+- (c) **Reader-written activity tracking**: each operation updates `last_used_at` in the readers.
+  This is distinct from (a)'s SELECT-only per-operation idle check.
 - (d) **Long-lived management token** (hours) with no refresh, revoked only by session row.
 
 **Trade-offs by axis.**
 
-| axis | (a) PG session + rotating refresh | (b) provider sessions | (c) per-op idle write | (d) long token |
+| axis | (a) PG session + rotating refresh | (b) provider sessions | (c) reader-written activity | (d) long token |
 |---|---|---|---|---|
 | direction | the contract's first-named form; "provider sessions alone do not certify current grants" (`:85-86`) | the contract's "provider-supported equivalent", conditional on logout propagation, which H2 measured as **absent** (`intact.logout`) | contradicts the read-only reader; R48 measured the reader with no mutation grant | contradicts the 10-minute limit |
 | architecture | one writer (issuer), many readers; matches R48's split | exchange depends on provider session API per adapter | turns every data worker into an authority writer | simplest; weakest |
 | compat | `single` unchanged; device tokens untouched (8 h preserved) | tied to provider | same as (a) for clients | none |
 | maintenance | our table, our rules; one more migration in the access candidate | per-provider session semantics | lock contention paths to characterise | least |
 | reliability | provider outage: refresh continues until idle/absolute expire (contract `:141` "Provider/identity outages ... need their own explicit acceptance") | provider outage ends all management sessions at the next 10-minute boundary | write on the hot path under outage | long exposure window of a stolen token |
-| performance | one extra UPDATE per 10 min per owner session | one exchange per 10 min per owner | one UPDATE per operation (R48 measured reads at 2.8/2.3 ms p50 combined; a write per op is unmeasured) | none |
+| performance | refresh writes plus issuer-only qualifying-activity writes; load unmeasured | one exchange per 10 min per owner | one UPDATE per operation (R48 measured reads at 2.8/2.3 ms p50 combined; a write per op is unmeasured) | none |
 
-**Who notices.** Owners: (a) and (b) both give a silent refresh every 10 minutes and a forced sign-in
-after 30 idle minutes or 12 hours; (b) additionally signs them out whenever the provider is down;
+**Who notices (proposed).** Owners under (a) may refresh silently while the current idle and absolute
+deadlines permit it; automatic refresh must not keep an unattended session alive. The adopted
+human lifetime limits still need implementation and acceptance. Provider-held sessions under (b)
+need equivalent enforcement; provider outages may prevent the next exchange;
 (d) keeps them signed in for the token's life even after a revocation that the session row has not
 caught. Operators: (a) adds one migration and an issuer role; (c) changes the serving role's grants.
 **Multitenant only.**
@@ -196,7 +227,7 @@ each with a recommended default and its basis:
 
 | value | recommended default | basis |
 |---|---|---|
-| refresh-secret reuse grace (a second presentation of the just-rotated secret within this window is a retry, not an attack) | 30 s | the cookie-variants record notes E's assertion was valid "for at most 30 s at the backend" (§6); a retry window longer than a network timeout turns reuse detection into a false-positive generator. **Unmeasured** |
+| refresh-secret reuse grace (a second presentation of the just-rotated secret within this window is a retry, not an attack) | 30 s | the cookie-variants record notes E's assertion was valid "for at most 30 s at the backend" (§6); this assertion lifetime does not establish a safe refresh retry window. Retry latency and concurrent refresh measurements must set the bound. **Unmeasured; no approved default** |
 | management session absolute lifetime for **headless** management credentials (operator-provisioned, owner-authority.md:89-93) | same 12 h, renewable without a human | the contract says unattended uploaders renew without a human login; headless management should not be looser than human |
 | maximum concurrent management sessions per (tenant, subject) | 5 | an owner on a phone, a laptop and a caregiver's browser; bounds the family-revocation blast radius. **Unmeasured** |
 | management-token clock skew tolerance | 0 (none) | `access-token.js:51` already refuses `iat > now`; the lab ran in UTC with synchronised clocks; add tolerance only if a measurement shows refusals |
@@ -206,8 +237,9 @@ do not certify grants" true in code. Architecture: it preserves R48's writer/rea
 what made the read-only serving identity possible. Compatibility: device tokens and `single` are
 untouched. Maintenance: one table extension in our own candidate. Reliability: the only outage that
 ends a session early is PostgreSQL, which already refuses every protected operation. Performance:
-one write per ten minutes per session. **Unmeasured:** the refresh endpoint itself, rotation under
-concurrent refreshes, and the idle rule; each is an entry-bar control in §3.
+refresh and qualifying-activity writes require measurement; no per-session write rate is established.
+**Unmeasured:** the refresh endpoint, concurrent rotation, per-operation idle enforcement and
+qualifying-activity propagation; each requires an entry-bar control in §3.
 
 ### Q3. Issuer and audience split; key binding and rotation
 
@@ -229,9 +261,10 @@ management-purpose tokens (`access-tokens.md:48`).
 **Measured.** R48: public keys bind issuer, tenant, kid and purpose; unknown keys refuse without
 legacy fallback; duplicate key material refuses at boot (`preview-config.js:155-156`). The
 secrets suite: rotation creates new provider versions without export; retirement control shows
-old ciphertext refuses (`lib/secrets/README.md:318-320`). **Read:** no issuer exists; no management
-key has ever been provisioned; rotation of *token* keys (as opposed to ciphertext rewrap) is
-described, not run.
+old ciphertext refuses (`lib/secrets/README.md:318-320`). **Read on `83582e87`:** no human issuer or composed management-key verifier exists there.
+The newer operator-provisioned headless management proof is bounded separately above; it does
+not implement human issuance. Rotation of *token* keys (as opposed to ciphertext rewrap), including
+issuance cutoff and overlap, remains proposed and unmeasured.
 
 **Options.**
 
@@ -262,12 +295,15 @@ provider's. Operators: (a) is one more role to run, which D21 already names (`se
 fewer. **Multitenant only.**
 
 **Key binding and rotation under (a), proposed for the decision row.** Two `kid`s per (tenant,
-purpose) may be active at once; a new `kid` is activated at least one maximum token lifetime
-(10 min management, 8 h data) before the old is deactivated, so no live token's key retires under it;
-retirement is `UPDATE access_keys SET active = false`, which every verifier observes on its next
-snapshot (`access-token.js:66`); the public key reaches verifiers through the provisioned
-configuration the preview already uses (`access-tokens.md:8-28`), never from a request. Rotation
-period is a value the maintainer must set: recommended **90 days** for management keys and **365
+purpose) may overlap. Provision the new verification key before issuing with it, then **stop all
+issuance under the old key** at a defined cutoff across every issuer. Do not retire the old key
+before its last possible issuance time plus that purpose's maximum token lifetime and any
+explicitly accepted clock-skew allowance. Activating a new key one lifetime earlier is insufficient
+if any issuer can continue signing with the old key. The cutoff/last-issuance proof and distribution
+order are unimplemented and unmeasured; no new skew allowance is adopted here. Retirement is
+`UPDATE access_keys SET active = false`, observed by each current snapshot (`access-token.js:66`);
+public keys reach verifiers through provisioned configuration (`access-tokens.md:8-28`), never a
+request. Rotation period is a value the maintainer must set: recommended **90 days** for management keys and **365
 days** for data keys, basis: the longest lifetime a stolen *public* key could be useful is zero and a
 stolen private key cannot leave Vault (`lib/secrets/README.md:89`), so the period bounds only the
 window of an undetected issuer compromise; **unmeasured**.
@@ -277,74 +313,51 @@ amendment decided, and the schema already carries the `(tenant, kid, purpose)` k
 the R48 verifier needs no change, only a second configured purpose. Maintenance: one issuer, two key
 sets. Reliability: issuer outage degrades to "no new sessions"; verification continues. Performance:
 one internal hop per login or refresh, not per operation. **Unmeasured:** the issuer role itself,
-cross-purpose refusal on the owner socket (the data-side refusal is measured, the owner-side is not),
-and rotation overlap.
+full cross-purpose key-isolation acceptance and rotation overlap/cutoff. The bounded newer owner
+wrong-purpose refusal is already measured as described above; it is not a human-issuer proof.
 
-### Q4. Existing-grant clamping
+### Q4. Existing-grant authority: withdrawn reader mode, future M6 research
 
-**Mechanism.** R53's policy constrains **proposed** grants only (`owner-policy.js:77-111`). R62's
-optional reader clamps **stored** grants at every snapshot: `effective = owner.clamp(rows, groups)`
-filters each group to catalogue ∩ current ceiling (`access-postgres.js:76`; `owner-policy.js:139`).
-With the option set, a tenant whose `anonymous_roles` include `readable`, or whose stored roles hold
-a wildcard (the shipping defaults `admin: ['*']` and `readable: ['*:*:read']`, `authorization/storage.js:239-242`,
-if imported as-is), fails `concretePermissions` and the reader throws `ACCESS_AUTHORITY_INVALID`
-(`owner-policy.js:131-137`), which the HTTP layer maps to **503** (`lib/server/tenant-app/index.js:18`);
-root and anonymous principals are refused as `TENANT_AUTHORITY_PRINCIPAL_INVALID` (`tenant-authorization/postgres.js:136`).
-The contract requires exactly this semantic: "Tightening current policy bounds effective authority
-even when an old stored assignment remains" (owner-authority.md:55-56), and "takes effect on the
-next protected operation across workers" (`:106-107`). The reader has no delegator lineage: it
-bounds "the current tenant ceiling, not the current authority of whichever actor issued an old
-grant" (`tenant-authorization/README.md:101-103`).
+**Decided: withdraw the optional subject-reader clamping mode.** The
+[promotion-bar decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+at alignment `56951c8088ec7f942c875a52a13f8816bbafea8f` supersedes this packet's earlier
+per-tenant activation/preflight proposal and the earlier root-carrier →401 recommendation.
+Changing that refusal from503 to401 would still break compatibility. A tenant's own
+`API_SECRET` must continue to get **200 on its own protected resource**. There is no retained
+reader selection, rollout preflight or opt-in mode recommended here.
 
-**Measured.** R62: 12 / 0 / 0 with the intersection ablation admitting three protected operations
-(red) and restored 12; R63: oref0 subject-token uploads unchanged, emptied ceiling → 401 with no
-effect, cgmsim root upload → 503 with no effect (where the unselected reference gives 200 and a
-write). **Read:** the effect on any tenant with wildcard roles; the open-decisions note item 1
-recommends mapping the root carrier to **401 with no effect**.
+**Historical evidence stays valid at its executed scope.** R62 measured the dormant reader's
+intersection and controls; R63 measured preserved subject-token uploads and an incompatible
+root-carrier refusal under selection, against a successful unselected reference. Those records
+explain the withdrawal; they are not acceptance of a current mode. Their measurements remain in
+[the integration record](../remedial/rc-16.0.0-integration-record.md)
+(R62/R63); this correction does not rewrite them. Local source candidate `e2a760bc` removes the
+reader-only factory/options, joins/intersections and reader-only cases. That is source removal,
+not a new client execution result.
 
-**Options.**
+**Retained writer policy is separate.** R53's management transaction still constrains proposed
+subject grants to the reviewed catalogue, current operator ceiling and current actor's delegation
+(`lib/subject-admin/owner-policy.js` createOwnerPolicy). The headless owner's `ownerPolicy`
+configuration feeds that writer only. It does not alter data-reader authority or promote root/data
+credentials to management authority.
 
-- (a) **Clamp at next use, selected per tenant, after a preflight.** The option stays off by
-  default; an operator (or, later, the owner) selects it per tenant; selection runs a preflight
-  that lists every stored role or default that would refuse under the reader (wildcards,
-  `readable`, root-carrier clients observed in that tenant's recent credentials) and refuses to
-  select while any remains, so the first clamped operation can only ever be a 401/403, never a 503.
-- (b) **Clamp at a sweep**: when the ceiling narrows, rewrite stored `tenant_authorization_roles`
-  and `subject_roles` to the intersection.
-- (c) **Never until reissued**: stored grants keep their meaning; only new proposals are bounded
-  (today's unselected behaviour).
-- (d) **Clamp at next use, selected universally** (the mode on for every tenant).
-
-**Trade-offs by axis.**
-
-| axis | (a) next use, per tenant, preflight | (b) sweep | (c) never | (d) universal |
-|---|---|---|---|---|
-| direction | the contract's rule, with activation gated as R63 asks | rewrites the owner's stored intent; the reader has no lineage to re-derive it from | contradicts owner-authority.md:55-56 | R63: "Universal selected-mode activation ... does not meet the user's no-unintended-client-impact condition" |
-| architecture | the R62 mechanism, unchanged | a second writer that races the proposal transaction (`README.md:249-257` lock order) | n/a | the R62 mechanism |
-| compat | per-tenant, so a root-carrier tenant stays unselected until its clients can carry subject tokens (open-decisions item 1(d)) | stored roles diverge from what the owner set; rollback impossible without a copy | full | breaks cgmsim-class clients |
-| maintenance | one preflight query | sweep job, its audit, its retries | none | none |
-| reliability | a refusal is deterministic per snapshot | partial sweep = inconsistent authority between rows | stale authority after narrowing | 503 storms from retrying clients (open-decisions item 1) |
-| performance | one extra LEFT JOIN per snapshot (measured in R62's gate; not isolated) | bulk UPDATE under FOR SHARE contention | none | same as (a) |
-
-**Who notices.** Owners of a selected tenant: a narrowing by the operator is felt by their uploaders
-on the next request (401 for a subject whose grant was clamped to nothing, R63). Owners of an
-unselected tenant: nothing. Operators: (a) gives them a per-tenant switch and a list of what blocks
-it; (d) gives them a cohort-wide incident the first time a wildcard role exists. **Multitenant only.**
-
-**Decided by the maintainer on 2026-11-06, overtaking this question's draft recommendation.** Open-decisions
-item 1 is decided as a backward-compatibility rule: a tenant's api-secret keeps **200** on its own tenant
-resource, and the subject-reader clamping mode (R62's optional `createOwnerReadPolicy` and its two reader
-consumers) is **dropped**, because selecting it anywhere is a compatibility break ("we want backward compat
-solutions"); a lane `claude/drop-reader-clamping-20261106` removes it, while the management-side
-`createOwnerPolicy` and the proposed-grant catalogue (R53) stay. Against the options above that is **(c) for
-stored grants**: new proposals are bounded by catalogue ∩ ceiling ∩ delegation at the management
-transaction, and existing credentials keep working. The draft recommendation (a) is kept above as the
-analysis record only. If per-subject clamping ever returns, it comes through Q5's lifecycle work in a shape
-that keeps existing credentials working (reissuance the owner initiates, not a reader-side refusal), and
-never as a 503 to an api-secret client. **Unmeasured:** nothing remains to measure for Q4 as decided;
-the R62 and R63 captures stay historical evidence of the dropped mode.
+**Future M6 research, not an implementation selection.** Existing-grant lifecycle ideas must
+preserve existing credentials and first specify provenance, effective-authority transitions and
+recovery semantics. No sweep, per-tenant switch, replacement mode or root refusal is adopted here.
+Any proposal needs actual legacy root/API_SECRET **and** subject-client compatibility execution,
+cross-tenant refusal, current revocation and no-effect oracles, with independently calibrated
+controls. A subject-only pass cannot establish backward compatibility. Thresholds, activation
+policy, migration and performance remain unmeasured; the current decision is to remove the mode.
 
 ### Q5. Ownership lifecycle
+
+**Later decision, separate from this draft's recommendations:** the maintainer's
+[promotion-bar decision record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+adopts retaining Transit keys and the export artifact for 30 days, followed by
+operator key destruction. R69 measures recovery while laboratory keys remain;
+key destruction and restore-after-window refusal remain unmeasured. This artifact
+retention window is separate from the proposed cancellation/confirmation window
+below. Other lifecycle proposals in this packet are not adopted by that decision.
 
 **Mechanism.** The contract (owner-authority.md:38-48): "Owner is an explicit tenant relationship,
 separate from legacy data wildcards"; initial capabilities include "export and deletion requests";
@@ -423,9 +436,11 @@ roadmap's audience split. Architecture: the request table and the two-step trans
 secrets" both true at once. Compatibility: `single` untouched. Maintenance: one audit shape, which
 the schema spec already asks for before Q5 is built. Reliability: every invariant is a transaction.
 **Unmeasured:** all of it; the entry bar is in §3. The DELETE policy for *subjects* (R53's refusal)
-follows from the same rule: in selected mode, a remove is authorised like an update to `roles: []`
-(the actor must be active with `can_update`) and additionally refused while the subject is the
-credential behind any active owner grant; outside that, R53's unselected remove is unchanged.
+is a future writer-policy proposal, not the withdrawn reader mode: a remove could be authorised
+like an update to `roles: []` (the actor would need to be active with `can_update`) and
+additionally refused while the subject is the
+credential behind any active owner grant. This DELETE change is not implemented or adopted;
+current writer-selected DELETE refusal and existing unselected removal remain unchanged.
 
 ---
 
@@ -438,24 +453,25 @@ and a restoration. Predicted results are written before the run.
 | question | positive (predicted green) | break-it control (predicted red, exact symptom) |
 |---|---|---|
 | Q1 provider adapter | an owner's provider session for tenant A exchanges on A's host for a management token with `tid = A`, `purpose = management`; the same session on B's host is 403 `not-a-member`; the A token on B is 401 `TOKEN_SIGNATURE` (the ORY proof's gate re-run against the real `ns-tenant-admin`, not the stand-in) | remove the membership check: B mints for A's owner (200 instead of 403); remove the subject-claim mapping: a token with no `sub` is accepted (200 instead of 401) |
-| Q2 session | a refresh within 10 min returns a new token and a new refresh secret; the old secret presented after the grace window revokes the family and the next data or management operation on that session is 403; a session idle 31 min cannot refresh (401) while one idle 29 min can; absolute 12 h refuses regardless | remove rotation: the old secret still refreshes (200 instead of 401); remove the reuse-family revocation: a reused secret leaves the session active (next GET 200 instead of 403); remove the idle rule: the 31-minute session refreshes (200 instead of 401) |
-| Q3 issuer | a management token is 401 `TOKEN_KEY` on the data socket and 200 on the owner socket; a data token is 401 on the owner socket; after `access_keys.active = false` on the old `kid`, a token signed under it is 401 on the next operation while a token under the new `kid` is 200; during the overlap both are 200 | remove the purpose check in `resolveKey`: the management token is 200 on the data socket; remove `keyActive` from the snapshot: the retired-key token stays 200 |
-| Q4 clamping | **superseded by the 2026-11-06 decision** (reader clamping dropped; api-secret keeps 200): the remaining positive is the R53 shape, a proposal outside catalogue ∩ ceiling ∩ delegation refuses with no effect, and an existing api-secret upload on its own tenant is 200 and stored | remove one R53 fence: the over-ceiling proposal persists (R53's control, HTTP 200 versus 403 with persisted effects); the reader-side controls of R62/R63 are retired with the mode |
+| Q2 session (proposed) | refresh rotates secret within current idle/absolute deadlines; an already-issued, unexpired token is refused on its next protected operation after the idle deadline; automatic refresh alone never advances human activity; qualifying issuer-recorded activity can advance only an unexpired session under the future contract; reuse revokes current session authority across workers | remove only the SELECT idle-deadline predicate: the expired-idle operation is accepted; count automatic refresh as human activity: the idle deadline advances without interaction; remove family revocation: the reused-secret session remains accepted. Exact HTTP statuses must follow each data/management route contract; setup or a different refusal layer is not a red |
+| Q3 issuer | wrong-purpose tokens remain refused independently by provisioned-key binding and audience/purpose claims; an isolated verifier probe supplies otherwise valid data claims signed by a synthetic management-purpose key and an explicit resolver returning that management-bound key; expect TOKEN_KEY before signature/claims acceptance. Separately test retired-key refusal and last-old-issuance cutoff before planned retirement | in the isolated probe only, remove the key.purpose check at access-token.js:40-41 while preserving the valid data claims, signature and resolver: verification returns claims instead of throwing TOKEN_KEY, so the independent assert.throws fails. Removing a resolver check alone need not admit a normal management token because audience/purpose claims still refuse. Separately remove keyActive: a valid otherwise-authorized retired-key operation is accepted |
+| Q4 compatibility after withdrawal | actual root/API_SECRET and subject clients retain own-tenant outcomes; own root protected resource200, foreign credentials refuse; existing regular revocation and retained management-writer fences hold. No reader-mode activation is a positive | use independent existing root/subject, tenant-isolation and writer-fence controls; historical reader-intersection controls remain historical. Any future M6 mechanism must calibrate its own controls without intentionally adopting a root refusal |
 | Q5 lifecycle | add co-owner with a 4-minute-old authentication succeeds and with a 6-minute-old one is 403; transfer: the invitee accepts and the old grant is gone in the same transaction; removing the last active owner is 409 with no row change; `recover-owner` on the operator plane writes an invitation and no `reveal` audit row appears; a deletion request is `requested`, the owner can cancel, the operator's `execute-deletion` refuses before the window and succeeds after, and the export exists before the delete | remove the freshness check: the 6-minute case is 200; remove the `FOR UPDATE` count: two concurrent removals leave zero owners; execute deletion from the owner listener: must be 405/403, red if 200; remove the export-before-delete ordering: the delete proceeds with no export (red) |
 
-**Landing order relative to Batch A and C** (batching plan §5; the open-decisions note item 2
-recommends homing issuer and lifecycle under M6, which this order is consistent with either way):
+**Research dependency order, not an implementation commitment.** The
+[promotion-bar decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+place human issuer/refresh, future existing-grant lifecycle and tenant lifecycle under M6.
+M2 retains the roadmap cell's bar and is **not promoted** by this packet.
 
-1. **Q3 then Q2, in Batch A's tail, as T30-TENANT-ADMIN's composition.** They are the management
-   listener's missing half: the issuer role and the session extension. They do not touch the data
-   verifier and can run under the same full/browser/corpus campaign as A's freeze. Predicted: the R48
-   7 new-format cases and R53's 22 stay green; the new controls above go red and restore.
-2. **Q4 needs no lane**: decided 2026-11-06 as (c) with the reader mode removed by `claude/drop-reader-clamping-20261106`; its entry bar collapses to R53's existing control.
-3. **Q1, its own lane gated on the compliance owner**, source-only until a provider adapter can be
-   run against the real listener; it joins at a batch boundary and never with real identities.
-4. **Q5, in Batch C beside the export/delete tooling lane** (`codex/tenant-export-delete-20261106`),
-   because deletion execution is that lane's tool and the request table is this packet's. The
-   operator commands land with the `admin` role that D21 names and the CLI does not yet run.
+1. Q3 issuer and Q2 session research must define issuance/cutoff, idle/activity and propagation
+   contracts before a new implementation batch is proposed. The bounded headless management
+   verifier does not supply these human-session semantics.
+2. Q4's earlier Batch A activation/status-change plan is withdrawn. Current acceptance checks
+   ordinary legacy root and subject compatibility with no reader clamping mode.
+3. Q1 remains gated on the compliance owner; provider work joins only at an explicitly reviewed
+   batch boundary using synthetic identities.
+4. Q5 can inform Batch C export/delete tooling and the future owner request contract. The
+   request/confirmation/retention/recovery policy is not adopted by this packet.
 
 ---
 
@@ -464,12 +480,14 @@ recommends homing issuer and lifecycle under M6, which this order is consistent 
 - **Real identities, real traffic, real data.** D17 row 2's compliance-owner condition and its
   four edge conditions are untouched; every lifetime and every control above is for synthetic
   identities in owned containers.
-- **Numeric bounds the maintainer has not set**: the refresh grace, concurrent-session cap, key
-  rotation periods, deletion retention window and invitation validity are named with recommended
-  defaults and a basis, and are UNMEASURED; the open-decisions note item 3 carries the general rule
-  that thresholds come from a measurement designed to set them.
-- **Which M2 bar holds.** Whether issuer, clamping and lifecycle are M2 or M6 criteria is the
-  open-decisions note's item 2, not this packet's.
+- **Numeric bounds the maintainer has not set**: refresh grace, concurrent-session cap, key
+  rotation periods, deletion retention window and invitation validity retain only draft candidates
+  for future measurement. No value in this packet overrides the promotion-bar decision deferring
+  numeric bounds; none is an approved default or an implementation instruction.
+- **M2 promotion.** The roadmap-cell bar and M6 placement are decided in the
+  [promotion-bar decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06),
+  recorded at alignment `0de4d791b71f70616ea21893c2a98832bd3e67da`; completion still requires
+  final-head evidence. This packet does not promote M2.
 - **The provider list.** Only Kratos has been run; Clerk and others are read. The adapter
   interface is owed by D17 as amended and is not drafted here.
 - **Owner UI.** The roadmap defers a first-party owner UI; every operation here is an API on
@@ -487,8 +505,8 @@ recommends homing issuer and lifecycle under M6, which this order is consistent 
    AU1's text predates the amendment.
 2. owner-authority.md:27 names a "PostgreSQL session record and one-way verifier; rotation/reuse
    detection"; `access_sessions` on `83582e87` has no verifier, no refresh secret and no idle
-   timestamp. The contract's idle lifetime cannot be enforced by a SELECT-only reader; Q2(a) places
-   the write at the issuer.
+   timestamp. Q2(a) proposes a SELECT-only per-operation idle-deadline check and issuer-only
+   qualifying-activity writes; neither exists yet, and their propagation semantics remain open.
 3. Two owner-identity keys with no mapping: `tenant_owner_actors(principal, consumer)` (built, R53)
    and `tenant_access_grants(provider, subject_id)` (schema spec, decided 2026-10-29). Q5 names
    the resolution.
