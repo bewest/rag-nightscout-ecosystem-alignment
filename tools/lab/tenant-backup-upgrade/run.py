@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import shutil
 import signal
+from probes import instrument, classify
 from datetime import datetime, timezone
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -66,8 +67,9 @@ assert not git('status', '--porcelain', '--untracked-files=no'), 'Source must be
 head = git('rev-parse', 'HEAD')
 lock = (worktree / 'package-lock.json').read_bytes()
 assert lock == (deps / '.codex-source-package-lock.json').read_bytes(), 'Dependency source lock mismatch'
-assert deps.is_dir() and deps != (worktree / 'node_modules').resolve(), 'Use private dependencies'
+assert deps.is_dir() and deps.name == 'node_modules' and deps != (worktree / 'node_modules').resolve(), 'Use private node_modules dependencies'
 node = run(['node', '-p', 'process.execPath']).stdout.decode().strip()
+run([node, '-e', 'require(' + json.dumps(str(deps / 'debug')) + '); require(' + json.dumps(str(deps / 'pg')) + ')'])
 report = {'head': head, 'grant': args.grant, 'startedAt': datetime.now(timezone.utc).isoformat(),
           'worktree': str(worktree), 'dependencyLockSha256': digest(lock),
           'node': run([node, '--version']).stdout.decode().strip(), 'stages': []}
@@ -117,6 +119,8 @@ def capture(label, control=None, grep=None):
             path.write_text(source.replace(before, after))
             entry['mutation'] = {'file': file, 'before': before, 'after': after,
                                  'beforeSha256': digest(source.encode()), 'afterSha256': digest(path.read_bytes())}
+        if control or grep:
+            instrument(root / 'tests/tenant-operations.integration.test.js', out / (label + '.probe.patch'))
         audit_path = out / (label + '.audit.jsonl')
         command = [node, str(deps / 'mocha/bin/mocha.js'), '--no-config', '--no-package', '--fail-zero',
                    '--reporter', 'json', 'tests/tenant-operations.integration.test.js']
@@ -171,6 +175,7 @@ def capture(label, control=None, grep=None):
             assert completed.returncode == 1 and result['stats']['failures'] == 1 and result['stats']['pending'] == 0, 'Invalid red control outcome'
             assert failures[0]['err'].get('code') == 'ERR_ASSERTION', 'Setup/SQL/type errors are not semantic red'
             assert control[5] in failures[0]['err'].get('message', ''), 'Expected semantic symptom missing'
+            entry['physicalProof'] = classify(control[0], audit)
             entry['classification'] = 'semantic-red'
         else:
             expected = 1 if label.endswith('-restored') else 5
