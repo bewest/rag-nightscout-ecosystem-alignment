@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R62/R64 published draft #8898 83582e87 control/recovery acceptance with CI and CodeQL green; M0 foundations promoted in R60 and bounded M4-CLIENT-LAB complete. M1\u2013M6 remain open. R63 selected actual subject workflows are bounded; root refusal keeps universal activation disabled. R67 clinical constructor and R68 fresh-schema DATA controls are local component evidence. Joined owner/clinical/DATA candidate is local and in verification, without full/browser acceptance. R55 whole profile branch remains separate. B7 adopted; no live runtime/default/rollout enabled. R65 clock HTTP data is descriptive; capacity and budget acceptance remain unmeasured.",
+ "measured": "2026-11-06: R62/R64 published835 acceptance remains historical; optional reader clamping is withdrawn by maintainer decision after R63 root incompatibility. Removed in the local candidate; comprehensive verification pending. Writer ownerPolicy remains. M0 promoted; M1/M2/M5 in progress and M3/M4/M6 blocked. M2 uses the roadmap cell; human issuer/refresh, existing-grant lifecycle and production resolution trust belong to M6. M1 resource budgets deferred to C. M4 bar: headless actual clients plus source-pattern replay, no all-client claim; Android emulator in C. Local R67/R68 native evidence and final-floor component proof do not establish fresh full acceptance.",
  "tracks": [
   {
    "id": "storage",
@@ -347,13 +347,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "PG REST ports / import",
-   "title": "R62/R64 retain selected PostgreSQL REST ports and accept persisted typed current-row replay with populated PG recovery LAB. Full admitted backend/import/order/resource semantics remain open. R68 fresh-schema ordering is a local prototype only.",
+   "title": "R62/R64 retain published selected PostgreSQL REST ports, typed current-row replay and populated recovery LAB. Complete admitted backend/import acceptance remains open; resource bounds and numeric performance budgets are explicitly deferred to batch C.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
    "check": "R51 bounded settings33870764 full7089/80pending/0failure/browser684/prcheckOK; archived12, sortcap/predicate/projection each0/1semantic, restored12. Only product edit global PG sort cap4\u21925. Six-key refusal and regex/dotted PG500 capability limits remain; performance/full client parity unmeasured.",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Published dormant control/recovery batch; local fresh-only ordering has no populated/imported-history migration or downmigration. No full M1 promotion. R62 broad campaigns executed on 87133959; exact runner-only difference permits reuse on published83582e87.",
+   "ref": "M1 is not promoted. Resource bounds: deferred, measured in C; no numeric threshold approved. PG-only sort cap remains 5. Fresh-schema ordering is a local prototype with no populated/imported-history migration or downmigration.",
    "spec": [
     {
      "label": "R62/R64 published acceptance and verification",
@@ -402,6 +402,10 @@
     {
      "label": "R68 fresh-schema DATA native controls",
      "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898"
@@ -735,9 +739,13 @@
     {
      "label": "architecture and compatibility",
      "href": "../tenancy/single-and-multitenant-architecture.md"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
-   "ref": "Merged namespace #8865/#8899; R64 verifies published draft #8898 API preview. Headless owner CLI is a local candidate in verification; no production role or M2 promotion.",
+   "ref": "Merged namespace #8865/#8899 and published API preview retained. Headless owner candidate remains in verification with writer config.ownerPolicy retained; authorization reader option is withdrawn. No M2 promotion.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
@@ -764,7 +772,7 @@
    "phase": "boundary",
    "state": "progress",
    "short": "Per-tenant config table",
-   "title": "Adopted owner-authority policy, selected proposed-grant enforcement and R62 optional current-subject reader clamping are accepted. Full permission/settings/default catalogue and deployable owner lifecycle remain open.",
+   "title": "Writer owner-authority policy and proposed-grant fencing are retained. Optional subject-reader catalogue clamping is withdrawn for backward compatibility; removed in the local candidate; comprehensive verification pending. M2 requires tenant-local config/versioned writes and route separation.",
    "ref": "Selected R40 services are separate from the older seam catalogue. Current T30-SCHEMA-CONFIG static gate fails its crm-seam D15 table predicate; see the architecture evidence gaps. No full-catalogue promotion.",
    "depends": [
     "T30-RESEARCH",
@@ -786,6 +794,10 @@
     {
      "label": "selected configuration work",
      "href": "../tenancy/multitenant-delivery-dashboard.md#mt-config-min"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ]
   },
@@ -795,8 +807,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Resolution / lifecycle",
-   "title": "Direct-alias and explicitly trusted canonical resolution run in the accepted API preview. Full tenant lifecycle and production transport/service identity remain blocked on their prerequisites.",
-   "ref": "R62/R64 retain configured direct/canonical two-tenant preview resolution. Local owner CLI verification does not establish durable mapping, provisioning/publication or production owner/operator lifecycle.",
+   "title": "Direct/canonical preview resolution is accepted. M2 needs unknown-tenant refusal and route boundaries; durable lifecycle and production resolution trust are M6 work.",
+   "ref": "Static preview maps do not establish M6 durable provisioning/publication or production owner/operator lifecycle. No milestone promoted.",
    "depends": [
     "MT-CONFIG-MIN",
     "MIG-RUNNER",
@@ -815,6 +827,10 @@
     {
      "label": "architecture",
      "href": "../tenancy/single-and-multitenant-architecture.md"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ]
   },
@@ -824,8 +840,8 @@
    "phase": "multi",
    "state": "progress",
    "short": "Tenant-scoped auth",
-   "title": "Current tenant credentials/grants and optional local Ed25519 data-token verification compose with CLI/REST. R62 accepts selected current-subject catalogue/ceiling clamping per operation. Human issuer/refresh, full catalogue and production lifecycle remain open.",
-   "ref": "R63 actual oref0 subject workflows pass with next-operation tightening refusal; cgmsim root selected-mode refusal keeps universal activation disabled. Local headless owner candidate remains in verification.",
+   "title": "Current persisted tenant authority and optional local Ed25519 verification remain. Optional subject-reader clamping is withdrawn; legacy tenant api-secret access must keep working. M2 requires cross-tenant signature refusal and no environment/root/key leakage.",
+   "ref": "R62/R63 reader-mode measurements remain history, not current direction. Removed in the local candidate; comprehensive final-head verification pending. Human issuer/refresh, lifecycle clamping and production resolution trust are M6 criteria. Headless owner writer config.ownerPolicy is retained.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
@@ -859,6 +875,10 @@
     {
      "label": "single vs multitenant",
      "href": "../tenancy/single-and-multitenant-architecture.md"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ]
   },
@@ -868,8 +888,8 @@
    "phase": "multi",
    "state": "blocked",
    "short": "Full M3 acceptance",
-   "title": "R60 M0 promotion and bounded M4-CLIENT-LAB completion are retained. R62 accepts the dormant control/recovery batch and R64 verifies publication. Full M3 remains blocked on complete M1/M2.",
-   "ref": "Published acceptance and local R67/R68 component controls are separate. Joined local candidate full/browser verification is pending; wider client/import/resource/control-plane and capacity acceptance remain open.",
+   "title": "M0 promotion and bounded client lab completion remain. Full M3 depends on complete M1/M2. M4 uses executed headless clients plus source-pattern replay, with no all-client claim.",
+   "ref": "M4 remains blocked on M3. Android emulator lab belongs to batch C; iOS is outside automated execution. Fresh comprehensive candidate acceptance is pending after reader-option removal.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -920,6 +940,10 @@
     {
      "label": "acceptance evidence",
      "href": "../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ]
   },
@@ -952,8 +976,8 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current policy / settings",
-   "title": "R62 accepts optional current-subject clamping to the reviewed finite catalogue and current operator ceiling in one authorization snapshot. Human management issuer/refresh, wildcard/default/root migration, DELETE policy and production owner lifecycle remain open.",
-   "ref": "Unselected behavior retains compatibility. R63 bounds actual subject-client workflows; root refusal prevents universal activation. Local headless owner CLI is in verification, not production composition.",
+   "title": "Optional subject-reader clamping is withdrawn as backward incompatible. Retain tenant-local config, versioned writes and owner writer-policy enforcement; reader option is removed in the local candidate; comprehensive verification pending.",
+   "ref": "M2 bar is the roadmap cell. Versioned-write re-execution and comprehensive owner/data/operator listener separation remain pending. Human issuer/refresh, existing-grant lifecycle policy and production resolution trust move to M6.",
    "spec": [
     {
      "label": "R62/R64 published acceptance and verification",
@@ -986,6 +1010,10 @@
     {
      "label": "architecture",
      "href": "../tenancy/single-and-multitenant-architecture.md"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ]
   },
@@ -1131,7 +1159,7 @@
    "state": "progress",
    "short": "Durable runtime / replay",
    "title": "B7 direction is adopted. R62 accepts dormant typed current-row replay/recovery; R67 clinical and R68 fresh-schema DATA controls are bounded local evidence. M5/M6 remain open.",
-   "ref": "Local joined owner/clinical/DATA candidate is in verification. No live scheduling/current stream authority, ack/notification/provider/lease/capacity or rollout accepted. Fresh-schema prototype rejects populated migration; no downmigration or imported past ordering. Transaction final-floor event stamps are adopted; local separate payload implementation awaits broader verification.",
+   "ref": "Final-floor event stamps are adopted; independent actual-PG component proof is running and fresh full acceptance has not started. R67/R68 remain bounded local evidence; no live scheduling, notification/ack or rollout acceptance. Resource budgets deferred to C.",
    "spec": [
     {
      "label": "R62/R64 published acceptance and verification",
@@ -1152,6 +1180,10 @@
     {
      "label": "R68 fresh-schema DATA native controls",
      "href": "../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06"
+    },
+    {
+     "label": "Adopted promotion bars and reader-mode withdrawal",
+     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ]
   }

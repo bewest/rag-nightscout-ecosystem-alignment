@@ -29,9 +29,9 @@ use this map to see how the platform tracks meet.
 | Scope | Current recorded acceptance | What remains |
 |---|---|---|
 | Multitenant foundations | **M0 promoted** in R60; R64 verifies the published draft #8898 control/recovery batch. | No default or production role enabled; the PR is open/draft, not merged or released. |
-| Data, authority and clients | R62 accepts optional current-subject grant clamping, persisted typed current-row replay and populated PG recovery LAB. The bounded `M4-CLIENT-LAB` card remains complete. | M1–M4 retain backend/import/resource, control-plane and wider client criteria; M3 depends on complete M1/M2. R63's actual oref0 workflows pass, but the cgmsim root refusal keeps universal selected-mode activation disabled. |
+| Data, authority and clients | R62/R63 retain historical reader-mode/client measurements; R62 also accepts persisted typed current-row replay and populated PG recovery LAB. The bounded `M4-CLIENT-LAB` card remains complete. | **Optional subject-reader clamping is withdrawn** for backward compatibility; reader option is removed in the local candidate; comprehensive verification is pending. A tenant's own legacy `api-secret` must keep authorized access (200). M2 uses the roadmap cell; human issuer/refresh, existing-grant lifecycle clamping and production resolution trust move to M6. |
 | Durable runtime | B7 direction is adopted. R67 accepts a bounded local recovered clinical constructor; R68 accepts a local fresh-schema DATA prototype with physical controls. | M5/M6 remain open. The transaction final-floor event-stamp direction is adopted; its payload implementation/verification remains separate. No live evaluator/realtime role, notification/ack, provider/lease or rollout acceptance. Fresh-only ordering has no populated/imported-history migration or downmigration. |
-| Local joined candidate | Owner CLI, clinical projection and experimental DATA components are joined in a **local candidate in verification**. | Native component evidence does not accept the joined full/browser campaign or promote M2/M5. Current head and lane state belong to the dashboard. |
+| Local joined candidate | Owner CLI, clinical projection and experimental DATA components are joined in a **local candidate in verification**. | Reader option is removed in the local candidate; comprehensive verification is pending; native component evidence does not accept a fresh joined full/browser campaign or promote M2/M5. Current head and lane state belong to the dashboard. |
 | Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | The whole profile branch remains separate. Reusing its private helper/evaluateCycle hunk in the local candidate establishes no common atomic revision, live profile role or notification handoff. |
 
 The [integration record](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
@@ -40,7 +40,7 @@ checks separately from local acceptance. [R67](../remedial/rc-16.0.0-integration
 and [R68](../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06)
 are bounded local component evidence, not whole-candidate acceptance. R66's original
 socket failure remains recorded. R65 supplies descriptive small clock HTTP data;
-capacity, steady-state performance and budget acceptance remain unmeasured. The
+resource bounds and performance budgets are explicitly **deferred to batch C**, with no approved numeric threshold. The
 older corpus benchmark remains pending in its capture. See the
 [release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md) for programme disposition.
 
@@ -162,7 +162,7 @@ Done, in 16.0.0: PR-8854, QC-MATRIX-TT (360 cells), ST-FILTER, ST-READS, ST-WRIT
 | ST-HARNESS | **merged 2026-11-01** as #8881 (`f54941b5`, head `993275f3`): backend-selectable harness, backend selection, tenant scope | WC-STEP-PATCH | `NS_TEST_BACKEND` controls |
 | ST-VIEWS | **merged 2026-11-01** as #8875 (`1fc6d8be`), not wired in; equal to the resident path on 126,092 replayed minutes per view (re-checked on `1fc6d8be`): computed views from bounded queries, without a resident `ddata`: page, socket `dataUpdate`, plugins, alarms (M4) | ST-READS | each view equal to today's on the corpus fixtures; alarms per the execution plan §7b |
 | ST-VIEWS-PROFILE | Published draft #8891 remains `744d1968`; independent local refresh `925c9527` / R43 contains current dev and bounded full/replay acceptance. Explicit single/nonresident launcher computes bounded alarms/properties after admitted physical writes and heartbeat, retaining the last cycle properties; default single stays resident. Logical no-op/refusal admission, full alarm/writer coverage, live stats freshness, quiet-hardware cost and placement remain open. It is not joined into #8898. | ST-VIEWS | [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05): actual trigger/timer/freshness and teardown controls; remaining entry bar is explicit |
-| ST-PG | Published selected-domain PostgreSQL/RLS API preview, R40; complete query/import/resource acceptance remains open | ST-HARNESS | actual HTTP/Mongo differentials and source controls; full M1 gates in the delivery dashboard |
+| ST-PG | Published selected-domain PostgreSQL/RLS API preview; complete admitted backend/import acceptance remains open. Resource bounds are deferred to batch C by decision | ST-HARNESS | actual HTTP/Mongo differentials and source controls; full M1 gates in the delivery dashboard |
 
 The September seam chain is kept as reference for ST-HARNESS, ST-PG and TEN-RESOLVE (commits named on each item); it is not merged as it stands.
 
@@ -228,6 +228,16 @@ The dependency map shows selected work items and their bounded component state.
 Its blocked markers preserve unmet acceptance prerequisites even where a useful
 preview already passes. The [M0–M6 dashboard](../tenancy/multitenant-delivery-dashboard.md)
 is authoritative for milestone gates; accepted slices are not completion percentages.
+The adopted M2 bar is tenant-local config/versioned writes, unknown-tenant refusal,
+A's token failing on B by signature, no environment/root/key leakage, and separate
+owner/data/operator routes. Versioned-write re-execution and comprehensive
+listener-separation acceptance remain pending. M4's bar is executed headless clients
+plus source-pattern replay for the rest, with **no all-client claim**; Android
+emulator work moves to C and iOS is outside the automated lab. M4 still depends on M3.
+The [promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+own these scope changes. Headless owner `config.ownerPolicy` is retained writer
+policy, distinct from the withdrawn authorization reader option.
+
 The [architecture and compatibility comparison](../tenancy/single-and-multitenant-architecture.md)
 contains request-flow, isolation and historical-comparison diagrams.
 
@@ -236,9 +246,9 @@ contains request-flow, isolation and historical-comparison diagrams.
 | PLAT-ENTRY | one executable, `bin/nightscout.js`: `single` (today's server, every old start path unchanged) and the operator tools; image ENTRYPOINT, and no image HEALTHCHECK so a boot-error page is not restarted away (D21) | dev |
 | PLAT-SERVE | Merged `multitenant` CLI namespace (#8899); explicit API preview on draft #8898, with separate operator preparation/readiness. Other roles remain unenabled | PLAT-ENTRY, ST-READS |
 | T30-RESEARCH | the tenant-owner configuration surface: 264 settings on dev, 12 contested | D-T30 |
-| T30-SCHEMA-CONFIG | Adopted owner-authority policy and selected transactional proposed-grant fencing and optional current-subject reader clamping are accepted; full permission/settings catalogue and deployable owner API remain open. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate | T30-RESEARCH |
+| T30-SCHEMA-CONFIG | Adopted owner-authority writer policy and transactional proposed-grant fencing are retained. Optional subject-reader clamping is withdrawn; removed in the local candidate; comprehensive verification pending. M2 requires tenant-local config/versioned writes and route separation; wider lifecycle belongs to M6. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate | T30-RESEARCH |
 | TEN-RESOLVE | Direct/canonical preview resolution accepted; full production trust, durable mapping and operator lifecycle still blocked | MT-CONFIG-MIN, MIG-RUNNER, PLAT-SERVE |
-| T30-WIRING | Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; selected proposed-grant fencing and optional current-subject clamping are accepted; management issuer/refresh, full catalogue and production lifecycle remain open | TEN-RESOLVE, MT-SECRETS-CONTRACT |
+| T30-WIRING | Current persisted authority composes with actual CLI/REST. Adopted local new-format token verification keeps per-operation PG session/key/grants; writer proposed-grant fencing is retained; optional reader clamping is withdrawn. Management issuer/refresh, existing-grant lifecycle policy and production trust are M6 work | TEN-RESOLVE, MT-SECRETS-CONTRACT |
 | TEN-LAB | R62/R64 accept and verify the published dormant control/recovery batch; R60 M0 promotion is retained; complete M3 remains blocked on full M1/M2 | ST-PG, T30-WIRING, MIG-RUNNER |
 
 Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): `nightscout single` is single-tenant and the `nightscout multitenant` namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and `TENANCY_MODE` retires as an operator setting. Which listener and role owns each API is mapped in [interface ownership](interface-ownership-2026-10-27.md), with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D23 are in the [execution plan](../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md).

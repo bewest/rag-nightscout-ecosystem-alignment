@@ -1,7 +1,7 @@
 # Tenancy: what to read and maintain
 
 *Contributor-facing living reading guide. Reconciled 2026-11-06 to recorded R62/R64
-published acceptance and bounded local R67/R68 evidence. This guide owns document navigation; status, decisions and measurements
+historical published acceptance, local R67/R68 evidence and the subsequent promotion-bar/reader-withdrawal decisions. This guide owns document navigation; status, decisions and measurements
 stay in their existing homes. Dates in filenames do not establish currency.*
 
 ## Start with the task
@@ -12,6 +12,7 @@ stay in their existing homes. Dates in filenames do not establish currency.*
 | What to implement and how to join it | [Batching plan §5](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) | Current A–C completion schedule and acceptance boundaries. Sections 1 and 4 retain the original dispatch. |
 | The milestone's actual criteria | [Delivery roadmap §4](multitenant-delivery-roadmap-2026-11-02.md#4-milestones-and-continuous-integration) | Maintained promotion criteria. The dashboard owns milestone claims; dated checkpoint sections own only their captured scope. |
 | Why the architecture is this way | [Execution-plan decisions](nightscout-multitenancy-execution-plan-2026-09-14.md#1-decisions) | Maintainer decisions D1–D23. Read the relevant decision and task, rather than the entire plan. |
+| Current promotion bars and compatibility direction | [Promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06) | Reader mode withdrawn; writer policy retained. M2 roadmap cell, M6 lifecycle, M1 budgets and Android lab deferred to C. No new promotion. |
 | Owner, delegation and token rules | [Owner authority](owner-authority.md) | Adopted amendment to the execution plan. Implementation acceptance remains separate. |
 | What the maintainer is asked to decide now | [Open decisions on the critical path](multitenant-open-decisions-2026-11-06.md) | One topic per section with mechanism, trade-off, impact and a recommendation; each answer becomes a row in the release decisions file, and the note then points at it. |
 | Durable consumers and recovery | [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | B7 direction adopted; experiments and implementation acceptance retain their own evidence. |
