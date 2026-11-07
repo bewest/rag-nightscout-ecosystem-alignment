@@ -1,0 +1,323 @@
+{
+  "capturedAt": "2026-11-07T18:14:36.324167+00:00",
+  "classification": "read-derived GitHub terminal metadata; cleanup and warning controls reproduced separately",
+  "applicationAttempts": [
+    {
+      "id": 42391789349,
+      "url": "https://github.com/nightscout/cgm-remote-monitor/actions/runs/42391789349",
+      "head": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "name": "Validate Docker image (amd64)",
+          "id": 128460702588,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (26, chromium)",
+          "id": 128460702617,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run Tests (26, 5.0)",
+          "id": 128460702645,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Tests without a database (22.23.4)",
+          "id": 128460702652,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docker image (arm64)",
+          "id": 128460702689,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate npm 12 install and build",
+          "id": 128460702691,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run Tests (22.23.4, 8.0)",
+          "id": 128460702701,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Tests without a database (26)",
+          "id": 128460702713,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run Tests (24, 6)",
+          "id": 128460702726,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Maintained MongoDB (26, 8.0.29)",
+          "id": 128460702769,
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Run Tests (22, 6)",
+          "id": 128460702789,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Multitenant opt-in corpus (PostgreSQL, MongoDB, Vault)",
+          "id": 128460702819,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (26, webkit)",
+          "id": 128460702847,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (26, firefox)",
+          "id": 128460702860,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Tests pass",
+          "id": 128463040180,
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Publish the release image",
+          "id": 128463066636,
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Build Docker image (${{ matrix.arch }})",
+          "id": 128463066995,
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Publish to Docker Hub",
+          "id": 128463067415,
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "id": 42391789349,
+      "url": "https://github.com/nightscout/cgm-remote-monitor/actions/runs/42391789349",
+      "head": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+      "attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "Maintained MongoDB (26, 8.0.29)",
+          "id": 128477501199,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate npm 12 install and build",
+          "id": 128477502054,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run Tests (24, 6)",
+          "id": 128477502372,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (26, webkit)",
+          "id": 128477502609,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run Tests (22, 6)",
+          "id": 128477502772,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run Tests (26, 5.0)",
+          "id": 128477503092,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Tests without a database (26)",
+          "id": 128477524720,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docker image (arm64)",
+          "id": 128477527165,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (26, chromium)",
+          "id": 128477531290,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Browser tests (26, firefox)",
+          "id": 128477531920,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Tests without a database (22.23.4)",
+          "id": 128477535986,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run Tests (22.23.4, 8.0)",
+          "id": 128477536413,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Multitenant opt-in corpus (PostgreSQL, MongoDB, Vault)",
+          "id": 128477537492,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Validate Docker image (amd64)",
+          "id": 128477542218,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Tests pass",
+          "id": 128479127802,
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build Docker image (${{ matrix.arch }})",
+          "id": 128479151363,
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Publish the release image",
+          "id": 128479152078,
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Publish to Docker Hub",
+          "id": 128479152441,
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    }
+  ],
+  "codeql": {
+    "id": 42391789369,
+    "url": "https://github.com/nightscout/cgm-remote-monitor/actions/runs/42391789369",
+    "head": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Analyze (javascript)",
+        "id": 128460702626,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "alignment": {
+    "id": 42391800519,
+    "url": "https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42391800519",
+    "head": "4440e4d723aa0182008bc97cd4f2052bb3bd5b87",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Specs and fixtures",
+        "id": 128460735748,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Python syntax (3.12)",
+        "id": 128460735938,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Site (build, check, publish to gh-pages)",
+        "id": 128460865113,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "pr": {
+    "url": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
+    "state": "open",
+    "draft": true,
+    "title": "Compose multitenant DATA, durable runtime and bounded recovery previews",
+    "head": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+    "base": "dev"
+  },
+  "rerunAttribution": "Attempt2 observed externally under shared GitHub actor; this coordinator and source chat did not initiate it; initiating person/session unestablished.",
+  "cleanup": {
+    "classification": "reproduced separate approved cleanup; original failed cleanup remains immutable",
+    "removedCount": 19,
+    "approvedTargetCount": 19,
+    "remainingApprovedVolumes": [],
+    "nonTargetVolumesUnchanged": true,
+    "containersUnchanged": true,
+    "networksUnchanged": true,
+    "approvedCleanupVerified": true
+  },
+  "warningDiagnosis": {
+    "classification": "reproduced diagnostic counterexample; actual second remote warning remains unidentified",
+    "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+    "ordinary": {
+      "passing": 3,
+      "failing": 0
+    },
+    "unrelatedWarningControl": {
+      "passing": 2,
+      "failing": 1,
+      "assertion": "2 !== 1 at tests/boot-await-indexes.test.js:39"
+    },
+    "restoration": {
+      "passing": 3,
+      "failing": 0
+    },
+    "applicationSourceChanged": false
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "classification": "reproduced isolated synthetic allocator discriminator; no restore implementation/admission",
+  "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+  "sourcePacketIndexSha256": "a2eb1de455a7b820290d1b14adeddcb9b26dc05c3e360eca96846dd4ff991df8",
+  "parentIndexSha256": "04e684c52b380d1a4fb1cee6dc6b44b14ee6e906a8e22590b0b3de6b8a444b30",
+  "nativeCaptureIndexSha256": "94c17090a740604ed92e87879fb728fefa486494623f72c8bb49d58a402d2d88",
+  "groups": [
+    {
+      "id": "clock-ordinary",
+      "kind": "ordinary",
+      "passed": true
+    },
+    {
+      "id": "clock-control",
+      "kind": "intended-red",
+      "assertion": "SID_CLOCK_COVERAGE_BOUNDARY"
+    },
+    {
+      "id": "clock-restored",
+      "kind": "restored",
+      "passed": true
+    },
+    {
+      "id": "rewind-ordinary",
+      "kind": "ordinary",
+      "passed": true
+    },
+    {
+      "id": "rewind-control",
+      "kind": "intended-red",
+      "assertion": "SID_TENANT_MAX_REWINDS_SHARED_ALLOCATOR"
+    },
+    {
+      "id": "rewind-restored",
+      "kind": "restored",
+      "passed": true
+    },
+    {
+      "id": "private-cache8",
+      "kind": "separate-hypothetical-configuration-counterexample",
+      "passed": true,
+      "applicationConfigurationMeasured": false
+    }
+  ],
+  "failure": null,
+  "sqlDiscriminatorPassed": true,
+  "observedInstrumentBackendBirths": 7,
+  "maximumConcurrentDatabaseSessions": 4,
+  "rootClosure": {
+    "classification": "independent exact-resource readback with later baseline restart explicitly retained",
+    "exactOwnedContainerAbsent": true,
+    "exactOwnedVolumeAbsent": true,
+    "exactChildBirthAbsent": true,
+    "baselineInventoryUnchanged": true,
+    "immediateParentBaselineMetadataUnchanged": true,
+    "laterBaselineMetadataUnchanged": false,
+    "laterDifference": "Existing baseline container endpoint/MAC changed; Docker die/start at18:14:44Z after closure file write; no owned-resource collision",
+    "runtimeSlotReleased": true,
+    "programmeAccepted": false
+  },
+  "firstSetupAttempt": {
+    "driverExit": 1,
+    "message": "Connection terminated unexpectedly",
+    "instrumentEventsProduced": false,
+    "baselineInventoryAndMetadataRestored": true,
+    "accepted": false,
+    "cause": "read-derived readiness transport hypothesis; exact original cause unproven"
+  },
+  "programmeAccepted": false
+}
