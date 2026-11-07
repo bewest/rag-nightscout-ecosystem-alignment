@@ -80,6 +80,52 @@ Bounded native acceptance and parent semantic controls are recorded in
 This selected transaction does not make an operation/target-only management
 callback sufficient for general proposed-grant enforcement.
 
+## Shared OIDC integration
+
+The [shared OIDC decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#shared-oidc-provider-renewal)
+adopts one optional integration for single-tenant and multitenant Nightscout,
+provider-backed renewal first, and separate authorization adapters. Human login,
+renewal and logout support should be equivalent for comparable capabilities in
+both modes; storage and tenant-resolution differences remain explicit. The intended
+single-tenant opt-in is `ENABLE=oidc`, or an equivalent explicit flag if integration
+measurement refutes that spelling. Default-off behavior preserves current startup,
+web/data authentication and unattended clients. No OIDC feature is implemented or
+enabled merely by setting that value today.
+
+Share the provider-facing protocol and session integration. Single-tenant maps
+verified provider/subject to local current authority; multitenant resolves the
+selected tenant and maps it to current membership, session and grants under RLS.
+A provider identity or ID token is not automatically an accepted Nightscout data
+credential, root grant or management credential. Human data access and management
+access can share login plumbing while retaining explicit permissions/audiences.
+Keep native API_SECRET, subject/device tokens and machine renewal compatible.
+
+The existing `single` application supplies the single-tenant HTTP boundary.
+Multitenant owner operations use `tenant-admin` on its own listener, initially
+co-locatable with `api`; DATA `api`, `realtime` and the private operator `admin`
+retain their existing responsibilities. Login/callback/exchange/renewal routes
+are not yet implemented or placed by this direction. Prefer composing the common
+adapter into the applicable existing boundary over requiring a new process.
+No first-party browser UI is required by this integration decision.
+
+Provider-backed renewal obtains new short-lived Nightscout management access from
+valid provider authentication and current Nightscout authority. It does not require
+Nightscout-owned rotating refresh credentials initially. The provider's login
+cookie/session, any Nightscout browser-session cookie, the current server-side
+Nightscout session and access bearer token are distinct. Cookie scope/transport,
+local and provider logout propagation, idle activity, concurrent renewal and outage
+behavior need explicit contracts before acceptance. Adopted lifetimes below remain;
+provider activity alone cannot bypass current Nightscout authority.
+
+Acceptance must exercise the same synthetic provider/login/renewal contract on
+both supported modes, enabled and disabled. Cover missing/wrong issuer/audience,
+invalid signatures, identity-to-permission mapping, revocation/expiry, logout,
+provider outage and ordinary legacy data-client compatibility. Multitenant adds
+foreign-tenant/selector refusal and isolated current authority; single-tenant must
+not require multitenant PostgreSQL, a cohort identity service or extra role listeners.
+Record unsupported provider capabilities rather than silently weakening guarantees.
+Choose browser cookie versus direct-token transport through its own bounded review.
+
 ## Management authentication and lifetime policy
 
 The owner listener stays separate from data/private-operator listeners. Human

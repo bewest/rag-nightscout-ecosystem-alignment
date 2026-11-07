@@ -1819,3 +1819,12 @@ One evolving coordination handoff: `externals/work/HANDOFF-codex-completion-coor
 | Execution | Existing M5 lane continues adopted bounded snapshot reconciliation and actual evaluator recovery; M6 synthetic preparation may proceed in parallel. | Native capability acceptance precedes coherent integration acceptance. Alarm/session/deletion policies remain explicit questions; operating limits follow agreed workloads and measurements. |
 
 Validation: queue-check, docs-links, Markdown heading/explicit-anchor targets and whitespace checks pass. The isolated lane initially lacked external fixture paths; exposing the existing paths by symlink resolved that preflight failure. Application suites and site rebuild were skipped: no application, rich-page source or page manifest changed.
+
+### Update — shared optional OIDC direction (2026-11-06)
+
+| Scope | Adopted direction | Acceptance boundary |
+|---|---|---|
+| Human authentication | [Shared OIDC](decisions.md#shared-oidc-provider-renewal) for single/multitenant, provider-backed renewal first, equivalent optional support and separate authority adapters. Single-tenant enablement prefers `ENABLE=oidc`. | Current credentials/default behavior preserved. Identity alone grants neither root nor owner access. Login/renewal implementation and parity are UNMEASURED; logout/idle/outage/transport contracts remain explicit work. |
+| Execution | Existing M5 runtime lane continues independently; owner/auth contracts and current decision list reflect the adopted direction. | No M5/M6 promotion, browser UI requirement or production/default enablement follows. No new application test result is asserted. |
+
+Validation: queue-check, docs-links, Markdown fragment targets using site-compatible HTML/heading parsing, and whitespace checks pass. Application suites and site rebuild were skipped because only prose changed; the OIDC direction is not implementation acceptance.

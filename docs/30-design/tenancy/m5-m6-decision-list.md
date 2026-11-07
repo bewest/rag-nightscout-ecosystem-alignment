@@ -25,6 +25,7 @@ production permission or waive an existing criterion from that preference.
 | Topic | Canonical home / implementation boundary |
 |---|---|
 | Current-state recovery | [Bounded full snapshot reconciliation first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation); preserve producer deletes/timestamps/replies. Cadence/capacity is measurement work. No every-transition promise. |
+| Shared human authentication | [Shared optional OIDC, provider-backed renewal first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#shared-oidc-provider-renewal), equivalent single/multitenant support; preferred single opt-in `ENABLE=oidc`. Separate authorization adapters; no implicit root/management grant. |
 | First-preview ownership changes | [Operator-assisted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-operator-assisted-ownership); self-service co-owner/transfer follows separately. Last-owner, current authority, audit and secret boundaries remain required. |
 | Restore versus cloning | [Restore original tenant ID; clone establishes new secrets/credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning). Clinical sync does not transfer credential authority. |
 | Deleted-tenant keys/artifact | [Retain 30 days, then operator destroys keys](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention). Destroy/after-window refusal still needs evidence; this does not set a deletion cancellation period. |
@@ -35,14 +36,14 @@ production permission or waive an existing criterion from that preference.
 
 These are bounded topics for a concrete proposal, not blanket implementation stops.
 A recommendation remains a proposal until recorded in release decisions.
-The next human discussion is the minimal session-renewal base; M5 alarm-state
-proposals and current recovery implementation can proceed in parallel.
+Shared OIDC and provider-backed renewal are adopted. Remaining session effects
+and M5 alarm-state proposals can be reviewed while runtime implementation continues.
 
 | Topic | Decision needed | Work that need not wait |
 |---|---|---|
 | M5 durable ack/snooze | Define suppression scope/effect, original expiry, duplicate/retry behavior and retained evidence. Start from actual legacy client behavior; flag any observable change. Storage layout is an engineering choice once effects are agreed. | Reconciliation, evaluator acquisition, D23 forwarding/current authority and isolated reference scheduling. |
 | M5 notification handoff | Define durable request identity and crash/retry responsibility before enabling handoff; separate request persistence from delivery to a device. Select a provider only when its enabled capability needs it. | Current-state recovery; synthetic handoff experiments. Do not promise exactly-once external effects. |
-| M6 human session renewal | Choose provider-supported re-exchange versus Nightscout-held rotating refresh credentials. Specify upstream logout propagation, provider outage, qualifying activity and concurrent renewal. Existing adopted lifetimes and next-operation current-authority checks remain. | Adapter/session prototypes with synthetic identities and refusal controls; no custom password/recovery system. |
+| M6 human session effects | Shared OIDC/provider-backed renewal is settled. Specify local versus provider logout, propagation, provider outage, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain. | Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh. |
 | M6 bounded owner surface | Approve the exact first-preview settings, credentials and enabled integrations; identify unsupported names/operations. Operator-assisted ownership is settled. | Census and proposed catalogue with consuming-runtime tests; do not silently declare the full catalogue implemented. |
 | M6 deletion ceremony | Set request confirmation/cancellation and operator recovery procedure. Distinguish pre-deletion cancellation from adopted post-deletion key retention. | Synthetic export/delete/recovery tooling and artifact-fidelity controls. |
 | M6 deployment/trust | Review concrete trusted-ingress and secrets/identity adapter contracts for the reference deployment before production use. | Synthetic spoof/conflict/outage probes and provider-neutral interfaces. |

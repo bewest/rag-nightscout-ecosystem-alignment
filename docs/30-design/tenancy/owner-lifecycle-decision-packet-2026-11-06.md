@@ -99,6 +99,11 @@ each.
 
 ### Q1. Human identity provider for owners
 
+**Later direction adopted:** [shared optional OIDC integration](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#shared-oidc-provider-renewal)
+serves equivalent single/multitenant human authentication through separate authority
+adapters. No provider-specific deployment or callback/cookie contract is selected
+by that direction. The source survey and alternatives below retain their scope.
+
 **Mechanism.** D17 row 2 as adopted in principle (2026-10-12): Kratos, one cohort-wide pool, cookie
 scope E, four production conditions, no real identities until the compliance question has an owner.
 D17 as amended (2026-10-27): the provider is interchangeable ("bring your own auth": Kratos, Clerk or
@@ -161,6 +166,13 @@ unchanged by this choice and remains a maintainer gate before any real identity 
 E's edge over https and through socket.io.
 
 ### Q2. Session model and lifetimes
+
+**Renewal direction adopted:** [provider-backed renewal first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#shared-oidc-provider-renewal),
+with existing Nightscout current authority and adopted limits. This supersedes the
+earlier recommendation (a) as the initial implementation selection. Nightscout-owned
+rotating refresh is not an initial requirement. Logout/idle/outage/concurrency and
+transport contracts still need acceptance; none of the numeric proposals below is
+approved by this direction.
 
 **Mechanism.** The contract's table row (owner-authority.md:27): "Refresh/session credential:
 PostgreSQL session record and one-way verifier; rotation/reuse detection or provider-supported
