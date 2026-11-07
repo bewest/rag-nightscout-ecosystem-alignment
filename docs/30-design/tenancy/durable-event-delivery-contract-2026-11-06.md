@@ -224,6 +224,9 @@ says so in its health report; it does not invent one.
 
 ## 7. Evaluator and notification state
 
+[R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) owns current functional M5 acceptance. The historical source inventory below
+remains anchored to the earlier source in §0; it is not a current code inventory.
+
 The later [tenant-wide suppression decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-wide-alarm-suppression)
 settles first-preview ack/snooze effects: shared within the tenant for the alarm
 group/level, original absolute expiry retained through restart, and no extension
@@ -231,9 +234,10 @@ from repeats during the active window. Preserve the existing default duration an
 level-2-to-level-1 effect. Per-user/device suppression is separate. Storage shape
 and historical retention are engineering/operational work; the unchanged client
 protocol supplies no durable request identity for indefinite post-expiry deduplication.
-Persistence, crash/retry and cross-tenant acceptance remain unmeasured.
+R73 records bounded persistence, crash/retry and cross-tenant acceptance.
+Live provider/device delivery and operating/retention budgets remain separate.
 
-Where that state lives **today** at `35903069`, **read-derived**:
+Historical state locations at `35903069`, **read-derived**:
 
 | State | Home today | Scope today |
 |---|---|---|
@@ -326,8 +330,10 @@ budget or live egress is authorized by this decision.
 
 The roadmap asks for executable controls before one producer/consumer recovery
 slice. Each row names the predicted green and the exact red symptom; a control
-that goes red for a setup reason is not evidence (clock proof plan). All are
-**UNMEASURED** today.
+that goes red for a setup reason is not evidence (clock proof plan). The rows
+below retain the original predicted controls. R73 owns the actual executed
+mechanisms, physical observations and criterion mapping; a predicted mutation
+is not evidence that that exact experiment ran.
 
 | Control | Predicted green assertion | Exact red symptom when the mechanism is broken |
 |---|---|---|
@@ -341,8 +347,9 @@ that goes red for a setup reason is not evidence (clock proof plan). All are
 | **lost `NOTIFY`** (drop every notification for an interval) | the backstop delivers the cohort within its bound; the event-driven path delivers nothing | break: backstop disabled. Red: the cohort is never evaluated until the next write |
 | **rollback inside the transaction** | no event, no stamp advance, no row | already **reproduced** at the clock head (lower-port "actual rollback", "publish immediately instead of queueing" control: 1 event rather than 0); rerun on the frozen head that joins the clock |
 
-These rows are the gate `MT-RUNTIME-PLAN` lacks today; the queue item keeps
-`no-gate` until a runnable instrument exists in `tools/queue/gates/`.
+The executable recorded-evidence gates and source applicability are linked from
+R73 and the queue. They replay the archived measurements rather than starting a
+fresh native campaign.
 
 ## 9. What this contract does not decide
 
@@ -391,8 +398,9 @@ sentence the entry bar in §8 can falsify:
 
 The [bounded snapshot reconciliation decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation)
 selects the initial M5 current-state recovery path. It preserves existing writer
-contracts and requires explicit row/byte refusal; implementation/native acceptance
-and scan cadence/capacity remain separate measurements. Every-transition and
+contracts and requires explicit row/byte refusal. R73 records bounded functional
+implementation/native acceptance for the first reference; scan cadence/capacity
+budgets remain separate measurements. Every-transition and external
 notification-delivery guarantees retain their own contracts.
 
 The maintainer adopted B7's design direction on 2026-11-06 in the B7 approval
@@ -402,7 +410,9 @@ scalability and performance. The decision is recorded in the
 [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#b7-durable-multitenant-delivery-2026-11-06).
 This accepts the direction and the executable entry bar, not measured distributed
 recovery, a performance budget, a provider, milestone promotion or release admission.
-`MT-RUNTIME-PLAN` remains in-progress with `no-gate` until its instrument exists.
+R73 supplies the functional M5 disposition and recorded instruments. The queue
+owns broader item state and remaining admission gates; this design document does
+not make a fresh current-HEAD or production acceptance claim.
 
 **What UNMEASURED means.** The named behavior has no applicable executed capture
 on the stated assembled source and workload. It is neither a failure nor a pass.

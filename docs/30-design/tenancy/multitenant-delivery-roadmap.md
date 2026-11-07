@@ -186,11 +186,12 @@ implementation and destroy/after-window refusal evidence remain separate.
 
 ## Current bounded proof and remaining admission
 
-[R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) owns the joined criterion disposition. These synthetic native records have
-bounded acceptance at their declared executed heads; their runnable
-RECORDED-EVIDENCE gates replay archived physical observations, not a fresh
-current-HEAD campaign. Final assembled full/default-browser/current-corpus/PR
-checks remain open. Neither M5 nor M6 is promoted by this table.
+[R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) accepts the functional M5 reference on one host and records its final
+comprehensive verification. These synthetic native records retain their declared
+executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
+observations, not a fresh current-HEAD campaign. M6 remains blocked despite its
+bounded SQL operations proof. Publication, remote CI and production/default
+admission are separate claims.
 
 | Recorded proof | Boundary and remaining work |
 |---|---|
@@ -224,8 +225,8 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 | M6 operations and clients | Populated backup/restore and upgrade/rollback cover interruption, supported schema/catalogue and failure recovery on the assembled tree. Retain the Android emulator acceptance and the explicit iOS/all-client exclusions. A representative entries/clock lab does not cover the whole catalogue. |
 | M6 operating envelope and final review | Declare synthetic workload and freshness/recovery expectations, then measure shared-pool/hot-tenant interference, row/byte limits, scan cadence, latency and egress refusal before approving bounds. Complete the final criterion matrix and review. Functional passes do not establish capacity. |
 
-The bounded M5 reference can complete its final gates without selecting a live
-external notification provider or retained every-transition history. Multi-node failover,
+The accepted M5 reference does not select a live external notification provider
+or promise retained every-transition history. Multi-node failover,
 every-transition history and self-service ownership are separate enhancements.
 Real identities/data, production/default role enablement and release admission keep
 their existing explicit approval boundaries.

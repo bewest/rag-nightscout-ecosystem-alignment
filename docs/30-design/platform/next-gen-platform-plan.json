@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-07: R72 retains M0 and accepts M1\u2013M4 at their stated scopes. R73 joins accepted bounded current-state/evaluator, durable alarm/request, reference-role/browser and SQL-operations evidence, preserving each actual executed head. Final assembled full/default-browser/current-corpus/PR checks and criterion disposition remain pending; M5 stays in progress and M6 blocked. Recorded-evidence gates replay archived measurements, not fresh current-HEAD execution. Live provider/device delivery, capacity and identity-bearing tenant restore remain separate. Draft preview acceptance does not constitute dev merge, operator release or production/default enablement.",
+ "measured": "2026-11-07: R73 accepts the functional M5 reference on one host using polling over consistent tenant snapshots. R72 retains M0 and M1\u2013M4 at their stated scopes. Bounded PostgreSQL and role/browser evidence retains each actual executed head; final assembled full/default-browser/current-corpus/PR checks are accepted at the R73 source. M6 remains blocked despite bounded SQL operations acceptance. Recorded-evidence gates replay archived measurements, not fresh current-HEAD execution. Live provider/device delivery, capacity, multi-node operation and identity-bearing tenant restore remain separate. Acceptance does not assert remote publication/CI, dev merge, operator release or production/default enablement.",
  "tracks": [
   {
    "id": "storage",
@@ -1186,11 +1186,11 @@
    "phase": "multi",
    "state": "progress",
    "short": "Durable runtime / replay",
-   "title": "R73 joins bounded current-state and evaluator recovery, durable alarm/request state, and reference roles and browser evidence on one host using polling. Final assembled verification remains open; component passes alone do not promote M5/M6.",
+   "title": "R73 accepts the functional M5 reference on one host using polling: bounded current-state and evaluator recovery, durable alarm/request state, and actual reference roles and browser consumers. Broader operating and delivery admission remain separate.",
    "ref": "Live provider/device delivery, capacity/freshness/egress budgets, multi-node ownership and M6 identity-bearing tenant restore retain separate acceptance.",
    "spec": [
     {
-     "label": "R73 joined criterion disposition and final gates",
+     "label": "R73 accepted functional M5 and bounded SQL operations",
      "href": "../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch"
     },
     {
@@ -1234,7 +1234,7 @@
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
-   "check": "Recorded gates replay pinned native evidence, actual source attribution, physical controls and cleanup. Final full/default-browser/current-corpus/PR checks and criterion disposition are required before milestone promotion."
+   "check": "R73 binds recorded physical controls to executed source heads and accepted final full/default-browser/current-corpus/PR checks. Archival gate passes do not measure a fresh current HEAD."
   }
  ],
  "decisions": [

@@ -7,13 +7,17 @@ records no new application measurement or promotion.*
 
 ## Execute now
 
-Finish final assembled full/default-browser/current-corpus/PR checks and record
-the criterion verdict in [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) before promoting M5. Bounded current-state/evaluator,
-durable alarm/request and actual reference-role/browser proofs are accepted at
-their recorded heads; component passes are not the final joined verdict. Reuse the
-[recorded proof gates](multitenant-delivery-roadmap.md#current-bounded-proof-and-remaining-admission)
+The functional M5 reference on one host is accepted in [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch). It includes
+bounded current-state/evaluator recovery, durable alarm/request state and actual
+reference-role/browser consumers, with accepted final comprehensive verification.
+Publication and remote CI retain their separate records; production/default
+admission and live provider/device delivery are not implied.
+
+Reuse the [recorded proof gates](multitenant-delivery-roadmap.md#current-bounded-proof-and-remaining-admission)
 for source-identical evidence instead of repeating native cases for documentation
-changes. New source behavior still needs affected checks.
+changes. New source behavior still needs affected checks and an appropriate joined
+verification. Do not silently add later provider, capacity or multi-node work to
+the satisfied M5 functional bar.
 
 M6 has bounded SQL operations evidence. Continue shared human identity/session
 contracts, operator-assisted ownership, full suspension and identity-bearing
