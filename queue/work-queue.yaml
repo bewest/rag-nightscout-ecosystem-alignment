@@ -25454,9 +25454,15 @@ items:
       - ARCH-SEAM-CONTRACT
       - ST-VIEWS-PROFILE
     evidence:
+      - docs/30-design/tenancy/derived-output-boundary-2026-11-07.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      The 2026-11-07 derived-output-boundary follow-up specifies read-derived
+      evaluator/realtime/HTTP distinctions and ordered characterization, output
+      identity/freshness decision and conditional runtime-ownership work. It
+      adopts no publication service, changes no serving dependency and claims no
+      new runtime measurement; MT-RUNTIME-PLAN owns any distributed handoff.
       R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure,
       browser684/settings12/freshprcheckOK; native gate captures retain their pins.
       No clock/profile2ee join, milestone promotion or expanded production scope.
