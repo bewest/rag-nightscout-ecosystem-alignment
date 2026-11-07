@@ -2563,6 +2563,8 @@
       
         
       
+        
+      
     
     
     
@@ -2688,6 +2690,34 @@
     
   
     M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m5-m6-decision-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5/M6: current decisions and next review
   
 
     
@@ -5419,6 +5449,7 @@ lifecycle"; ranked item 7). Nothing here is a decision: a decision taken from th
 in <code>releases/cgm-remote-monitor-16.0.0/decisions.md</code>, after which this packet points at it. No code
 was written; no gate was run. Companion: <a href="multitenant-open-decisions-2026-11-06.html">the five critical-path decisions</a>,
 whose items 1 and 2 now have maintainer decisions, linked below rather than re-asked.</em></p>
+<p><strong>Current reading path:</strong> use the <a href="m5-m6-decision-list.html">M5/M6 decision list</a>. This packet preserves source surveys and alternatives; later canonical decisions govern preview scope.</p>
 <p><strong>Anchors, read from <code>git</code> at the moment of writing.</strong></p>
 <table>
 <thead>
@@ -5987,6 +6018,13 @@ cross-tenant refusal, current revocation and no-effect oracles, with independent
 controls. A subject-only pass cannot establish backward compatibility. Thresholds, activation
 policy, migration and performance remain unmeasured; the current decision is to remove the mode.</p>
 <h3 id="q5-ownership-lifecycle">Q5. Ownership lifecycle<a class="headerlink" href="#q5-ownership-lifecycle" title="Permanent link">&para;</a></h3>
+<p><strong>Preview scope decided:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">operator-assisted ownership changes</a>
+are sufficient initially. Self-service co-owner/transfer proposals below are later
+enhancements, not first-preview gates. The operator path still needs current
+authority, last-owner protection, audit and recovery without secret disclosure.
+The earlier recommendation (a) below is retained as a future proposal, not the
+adopted preview implementation. Deletion confirmation/cancellation policy is a
+separate open question; the adopted 30-day key/artifact retention does not settle it.</p>
 <p><strong>Later decision, separate from this draft's recommendations:</strong> the maintainer's
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision record</a>
 adopts retaining Transit keys and the export artifact for 30 days, followed by

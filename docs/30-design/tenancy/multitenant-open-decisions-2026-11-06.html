@@ -2563,6 +2563,8 @@
       
         
       
+        
+      
     
     
     
@@ -2688,6 +2690,34 @@
     
   
     M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m5-m6-decision-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5/M6: current decisions and next review
   
 
     
@@ -5339,6 +5369,7 @@ the mechanism, the trade-off, what operators or clients would notice, what is me
 what is only read, and whether it is single- or multitenant. A decision taken here is
 recorded as one row in <code>releases/cgm-remote-monitor-16.0.0/decisions.md</code>; this note then
 points at it. One topic per section; recommendations are given because they were asked for.</em></p>
+<p><strong>Current reading path:</strong> use the <a href="m5-m6-decision-list.html">M5/M6 decision list</a>. This note preserves the earlier questions; it is not the remaining-decision checklist.</p>
 <p><strong>Decided 2026-11-06 after this note was written:</strong> items 2, 3 and 4 are decided as recommended and recorded as rows in decisions.md (section "Multitenant promotion bars"). Item 1 is decided differently from the recommendation: the clamping mode is <strong>dropped</strong> as a backward-compatibility break (decisions.md row of 2026-11-06); a tenant's api-secret must get 200 on its own tenant resource, and only backward-compatible solutions are wanted. The section below is kept as the record of the question as asked. Item 5's lifecycle packet is published: <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner session and issuer lifecycle decision packet</a>.</p>
 <p><strong>Closed today, for the record:</strong> the per-write event's <code>stamp</code> is the transaction's final
 clock floor (decisions.md, B7 section, row of 2026-11-06; lane head <code>e7baff74</code>). It is not

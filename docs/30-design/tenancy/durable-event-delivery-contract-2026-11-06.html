@@ -2563,6 +2563,8 @@
       
         
       
+        
+      
     
     
     
@@ -2878,6 +2880,34 @@
     
   
     M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m5-m6-decision-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5/M6: current decisions and next review
   
 
     
@@ -5761,8 +5791,8 @@ keys them apart; the port corpus preserves typed forms in delete records,
 </tr>
 <tr>
 <td><strong>hard delete</strong> through the intent path (v3 <code>prune</code>/autoPrune, <code>write-intent.js:4606-4613</code>; permanent delete)</td>
-<td><strong>outside the spine.</strong> The event names the removed ids, but no durable row carries a stamp afterwards, so replay cannot reconstruct it. A consumer learns of it only by re-reading a window and noticing absence. Whether a tombstone is added, and the window the backstop re-reads, are deferred (§9)</td>
-<td><strong>read-derived</strong>; the roadmap's "no timer substitutes for lost writes" applies with equal force here</td>
+<td><strong>outside the spine.</strong> The event names the removed ids, but no durable row carries a stamp afterwards, so replay cannot reconstruct it. Strict replay cannot recover absence. The adopted full current-state snapshot backstop below handles absence separately; tombstones remain deferred (§9)</td>
+<td><strong>read-derived</strong> stamped-spine limit; separate native characterization and the adopted reconciliation direction are linked in §11</td>
 </tr>
 <tr>
 <td><strong>raw writers that bypass <code>write(intent)</code></strong> (a direct MongoDB upload, an independent SQL client)</td>
@@ -5771,9 +5801,13 @@ keys them apart; the port corpus preserves typed forms in delete records,
 </tr>
 </tbody>
 </table>
-<p>A consumer never infers a hard delete from a missing event. It reports what it
-replayed; reconciling absence is the backstop's bounded job and its horizon is
-a deferred decision.</p>
+<p>A consumer never infers a hard delete from a missing event. Strict stamped replay
+retains the limits above. The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m5-bounded-snapshot-reconciliation">bounded snapshot reconciliation decision</a>
+selects full admitted current-identity/absence reconciliation in a consistent tenant
+snapshot, independent of floor movement. An arbitrary recent-time window is not
+sufficient. It preserves existing hard deletes and unstamped activity behavior;
+explicit row/byte refusal is required. Cadence/capacity and implementation acceptance
+remain unmeasured; every-transition history remains separate.</p>
 <h2 id="5-configuration-and-grant-invalidation">5. Configuration and grant invalidation<a class="headerlink" href="#5-configuration-and-grant-invalidation" title="Permanent link">&para;</a></h2>
 <p><strong>Decision: re-read per cycle, not an event.</strong> Current authority is checked per
 operation from a tenant-bound snapshot taken for that operation, and the
@@ -5996,6 +6030,9 @@ that goes red for a setup reason is not evidence (clock proof plan). All are
 <p>These rows are the gate <code>MT-RUNTIME-PLAN</code> lacks today; the queue item keeps
 <code>no-gate</code> until a runnable instrument exists in <code>tools/queue/gates/</code>.</p>
 <h2 id="9-what-this-contract-does-not-decide">9. What this contract does not decide<a class="headerlink" href="#9-what-this-contract-does-not-decide" title="Permanent link">&para;</a></h2>
+<p>For the current decision queue, use the <a href="m5-m6-decision-list.html">M5/M6 decision list</a>.
+The later snapshot-reconciliation choice in §11 settles the initial current-state
+absence backstop; the historical spine limitations below do not reopen that choice.</p>
 <table>
 <thead>
 <tr>
@@ -6013,7 +6050,7 @@ that goes red for a setup reason is not evidence (clock proof plan). All are
 <td><strong>deferred.</strong> The seams plan says a cell lease cannot by itself establish these guarantees; the single-machine separate-role reference deployment is the adopted first proof (clock proof plan)</td>
 </tr>
 <tr>
-<td>retention horizon: how far behind a checkpoint may fall before replay is refused; slot WAL retention; the backstop's re-read window for hard deletes</td>
+<td>retention horizon: how far behind a checkpoint may fall before replay is refused; slot WAL retention</td>
 <td><strong>UNMEASURED.</strong> T4.1 measured one stop of 200 rows</td>
 </tr>
 <tr>
@@ -6061,7 +6098,7 @@ sentence the entry bar in §8 can falsify:</p>
 <li>Authority and settings are re-read per operation or per cycle, not
    invalidated by event.</li>
 <li>Replay covers crash-after-commit; the publish covers nothing.</li>
-<li>The timer drives time-based alarms only and never reloads rows.</li>
+<li>Time-only alarm ticks are separate from the later adopted snapshot-reconciliation schedule; a wake or tick alone establishes no recovery guarantee.</li>
 <li>Evaluator and notification state is keyed by tenant, settings version and
     plugin set, with R50's retention policy.</li>
 <li>The contract applies only where the commit-coupled stamp exists; the clock

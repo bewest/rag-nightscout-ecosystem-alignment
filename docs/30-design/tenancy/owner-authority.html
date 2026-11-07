@@ -2563,6 +2563,8 @@
       
         
       
+        
+      
     
     
     
@@ -2688,6 +2690,34 @@
     
   
     M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m5-m6-decision-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5/M6: current decisions and next review
   
 
     
@@ -5328,7 +5358,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>2f3268a6e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>09f6b75dc</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5392,7 +5422,10 @@ operator plane. Controller commands require their own reviewed authority.</p>
 <p>Secret reveal is a separate permission with recent reauthentication. Ownership
 transfer and adding co-owners are sensitive explicit operations; last-owner removal
 must not orphan the tenant. Transactional transfer/recovery details require a
-bounded implementation contract, not automatic operator access to owner secrets.</p>
+bounded implementation contract, not automatic operator access to owner secrets.
+For the first preview, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">ownership changes are operator-assisted</a>.
+Self-service co-owner addition and transfer are later enhancements; last-owner
+protection, current authority and audit remain required for the operator path.</p>
 <p>A grant must fit all three: project delegable catalogue, operator tenant ceiling,
 and actor's explicit delegation authority. Possessing a permission does not grant
 the right to delegate it. Start with reviewed roles and bounded assignment;

@@ -2563,6 +2563,8 @@
       
         
       
+        
+      
     
     
     
@@ -2688,6 +2690,34 @@
     
   
     M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m5-m6-decision-list.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5/M6: current decisions and next review
   
 
     
@@ -2900,6 +2930,17 @@
     <span class="md-ellipsis">
       
         Milestones and continuous integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#m5m6-acceptance-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M5/M6 acceptance families
       
     </span>
   </a>
@@ -5311,6 +5352,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#m5m6-acceptance-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M5/M6 acceptance families
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#compatibility-and-parallel-contracts" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5350,12 +5402,12 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>fbf184322</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>09f6b75dc</code>.</em></p>
 <p><em>Contributor-facing living plan. Consolidated 2026-11-06 from the delivery journal
 and the adopted release decisions, without a new application measurement or
 milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/0ef07c77d449b959d60f8921e1f947cc3a9dbbad/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/09f6b75dcbeff3f5e98bbc1ed41b2376d963ba29/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5371,6 +5423,9 @@ coherent candidate for comprehensive acceptance; do not rerun accepted campaigns
 merely because a new session resumes. Promotion requires the complete criterion
 list below, with actual commands, source/instrument revisions, artifacts and
 verdicts on the applicable final tree.</p>
+<p>Use the <a href="m5-m6-decision-list.html">current M5/M6 decision list</a> for remaining human
+questions and measurement prerequisites. Prefer a minimal working reference with
+explicitly deferred enhancements; do not substitute a component pass for a milestone.</p>
 <h2 id="supported-boundary-and-owner-journeys">Supported boundary and owner journeys<a class="headerlink" href="#supported-boundary-and-owner-journeys" title="Permanent link">&para;</a></h2>
 <p>The supported owner deliverable is a <strong>headless, documented, versioned API</strong>, with
 conformance independent of vendor UI. A first-party owner UI is deferred; vendor
@@ -5383,7 +5438,9 @@ dormant slice remains separate from enabling its roles.</p>
 <p>Initial lifecycle operations are private-operator actions: provision, suspend,
 export and delete, without public signup. An owner may export or request deletion;
 the operator authorizes and executes deletion. A request never bypasses
-confirmation, retention or recovery policy.</p>
+confirmation, retention or recovery policy. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">Ownership changes are operator-assisted</a>
+for the first preview; self-service co-owner addition and transfer follow separately.
+Operator execution still preserves last-owner protection and owner-secret boundaries.</p>
 <table>
 <thead>
 <tr>
@@ -5558,7 +5615,9 @@ consumer admission, prove commit coupling, durable checkpoints, ordering, comple
 cohorts, duplication/deletion/config invalidation and crash/replay boundaries.
 The event carries the transaction's <strong>final floor</strong>, as decided in the
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#b7-durable-multitenant-delivery-2026-11-06">B7 record</a>.
-A timer may drive time-based alarms; it cannot replace lost write events.
+Time-only ticks drive time-based alarms. The separately scheduled bounded snapshot
+reconciliation recovers current rows and absence after missed wakes; neither
+mechanism promises recovery of every intermediate transition.
 D23 forwards socket writes/acks unchanged from the reader <code>realtime</code> role to the
 internal <code>api</code> write endpoint with the <code>socket</code> source label; client behavior and
 current authority must be measured at that boundary. Failed forwarding yields
@@ -5568,6 +5627,66 @@ artifact for a 30-day window, then an operator destroys the keys. The artifact
 must contain every ciphertext/key reference before secret/audit rows are removed.
 The decision is in the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion record</a>;
 implementation and destroy/after-window refusal evidence remain separate.</p>
+<h2 id="m5m6-acceptance-families">M5/M6 acceptance families<a class="headerlink" href="#m5m6-acceptance-families" title="Permanent link">&para;</a></h2>
+<p>These refine the milestone cells above into observable results. They are required
+coverage, not new passing measurements. The coordinator records actual source,
+command, control, artifact and verdict per family on the assembled candidate.
+A deferred enhancement is named explicitly; it does not silently lower another bar.</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Required observable result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M5 current-state recovery</td>
+<td>Bounded full typed identity/absence reconciliation in one consistent tenant snapshot recovers hard deletes and unstamped activity after missed wakes/restart and at an unchanged floor. Preserve producer timestamps and replies. Concurrent paging cannot combine snapshots; foreign tenant state is unchanged. Row/byte/transaction failure refuses without partial projection/checkpoint replacement.</td>
+</tr>
+<tr>
+<td>M5 evaluator recovery</td>
+<td>The actual evaluator consumes recovered inputs. Acquisition or commit failure preserves last good state; downstream clinical failure may leave newer committed inputs while retaining the prior clinical result/time. A later cycle retries computation even at an unchanged floor. Settings/plugin-version changes cannot reuse an incompatible result. Do not claim atomic input-plus-clinical-output persistence.</td>
+</tr>
+<tr>
+<td>M5 live reference</td>
+<td>Separate roles on one machine exercise subscription startup races, missed/duplicate wakes, process death/restart and explicit scheduling. Time-only alarm ticks and current-state reconciliation are distinct work. A transport wake is not delivery evidence; a checkpoint lock is not a multi-node lease.</td>
+</tr>
+<tr>
+<td>M5 socket compatibility and authority</td>
+<td>Actual D23 API forwarding preserves namespace, source, replies and ack/no-ack retry behavior; realtime has no storage-write authority. Current authorization covers operations, reconnect and protected delivery. Tenant rooms/caches and settings invalidation remain isolated.</td>
+</tr>
+<tr>
+<td>M5 durable alarm state</td>
+<td>Adopt the ack/snooze effect, expiry and retry contract before wiring it. API-persisted tenant state survives restart; duplicate delivery cannot extend suppression unintentionally. Exercise persistence failure and restart boundaries against actual client behavior. Live external notification delivery remains a separate gate; enabled durable request handoff needs its own crash/retry oracle.</td>
+</tr>
+<tr>
+<td>M6 bounded owner API</td>
+<td>Declare the exact reviewed configuration/credential/integration catalogue and refusals. Human issuer/renewal implements adopted lifetimes, current authority, reauthentication and cross-worker revocation through synthetic identities. Provider logout, idle activity and outage behavior require explicit contracts; operator-provisioned credentials alone do not close human identity.</td>
+</tr>
+<tr>
+<td>M6 operator-assisted ownership</td>
+<td>Private-operator addition/transfer/recovery is tenant-bound, explicit and audited. Concurrent changes cannot orphan a tenant or silently replace an owner; unauthorized operations have no effect. Recovery grants no automatic secret reveal. Self-service co-owner/transfer is not a preview gate.</td>
+</tr>
+<tr>
+<td>M6 lifecycle and trust</td>
+<td>Provision/suspend/export/delete and restore respect current authority and trusted tenant resolution. Artifact fidelity is independently checked; capture required ciphertext/key references before deletion. Exercise retained-key recovery, operator destruction and after-window refusal. Same-ID restore and new-secret cloning remain distinct. Deletion request/confirmation/cancellation policy needs an explicit answer.</td>
+</tr>
+<tr>
+<td>M6 operations and clients</td>
+<td>Populated backup/restore and upgrade/rollback cover interruption, supported schema/catalogue and failure recovery on the assembled tree. Retain the Android emulator acceptance and the explicit iOS/all-client exclusions. A representative entries/clock lab does not cover the whole catalogue.</td>
+</tr>
+<tr>
+<td>M6 operating envelope and final review</td>
+<td>Declare synthetic workload and freshness/recovery expectations, then measure shared-pool/hot-tenant interference, row/byte limits, scan cadence, latency and egress refusal before approving bounds. Complete the final criterion matrix and review. Functional passes do not establish capacity.</td>
+</tr>
+</tbody>
+</table>
+<p>M5 reconciliation implementation may proceed now; it does not depend on selecting
+an external notification provider or retained history. Multi-node failover,
+every-transition history and self-service ownership are separate enhancements.
+Real identities/data, production/default role enablement and release admission keep
+their existing explicit approval boundaries.</p>
 <h2 id="compatibility-and-parallel-contracts">Compatibility and parallel contracts<a class="headerlink" href="#compatibility-and-parallel-contracts" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
