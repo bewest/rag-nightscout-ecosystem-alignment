@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import shutil
+import signal
 from datetime import datetime, timezone
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -22,7 +24,20 @@ out = Path(args.out).resolve()
 out.mkdir(parents=True, exist_ok=False)
 
 def run(command, cwd=None, env=None, check=True, timeout=30):
-    result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, timeout=timeout)
+    child = subprocess.Popen(command, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+    try:
+        start = Path(f'/proc/{child.pid}/stat').read_text().rsplit(') ', 1)[1].split()[19]
+    except FileNotFoundError:
+        start = None
+    try:
+        stdout, stderr = child.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(child.pid, signal.SIGKILL)
+        stdout, stderr = child.communicate()
+        raise subprocess.TimeoutExpired(command[0], timeout, stdout, stderr)
+    with (out / 'children.jsonl').open('a') as stream:
+        stream.write(json.dumps({'pid': child.pid, 'birth': start, 'exit': child.returncode, 'program': Path(command[0]).name}) + '\n')
+    result = subprocess.CompletedProcess(command, child.returncode, stdout, stderr)
     if check and result.returncode:
         # Commands can carry environment-only credentials in internal diagnostics.
         raise RuntimeError(f'{command[0]} {command[1]} exited {result.returncode}')
@@ -42,7 +57,8 @@ def write(name, value):
 
 def inventory():
     return {'containers': sorted(docker('ps', '-aq', '--no-trunc').splitlines()),
-            'volumes': sorted(docker('volume', 'ls', '-q').splitlines())}
+            'volumes': sorted(docker('volume', 'ls', '-q').splitlines()),
+            'networks': sorted(docker('network', 'ls', '-q', '--no-trunc').splitlines())}
 
 stages = args.stages.split(',')
 assert stages and all(stage in ['initial', 'controls', 'restored'] for stage in stages)
@@ -88,6 +104,11 @@ def capture(label, control=None, grep=None):
         subprocess.run(['tar', '-x', '-C', scratch], input=archive, check=True)
         root = Path(scratch)
         (root / 'node_modules').symlink_to(deps, target_is_directory=True)
+        private_bin = root / '.native-proof-bin'
+        private_bin.mkdir()
+        wrapper = private_bin / 'docker'
+        wrapper.write_bytes((Path(__file__).parent / 'docker-audit.py').read_bytes())
+        wrapper.chmod(0o700)
         if control:
             name, file, before, after, pattern, marker = control
             path = root / file
@@ -101,8 +122,12 @@ def capture(label, control=None, grep=None):
                    '--reporter', 'json', 'tests/tenant-operations.integration.test.js']
         if control or grep:
             command.extend(['--grep', control[4] if control else grep])
-        env = {**os.environ, 'NS_TENANT_OPERATIONS_PG_TEST': '1', 'NS_TENANT_OPERATIONS_AUDIT': str(audit_path),
+        env = {**{key: os.environ[key] for key in ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'DOCKER_HOST', 'DOCKER_CONTEXT', 'XDG_RUNTIME_DIR'] if key in os.environ},
+               'NS_TENANT_OPERATIONS_PG_TEST': '1', 'NS_TENANT_OPERATIONS_AUDIT': str(audit_path),
                'TZ': 'UTC', 'NODE_ENV': 'test'}
+        env['NS_BACKUP_DOCKER_REAL'] = shutil.which('docker')
+        env['NS_BACKUP_DOCKER_AUDIT'] = str(out / (label + '.docker.jsonl'))
+        env['PATH'] = str(private_bin) + os.pathsep + env['PATH']
         completed = None
         cleanup = []
         try:
