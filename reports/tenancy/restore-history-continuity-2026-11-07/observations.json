@@ -1,0 +1,80 @@
+{
+  "completed": true,
+  "scope": "Actual clock allocator and actual history operation/filter, recording storage/clock and stubbed authentication; synthetic client-cache model, not PG/mobile",
+  "observations": [
+    {
+      "label": "older-artifact-clock",
+      "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+      "initialClockFloor": 1699999999000,
+      "requestedWallTime": 1700000000000,
+      "nextActualClockStamp": 1700000000000,
+      "clientCursor": 1700000010000,
+      "actualHistoryFilter": [
+        {
+          "field": "srvModified",
+          "operator": "gt",
+          "value": 1700000010000
+        }
+      ],
+      "actualHistoryResult": [],
+      "clientCacheRetainsHardRemovedPostBackupRow": true,
+      "clientCacheRetainsLaterValueForRestoredOlderRow": true,
+      "calls": [
+        {
+          "sql": "SELECT last_stamp FROM \"clock_protocol\".tenant_write_clock WHERE tenant_id = $1 FOR UPDATE",
+          "values": [
+            "11111111-1111-4111-8111-111111111111"
+          ]
+        },
+        {
+          "sql": "UPDATE \"clock_protocol\".tenant_write_clock SET last_stamp = $1 WHERE tenant_id = $2 AND last_stamp = $3",
+          "values": [
+            1700000000000,
+            "11111111-1111-4111-8111-111111111111",
+            1699999999000
+          ]
+        }
+      ]
+    },
+    {
+      "label": "retain-live-clock-only",
+      "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+      "initialClockFloor": 1700000010000,
+      "requestedWallTime": 1700000000000,
+      "nextActualClockStamp": 1700000010001,
+      "clientCursor": 1700000010000,
+      "actualHistoryFilter": [
+        {
+          "field": "srvModified",
+          "operator": "gt",
+          "value": 1700000010000
+        }
+      ],
+      "actualHistoryResult": [
+        {
+          "identifier": "after-restore",
+          "srvModified": 1700000010001,
+          "value": "new"
+        }
+      ],
+      "clientCacheRetainsHardRemovedPostBackupRow": true,
+      "clientCacheRetainsLaterValueForRestoredOlderRow": true,
+      "calls": [
+        {
+          "sql": "SELECT last_stamp FROM \"clock_protocol\".tenant_write_clock WHERE tenant_id = $1 FOR UPDATE",
+          "values": [
+            "11111111-1111-4111-8111-111111111111"
+          ]
+        },
+        {
+          "sql": "UPDATE \"clock_protocol\".tenant_write_clock SET last_stamp = $1 WHERE tenant_id = $2 AND last_stamp = $3",
+          "values": [
+            1700000010001,
+            "11111111-1111-4111-8111-111111111111",
+            1700000010000
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1940,3 +1940,11 @@ for this coherent document/queue batch; no application-source readiness is infer
 Current exact branch heads, local packets, runtime ownership and next integration boundary:
 `externals/work/HANDOFF-m6-restore-fence-20261107.md`. No operator-visible behavior,
 default, deployment or milestone promotion changes in this update.
+
+### Update — restore history compatibility and documentation backlog (2026-11-07)
+
+| Scope | Result | Remaining boundary |
+|---|---|---|
+| Older same-ID snapshot | [Reproduced source protocol](../../reports/tenancy/restore-history-continuity-2026-11-07/README.md): restoring old clock/document metadata can skip history and retain stale client rows; floor preservation alone does not supply updates/deletions. Root replay agrees. | Forward history correction versus explicit client resync remains a maintainer choice. Joined source refuses full clock-bearing import before SQL; no complete restore acceptance. |
+| Alignment documentation | MT-DOC-DEPLOY, MT-DOC-REALTIME and MT-DOC-SQL queued with separate acceptance criteria and linked from the tenancy reading guide. | Scenarios/diagrams, component communication and SQL/migration design documentation remain pending and UNMEASURED. |
+| Joined implementation | Original migration/readiness/controller/lifecycle histories joined locally; focused checks continue before a coherent final campaign. | No new application push, PR acceptance, production/default enablement or M6 promotion claimed. |
