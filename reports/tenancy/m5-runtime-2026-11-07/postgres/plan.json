@@ -1,0 +1,680 @@
+{
+  "version": 1,
+  "evidenceClass": "RECORDED-EVIDENCE",
+  "date": "2026-11-07",
+  "scope": {
+    "boundary": "bounded PostgreSQL evaluator lifecycle, alarm suppression, durable notification request/retry and controlled UDS consumer composition",
+    "freshNativeExecution": false,
+    "actualPublicRoleRecipientAuthority": "UNMEASURED",
+    "browser": "UNMEASURED",
+    "providerDeviceDelivery": "UNMEASURED",
+    "performanceCapacity": "UNMEASURED",
+    "wholeM5M6": "UNMEASURED",
+    "sourceAttribution": "per actual phase; no aggregate source head",
+    "roles": "UNMEASURED"
+  },
+  "components": {
+    "lifecycle": {
+      "file": "tests/tenant-current-state-recovery-proof.integration.test.js",
+      "flag": "NS_M5_CURRENT_STATE_PROOF_TEST",
+      "suite": "M5 evaluator preview lifecycle actual PostgreSQL",
+      "expectedCount": 7,
+      "markerPrefix": "M5_EVALUATOR_OBSERVATION",
+      "expectedMarkers": 21,
+      "adapter": "lifecycle.cjs",
+      "fullTitles": [
+        "M5 evaluator preview lifecycle actual PostgreSQL boots listenerless role and actual CLI and recovers current state on restart",
+        "M5 evaluator preview lifecycle actual PostgreSQL finds quiet canonical absence and unstamped activity through the explicit recovery backstop",
+        "M5 evaluator preview lifecycle actual PostgreSQL uses retained input for time-only ticks until explicit acquisition",
+        "M5 evaluator preview lifecycle actual PostgreSQL discards a reused-revision changed config and refuses stale cached eligibility",
+        "M5 evaluator preview lifecycle actual PostgreSQL keeps tenant B progressing while A row or byte refusal retains last good output",
+        "M5 evaluator preview lifecycle actual PostgreSQL drains and fences a real in-flight clinical read before role shutdown",
+        "M5 evaluator preview lifecycle actual PostgreSQL refuses actual unsafe clinical clock checkpoint and unrelated grants before starting jobs"
+      ]
+    },
+    "alarm": {
+      "file": "tests/tenant-alarm-state.integration.test.js",
+      "flag": "NS_TENANT_ALARM_TEST",
+      "suite": "durable tenant alarm native boundary",
+      "expectedCount": 4,
+      "markerPrefix": "TENANT_ALARM_OBSERVATION",
+      "expectedMarkers": 6,
+      "adapter": "alarm.cjs",
+      "fullTitles": [
+        "durable tenant alarm native boundary commits tenant-wide original expiry and consumes suppression after fresh handles",
+        "durable tenant alarm native boundary preserves first accepted expiry under concurrent actors and urgent warning cascade",
+        "durable tenant alarm native boundary confirms commit before callback and never acknowledges rolled back or revoked writes",
+        "durable tenant alarm native boundary keeps foreign state unreadable and realtime unable to write, with unsafe privilege refusal"
+      ]
+    },
+    "notification": {
+      "file": "tests/tenant-notifications.integration.test.js",
+      "flag": "NS_TENANT_NOTIFICATIONS_TEST",
+      "suite": "durable tenant notification actual PostgreSQL",
+      "expectedCount": 7,
+      "markerPrefix": "TENANT_NOTIFICATION_OBSERVATION",
+      "expectedMarkers": 10,
+      "adapter": "notification.cjs",
+      "fullTitles": [
+        "durable tenant notification actual PostgreSQL commits request and attempt before fake consumer entry and preserves admission/rearm across handles",
+        "durable tenant notification actual PostgreSQL retries same durable identity after actual child death following fake acceptance without completion",
+        "durable tenant notification actual PostgreSQL rolls back inserted intent before failed transaction completion and persists uncertain callback instead of acceptance",
+        "durable tenant notification actual PostgreSQL refuses new suppression and cleared condition on queued retry while foreign tenant is unchanged",
+        "durable tenant notification actual PostgreSQL enforces forced RLS and narrow SQL authority with actual denied writes",
+        "durable tenant notification actual PostgreSQL refuses unsafe RLS schema or inherited table authority before any consumed request effect",
+        "durable tenant notification actual PostgreSQL persists selected consumer receipts and clears only explicitly acknowledged references without alarm fields"
+      ]
+    },
+    "consumer": {
+      "file": "tests/evaluator-consumers.integration.test.js",
+      "flag": "NS_EVALUATOR_CONSUMERS_TEST",
+      "suite": "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink",
+      "fullTitles": [
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink commits immutable tenant intent before actual adapter handoff and admits same-output once plus a new realtime cycle",
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink recovers retained producer normal-state clear after actual evaluator process restart without repeated clear UUIDs",
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink retries a still-current uncertain request with the same UUID after actual process death while permitting one fresh cycle event",
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink clears a committed authorized ACK despite failed clinical acquisition and keeps the other tenant independent",
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink keeps ACK producer state SELECT-only and refuses unsafe forced-RLS state before any sink effect"
+      ],
+      "expectedCount": 5,
+      "markerPrefix": "M5_CONSUMER_OBSERVATION",
+      "markerContract": {
+        "kind": "bounded-allowed-phases",
+        "sinkMin": 1,
+        "sinkMax": 64,
+        "totalMax": 96
+      },
+      "adapter": "consumer.cjs",
+      "expectedChildExits": 8
+    }
+  },
+  "controls": [
+    {
+      "id": "lifecycle-listener",
+      "component": "lifecycle",
+      "control": "listener",
+      "selection": [
+        "M5 evaluator preview lifecycle actual PostgreSQL boots listenerless role and actual CLI and recovers current state on restart"
+      ],
+      "patches": [
+        {
+          "file": "lib/server/serve/index.js",
+          "before": "    for (const name of order) {",
+          "after": "    for (const name of specs.map(spec => spec.role)) {"
+        }
+      ],
+      "failure": "M5_EVAL_LISTENERLESS_BOOT",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "lifecycle-backstop",
+      "component": "lifecycle",
+      "control": "backstop",
+      "selection": [
+        "M5 evaluator preview lifecycle actual PostgreSQL finds quiet canonical absence and unstamped activity through the explicit recovery backstop"
+      ],
+      "patches": [
+        {
+          "file": "lib/server/serve/evaluator-runtime.js",
+          "before": "  timers.push(schedule(() => { all(true).catch(() => {}); }, recoveryIntervalMs));",
+          "after": ""
+        }
+      ],
+      "failure": "M5_EVAL_BACKSTOP_RECOVERY",
+      "expectedMarkers": 2
+    },
+    {
+      "id": "lifecycle-time",
+      "component": "lifecycle",
+      "control": "time",
+      "selection": [
+        "M5 evaluator preview lifecycle actual PostgreSQL uses retained input for time-only ticks until explicit acquisition"
+      ],
+      "patches": [
+        {
+          "file": "lib/data/tenant-projection-evaluator.js",
+          "before": "    evaluateTime: ({ at = Date.now() } = {}) => compute(false, at),",
+          "after": "    evaluateTime: ({ at = Date.now() } = {}) => compute(true, at),"
+        }
+      ],
+      "failure": "M5_EVAL_TIME_RETAINED",
+      "expectedMarkers": 2
+    },
+    {
+      "id": "lifecycle-config",
+      "component": "lifecycle",
+      "control": "config",
+      "selection": [
+        "M5 evaluator preview lifecycle actual PostgreSQL discards a reused-revision changed config and refuses stale cached eligibility"
+      ],
+      "patches": [
+        {
+          "file": "lib/server/serve/evaluator-runtime.js",
+          "before": "        if (!state.instance || current.identity !== state.identity) {",
+          "after": "        if (!state.instance) {"
+        }
+      ],
+      "failure": "M5_EVAL_CONFIG_REBUILD",
+      "expectedMarkers": 2
+    },
+    {
+      "id": "lifecycle-close",
+      "component": "lifecycle",
+      "control": "close",
+      "selection": [
+        "M5 evaluator preview lifecycle actual PostgreSQL drains and fences a real in-flight clinical read before role shutdown"
+      ],
+      "patches": [
+        {
+          "file": "lib/server/serve/evaluator-runtime.js",
+          "before": "        if (closed || cycleGeneration !== state.generation) continue; // generation and shutdown fence late results",
+          "after": "        if (cycleGeneration !== state.generation) continue; // archived shutdown-fence ablation"
+        },
+        {
+          "file": "lib/server/serve/evaluator-runtime.js",
+          "before": "        if (state.instance) closeComponent(state.instance);",
+          "after": ""
+        }
+      ],
+      "failure": "M5_EVAL_CLOSE_FENCE",
+      "expectedMarkers": 2
+    },
+    {
+      "id": "alarm-repeat",
+      "component": "alarm",
+      "control": "repeat",
+      "selection": [
+        "durable tenant alarm native boundary commits tenant-wide original expiry and consumes suppression after fresh handles"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-alarms/postgres.js",
+          "before": " WHERE existing.expires_at <= EXCLUDED.acked_at",
+          "after": ""
+        }
+      ],
+      "failure": "ALARM_NATIVE_REPEAT",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "alarm-cascade",
+      "component": "alarm",
+      "control": "cascade",
+      "selection": [
+        "durable tenant alarm native boundary preserves first accepted expiry under concurrent actors and urgent warning cascade"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-alarms/postgres.js",
+          "before": "if (primary.accepted && input.level === 2)",
+          "after": "if (false)"
+        }
+      ],
+      "failure": "ALARM_NATIVE_CASCADE",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "alarm-consume",
+      "component": "alarm",
+      "control": "consume",
+      "selection": [
+        "durable tenant alarm native boundary commits tenant-wide original expiry and consumes suppression after fresh handles"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-alarms/cycle.js",
+          "before": "return expiry === undefined || at > expiry;",
+          "after": "return true;"
+        }
+      ],
+      "failure": "ALARM_NATIVE_CONSUMED",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "alarm-authority",
+      "component": "alarm",
+      "control": "authority",
+      "selection": [
+        "durable tenant alarm native boundary confirms commit before callback and never acknowledges rolled back or revoked writes"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-alarms/postgres.js",
+          "before": "if (await authorizeInTransaction({ connection: db, operation }) !== true)",
+          "after": "if (false)"
+        }
+      ],
+      "failure": "ALARM_NATIVE_CURRENT_AUTHORITY",
+      "expectedMarkers": 2
+    },
+    {
+      "id": "alarm-reply-before-commit",
+      "component": "alarm",
+      "control": "precommit",
+      "selection": [
+        "durable tenant alarm native boundary confirms commit before callback and never acknowledges rolled back or revoked writes"
+      ],
+      "patches": [
+        {
+          "file": "lib/server/tenant-socket-forwarding.js",
+          "before": "      const replyArgs = await execute({ tenant, actor, namespace, event, args, source: 'socket' });",
+          "after": "      const executing = execute({ tenant, actor, namespace, event, args, source: 'socket' });\n      const replyArgs = event === 'ack' ? (executing.catch(() => {}), []) : await executing;"
+        }
+      ],
+      "failure": "ALARM_NATIVE_NO_EARLY_ACK",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "notification-premature-dispatch",
+      "component": "notification",
+      "control": "premature-dispatch",
+      "selection": [
+        "durable tenant notification actual PostgreSQL commits request and attempt before fake consumer entry and preserves admission/rearm across handles"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/component.js",
+          "before": "          const row = await store.enqueue({ tenant, consumer: adapter.id, key:",
+          "after": "          await callAdapter({ tenant_id: tenant, request_id: '00000000-0000-4000-8000-000000000000', attempt: 0, payload }, []);\n          const row = await store.enqueue({ tenant, consumer: adapter.id, key:"
+        }
+      ],
+      "failure": "NOTIFICATION_NATIVE_DURABLE_REQUEST",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "notification-retry-identity",
+      "component": "notification",
+      "control": "retry-identity",
+      "selection": [
+        "durable tenant notification actual PostgreSQL retries same durable identity after actual child death following fake acceptance without completion"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/postgres.js",
+          "before": "if (same && (saved.origin === origin || active)) return saved;",
+          "after": "if (same && saved.origin === origin) return saved;"
+        }
+      ],
+      "failure": "NOTIFICATION_NATIVE_RETRY_IDENTITY",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "notification-failed-accepted",
+      "component": "notification",
+      "control": "failed-accepted",
+      "selection": [
+        "durable tenant notification actual PostgreSQL rolls back inserted intent before failed transaction completion and persists uncertain callback instead of acceptance"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/component.js",
+          "before": "const state = outcome.accepted ? 'accepted' : 'uncertain';",
+          "after": "const state = 'accepted';"
+        }
+      ],
+      "failure": "NOTIFICATION_NATIVE_FAILED_SEND_NOT_ACCEPTED",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "notification-suppression",
+      "component": "notification",
+      "control": "suppression",
+      "selection": [
+        "durable tenant notification actual PostgreSQL refuses new suppression and cleared condition on queued retry while foreign tenant is unchanged"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/component.js",
+          "before": "if (await allows({ tenant, notification: payload, at: c.instant(now()) }) !== true) return false;",
+          "after": "await allows({ tenant, notification: payload, at: c.instant(now()) });"
+        }
+      ],
+      "failure": "NOTIFICATION_NATIVE_SUPPRESSION_NO_DISPATCH",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "notification-readiness",
+      "component": "notification",
+      "control": "readiness",
+      "selection": [
+        "durable tenant notification actual PostgreSQL refuses unsafe RLS schema or inherited table authority before any consumed request effect"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/postgres.js",
+          "before": "      await assertReady(connection, namespace);",
+          "after": "      // control: readiness guard omitted"
+        }
+      ],
+      "failure": "NOTIFICATION_NATIVE_UNSAFE_NO_EFFECT",
+      "expectedMarkers": 1
+    },
+    {
+      "id": "consumer-missing-intent",
+      "component": "consumer",
+      "control": "missing-intent",
+      "selection": [
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink commits immutable tenant intent before actual adapter handoff and admits same-output once plus a new realtime cycle"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/postgres.js",
+          "before": "for (const intent of next.intents)",
+          "after": "for (const intent of [])"
+        }
+      ],
+      "failure": "M5_CONSUMER_COMMIT_BEFORE_SINK",
+      "expectedConsumerExits": 1
+    },
+    {
+      "id": "consumer-lost-state",
+      "component": "consumer",
+      "control": "lost-state",
+      "selection": [
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink recovers retained producer normal-state clear after actual evaluator process restart without repeated clear UUIDs"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/producer-state.js",
+          "before": "service(prior.alarms,",
+          "after": "service([],"
+        }
+      ],
+      "failure": "M5_CONSUMER_RESTART_CLEAR",
+      "expectedConsumerExits": 2
+    },
+    {
+      "id": "consumer-cold-no-output",
+      "component": "consumer",
+      "control": "cold-no-output",
+      "selection": [
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink clears a committed authorized ACK despite failed clinical acquisition and keeps the other tenant independent"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/producer.js",
+          "before": "const observed = current(tenant);",
+          "after": "const observed = current(tenant); if (!observed) throw new Error('CONTROL_COLD_CLINICAL_UNAVAILABLE');"
+        }
+      ],
+      "failure": "M5_CONSUMER_CONTROL_CLEAR_FAILED_CLINICAL",
+      "expectedConsumerExits": 2
+    },
+    {
+      "id": "consumer-jsonb-admission-churn",
+      "component": "consumer",
+      "control": "jsonb-admission-churn",
+      "selection": [
+        "selected evaluator durable realtime consumer actual PostgreSQL and controlled UDS sink commits immutable tenant intent before actual adapter handoff and admits same-output once plus a new realtime cycle"
+      ],
+      "patches": [
+        {
+          "file": "lib/tenant-notifications/postgres.js",
+          "before": "!isDeepStrictEqual(previous.producer, next.producer)",
+          "after": "JSON.stringify(previous.producer) !== JSON.stringify(next.producer)"
+        }
+      ],
+      "failure": "M5_CONSUMER_COMMIT_BEFORE_SINK",
+      "expectedConsumerExits": 1
+    }
+  ],
+  "phases": [
+    {
+      "id": "initial-ordinary",
+      "capsule": "initial",
+      "originalPhase": "ordinary",
+      "kind": "ordinary"
+    },
+    {
+      "id": "lifecycle-listener",
+      "capsule": "initial",
+      "originalPhase": "lifecycle-listener",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "lifecycle-backstop",
+      "capsule": "initial",
+      "originalPhase": "lifecycle-backstop",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "lifecycle-time",
+      "capsule": "initial",
+      "originalPhase": "lifecycle-time",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "lifecycle-config",
+      "capsule": "initial",
+      "originalPhase": "lifecycle-config",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "lifecycle-close",
+      "capsule": "initial",
+      "originalPhase": "lifecycle-close",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "alarm-repeat",
+      "capsule": "initial",
+      "originalPhase": "alarm-repeat",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "alarm-cascade",
+      "capsule": "initial",
+      "originalPhase": "alarm-cascade",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "alarm-consume",
+      "capsule": "initial",
+      "originalPhase": "alarm-consume",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "alarm-authority",
+      "capsule": "initial",
+      "originalPhase": "alarm-authority",
+      "kind": "control",
+      "regrade": true
+    },
+    {
+      "id": "alarm-reply-before-commit",
+      "capsule": "continuation",
+      "originalPhase": "alarm-reply-before-commit",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "notification-premature-dispatch",
+      "capsule": "continuation",
+      "originalPhase": "notification-premature-dispatch",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "notification-retry-identity",
+      "capsule": "continuation",
+      "originalPhase": "notification-retry-identity",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "notification-failed-accepted",
+      "capsule": "continuation",
+      "originalPhase": "notification-failed-accepted",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "notification-suppression",
+      "capsule": "continuation",
+      "originalPhase": "notification-suppression",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "notification-readiness",
+      "capsule": "continuation",
+      "originalPhase": "notification-readiness",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "consumer-missing-intent",
+      "capsule": "continuation",
+      "originalPhase": "consumer-missing-intent",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "consumer-lost-state",
+      "capsule": "continuation",
+      "originalPhase": "consumer-lost-state",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "consumer-cold-no-output",
+      "capsule": "continuation",
+      "originalPhase": "consumer-cold-no-output",
+      "kind": "control",
+      "regrade": false
+    },
+    {
+      "id": "consumer-jsonb-admission-churn",
+      "capsule": "continuation",
+      "originalPhase": "consumer-jsonb-order",
+      "kind": "control",
+      "regrade": true
+    },
+    {
+      "id": "restored",
+      "capsule": "restoration",
+      "originalPhase": "restored",
+      "kind": "ordinary"
+    }
+  ],
+  "capsules": [
+    {
+      "id": "initial",
+      "head": "f4e3f7e7b9eab6388cee1fb3470d380506917e05",
+      "tree": "6c6f1a2293cab2bc700ed74986e2d4600714328f",
+      "indexSha256": "ba926f13bd20fda31f9d045fbdf80b14cc8129187c9b0fc0732ed2f51d6563f0",
+      "observerIndexSha256": "734034a9e166018a6066a617c507b65017e2b1a019639ce9a6a63d0865e2e762",
+      "indexCount": 109,
+      "containers": 10,
+      "volumes": 10,
+      "nodeBirths": 37
+    },
+    {
+      "id": "continuation",
+      "head": "353bb4445143bc85fe9f52e6ba3295247b23a96a",
+      "tree": "ac6d49f96fa2cf62889f33c9f3f8f27bd4751e46",
+      "indexSha256": "bd625af3c2b190032bab2686e160b825a4914daaae06ec0a0685b01920813dbc",
+      "observerIndexSha256": "be1df4b734317ef77981f877e47165e474dca050ba0e026b91870fface934748",
+      "indexCount": 111,
+      "containers": 10,
+      "volumes": 10,
+      "nodeBirths": 17
+    },
+    {
+      "id": "restoration",
+      "head": "353bb4445143bc85fe9f52e6ba3295247b23a96a",
+      "tree": "ac6d49f96fa2cf62889f33c9f3f8f27bd4751e46",
+      "indexSha256": "7f02044e797cd9a96e08c880ee0d255aeaa596fd0c8d6f64a631a1b2a63ec5c2",
+      "observerIndexSha256": "bd63ef3b2605c5d4135552b36c8acdbef13d5c6c6d08789f5da1148974074d28",
+      "indexCount": 22,
+      "containers": 1,
+      "volumes": 1,
+      "nodeBirths": 22
+    },
+    {
+      "id": "invalid-inner-await",
+      "head": "693ca4b82b9ba65bd93242018742f1e062b891e8",
+      "tree": "98d9c8369195da48b99a594f79ef3c1fbdf14924",
+      "indexSha256": "7b05842da1357f156e4040b8f8dea1859954abeeee2961245ebe5dad246c3e44",
+      "observerIndexSha256": "e5a14c5e416f3c462cbe328c5b0876c08db298ea3204c161af0c5b549201e646",
+      "indexCount": 21,
+      "containers": 1,
+      "volumes": 1,
+      "nodeBirths": 2
+    }
+  ],
+  "causalFiles": {
+    "lib/data/tenant-projection-evaluator.js": "ac8e3efde8f4ad049e79fef145d46240c7d9dcd72762d7793871dbf159359ec8",
+    "lib/server/serve/evaluator-consumers.js": "2b380259fd9bba426a04adb3aaf1b445468975125db774f89a58da0cc7c7b957",
+    "lib/server/serve/evaluator-runtime.js": "523604cb96efdd0e09adfead906140d9c8a4df17cae8aa60d49224ad5d2ce0fa",
+    "lib/server/serve/index.js": "89e738e49a441236747c322e3665919d264fed5f9c89fe5f9d939a3671b3e3ca",
+    "lib/tenant-alarms/ack-executor.js": "9146fd84e5de3e0a6c26787d99912dd8eaa390bace4e6aea4c61660354b7f4e3",
+    "lib/tenant-alarms/cycle.js": "65dafa1e82b8d283ee7106b9a87e62d4a333a91bf967b3e73d1f674fccc2907c",
+    "lib/tenant-alarms/postgres.js": "81aa0e4a332d7f2137dfbf05e1a37438ce8ba9cf34a0a727fbde395562bd0093",
+    "lib/tenant-notifications/component.js": "0250eaf7e2346b5e7e83dbad45ff0df651d574caa65c82cecf7b594420597fb9",
+    "lib/tenant-notifications/postgres-candidate.json": "0d998333640f4415dfb93edd789edb0277c1067ccd79f8583f902b3e1b0e1ec2",
+    "lib/tenant-notifications/postgres.js": "4a16996d31240b8c52beb121d4920d017d7efb2a0f65d13d0614abbc4d624f0a",
+    "lib/tenant-notifications/producer-state.js": "5bc12786b8bbb129a7bdbcc5f0491823d7a4431ea6b4d3cafd230cdfeed96fd8",
+    "lib/tenant-notifications/producer.js": "c72c675adb24cd9605281dffb6f241ea078eff13e6e7752c594ffcf800e3ec30",
+    "lib/tenant-notifications/readiness.js": "db3df0e90e65a60782676f2ea28b93bdd6cf98d73d2ab26fcf89174e67c33f2b",
+    "package-lock.json": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+    "package.json": "ec5fe8d7d5afd51d279b0df2398743b43805816fef74b3462d10dfe08d4dca44",
+    "tests/evaluator-consumers.integration.test.js": "9e81573139fbe59cd09a558a204e8956089491d37b52513f18db0c4d48495acb",
+    "tests/fixtures/evaluator-consumer-worker.js": "d99c3e07a00aca40fa7b4294710c42db65af73f99c33dcc552573f47e3dbdcaf",
+    "tests/fixtures/evaluator-consumers-native.js": "8e59a1c1d6b8b7e298f776f22b7ecf338e38a56573ea720428ca4ce1082c7a65",
+    "tests/fixtures/tenant-notifications-native.js": "2818f0b680dc341252b71f0582a8f3b6350173f40f2271c735f8fb2b52ccd654",
+    "tests/tenant-alarm-state.integration.test.js": "c6b7323033711a3efb70efba5fc936de2014802cf39378f38895ca655b0b48ff",
+    "tests/tenant-current-state-recovery-proof.integration.test.js": "6f6c4ed869e8448d820aa73de9230dcb20ffb7f94483168b84771384a6ece4e9",
+    "tests/tenant-notifications.integration.test.js": "d098cb0277a056809df53a9468b05392ec0561376dbfa1a11f62fceeb94989e3",
+    "lib/storage/postgres-public-policy-roles.js": "9978c8c0323fd76710301de8c6faad083ef7c09f35187f166c44836da5ffc3cf",
+    "lib/storage/metadata-observer.js": "2189b4b03ba7807c066ed06dc369c7bfa5336e204ea722b9127c430293f330f1",
+    "lib/server/serve/evaluator-consumer-readiness.js": "d48ec47f4233de2c14a0787c81f182bf9659efb0ecba59cf25140d8cf8da7b9d",
+    "lib/server/serve/evaluator-config.js": "da804c3bc333d17a5f4de5c82cc6b93a4cddcaae3ff562a8843cbab3068145bf",
+    "lib/server/serve/evaluator-consumer-config.js": "7c91fbe62a92183f1b45bbe1510461590367a0b10c0f3793376a1c63a373a5ca",
+    "tests/fixtures/evaluator-preview-lab.js": "3e9dd26dac08460fd27cf7ba226cb6e722e3a107bfdb78311703bbd31c2cf5bc",
+    "tests/fixtures/tenant-durable-replay.js": "c3c0a09293d036dd8cc84c8f9460db7c80e93a490592a31266844369b646d0a4",
+    "tests/fixtures/tenant-commit-clock-port.js": "a9c53532e85ce8c972160647b37c75c10c2805af47f6e001d458ed3cc94ea4c3",
+    "tests/fixtures/evaluator-preview-worker.js": "fab102826225fdb2198fb73ff9ea022ec80bad2f1d50ab161eefb8d0e2f6b470",
+    "tests/fixtures/evaluator-consumer-open-protocol.js": "6d4f89be124a8eac69eaa6c83872160aeae5344273499b8ae16174c22044374e",
+    "tests/evaluator-consumer-native-observation.test.js": "cf322cdf8f8443aa02de22b087debeb2776e3da058c4275b2f2a5c4f912b33f0",
+    "tests/tenant-notification-native-restoration.test.js": "2afee2a1bb1ba9157a2557d9ff7468f71425768ddceff1f5c6a4647ccd7f8590",
+    "tests/evaluator-consumer-open-order.test.js": "d9edfb6d694f0e5fa32a28b618bc68f2d434237f10d01ff2b63e9316a0920624",
+    "lib/server/realtime/alarm-transport.js": "9c34fc8501e522320fca353d8567c7b2cb71e3e0295b1c2081055e8c61c4a02f",
+    "lib/plugins/bgnow.js": "8202e0223e6d604bf91c39065c083aed4b80d2a84456d47399ce5b0c9e579770",
+    "lib/server/tenant-socket-forwarding.js": "ae3f71f6f594c1bbbd1d3557ac0a13618264d1cae9cae1af49e7dff992ba900f"
+  },
+  "causalDeclaration": {
+    "originalPriorFiles": 37,
+    "additionalControlSources": 1,
+    "equivalentAtAllDeclaredHeads": true
+  },
+  "adapterHashes": {
+    "lifecycle.cjs": "13714d42383bc0961401cf9538f8ada0e3bdf12f51ba74811cac1a0c8972fca4",
+    "consumer.cjs": "e27eba645370a93770d4390c333dd10733274c81e5c4447c1caaf8c686e1a943",
+    "alarm.cjs": "50582f5956f694042128ea846e38f30d0f0f84b3420eb1b1c561ea1ee97f81e3",
+    "notification.cjs": "ee75ed1e971a291da2f553e211f3612d59142a83ae33137ffff6cb6b74213adf"
+  },
+  "lockSha256": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+  "postgresImage": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+  "invalidControl": {
+    "id": "invalid-inner-await",
+    "originalPhase": "alarm-precommit",
+    "component": "alarm",
+    "patches": [
+      {
+        "file": "lib/tenant-alarms/ack-executor.js",
+        "before": "await writer.ack(operation);",
+        "after": "writer.ack(operation).catch(() => {});"
+      }
+    ],
+    "disposition": "INVALID timeout before the held-transaction marker; excluded from nineteen controls"
+  }
+}

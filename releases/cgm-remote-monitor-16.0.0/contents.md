@@ -1849,3 +1849,23 @@ Validation: queue-check, docs-links, changed Markdown fragment targets and white
 | Execution | M5 runtime integration/acceptance continues independently; C can prepare this lifecycle contract while waiting for the final M5 schema inventory. | No M5/M6 promotion or actual tenant deletion is performed by this decision update. Earlier 14-day proposal is not a preview requirement. |
 
 Validation: queue-check, docs-links, changed Markdown fragment targets and whitespace checks pass. Application/site suites were skipped for this prose-only policy update. No actual deletion or lifecycle acceptance was run.
+
+
+### Update — durable runtime and bounded SQL operations acceptance (2026-11-07)
+
+| Scope | Recorded state | Acceptance and remaining boundary |
+|---|---|---|
+| Assembled application | Local `codex/m5-m6-joined-completion-20261107` at `f0fac99a2fccee259c9a76eba0123058bf288d96` | **Reproduced:** [R73](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) accepts the full suite, entire default browser, entire enabled45-suite corpus and unchanged-source final upstream check. Exact figures, source comparisons, failed initial run and causal controls live in R73. No application source or test followed final prcheck. |
+| M5 milestone | **Functional reference on one host promoted**; M0–M4 R72 scope retained | Durable current-state/evaluator recovery, current socket authority and DATA compatibility, original alarm suppression and actual same-identity notification consumers pass the joined criterion bar. The current reference polls consistent snapshots; no LISTEN latency, multi-node lease, every-transition history, live provider/device or all-client claim. |
+| M6 operations | Bounded populated SQL recovery/upgrade/rollback and synthetic lifecycle accepted | Separate actual-source [SQL record](../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md). M6 remains blocked on complete identity/owner/lifecycle/trust, same-ID tenant restore, recoverable/destroyed keys, operating envelope and final preview admission. Fresh deployment restoration does not establish a live shared allocator fence. |
+| Gates and controls | Recorded PG, joined-role and SQL evidence gates wired to their broader parent cards | Existing app git objects and, for roles, lock-matched installed BSON dependencies are prerequisites. Gates do not start services. Each new gate rejects its authored physical corruption; wider explicit no-gate markers remain. No performance budget is inferred from functional passes. |
+| Publication | **Not pushed**; existing draft #8898 still carries accepted R72 head `74d7b3fc25c7e3c496c438847c95e89ec7fe6061` | Automatic approval review rejected the application push; direct publication approval is pending. This is not a dev merge, tag/operator release or production/default enablement. Remote CI on the new head is UNMEASURED. |
+| Operator-visible effect | None enabled by this record | Existing single-tenant/Mongo behavior is preserved. Experimental multitenant roles and controlled consumers require explicit selection; no provider or real-data/identity admission is selected here. |
+
+The first failed full attempt left19 known unreferenced synthetic test volumes.
+Their explicit deletion approval is separate and pending; later verified runs
+preserved them as baseline and removed every newly created resource. The original
+failed cleanup remains recorded. Local lane ownership, exact captures and pending
+approval details: `externals/work/HANDOFF-codex-completion-coordination-20261106.md`.
+
+Validation: application acceptance is reproduced in R73. Queue validation and generation, queue-check, docs-links, the three selected recorded gates and their break-it controls pass. The site render and site-check for the combined visualizations remain pending.

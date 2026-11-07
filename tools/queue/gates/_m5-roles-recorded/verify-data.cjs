@@ -1,0 +1,10 @@
+'use strict';
+// Parent replays the SAME frozen pure recorded-row oracle used by the child.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+module.exports=({directory,result,configuration,sourceDir,sourceFiles})=>{
+ const rows=JSON.parse(fs.readFileSync(path.join(directory,'socket-data-physical-parity.json'))),cases=rows.filter(x=>x.logical);assert.equal(result.status,0,'JOINED_DATA_CLI_STATUS');assert.equal(cases.length,12);
+ const binding=configuration.dataParityOracle;assert(binding?.reviewed===true&&binding.sourceHead===configuration.sourceHead&&binding.file==='tests/fixtures/realtime-preview/data-timestamps.js','DATA_ORACLE_FROZEN_BINDING_REQUIRED');const file=path.resolve(sourceDir,binding.file);assert(file.startsWith(path.resolve(sourceDir)+path.sep));assert.equal(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),sourceFiles[binding.file],'DATA_ORACLE_SOURCE_HASH');const oracle=require(file);assert.equal(typeof oracle[binding.initialStateExport],'function');assert.equal(typeof oracle[binding.replayExport],'function');const state=oracle[binding.initialStateExport](),replayed=[];
+ const names=['entries','treatments','devicestatus','profile','food','activity'];
+ for(let index=0;index<cases.length;index++){const row=cases[index];assert.equal(row.logical,names[Math.floor(index/2)]);assert.equal(row.attempt,index%2+1);assert(row.pgRaw.length===1&&row.mongoRaw.length===1,'JOINED_DATA_EXACT_PHYSICAL_CASE');assert.equal(row.actual.outcome,row.expected.outcome,'JOINED_DATA_CALLBACK_OUTCOME');const value=oracle[binding.replayExport](row,state);assert(!value||typeof value.then!=='function','DATA_ORACLE_SYNCHRONOUS_CONTRACT');replayed.push({logical:row.logical,attempt:row.attempt,matched:true});}
+ assert.deepEqual(rows.at(-1).cleanupErrors,[]);fs.writeFileSync(path.join(directory,'parent-data-oracle-replay.json'),JSON.stringify({classification:'same frozen source pure-oracle replay on actual captured rows',sourceHead:configuration.sourceHead,file:binding.file,sha256:sourceFiles[binding.file],replayed},null,2)+'\n');
+};

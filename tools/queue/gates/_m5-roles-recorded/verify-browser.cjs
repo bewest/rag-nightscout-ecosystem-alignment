@@ -1,0 +1,5 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+module.exports=({directory,result,configuration})=>{
+ const row=JSON.parse(fs.readFileSync(path.join(directory,'actual-browser-consumer.json')));assert.equal(result.status,0,'JOINED_BROWSER_CLI_STATUS');assert.equal(row.classification,'controlled fixture UI, unchanged client, actual API/RT');assert.equal(new URL(row.origin).hostname,configuration.browserHost);assert.deepEqual(row.resolverHosts,configuration.browserResolverHosts);assert.deepEqual(row.redirectRefusals,[]);assert.equal(row.browserRuntime.browser,'chromium');assert.equal(row.browserRuntime.executablePath,configuration.browserRuntime.executablePath);assert.equal(row.browserRuntime.sha256,configuration.browserRuntime.sha256);assert(typeof row.browserRuntime.version==='string'&&row.browserRuntime.version.length>0);assert.equal(row.initial.main,row.initial.alarm);assert.equal(row.result.urgentUi,true);assert.deepEqual(row.result.sgvs,[]);assert(row.result.events.some(x=>x.event==='urgent_alarm'));assert(!row.result.events.some(x=>x.event==='announcement'));
+};

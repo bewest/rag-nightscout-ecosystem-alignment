@@ -8380,9 +8380,9 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 6 run + 1 no-gate |
 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
-| `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 1 run + 1 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `done` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
-| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 3 run + 1 no-gate |
+| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `codex/m5-m6-completion-acceptance-20261107` | n/a | 2 run + 1 no-gate |
 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
@@ -8580,13 +8580,17 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Provider-neutral resolution and current-authority data/exchange slices are measured through R39 at ae471ac7, including canonical Host and explicit API executable with real-provider HTTP; complete M2 lifecycle acceptance remains open. Static maps and test-local trust do not provide durable allocation, production transport identity or versioned publication. Deployment provisioning, suspension and listener composition remain. Required controls: unknown/suspended tenants refuse, untrusted forwarded hosts cannot select tenants, private operator routes never answer on the data/owner plane.
+- `[integration]` `node tools/queue/gates/m6-ops-recorded.js`
+  - RECORDED-EVIDENCE only: actual9298 five initial SQL cases/11 physical controls/11 targeted restorations/five fresh final cases,37 CURRENT/31 OLD tables and exact process-audit reconciliation with original false closure retained. Reads pinned git objects; no native execution or whole-M6 claim.
+- **NO GATE** &mdash; R72's headless M2 reference promotion is retained. R73 adds bounded populated SQL backup/restore/upgrade/rollback and synthetic lifecycle evidence, not production trust, a complete owner/human identity adapter or identity-bearing same-ID tenant restore. Deployment/issuer/current authority and lifecycle completion remain separate broader contracts; fresh deployment-target restoration does not supply a shared allocator fence or an approved tenant-B write outage.
 
 **Evidence.**
 
-- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `reports/tenancy/m6-ops-2026-11-07/postgres/README.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+- `docs/30-design/tenancy/multitenant-delivery-roadmap.md`
 
-**Notes.** M2; canonical resolver, real-provider HTTP and explicit API runtime compose at published draft ae471ac7 (R38/R39). Test-only credential fidelity is incorporated; supported provisioning/import, production identity and lifecycle remain open. Dependencies remain open; operator-only lifecycle, single unchanged.
+**Notes.** R72 accepts the declared headless M2 preview; this broader parent remains blocked on production/lifecycle contracts. R73's actual9298 SQL core keeps OLD a7f5 and subsequent source-only ec0f collector correction distinct. Same-ID identity import remains OPEN/UNSUPPORTED. SQL artifact/row fidelity, current synthetic authority and cancellation/execution controls do not establish provider/real identity/client or production availability acceptance.
 
 ### `TEN-LAB` &mdash; Two-tenant entries HTTP lab on PostgreSQL
 
@@ -8629,38 +8633,35 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `records/multitenant-roadmap-20261102` |
-| base | `main@28671cb4a` |
+| branch | `codex/m5-m6-completion-acceptance-20261107` |
+| base | `main@53cda1759` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 
-**Blast radius.** Roadmap for collection coverage, legacy clients, socket writes/reconnect, computed views, tenant-local plugin state, durable event delivery, ack/snooze and operations. Reconcile D6 with D-EVENT.
+**Blast radius.** R73 recorded bounded current-state/evaluator/alarm/request and joined API/realtime/consumer/browser evidence; broader operating contracts remain.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
-**Why `n/a`.** design
+**Why `n/a`.** recorded synthetic evidence and roadmap
 
 **Gates.**
 
-- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24`
-  - R68 experimental fresh-successor-schema DATA forwarding:four native canonical Mongo/PG pattern, current subject authority, held-COMMIT and reached post-write rollback cases. Actual early-ack and role controls expose independent physical state. No binary/transport/rollout claim.
-- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b`
-  - R67 seven actual PG clinical projection cases plus native typed-identity and advanced-empty-bootstrap controls:independent physical inputs, current clinical values, A/B retained state, read failure/retry, explicit later-time computation and producer-death recovery.
-- `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c`
-  - R62 archived seven actual PostgreSQL current-row replay cases:durable typed projection/checkpoint, repeatable-read bootstrap, process death, tenant fencing, rollback and scan bounds. Removing identity kind collapses independently stored twins; fresh restoration passes.
-- **NO GATE** &mdash; Dormant current-row convergence is measured; actual realtime/evaluator role composition/scheduling, current socket authority, ack/snooze persistence, wider clinical cohorts, quiet wakes and notification handoff remain. R67 measures the dormant clinical constructor only. Every intermediate transition and exactly-once external effects are outside this component. Provider/lease/capacity remain unmeasured.
+- `[integration]` `node tools/queue/gates/m5-runtime-recorded.js`
+  - RECORDED-EVIDENCE only: pinned PostgreSQL23 ordinary/19 distinct physical controls/fresh23 restoration, exact executed-source attribution, retained failures and precise regrades. Reads app git objects; no services.
+- `[integration]` `node tools/queue/gates/m5-roles-recorded.js`
+  - RECORDED-EVIDENCE only: six ordinary/six physical reds/six fresh restored joined-role cohorts, actual consumer/current-authority/browser predicates and typed timestamp oracle. Requires existing lock-matched app dependencies via NS_M5_RECORDED_DEPS; missing prerequisites fail NO-INSTRUMENT. No fresh native or current-HEAD/provider/device/capacity claim.
+- **NO GATE** &mdash; The bounded R73 runtime and consumer records and final full/browser/entire45 corpus/prcheck are measured; functional M5 reference is promoted. This broader parent retains live external provider/device delivery, retry/retention operating bounds, multi-node leases and capacity are not established by recorded functional passes. Every intermediate transition, universal offline client-cache recovery and exactly-once external effects are not inferred from the preserved protocol.
 
 **Evidence.**
 
-- `reports/tenancy/socket-data-controls-12919f55-2026-11-06/README.md`
-- `reports/tenancy/socket-order-prototype-native-2026-11-06.md`
-- `reports/projection-evaluator-gates/2026-11-06/README.md`
-- `reports/control-recovery-gates/2026-11-06/README.md`
+- `reports/tenancy/m5-runtime-2026-11-07/postgres/README.md`
+- `reports/tenancy/m5-runtime-2026-11-07/roles/README.md`
+- `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
-- `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
+- `docs/30-design/tenancy/multitenant-delivery-roadmap.md`
 
-**Notes.** R68 native DATA prototype controls/restored4 measured on12919; matrix3 retains0d628 attribution by product/schema identity. Old-catalogue checker rejects upgraded ledger; populated/import order and downgrade unsupported. Experimental selection only; original failures preserved and no rollout, production transport/current stream or alarm ack semantics inferred. R67 measures dormant clinical projection recovery on unpublished1990: native7 positive, identity111vs222 and missing123 explicit assertion reds, restored7. Scratch-only optional-chain oracle keeps expected123 and physical inputs precede clinical assertions. No full-batch/role promotion; R66's independent socket ordering failure is preserved, not waived. R62 accepts dormant persisted replay in83582e87; real871 native7/typed-key semantic red/restored7 plus full/browser/enabled-corpus acceptance. Source-control-runner-only continuation retains exact execution attribution. No realtime/evaluator role or provider/default selected; no M5 promotion. M4-M6; no clinical notification delivery acceptance inferred. Architecture plan joins ST-VIEWS-PROFILE and ARCH-DERIVED-FRAME before multitenant evaluator acceptance; contract design continues independently. Durable commit/checkpoint replay, tenant-local scheduling/properties/ack-snooze, quiet wake and current authority after reconnect require paired controls. No SQLite dispatch.
+**Notes.** R73 keeps actual PostgreSQL f4e3/353 and joined-role b6bb executions distinct. Durable same-identity retry, original suppression expiry, private plugin ACK, current recipient/config authority, cold committed control clears and unchanged client behavior are measured under the declared synthetic reference boundary. A failed clinical cycle cannot create an ordinary clinical request; independently authorized committed controls can still create clear requests. Native six-domain DATA comparisons preserve producer identity/time/reply semantics. Recorded gates replace old leaf reruns; R62/R67/R68 retain their original historical attribution. The joined R73 criterion disposition promotes the functional one-host M5 reference, not a component gate alone. This broader parent remains in progress; default role/provider enablement, clinical/device delivery, capacity and M6 are separate.
 
 ### `MT-IDENTITY-PLAN` &mdash; Human identity, tenant access grants and delegated consent plan
 

@@ -3175,41 +3175,6 @@ controls:
       reaches A. The registered positive retains both default clients; the focused
       control proves the independent oracle notices the wrong tenant.
 
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
-    control: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c --control identity
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite durable-replay --ref 8713395992e07b4dd2cde61ee972e9a15c8ada8c
-    control-kind: integration
-    proves: >
-      Remove identity kind only from durable projection map key; independently stored two rows/two kinds remain, but projection count is one instead of two. Native assertion red, fresh restoration green.
-
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
-    control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b --control identity
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
-    control-kind: integration
-    proves: >
-      Remove only durable projection identity kind; physical two rows/two kinds remain, but actual clinical current value is111 instead222. One explicit native assertion fails; fresh restoration passes.
-
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
-    control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b --control bootstrap
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite projection-evaluator --ref 1990f453e09303d9dcf3394f0f50a42c3ce4052b
-    control-kind: integration
-    proves: >
-      Skip full bootstrap at an advanced empty projection; independent physical reading123 remains, but recovered clinical value is missing. Scratch-only optional-chain oracle preserves expected123, producing explicit assertion rather than TypeError; fresh restoration passes.
-
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
-    control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24 --control earlyack
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
-    control-kind: integration
-    proves: >
-      Move only callback before transport completes; held transaction has its own row, independent committed row/events remain absent, but actual callback arrives. Named native assertion true versus false plus physical proof; fresh restoration passes.
-
-  - gate: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
-    control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24 --control role
-    positive-control: node tools/queue/gates/multitenant-next-slices.js --suite socket-data-forwarding --ref 12919f5558c9cbac50b0fd15e4bc2ea482af1a24
-    control-kind: integration
-    proves: >
-      Replace only current socket subject authority with a transport-role actor; actual tenant-A row commits and callback/event appear while tenant-B rows stay unchanged. Native count1 versus0 and physical proof, not refusal timeout; fresh restoration passes.
-
   - gate: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702
     control: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702 --control snapshot
     positive-control: node tools/queue/gates/multitenant-next-slices.js --suite owner-preview --ref 4cd95d069675b650e1173779057a7927f4873702
@@ -3223,3 +3188,31 @@ controls:
     control-kind: integration
     proves: >
       Bind owner app on DATA in the real combined CLI; management request wrongly mutates target and audit+1. Exact physical assertion red, fresh ordinary9 restored; lifecycle fault disposal remains explicit.
+
+  - gate: node tools/queue/gates/m5-runtime-recorded.js
+    control: node tools/queue/gates/m5-runtime-recorded.js --control physical
+    positive-control: node tools/queue/gates/m5-runtime-recorded.js
+    control-kind: integration
+    proves: >
+      Offline rehashed acquired mean222 contradicts two physically captured
+      readings with mean166.5 and fails EXPLICIT_ACQUISITION_FAILED. The unchanged
+      pinned archive validates before and after; no native services are started.
+
+  - gate: node tools/queue/gates/m5-roles-recorded.js
+    control: node tools/queue/gates/m5-roles-recorded.js --control retry-control-green
+    positive-control: node tools/queue/gates/m5-roles-recorded.js
+    control-kind: integration
+    proves: >
+      Offline rehashed changed-wire-UUID control is corrupted back to the original
+      durable UUID while retaining its claimed semantic-red result. The consumed
+      physical oracle refuses INVALID_CONTROL_PHYSICAL_ORACLE; unchanged18-phase
+      recorded evidence validates. Requires existing app objects/BSON dependencies.
+
+  - gate: node tools/queue/gates/m6-ops-recorded.js
+    control: node tools/queue/gates/m6-ops-recorded.js --control physical
+    positive-control: node tools/queue/gates/m6-ops-recorded.js
+    control-kind: integration
+    proves: >
+      Offline rehashed final restored entry value222 contradicts the independently
+      captured source rows and fails WHOLE_C_PHYSICAL_ROWS entries.entries. The
+      unchanged37/31-table record validates before and after, without a database run.
