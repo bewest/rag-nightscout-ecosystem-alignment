@@ -29,17 +29,26 @@ existing heading anchors are preserved. Older "next" instructions and relative
 "this/other session" assignments describe their dated handoff, not today's
 ownership. The dashboard supersedes them for coordination.
 
-**Current acceptance:** [R62/R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
-accept and verify the published open/draft #8898 dormant owner-reader/replay/recovery
-batch. **M0 foundations remains promoted** and bounded `M4-CLIENT-LAB` complete;
-M1–M6 retain their remaining criteria. R63 bounds selected actual subject-client
-compatibility; root refusal keeps universal activation disabled. R67 clinical and
-R68 fresh-schema DATA controls are local component evidence. The joined
-owner/clinical/DATA candidate is **local and in verification**, with joined
-full/browser acceptance pending. The whole independent R55 profile branch remains
-separate. R65's clock HTTP measurements are descriptive; capacity and performance
-budget acceptance remain unmeasured. Exact heads and current lane state belong to
-the dashboard, and the dated captures retain their original limits.
+**Current acceptance and direction:** R62/R64 published #8898 acceptance and
+R63 client measurements retain their historical scope. The maintainer has
+**withdrawn optional subject-reader clamping**, rather than leaving it unselected:
+a tenant's own legacy `api-secret` must retain authorized200. Application removal
+and fresh broad-candidate verification are pending. Headless owner
+`config.ownerPolicy` is writer policy and stays.
+
+The [promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+keep M2 to the roadmap cell (tenant-local config/versioned writes, unknown-tenant
+refusal, A token refused on B by signature, no environment/root/key leakage,
+separate owner/data/operator routes). Human issuer/refresh, existing-grant lifecycle
+clamping, durable lifecycle and production resolution trust belong to M6.
+M1 resource bounds are **deferred, measured in C** with no numeric budget approved.
+M4 uses actual headless clients plus source-pattern replay, with **no all-client
+claim**; Android emulator work belongs to C, iOS outside automated execution.
+
+M0 remains promoted, M1/M2/M5 in progress and M3/M4/M6 blocked. R67/R68 retain
+bounded local evidence; final-floor actual-PG component proof is running and a
+fresh full campaign has not started. Current exact source/lane state belongs to
+the dashboard; no decision above is a milestone promotion.
 
 Use the [reading guide](README.md) to select a current contract or a dated record.
 The detailed checkpoints below retain their captured heads and remaining work at
