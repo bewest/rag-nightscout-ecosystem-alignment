@@ -33,13 +33,13 @@ enhancements; that preference grants no production permission or criterion waive
 |---|---|
 | Current-state recovery | [Bounded full snapshot reconciliation first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation); preserve producer deletes/timestamps/replies. Cadence/capacity is measurement work. No every-transition promise. |
 | Shared human authentication | [Shared optional OIDC, provider-backed renewal first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#shared-oidc-provider-renewal), equivalent single/multitenant support; preferred single opt-in `ENABLE=oidc`. Separate authorization adapters; no implicit root/management grant. |
+| OIDC provider outage | [Existing valid access until existing expiry](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#oidc-provider-outage-existing-access), with current local authority/session checks, no new login or renewal and unchanged sensitive-action freshness. Equivalent optional single/multitenant behavior; provider-only revocation may remain unknown until expiry/recovery. Implementation and outage acceptance remain open. |
 | Alarm suppression scope and restart | [Tenant-wide group/level suppression](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-wide-alarm-suppression), original expiry retained across restart, active-window repeats do not extend it. Per-user/device scope follows separately. |
 | Notification retry responsibility | [Persist request intent before dispatch; retry same identity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#durable-notification-requests-and-retries). Preserve suppression/dedup/single behavior; joined notification-consumer verification required. No exactly-once external delivery claim. |
 | Deletion ceremony | [Explicit request + operator confirmation; cancellable before execution; no mandatory wait](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-deletion-confirmation). Post-deletion 30-day key/artifact retention remains separate. |
 | First-preview ownership changes | [Operator-assisted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-operator-assisted-ownership); self-service co-owner/transfer follows separately. Last-owner, current authority, audit and secret boundaries remain required. |
 | Restore versus cloning | [Restore original tenant ID; clone establishes new secrets/credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning). Clinical sync does not transfer credential authority. |
 | Deleted-tenant keys/artifact | [Retain 30 days, then operator destroys keys](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention). Destroy/after-window refusal still needs evidence; this does not set a deletion cancellation period. |
-| Human session outage and local logout | [Existing access within lifetime/current authority; provider-dependent renewal refuses; local revocation on the next protected operation](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-outage-and-logout). Provider propagation/activity/transport/concurrency still need explicit contracts. |
 | Tenant-local restore and ordering | [Per-tenant/collection ordering only; pursue tenant-local insertion state](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics). Preserve other tenants' current state and supported client ordering. Counter/trigger migration and lifecycle admission need their own proof; no global restore pause selected. |
 | Legacy authority and management split | [Reader clamp withdrawn; preserve own-tenant credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06); [owner authority](owner-authority.md) governs separate management audience, current authority and adopted lifetimes. |
 | Socket writer and recovery direction | [D23](multitenancy-decisions.md#d23): realtime forwards to API with existing protocol/source; failure gives no acknowledgement. First runtime proof uses separate roles on one machine. No multi-node lease claim. |
@@ -48,7 +48,8 @@ enhancements; that preference grants no production permission or criterion waive
 
 These are bounded topics for a concrete proposal, not blanket implementation stops.
 A recommendation remains a proposal until recorded in release decisions.
-Shared OIDC/provider-backed renewal and tenant-wide alarm suppression are adopted.
+Shared OIDC/provider-backed renewal, bounded existing access during provider outage
+and tenant-wide alarm suppression are adopted.
 Review remaining session effects and operational parameters while implementation continues.
 Notification retry responsibility and deletion ceremony policy are settled. Their
 bounded proofs do not resolve live-provider admission or wider M6 identity/trust.
@@ -67,9 +68,10 @@ open-decision note](multitenant-open-decisions-2026-11-06.md) preserves already
 answered A questions, not the current backlog.
 
 The [counter and restore options analysis](counter-and-restore-options.md)
-separates the tenant-local history clock from internal insertion order. Test
-allocator preservation first; fresh internal ordinals with preserved relative
-order remain a logical-restore proposal, not a weakened physical artifact oracle.
+separates the tenant-local history clock from internal insertion order. The
+tenant-local insertion prototype removes cross-tenant allocation state while
+preserving supported per-tenant order; exact physical and logical backup fidelity
+retain their separate contracts.
 
 ## Measure before setting limits
 

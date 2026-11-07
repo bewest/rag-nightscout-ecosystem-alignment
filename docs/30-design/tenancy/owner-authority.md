@@ -116,9 +116,11 @@ valid provider authentication and current Nightscout authority. It does not requ
 Nightscout-owned rotating refresh credentials initially. The provider's login
 cookie/session, any Nightscout browser-session cookie, the current server-side
 Nightscout session and access bearer token are distinct. Cookie scope/transport,
-local and provider logout propagation, idle activity, concurrent renewal and outage
-behavior need explicit contracts before acceptance. Adopted lifetimes below remain;
-provider activity alone cannot bypass current Nightscout authority.
+local and provider logout propagation, idle activity and concurrent renewal need
+explicit contracts before acceptance. The [adopted provider-outage policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#oidc-provider-outage-existing-access)
+allows existing valid access only until existing expiry under current local
+checks, with no new login/renewal or relaxed freshness. Adopted lifetimes below
+remain; provider activity alone cannot bypass current Nightscout authority.
 
 Acceptance must exercise the same synthetic provider/login/renewal contract on
 both supported modes, enabled and disabled. Cover missing/wrong issuer/audience,
@@ -190,7 +192,7 @@ With a trusted cached public key and available current PostgreSQL authority, exi
 new-format tokens continue ordinary data operations during a Vault outage. New
 issuance, reveal and secret consumption that requires Vault refuse. Unknown keys
 refuse rather than fall back. PostgreSQL authority outages refuse protected reads
-and writes even when the token signature verifies. The [human-session outage/logout decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-outage-and-logout)
+and writes even when the token signature verifies. The [OIDC provider-outage decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#oidc-provider-outage-existing-access)
 allows existing human access only within its adopted lifetime and current
 Nightscout authority during an identity-provider outage. Provider-dependent
 renewal refuses. Local logout/revocation takes effect on the next protected
