@@ -260,9 +260,12 @@ proofs; neither selects a new authority policy or establishes real database rest
 Owner session/issuer lifecycle and the first Batch C tooling proof were assigned by the
 maintainer on 2026-11-06 to session `-8c` (see section 6): the lifecycle item as a
 read-derived decision packet, no code; the tooling proof as a source-only lane with one
-focused run. The wider operational implementation (backup/restore, upgrade/rollback,
-resource and egress bounds, final-tree review) remains **unassigned**; the coordinator
-must allocate it before claiming C implementation complete.
+focused run. Backup/restore on the assembled tree and upgrade/rollback were assigned by the
+maintainer later on 2026-11-06 to the Claude session that wrote the open-decisions note
+(lane `claude/tenant-backup-upgrade-20261106` off `83582e87`, source-only until one focused
+run; see section 6). Resource and egress bounds wait for the benchmark window the bounds
+decision calls for, and the final-tree review waits for the frozen C candidate; both remain
+**unassigned** and the coordinator must allocate them before claiming C complete.
 Local integration ownership and exact unpushed anchors are in
 `externals/work/HANDOFF-codex-completion-batches-20261106.md` (local, untracked).
 
@@ -303,6 +306,18 @@ Local integration ownership and exact unpushed anchors are in
   issuer/refresh, existing-grant clamping, DELETE policy and provision/suspend/export/delete
   questions that the promotion review lists as unimplemented. Checked 2026-11-06 23:40 UTC:
   unclaimed by any Codex lane; the owner/evaluator batch explicitly excludes human issuer/refresh.
+- **Claude lanes of 2026-11-06 (open-decisions session)**, each with a handoff under
+  `externals/work/`: `claude/gate-enrol-socket-handlers-20261106` off `4cd95d06` repairs the
+  two one-door gates (`tests/write-intent.test.js` G2, `tests/write-step.test.js`) that still
+  enrol `lib/server/websocket.js` after `eb8671a9` moved the six socket writers into
+  `lib/server/socket-write-handlers.js` (the comprehensive campaign on `4cd95d06` stopped at
+  the unit tier with 22 failures from that one cause; default-client gate 82/82 and its
+  oracle control red as predicted; record in `claude-owner-evaluator-campaign-20261106/`), then
+  reruns the whole campaign on the repaired head; `claude/drop-reader-clamping-20261106` off
+  `4cd95d06` removes the subject-reader clamping mode per the decision of 2026-11-06
+  (source-only, no slot); `claude/tenant-backup-upgrade-20261106` off `83582e87` is the batch C
+  backup/restore and upgrade/rollback lane (source-only until one focused run). Each joins
+  #8898 at a batch boundary through the integration coordinator; none is pushed on its own.
 - **Lane handoffs** are `externals/work/HANDOFF-<lane>-<date>.md`, local and
   untracked. The coordinating session's own notes are in
   `externals/work/HANDOFF-batching-coordinator-20261106.md`.
