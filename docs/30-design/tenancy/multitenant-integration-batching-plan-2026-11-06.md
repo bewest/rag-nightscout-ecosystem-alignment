@@ -123,6 +123,18 @@ lane does not rerun an accepted campaign.
    owned integration branch; do not rewrite shared published history. The
    coordinator records one comprehensive acceptance campaign per candidate.
    Publication remains the maintainer's action; agents never push.
+
+   **Commit integration direction adopted 2026-11-07:** integrate original
+   committed lane branches by fast-forward or ordinary merge, preserving commit
+   identity. Before joining a lane, check ancestry and patch equivalence against
+   the integration branch; resolve existing overlap explicitly. Do not copy lane
+   patches by cherry-pick or rebase and then merge their original history to make
+   evidence commits reachable. Evidence records retain the actual measured source
+   head and separately identify its integration commit; incorporation requires
+   ancestry, and acceptance applies to the measured candidate. Preserve the shared
+   published history of [draft #8898](https://github.com/nightscout/cgm-remote-monitor/pull/8898)
+   and continue work there. A second or cleaned PR is deferred until more work is
+   complete; no cleanup rewrite is authorized by this direction.
 2. **Triggers that require a full campaign on the final candidate.** Any change
    to: an existing shipping file under `lib/api`, `lib/api3`, `lib/server`,
    `lib/storage` or `lib/data`; `tests/tiers.json`; `package.json` or the lock;
