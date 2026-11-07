@@ -1,0 +1,52 @@
+{
+  "lab": "tenant-export-delete",
+  "startedAt": "2026-11-07T00:01:53.073Z",
+  "owner": "4107202f-8ec5-44ec-b882-8101963d8d70",
+  "worktree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-export-delete-20261106",
+  "stages": [],
+  "unmeasured": [
+    "real tenant data, real backup tooling, M6 acceptance",
+    "capacity thresholds, artifact size bounds, retention periods (DECISION, not measured)",
+    "MongoDB-backed catalogues (this proof is PostgreSQL lower-port only)",
+    "Vault key destruction after deletion (DECISION; keys retained here)",
+    "concurrent writers during export (stopped-write snapshot only)"
+  ],
+  "crmCommit": "7255414e969280a05b22b8955e69b68e85998bd2",
+  "fixtureSha256": "e6afbf4e7a26ec527ff57da0696ebcf745d97348410e5ed2a48b5deda99c60d5",
+  "freeDiskKbBefore": 77844044,
+  "postgres": {
+    "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "image": "postgres:16",
+    "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b"
+  },
+  "vault": {
+    "version": "2.2.1",
+    "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+    "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8"
+  },
+  "fatal": {
+    "message": "Migration 0001_tenant_lifecycle_requests (up) failed: Original error: syntax error at or near \"^\""
+  },
+  "cleanup": [
+    {
+      "name": "ns-lifecycle-4107202f-pg",
+      "id": "0df1a926eacdf079fb881111b82c8c62dcefb2e9658f1b795b5f5168e29b3d73",
+      "volumes": [],
+      "containerAbsent": true,
+      "volumesAbsent": true
+    },
+    {
+      "name": "ns-lifecycle-4107202f-vault",
+      "id": "b6f879d6877b78efd5b390a9a78cfcf173bc9ed0daeb8d015dcf1fa513ee9892",
+      "volumes": [
+        "41fcdeb0be02baf445243cf853922477b606158847a1ca84fd44b0677debc159",
+        "2bccc20fefd3171fc21b896304adf1c9172e9cfa29f9ee3270023c764083e1c4"
+      ],
+      "containerAbsent": true,
+      "volumesAbsent": true
+    }
+  ],
+  "freeDiskKbAfter": 77844020,
+  "finishedAt": "2026-11-07T00:01:55.856Z",
+  "result": "fatal"
+}

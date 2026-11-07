@@ -162,7 +162,7 @@ consumer, and no batch changes release placement or enables a serving default.
 |---|---|---|---|
 | **A — data, control and clients (M0–M4)** | Coordinator joins storage/authority/config/migration/runtime-readiness completion with the client lane's compatible v1/v2/v3 surface. | Active: M4 lab findings and application repairs; integrate B4a evidence/instrument repair and the B5 corpus inventory correction; inventory remaining M0–M3 criteria as implementation, measurement or decision gaps. Populated-import and authority/lifecycle proofs run before dependent assumptions spread. | Freeze a coherent candidate after targeted lane checks. Run both-store applicable contracts, actual two-tenant HTTP and stored oracles, pooled/concurrent authority/outage/schema controls, actual pinned-client labs, full/browser/enabled corpus, then final prcheck. All semantic differences require an approved basis; unknown differences remain failures. |
 | **B — durable runtime (M5)** | Runtime owner joins one proven durable producer/consumer path, realtime forwarding/fan-out, evaluator state and durable ack/snooze. | Active early proof: commit-stamp meaning and crash/replay correctness. Implementation proceeds under the adopted B7 direction, with early recovery experiments resolving concrete semantics before dependent consumer wiring; role-table and event-payload lanes retain their own gates. | First reference is separate roles on one machine. Freeze the assembled runtime, then exercise real process death/restart, duplicate/lost delivery, cohort pagination, current socket authorization, forwarding acknowledgements, replay-equivalent tenant views and retained evaluator results. Run batch regression and final prcheck once on that candidate. |
-| **C — synthetic operational preview (M6)** | Operations owner joins import/export/deletion, ciphertext/key recovery, backup/restore, upgrade/rollback, bounded resources/egress and final-tree review. | Prepare tools and populated synthetic fixtures in parallel with A/B. Run one representative populated restore/import and contention experiment early; broader acceptance waits for stable data/runtime contracts and approved bounds. | Freeze the complete preview after A/B criteria and chosen owner capabilities are satisfied. Run populated failure/recovery and lifecycle campaigns, isolation/security/client/runtime regression, explicit capacity/latency workloads and the complete criterion matrix. Production identity/traffic, real data, role enablement and publication retain their separate approvals. |
+| **C — synthetic operational preview (M6)** | Operations owners join import/export/deletion, ciphertext/key recovery, backup/restore, upgrade/rollback, bounded resources/egress and final-tree review. | Prepare tools and populated synthetic fixtures in parallel with A/B. **Early proof done:** [R69](../remedial/rc-16.0.0-integration-record.md#r69---tenant-export-import-and-two-phase-deletion-early-proof-on-fd827e35-2026-11-07) reproduces typed export, import with an independent oracle and two-phase deletion on lane `codex/tenant-export-delete-20261106` `fd827e35` over `83582e87`: positive 14 / 14, six controls each red for their mechanism, restored 14 / 14, containers and volumes absent; five decision lines for the maintainer are in the lane and lab READMEs. Backup/restore and upgrade/rollback are the separate `claude/tenant-backup-upgrade-20261106` lane (section 6). Broader acceptance waits for stable data/runtime contracts and approved bounds. | Freeze the complete preview after A/B criteria and chosen owner capabilities are satisfied. Run populated failure/recovery and lifecycle campaigns, isolation/security/client/runtime regression, explicit capacity/latency workloads and the complete criterion matrix. Production identity/traffic, real data, role enablement and publication retain their separate approvals. |
 
 The first coherent CI/client sub-batch is accepted in
 [R60](../remedial/rc-16.0.0-integration-record.md#r60---coherent-ci-client-batch-and-m0-foundations-2026-11-06):
@@ -260,9 +260,12 @@ proofs; neither selects a new authority policy or establishes real database rest
 Owner session/issuer lifecycle and the first Batch C tooling proof were assigned by the
 maintainer on 2026-11-06 to session `-8c` (see section 6): the lifecycle item as a
 read-derived decision packet, no code; the tooling proof as a source-only lane with one
-focused run. The wider operational implementation (backup/restore, upgrade/rollback,
-resource and egress bounds, final-tree review) remains **unassigned**; the coordinator
-must allocate it before claiming C implementation complete.
+focused run. Backup/restore on the assembled tree and upgrade/rollback were assigned by the
+maintainer later on 2026-11-06 to the Claude session that wrote the open-decisions note
+(lane `claude/tenant-backup-upgrade-20261106` off `83582e87`, source-only until one focused
+run; see section 6). Resource and egress bounds wait for the benchmark window the bounds
+decision calls for, and the final-tree review waits for the frozen C candidate; both remain
+**unassigned** and the coordinator must allocate them before claiming C complete.
 Local integration ownership and exact unpushed anchors are in
 `externals/work/HANDOFF-codex-completion-batches-20261106.md` (local, untracked).
 
@@ -295,14 +298,33 @@ Local integration ownership and exact unpushed anchors are in
   recoverable key material on a synthetic populated fixture. New CRM worktree off the
   accepted head `83582e87`, branch `codex/tenant-export-delete-20261106`, handoff
   `HANDOFF-tenant-export-delete-20261106.md`. Source-only until one focused run with its
-  own containers; it builds beside, not inside, R62's populated dump/restore lab. Checked
-  2026-11-06 23:40 UTC: no other lane, branch, worktree or document claims this work.
+  own containers; it builds beside, not inside, R62's populated dump/restore lab. **Done:**
+  R69 on `fd827e35` (figures in the Batch C row); joins #8898 at the coordinator's next boundary.
 - **Owner session/issuer lifecycle decision packet** (session `-8c`, maintainer-assigned
   2026-11-06, no code, no slot): a read-derived packet for the maintainer at
   `owner-lifecycle-decision-packet-2026-11-06.md` in this directory. It covers the human
   issuer/refresh, existing-grant clamping, DELETE policy and provision/suspend/export/delete
   questions that the promotion review lists as unimplemented. Checked 2026-11-06 23:40 UTC:
   unclaimed by any Codex lane; the owner/evaluator batch explicitly excludes human issuer/refresh.
+- **Claude lanes of 2026-11-06 (open-decisions session)**, each with a handoff under
+  `externals/work/`: `claude/gate-enrol-socket-handlers-20261106` off `4cd95d06` repairs the
+  two one-door gates (`tests/write-intent.test.js` G2, `tests/write-step.test.js`) that still
+  enrol `lib/server/websocket.js` after `eb8671a9` moved the six socket writers into
+  `lib/server/socket-write-handlers.js` (the comprehensive campaign on `4cd95d06` stopped at
+  the unit tier with 22 failures from that one cause; default-client gate 82/82 and its
+  oracle control red as predicted; record in `claude-owner-evaluator-campaign-20261106/`), then
+  reruns the whole campaign on the repaired head; `claude/drop-reader-clamping-20261106` off
+  `4cd95d06` removes the subject-reader clamping mode per the decision of 2026-11-06
+  (source-only, no slot; **done at `98118fb2`**, 9 files, +51 / −589: `createOwnerReadPolicy`
+  and both readers' `ownerPolicy` branches gone, the management proposed-grant policy and its
+  opt-in suite kept whole; unit 39 / 0 on the three touching files, three controls red and
+  restored, eslint 0, tiers 522 ok; the two edited Docker suites are lint/syntax-checked only,
+  UNMEASURED at runtime; the alignment items that now describe a removed mode are the
+  `owner-reader` gate and controls in `queue/work-queue.yaml` and `queue/gate-controls.yaml`,
+  `tools/lab/selected-owner-clients/` and `reports/selected-owner-clients/2026-11-06/`, to be
+  marked historical by the coordinator when the lane joins); `claude/tenant-backup-upgrade-20261106` off `83582e87` is the batch C
+  backup/restore and upgrade/rollback lane (source-only until one focused run). Each joins
+  #8898 at a batch boundary through the integration coordinator; none is pushed on its own.
 - **Lane handoffs** are `externals/work/HANDOFF-<lane>-<date>.md`, local and
   untracked. The coordinating session's own notes are in
   `externals/work/HANDOFF-batching-coordinator-20261106.md`.

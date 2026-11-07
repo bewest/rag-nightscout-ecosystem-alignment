@@ -8,7 +8,7 @@ unimplemented (rows "Human management issuer/refresh", "Existing-grant clamping"
 lifecycle"; ranked item 7). Nothing here is a decision: a decision taken from this packet is one row
 in `releases/cgm-remote-monitor-16.0.0/decisions.md`, after which this packet points at it. No code
 was written; no gate was run. Companion: [the five critical-path decisions](multitenant-open-decisions-2026-11-06.md),
-whose items 1 and 2 overlap Q4 below and are cited rather than re-asked.*
+whose items 1 and 2 overlap Q4 below and are cited rather than re-asked; item 1 was decided on 2026-11-06 after this packet was drafted, and Q4 records that decision.*
 
 **Anchors, read from `git` at the moment of writing.**
 
@@ -331,15 +331,18 @@ on the next request (401 for a subject whose grant was clamped to nothing, R63).
 unselected tenant: nothing. Operators: (a) gives them a per-tenant switch and a list of what blocks
 it; (d) gives them a cohort-wide incident the first time a wildcard role exists. **Multitenant only.**
 
-**Recommendation: (a), with the open-decisions note's item 1(a) adopted first** (root carrier →
-401 with no effect) and with `ACCESS_AUTHORITY_INVALID` for a stored wildcard reclassified to a
-refusal the preflight can name, so that 503 is reserved for the authority store being unreachable.
-Direction: it is the contract's semantic and R62's mechanism. Architecture: no new writer.
-Compatibility: per-tenant selection is the only shape that honours R63's condition. Maintenance: a
-preflight query against tables the reader already joins. Reliability: deterministic refusals.
-Performance: already inside the measured snapshot. **Unmeasured:** the preflight, the reclassified
-status, and clamping under a ceiling change that lands between a proposal's locks and its commit
-(R53 names that ordering as not establishing cancellation guarantees).
+**Decided by the maintainer on 2026-11-06, overtaking this question's draft recommendation.** Open-decisions
+item 1 is decided as a backward-compatibility rule: a tenant's api-secret keeps **200** on its own tenant
+resource, and the subject-reader clamping mode (R62's optional `createOwnerReadPolicy` and its two reader
+consumers) is **dropped**, because selecting it anywhere is a compatibility break ("we want backward compat
+solutions"); a lane `claude/drop-reader-clamping-20261106` removes it, while the management-side
+`createOwnerPolicy` and the proposed-grant catalogue (R53) stay. Against the options above that is **(c) for
+stored grants**: new proposals are bounded by catalogue ∩ ceiling ∩ delegation at the management
+transaction, and existing credentials keep working. The draft recommendation (a) is kept above as the
+analysis record only. If per-subject clamping ever returns, it comes through Q5's lifecycle work in a shape
+that keeps existing credentials working (reissuance the owner initiates, not a reader-side refusal), and
+never as a 503 to an api-secret client. **Unmeasured:** nothing remains to measure for Q4 as decided;
+the R62 and R63 captures stay historical evidence of the dropped mode.
 
 ### Q5. Ownership lifecycle
 
@@ -437,7 +440,7 @@ and a restoration. Predicted results are written before the run.
 | Q1 provider adapter | an owner's provider session for tenant A exchanges on A's host for a management token with `tid = A`, `purpose = management`; the same session on B's host is 403 `not-a-member`; the A token on B is 401 `TOKEN_SIGNATURE` (the ORY proof's gate re-run against the real `ns-tenant-admin`, not the stand-in) | remove the membership check: B mints for A's owner (200 instead of 403); remove the subject-claim mapping: a token with no `sub` is accepted (200 instead of 401) |
 | Q2 session | a refresh within 10 min returns a new token and a new refresh secret; the old secret presented after the grace window revokes the family and the next data or management operation on that session is 403; a session idle 31 min cannot refresh (401) while one idle 29 min can; absolute 12 h refuses regardless | remove rotation: the old secret still refreshes (200 instead of 401); remove the reuse-family revocation: a reused secret leaves the session active (next GET 200 instead of 403); remove the idle rule: the 31-minute session refreshes (200 instead of 401) |
 | Q3 issuer | a management token is 401 `TOKEN_KEY` on the data socket and 200 on the owner socket; a data token is 401 on the owner socket; after `access_keys.active = false` on the old `kid`, a token signed under it is 401 on the next operation while a token under the new `kid` is 200; during the overlap both are 200 | remove the purpose check in `resolveKey`: the management token is 200 on the data socket; remove `keyActive` from the snapshot: the retired-key token stays 200 |
-| Q4 clamping | preflight on a tenant with `admin: ['*']` refuses selection naming the role; after the role is rewritten to concrete permissions, selection succeeds; narrowing the ceiling makes the next upload 401 with no stored effect (R63's shape); a root-carrier upload on a selected tenant is 401 with no effect (open-decisions item 1(a)) | remove the intersection: the narrowed upload is 200 and stored (R62's control, re-run); remove the preflight: selection succeeds on the wildcard tenant and its next operation is 503 |
+| Q4 clamping | **superseded by the 2026-11-06 decision** (reader clamping dropped; api-secret keeps 200): the remaining positive is the R53 shape, a proposal outside catalogue ∩ ceiling ∩ delegation refuses with no effect, and an existing api-secret upload on its own tenant is 200 and stored | remove one R53 fence: the over-ceiling proposal persists (R53's control, HTTP 200 versus 403 with persisted effects); the reader-side controls of R62/R63 are retired with the mode |
 | Q5 lifecycle | add co-owner with a 4-minute-old authentication succeeds and with a 6-minute-old one is 403; transfer: the invitee accepts and the old grant is gone in the same transaction; removing the last active owner is 409 with no row change; `recover-owner` on the operator plane writes an invitation and no `reveal` audit row appears; a deletion request is `requested`, the owner can cancel, the operator's `execute-deletion` refuses before the window and succeeds after, and the export exists before the delete | remove the freshness check: the 6-minute case is 200; remove the `FOR UPDATE` count: two concurrent removals leave zero owners; execute deletion from the owner listener: must be 405/403, red if 200; remove the export-before-delete ordering: the delete proceeds with no export (red) |
 
 **Landing order relative to Batch A and C** (batching plan §5; the open-decisions note item 2
@@ -447,8 +450,7 @@ recommends homing issuer and lifecycle under M6, which this order is consistent 
    listener's missing half: the issuer role and the session extension. They do not touch the data
    verifier and can run under the same full/browser/corpus campaign as A's freeze. Predicted: the R48
    7 new-format cases and R53's 22 stay green; the new controls above go red and restore.
-2. **Q4, in Batch A after the M4 client dispositions**, because its first step is the open-decisions
-   item 1(a) status change and the preflight, both of which R63's lab re-runs with a predicted 401.
+2. **Q4 needs no lane**: decided 2026-11-06 as (c) with the reader mode removed by `claude/drop-reader-clamping-20261106`; its entry bar collapses to R53's existing control.
 3. **Q1, its own lane gated on the compliance owner**, source-only until a provider adapter can be
    run against the real listener; it joins at a batch boundary and never with real identities.
 4. **Q5, in Batch C beside the export/delete tooling lane** (`codex/tenant-export-delete-20261106`),
