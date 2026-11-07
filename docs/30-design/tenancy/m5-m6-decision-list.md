@@ -1,24 +1,27 @@
 # M5/M6: current decisions and next review
 
-*Living contributor-facing decision index, 2026-11-06. Read this before older
+*Living contributor-facing decision index, 2026-11-07. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
 records no new application measurement or promotion.*
 
 ## Execute now
 
-M5's existing implementation lane owns bounded current-state reconciliation,
-actual evaluator consumption and failure recovery. Continue focused source checks,
-then reviewed native positives and mechanism-specific red/restored controls.
-Integrate live reference roles/forwarding and durable alarm state in coherent
-capability batches; freeze one assembled candidate for comprehensive acceptance.
-The [completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
-owns assignments; the [roadmap acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families)
-own observable completion. Component recovery does not close all of M5.
+Finish final assembled full/default-browser/current-corpus/PR checks and record
+the criterion verdict in [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) before promoting M5. Bounded current-state/evaluator,
+durable alarm/request and actual reference-role/browser proofs are accepted at
+their recorded heads; component passes are not the final joined verdict. Reuse the
+[recorded proof gates](multitenant-delivery-roadmap.md#current-bounded-proof-and-remaining-admission)
+for source-identical evidence instead of repeating native cases for documentation
+changes. New source behavior still needs affected checks.
 
-Prepare M6 synthetic lifecycle/operations and bounded owner contracts in parallel.
-Prefer a minimal working base with explicit incremental enhancements. Do not infer
-production permission or waive an existing criterion from that preference.
+M6 has bounded SQL operations evidence. Continue shared human identity/session
+contracts, operator-assisted ownership, full suspension and identity-bearing
+same-ID restore, key destruction and workload-based operating limits. The
+[completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
+owns assignments; the [roadmap acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families)
+own observable completion. Prefer a minimal working base with explicit later
+enhancements; that preference grants no production permission or criterion waiver.
 
 ## Settled: do not ask again
 
@@ -41,15 +44,14 @@ These are bounded topics for a concrete proposal, not blanket implementation sto
 A recommendation remains a proposal until recorded in release decisions.
 Shared OIDC/provider-backed renewal and tenant-wide alarm suppression are adopted.
 Review remaining session effects and operational parameters while implementation continues.
-Notification retry responsibility is settled; joined consumer acceptance is implementation work.
+Notification retry responsibility and deletion ceremony policy are settled. Their
+bounded proofs do not resolve live-provider admission or wider M6 identity/trust.
 
 | Topic | Decision needed | Work that need not wait |
 |---|---|---|
-| M5 alarm persistence details | Scope/original-expiry/active-window repeats are settled. Implement storage/recovery and preserve existing level/default effects. Retained historical evidence is operational work; a delayed request after expiry has no durable client identity, so do not promise indefinite deduplication or add a protocol change implicitly. | Durable tenant-wide alarm-state implementation and focused restart/failure/retry controls may proceed. Per-user/device enhancement is not a preview requirement. |
-| M5 notification adapter/operations | Durable intent/same-identity retry is settled. Define a concrete adapter contract and measured retry/retention bounds before its enabled use; do not mistake an acceptance receipt for device delivery. | Durable handoff implementation and joined actual-consumer tests may proceed with controlled adapters. Provider selection/live delivery remains separately gated. |
+| Live notification provider admission | Select the live adapter/provider and operating bounds before live use. Durable intent/same-identity retry is settled; an acceptance receipt does not prove device delivery. | Controlled joined-consumer proof is recorded. Live egress, retry/retention budgets and selected provider/device delivery keep separate gates. |
 | M6 human session effects | Shared OIDC/provider-backed renewal is settled. Specify local versus provider logout, propagation, provider outage, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain. | Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh. |
 | M6 bounded owner surface | Approve the exact first-preview settings, credentials and enabled integrations; identify unsupported names/operations. Operator-assisted ownership is settled. | Census and proposed catalogue with consuming-runtime tests; do not silently declare the full catalogue implemented. |
-| M6 deletion implementation | Request/confirmation/cancellation/no-wait policy is settled. Implement operator recovery and atomic cancellation-versus-execution claiming with current authority and verified artifact. | Synthetic export/delete/recovery and artifact-fidelity/transaction controls; no waiting-period decision is needed. |
 | M6 deployment/trust | Review concrete trusted-ingress and secrets/identity adapter contracts for the reference deployment before production use. | Synthetic spoof/conflict/outage probes and provider-neutral interfaces. |
 
 The [owner lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md)

@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R72 accepts the coherent admitted entries, owner configuration and client batch. M0 retained; M1/M2 promoted, then M3/M4 on cumulative evidence. Resource bounds deferred C; M4 actual headless/source-pattern bar, no all-client claim. Reader clamping removed, own-tenant legacy credentials preserved, writer fences retained. M5 remains in progress and M6 blocked. Draft preview acceptance does not enable defaults/production roles or constitute dev merge/operator release. R72 owns executed heads, controls, pending cases and source-identity reuse.",
+ "measured": "2026-11-07: R72 retains M0 and accepts M1\u2013M4 at their stated scopes. R73 joins accepted bounded current-state/evaluator, durable alarm/request, reference-role/browser and SQL-operations evidence, preserving each actual executed head. Final assembled full/default-browser/current-corpus/PR checks and criterion disposition remain pending; M5 stays in progress and M6 blocked. Recorded-evidence gates replay archived measurements, not fresh current-HEAD execution. Live provider/device delivery, capacity and identity-bearing tenant restore remain separate. Draft preview acceptance does not constitute dev merge, operator release or production/default enablement.",
  "tracks": [
   {
    "id": "storage",
@@ -753,7 +753,7 @@
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
-   "ref": "R72 accepts M1\u2013M4 on draft #8898. Writer owner policy and current-authority fences are retained; reader clamping is withdrawn. M5/M6 remain open.",
+   "ref": "R72 accepts M1\u2013M4 on draft #8898. Writer owner policy and current-authority fences are retained; reader clamping is withdrawn. Runtime/lifecycle and production admission follow their own gates.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
@@ -1186,9 +1186,25 @@
    "phase": "multi",
    "state": "progress",
    "short": "Durable runtime / replay",
-   "title": "B7 is adopted; R67/R68 record bounded clinical/DATA prototypes and R71 records actual final-floor component proof. R72 integrates these components without promoting M5/M6.",
-   "ref": "Live evaluator/realtime roles, current delivery, durable ack/snooze and notification/provider recovery remain. Resource/performance budgets are C; fresh-only ordering has no populated upgrade acceptance.",
+   "title": "R73 joins bounded current-state/evaluator, durable alarm/request and reference-role/browser evidence. Final assembled verification remains open; component passes alone do not promote M5/M6.",
+   "ref": "Live provider/device delivery, capacity/freshness/egress budgets, multi-node ownership and M6 identity-bearing tenant restore retain separate acceptance.",
    "spec": [
+    {
+     "label": "R73 joined criterion disposition and final gates",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch"
+    },
+    {
+     "label": "M5 bounded PostgreSQL recorded evidence",
+     "href": "../../../reports/tenancy/m5-runtime-2026-11-07/postgres/README.md"
+    },
+    {
+     "label": "M5 joined roles/browser recorded evidence",
+     "href": "../../../reports/tenancy/m5-runtime-2026-11-07/roles/README.md"
+    },
+    {
+     "label": "M6 bounded SQL operations recorded evidence",
+     "href": "../../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md"
+    },
     {
      "label": "R72 accepted criterion disposition",
      "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
@@ -1218,7 +1234,7 @@
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
-   "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
+   "check": "Recorded gates replay pinned native evidence, actual source attribution, physical controls and cleanup. Final full/default-browser/current-corpus/PR checks and criterion disposition are required before milestone promotion."
   }
  ],
  "decisions": [

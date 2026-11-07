@@ -30,22 +30,23 @@ use this map to see how the platform tracks meet.
 |---|---|---|
 | Multitenant foundations and initial preview | [R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06) retains M0 and promotes M1/M2, followed by M3/M4 on cumulative evidence. | Draft #8898; source acceptance is distinct from dev merge, operator release and default/production enablement. |
 | Data, authority and clients | Admitted PG ports/import and actual typed/versioned owner settings pass; reader clamping is removed, legacy own-tenant credentials and writer fences retained. | M1 resource bounds deferred C. M4 actual headless/source-pattern bar, no all-client claim; Android emulator C. Human issuer/refresh, wider catalogue/lifecycle and production resolution trust remain M6. |
-| Durable runtime | R67/R68 retain bounded clinical/DATA prototype evidence; R71 final-floor PostgreSQL proof is recorded and joined in R72. | M5/M6 remain open: live roles/current delivery, durable ack/snooze, notification/provider recovery and operational acceptance. Fresh-only ordering has no populated/imported-history migration or downmigration. |
-| Local joined candidate | Owner CLI, clinical projection and experimental DATA components are joined in a **local candidate in verification**. | Reader option is removed in the local candidate; comprehensive verification is pending; native component evidence does not accept a fresh joined full/browser campaign or promote M2/M5. Current head and lane state belong to the dashboard. |
-| Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | The whole profile branch remains separate. Reusing its private helper/evaluateCycle hunk in the local candidate establishes no common atomic revision, live profile role or notification handoff. |
+| Durable runtime | R73 joins the bounded [PostgreSQL recovery/notification record](../../../reports/tenancy/m5-runtime-2026-11-07/postgres/README.md) and [reference-role/browser record](../../../reports/tenancy/m5-runtime-2026-11-07/roles/README.md), with their actual executed heads and controls. | Final assembled verification and criterion disposition remain open. Live provider/device delivery and capacity/freshness/egress budgets retain separate gates. |
+| SQL operations | R73 retains bounded [populated SQL recovery, upgrade/rollback and deletion proof](../../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md). | Fixture quiescence does not establish a serving blackout. Identity-bearing same-ID tenant restore, keys/provider integration and wider M6 acceptance remain open; populated predecessor profile migration retains its refusal. |
+| Local joined candidate | Bounded runtime and SQL-operations components are joined in a candidate undergoing final comprehensive verification. | Component proofs do not promote M5/M6 on their own. Current head, gates and milestone claims belong to the dashboard and R73 disposition. |
+| Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | The computed-single branch remains separate. Shared private code does not equate its trigger, cost or admission to the multitenant reference. |
 
-The [integration record](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
-owns measured heads, controls and source-identity reuse; the [R62 capsule](../../../reports/tenancy/control-recovery-acceptance-87133959-2026-11-06.md) retains broad campaigns executed on `87133959` and the exact runner-only difference on `83582e87`. R64 records remote publication
-checks separately from local acceptance. [R67](../remedial/rc-16.0.0-integration-record.md#r67---bounded-recovered-clinical-projection-native-controls-2026-11-06)
-and [R68](../remedial/rc-16.0.0-integration-record.md#r68---fresh-schema-socket-data-prototype-native-controls-2026-11-06)
-are bounded local component evidence, not whole-candidate acceptance. R66's original
-socket failure remains recorded. R65 supplies descriptive small clock HTTP data;
-resource bounds and performance budgets are explicitly **deferred to batch C**, with no approved numeric threshold. The
-older corpus benchmark remains pending in its capture. See the
-[release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md) for programme disposition.
+The [R73 integration record](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) owns
+executed heads, controls, source-identity reuse and criterion disposition. R73
+joins the bounded records above with the final comprehensive verdict before any
+milestone promotion. Recorded-evidence gates replay archived measurements; they
+do not run a fresh native/current-HEAD campaign. Production capacity, freshness
+and egress budgets still need declared workloads and measurements. The
+[release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md) owns
+programme disposition.
 
 | Earlier overview | Retained evidence |
 |---|---|
+| [R62–R72 overview at the prior revision](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/docs/30-design/platform/next-gen-platform-plan.md#1-where-things-stand) | Earlier publication checks, prototype failures and small clock HTTP evidence; the integration record and named capsules retain their original verdicts. |
 | [R49–R55 platform checkpoints at the prior revision](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/ed18a7bceb096fc52e155fc5a005106f7e91263d/docs/30-design/platform/next-gen-platform-plan.md#1-where-things-stand) | Native and cumulative campaigns, capacity HOLD and cleanup captures, original replica failure and focused clock repair. Their named reports remain authoritative for those runs. |
 
 ## 1. 16.0.0 scope (maintainer, 2026-10-30)

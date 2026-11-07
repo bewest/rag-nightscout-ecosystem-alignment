@@ -184,6 +184,25 @@ must contain every ciphertext/key reference before secret/audit rows are removed
 The decision is in the [promotion record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06);
 implementation and destroy/after-window refusal evidence remain separate.
 
+## Current bounded proof and remaining admission
+
+[R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) owns the joined criterion disposition. These synthetic native records have
+bounded acceptance at their declared executed heads; their runnable
+RECORDED-EVIDENCE gates replay archived physical observations, not a fresh
+current-HEAD campaign. Final assembled full/default-browser/current-corpus/PR
+checks remain open. Neither M5 nor M6 is promoted by this table.
+
+| Recorded proof | Boundary and remaining work |
+|---|---|
+| [M5 PostgreSQL](../../../reports/tenancy/m5-runtime-2026-11-07/postgres/README.md) | Current-state/evaluator recovery, restricted-role durable alarm/request state and controlled consumer handoff. Actual roles/browser have their separate home below. |
+| [M5 reference roles/browser](../../../reports/tenancy/m5-runtime-2026-11-07/roles/README.md) | Separate API/realtime/evaluator roles, typed write compatibility, current recipient/configuration authority, alarm controls and a controlled same-origin browser. Server handoff, recipient event and browser presentation are separate observations; no evaluator-to-device journey or live provider delivery is established. |
+| [M6 SQL operations](../../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md) | Populated catalogue/artifact fidelity, supported upgrade/rollback, interruption and deletion ceremony under fixture quiescence. Identity-bearing same-ID tenant restore remains unsupported. Whole-deployment rollback includes other tenants; this is not a single-tenant restore or a serving/DDL/cache blackout. |
+
+Shared OIDC/session effects, operator-assisted ownership, full suspension,
+retained-key destruction/after-window refusal and measured operating budgets
+remain M6 work. The [current decision index](m5-m6-decision-list.md) separates
+human choices from implementation and measurement work.
+
 ## M5/M6 acceptance families
 
 These refine the milestone cells above into observable results. They are required
@@ -205,8 +224,8 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 | M6 operations and clients | Populated backup/restore and upgrade/rollback cover interruption, supported schema/catalogue and failure recovery on the assembled tree. Retain the Android emulator acceptance and the explicit iOS/all-client exclusions. A representative entries/clock lab does not cover the whole catalogue. |
 | M6 operating envelope and final review | Declare synthetic workload and freshness/recovery expectations, then measure shared-pool/hot-tenant interference, row/byte limits, scan cadence, latency and egress refusal before approving bounds. Complete the final criterion matrix and review. Functional passes do not establish capacity. |
 
-M5 reconciliation implementation may proceed now; it does not depend on selecting
-an external notification provider or retained history. Multi-node failover,
+The bounded M5 reference can complete its final gates without selecting a live
+external notification provider or retained every-transition history. Multi-node failover,
 every-transition history and self-service ownership are separate enhancements.
 Real identities/data, production/default role enablement and release admission keep
 their existing explicit approval boundaries.
