@@ -1,0 +1,2829 @@
+{
+  "classification": "reproduced bounded synthetic characterization; read-derived corpus selection and source explanation identified separately",
+  "source": {
+    "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+    "sourceTree": "09dd7baf52d51f2725e7cac732fabd3f8280b482",
+    "instrumentSHA256": "e4ea09a47b0cd8440896d7719d74fd75da71dcc631f342dc4424471c3866a919",
+    "parentSHA256": "bbff0ecd87c65ba45a816e6b28d99190109c09eb87a02d7121fe717903d3ee7a",
+    "planSHA256": "c388822842a81e3c557aef659f1c6186f92dd3e74d4543abb1f7ddb04e971356",
+    "node": "v22.23.4"
+  },
+  "captureFinalIndexSHA256": "a42f2a826e4a7d7eac223aa08ddeae2519c7f0bde821867683480ae440b381f0",
+  "journeyBuilderSHA256": "26d104b1584eb2e91b4fb8314701e833aba4b77ab89cb2ab26eb84b0b850fb01",
+  "verdict": {
+    "childAccepted": true,
+    "parentAccepted": true,
+    "runtimeReleased": true,
+    "globalEgressAttempts": 0,
+    "metricRows": 360,
+    "controls": 6,
+    "parentElapsedSeconds": 26.01532862195745
+  },
+  "closure": {
+    "childBirthAbsent": true,
+    "childProcessGroupAbsent": true,
+    "ownedContainerAbsent": true,
+    "ownedVolumeAbsent": true,
+    "baselineMetadataUnchanged": true,
+    "exactInventoryRestored": true,
+    "originalError": null,
+    "cleanupErrors": []
+  },
+  "independentRootClosure": {
+    "ownedContainerAbsent": true,
+    "ownedVolumeAbsent": true,
+    "childAbsent": true,
+    "exactInventoryRestored": true,
+    "baselineMetadataUnchanged": true,
+    "scope": "fresh readback against parent closure identities; selected identity/config metadata, not all live network endpoint state"
+  },
+  "controls": [
+    {
+      "name": "actual-bgnow-setter-corruption",
+      "exactSymptomFirstLine": "clinical setter must agree"
+    },
+    {
+      "name": "checkpoint-only-stale-result",
+      "exactSymptomFirstLine": "same-checkpoint result reused at wrong time"
+    },
+    {
+      "name": "cross-tenant-result-substitution",
+      "exactSymptomFirstLine": "tenant B must have independent result"
+    },
+    {
+      "name": "settings-version-stale-result",
+      "exactSymptomFirstLine": "disabled plugin must not reuse enabled output"
+    },
+    {
+      "name": "stale-frame-after-hard-delete",
+      "exactSymptomFirstLine": "reused frame retained deleted reading"
+    },
+    {
+      "name": "partial-input-refusal",
+      "exactSymptomFirstLine": "SYNTHETIC_PARTIAL_ENTRY_READ"
+    }
+  ],
+  "repeatability": [
+    {
+      "size": "small",
+      "provenance": "loop",
+      "inputRows": 35,
+      "propertySHA256": [
+        "8627a5a94d499182968d959dbb76d91d3265e8e0deb398ed6e37bb0ff65966a8",
+        "8627a5a94d499182968d959dbb76d91d3265e8e0deb398ed6e37bb0ff65966a8"
+      ],
+      "equal": true
+    },
+    {
+      "size": "small",
+      "provenance": "openaps",
+      "inputRows": 35,
+      "propertySHA256": [
+        "5c1770ffcd9bb7706773f74e6a4af32a1fcb3c1c5cb3a283a7d3b79685c0976e",
+        "5c1770ffcd9bb7706773f74e6a4af32a1fcb3c1c5cb3a283a7d3b79685c0976e"
+      ],
+      "equal": true
+    },
+    {
+      "size": "small",
+      "provenance": "treatments",
+      "inputRows": 34,
+      "propertySHA256": [
+        "41e06f2f99873954ff7aec56855bc06e96a20212e5994f4e15f2340ed8303ad6",
+        "41e06f2f99873954ff7aec56855bc06e96a20212e5994f4e15f2340ed8303ad6"
+      ],
+      "equal": true
+    },
+    {
+      "size": "history",
+      "provenance": "loop",
+      "inputRows": 759,
+      "propertySHA256": [
+        "8627a5a94d499182968d959dbb76d91d3265e8e0deb398ed6e37bb0ff65966a8",
+        "8627a5a94d499182968d959dbb76d91d3265e8e0deb398ed6e37bb0ff65966a8"
+      ],
+      "equal": true
+    },
+    {
+      "size": "history",
+      "provenance": "openaps",
+      "inputRows": 759,
+      "propertySHA256": [
+        "5c1770ffcd9bb7706773f74e6a4af32a1fcb3c1c5cb3a283a7d3b79685c0976e",
+        "5c1770ffcd9bb7706773f74e6a4af32a1fcb3c1c5cb3a283a7d3b79685c0976e"
+      ],
+      "equal": true
+    },
+    {
+      "size": "history",
+      "provenance": "treatments",
+      "inputRows": 758,
+      "propertySHA256": [
+        "65cae673b4eec4a3272f083845ae2def7e2b0c47f163dd08f45913419c16add7",
+        "65cae673b4eec4a3272f083845ae2def7e2b0c47f163dd08f45913419c16add7"
+      ],
+      "equal": true
+    }
+  ],
+  "measurements": [
+    {
+      "size": "small",
+      "provenance": "loop",
+      "path": "api-http",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 13.869228,
+        "p95": 30.121347,
+        "min": 10.042347,
+        "max": 30.121347
+      },
+      "cpuMs": {
+        "median": 11.352,
+        "p95": 16.892,
+        "min": 7.158,
+        "max": 16.892
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 60.0,
+        "p95": 60,
+        "min": 60,
+        "max": 60
+      },
+      "sqlRowJsonBytes": {
+        "median": 12491.0,
+        "p95": 12491,
+        "min": 12491,
+        "max": 12491
+      },
+      "sqlElapsedMs": {
+        "median": 17.017807499999996,
+        "p95": 38.031158999999995,
+        "min": 11.712430999999997,
+        "max": 38.031158999999995
+      },
+      "pluginElapsedMs": {
+        "median": 0.7436429999999999,
+        "p95": 1.3274160000000002,
+        "min": 0.6019519999999999,
+        "max": 1.3274160000000002
+      },
+      "outputJsonBytes": {
+        "median": 5901.0,
+        "p95": 5901,
+        "min": 5901,
+        "max": 5901
+      },
+      "heapDeltaBytes": {
+        "median": 2407116.0,
+        "p95": 2573240,
+        "min": -9709160,
+        "max": 2573240
+      },
+      "rssBytes": {
+        "median": 188872704.0,
+        "p95": 232853504,
+        "min": 140959744,
+        "max": 232853504
+      },
+      "propertyJsonBytes": {
+        "median": 5901.0,
+        "p95": 5901,
+        "min": 5901,
+        "max": 5901
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "loop",
+      "path": "api-core",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 10.686057,
+        "p95": 30.996707,
+        "min": 9.579961,
+        "max": 30.996707
+      },
+      "cpuMs": {
+        "median": 9.4355,
+        "p95": 15.894,
+        "min": 6.497,
+        "max": 15.894
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 60.0,
+        "p95": 60,
+        "min": 60,
+        "max": 60
+      },
+      "sqlRowJsonBytes": {
+        "median": 12491.0,
+        "p95": 12491,
+        "min": 12491,
+        "max": 12491
+      },
+      "sqlElapsedMs": {
+        "median": 13.194091000000002,
+        "p95": 40.46111200000001,
+        "min": 11.778944,
+        "max": 40.46111200000001
+      },
+      "pluginElapsedMs": {
+        "median": 0.8079639999999999,
+        "p95": 1.450832,
+        "min": 0.636592,
+        "max": 1.450832
+      },
+      "outputJsonBytes": {
+        "median": 5901.0,
+        "p95": 5901,
+        "min": 5901,
+        "max": 5901
+      },
+      "heapDeltaBytes": {
+        "median": 2237708.0,
+        "p95": 2457008,
+        "min": -9976720,
+        "max": 2457008
+      },
+      "rssBytes": {
+        "median": 188872704.0,
+        "p95": 232853504,
+        "min": 141090816,
+        "max": 232853504
+      },
+      "propertyJsonBytes": {
+        "median": 5901.0,
+        "p95": 5901,
+        "min": 5901,
+        "max": 5901
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "loop",
+      "path": "realtime-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 16.530964,
+        "p95": 27.916248,
+        "min": 12.130968,
+        "max": 27.916248
+      },
+      "cpuMs": {
+        "median": 10.905000000000001,
+        "p95": 16.461,
+        "min": 5.44,
+        "max": 16.461
+      },
+      "sqlQueries": {
+        "median": 84.0,
+        "p95": 84,
+        "min": 84,
+        "max": 84
+      },
+      "sqlRows": {
+        "median": 99.0,
+        "p95": 99,
+        "min": 99,
+        "max": 99
+      },
+      "sqlRowJsonBytes": {
+        "median": 37024.0,
+        "p95": 37024,
+        "min": 37024,
+        "max": 37024
+      },
+      "sqlElapsedMs": {
+        "median": 19.96758549999999,
+        "p95": 35.567378000000005,
+        "min": 14.460767000000002,
+        "max": 35.567378000000005
+      },
+      "pluginElapsedMs": {
+        "median": 0.0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      },
+      "outputJsonBytes": {
+        "median": 18547.0,
+        "p95": 18547,
+        "min": 18547,
+        "max": 18547
+      },
+      "heapDeltaBytes": {
+        "median": 2170064.0,
+        "p95": 2250216,
+        "min": -9746008,
+        "max": 2250216
+      },
+      "rssBytes": {
+        "median": 188872704.0,
+        "p95": 232853504,
+        "min": 141090816,
+        "max": 232853504
+      },
+      "browserFrameJsonBytes": {
+        "median": 7652.0,
+        "p95": 7652,
+        "min": 7652,
+        "max": 7652
+      },
+      "pluginCalls": {},
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "loop",
+      "path": "evaluator-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 15.138619,
+        "p95": 17.618704,
+        "min": 13.01032,
+        "max": 17.618704
+      },
+      "cpuMs": {
+        "median": 7.6085,
+        "p95": 28.405,
+        "min": 6.204,
+        "max": 28.405
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 97.0,
+        "p95": 97,
+        "min": 97,
+        "max": 97
+      },
+      "sqlRowJsonBytes": {
+        "median": 36902.0,
+        "p95": 36902,
+        "min": 36902,
+        "max": 36902
+      },
+      "sqlElapsedMs": {
+        "median": 16.3247765,
+        "p95": 18.507016000000004,
+        "min": 14.215037,
+        "max": 18.507016000000004
+      },
+      "pluginElapsedMs": {
+        "median": 0.68987,
+        "p95": 0.904584,
+        "min": 0.5713170000000001,
+        "max": 0.904584
+      },
+      "outputJsonBytes": {
+        "median": 6116.0,
+        "p95": 6116,
+        "min": 6116,
+        "max": 6116
+      },
+      "heapDeltaBytes": {
+        "median": 2182708.0,
+        "p95": 2390944,
+        "min": -9359520,
+        "max": 2390944
+      },
+      "rssBytes": {
+        "median": 188938240.0,
+        "p95": 232853504,
+        "min": 141484032,
+        "max": 232853504
+      },
+      "propertyJsonBytes": {
+        "median": 5901.0,
+        "p95": 5901,
+        "min": 5901,
+        "max": 5901
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "loop",
+      "path": "evaluator-time-only",
+      "samples": 2,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 8.135667999999999,
+        "p95": 8.849834,
+        "min": 7.421502,
+        "max": 8.849834
+      },
+      "cpuMs": {
+        "median": 8.157,
+        "p95": 9.532,
+        "min": 6.782,
+        "max": 9.532
+      },
+      "sqlQueries": {
+        "median": 44.0,
+        "p95": 44,
+        "min": 44,
+        "max": 44
+      },
+      "sqlRows": {
+        "median": 46.0,
+        "p95": 46,
+        "min": 46,
+        "max": 46
+      },
+      "sqlRowJsonBytes": {
+        "median": 11926.0,
+        "p95": 11926,
+        "min": 11926,
+        "max": 11926
+      },
+      "sqlElapsedMs": {
+        "median": 9.641922000000003,
+        "p95": 11.690579000000003,
+        "min": 7.5932650000000015,
+        "max": 11.690579000000003
+      },
+      "pluginElapsedMs": {
+        "median": 0.7235945,
+        "p95": 0.7712159999999999,
+        "min": 0.6759730000000002,
+        "max": 0.7712159999999999
+      },
+      "outputJsonBytes": {
+        "median": 6114.0,
+        "p95": 6114,
+        "min": 6114,
+        "max": 6114
+      },
+      "heapDeltaBytes": {
+        "median": -4212088.0,
+        "p95": 1742008,
+        "min": -10166184,
+        "max": 1742008
+      },
+      "rssBytes": {
+        "median": 188938240.0,
+        "p95": 232853504,
+        "min": 145022976,
+        "max": 232853504
+      },
+      "propertyJsonBytes": {
+        "median": 5901.0,
+        "p95": 5901,
+        "min": 5901,
+        "max": 5901
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "openaps",
+      "path": "api-http",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 11.4533595,
+        "p95": 26.772623,
+        "min": 10.331886,
+        "max": 26.772623
+      },
+      "cpuMs": {
+        "median": 9.5615,
+        "p95": 17.7,
+        "min": 6.266,
+        "max": 17.7
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 60.0,
+        "p95": 60,
+        "min": 60,
+        "max": 60
+      },
+      "sqlRowJsonBytes": {
+        "median": 12594.0,
+        "p95": 12594,
+        "min": 12594,
+        "max": 12594
+      },
+      "sqlElapsedMs": {
+        "median": 13.4159835,
+        "p95": 31.190233000000006,
+        "min": 9.954480000000006,
+        "max": 31.190233000000006
+      },
+      "pluginElapsedMs": {
+        "median": 0.7627934999999999,
+        "p95": 1.1122029999999998,
+        "min": 0.6919769999999998,
+        "max": 1.1122029999999998
+      },
+      "outputJsonBytes": {
+        "median": 6068.0,
+        "p95": 6068,
+        "min": 6068,
+        "max": 6068
+      },
+      "heapDeltaBytes": {
+        "median": 2450636.0,
+        "p95": 2557880,
+        "min": -9592616,
+        "max": 2557880
+      },
+      "rssBytes": {
+        "median": 190353408.0,
+        "p95": 233377792,
+        "min": 147251200,
+        "max": 233377792
+      },
+      "propertyJsonBytes": {
+        "median": 6068.0,
+        "p95": 6068,
+        "min": 6068,
+        "max": 6068
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "openaps",
+      "path": "api-core",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 10.5426625,
+        "p95": 26.434022,
+        "min": 8.554477,
+        "max": 26.434022
+      },
+      "cpuMs": {
+        "median": 7.5985,
+        "p95": 17.54,
+        "min": 4.993,
+        "max": 17.54
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 60.0,
+        "p95": 60,
+        "min": 60,
+        "max": 60
+      },
+      "sqlRowJsonBytes": {
+        "median": 12594.0,
+        "p95": 12594,
+        "min": 12594,
+        "max": 12594
+      },
+      "sqlElapsedMs": {
+        "median": 13.333993000000003,
+        "p95": 35.81912200000001,
+        "min": 10.370922000000002,
+        "max": 35.81912200000001
+      },
+      "pluginElapsedMs": {
+        "median": 0.761597,
+        "p95": 1.061284,
+        "min": 0.604697,
+        "max": 1.061284
+      },
+      "outputJsonBytes": {
+        "median": 6068.0,
+        "p95": 6068,
+        "min": 6068,
+        "max": 6068
+      },
+      "heapDeltaBytes": {
+        "median": 2256524.0,
+        "p95": 2383168,
+        "min": -9256024,
+        "max": 2383168
+      },
+      "rssBytes": {
+        "median": 190418944.0,
+        "p95": 233377792,
+        "min": 145661952,
+        "max": 233377792
+      },
+      "propertyJsonBytes": {
+        "median": 6068.0,
+        "p95": 6068,
+        "min": 6068,
+        "max": 6068
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "openaps",
+      "path": "realtime-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 16.0292295,
+        "p95": 34.57572,
+        "min": 13.675346,
+        "max": 34.57572
+      },
+      "cpuMs": {
+        "median": 9.472999999999999,
+        "p95": 15.337,
+        "min": 6.218,
+        "max": 15.337
+      },
+      "sqlQueries": {
+        "median": 84.0,
+        "p95": 84,
+        "min": 84,
+        "max": 84
+      },
+      "sqlRows": {
+        "median": 99.0,
+        "p95": 99,
+        "min": 99,
+        "max": 99
+      },
+      "sqlRowJsonBytes": {
+        "median": 37333.0,
+        "p95": 37333,
+        "min": 37333,
+        "max": 37333
+      },
+      "sqlElapsedMs": {
+        "median": 19.950950499999994,
+        "p95": 44.937631000000025,
+        "min": 15.582547000000002,
+        "max": 44.937631000000025
+      },
+      "pluginElapsedMs": {
+        "median": 0.0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      },
+      "outputJsonBytes": {
+        "median": 18753.0,
+        "p95": 18753,
+        "min": 18753,
+        "max": 18753
+      },
+      "heapDeltaBytes": {
+        "median": 2161844.0,
+        "p95": 2204304,
+        "min": -9472528,
+        "max": 2204304
+      },
+      "rssBytes": {
+        "median": 190418944.0,
+        "p95": 233377792,
+        "min": 145661952,
+        "max": 233377792
+      },
+      "browserFrameJsonBytes": {
+        "median": 7755.0,
+        "p95": 7755,
+        "min": 7755,
+        "max": 7755
+      },
+      "pluginCalls": {},
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "openaps",
+      "path": "evaluator-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 17.617849999999997,
+        "p95": 41.528622,
+        "min": 14.354043,
+        "max": 41.528622
+      },
+      "cpuMs": {
+        "median": 14.5525,
+        "p95": 28.85,
+        "min": 7.284,
+        "max": 28.85
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 97.0,
+        "p95": 97,
+        "min": 97,
+        "max": 97
+      },
+      "sqlRowJsonBytes": {
+        "median": 37211.0,
+        "p95": 37211,
+        "min": 37211,
+        "max": 37211
+      },
+      "sqlElapsedMs": {
+        "median": 19.126624000000003,
+        "p95": 45.117148,
+        "min": 15.417717000000001,
+        "max": 45.117148
+      },
+      "pluginElapsedMs": {
+        "median": 0.9560775000000001,
+        "p95": 1.712358,
+        "min": 0.68742,
+        "max": 1.712358
+      },
+      "outputJsonBytes": {
+        "median": 6283.0,
+        "p95": 6283,
+        "min": 6283,
+        "max": 6283
+      },
+      "heapDeltaBytes": {
+        "median": 2214856.0,
+        "p95": 2346648,
+        "min": -9449312,
+        "max": 2346648
+      },
+      "rssBytes": {
+        "median": 190812160.0,
+        "p95": 233377792,
+        "min": 146841600,
+        "max": 233377792
+      },
+      "propertyJsonBytes": {
+        "median": 6068.0,
+        "p95": 6068,
+        "min": 6068,
+        "max": 6068
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "openaps",
+      "path": "evaluator-time-only",
+      "samples": 2,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 9.259211,
+        "p95": 9.408866,
+        "min": 9.109556,
+        "max": 9.408866
+      },
+      "cpuMs": {
+        "median": 5.4355,
+        "p95": 6.107,
+        "min": 4.764,
+        "max": 6.107
+      },
+      "sqlQueries": {
+        "median": 44.0,
+        "p95": 44,
+        "min": 44,
+        "max": 44
+      },
+      "sqlRows": {
+        "median": 46.0,
+        "p95": 46,
+        "min": 46,
+        "max": 46
+      },
+      "sqlRowJsonBytes": {
+        "median": 12029.0,
+        "p95": 12029,
+        "min": 12029,
+        "max": 12029
+      },
+      "sqlElapsedMs": {
+        "median": 11.288741000000002,
+        "p95": 12.075488000000002,
+        "min": 10.501994000000003,
+        "max": 12.075488000000002
+      },
+      "pluginElapsedMs": {
+        "median": 0.7721895,
+        "p95": 0.930927,
+        "min": 0.613452,
+        "max": 0.930927
+      },
+      "outputJsonBytes": {
+        "median": 6281.0,
+        "p95": 6281,
+        "min": 6281,
+        "max": 6281
+      },
+      "heapDeltaBytes": {
+        "median": 1702680.0,
+        "p95": 1729168,
+        "min": 1676192,
+        "max": 1729168
+      },
+      "rssBytes": {
+        "median": 190812160.0,
+        "p95": 230850560,
+        "min": 150773760,
+        "max": 230850560
+      },
+      "propertyJsonBytes": {
+        "median": 6068.0,
+        "p95": 6068,
+        "min": 6068,
+        "max": 6068
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "treatments",
+      "path": "api-http",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 13.4599995,
+        "p95": 15.088931,
+        "min": 10.195925,
+        "max": 15.088931
+      },
+      "cpuMs": {
+        "median": 9.392,
+        "p95": 16.968,
+        "min": 5.976,
+        "max": 16.968
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 59.0,
+        "p95": 59,
+        "min": 59,
+        "max": 59
+      },
+      "sqlRowJsonBytes": {
+        "median": 11471.0,
+        "p95": 11471,
+        "min": 11471,
+        "max": 11471
+      },
+      "sqlElapsedMs": {
+        "median": 15.841684999999998,
+        "p95": 18.620729000000004,
+        "min": 12.043929,
+        "max": 18.620729000000004
+      },
+      "pluginElapsedMs": {
+        "median": 0.5348785,
+        "p95": 1.1064189999999998,
+        "min": 0.455387,
+        "max": 1.1064189999999998
+      },
+      "outputJsonBytes": {
+        "median": 3359.0,
+        "p95": 3359,
+        "min": 3359,
+        "max": 3359
+      },
+      "heapDeltaBytes": {
+        "median": 2288348.0,
+        "p95": 2354824,
+        "min": -9503296,
+        "max": 2354824
+      },
+      "rssBytes": {
+        "median": 192833536.0,
+        "p95": 231370752,
+        "min": 149970944,
+        "max": 231370752
+      },
+      "propertyJsonBytes": {
+        "median": 3359.0,
+        "p95": 3359,
+        "min": 3359,
+        "max": 3359
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "treatments",
+      "path": "api-core",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 11.653735999999999,
+        "p95": 14.749297,
+        "min": 9.154476,
+        "max": 14.749297
+      },
+      "cpuMs": {
+        "median": 8.689499999999999,
+        "p95": 10.45,
+        "min": 6.151,
+        "max": 10.45
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 59.0,
+        "p95": 59,
+        "min": 59,
+        "max": 59
+      },
+      "sqlRowJsonBytes": {
+        "median": 11471.0,
+        "p95": 11471,
+        "min": 11471,
+        "max": 11471
+      },
+      "sqlElapsedMs": {
+        "median": 14.689244000000002,
+        "p95": 20.176252,
+        "min": 11.183433999999998,
+        "max": 20.176252
+      },
+      "pluginElapsedMs": {
+        "median": 0.5748565,
+        "p95": 0.9971610000000001,
+        "min": 0.502849,
+        "max": 0.9971610000000001
+      },
+      "outputJsonBytes": {
+        "median": 3359.0,
+        "p95": 3359,
+        "min": 3359,
+        "max": 3359
+      },
+      "heapDeltaBytes": {
+        "median": 2146132.0,
+        "p95": 2183536,
+        "min": -9564520,
+        "max": 2183536
+      },
+      "rssBytes": {
+        "median": 192833536.0,
+        "p95": 231768064,
+        "min": 150757376,
+        "max": 231768064
+      },
+      "propertyJsonBytes": {
+        "median": 3359.0,
+        "p95": 3359,
+        "min": 3359,
+        "max": 3359
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "treatments",
+      "path": "realtime-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 15.370515999999999,
+        "p95": 22.554551,
+        "min": 13.71855,
+        "max": 22.554551
+      },
+      "cpuMs": {
+        "median": 9.061499999999999,
+        "p95": 16.006,
+        "min": 5.398,
+        "max": 16.006
+      },
+      "sqlQueries": {
+        "median": 84.0,
+        "p95": 84,
+        "min": 84,
+        "max": 84
+      },
+      "sqlRows": {
+        "median": 97.0,
+        "p95": 97,
+        "min": 97,
+        "max": 97
+      },
+      "sqlRowJsonBytes": {
+        "median": 33909.0,
+        "p95": 33909,
+        "min": 33909,
+        "max": 33909
+      },
+      "sqlElapsedMs": {
+        "median": 20.578956999999996,
+        "p95": 28.535972999999995,
+        "min": 15.940538000000004,
+        "max": 28.535972999999995
+      },
+      "pluginElapsedMs": {
+        "median": 0.0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      },
+      "outputJsonBytes": {
+        "median": 16545.0,
+        "p95": 16545,
+        "min": 16545,
+        "max": 16545
+      },
+      "heapDeltaBytes": {
+        "median": 2078248.0,
+        "p95": 2119224,
+        "min": -9908112,
+        "max": 2119224
+      },
+      "rssBytes": {
+        "median": 193423360.0,
+        "p95": 231768064,
+        "min": 150757376,
+        "max": 231768064
+      },
+      "browserFrameJsonBytes": {
+        "median": 6659.0,
+        "p95": 6659,
+        "min": 6659,
+        "max": 6659
+      },
+      "pluginCalls": {},
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "treatments",
+      "path": "evaluator-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 15.4102265,
+        "p95": 23.867812,
+        "min": 12.516414,
+        "max": 23.867812
+      },
+      "cpuMs": {
+        "median": 6.3004999999999995,
+        "p95": 34.447,
+        "min": 5.355,
+        "max": 34.447
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 95.0,
+        "p95": 95,
+        "min": 95,
+        "max": 95
+      },
+      "sqlRowJsonBytes": {
+        "median": 33787.0,
+        "p95": 33787,
+        "min": 33787,
+        "max": 33787
+      },
+      "sqlElapsedMs": {
+        "median": 17.953676,
+        "p95": 28.431187000000012,
+        "min": 13.214944000000001,
+        "max": 28.431187000000012
+      },
+      "pluginElapsedMs": {
+        "median": 0.5569255,
+        "p95": 0.8012810000000001,
+        "min": 0.45509000000000005,
+        "max": 0.8012810000000001
+      },
+      "outputJsonBytes": {
+        "median": 3574.0,
+        "p95": 3574,
+        "min": 3574,
+        "max": 3574
+      },
+      "heapDeltaBytes": {
+        "median": 2080852.0,
+        "p95": 2093728,
+        "min": -9883984,
+        "max": 2093728
+      },
+      "rssBytes": {
+        "median": 193556480.0,
+        "p95": 232161280,
+        "min": 150757376,
+        "max": 232161280
+      },
+      "propertyJsonBytes": {
+        "median": 3359.0,
+        "p95": 3359,
+        "min": 3359,
+        "max": 3359
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "small",
+      "provenance": "treatments",
+      "path": "evaluator-time-only",
+      "samples": 2,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 9.4872305,
+        "p95": 11.897161,
+        "min": 7.0773,
+        "max": 11.897161
+      },
+      "cpuMs": {
+        "median": 6.1015,
+        "p95": 6.215,
+        "min": 5.988,
+        "max": 6.215
+      },
+      "sqlQueries": {
+        "median": 44.0,
+        "p95": 44,
+        "min": 44,
+        "max": 44
+      },
+      "sqlRows": {
+        "median": 45.0,
+        "p95": 45,
+        "min": 45,
+        "max": 45
+      },
+      "sqlRowJsonBytes": {
+        "median": 10909.0,
+        "p95": 10909,
+        "min": 10909,
+        "max": 10909
+      },
+      "sqlElapsedMs": {
+        "median": 13.075741,
+        "p95": 17.840821000000002,
+        "min": 8.310660999999998,
+        "max": 17.840821000000002
+      },
+      "pluginElapsedMs": {
+        "median": 0.7463150000000001,
+        "p95": 0.8003120000000001,
+        "min": 0.6923179999999999,
+        "max": 0.8003120000000001
+      },
+      "outputJsonBytes": {
+        "median": 3572.0,
+        "p95": 3572,
+        "min": 3572,
+        "max": 3572
+      },
+      "heapDeltaBytes": {
+        "median": 1561308.0,
+        "p95": 1576376,
+        "min": 1546240,
+        "max": 1576376
+      },
+      "rssBytes": {
+        "median": 193816576.0,
+        "p95": 231370752,
+        "min": 156262400,
+        "max": 231370752
+      },
+      "propertyJsonBytes": {
+        "median": 3359.0,
+        "p95": 3359,
+        "min": 3359,
+        "max": 3359
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "loop",
+      "path": "api-http",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 23.875096,
+        "p95": 27.330453,
+        "min": 19.616345,
+        "max": 27.330453
+      },
+      "cpuMs": {
+        "median": 19.953,
+        "p95": 35.24,
+        "min": 16.25,
+        "max": 35.24
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 756.0,
+        "p95": 756,
+        "min": 756,
+        "max": 756
+      },
+      "sqlRowJsonBytes": {
+        "median": 226222.0,
+        "p95": 226222,
+        "min": 226222,
+        "max": 226222
+      },
+      "sqlElapsedMs": {
+        "median": 32.46765500000001,
+        "p95": 35.276184,
+        "min": 24.92275499999999,
+        "max": 35.276184
+      },
+      "pluginElapsedMs": {
+        "median": 1.3631185000000001,
+        "p95": 1.722717,
+        "min": 1.209002,
+        "max": 1.722717
+      },
+      "outputJsonBytes": {
+        "median": 6570.0,
+        "p95": 6570,
+        "min": 6570,
+        "max": 6570
+      },
+      "heapDeltaBytes": {
+        "median": -686940.0,
+        "p95": -97600,
+        "min": -4366088,
+        "max": -97600
+      },
+      "rssBytes": {
+        "median": 208414720.0,
+        "p95": 238338048,
+        "min": 173461504,
+        "max": 238338048
+      },
+      "propertyJsonBytes": {
+        "median": 6570.0,
+        "p95": 6570,
+        "min": 6570,
+        "max": 6570
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "loop",
+      "path": "api-core",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 22.989337,
+        "p95": 29.356753,
+        "min": 19.345582,
+        "max": 29.356753
+      },
+      "cpuMs": {
+        "median": 21.073,
+        "p95": 30.999,
+        "min": 13.489,
+        "max": 30.999
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 756.0,
+        "p95": 756,
+        "min": 756,
+        "max": 756
+      },
+      "sqlRowJsonBytes": {
+        "median": 226222.0,
+        "p95": 226222,
+        "min": 226222,
+        "max": 226222
+      },
+      "sqlElapsedMs": {
+        "median": 31.782218999999998,
+        "p95": 37.721876000000016,
+        "min": 27.62481600000001,
+        "max": 37.721876000000016
+      },
+      "pluginElapsedMs": {
+        "median": 1.4497224999999998,
+        "p95": 2.708078,
+        "min": 1.270575,
+        "max": 2.708078
+      },
+      "outputJsonBytes": {
+        "median": 6570.0,
+        "p95": 6570,
+        "min": 6570,
+        "max": 6570
+      },
+      "heapDeltaBytes": {
+        "median": -3938444.0,
+        "p95": 10882816,
+        "min": -4228368,
+        "max": 10882816
+      },
+      "rssBytes": {
+        "median": 209864704.0,
+        "p95": 238587904,
+        "min": 176807936,
+        "max": 238587904
+      },
+      "propertyJsonBytes": {
+        "median": 6570.0,
+        "p95": 6570,
+        "min": 6570,
+        "max": 6570
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "loop",
+      "path": "realtime-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 53.1590765,
+        "p95": 57.291241,
+        "min": 48.690694,
+        "max": 57.291241
+      },
+      "cpuMs": {
+        "median": 32.528999999999996,
+        "p95": 85.119,
+        "min": 27.935,
+        "max": 85.119
+      },
+      "sqlQueries": {
+        "median": 89.0,
+        "p95": 89,
+        "min": 89,
+        "max": 89
+      },
+      "sqlRows": {
+        "median": 1519.0,
+        "p95": 1519,
+        "min": 1519,
+        "max": 1519
+      },
+      "sqlRowJsonBytes": {
+        "median": 731506.0,
+        "p95": 731506,
+        "min": 731506,
+        "max": 731506
+      },
+      "sqlElapsedMs": {
+        "median": 55.63572849999999,
+        "p95": 58.664812,
+        "min": 51.84233699999998,
+        "max": 58.664812
+      },
+      "pluginElapsedMs": {
+        "median": 0.0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      },
+      "outputJsonBytes": {
+        "median": 362597.0,
+        "p95": 362597,
+        "min": 362597,
+        "max": 362597
+      },
+      "heapDeltaBytes": {
+        "median": 2785112.0,
+        "p95": 16274064,
+        "min": -44293240,
+        "max": 16274064
+      },
+      "rssBytes": {
+        "median": 211582976.0,
+        "p95": 238919680,
+        "min": 180346880,
+        "max": 238919680
+      },
+      "browserFrameJsonBytes": {
+        "median": 138842.0,
+        "p95": 138842,
+        "min": 138842,
+        "max": 138842
+      },
+      "pluginCalls": {},
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "loop",
+      "path": "evaluator-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 50.8570595,
+        "p95": 54.766292,
+        "min": 47.767355,
+        "max": 54.766292
+      },
+      "cpuMs": {
+        "median": 33.61750000000001,
+        "p95": 38.728,
+        "min": 27.617,
+        "max": 38.728
+      },
+      "sqlQueries": {
+        "median": 81.0,
+        "p95": 81,
+        "min": 81,
+        "max": 81
+      },
+      "sqlRows": {
+        "median": 1517.0,
+        "p95": 1517,
+        "min": 1517,
+        "max": 1517
+      },
+      "sqlRowJsonBytes": {
+        "median": 731384.0,
+        "p95": 731384,
+        "min": 731384,
+        "max": 731384
+      },
+      "sqlElapsedMs": {
+        "median": 49.4830735,
+        "p95": 54.80755100000001,
+        "min": 45.85067900000001,
+        "max": 54.80755100000001
+      },
+      "pluginElapsedMs": {
+        "median": 1.3511515,
+        "p95": 1.4957449999999999,
+        "min": 1.2511780000000001,
+        "max": 1.4957449999999999
+      },
+      "outputJsonBytes": {
+        "median": 6785.0,
+        "p95": 6785,
+        "min": 6785,
+        "max": 6785
+      },
+      "heapDeltaBytes": {
+        "median": 2256964.0,
+        "p95": 2301992,
+        "min": 578568,
+        "max": 2301992
+      },
+      "rssBytes": {
+        "median": 210589696.0,
+        "p95": 238227456,
+        "min": 180215808,
+        "max": 238227456
+      },
+      "propertyJsonBytes": {
+        "median": 6570.0,
+        "p95": 6570,
+        "min": 6570,
+        "max": 6570
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "loop",
+      "path": "evaluator-time-only",
+      "samples": 2,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 23.105967,
+        "p95": 23.956104,
+        "min": 22.25583,
+        "max": 23.956104
+      },
+      "cpuMs": {
+        "median": 21.9675,
+        "p95": 27.778,
+        "min": 16.157,
+        "max": 27.778
+      },
+      "sqlQueries": {
+        "median": 44.0,
+        "p95": 44,
+        "min": 44,
+        "max": 44
+      },
+      "sqlRows": {
+        "median": 742.0,
+        "p95": 742,
+        "min": 742,
+        "max": 742
+      },
+      "sqlRowJsonBytes": {
+        "median": 225654.0,
+        "p95": 225654,
+        "min": 225654,
+        "max": 225654
+      },
+      "sqlElapsedMs": {
+        "median": 28.921443499999995,
+        "p95": 30.204815,
+        "min": 27.638071999999987,
+        "max": 30.204815
+      },
+      "pluginElapsedMs": {
+        "median": 1.243071,
+        "p95": 1.258225,
+        "min": 1.2279170000000001,
+        "max": 1.258225
+      },
+      "outputJsonBytes": {
+        "median": 6783.0,
+        "p95": 6783,
+        "min": 6783,
+        "max": 6783
+      },
+      "heapDeltaBytes": {
+        "median": -3493508.0,
+        "p95": -3151368,
+        "min": -3835648,
+        "max": -3151368
+      },
+      "rssBytes": {
+        "median": 212058112.0,
+        "p95": 238505984,
+        "min": 185610240,
+        "max": 238505984
+      },
+      "propertyJsonBytes": {
+        "median": 6570.0,
+        "p95": 6570,
+        "min": 6570,
+        "max": 6570
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "openaps",
+      "path": "api-http",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 22.315434500000002,
+        "p95": 26.092237,
+        "min": 20.950824,
+        "max": 26.092237
+      },
+      "cpuMs": {
+        "median": 18.689500000000002,
+        "p95": 31.088,
+        "min": 17.37,
+        "max": 31.088
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 756.0,
+        "p95": 756,
+        "min": 756,
+        "max": 756
+      },
+      "sqlRowJsonBytes": {
+        "median": 226325.0,
+        "p95": 226325,
+        "min": 226325,
+        "max": 226325
+      },
+      "sqlElapsedMs": {
+        "median": 29.397147999999994,
+        "p95": 34.508821000000026,
+        "min": 26.167783000000018,
+        "max": 34.508821000000026
+      },
+      "pluginElapsedMs": {
+        "median": 1.4639654999999998,
+        "p95": 2.15792,
+        "min": 1.277609,
+        "max": 2.15792
+      },
+      "outputJsonBytes": {
+        "median": 6737.0,
+        "p95": 6737,
+        "min": 6737,
+        "max": 6737
+      },
+      "heapDeltaBytes": {
+        "median": -1405268.0,
+        "p95": -101888,
+        "min": -4375888,
+        "max": -101888
+      },
+      "rssBytes": {
+        "median": 218423296.0,
+        "p95": 242061312,
+        "min": 185057280,
+        "max": 242061312
+      },
+      "propertyJsonBytes": {
+        "median": 6737.0,
+        "p95": 6737,
+        "min": 6737,
+        "max": 6737
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "openaps",
+      "path": "api-core",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 20.6828635,
+        "p95": 22.768224,
+        "min": 18.289718,
+        "max": 22.768224
+      },
+      "cpuMs": {
+        "median": 17.0045,
+        "p95": 22.121,
+        "min": 13.489,
+        "max": 22.121
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 756.0,
+        "p95": 756,
+        "min": 756,
+        "max": 756
+      },
+      "sqlRowJsonBytes": {
+        "median": 226325.0,
+        "p95": 226325,
+        "min": 226325,
+        "max": 226325
+      },
+      "sqlElapsedMs": {
+        "median": 28.4340775,
+        "p95": 32.17120700000001,
+        "min": 25.542137999999998,
+        "max": 32.17120700000001
+      },
+      "pluginElapsedMs": {
+        "median": 1.372004,
+        "p95": 1.5630000000000002,
+        "min": 1.283176,
+        "max": 1.5630000000000002
+      },
+      "outputJsonBytes": {
+        "median": 6737.0,
+        "p95": 6737,
+        "min": 6737,
+        "max": 6737
+      },
+      "heapDeltaBytes": {
+        "median": -2805276.0,
+        "p95": 10897520,
+        "min": -4290872,
+        "max": 10897520
+      },
+      "rssBytes": {
+        "median": 219172864.0,
+        "p95": 242847744,
+        "min": 185057280,
+        "max": 242847744
+      },
+      "propertyJsonBytes": {
+        "median": 6737.0,
+        "p95": 6737,
+        "min": 6737,
+        "max": 6737
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "openaps",
+      "path": "realtime-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 48.313717499999996,
+        "p95": 58.402842,
+        "min": 44.860918,
+        "max": 58.402842
+      },
+      "cpuMs": {
+        "median": 32.613,
+        "p95": 74.426,
+        "min": 26.066,
+        "max": 74.426
+      },
+      "sqlQueries": {
+        "median": 89.0,
+        "p95": 89,
+        "min": 89,
+        "max": 89
+      },
+      "sqlRows": {
+        "median": 1519.0,
+        "p95": 1519,
+        "min": 1519,
+        "max": 1519
+      },
+      "sqlRowJsonBytes": {
+        "median": 731815.0,
+        "p95": 731815,
+        "min": 731815,
+        "max": 731815
+      },
+      "sqlElapsedMs": {
+        "median": 51.413841500000004,
+        "p95": 58.518604,
+        "min": 46.58278799999998,
+        "max": 58.518604
+      },
+      "pluginElapsedMs": {
+        "median": 0.0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      },
+      "outputJsonBytes": {
+        "median": 362803.0,
+        "p95": 362803,
+        "min": 362803,
+        "max": 362803
+      },
+      "heapDeltaBytes": {
+        "median": 2789328.0,
+        "p95": 16434704,
+        "min": -106076224,
+        "max": 16434704
+      },
+      "rssBytes": {
+        "median": 221456384.0,
+        "p95": 243146752,
+        "min": 189120512,
+        "max": 243146752
+      },
+      "browserFrameJsonBytes": {
+        "median": 138945.0,
+        "p95": 138945,
+        "min": 138945,
+        "max": 138945
+      },
+      "pluginCalls": {},
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "openaps",
+      "path": "evaluator-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 47.4329965,
+        "p95": 55.598062,
+        "min": 44.325074,
+        "max": 55.598062
+      },
+      "cpuMs": {
+        "median": 31.115000000000002,
+        "p95": 45.458,
+        "min": 27.518,
+        "max": 45.458
+      },
+      "sqlQueries": {
+        "median": 81.0,
+        "p95": 81,
+        "min": 81,
+        "max": 81
+      },
+      "sqlRows": {
+        "median": 1517.0,
+        "p95": 1517,
+        "min": 1517,
+        "max": 1517
+      },
+      "sqlRowJsonBytes": {
+        "median": 731693.0,
+        "p95": 731693,
+        "min": 731693,
+        "max": 731693
+      },
+      "sqlElapsedMs": {
+        "median": 46.487801000000005,
+        "p95": 52.486528000000014,
+        "min": 42.621037999999984,
+        "max": 52.486528000000014
+      },
+      "pluginElapsedMs": {
+        "median": 1.4278309999999999,
+        "p95": 1.745151,
+        "min": 1.2775200000000002,
+        "max": 1.745151
+      },
+      "outputJsonBytes": {
+        "median": 6952.0,
+        "p95": 6952,
+        "min": 6952,
+        "max": 6952
+      },
+      "heapDeltaBytes": {
+        "median": 2283136.0,
+        "p95": 5198456,
+        "min": 1154320,
+        "max": 5198456
+      },
+      "rssBytes": {
+        "median": 221294592.0,
+        "p95": 242339840,
+        "min": 188940288,
+        "max": 242339840
+      },
+      "propertyJsonBytes": {
+        "median": 6737.0,
+        "p95": 6737,
+        "min": 6737,
+        "max": 6737
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "openaps",
+      "path": "evaluator-time-only",
+      "samples": 2,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 23.0274055,
+        "p95": 24.323457,
+        "min": 21.731354,
+        "max": 24.323457
+      },
+      "cpuMs": {
+        "median": 21.099,
+        "p95": 21.484,
+        "min": 20.714,
+        "max": 21.484
+      },
+      "sqlQueries": {
+        "median": 44.0,
+        "p95": 44,
+        "min": 44,
+        "max": 44
+      },
+      "sqlRows": {
+        "median": 742.0,
+        "p95": 742,
+        "min": 742,
+        "max": 742
+      },
+      "sqlRowJsonBytes": {
+        "median": 225757.0,
+        "p95": 225757,
+        "min": 225757,
+        "max": 225757
+      },
+      "sqlElapsedMs": {
+        "median": 28.4593565,
+        "p95": 30.057678,
+        "min": 26.861035,
+        "max": 30.057678
+      },
+      "pluginElapsedMs": {
+        "median": 1.362951,
+        "p95": 1.368417,
+        "min": 1.357485,
+        "max": 1.368417
+      },
+      "outputJsonBytes": {
+        "median": 6950.0,
+        "p95": 6950,
+        "min": 6950,
+        "max": 6950
+      },
+      "heapDeltaBytes": {
+        "median": -3488424.0,
+        "p95": -3213328,
+        "min": -3763520,
+        "max": -3213328
+      },
+      "rssBytes": {
+        "median": 222992384.0,
+        "p95": 236990464,
+        "min": 208994304,
+        "max": 236990464
+      },
+      "propertyJsonBytes": {
+        "median": 6737.0,
+        "p95": 6737,
+        "min": 6737,
+        "max": 6737
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "treatments",
+      "path": "api-http",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 22.4589195,
+        "p95": 24.358645,
+        "min": 20.271063,
+        "max": 24.358645
+      },
+      "cpuMs": {
+        "median": 17.87,
+        "p95": 26.476,
+        "min": 16.594,
+        "max": 26.476
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 755.0,
+        "p95": 755,
+        "min": 755,
+        "max": 755
+      },
+      "sqlRowJsonBytes": {
+        "median": 225202.0,
+        "p95": 225202,
+        "min": 225202,
+        "max": 225202
+      },
+      "sqlElapsedMs": {
+        "median": 28.941769,
+        "p95": 34.920913,
+        "min": 25.687820000000002,
+        "max": 34.920913
+      },
+      "pluginElapsedMs": {
+        "median": 1.1949755,
+        "p95": 1.268833,
+        "min": 1.140152,
+        "max": 1.268833
+      },
+      "outputJsonBytes": {
+        "median": 4032.0,
+        "p95": 4032,
+        "min": 4032,
+        "max": 4032
+      },
+      "heapDeltaBytes": {
+        "median": -2803208.0,
+        "p95": -129080,
+        "min": -4452504,
+        "max": -129080
+      },
+      "rssBytes": {
+        "median": 237619200.0,
+        "p95": 241876992,
+        "min": 223125504,
+        "max": 241876992
+      },
+      "propertyJsonBytes": {
+        "median": 4032.0,
+        "p95": 4032,
+        "min": 4032,
+        "max": 4032
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "treatments",
+      "path": "api-core",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 21.345593,
+        "p95": 25.879882,
+        "min": 18.642906,
+        "max": 25.879882
+      },
+      "cpuMs": {
+        "median": 17.656,
+        "p95": 22.537,
+        "min": 13.601,
+        "max": 22.537
+      },
+      "sqlQueries": {
+        "median": 76.0,
+        "p95": 76,
+        "min": 76,
+        "max": 76
+      },
+      "sqlRows": {
+        "median": 755.0,
+        "p95": 755,
+        "min": 755,
+        "max": 755
+      },
+      "sqlRowJsonBytes": {
+        "median": 225202.0,
+        "p95": 225202,
+        "min": 225202,
+        "max": 225202
+      },
+      "sqlElapsedMs": {
+        "median": 30.826116,
+        "p95": 38.77393699999999,
+        "min": 26.046526999999994,
+        "max": 38.77393699999999
+      },
+      "pluginElapsedMs": {
+        "median": 1.2080625,
+        "p95": 1.3728289999999999,
+        "min": 1.1165659999999997,
+        "max": 1.3728289999999999
+      },
+      "outputJsonBytes": {
+        "median": 4032.0,
+        "p95": 4032,
+        "min": 4032,
+        "max": 4032
+      },
+      "heapDeltaBytes": {
+        "median": 3416544.0,
+        "p95": 10808696,
+        "min": -3979688,
+        "max": 10808696
+      },
+      "rssBytes": {
+        "median": 238319616.0,
+        "p95": 242503680,
+        "min": 223911936,
+        "max": 242503680
+      },
+      "propertyJsonBytes": {
+        "median": 4032.0,
+        "p95": 4032,
+        "min": 4032,
+        "max": 4032
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "treatments",
+      "path": "realtime-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 47.471954,
+        "p95": 53.412796,
+        "min": 45.222137,
+        "max": 53.412796
+      },
+      "cpuMs": {
+        "median": 31.679000000000002,
+        "p95": 39.91,
+        "min": 26.647,
+        "max": 39.91
+      },
+      "sqlQueries": {
+        "median": 89.0,
+        "p95": 89,
+        "min": 89,
+        "max": 89
+      },
+      "sqlRows": {
+        "median": 1517.0,
+        "p95": 1517,
+        "min": 1517,
+        "max": 1517
+      },
+      "sqlRowJsonBytes": {
+        "median": 728392.0,
+        "p95": 728392,
+        "min": 728392,
+        "max": 728392
+      },
+      "sqlElapsedMs": {
+        "median": 51.51593550000001,
+        "p95": 55.82519700000001,
+        "min": 48.16259599999997,
+        "max": 55.82519700000001
+      },
+      "pluginElapsedMs": {
+        "median": 0.0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      },
+      "outputJsonBytes": {
+        "median": 360595.0,
+        "p95": 360595,
+        "min": 360595,
+        "max": 360595
+      },
+      "heapDeltaBytes": {
+        "median": 2919808.0,
+        "p95": 3613288,
+        "min": 2175344,
+        "max": 3613288
+      },
+      "rssBytes": {
+        "median": 241424384.0,
+        "p95": 244146176,
+        "min": 227115008,
+        "max": 244146176
+      },
+      "browserFrameJsonBytes": {
+        "median": 137849.0,
+        "p95": 137849,
+        "min": 137849,
+        "max": 137849
+      },
+      "pluginCalls": {},
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "treatments",
+      "path": "evaluator-acquire",
+      "samples": 10,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 48.446228000000005,
+        "p95": 58.194399,
+        "min": 46.453624,
+        "max": 58.194399
+      },
+      "cpuMs": {
+        "median": 30.149,
+        "p95": 89.317,
+        "min": 27.974,
+        "max": 89.317
+      },
+      "sqlQueries": {
+        "median": 81.0,
+        "p95": 81,
+        "min": 81,
+        "max": 81
+      },
+      "sqlRows": {
+        "median": 1515.0,
+        "p95": 1515,
+        "min": 1515,
+        "max": 1515
+      },
+      "sqlRowJsonBytes": {
+        "median": 728270.0,
+        "p95": 728270,
+        "min": 728270,
+        "max": 728270
+      },
+      "sqlElapsedMs": {
+        "median": 47.707413999999986,
+        "p95": 60.101796000000014,
+        "min": 45.30090800000001,
+        "max": 60.101796000000014
+      },
+      "pluginElapsedMs": {
+        "median": 1.1659395,
+        "p95": 2.097385,
+        "min": 1.0856860000000004,
+        "max": 2.097385
+      },
+      "outputJsonBytes": {
+        "median": 4247.0,
+        "p95": 4247,
+        "min": 4247,
+        "max": 4247
+      },
+      "heapDeltaBytes": {
+        "median": 2277608.0,
+        "p95": 3134696,
+        "min": -97100488,
+        "max": 3134696
+      },
+      "rssBytes": {
+        "median": 237570048.0,
+        "p95": 243453952,
+        "min": 229240832,
+        "max": 243453952
+      },
+      "propertyJsonBytes": {
+        "median": 4032.0,
+        "p95": 4032,
+        "min": 4032,
+        "max": 4032
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    },
+    {
+      "size": "history",
+      "provenance": "treatments",
+      "path": "evaluator-time-only",
+      "samples": 2,
+      "campaigns": [
+        1,
+        2
+      ],
+      "wallMs": {
+        "median": 21.8745805,
+        "p95": 22.840419,
+        "min": 20.908742,
+        "max": 22.840419
+      },
+      "cpuMs": {
+        "median": 21.363500000000002,
+        "p95": 24.127,
+        "min": 18.6,
+        "max": 24.127
+      },
+      "sqlQueries": {
+        "median": 44.0,
+        "p95": 44,
+        "min": 44,
+        "max": 44
+      },
+      "sqlRows": {
+        "median": 741.0,
+        "p95": 741,
+        "min": 741,
+        "max": 741
+      },
+      "sqlRowJsonBytes": {
+        "median": 224637.0,
+        "p95": 224637,
+        "min": 224637,
+        "max": 224637
+      },
+      "sqlElapsedMs": {
+        "median": 26.405379999999994,
+        "p95": 28.918968999999993,
+        "min": 23.891790999999998,
+        "max": 28.918968999999993
+      },
+      "pluginElapsedMs": {
+        "median": 1.1656285,
+        "p95": 1.1875660000000001,
+        "min": 1.143691,
+        "max": 1.1875660000000001
+      },
+      "outputJsonBytes": {
+        "median": 4245.0,
+        "p95": 4245,
+        "min": 4245,
+        "max": 4245
+      },
+      "heapDeltaBytes": {
+        "median": -3358792.0,
+        "p95": -3220288,
+        "min": -3497296,
+        "max": -3220288
+      },
+      "rssBytes": {
+        "median": 237815808.0,
+        "p95": 242335744,
+        "min": 233295872,
+        "max": 242335744
+      },
+      "propertyJsonBytes": {
+        "median": 4032.0,
+        "p95": 4032,
+        "min": 4032,
+        "max": 4032
+      },
+      "pluginCalls": {
+        "bgnow.setProperties": 1.0,
+        "cob.setProperties": 1.0,
+        "direction.setProperties": 1.0,
+        "iob.setProperties": 1.0,
+        "loop.checkNotifications": 1.0,
+        "loop.setProperties": 1.0,
+        "openaps.checkNotifications": 1.0,
+        "openaps.setProperties": 1.0,
+        "pump.checkNotifications": 1.0,
+        "pump.setProperties": 1.0,
+        "rawbg.setProperties": 1.0,
+        "simplealarms.checkNotifications": 1.0,
+        "timeago.checkNotifications": 1.0,
+        "upbat.checkNotifications": 1.0,
+        "upbat.setProperties": 1.0
+      },
+      "egressAttempts": 0
+    }
+  ],
+  "interpretation": {
+    "sqlElapsedMs": "sum of protocol call durations; overlapping queries can exceed wall",
+    "heapDeltaBytes": "transient net process heap movement, not allocations or retained per-tenant state",
+    "rssBytes": "whole child process observation including previous trials; no per-role memory claim",
+    "cpuMs": "whole child process delta including serialization/client HTTP when selected",
+    "outputJsonBytes": "different consumer result envelopes, not comparable semantic payloads",
+    "sampleProtocol": "two reseeded campaigns in one child/PG process (not independent process repetitions), alternating path order, two warmup plus five measured per acquisition path/cell; one retained-input tick per campaign/cell"
+  },
+  "semanticWitnesses": {
+    "timeWithoutWrite": {
+      "beforeIOB": 1.25,
+      "beforeSource": "Loop",
+      "afterIOB": 1.425,
+      "afterSource": "Care Portal",
+      "checkpointUnchanged": true
+    },
+    "carbCorrectionCOB": {
+      "created": 60,
+      "edited": 90,
+      "deleted": 30
+    },
+    "futureAcquisition": {
+      "evaluatorIncludesFuture": true,
+      "apiIncludesFuture": false,
+      "realtimeIncludesFuture": false,
+      "currentBGStillAgrees": true
+    },
+    "mmolDelta": {
+      "mgdl": -2,
+      "scaled": -0.1,
+      "display": "-0.1"
+    }
+  },
+  "excluded": [
+    "full public authorization and role acceptance",
+    "client binaries/browser execution",
+    "WebSocket fan-out transport/device delivery",
+    "production capacity/autoscaling",
+    "distributed publication/leases",
+    "retained-memory estimate",
+    "M6 lifecycle prototype acceptance"
+  ],
+  "priorRefusal": {
+    "classification": "pre-native suspended-grant admission refusal retained separately",
+    "resourcesCreated": false,
+    "nativeStarted": false
+  }
+}

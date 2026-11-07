@@ -1911,3 +1911,32 @@ Local ownership and exact private captures:
 
 Local evolving ownership and exact private captures:
 `externals/work/HANDOFF-session-restore-policy-20261107.md`.
+
+### Update — M6 operation lifetime uncertainty proof (2026-11-07)
+
+| Scope | Measured result / claimed state | Next boundary |
+|---|---|---|
+| Local source | Unpublished prototype `6a245c09f652f020dc07f774aa0f2fe8e22e973f`; **reproduced: 95 focused source tests pass** | Optional core adapters are not a complete CLI/cohort fence. Root owns durable operator phase/claim/drain, exact schema/role/census and complete actual consumer wiring. Full/browser/enabled-corpus/final-prcheck remain deferred until coherent freeze. |
+| Native uncertainty proof | [R75](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r75-operation-lifetime-early-proof-and-cache-parameter-mismatch) retains both failed runs and seven completed component groups, source-specific bypasses/restorations and a separate narrow cache diagnostic. | SQL lease absence does not establish callback completion: a real killed lease leaves pending operation count 1 while the body is open, and must refuse restoration. No orphan-clearance timeout or override policy adopted. |
+| Refuted cache prediction | Same retained backend/OID, changed relfilenode and actual next 109 after ALTER CACHE 1; setval-only CACHE 8 remains actual next 2. | Current metadata alone is not a history/connection proof. No ALTER-based restore/global fence/B outage is selected. Supported allocator conditions, above-floor refusal and actual import/current-B fidelity remain unmeasured. |
+| Programme state | M6 blocked; same-ID identity-bearing import remains OPEN/UNSUPPORTED | Published f0/R73/M5 one-host functional acceptance and completed publication/cleanup receipts remain unchanged. No real-data/identity/default/production admission. |
+| Derived-output follow-up | [Decision-preparation packet](../../docs/30-design/tenancy/derived-output-boundary-2026-11-07.md) reviewed against unchanged current calculation bodies and linked to ARCH-DERIVED-FRAME | Characterization precedes a publication-service decision. No result materialization, transport or ownership architecture selected. |
+
+Current owned worktrees, exact captures, original failure symptoms and next owner:
+`externals/work/HANDOFF-m6-restore-fence-20261107.md`. No active native resources
+or reusable grant remain after the recorded closure. Queue validation/generation, queue-check, docs-links and whitespace checks pass
+for this coherent document/queue batch; no application-source readiness is inferred.
+
+
+### Update — M6 admission continuation and adopted outage direction (2026-11-07)
+
+| Scope | Result / claimed state | Next boundary |
+|---|---|---|
+| Original history integration | Original guidance and architecture commits remain in the evidence branch ancestry; original outage-policy commit `a5aef2b149d84f4a5ab65da814004b7067bfbf7f` merged normally. | Local and unpushed; retain original commits when integrating this branch. |
+| Human access policy | Maintainer adopted the [existing-access outage policy](decisions.md#oidc-provider-outage-existing-access). | Policy adoption only; shared OIDC implementation and outage acceptance remain unmeasured. |
+| Operation-window source | Original lane commits joined at local `f0590be387e077842dabee3ce4e1804719000138`: schema/role/ledger admission, backend-owned durable operations and fail-closed lifetime relation/function privilege census. **Reproduced: 177 affected source/protocol tests pass** on that joined head; catalog doubles do not establish native SQL, grants or RLS enforcement. Native [R75](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r75-operation-lifetime-early-proof-and-cache-parameter-mismatch) remains attributed to its earlier source. | Source admission is integrated; CLI/cohort selection, operator drain and native schema/privilege/allocator admission remain open. Same-ID identity-bearing import stays unsupported. |
+| Derived-output characterization | **Reproduced:** the [bounded f0 characterization](../../reports/tenancy/derived-output-2026-11-07/README.md) passed ordinary, six intended negative controls/restorations and two reseeded campaigns. Root independently verified physical resource/child absence and exact inventory/selected baseline identity restoration. | Selected current evaluator/API properties agree under the tested contexts; realtime retains its raw frame contract. Checkpoint alone is an invalid result identity. Full role/browser/provider equivalence, capacity and a publication service remain unmeasured. Original suspended-grant preflight refusal remains preserved; explicit human messaging authorization enabled the renewed single-use run. |
+
+Current exact branch heads, local packets, runtime ownership and next integration boundary:
+`externals/work/HANDOFF-m6-restore-fence-20261107.md`. No operator-visible behavior,
+default, deployment or milestone promotion changes in this update.

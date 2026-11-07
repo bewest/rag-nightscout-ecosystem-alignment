@@ -220,6 +220,17 @@ gates; local replay does not establish either.
 
 ## Shared frame join and multitenant recovery
 
+The [derived output ownership follow-up](derived-output-boundary-2026-11-07.md)
+distinguishes shared calculation code from publishing reusable evaluated results
+to HTTP/realtime consumers. It records source-derived differences and ordered
+characterization/decision work; it adopts no publication service or serving change.
+
+The [2026-11-07 bounded characterization](../../../reports/tenancy/derived-output-2026-11-07/README.md)
+measures selected f0 property agreement and distinct realtime frame work,
+including retained-input PostgreSQL query cost. Its scoped sharing recommendation
+leaves publication, ownership, operating budgets and current authorization as
+explicit follow-up contracts.
+
 `ARCH-DERIVED-FRAME` inventories `lib/data/views/index.js`, tenant
 `snapshot.js`, `derived-frame.js`, `derived-reads.js` and #8891 `nonresident.js`.
 Share bounded acquisition, data transformation and shipping calculation code.
