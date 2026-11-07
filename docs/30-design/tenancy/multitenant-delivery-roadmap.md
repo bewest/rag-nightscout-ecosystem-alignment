@@ -123,7 +123,16 @@ and refuse ambiguous repeated textual IDs; accept JSONB logical equality without
 claiming BSON field-order fidelity. This importer is not a raw backup.
 `nightscout-connect` remains the separate ongoing synchronization path.
 
+Apply the [restore identity and cloning decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning).
+Operational restore labs retain original-tenant bindings. Clinical API population
+and synchronization do not migrate credential authority. Cloning implementation
+and native acceptance remain UNMEASURED.
+
 ## Milestones and continuous integration
+
+[R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06)
+records the latest criterion verdicts; the [dashboard](multitenant-delivery-dashboard.md)
+displays milestone claims. The criteria below retain their adopted scope.
 
 The [release promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
 fix the scope of these bars. In particular, M2 is its table cell; human

@@ -101,14 +101,15 @@ digest, wall clock 00:02:49 to 00:02:59 UTC, free disk 77,813,408 KB before and 
   anonymous volumes verified absent by `docker inspect`; the PostgreSQL data directory was a
   tmpfs with no volume.
 
-## Decision questions (not agent defaults)
+## Adopted decisions and remaining questions
 
-- DECISION: key retention after tenant deletion. Secrets rows go only after their ciphertext
-  and key references are verified in the artifact; Vault Transit keys are never deleted by this
-  proof, so the artifact stays decryptable. Destroying keys, and how long artifacts and the
-  `tenant_lifecycle_requests` tombstone are retained, is policy.
-- DECISION: re-homing under a new tenant id. The secrets envelope binds the tenant id
-  (`lib/secrets/component.js`), so the import target must equal the artifact's tenant.
+- [Key/artifact retention policy is adopted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention).
+  R69 measures retained keys and artifact decryptability. Operator key destruction
+  and restore-after-window refusal remain UNMEASURED; request-tombstone retention
+  remains a separate policy question.
+- [Restore identity and cloning policy is adopted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning).
+  This probe exercises original-tenant restore. Cloning implementation and native
+  acceptance remain UNMEASURED.
 - DECISION: artifact size and transaction bounds; one transaction, no numeric cap here.
 - DECISION: who calls `requestDeletion` (owner request) versus `executeDeletion` (private
   operator plane); the module enforces no authorization.

@@ -44,3 +44,11 @@ capture directories are refused. Unexpected outcomes stop the campaign and retai
 raw failed history; repairs require a new committed source head and new capture.
 `manifest.json` and `sha256.json` freeze attribution and artifact hashes. No disabled
 suite, registered case or fake-client result counts as native evidence.
+
+## Recovery scope
+
+The [representative native proof](../../../reports/tenancy/backup-upgrade-native-f77-2026-11-06.md)
+records the executed entries/clock boundary. Apply the
+[restore identity and cloning decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning):
+this laboratory exercises original-tenant recovery. Cloning implementation/native
+acceptance, the full selected catalogue and durable backup storage remain unmeasured.

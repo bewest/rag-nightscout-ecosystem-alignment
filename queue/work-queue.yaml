@@ -501,7 +501,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: records/multitenant-roadmap-20261102
     base: main@28671cb4a
-    state: blocked
+    state: done
     blast_radius: >
       Disposable synthetic two-tenant HTTP deployment with pinned server and
       data/configuration/credential checks. Not full multitenant preview acceptance.
@@ -530,18 +530,17 @@ items:
     blocks_on: [ST-PG, T30-WIRING, MIG-RUNNER]
     evidence:
       - docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+      - docs/30-design/remedial/rc-16.0.0-integration-record.md
+      - reports/tenancy/completion-batch-74d7-2026-11-06/README.md
     notes: >
-      2026-11-06 (R62/R64): published #8898 head 83582e87 is the accepted cumulative batch with CI and CodeQL green; M3 stays blocked on M1/M2. The race and identity gates keep their native pins (44331668, bc4ee1a9); frozen-head replay UNMEASURED.
-
-      M3; R41 accepts local subject service and strict compatibility tests
-      at 94c57f1f; published draft is R42 d4570e58, not full preview.
-      Local composition continuation adds bounded direct imported-identity coverage;
-      the historical release comparison retains its separately scoped omissions.
-      Maintainer priority 2026-11-05: management HTTP and wider REST, with parallel
-      current Mongo/PG and historical release/dev/PR-single compatibility.
-      Existing RC corrections/client quirks need explicit expected-change
-      bases; unexplained differences fail acceptance. Complete M1/M2 and
-      repeatable cumulative gate/control coverage before promotion.
+      R72 accepts the coherent admitted preview: M1/M2 criteria pass, followed by
+      actual cumulative A/B HTTP, independent stored outcomes and stale/unsafe
+      startup refusal, promoting M3. M4 also promotes under the adopted actual
+      headless/source-pattern bar, with no all-client claim. The applicable
+      preview prerequisites of the broader parent cards are satisfied; their
+      remaining M5/M6 scope does not reopen this completed synthetic lab.
+      Resource budgets and Android emulator remain C; human issuer, durable
+      lifecycle/production trust and live runtime remain their separate contracts.
 
   - id: MT-RUNTIME-PLAN
     title: "Continuous v1/v3, realtime and evaluator integration contracts"

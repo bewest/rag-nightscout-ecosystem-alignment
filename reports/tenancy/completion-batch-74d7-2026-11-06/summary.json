@@ -1,0 +1,268 @@
+{
+  "classification": "reproduced coherent Batch A acceptance; not released or programme-wide M0-M6 completion",
+  "source": {
+    "head": "74d7b3fc25c7e3c496c438847c95e89ec7fe6061",
+    "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+    "clean": true,
+    "unchangedAfterPrcheck": true,
+    "applicationTestsAfterPrcheck": false
+  },
+  "actualHead74": {
+    "focused": {
+      "passing": 46,
+      "pending": 0,
+      "failing": 0,
+      "scope": [
+        "write-intent.resend-switch.test.js",
+        "write-intent.event-payload.test.js",
+        "tenant-commit-clock.test.js"
+      ]
+    },
+    "fullNonbrowser": {
+      "tiers": {
+        "unit": {
+          "passing": 2338,
+          "pending": 0,
+          "failing": 0
+        },
+        "dom": {
+          "passing": 205,
+          "pending": 0,
+          "failing": 0
+        },
+        "dependency": {
+          "passing": 368,
+          "pending": 2,
+          "failing": 0
+        },
+        "core": {
+          "passing": 319,
+          "pending": 0,
+          "failing": 0
+        },
+        "harness": {
+          "passing": 93,
+          "pending": 0,
+          "failing": 0
+        },
+        "integration": {
+          "passing": 3979,
+          "pending": 130,
+          "failing": 0
+        },
+        "stress": {
+          "passing": 18,
+          "pending": 0,
+          "failing": 0
+        }
+      },
+      "total": {
+        "passing": 7320,
+        "pending": 132,
+        "failing": 0
+      },
+      "exit": 0
+    },
+    "browser": {
+      "files": 41,
+      "passing": 684,
+      "pending": 0,
+      "failing": 0,
+      "exit": 0
+    },
+    "enabledCorpus": {
+      "suites": 40,
+      "suitePaths": [
+        "tests/owner-configuration.integration.test.js",
+        "tests/owner-preview.integration.test.js",
+        "tests/tenant-socket-order-capability.integration.test.js",
+        "tests/tenant-socket-data-forwarding.integration.test.js",
+        "tests/postgres-connection.test.js",
+        "tests/entries-importer-postgres.integration.test.js",
+        "tests/postgres-entries-read.test.js",
+        "tests/postgres-entries-write.test.js",
+        "tests/api3.entries-crud.http.test.js",
+        "tests/tenant-rest-entries.integration.test.js",
+        "tests/tenant-rest-identifier-race.integration.test.js",
+        "tests/tenant-rest-identity-differential.integration.test.js",
+        "tests/tenant-frame-concurrency.integration.test.js",
+        "tests/tenant-durable-replay.integration.test.js",
+        "tests/tenant-projection-evaluator.integration.test.js",
+        "tests/tenant-commit-clock-port.integration.test.js",
+        "tests/tenant-commit-clock-http.integration.test.js",
+        "tests/multitenant-preview-replicas.integration.test.js",
+        "tests/tenant-rest-derived.integration.test.js",
+        "tests/tenant-rest-treatments.integration.test.js",
+        "tests/tenant-rest-context.integration.test.js",
+        "tests/tenant-rest-device-activity.integration.test.js",
+        "tests/tenant-rest-profile-food.integration.test.js",
+        "tests/tenant-rest-settings-differential.integration.test.js",
+        "tests/postgres-migrations.integration.test.js",
+        "tests/mongodb-migrations.integration.test.js",
+        "tests/postgres-secrets.integration.test.js",
+        "tests/vault-secrets.integration.test.js",
+        "tests/tenant-runtime-vault.integration.test.js",
+        "tests/tenant-entries-http.integration.test.js",
+        "tests/tenant-credential-http.integration.test.js",
+        "tests/tenant-authorization-postgres.integration.test.js",
+        "tests/subject-management-http.integration.test.js",
+        "tests/subject-admin-postgres.integration.test.js",
+        "tests/owner-subject-policy.integration.test.js",
+        "tests/tenant-rest-authority-review.test.js",
+        "tests/storage-port-contract.integration.test.js",
+        "tests/tenant-frame-acquisition.integration.test.js",
+        "tests/tenant-rest-client-replay.integration.test.js",
+        "tests/multitenant-preview-process.integration.test.js"
+      ],
+      "status": 0,
+      "signal": null,
+      "passing": 495,
+      "pending": 1,
+      "failing": 0,
+      "remaining": [],
+      "pendingReason": "explicitly disabled NS_TENANT_COMMIT_CLOCK_BENCHMARK=0; performance unmeasured"
+    },
+    "sourceChecks": {
+      "files": 527,
+      "tiers": 8,
+      "optinSuites": 40,
+      "ownContainerSuites": 23,
+      "writeBoundaryAdapterEntryPoints": 9,
+      "writeIntentEnrolledModules": 13,
+      "writeIntentIdentifierReads": 3,
+      "lintErrors": 0,
+      "lintWarnings": 29,
+      "results": [
+        {
+          "name": "tiers",
+          "exit": 0
+        },
+        {
+          "name": "inventory",
+          "exit": 0
+        },
+        {
+          "name": "write-boundary",
+          "exit": 0
+        },
+        {
+          "name": "write-intent",
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "exit": 0
+        },
+        {
+          "name": "whitespace",
+          "exit": 0
+        }
+      ]
+    },
+    "prcheck": {
+      "exit": 0,
+      "lastApplicationCheck": true,
+      "headChanged": false
+    }
+  },
+  "boundedReuseActual701": {
+    "head": "7015fbae42e5c3e2f26acf79488e5a7328ff3b29",
+    "onlyDiff": [
+      "tests/write-intent.resend-switch.test.js"
+    ],
+    "otherIdenticalTrackedBlobs": 1777,
+    "defaultActualClients": {
+      "checks": 82,
+      "passing": 82,
+      "pairedCellsPerStack": 19,
+      "differences": 0,
+      "compiledCgmsimRuntimeJS": 94
+    },
+    "freshAffectedPooler": {
+      "connectionRLS": 9,
+      "typedIdentity": 4,
+      "realEmbeddedControls": true,
+      "clients": 2,
+      "backend": 1
+    },
+    "M1": "actual native2, two physical semantic reds, restored2; separate capture",
+    "M2": "actual final14, four physical semantic reds, restored4; separate capture",
+    "rationale": "Only one assertion file differs; all product, package/lock, relevant instruments and fixtures identical. Same physical matching dependencies and static bundle. Reused captures retain actual701 head attribution. Prior failed7/8 pooler predicate was not waived; fresh actual701 pooler executed."
+  },
+  "history": {
+    "failedFull701": {
+      "passing": 7317,
+      "pending": 132,
+      "failing": 3,
+      "exit": 3,
+      "cause": "Strict expected settle event objects omitted adopted tenant:null and stamp:null; root repaired TEST ONLY with exact equality and all other assertions retained.",
+      "immutableIndexSHA256": "9f471ed50e46875bec22ec7b1b2af7e07bd1b8e0b80a8ed9ea85e0265fe369c2"
+    },
+    "auditSetupStop": "Initial corpus audit omitted supported runner manifest argument; prefix guard rejected generated name. Root independently verified unique manifest IDs/images/volumes, then approved unchanged helper with exact manifest allowlist. No product/control failure, no test rerun or prefix exception."
+  },
+  "cleanup": {
+    "focus": {
+      "phase": "focus",
+      "head": "74d7b3fc25c7e3c496c438847c95e89ec7fe6061",
+      "exit": 0,
+      "containersAbsent": 1,
+      "mountedVolumesAbsent": 2,
+      "birthIdentifiedNodeDescendantsAbsent": 2,
+      "baselinePreserved": true,
+      "newContainersVolumesNetworks": 0,
+      "observerErrors": 0
+    },
+    "full": {
+      "phase": "full",
+      "head": "74d7b3fc25c7e3c496c438847c95e89ec7fe6061",
+      "exit": 0,
+      "containersAbsent": 22,
+      "mountedVolumesAbsent": 32,
+      "birthIdentifiedNodeDescendantsAbsent": 172,
+      "baselinePreserved": true,
+      "newContainersVolumesNetworks": 0,
+      "observerErrors": 0
+    },
+    "browser": {
+      "phase": "browser",
+      "head": "74d7b3fc25c7e3c496c438847c95e89ec7fe6061",
+      "exit": 0,
+      "containersAbsent": 3,
+      "mountedVolumesAbsent": 5,
+      "birthIdentifiedNodeDescendantsAbsent": 6,
+      "baselinePreserved": true,
+      "newContainersVolumesNetworks": 0,
+      "observerErrors": 0
+    },
+    "corpus": {
+      "phase": "corpus",
+      "head": "74d7b3fc25c7e3c496c438847c95e89ec7fe6061",
+      "exit": 0,
+      "containersAbsent": 40,
+      "mountedVolumesAbsent": 57,
+      "birthIdentifiedNodeDescendantsAbsent": 110,
+      "baselinePreserved": true,
+      "newContainersVolumesNetworks": 0,
+      "observerErrors": 0
+    },
+    "prcheck": {
+      "phase": "prcheck",
+      "head": "74d7b3fc25c7e3c496c438847c95e89ec7fe6061",
+      "exit": 0,
+      "containersAbsent": 0,
+      "mountedVolumesAbsent": 0,
+      "birthIdentifiedNodeDescendantsAbsent": 0,
+      "baselinePreserved": true,
+      "newContainersVolumesNetworks": 0,
+      "observerErrors": 0
+    }
+  },
+  "runtimeReleased": true,
+  "limitations": [
+    "Counts across focused/full/browser/corpus and earlier native captures overlap and must not be added.",
+    "Pending cases are not passing; performance/benchmark deferred.",
+    "No Batch C implementation, human issuer/refresh/provider trust, scheduler/notification/ack, production socket transport or complete M0-M6 promotion claim.",
+    "Publication, queue/R allocation, release and milestone decisions remain root owned.",
+    "Raw logs, resource identifiers and synthetic private rows remain private; this aggregate contains no credentials or database URLs."
+  ]
+}

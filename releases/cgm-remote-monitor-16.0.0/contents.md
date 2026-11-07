@@ -1798,3 +1798,14 @@ Consolidation lane detail: `externals/work/HANDOFF-tenancy-journal-archive-2026-
 | Recordkeeping | The existing completion-batch decision was updated in place; each lane maintains one evolving handoff and each coherent acceptance batch its programme record. | Substantive failures, decisions and ownership transfers still receive prompt records. No new application measurement, milestone promotion or role enablement follows from this guidance change. |
 
 Validation: queue-check (including document links) and both edited skills' validators pass. Application suites and site rebuild were skipped because no application, rich-page source or page manifest changed.
+
+### Update — admitted entries and owner configuration completion batch (2026-11-06)
+
+| Scope | Accepted result | Boundary |
+|---|---|---|
+| Coherent application candidate | [R72](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06) accepts74d7b3fc on current dev: full, browser, all40 enabled suites and final prcheck pass. Actual client/pooler/native7015 captures retain exact product/input-identity reuse. | Test-only settle expectations align with adopted nullable metadata; original failed full and earlier fixture/product failures remain. |
+| Milestones | M1 and M2 promoted under their adopted cells, then M3 and M4 on their own cumulative evidence. M0 retained. | M1 resource bounds deferred C; M4 headless actual/source-pattern scope, no all-client claim. M5/M6 remain open; no dev merge/tag/default/production enablement. |
+| Operational continuation | Representative original-tenant backup/upgrade native proof is recorded separately; restore-versus-clone decision adopted and linked. | Broader catalogue/durable backup/key destruction/cloning/native operational acceptance remains unmeasured. C application source is not joined to74d7. |
+| Publication | Accepted local74d7 candidate and evidence prepared for draft #8898 and alignment main. | Remote push/CI verification follows this accepted batch; source and exact phase attribution remain in R72. |
+
+One evolving coordination handoff: `externals/work/HANDOFF-codex-completion-coordination-20261106.md` (local, untracked).

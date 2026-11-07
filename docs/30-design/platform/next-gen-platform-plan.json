@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R62/R64 published835 acceptance remains historical; optional reader clamping is withdrawn by maintainer decision after R63 root incompatibility. Removed in the local candidate; comprehensive verification pending. Writer ownerPolicy remains. M0 promoted; M1/M2/M5 in progress and M3/M4/M6 blocked. M2 uses the roadmap cell; human issuer/refresh, existing-grant lifecycle and production resolution trust belong to M6. M1 resource budgets deferred to C. M4 bar: headless actual clients plus source-pattern replay, no all-client claim; Android emulator in C. Local R67/R68 native evidence and final-floor component proof do not establish fresh full acceptance.",
+ "measured": "2026-11-06: R72 accepts the coherent admitted entries, owner configuration and client batch. M0 retained; M1/M2 promoted, then M3/M4 on cumulative evidence. Resource bounds deferred C; M4 actual headless/source-pattern bar, no all-client claim. Reader clamping removed, own-tenant legacy credentials preserved, writer fences retained. M5 remains in progress and M6 blocked. Draft preview acceptance does not enable defaults/production roles or constitute dev merge/operator release. R72 owns executed heads, controls, pending cases and source-identity reuse.",
  "tracks": [
   {
    "id": "storage",
@@ -345,16 +345,20 @@
    "id": "ST-PG",
    "track": "storage",
    "phase": "multi",
-   "state": "progress",
-   "short": "PG REST ports / import",
-   "title": "R62/R64 retain published selected PostgreSQL REST ports, typed current-row replay and populated recovery LAB. Complete admitted backend/import acceptance remains open; resource bounds and numeric performance budgets are explicitly deferred to batch C.",
+   "state": "done",
+   "short": "Admitted PG ports / M1",
+   "title": "R72 promotes the admitted entries/backend/DDL/import contract. Dedicated Mongo/PG native suites and independent import/paging oracles pass.",
    "where": "lib/storage/postgres-*.js, lib/server/tenant-app/, lib/import/entries.js, migrations/candidates/",
-   "check": "R51 bounded settings33870764 full7089/80pending/0failure/browser684/prcheckOK; archived12, sortcap/predicate/projection each0/1semantic, restored12. Only product edit global PG sort cap4\u21925. Six-key refusal and regex/dotted PG500 capability limits remain; performance/full client parity unmeasured.",
+   "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition.",
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "M1 is not promoted. Resource bounds: deferred, measured in C; no numeric threshold approved. PG-only sort cap remains 5. Fresh-schema ordering is a local prototype with no populated/imported-history migration or downmigration.",
+   "ref": "Resource bounds deferred C; sort cap5 and explicit unsupported operations retained. Global generic PG fixture availability and fresh-only socket-order migration are outside this acceptance.",
    "spec": [
+    {
+     "label": "R72 accepted criterion disposition",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -806,9 +810,9 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "blocked",
-   "short": "Resolution / lifecycle",
-   "title": "Direct/canonical preview resolution is accepted. M2 needs unknown-tenant refusal and route boundaries; durable lifecycle and production resolution trust are M6 work.",
-   "ref": "Static preview maps do not establish M6 durable provisioning/publication or production owner/operator lifecycle. No milestone promoted.",
+   "short": "Resolution / M6 lifecycle",
+   "title": "R72 accepts M2 direct/canonical preview resolution and unknown-tenant refusal. Durable allocation/lifecycle and production mapping trust remain M6.",
+   "ref": "Static preview mappings retain their bounded acceptance; production provisioning/publication and lifecycle trust remain open.",
    "depends": [
     "MT-CONFIG-MIN",
     "MIG-RUNNER",
@@ -816,6 +820,10 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R72 accepted criterion disposition",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -832,22 +840,27 @@
      "label": "Adopted promotion bars and reader-mode withdrawal",
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
-   ]
+   ],
+   "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
   },
   {
    "id": "T30-WIRING",
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "Tenant-scoped auth",
-   "title": "Current persisted tenant authority and optional local Ed25519 verification remain. Optional subject-reader clamping is withdrawn; legacy tenant api-secret access must keep working. M2 requires cross-tenant signature refusal and no environment/root/key leakage.",
-   "ref": "R62/R63 reader-mode measurements remain history, not current direction. Removed in the local candidate; comprehensive final-head verification pending. Human issuer/refresh, lifecycle clamping and production resolution trust are M6 criteria. Headless owner writer config.ownerPolicy is retained.",
+   "short": "Current auth / M6 identity",
+   "title": "R72 accepts M2 current tenant authority, signature/refusal and listener boundaries. Existing legacy API_SECRET authority is preserved after reader-clamp withdrawal.",
+   "ref": "Human issuer/refresh, compatible existing-grant lifecycle and production trust remain M6. Broader parent-card scope stays open.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R72 accepted criterion disposition",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -880,16 +893,17 @@
      "label": "Adopted promotion bars and reader-mode withdrawal",
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
-   ]
+   ],
+   "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
   },
   {
    "id": "TEN-LAB",
    "track": "tenancy",
    "phase": "multi",
-   "state": "blocked",
-   "short": "Full M3 acceptance",
-   "title": "M0 promotion and bounded client lab completion remain. Full M3 depends on complete M1/M2. M4 uses executed headless clients plus source-pattern replay, with no all-client claim.",
-   "ref": "M4 remains blocked on M3. Android emulator lab belongs to batch C; iOS is outside automated execution. Fresh comprehensive candidate acceptance is pending after reader-option removal.",
+   "state": "done",
+   "short": "Two-tenant / client lab M3-M4",
+   "title": "R72 promotes M3 after M1/M2, then M4 using actual executable A/B HTTP/stored outcomes, unsafe startup refusal, pinned headless clients and source-pattern replay.",
+   "ref": "No all-client claim. Android emulator C; iOS outside automated lab. No default/production enablement or operator release.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -897,6 +911,10 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "R72 accepted criterion disposition",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -945,7 +963,8 @@
      "label": "Adopted promotion bars and reader-mode withdrawal",
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
-   ]
+   ],
+   "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
   },
   {
    "id": "MIG-RUNNER",
@@ -974,11 +993,15 @@
    "id": "MT-CONFIG-MIN",
    "track": "tenancy",
    "phase": "multi",
-   "state": "progress",
-   "short": "Current policy / settings",
-   "title": "Optional subject-reader clamping is withdrawn as backward incompatible. Retain tenant-local config, versioned writes and owner writer-policy enforcement; reader option is removed in the local candidate; comprehensive verification pending.",
-   "ref": "M2 bar is the roadmap cell. Versioned-write re-execution and comprehensive owner/data/operator listener separation remain pending. Human issuer/refresh, existing-grant lifecycle policy and production resolution trust move to M6.",
+   "state": "done",
+   "short": "Versioned owner config / M2",
+   "title": "R72 accepts actual headless OWNER settings with typed CAS/history/rollback, explicit configure authority and current operator fencing; DATA consumes fresh presentation values independently of raw ingestion.",
+   "ref": "Two reviewed display names. Human issuer/refresh, wider catalogue/lifecycle and production resolution trust remain M6. Writer proposed-grant policy remains; reader clamp removed.",
    "spec": [
+    {
+     "label": "R72 accepted criterion disposition",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -1015,7 +1038,8 @@
      "label": "Adopted promotion bars and reader-mode withdrawal",
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
-   ]
+   ],
+   "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
   },
   {
    "id": "MT-SECRETS-CONTRACT",
@@ -1158,9 +1182,13 @@
    "phase": "multi",
    "state": "progress",
    "short": "Durable runtime / replay",
-   "title": "B7 direction is adopted. R62 accepts dormant typed current-row replay/recovery; R67 clinical and R68 fresh-schema DATA controls are bounded local evidence. M5/M6 remain open.",
-   "ref": "Final-floor event stamps are adopted; independent actual-PG component proof is running and fresh full acceptance has not started. R67/R68 remain bounded local evidence; no live scheduling, notification/ack or rollout acceptance. Resource budgets deferred to C.",
+   "title": "B7 is adopted; R67/R68 record bounded clinical/DATA prototypes and R71 records actual final-floor component proof. R72 integrates these components without promoting M5/M6.",
+   "ref": "Live evaluator/realtime roles, current delivery, durable ack/snooze and notification/provider recovery remain. Resource/performance budgets are C; fresh-only ordering has no populated upgrade acceptance.",
    "spec": [
+    {
+     "label": "R72 accepted criterion disposition",
+     "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -1185,7 +1213,8 @@
      "label": "Adopted promotion bars and reader-mode withdrawal",
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
-   ]
+   ],
+   "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
   }
  ],
  "decisions": [

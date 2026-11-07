@@ -89,6 +89,12 @@ to the table above; they are not line references into the joined source.
    `35903069` it carries neither (`write-intent.js:4676-4677`); D-EVENT question
    3 already reserved "later the tenant". A consumer that receives an event
    without a stamp treats it as a wake-up only and reads from its checkpoint.
+   **Current joined implementation:** after-COMMIT callbacks receive the final
+   transaction floor; unclocked, no-allocation and settle events carry null.
+   [R71](../remedial/rc-16.0.0-integration-record.md#r71---transaction-final-floor-postgresql-component-control-2026-11-06)
+   owns the physical component proof and [R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06)
+   owns comprehensive integration and the explicit nullable single-site settle
+   assertions. The following initial allocation-time prototype is historical.
    **Built** on lane `codex/event-payload-20261106` (head `4b5edf02`, three commits
    over `65bb8456`, unpushed): `withCommitEvents.write` captures the tenant from the
    bound scope and the stamp from a new `connection.currentStamp()` on the clock
