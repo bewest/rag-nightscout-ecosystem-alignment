@@ -1830,3 +1830,13 @@ Validation: queue-check, docs-links, Markdown heading/explicit-anchor targets an
 Validation: queue-check, docs-links, Markdown fragment targets using site-compatible HTML/heading parsing, and whitespace checks pass. Application suites and site rebuild were skipped because only prose changed; the OIDC direction is not implementation acceptance.
 
 Tenant-wide alarm suppression was also adopted during this review: [decision](decisions.md#tenant-wide-alarm-suppression). Preserve original expiry across restart and ignore active-window repeats. M5 can implement durable state under the existing D23/API boundary; native persisted/restart acceptance and historical retention remain separate, with no indefinite post-expiry deduplication claim.
+
+### Update — durable notification retry responsibility (2026-11-06)
+
+| Scope | Adopted direction | Acceptance boundary |
+|---|---|---|
+| Notification handoff | [Persist tenant-bound request intent before dispatch and retry the same identity](decisions.md#durable-notification-requests-and-retries), preserving normal suppression/dedup and single-tenant behavior. | Persisted intent, attempt, adapter acceptance and device delivery remain distinct. Ambiguous sends can repeat external notifications; clinical write deduplication is not external-effect deduplication. |
+| Joined M5 testing | The roadmap/B7/current decision list require actual notification-consumer effects: ordinary alarm, snooze/repeat window, restart, ambiguous response, tenant/config/current-authority refusal, failed cycle and shutdown. | Component/synthetic-provider evidence motivates the policy; no joined/native/live-provider result or M5 promotion is asserted here. Uploader corpus acceptance is not notification acceptance. |
+| Execution | Existing lifecycle, durable alarm and handoff capability owners continue under root source review and native grants. | No provider choice, exactly-once external guarantee, retry cadence/capacity or default/production enablement follows. |
+
+Validation: queue-check, docs-links, changed Markdown fragment targets and whitespace checks pass. Application/site suites were skipped for this prose-only update. The joined consumer matrix must select actual browser alarm/ack, notification cache and controlled adapter contracts; mobile pattern replay and live provider/device delivery retain explicit limits.

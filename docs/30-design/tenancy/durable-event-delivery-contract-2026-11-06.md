@@ -273,6 +273,49 @@ and the seams plan's identity rule:
    consumer's checkpoint; the evaluation instant is recorded with the cycle and
    is not a database revision (R49).
 
+### Durable notification request handoff
+
+The maintainer adopted [durable requests and retries](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#durable-notification-requests-and-retries)
+for the explicit multitenant preview after reviewing actual-component/synthetic-
+provider ambiguity evidence on `57d54963`. That evidence models lost process-local
+state through component recreation; it is not a measured process crash, live
+provider acceptance or device delivery. The decision selects the responsibility
+for retry; joined implementation acceptance remains separate.
+
+1. Persist tenant-bound accepted request intent and a stable logical request
+   identity **before** dispatch. Retry that identity after restart or an ambiguous
+   provider result. Input checkpoint/floor alone is not an identity: time-only
+   evaluation and unstamped changes can produce distinct evaluated outputs.
+2. Persisted intent, send attempt, adapter acceptance/receipt and device delivery
+   are distinct facts. A lost response after external acceptance can lead to a
+   repeated notification. Clinical-record write identity prevents neither that
+   ambiguity nor the repeated external effect. No exactly-once delivery is claimed.
+3. Preserve existing normal alarm/snooze/repeat-window behavior and tenant-wide
+   suppression/original expiry. Current authority, configuration identity and
+   suppression must govern dispatch/retry; a queued request cannot bypass them.
+   Failed cycles enqueue no new handoff. Shutdown fences late dispatch/publication.
+4. Preserve the single-tenant path and existing client/wire shapes. New durable
+   preview recovery is not evidence of equivalent external failure behavior:
+   retrying an uncertain send can repeat an alert. Reuse shared seams only with
+   explicit default/single compatibility verification.
+5. Joined M5 acceptance exercises actual notification consumers with controlled
+   adapters: ordinary alarm, snooze, active repeat window, restart, ambiguous
+   acceptance, failed cycle, foreign tenant/configuration and shutdown. Verify
+   stable retry identity and persisted state independently. Actual selected
+   provider/device delivery retains its own gate. Uploader corpus passes cannot
+   substitute for notification-consumer evidence.
+   Select actual browser alarm presentation/ack consumers and existing notification
+   cache contracts, with controlled Pushover/Maker-compatible sinks where admitted.
+   Run joined restricted-PG/process-death, lost-completion and same-identity retry
+   controls, including snooze/config changes before retry and D23 ack/no-ack stored
+   outcomes. Pinned mobile socket-pattern replay is not execution of those mobile
+   binaries; neither proves live provider/device delivery.
+
+Request storage/state-machine layout and a controlled synthetic sink are
+implementation choices within these effects. Provider selection, retry timing,
+queue retention and capacity need their own measurements/contracts; no numeric
+budget or live egress is authorized by this decision.
+
 ## 8. Entry bar before any implementation
 
 The roadmap asks for executable controls before one producer/consumer recovery
@@ -364,8 +407,9 @@ proofs do not establish distributed consumer or notification recovery.
 **Correctness experiments before runtime acceptance.** Implement the §8 positives
 and paired breaks in an isolated synthetic producer/consumer slice. Also cut the
 consumer at each boundary between processing, durable notification handoff and
-checkpoint persistence: demonstrate neither a lost required handoff nor a duplicate
-request after restart. Provider delivery to a device remains a separate acceptance.
+checkpoint persistence: demonstrate no lost accepted durable intent and no second logical request
+identity for the same retry. Repeated external attempts/effects remain possible
+after ambiguous acceptance under the adopted retry policy. Provider delivery to a device remains a separate acceptance.
 Exercise subscription during concurrent commits so startup cannot depend on an
 uncovered gap between catch-up and listening. Measure an update that overwrites a
 row, then another update or hard delete before replay: state convergence from current
