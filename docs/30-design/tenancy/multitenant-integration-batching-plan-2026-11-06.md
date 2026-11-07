@@ -377,7 +377,20 @@ Local integration ownership and exact unpushed anchors are in
   `owner-reader` gate and controls in `queue/work-queue.yaml` and `queue/gate-controls.yaml`,
   `tools/lab/selected-owner-clients/` and `reports/selected-owner-clients/2026-11-06/`, to be
   marked historical by the coordinator; **joined** in `a7422f16` inside the R72 batch `74d7b3fc`); `claude/tenant-backup-upgrade-20261106` off `83582e87` is the batch C
-  backup/restore and upgrade/rollback lane (source-only until one focused run). Each joins
+  backup/restore and upgrade/rollback lane (source-only until one focused run; **done at
+  `b06be86e`**, three commits, 12 files, +1853: a draft contract `docs/multitenant-backup-upgrade.md`,
+  a dormant `lib/tenant-operations/` module over an injected connection and migration runner
+  (one repeatable-read read-only backup snapshot; restore refuses before the first INSERT on
+  ledger, catalogue, columns, emptiness and identity, and re-verifies its own writes with an
+  in-transaction oracle; upgrade is status → backup → up → check; rollback is restore of the
+  pre-upgrade backup with the older catalogue's `check` as the refusal oracle), unit 18 / 0
+  with every refusal code exercised, one true break-it (digest check removed → the oracle
+  layer catches the tamper after inserts), eslint 0, tiers 516 ok, and one opt-in suite
+  `tests/tenant-operations.integration.test.js` registered in the corpus (36 / 22 at this
+  base) but **not run: UNMEASURED**. It takes the catalogue list as input because
+  `lib/tenant-lifecycle/` is not in its base; shared helpers are credited for later merging.
+  Open in its contract: advancing the write clock past the lost window, clearing consumer
+  checkpoints on restore, artifact size/retention/encryption, CLI wiring and authorisation). Each joins
   #8898 at a batch boundary through the integration coordinator; none is pushed on its own.
 - **Lane handoffs** are `externals/work/HANDOFF-<lane>-<date>.md`, local and
   untracked. The coordinating session's own notes are in
