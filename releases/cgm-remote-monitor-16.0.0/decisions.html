@@ -2186,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>6114cfecf</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>57bc4736b</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3166,6 +3166,12 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td><a href="../../docs/30-design/tenancy/owner-authority.html#shared-oidc-integration">Shared integration contract</a> owns placement and parity acceptance. No Nightscout-owned rotating refresh credential is required initially. Login/callback/exchange/renewal, cookie transport, upstream logout, idle activity and outage acceptance remain UNIMPLEMENTED/UNMEASURED; no provider, route spelling, browser UI or production enablement is selected by this decision.</td>
 </tr>
 <tr>
+<td><a id="oidc-provider-outage-existing-access"></a><strong>During an OIDC provider outage, existing valid Nightscout human access may continue only until its existing token or session expires, subject to current local authority on every operation.</strong> Do not extend token/session lifetimes or allow new provider login or renewal while unavailable. Preserve the management-token ceiling of 10 minutes and sensitive-action authentication freshness requirements; local logout/revocation remains effective. Provider-only revocation can remain unknown until expiry or recovery. Apply equivalent behavior to optional single-tenant and multitenant OIDC; existing API_SECRET/device access keeps its current contract.</td>
+<td>maintainer, 2026-11-07 ("Allow existing valid access until expiry")</td>
+<td><code>MT-IDENTITY-PLAN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>Policy adopted; shared OIDC outage integration remains UNIMPLEMENTED/UNMEASURED. Acceptance must prove existing valid access, expiry without extension, login/renewal refusal, local logout/revocation and authority-store failure refusal during provider outage, sensitive-action freshness, recovery and enabled/disabled single/multitenant parity. Current management verification uses a 600-second ceiling and a current authority snapshot; these existing mechanisms alone do not prove the OIDC outage contract.</td>
+</tr>
+<tr>
 <td><a id="tenant-wide-alarm-suppression"></a><strong>Alarm acknowledgement/snooze suppresses the alarm group/level tenant-wide for the first preview, preserving single-tenant behavior.</strong> Retain the original absolute expiry across restart; ignore repeats during the active suppression window rather than extending it. Per-user/per-device suppression is a separate enhancement.</td>
 <td>maintainer, 2026-11-06 ("Tenant-wide suppression (recommended)", answering the scope/expiry/retry question)</td>
 <td><code>MT-RUNTIME-PLAN</code>, M5</td>
@@ -3182,6 +3188,85 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td>maintainer, 2026-11-06 ("Operator confirmation, no mandatory wait (recommended)", answering the explicit request/cancellation/wait question)</td>
 <td><code>MT-RUNTIME-PLAN</code>, M6</td>
 <td><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap.html#m5m6-acceptance-families">Lifecycle acceptance</a> must prove current tenant/operator authority, explicit confirmation bound to the request/artifact, no effect after cancellation, and atomic cancellation-versus-execution claiming. No fixed waiting timer or proposed 14-day cancellation window is required. <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a> accepts bounded synthetic SQL confirmation/cancellation/execution/rollback controls. Complete production authority/recovery/key-retention admission remains M6; artifact retention is not the cancellation period.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="human-sessions-and-tenant-restore-direction-2026-11-07">Human sessions and tenant restore direction (2026-11-07)<a class="headerlink" href="#human-sessions-and-tenant-restore-direction-2026-11-07" title="Permanent link">&para;</a></h2>
+<p><a id="human-session-outage-and-logout"></a></p>
+<p>The <a href="#oidc-provider-outage-existing-access">OIDC provider-outage decision</a> owns
+existing-access, expiry, renewal and local-revocation policy.</p>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="allocator-preserving-restore-first"></a><strong>Test allocator-preserving original-tenant restore first; preserve other tenants' current state. A bounded shared write pause is acceptable for the preview only if measurements establish it is needed and its recovery protocol is explicit.</strong></td>
+<td>maintainer, 2026-11-07, session/restore discussion and pause-risk clarification</td>
+<td><code>TEN-RESOLVE</code>, <code>MT-RUNTIME-PLAN</code>, M6</td>
+<td>First test exact original insertion ordinals with the existing live allocator unchanged; no tenant-local rewind or regenerated public record identity. Equivalent internal-order representations remain proposals requiring consumer/compatibility review. Keep the tenant-local history clock independent. A pause must cover admitted writers/in-flight work, refuse unsafe resumption after interruption and verify restoration before reopening. A deadline alone cannot authorize resumption; no deterministic recovery duration, numerical outage budget or blanket global-fence admission is inferred. Compare narrower tenant exclusion and alternatives before introducing a shared pause. Product identity-bearing tenant import remains unsupported pending implementation and evidence. <a href="../../reports/tenancy/m6-allocator-discriminator-2026-11-07/index.html">Prior discriminator</a>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tenant-local-restore-continuation-and-consumer-compatibility-2026-11-07">Tenant-local restore continuation and consumer compatibility (2026-11-07)<a class="headerlink" href="#tenant-local-restore-continuation-and-consumer-compatibility-2026-11-07" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="tenant-local-restore-existing-allocator"></a><strong>Proceed with same-deployment original-tenant restore while preserving other tenants' current state and supported relative ordering.</strong></td>
+<td>maintainer, 2026-11-07, tenant-local restore clarification and subsequent insertion-state simplification</td>
+<td><code>TEN-RESOLVE</code>, <code>MT-RUNTIME-PLAN</code>, M6</td>
+<td>Retain the tenant-local history clock. <a href="#tenant-local-insertion-semantics">Tenant-local insertion semantics</a> owns the allocator design direction. The existing-allocator proof remains source-attributed feasibility evidence. Read-only advisory preflight cannot authorize execution: complete held-A serving/writer exclusion and revalidation remain required. Shared-pause allowance remains conditional; no global restore pause is selected.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tenant-local-insertion-semantics-2026-11-07">Tenant-local insertion semantics (2026-11-07)<a class="headerlink" href="#tenant-local-insertion-semantics-2026-11-07" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="tenant-local-insertion-semantics"></a><strong>Require insertion order only within a selected tenant/collection; no cross-tenant ordering or globally meaningful insertion number is required. Pursue tenant-local insertion state to remove shared allocator maintenance from tenant restoration.</strong></td>
+<td>maintainer, 2026-11-07, consumer/Byzantine-fault discussion and explicit simplification request</td>
+<td><code>TEN-RESOLVE</code>, <code>MT-RUNTIME-PLAN</code>, M6</td>
+<td>Preserve public record IDs, documents/history and supported per-tenant first-match/natural ordering. Existing mobile/data clients retain tenant-local behavior; private ordinal values are not a public identity. Prototype per-domain forced-RLS counter rows and invoker triggers without new service, per-tenant sequences, SECURITY DEFINER or dependence on optional history-clock composition. Source/native feasibility precedes migration/role/readiness/lifecycle integration and final joined acceptance. Current shared-allocator preflight is retained as bounded evidence, not selected as the target architecture. The one-time operator schema conversion requires ordinary DDL exclusion; no global restore pause is selected.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="same-id-restore-history-continuity-2026-11-07">Same-ID restore history continuity (2026-11-07)<a class="headerlink" href="#same-id-restore-history-continuity-2026-11-07" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="restore-history-forward-correction"></a><strong>Publish normal history updates and deletion records during same-ID logical restore so existing clients converge automatically.</strong></td>
+<td>maintainer, 2026-11-07, explicit choice after the reproduced stale-cache protocol</td>
+<td><code>TEN-RESOLVE</code>, <code>MT-RUNTIME-PLAN</code>, M6</td>
+<td>Preserve the authoritative live history floor before destructive changes. Compare current and captured tenant records; publish restored/changed values and post-backup deletions above issued cursors, preserving public IDs, clinical fields and per-tenant relative ordering. Exact raw snapshot server metadata is a separate physical-backup contract. Reconcile current authority, checkpoints and retained caches deliberately; do not rewind them indiscriminately. Publish effects only after the actual outer restore transaction commits; ambiguous commit outcomes require verification, not automatic replay/reopening. Preserve other tenants' current state without a global pause. <a href="../../reports/tenancy/restore-history-continuity-2026-11-07/index.html">Protocol evidence</a> establishes the problem, not implementation acceptance. Previously purged identifiers and complete client convergence need explicit evidence or refusal; no all-client guarantee follows from a source model.</td>
 </tr>
 </tbody>
 </table>

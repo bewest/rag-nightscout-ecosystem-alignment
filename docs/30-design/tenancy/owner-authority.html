@@ -2565,6 +2565,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -2634,6 +2638,62 @@
     
   
     Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="counter-and-restore-options.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Counters, compatibility and tenant restore options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived output ownership: evaluator, realtime and HTTP
   
 
     
@@ -5380,7 +5440,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>59cbce7ae</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>a5aef2b14</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5505,9 +5565,11 @@ valid provider authentication and current Nightscout authority. It does not requ
 Nightscout-owned rotating refresh credentials initially. The provider's login
 cookie/session, any Nightscout browser-session cookie, the current server-side
 Nightscout session and access bearer token are distinct. Cookie scope/transport,
-local and provider logout propagation, idle activity, concurrent renewal and outage
-behavior need explicit contracts before acceptance. Adopted lifetimes below remain;
-provider activity alone cannot bypass current Nightscout authority.</p>
+local and provider logout propagation, idle activity and concurrent renewal need
+explicit contracts before acceptance. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">adopted provider-outage policy</a>
+allows existing valid access only until existing expiry under current local
+checks, with no new login/renewal or relaxed freshness. Adopted lifetimes below
+remain; provider activity alone cannot bypass current Nightscout authority.</p>
 <p>Acceptance must exercise the same synthetic provider/login/renewal contract on
 both supported modes, enabled and disabled. Cover missing/wrong issuer/audience,
 invalid signatures, identity-to-permission mapping, revocation/expiry, logout,
@@ -5585,9 +5647,16 @@ tenant-binding round trips; one snapshot is not a claim of one wire request.</p>
 new-format tokens continue ordinary data operations during a Vault outage. New
 issuance, reveal and secret consumption that requires Vault refuse. Unknown keys
 refuse rather than fall back. PostgreSQL authority outages refuse protected reads
-and writes even when the token signature verifies. Provider/identity outages and
-session renewal behavior need their own explicit acceptance; no indefinite renewal
-or new authority is granted by this outage policy.</p>
+and writes even when the token signature verifies. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">OIDC provider-outage decision</a>
+allows existing human access only within its adopted lifetime and current
+Nightscout authority during an identity-provider outage. Provider-dependent
+renewal refuses. Local logout/revocation takes effect on the next protected
+operation across workers; unavailable current authority refuses even with an
+unexpired token. No grace extension or Nightscout-owned refresh system is added.
+Provider logout propagation, qualifying idle activity, concurrent renewal and
+browser transport still require explicit implementation/acceptance. Upstream
+logout cannot take immediate local effect until it is known locally. Human
+login/session implementation remains UNIMPLEMENTED/UNMEASURED.</p>
 <p>The <a href="../../../tools/lab/owner-authority/index.html">lab</a> compares the actual current
 credential component/authority adapter with local verification and a bounded combined
 snapshot. Required controls cover signatures/audience/tenant, committed revocation

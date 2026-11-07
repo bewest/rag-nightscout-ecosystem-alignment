@@ -1289,6 +1289,14 @@
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/counter-and-restore-options.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/derived-output-boundary-2026-11-07.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
@@ -5613,7 +5621,19 @@
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/allocator-plan-2026-11-07/index.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/allocator-preserving-restore-2026-11-07/index.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/completion-batch-74d7-2026-11-06/index.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/derived-output-2026-11-07/index.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
@@ -5630,6 +5650,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/final-floor-native-1acb4eee-2026-11-06/instrument/docs/event-floor-characterization.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/insertion-order-consumers-2026-11-07/index.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
@@ -5657,6 +5681,10 @@
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m6-operation-window-2026-11-07/index.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m6-ops-2026-11-07/index.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
@@ -5673,7 +5701,15 @@
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/restore-history-continuity-2026-11-07/index.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/socket-data-controls-12919f55-2026-11-06/index.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/tenant-local-insertion-2026-11-07/index.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
