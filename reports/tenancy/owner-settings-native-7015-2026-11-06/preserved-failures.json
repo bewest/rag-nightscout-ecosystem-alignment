@@ -1,0 +1,33 @@
+{
+  "basis": "reproduced; original failures preserved, not accepted controls",
+  "captures": [
+    {
+      "source_head": "af8a9cde4098e009e7a2f39f9ef3893c0fd6af25",
+      "ordinary": {
+        "passes": 9,
+        "pending": 0,
+        "failures": 5
+      },
+      "mechanism": "Lazy metadata initialization attempted a forbidden request-tenant rebind; a dependent value assertion and incorrect fixture exit expectation also failed.",
+      "diagnostic": "Original scope error reproduced on unchanged source.",
+      "repair": "16e21747a15b157539e0da20ac22f73815150fb3",
+      "raw_artifacts_verified": 34,
+      "private_index_sha256": "52790e4c9bbb5e9ead98aa83a19b176956dd80dd78fe55e99ff71deb6a66dbc8"
+    },
+    {
+      "source_head": "071cbb12964c9c5a8218027b7143af1e76bc470b",
+      "ordinary": {
+        "passes": 13,
+        "pending": 0,
+        "failures": 1
+      },
+      "mechanism": "Transport hold fixture matched a shortened mounted-router URL; its readiness timeout supplies no isolation/control evidence.",
+      "diagnostic": "Actual successful mounted status handler observed stable original URL and shortened current URL.",
+      "test_only_repair": "b7002fbe761e5c9c59160bda9c800b1f74480d09",
+      "raw_artifacts_verified": 19,
+      "private_index_sha256": "379893eee18a0aa1cc811f3a59bdd3ba8851288612fc9ea53b6a2f9d32f5c339"
+    }
+  ],
+  "all_owned_resources_released": true,
+  "privilege_or_shared_scope_weakening": false
+}

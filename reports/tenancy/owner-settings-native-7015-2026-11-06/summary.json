@@ -1,0 +1,157 @@
+{
+  "head": "7015fbae42e5c3e2f26acf79488e5a7328ff3b29",
+  "capability": "bounded M2 explicit owner settings and presentation-only consumption",
+  "verdict": "focused native PASS; broader final batch remains separate",
+  "phases": [
+    {
+      "phase": "affected-held",
+      "stats": {
+        "tests": 1,
+        "passes": 1,
+        "pending": 0,
+        "failures": 0
+      },
+      "exit": 0,
+      "semantic": {}
+    },
+    {
+      "phase": "read-authority",
+      "stats": {
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1
+      },
+      "exit": 1,
+      "semantic": {
+        "kind": "configure GET denial falsified by actual200",
+        "currentExplicitConfigureFalse": true,
+        "stateHistoryUnchanged": true,
+        "ERR_ASSERTION": true,
+        "foreignUnchanged": true
+      }
+    },
+    {
+      "phase": "write-fence",
+      "stats": {
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1
+      },
+      "exit": 1,
+      "semantic": {
+        "kind": "committed configure revoke bypassed after admitted snapshot",
+        "currentAuthorityRevoked": true,
+        "independentVersionAdvanced": true,
+        "historyAppended": true,
+        "ERR_ASSERTION": true,
+        "foreignUnchanged": true
+      }
+    },
+    {
+      "phase": "policy-generation",
+      "stats": {
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1
+      },
+      "exit": 1,
+      "semantic": {
+        "kind": "captured generation bypassed after operator update to pin false",
+        "independentCurrentGeneration2": true,
+        "independentStoredShowSecondsTrue": true,
+        "independentVersionAdvanced": true,
+        "historyAppended": true,
+        "ERR_ASSERTION": true,
+        "foreignUnchanged": true
+      }
+    },
+    {
+      "phase": "boot-environment",
+      "stats": {
+        "tests": 1,
+        "passes": 0,
+        "pending": 0,
+        "failures": 1
+      },
+      "exit": 1,
+      "semantic": {
+        "kind": "actual DATA status stale mg/dl despite independently stored mmol",
+        "ownerVersion2": true,
+        "ownerShowSecondsTrue": true,
+        "historyAppended": true,
+        "ERR_ASSERTION": true,
+        "foreignUnchanged": true
+      }
+    },
+    {
+      "phase": "restored-focused",
+      "stats": {
+        "tests": 4,
+        "passes": 4,
+        "pending": 0,
+        "failures": 0
+      },
+      "exit": 0,
+      "semantic": {}
+    },
+    {
+      "phase": "restored-all",
+      "stats": {
+        "tests": 14,
+        "passes": 14,
+        "pending": 0,
+        "failures": 0
+      },
+      "exit": 0,
+      "semantic": {}
+    }
+  ],
+  "finalUniqueOrdinaryCases": 14,
+  "coverageAccounting": "affected and focused restoration cases overlap final14; controls are intended semantic failures, never ordinary passes",
+  "completedPresentationHoldScope": "already generated presentation bytes held at transport with concurrent fresh A/B requests; no common clinical snapshot claim",
+  "cleanup": {
+    "isolatedFixtureRuns": 7,
+    "uniqueOwnedContainers": 14,
+    "uniqueOwnedMountedVolumes": 21,
+    "uniqueBirthIdentifiedNodeDescendants": 34,
+    "allAbsentAtEachIndependentAudit": true,
+    "baselinePreservedEveryPhase": true,
+    "unknownResourcesRemoved": false,
+    "networkCreatedOrRemoved": false,
+    "postReleasePeerResources": "M1 owns subsequent runtime; no further global inspection or cleanup performed"
+  },
+  "images": [
+    {
+      "reference": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8"
+    },
+    {
+      "reference": "postgres:16",
+      "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b"
+    }
+  ],
+  "historicalCaptures": [
+    {
+      "head": "af8a9cde4098e009e7a2f39f9ef3893c0fd6af25",
+      "ordinary": "9pass/5fail",
+      "diagnostic": "exact scope rebind reproduced; not semantic control",
+      "path": "owner-config-native-20261107T011736Z"
+    },
+    {
+      "head": "071cbb12964c9c5a8218027b7143af1e76bc470b",
+      "ordinary": "13pass/1transport-hook timeout",
+      "path": "owner-config-native-071-20261107T013154Z",
+      "timeoutIsControlEvidence": false
+    }
+  ],
+  "limits": [
+    "two reviewed display names only",
+    "operator-provisioned headless management credentials; human issuer/refresh/provider production acceptance separate",
+    "original owner9 not replayed",
+    "no full/unit/browser/client/pooler/corpus/prcheck/M1 native campaign here",
+    "no milestone promotion/release/publication inferred"
+  ]
+}

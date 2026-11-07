@@ -1,0 +1,134 @@
+{
+  "grade": "bounded synthetic native PostgreSQL/Mongo HTTP calibration and four affected families; not broad acceptance",
+  "sourceHead": "386dba336a620e2e9655b682d0f405a824231560",
+  "releasedAt": "2026-11-07T00:38:00Z",
+  "productSourceUnchanged": true,
+  "unitPassing": 2311,
+  "helperPassing": 6,
+  "helperStaleAnchorControl": {
+    "passing": 2,
+    "failing": 4,
+    "symptom": "ERR_ASSERTION previous UTC day differs"
+  },
+  "tierFiles": 524,
+  "tierCount": 8,
+  "inventorySuites": 39,
+  "ownContainerSuites": 22,
+  "native": [
+    {
+      "phase": "positive",
+      "passing": 1,
+      "pending": 0,
+      "failing": 0,
+      "semanticSymptom": null,
+      "oracles": [
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 1
+        },
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 1
+        }
+      ],
+      "containersAbsent": 2,
+      "mountsAbsent": 3,
+      "childrenAbsent": 2
+    },
+    {
+      "phase": "old-anchor",
+      "passing": 0,
+      "pending": 0,
+      "failing": 1,
+      "semanticSymptom": "ERR_ASSERTION default count 0 != 1 after physical PG/Mongo/foreign count2 and unchanged foreign assertions",
+      "oracles": [
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 0
+        }
+      ],
+      "containersAbsent": 2,
+      "mountsAbsent": 3,
+      "childrenAbsent": 2
+    },
+    {
+      "phase": "date-predicate",
+      "passing": 0,
+      "pending": 0,
+      "failing": 1,
+      "semanticSymptom": "ERR_ASSERTION default count 2 != 1 after physical PG/Mongo/foreign count2 and unchanged foreign assertions",
+      "oracles": [
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 2
+        }
+      ],
+      "containersAbsent": 2,
+      "mountsAbsent": 3,
+      "childrenAbsent": 2
+    },
+    {
+      "phase": "restored",
+      "passing": 1,
+      "pending": 0,
+      "failing": 0,
+      "semanticSymptom": null,
+      "oracles": [
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 1
+        },
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 1
+        }
+      ],
+      "containersAbsent": 2,
+      "mountsAbsent": 3,
+      "childrenAbsent": 2
+    },
+    {
+      "phase": "bundle",
+      "passing": 44,
+      "pending": 0,
+      "failing": 0,
+      "semanticSymptom": null,
+      "oracles": [
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 1
+        },
+        {
+          "pg": 2,
+          "mongo": 2,
+          "foreign": 2,
+          "defaultCount": 1
+        }
+      ],
+      "containersAbsent": 5,
+      "mountsAbsent": 8,
+      "childrenAbsent": 10
+    }
+  ],
+  "cleanup": {
+    "distinctContainersAbsent": 13,
+    "distinctMountIdsAbsent": 20,
+    "observedChildIdentitiesAbsent": 18,
+    "baselineVolumesPreserved": 462,
+    "unknownBaselinePreserved": true
+  }
+}

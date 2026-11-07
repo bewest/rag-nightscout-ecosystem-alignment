@@ -1,0 +1,214 @@
+{
+  "date": "2026-11-06",
+  "timeBasis": "local programme date; native UTC timestamps below",
+  "classification": "reproduced bounded M1 entries sampling-vector proof; no milestone or comprehensive acceptance",
+  "applicationHead": "7015fbae42e5c3e2f26acf79488e5a7328ff3b29",
+  "sourceAttribution": {
+    "crosswalkCommit": "922b938fca880ad6a2b55752f896d7ef7415bc8c",
+    "nativePreparationCommit": "2ab6712ec0a1ea51915d31dd4c9d473c5ec1e90e",
+    "crosswalkSnapshot": "a7422f16dd194782e7e829313300703475cc6587",
+    "crosswalkScope": "read-derived applicable entries/common-property and explicit unsupported capability disposition; not generic PostgreSQL fixture execution or complete M1 promotion"
+  },
+  "nativeStartedAt": "2026-11-07T01:47:09.093Z",
+  "nativeFinishedAt": "2026-11-07T01:47:20.281Z",
+  "phases": [
+    {
+      "name": "ordinary",
+      "tests": 2,
+      "passing": 2,
+      "pending": 0,
+      "failing": 0,
+      "processExit": 0,
+      "signal": null,
+      "timedOut": false,
+      "predictedPhysicalVerdictMatched": true,
+      "exactOwnedCleanupVerified": true,
+      "rawHashes": {
+        "native.json": "9c658017ee00f0b17c3052c023e9b462e2dd41302b582c66733054024d188274",
+        "native.log": "fa69ce0b002365c080c972cc88e1d0bbd6562928ec7d0bfe85e01fd63117c96e",
+        "physical-verdict.json": "c5bc91090e8db50261cc0eab3f66b0cdd938201665ac99c0c89f790c06652908",
+        "stage.json": "18e2058336e6e83efefe5e631372dd1b860299837ff8dd2bb389695ef5176c8b"
+      },
+      "paging": {
+        "rowsPerTenant": {
+          "A": 12,
+          "B": 12
+        },
+        "tenantOrderSchedules": 4,
+        "reachedComparatorFlips": 0,
+        "storedRowsUnchanged": true,
+        "orderedIdentityAndCompletenessOracleVerified": true,
+        "interpretation": "ordinary default/custom-descending paging; independent Mongo and stored identity order"
+      },
+      "importer": {
+        "rowsVisibleInsideLaterPage": 3,
+        "rowsVisibleToIndependentReader": 2,
+        "rowsRetainedAfterRollback": 2,
+        "completedRows": {
+          "A": 4,
+          "B": 1
+        },
+        "receipt": {
+          "baselineCount": 4,
+          "historyCount": 2,
+          "phase": "done"
+        },
+        "foreignTenantUnchanged": true,
+        "completeReplayVerified": true,
+        "interpretation": "supplier callback to actual PG target; logical JSON/source/history fidelity and page rollback/rerun"
+      }
+    },
+    {
+      "name": "paging-control",
+      "tests": 1,
+      "passing": 0,
+      "pending": 0,
+      "failing": 1,
+      "processExit": 1,
+      "signal": null,
+      "timedOut": false,
+      "predictedPhysicalVerdictMatched": true,
+      "exactOwnedCleanupVerified": true,
+      "rawHashes": {
+        "native.json": "a532b3de99ddd76a4b616a072cf1fcea8c0ca7a3a4ebbe7b19b50fecd70e21b9",
+        "native.log": "65700dbc9cf4be774be974c04668cba79af96e66ea69b79dcc39529de06ec2d6",
+        "physical-verdict.json": "ba3bc0ae3c4d3ac0e3e031de88156728f409b6253e1ecb978cdbee637d2d48ce",
+        "stage.json": "af020c34cf738d83d5fa58756ed928b6c859bd19d6197c322cc43756087969a1"
+      },
+      "expectedAssertion": "M1_PAGING_ORDER",
+      "paging": {
+        "rowsPerTenant": {
+          "A": 12,
+          "B": 12
+        },
+        "tenantOrderSchedules": 4,
+        "reachedComparatorFlips": 20,
+        "storedRowsUnchanged": true,
+        "orderedIdentityAndCompletenessOracleVerified": true,
+        "interpretation": "actual archived test-instance PG final identity sort-argument reversal"
+      }
+    },
+    {
+      "name": "importer-control",
+      "tests": 1,
+      "passing": 0,
+      "pending": 0,
+      "failing": 1,
+      "processExit": 1,
+      "signal": null,
+      "timedOut": false,
+      "predictedPhysicalVerdictMatched": true,
+      "exactOwnedCleanupVerified": true,
+      "rawHashes": {
+        "native.json": "69e42b795db2f854335aacfc3617150bcf198534d35a03e3e193b40f85935ec1",
+        "native.log": "242e654dcccdb3916e7318f1dd34343e11929d7c713befd6b07368bab428239c",
+        "physical-verdict.json": "dec1580a6e409a2f69e75683ca5b55ca0b5262acaf24a486e5e57ffd90f6f01f",
+        "stage.json": "c62857fa2f7586d8dc5ea57b4d9b30f9303b9aee60e772aeee3fc3518b56a033"
+      },
+      "expectedAssertion": "M1_IMPORT_FIDELITY stored logical source/history rows",
+      "importer": {
+        "rowsVisibleInsideLaterPage": 3,
+        "rowsVisibleToIndependentReader": 2,
+        "rowsRetainedAfterRollback": 2,
+        "completedRows": {
+          "A": 3,
+          "B": 1
+        },
+        "receipt": {
+          "baselineCount": 4,
+          "historyCount": 2,
+          "phase": "done"
+        },
+        "foreignTenantUnchanged": true,
+        "completeReplayVerified": false,
+        "interpretation": "defective supplied-target / independent fidelity-oracle sensitivity; NOT production importer ablation"
+      }
+    },
+    {
+      "name": "restored",
+      "tests": 2,
+      "passing": 2,
+      "pending": 0,
+      "failing": 0,
+      "processExit": 0,
+      "signal": null,
+      "timedOut": false,
+      "predictedPhysicalVerdictMatched": true,
+      "exactOwnedCleanupVerified": true,
+      "rawHashes": {
+        "native.json": "23bf794c64e8edaa4216430aeb81cbf3d7e42ce1ec3311b9bc408bca8770e006",
+        "native.log": "7ad94cf6f9efcbeffa64a1465daeaecd6fe5658c93bd795df9748fb52e310814",
+        "physical-verdict.json": "c5bc91090e8db50261cc0eab3f66b0cdd938201665ac99c0c89f790c06652908",
+        "stage.json": "9225f6db96259d3e5dbebfdd3c3131990ed469dd5f0ea49c8d504601eeb43dac"
+      },
+      "paging": {
+        "rowsPerTenant": {
+          "A": 12,
+          "B": 12
+        },
+        "tenantOrderSchedules": 4,
+        "reachedComparatorFlips": 0,
+        "storedRowsUnchanged": true,
+        "orderedIdentityAndCompletenessOracleVerified": true,
+        "interpretation": "ordinary default/custom-descending paging; independent Mongo and stored identity order"
+      },
+      "importer": {
+        "rowsVisibleInsideLaterPage": 3,
+        "rowsVisibleToIndependentReader": 2,
+        "rowsRetainedAfterRollback": 2,
+        "completedRows": {
+          "A": 4,
+          "B": 1
+        },
+        "receipt": {
+          "baselineCount": 4,
+          "historyCount": 2,
+          "phase": "done"
+        },
+        "foreignTenantUnchanged": true,
+        "completeReplayVerified": true,
+        "interpretation": "supplier callback to actual PG target; logical JSON/source/history fidelity and page rollback/rerun"
+      }
+    }
+  ],
+  "cleanup": {
+    "uniqueOwnedContainers": 7,
+    "uniqueOwnedVolumes": 10,
+    "observedNodeBirthIdentities": 5,
+    "everyObservedOwnedContainerAndVolumeAbsent": true,
+    "everyOriginalObservedProcessIdentityAbsent": true,
+    "observerSawEveryOwnedContainer": true,
+    "observerErrors": 0,
+    "processObserverErrors": 0,
+    "baselineDeltaCounts": {
+      "containers": {
+        "new": 0,
+        "missing": 0
+      },
+      "volumes": {
+        "new": 0,
+        "missing": 0
+      },
+      "networks": {
+        "new": 0,
+        "missing": 0
+      }
+    },
+    "unknownBaselinesPreserved": true,
+    "observerScope": "independent pre/post container/volume/network sets and child PID/start-time identities; public aggregate only",
+    "runtimeReleased": true
+  },
+  "privateRawHashReferences": {
+    "rawIndexSha256": "b1edc7cc95929b7eb4e4568d5cf8741ddcb8ef69efa832e77e911b846c2c4d85",
+    "outerAuditSha256": "c7b040fdc778911469433b78cb132479deb614e461bda7b1aff06440305ab9d1",
+    "sourceArchiveSha256": "8efae993fe8dbc1954905b8ce52614a790e556ea5fa16e55f43e37ec56288668"
+  },
+  "limits": [
+    "Only the two new M1 vectors, their two guarded controls and fresh restoration executed; no old accepted native replay.",
+    "Paging control changes actual PG sort arguments in an archived test instance; importer control is a defective supplied target exposing oracle sensitivity, not a product import ablation.",
+    "One-shot supplier import proves page rollback and rerun; no whole-import atomicity, source transport/CLI, arbitrary BSON or lifecycle guarantee.",
+    "Crosswalk remains source-derived; global PostgreSQL fixture availability is unchanged, existing explicit PG ports are used. JSONB logical equality and reviewed unsupported capability distinctions remain.",
+    "No full M1\u2013M4 promotion, comprehensive/full/browser/corpus/prcheck, numeric resource budget, all-client or production enablement claim. Broader acceptance is separate.",
+    "Private resource/row identities, credentials, URIs and full raw logs are excluded from this capsule."
+  ]
+}
