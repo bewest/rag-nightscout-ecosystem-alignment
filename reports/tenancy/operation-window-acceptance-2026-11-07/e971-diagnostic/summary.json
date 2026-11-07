@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "capturedOn": "2026-11-07",
+  "recordKind": "immutable failed comprehensive measurement",
+  "basis": {
+    "execution": "reproduced by acceptance lead",
+    "projection": "independent readback of raw summaries, failure blocks, execution metadata, observer/root closure and indexed capture bytes; no rerun"
+  },
+  "source": {
+    "head": "e9713b6e8e1dd6c0546ab32944b1860d509d5c38",
+    "tree": "74b99d9ed43cd7b31e872ee6f195e7a2b63bafd5"
+  },
+  "execution": {
+    "phase": "full nonbrowser",
+    "command": [
+      "node",
+      "tools/lab/multitenant-rest-preview/owned.js",
+      "all"
+    ],
+    "selection": [
+      "unit",
+      "dom",
+      "dependency",
+      "core",
+      "harness",
+      "integration",
+      "stress"
+    ],
+    "exit": 2,
+    "benchmarkMode": "0",
+    "ambientNodePathPresent": false,
+    "frozenSourceCleanAndUnchanged": true,
+    "freshBundleAppSha256": "b7f4deb2510861f83da039699f462767453c931a669b5ff24ef3d06084d87420"
+  },
+  "runtime": {
+    "node": "v22.23.4",
+    "postgres": "16.15",
+    "mongo": "8.0.34",
+    "vault": "2.2.1",
+    "shuffleSeed": "41574423920"
+  },
+  "outcome": {
+    "status": "FAILED",
+    "phaseAccepted": false,
+    "tierResults": [
+      {
+        "tier": "unit",
+        "passing": 2769,
+        "pending": 0,
+        "failing": 2
+      },
+      {
+        "tier": "dom",
+        "passing": 205,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "tier": "dependency",
+        "passing": 368,
+        "pending": 2,
+        "failing": 0
+      },
+      {
+        "tier": "core",
+        "passing": 319,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "tier": "harness",
+        "passing": 99,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "tier": "integration",
+        "passing": 3849,
+        "pending": 172,
+        "failing": 6
+      },
+      {
+        "tier": "stress",
+        "passing": 18,
+        "pending": 0,
+        "failing": 0
+      }
+    ],
+    "summedRawTestResults": {
+      "passing": 7627,
+      "pending": 174,
+      "failing": 8
+    },
+    "failureMechanisms": [
+      {
+        "tier": "unit",
+        "cases": 1,
+        "mechanism": "canonical profile wire response fixture does not model response completion events",
+        "observed": "private handler reply status 503; expected 200",
+        "diagnosisBasis": "read-derived from retained source fixture and handler; failure reproduced in full run",
+        "fixAcceptance": "not established by this failed capture"
+      },
+      {
+        "tier": "unit",
+        "cases": 1,
+        "mechanism": "socket successor migration test retains the older catalogue-length expectation after two append-only tenant-local migrations",
+        "observed": "actual migration length 4; expected 2",
+        "diagnosisBasis": "read-derived source attribution; failure reproduced in full run",
+        "fixAcceptance": "not established by this failed capture"
+      },
+      {
+        "tier": "integration",
+        "cases": 1,
+        "mechanism": "views before-all boot inherits a nonempty short API_SECRET instead of installing a valid isolated fixture value",
+        "observed": "server boot refused invalid and missing API secret",
+        "diagnosisBasis": "read-derived environment-sharing mechanism; boot refusal reproduced in full run",
+        "fixAcceptance": "not established by this failed capture"
+      },
+      {
+        "tier": "integration",
+        "cases": 4,
+        "mechanism": "identifier-race foreign-row setup inserts without tenant binding required by the new counter trigger",
+        "observed": "TENANT_ORDINAL_BINDING_REQUIRED before the intended race in replace, merge-except-treatments, acknowledge and refuse cells",
+        "diagnosisBasis": "read-derived source attribution; all four refusals reproduced in full run",
+        "fixAcceptance": "not established by this failed capture"
+      },
+      {
+        "tier": "integration",
+        "cases": 1,
+        "mechanism": "uniqueness-only clock alternative control now also encounters tenant-local insertion serialization",
+        "observed": "second insert canceled by statement timeout while first insert remained held",
+        "diagnosisBasis": "read-derived lock-mechanism attribution; statement timeout reproduced in full run",
+        "fixAcceptance": "valid late-commit experiment repair remains unmeasured in this capture; no prescribed fix adopted"
+      }
+    ],
+    "note": "Exit2 is the command outcome; it is not a count of failing tests. Pending opt-in cases in this phase do not establish enabled-corpus acceptance."
+  },
+  "closure": {
+    "runtimeReleased": true,
+    "observerCleanupVerified": true,
+    "ownedContainers": 22,
+    "ownedVolumes": 32,
+    "observedProcessBirths": 166,
+    "ownedResourcesAbsent": true,
+    "observedBirthsAbsent": true,
+    "exactInventoryRestored": true,
+    "selectedBaselineMetadataUnchanged": true,
+    "emergencyCleanupUsed": false,
+    "observerErrors": [],
+    "rootReadbackProblems": [],
+    "historicalResidualAllowanceCount": 0,
+    "note": "Successful cleanup does not make the failed phase accepted."
+  },
+  "separateSourceClientReproduction": {
+    "sourceHead": "e9713b6e8e1dd6c0546ab32944b1860d509d5c38",
+    "classification": "source-client refusal before transport; no native services",
+    "requestCalls": 0,
+    "operations": [
+      {
+        "operation": "/cohort/status",
+        "error": "SOCKET_IPC_REQUEST_REFUSED"
+      },
+      {
+        "operation": "/cohort/invalidate",
+        "error": "SOCKET_IPC_REQUEST_REFUSED"
+      }
+    ],
+    "relationshipToFullRun": "separate reproduced defect, not an additional full-suite failure or native cohort result"
+  },
+  "attribution": {
+    "phaseIndexSha256": "c173e119200f178bf4b7fba348039c9d65e817d75c1fcfe3cd412b5b127701dd",
+    "phaseIndexedFilesVerified": 4,
+    "observerIndexSha256": "40c6b2c5366e62695be2156a2d35d8d3add868091911f7755518ab42d777255e",
+    "observerIndexedFilesVerified": 11,
+    "rawPhaseLogSha256": "fc1e34321ebb52586ac1943003839c52a5d29a43d2c639e736d6ab54616f7296",
+    "independentPhysicalReleaseSha256": "5a868587ee301efa83283aa2259ef64f3d380c0e86b1da6477677ecdc68afcd1",
+    "sourceClientReproductionSha256": "9bf84e851d42fb0cdf59381272b13c7f341c30a5df441ff28e7cefbe73bdb82f"
+  },
+  "notEstablished": [
+    "acceptance of repaired source",
+    "default browser acceptance",
+    "all enabled multitenant corpus acceptance",
+    "native separate-process cohort/controller/logical restore acceptance",
+    "final prcheck readiness",
+    "complete M6 or production/default/provider/real-data admission"
+  ]
+}
