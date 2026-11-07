@@ -133,11 +133,30 @@ These were each earned by a defect that reached a document, and every one still 
 
 **Agents running agents**
 
-Milestones run with background agents without asking each time. Every brief is self-contained and
-carries: the measured numbers and prior findings (not pointers), the predicted outcome of each
-check, break-it controls, and the two standing instructions: **stop and report a mismatch rather
-than reaching for the nearest thing that works**, and **confirm the head commit and that the task is
-still open before starting**. A brief that cannot be written clearly is a task not yet understood.
+Milestones run with background agents without asking each time. Give each lane a complete
+capability or an explicit milestone criterion, one owner and one integration boundary. Keep its
+helper changes, fixture repairs and authored controls in that lane; use another agent when the
+work is independently deliverable or resolves a material unknown. Reuse an ongoing chat through
+its fixes rather than starting a new one for each test or commit.
+
+Every brief is self-contained: the outcome/criterion, relevant measured findings and source head,
+expected focused checks and meaningful break-it controls, remaining decision boundaries, and the
+two standing instructions: **stop and report a mismatch rather than reaching for the nearest
+thing that works**, and **confirm the head commit and that the task is still open before starting**.
+A brief that cannot be written clearly is a task not yet understood.
+
+During implementation, run the affected/focused checks and controls appropriate to the capability.
+For cgm-remote-monitor integration, the coordinator freezes the coherent joined candidate for
+full/browser/enabled-corpus acceptance and final prcheck. A leaf commit or resumed session does not trigger another comprehensive
+campaign. A failed campaign requires focused diagnosis, then final acceptance on the repaired
+frozen candidate; planned fixes should join before that acceptance is repeated. Preserve exact
+source/instrument attribution and all isolation, authorization, clinical and compatibility gates.
+
+Report capabilities or criteria closed, remaining blockers, the next integration boundary/owner
+and the evidence link. Counts and hashes support that verdict. Maintain one evolving handoff per
+lane and one programme acceptance update per coherent batch; record substantive failures,
+decisions and ownership transfers promptly. The tenancy [batching plan](docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination)
+defines its operational detail.
 
 ## 6. Handing off to another agent
 
@@ -170,6 +189,9 @@ make site-check                        # after changing a rich page or pages.yam
 After editing `docs/30-design/platform/next-gen-platform-plan.{md,json}`: render with
 `tools/site/render_nextgen.py`, move `source_commit` in `site/pages/pages.yaml` to the plan commit,
 and commit both; the site publish refuses an unrendered plan.
+
+Batch document edits before consistency checks and any required render/site build. Repeat a
+check when a subsequent change can invalidate its result or a failure needs investigation.
 
 Report outcomes as measured: a failing gate is reported with its output, a skipped step is reported
 as skipped. A result nobody ran is `UNMEASURED`, never green.

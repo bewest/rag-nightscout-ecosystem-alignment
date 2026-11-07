@@ -1788,3 +1788,13 @@ queue-status baseline remains PASS=198 / FAIL=43 / UNMEASURED=124, with integrat
 gates skipped; this documentation work does not make those wider gates green.
 
 Consolidation lane detail: `externals/work/HANDOFF-tenancy-journal-archive-2026-11-06.md` (local, untracked).
+
+### Update — completion-focused orchestration applied (2026-11-06)
+
+| Scope | Applied adjustment | Boundary |
+|---|---|---|
+| Durable guidance | Agent contract, tenancy completion plan, reading guide and handoff/evidence skills now use whole capabilities or explicit criterion closure as the unit of delegation. | Focused implementation checks and meaningful controls remain. Comprehensive acceptance belongs to the coherent frozen candidate; existing milestone and safety/authorization/compatibility requirements are unchanged. |
+| Ongoing chats/subagents | Direction delivered to the active integration coordinator, M2 configuration implementation and backup/upgrade proof chats, with propagation to their subagents. | Valid in-flight checks may finish. The next handoff reports capability/criterion verdict, remaining blocker and next join, with immutable evidence linked; setup-only failures do not become product or milestone results. |
+| Recordkeeping | The existing completion-batch decision was updated in place; each lane maintains one evolving handoff and each coherent acceptance batch its programme record. | Substantive failures, decisions and ownership transfers still receive prompt records. No new application measurement, milestone promotion or role enablement follows from this guidance change. |
+
+Validation: queue-check (including document links) and both edited skills' validators pass. Application suites and site rebuild were skipped because no application, rich-page source or page manifest changed.

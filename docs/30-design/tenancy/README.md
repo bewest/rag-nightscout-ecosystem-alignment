@@ -21,6 +21,10 @@ filename do not establish currency. Consolidated 2026-11-06.*
 | What ran and on which tree | [Integration record](../remedial/rc-16.0.0-integration-record.md), then the named capture | Executed heads, failed predictions, red/restored controls and reuse limits. A prior green campaign is not a new-head execution. |
 | Release or publication status | [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) | Dated programme updates. Local acceptance, merge and release are distinct. |
 
+Follow [completion-focused coordination](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination):
+one capability/criterion per lane, focused checks during implementation and one
+comprehensive campaign on the coherent frozen batch. Report closure and blockers.
+
 For a new lane, read the dashboard, the applicable completion batch and the
 specific contract it touches, then inspect its evidence. Confirm current ownership
 and task state before starting; a dated handoff's “next” is not a new assignment.

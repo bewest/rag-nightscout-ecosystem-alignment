@@ -1,14 +1,32 @@
 ---
 name: evidence-harness
-description: Verify a cgm-remote-monitor change or a cross-ecosystem compatibility claim by measurement rather than by reading: boot the shipping module by path in a lab under tools/lab or tools/qc, run the write-contract matrix and classify the differing cells, prove every check with a break-it control, and record the run as a dated, labelled record. Use before calling any fix verified, any claim reproduced, or any client compatible.
+description: >-
+  Measure a cgm-remote-monitor change or a defined cross-ecosystem compatibility claim using shipping-module labs, comparative matrices and meaningful failure controls. Use before claiming a fix reproduced or a client compatible; scale verification to capability and batch boundaries.
 ---
 
 # Evidence harness: measure, control, record
 
 The programme's evidence has one shape. A harness `require()`s the shipping module **by path from
 a worktree** so the thing measured is the thing that ships; it runs against a throwaway database
-with synthetic data; it asserts liveness before and after each measured step; and every check is
-shown to fail on a known-bad state before its green is believed.
+with synthetic data; it asserts liveness before and after each measured step; and each claimed
+property has a meaningful known-bad control before its green is believed. One independent control may
+exercise several assertions when it exposes the same failure mechanism.
+
+## Choose the verification boundary
+
+Finish a complete capability or adopted milestone criterion within its lane.
+Use focused/affected checks during implementation. For cgm-remote-monitor, the
+integration coordinator owns full/browser/enabled-corpus acceptance on the coherent frozen candidate;
+resumption, a helper commit or another control does not trigger that campaign.
+Retain exact-head attribution and required semantic/clinical safeguards.
+
+An early native proof is useful when its result could change the architecture or
+establish a critical boundary. State its question and exit condition, then join
+its result into the capability. After an unexpected failure, preserve the symptom
+and diagnose narrowly. Setup-only failures need preflight repair before another
+campaign, with the invalid capture retained. Record one capability/batch evidence
+bundle and link it from the evolving handoff; individual control logs stay in
+that bundle rather than each becoming a new programme acceptance record.
 
 ## Pick the instrument
 
@@ -31,7 +49,10 @@ WC_WORKTREE=externals/work/<crm worktree> WC_MONGO=mongodb://127.0.0.1:27151 \
 node tools/qc/write-contract-matrix.js --compare tools/qc/results/write-contract-matrix/<pin>.json /tmp/<scratch>/after.json
 ```
 
-Run each tree **twice**; a cell that differs between a tree's own runs is noise, not a finding.
+For a new differential matrix capture, run each compared tree **twice**; a cell
+that differs between a tree's own runs is noise, not a finding. This repeatability
+check belongs to the comparative experiment, not every helper validation or
+full-suite campaign; justified reuse of an accepted capture retains its source scope.
 Predict the differing cells before the run and write the prediction down; a result that matches a
 prediction is evidence, a result that surprises is a finding to stop and report. Pins live in
 `tools/qc/results/write-contract-matrix/`; the settings and database version of every run are part
@@ -43,9 +64,11 @@ of the record.
    command, the expected output and the control; a runner that boots from `WC_WORKTREE` or an
    explicit worktree path; results under `results/` with the tree SHA in the file name.
 2. Seed synthetic data only. Database names contain `test`. Drop the database at the end.
-3. **Controls are authored, never derived.** For each assertion, write the state in which it must
-   fail and run it there. Record both results. A revert that does not reproduce the original
-   symptom proves nothing about the check.
+3. **Controls are authored, never derived.** For each claimed property, define and run a meaningful
+   failing state. A control family may cover several assertions sharing a failure mechanism.
+   Restore each break; run the unmodified focused capability suite after the control family.
+   Record positive, semantic failure and restoration results. A revert that does not reproduce
+   the original symptom proves nothing about the check.
 4. Stop and report when the code does not match the brief. Do not substitute the nearest thing that
    works; most real defects in this programme surfaced exactly at that point.
 

@@ -1,6 +1,7 @@
 ---
 name: session-handoff
-description: Write a handoff that an agent of any vendor, with none of this session's context, can resume from: anchored commits, what is done and where it is recorded, what is next with its gates, what is local and unpushed, traps, and lane ownership. Use at the end of a lane, when stopping mid-task, or when another session or tool takes over.
+description: >-
+  Write or refresh a vendor-neutral capability-lane handoff with source anchors, acceptance limits, next integration boundary and ownership. Use for an ownership or context transfer, or when a capability stops or completes.
 ---
 
 # Session handoff
@@ -8,6 +9,19 @@ description: Write a handoff that an agent of any vendor, with none of this sess
 Two layers, linked: the **programme-level state** goes in the release records (shared, tracked),
 and the **lane-level detail** goes in a local handoff file (untracked, because it names worktrees
 and ports on this machine). Vendor memory is private to one tool and is never the only copy.
+
+## Handoff granularity
+
+Keep one evolving handoff for a capability lane. Update it when the next owner,
+blocker, acceptance verdict or integration boundary changes; link immutable
+captures instead of restating every run. A helper commit or individual control
+is not a new lane or a reason to create another chat/handoff.
+
+Lead with capability/criterion closed, remaining blockers and next join/owner.
+Keep the source anchors and evidence needed to resume safely. Programme acceptance
+is recorded per coherent batch; substantive failures, decisions and ownership
+transfers are still recorded promptly. Follow the repository's completion-focused
+coordination contract in `AGENTS.md` and the applicable batch plan.
 
 ## 1. Record the programme state (tracked)
 

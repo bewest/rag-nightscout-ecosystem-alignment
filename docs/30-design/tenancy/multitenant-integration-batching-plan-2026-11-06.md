@@ -11,6 +11,47 @@ supplements the [REST delivery roadmap](multitenant-delivery-roadmap.md)
 and the [architecture seams plan](architecture-seams-execution-plan-2026-11-05.md)
 without changing release placement or promoting M0–M6.*
 
+## Completion-focused coordination
+
+**Maintainer direction, 2026-11-06:** organize sessions and subagents around complete
+capabilities and adopted milestone criteria. The acceptance ladder and A–C schedule
+below remain the plan; this section governs task size, test timing and reporting.
+
+- A lane has an observable deliverable, one owner, an exit criterion, focused
+  positive/negative checks, unresolved decisions and a next integration boundary.
+  Helpers, fixture repairs and controls belong inside it. A new chat is useful for
+  an independently deliverable capability or context/ownership transfer.
+- Complete the coherent implementation package before comprehensive acceptance.
+  During development, choose changed-code lint and affected/focused suites for
+  the behavior at risk. Preserve semantic controls for isolation, authorization,
+  clinical behavior and compatibility. Do not run full/browser/whole-corpus per
+  helper, leaf commit or resumption, or replay valid captures merely to repeat them.
+- Keep small early proofs when an architectural unknown could invalidate dependent
+  work, a critical boundary needs native evidence, or an observed mismatch needs
+  diagnosis. Name the question and its stop condition; once resolved, incorporate
+  the result into the capability instead of extending a chain of proof-only tasks.
+- The coordinator freezes the assembled candidate and runs one comprehensive
+  campaign plus final prcheck. If it fails, retain the failure and diagnose with
+  focused assertions/controls. Join the planned repairs, freeze the replacement,
+  and repeat acceptance when material inputs changed. Exact-head attribution and
+  justified source-identity reuse remain required; this changes no milestone bar.
+- Resolve setup-only failures with preflight/startup checks before retrying the
+  intended campaign. Preserve their captures as invalid attempts, not product
+  results or separate milestone events. Valid in-flight work may finish.
+- Report the capability delivered, criterion verdict, remaining blocker and next
+  integration boundary/owner, with an evidence link. Preserve supporting logs and
+  source identities without turning every checkpoint into a new programme update.
+  Use one evolving lane handoff and one acceptance bundle/update per coherent batch;
+  substantive failures, decisions and ownership changes still need prompt records.
+
+The immediate completion path is to finish the adopted M1/M2 capability gaps,
+freeze their combined candidate, and give explicit M1/M2 verdicts before M3/M4
+acceptance. B/M5 runtime and C operations continue as parallel capabilities.
+Use the [current roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration)
+for scope; resource budgets, human identity or other explicitly deferred C/M6 work
+must not become invented prerequisites to earlier milestones. Current ownership
+and executed evidence remain in the dashboard, release records and local handoffs.
+
 <a id="1-measured-basis"></a>
 ## 1. Historical measured basis
 
@@ -67,10 +108,10 @@ not the lane's nerves.
 
 | Stage | Claim | What runs | Who records |
 |---|---|---|---|
-| Locally accepted | this lane's change does what it says on its own head | lint on changed JS; `npm run test:affected`; the lane's focused suites; every authored break-it control, red then restored | the lane, in its handoff |
+| Locally accepted | this lane's change does what it says on its own head | changed-code lint and affected/focused capability suites; meaningful authored controls, then restoration; no separate full campaign per leaf | the lane, in its handoff |
 | Incorporated | the change is an ancestor of the frozen batch head | ancestry check; affected suites on the combined tree; tier registry check | the coordinator |
 | Integrated acceptance recorded | the frozen batch head regresses nothing | **one** full nonbrowser, **one** default browser, the enabled multitenant corpus and batch labs, final `prcheck.sh`; applicable queue positives and paired breaks run against the frozen head | the coordinator, as one R entry |
-| Milestone promoted | a roadmap section 4 criterion list is fully met | the milestone's own list; controls rerun on the cumulative tree; client-binary replay where the milestone claims client compatibility; benchmark where it claims capacity | maintainer decision, recorded in the roadmap and dashboard |
+| Milestone promoted | an adopted roadmap milestone criterion list is fully met | the milestone's own list; controls rerun on the cumulative tree; client-binary replay where the milestone claims client compatibility; benchmark where it claims capacity | maintainer decision, recorded in the roadmap and dashboard |
 
 A batch does not repeat lower-stage work for its members. A fresh agent resuming a
 lane does not rerun an accepted campaign.
@@ -107,8 +148,8 @@ lane does not rerun an accepted campaign.
    the source inventory before freezing, including joined clock suites.
    An explicitly disabled benchmark stays named pending, never a functional pass.
 5. **CI runs the corpus.** A PostgreSQL plus Vault job on #8898 moves the
-   stage-three campaign off the single local slot. The roadmap's section 4 already
-   calls for explicit PG jobs as applicable suites execute.
+   stage-three campaign off the single local slot. The current roadmap's milestone
+   criteria call for explicit PG jobs as applicable suites execute.
 6. **Queue gates measure the batch head.** After a batch's campaign passes,
    move each member item's `--ref` to the frozen batch head and run
    `make queue-status` with the admin URI set, inside the slot. Native refs stay
@@ -245,11 +286,11 @@ clock corpus required an inventory repair; source listing is verified but expand
 runtime acceptance remains UNMEASURED. These bounded results are inputs to A,
 not completion of A.
 
-Current ownership: root coordinator owns Batch A integration and acceptance;
-the existing M4 chat owns the independent client lab; the M4 application-repair
-agent owns diagnosed UUID-default and literal-regexp compatibility work; the M5
-agent owns the executable recovery prototype and first dormant durable replay
-implementation. B7 direction is adopted in the
+The following ownership notes retain their captured dispatch context; the
+current dashboard and coordinator's evolving handoff own active assignments.
+Do not redispatch a completed lane from this narrative. The coordinator owns
+criterion closure, coherent source freeze and comprehensive acceptance. B7 direction
+is adopted in the
 [contract acceptance](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments);
 its approval record has been reconciled from the separate decision lane.
 Recovery semantics and checkpoint bookkeeping require explicit implementation
