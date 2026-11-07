@@ -230,6 +230,12 @@ commit. Every lane still runs changed-code lint, affected tests, meaningful
 focused checks and authored red/restored controls. Final full acceptance belongs
 to the exact assembled head; ancestry alone never transfers a control result.
 
+Use the [current decision list](m5-m6-decision-list.md) and the roadmap's
+[M5/M6 acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families)
+for the remaining preview contracts. Snapshot reconciliation is adopted and
+unblocked; operator-assisted ownership changes suffice initially. Keep focused
+implementation/native capability checks moving before one coherent batch acceptance.
+
 ### Criterion-to-test matrix for the frozen candidates
 
 The coordinator fills the actual command/selector, tree, instrument revision,
@@ -244,7 +250,7 @@ cannot substitute for that mapping.
 | M2 settings/current authority/secrets and listener separation | A: actual provider + PG + HTTP config/versioning/revocation and owner/data/operator boundary controls | R72 accepts actual two-name versioned owner settings and current authority/listener boundaries. Human issuer/refresh, broader catalogue/lifecycle and production trust retain M6 scope. |
 | M3 cumulative two-tenant HTTP | A: actual executable, overlapping identities, independent stored-state oracle, grants/outages/concurrency/schema and restored controls | R72 accepts its own actual A/B HTTP, stored-outcome and unsafe-startup evidence after M1/M2; no serial campaign added. |
 | M4 pinned client workflows | A: actual executable clients and independent responses/stored values, retries/refusals/revocation, followed by explained differential cells | R72 accepts actual headless clients and source-pattern replay under the adopted bar; no all-client claim, Android emulator C, iOS outside automation. |
-| M5 durable feed/recovery | B: persisted checkpoint and complete-cohort oracle under commit-before-publish death, duplicates, missed notifications, soft deletion and cross-tenant checkpoint refusal | Architectural proof first. Hard-delete recovery, replay horizon, transport/provider and multi-node ownership guarantees cannot be inferred; unresolved choices stay scoped/deferred. |
+| M5 durable feed/recovery | B: persisted checkpoint and complete-cohort oracle under commit-before-publish death, duplicates, missed notifications, soft deletion and cross-tenant checkpoint refusal | Bounded full snapshot reconciliation is adopted for current-state hard-delete/unstamped recovery. Prove actual consumed recovery, bounds/transaction refusal, interleaving and last-good retention. Cadence/capacity remain C; retained history and multi-node ownership are separate. |
 | M5 sockets/evaluator/ack | B: D23 forwarding with actual ack/no-ack behavior, current authorization/reconnect, tenant rooms/caches, replay-equivalent evaluation and durable ack/snooze recovery | Implementation after interfaces are proven; ack schema/retention and notification delivery retain their own decision/acceptance gates. Live external notifications are not admitted by evaluator lab success. |
 | M6 populated operations and bounds | C: export/import fidelity, tenant deletion, recoverable keys/ciphertext, interrupted restore/upgrade, egress refusal and resource workloads on final assembled tree | Early feasibility proof and substantial implementation/measurement remain. Approve numeric bounds/retention policy before using them as pass thresholds. |
 

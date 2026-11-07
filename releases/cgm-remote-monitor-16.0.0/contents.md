@@ -1809,3 +1809,13 @@ Validation: queue-check (including document links) and both edited skills' valid
 | Publication | Draft #8898 is OPEN at accepted `74d7b3fc`; body matches R72 and reader-clamp removal. Alignment promotions/map published at `586f8c83`. | Exact-head [application CI](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42330725615), [CodeQL](https://github.com/nightscout/cgm-remote-monitor/actions/runs/42330725633) and [alignment CI](https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42331010678) pass. Fifteen app test/build jobs succeed; three release-image jobs skip. No dev merge or operator release. |
 
 One evolving coordination handoff: `externals/work/HANDOFF-codex-completion-coordination-20261106.md` (local, untracked).
+
+### Update — first-preview ownership scope and M5/M6 clarity (2026-11-06)
+
+| Scope | Current direction | Acceptance boundary |
+|---|---|---|
+| Ownership | [Operator-assisted changes](decisions.md#preview-operator-assisted-ownership) suffice for the first preview; self-service co-owner/transfer follows later. | Current authority, tenant isolation, concurrent last-owner protection, audit and no automatic secret reveal remain required. Implementation acceptance is UNMEASURED. |
+| Current reading path | [M5/M6 decision list](../../docs/30-design/tenancy/m5-m6-decision-list.md) separates settled policy, human questions and measurements; the roadmap supplies explicit acceptance families. | Older packets retain alternatives/evidence. No new milestone claim, application measurement or production/default enablement. |
+| Execution | Existing M5 lane continues adopted bounded snapshot reconciliation and actual evaluator recovery; M6 synthetic preparation may proceed in parallel. | Native capability acceptance precedes coherent integration acceptance. Alarm/session/deletion policies remain explicit questions; operating limits follow agreed workloads and measurements. |
+
+Validation: queue-check, docs-links, Markdown heading/explicit-anchor targets and whitespace checks pass. The isolated lane initially lacked external fixture paths; exposing the existing paths by symlink resolved that preflight failure. Application suites and site rebuild were skipped: no application, rich-page source or page manifest changed.

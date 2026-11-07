@@ -15,7 +15,7 @@ filename do not establish currency. Consolidated 2026-11-06.*
 | Why the architecture is this way | [Tenancy decisions](multitenancy-decisions.md#1-decisions) | D1–D23, hard qualifications and links to detailed contracts. Old per-commit tasks belong to the archive. |
 | Current promotion bars and compatibility direction | [Promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06) | Reader mode withdrawn; writer policy retained. M2 cell/M6 lifecycle and deferred M1 budgets/Android lab retain their adopted scope. No new promotion. |
 | Owner, delegation and token rules | [Owner authority](owner-authority.md) | Adopted amendment to D17/D22; implementation acceptance is separate. |
-| What needs a maintainer decision | [Open decisions](multitenant-open-decisions-2026-11-06.md), then [lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md) | Each answer goes in release decisions; the packets point there rather than retaining an answered question as open. |
+| What needs a maintainer decision | [Current M5/M6 decision list](m5-m6-decision-list.md) | Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; older packets supply background only. |
 | Durable consumers and recovery | [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | Adopted B7 direction; runtime evidence retains its actual tree and limits. |
 | A picture of the system | [Platform map](../platform/next-gen-platform-plan.md#3-the-map), then [architecture comparison](single-and-multitenant-architecture.md) | Map summarizes bounded components. Architecture diagrams retain their named source scope. Neither promotes a milestone. |
 | What ran and on which tree | [Integration record](../remedial/rc-16.0.0-integration-record.md), then the named capture | Executed heads, failed predictions, red/restored controls and reuse limits. A prior green campaign is not a new-head execution. |
@@ -55,6 +55,7 @@ These retain distinct evidence or alternatives; they are not current work instru
 | [Owner configuration census](tenant-owner-config-surface-2026-09-15.md) | Historical census/DDL; later [dev census](../../60-research/tenancy/t30-census-dev-2026-10-27.md), config candidate and owner authority have separate scopes. |
 | [Configuration/delegation questions](nightscout-configuration-and-delegation-2026-09-10.md), [control-plane reconciliation](nightscout-control-plane-reconciliation-2026-09-11.md) | Historical analysis and supersession map; not a replacement backlog. |
 | [Ordering translation](nightscout-seam-ordering-translation.md) | Old-seam proposal; current ports, write contract and backend measurements govern admission. |
+| [Earlier open-decision note](multitenant-open-decisions-2026-11-06.md), [owner lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md) | Historical questions, source surveys and alternatives. Start with the current decision list; draft recommendations are not adopted policy. |
 | [M0–M3 promotion review](milestone-promotion-review-2026-11-06.md), [M4 client dispatch](m4-client-binary-lab-packet-2026-11-06.md) | Read-derived gap review and lab hypotheses. Later integration records own actual acceptance. |
 
 ## Keeping this path useful

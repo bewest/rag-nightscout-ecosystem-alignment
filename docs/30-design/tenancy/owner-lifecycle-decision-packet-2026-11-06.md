@@ -10,6 +10,8 @@ in `releases/cgm-remote-monitor-16.0.0/decisions.md`, after which this packet po
 was written; no gate was run. Companion: [the five critical-path decisions](multitenant-open-decisions-2026-11-06.md),
 whose items 1 and 2 now have maintainer decisions, linked below rather than re-asked.*
 
+**Current reading path:** use the [M5/M6 decision list](m5-m6-decision-list.md). This packet preserves source surveys and alternatives; later canonical decisions govern preview scope.
+
 **Anchors, read from `git` at the moment of writing.**
 
 | tree | head |
@@ -350,6 +352,14 @@ controls. A subject-only pass cannot establish backward compatibility. Threshold
 policy, migration and performance remain unmeasured; the current decision is to remove the mode.
 
 ### Q5. Ownership lifecycle
+
+**Preview scope decided:** [operator-assisted ownership changes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-operator-assisted-ownership)
+are sufficient initially. Self-service co-owner/transfer proposals below are later
+enhancements, not first-preview gates. The operator path still needs current
+authority, last-owner protection, audit and recovery without secret disclosure.
+The earlier recommendation (a) below is retained as a future proposal, not the
+adopted preview implementation. Deletion confirmation/cancellation policy is a
+separate open question; the adopted 30-day key/artifact retention does not settle it.
 
 **Later decision, separate from this draft's recommendations:** the maintainer's
 [promotion-bar decision record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)

@@ -46,6 +46,9 @@ Secret reveal is a separate permission with recent reauthentication. Ownership
 transfer and adding co-owners are sensitive explicit operations; last-owner removal
 must not orphan the tenant. Transactional transfer/recovery details require a
 bounded implementation contract, not automatic operator access to owner secrets.
+For the first preview, [ownership changes are operator-assisted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-operator-assisted-ownership).
+Self-service co-owner addition and transfer are later enhancements; last-owner
+protection, current authority and audit remain required for the operator path.
 
 A grant must fit all three: project delegable catalogue, operator tenant ceiling,
 and actor's explicit delegation authority. Possessing a permission does not grant

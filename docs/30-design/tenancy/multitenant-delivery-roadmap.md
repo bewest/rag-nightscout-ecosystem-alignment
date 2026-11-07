@@ -24,6 +24,10 @@ merely because a new session resumes. Promotion requires the complete criterion
 list below, with actual commands, source/instrument revisions, artifacts and
 verdicts on the applicable final tree.
 
+Use the [current M5/M6 decision list](m5-m6-decision-list.md) for remaining human
+questions and measurement prerequisites. Prefer a minimal working reference with
+explicitly deferred enhancements; do not substitute a component pass for a milestone.
+
 ## Supported boundary and owner journeys
 
 The supported owner deliverable is a **headless, documented, versioned API**, with
@@ -38,7 +42,9 @@ dormant slice remains separate from enabling its roles.
 Initial lifecycle operations are private-operator actions: provision, suspend,
 export and delete, without public signup. An owner may export or request deletion;
 the operator authorizes and executes deletion. A request never bypasses
-confirmation, retention or recovery policy.
+confirmation, retention or recovery policy. [Ownership changes are operator-assisted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-operator-assisted-ownership)
+for the first preview; self-service co-owner addition and transfer follow separately.
+Operator execution still preserves last-owner protection and owner-secret boundaries.
 
 | Owner journey | Required contract | Capability boundary |
 |---|---|---|
@@ -162,7 +168,9 @@ consumer admission, prove commit coupling, durable checkpoints, ordering, comple
 cohorts, duplication/deletion/config invalidation and crash/replay boundaries.
 The event carries the transaction's **final floor**, as decided in the
 [B7 record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#b7-durable-multitenant-delivery-2026-11-06).
-A timer may drive time-based alarms; it cannot replace lost write events.
+Time-only ticks drive time-based alarms. The separately scheduled bounded snapshot
+reconciliation recovers current rows and absence after missed wakes; neither
+mechanism promises recovery of every intermediate transition.
 D23 forwards socket writes/acks unchanged from the reader `realtime` role to the
 internal `api` write endpoint with the `socket` source label; client behavior and
 current authority must be measured at that boundary. Failed forwarding yields
@@ -173,6 +181,32 @@ artifact for a 30-day window, then an operator destroys the keys. The artifact
 must contain every ciphertext/key reference before secret/audit rows are removed.
 The decision is in the [promotion record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06);
 implementation and destroy/after-window refusal evidence remain separate.
+
+## M5/M6 acceptance families
+
+These refine the milestone cells above into observable results. They are required
+coverage, not new passing measurements. The coordinator records actual source,
+command, control, artifact and verdict per family on the assembled candidate.
+A deferred enhancement is named explicitly; it does not silently lower another bar.
+
+| Family | Required observable result |
+|---|---|
+| M5 current-state recovery | Bounded full typed identity/absence reconciliation in one consistent tenant snapshot recovers hard deletes and unstamped activity after missed wakes/restart and at an unchanged floor. Preserve producer timestamps and replies. Concurrent paging cannot combine snapshots; foreign tenant state is unchanged. Row/byte/transaction failure refuses without partial projection/checkpoint replacement. |
+| M5 evaluator recovery | The actual evaluator consumes recovered inputs. Acquisition or commit failure preserves last good state; downstream clinical failure may leave newer committed inputs while retaining the prior clinical result/time. A later cycle retries computation even at an unchanged floor. Settings/plugin-version changes cannot reuse an incompatible result. Do not claim atomic input-plus-clinical-output persistence. |
+| M5 live reference | Separate roles on one machine exercise subscription startup races, missed/duplicate wakes, process death/restart and explicit scheduling. Time-only alarm ticks and current-state reconciliation are distinct work. A transport wake is not delivery evidence; a checkpoint lock is not a multi-node lease. |
+| M5 socket compatibility and authority | Actual D23 API forwarding preserves namespace, source, replies and ack/no-ack retry behavior; realtime has no storage-write authority. Current authorization covers operations, reconnect and protected delivery. Tenant rooms/caches and settings invalidation remain isolated. |
+| M5 durable alarm state | Adopt the ack/snooze effect, expiry and retry contract before wiring it. API-persisted tenant state survives restart; duplicate delivery cannot extend suppression unintentionally. Exercise persistence failure and restart boundaries against actual client behavior. Live external notification delivery remains a separate gate; enabled durable request handoff needs its own crash/retry oracle. |
+| M6 bounded owner API | Declare the exact reviewed configuration/credential/integration catalogue and refusals. Human issuer/renewal implements adopted lifetimes, current authority, reauthentication and cross-worker revocation through synthetic identities. Provider logout, idle activity and outage behavior require explicit contracts; operator-provisioned credentials alone do not close human identity. |
+| M6 operator-assisted ownership | Private-operator addition/transfer/recovery is tenant-bound, explicit and audited. Concurrent changes cannot orphan a tenant or silently replace an owner; unauthorized operations have no effect. Recovery grants no automatic secret reveal. Self-service co-owner/transfer is not a preview gate. |
+| M6 lifecycle and trust | Provision/suspend/export/delete and restore respect current authority and trusted tenant resolution. Artifact fidelity is independently checked; capture required ciphertext/key references before deletion. Exercise retained-key recovery, operator destruction and after-window refusal. Same-ID restore and new-secret cloning remain distinct. Deletion request/confirmation/cancellation policy needs an explicit answer. |
+| M6 operations and clients | Populated backup/restore and upgrade/rollback cover interruption, supported schema/catalogue and failure recovery on the assembled tree. Retain the Android emulator acceptance and the explicit iOS/all-client exclusions. A representative entries/clock lab does not cover the whole catalogue. |
+| M6 operating envelope and final review | Declare synthetic workload and freshness/recovery expectations, then measure shared-pool/hot-tenant interference, row/byte limits, scan cadence, latency and egress refusal before approving bounds. Complete the final criterion matrix and review. Functional passes do not establish capacity. |
+
+M5 reconciliation implementation may proceed now; it does not depend on selecting
+an external notification provider or retained history. Multi-node failover,
+every-transition history and self-service ownership are separate enhancements.
+Real identities/data, production/default role enablement and release admission keep
+their existing explicit approval boundaries.
 
 ## Compatibility and parallel contracts
 

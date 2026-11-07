@@ -8,6 +8,8 @@ what is only read, and whether it is single- or multitenant. A decision taken he
 recorded as one row in `releases/cgm-remote-monitor-16.0.0/decisions.md`; this note then
 points at it. One topic per section; recommendations are given because they were asked for.*
 
+**Current reading path:** use the [M5/M6 decision list](m5-m6-decision-list.md). This note preserves the earlier questions; it is not the remaining-decision checklist.
+
 **Decided 2026-11-06 after this note was written:** items 2, 3 and 4 are decided as recommended and recorded as rows in decisions.md (section "Multitenant promotion bars"). Item 1 is decided differently from the recommendation: the clamping mode is **dropped** as a backward-compatibility break (decisions.md row of 2026-11-06); a tenant's api-secret must get 200 on its own tenant resource, and only backward-compatible solutions are wanted. The section below is kept as the record of the question as asked. Item 5's lifecycle packet is published: [owner session and issuer lifecycle decision packet](owner-lifecycle-decision-packet-2026-11-06.md).
 
 **Closed today, for the record:** the per-write event's `stamp` is the transaction's final

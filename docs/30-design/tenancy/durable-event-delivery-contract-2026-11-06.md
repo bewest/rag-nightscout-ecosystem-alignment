@@ -158,12 +158,16 @@ keys them apart; the port corpus preserves typed forms in delete records,
 | Kind | Status under the contract | Basis |
 |---|---|---|
 | **soft delete** (the v3 default and every path that marks a record invalid) | an ordinary write: the row stays, its stamp advances, and a consumer that replays it removes the record from its view. A bulk soft delete is one event with many records (or `collapsed` above the cap) and one cohort that may share a stamp (§3 rule 1) | **read-derived** from the step; the tie case **reproduced** in the lower-port report |
-| **hard delete** through the intent path (v3 `prune`/autoPrune, `write-intent.js:4606-4613`; permanent delete) | **outside the spine.** The event names the removed ids, but no durable row carries a stamp afterwards, so replay cannot reconstruct it. A consumer learns of it only by re-reading a window and noticing absence. Whether a tombstone is added, and the window the backstop re-reads, are deferred (§9) | **read-derived**; the roadmap's "no timer substitutes for lost writes" applies with equal force here |
+| **hard delete** through the intent path (v3 `prune`/autoPrune, `write-intent.js:4606-4613`; permanent delete) | **outside the spine.** The event names the removed ids, but no durable row carries a stamp afterwards, so replay cannot reconstruct it. Strict replay cannot recover absence. The adopted full current-state snapshot backstop below handles absence separately; tombstones remain deferred (§9) | **read-derived** stamped-spine limit; separate native characterization and the adopted reconciliation direction are linked in §11 |
 | **raw writers that bypass `write(intent)`** (a direct MongoDB upload, an independent SQL client) | **outside the contract**, by decision: writers that go straight to the database are unsupported and xDrip+'s MongoDB upload is deprecated (D-EVENT question 1 row, decisions.md). R50's fixture used exactly such raw writes to show they "emit no process event" (**reproduced**); under the clock they also carry no stamp allocated by the fence | |
 
-A consumer never infers a hard delete from a missing event. It reports what it
-replayed; reconciling absence is the backstop's bounded job and its horizon is
-a deferred decision.
+A consumer never infers a hard delete from a missing event. Strict stamped replay
+retains the limits above. The later [bounded snapshot reconciliation decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation)
+selects full admitted current-identity/absence reconciliation in a consistent tenant
+snapshot, independent of floor movement. An arbitrary recent-time window is not
+sufficient. It preserves existing hard deletes and unstamped activity behavior;
+explicit row/byte refusal is required. Cadence/capacity and implementation acceptance
+remain unmeasured; every-transition history remains separate.
 
 ## 5. Configuration and grant invalidation
 
@@ -283,11 +287,15 @@ These rows are the gate `MT-RUNTIME-PLAN` lacks today; the queue item keeps
 
 ## 9. What this contract does not decide
 
+For the current decision queue, use the [M5/M6 decision list](m5-m6-decision-list.md).
+The later snapshot-reconciliation choice in §11 settles the initial current-state
+absence backstop; the historical spine limitations below do not reopen that choice.
+
 | Question | Status |
 |---|---|
 | provider: logical replication slot with `wal2json`-style decoding versus poll-only versus change streams | **deferred, research continuing.** D6 selected the slot as spine on T4.1's 2026-09-15 measurement; the seams plan reopens provider selection; nothing here closes it. The contract is written so that the slot, a poll, or both satisfy it, because the spine is the rows and the stamp, not the transport |
 | multi-node consumers: leasing a tenant to one evaluator, failover, split-brain | **deferred.** The seams plan says a cell lease cannot by itself establish these guarantees; the single-machine separate-role reference deployment is the adopted first proof (clock proof plan) |
-| retention horizon: how far behind a checkpoint may fall before replay is refused; slot WAL retention; the backstop's re-read window for hard deletes | **UNMEASURED.** T4.1 measured one stop of 200 rows |
+| retention horizon: how far behind a checkpoint may fall before replay is refused; slot WAL retention | **UNMEASURED.** T4.1 measured one stop of 200 rows |
 | performance budgets: contention, fresh-ingestion latency, lock-held work, evaluator cost per tenant | **UNMEASURED**; the clock reports say so in the same words, and the benchmark is opt-in and pending |
 | whether configuration and grant rows appear on the feed | **deferred**; §5 makes consumers correct without it |
 | tombstones for hard deletes | **deferred**; §4 keeps hard deletes outside the spine |
@@ -312,7 +320,7 @@ sentence the entry bar in §8 can falsify:
 7. Authority and settings are re-read per operation or per cycle, not
    invalidated by event.
 8. Replay covers crash-after-commit; the publish covers nothing.
-9. The timer drives time-based alarms only and never reloads rows.
+9. Time-only alarm ticks are separate from the later adopted snapshot-reconciliation schedule; a wake or tick alone establishes no recovery guarantee.
 10. Evaluator and notification state is keyed by tenant, settings version and
     plugin set, with R50's retention policy.
 11. The contract applies only where the commit-coupled stamp exists; the clock
