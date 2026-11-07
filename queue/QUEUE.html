@@ -3231,7 +3231,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>fbf184322</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3315,8 +3315,8 @@
 </tr>
 <tr>
 <td><code>blocked</code></td>
-<td>14</td>
-<td>TEN-RESOLVE, TEN-LAB, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164</td>
+<td>13</td>
+<td>TEN-RESOLVE, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164</td>
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
@@ -3340,8 +3340,8 @@
 </tr>
 <tr>
 <td><code>done</code></td>
-<td>43</td>
-<td>P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB</td>
+<td>44</td>
+<td>TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB</td>
 </tr>
 <tr>
 <td><code>unsettled</code></td>
@@ -20208,7 +20208,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tr>
 <td><code>TEN-LAB</code></td>
 <td>Two-tenant entries HTTP lab on PostgreSQL</td>
-<td><code>blocked</code></td>
+<td><code>done</code></td>
 <td><code>records/multitenant-roadmap-20261102</code></td>
 <td>n/a</td>
 <td>2 run + 1 no-gate</td>
@@ -20946,7 +20946,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>blocked</code></td>
+<td><code>done</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -20992,8 +20992,10 @@ alarm-readiness items, and the seam branch refresh.</p>
 <p><strong>Evidence.</strong></p>
 <ul>
 <li><code>docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md</code></li>
+<li><code>docs/30-design/remedial/rc-16.0.0-integration-record.md</code></li>
+<li><code>reports/tenancy/completion-batch-74d7-2026-11-06/README.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-11-06 (R62/R64): published #8898 head 83582e87 is the accepted cumulative batch with CI and CodeQL green; M3 stays blocked on M1/M2. The race and identity gates keep their native pins (44331668, bc4ee1a9); frozen-head replay UNMEASURED. M3; R41 accepts local subject service and strict compatibility tests at 94c57f1f; published draft is R42 d4570e58, not full preview. Local composition continuation adds bounded direct imported-identity coverage; the historical release comparison retains its separately scoped omissions. Maintainer priority 2026-11-05: management HTTP and wider REST, with parallel current Mongo/PG and historical release/dev/PR-single compatibility. Existing RC corrections/client quirks need explicit expected-change bases; unexplained differences fail acceptance. Complete M1/M2 and repeatable cumulative gate/control coverage before promotion.</p>
+<p><strong>Notes.</strong> R72 accepts the coherent admitted preview: M1/M2 criteria pass, followed by actual cumulative A/B HTTP, independent stored outcomes and stale/unsafe startup refusal, promoting M3. M4 also promotes under the adopted actual headless/source-pattern bar, with no all-client claim. The applicable preview prerequisites of the broader parent cards are satisfied; their remaining M5/M6 scope does not reopen this completed synthetic lab. Resource budgets and Android emulator remain C; human issuer, durable lifecycle/production trust and live runtime remain their separate contracts.</p>
 <h3 id="mt-runtime-plan--continuous-v1v3-realtime-and-evaluator-integration-contracts"><code>MT-RUNTIME-PLAN</code> &mdash; Continuous v1/v3, realtime and evaluator integration contracts<a class="headerlink" href="#mt-runtime-plan--continuous-v1v3-realtime-and-evaluator-integration-contracts" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

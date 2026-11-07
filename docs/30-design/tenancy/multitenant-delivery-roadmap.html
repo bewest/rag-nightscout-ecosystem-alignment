@@ -5350,12 +5350,12 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>fbf184322</code>.</em></p>
 <p><em>Contributor-facing living plan. Consolidated 2026-11-06 from the delivery journal
 and the adopted release decisions, without a new application measurement or
 milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/274b99272de0496051868a7d4443e6a95b1f31d3/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/586f8c831fba4b413836a7100fe8f682f7b3ff01/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5488,7 +5488,14 @@ and API projections may omit stored fields. Preserve ObjectId/string distinction
 and refuse ambiguous repeated textual IDs; accept JSONB logical equality without
 claiming BSON field-order fidelity. This importer is not a raw backup.
 <code>nightscout-connect</code> remains the separate ongoing synchronization path.</p>
+<p>Apply the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-identity-and-cloning">restore identity and cloning decision</a>.
+Operational restore labs retain original-tenant bindings. Clinical API population
+and synchronization do not migrate credential authority. Cloning implementation
+and native acceptance remain UNMEASURED.</p>
 <h2 id="milestones-and-continuous-integration">Milestones and continuous integration<a class="headerlink" href="#milestones-and-continuous-integration" title="Permanent link">&para;</a></h2>
+<p><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a>
+records the latest criterion verdicts; the <a href="multitenant-delivery-dashboard.html">dashboard</a>
+displays milestone claims. The criteria below retain their adopted scope.</p>
 <p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">release promotion decisions</a>
 fix the scope of these bars. In particular, M2 is its table cell; human
 issuer/refresh, existing-grant clamping, full lifecycle and production-resolution

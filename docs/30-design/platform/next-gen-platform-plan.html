@@ -5752,7 +5752,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>fbf184322</code>.</em></p>
 <p><em>Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
 <a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>
 and <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>:
@@ -5784,19 +5784,19 @@ use this map to see how the platform tracks meet.</p>
 </thead>
 <tbody>
 <tr>
-<td>Multitenant foundations</td>
-<td><strong>M0 promoted</strong> in R60; R64 verifies the published draft #8898 control/recovery batch.</td>
-<td>No default or production role enabled; the PR is open/draft, not merged or released.</td>
+<td>Multitenant foundations and initial preview</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, followed by M3/M4 on cumulative evidence.</td>
+<td>Draft #8898; source acceptance is distinct from dev merge, operator release and default/production enablement.</td>
 </tr>
 <tr>
 <td>Data, authority and clients</td>
-<td>R62/R63 retain historical reader-mode/client measurements; R62 also accepts persisted typed current-row replay and populated PG recovery LAB. The bounded <code>M4-CLIENT-LAB</code> card remains complete.</td>
-<td><strong>Optional subject-reader clamping is withdrawn</strong> for backward compatibility; reader option is removed in the local candidate; comprehensive verification is pending. A tenant's own legacy <code>api-secret</code> must keep authorized access (200). M2 uses the roadmap cell; human issuer/refresh, existing-grant lifecycle clamping and production resolution trust move to M6.</td>
+<td>Admitted PG ports/import and actual typed/versioned owner settings pass; reader clamping is removed, legacy own-tenant credentials and writer fences retained.</td>
+<td>M1 resource bounds deferred C. M4 actual headless/source-pattern bar, no all-client claim; Android emulator C. Human issuer/refresh, wider catalogue/lifecycle and production resolution trust remain M6.</td>
 </tr>
 <tr>
 <td>Durable runtime</td>
-<td>B7 direction is adopted. R67 accepts a bounded local recovered clinical constructor; R68 accepts a local fresh-schema DATA prototype with physical controls.</td>
-<td>M5/M6 remain open. The transaction final-floor event-stamp direction is adopted; its payload implementation/verification remains separate. No live evaluator/realtime role, notification/ack, provider/lease or rollout acceptance. Fresh-only ordering has no populated/imported-history migration or downmigration.</td>
+<td>R67/R68 retain bounded clinical/DATA prototype evidence; R71 final-floor PostgreSQL proof is recorded and joined in R72.</td>
+<td>M5/M6 remain open: live roles/current delivery, durable ack/snooze, notification/provider recovery and operational acceptance. Fresh-only ordering has no populated/imported-history migration or downmigration.</td>
 </tr>
 <tr>
 <td>Local joined candidate</td>
@@ -6307,7 +6307,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>T30-SCHEMA-CONFIG</td>
-<td>Adopted owner-authority writer policy and transactional proposed-grant fencing are retained. Optional subject-reader clamping is withdrawn; removed in the local candidate; comprehensive verification pending. M2 requires tenant-local config/versioned writes and route separation; wider lifecycle belongs to M6. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate</td>
+<td>Adopted owner-authority writer policy and transactional proposed-grant fencing are retained. Reader clamping is removed; R72 accepts M2 tenant-local config/versioned writes and route separation; wider lifecycle belongs to M6. Selected preview services do not finish this item; historical old-seam gate fails its D15 predicate</td>
 <td>T30-RESEARCH</td>
 </tr>
 <tr>
@@ -6322,7 +6322,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>TEN-LAB</td>
-<td>R62/R64 accept and verify the published dormant control/recovery batch; R60 M0 promotion is retained; complete M3 remains blocked on full M1/M2</td>
+<td>R72 promotes M3 after M1/M2, then M4 at the adopted headless/source-pattern scope; no all-client or M6 claim</td>
 <td>ST-PG, T30-WIRING, MIG-RUNNER</td>
 </tr>
 </tbody>

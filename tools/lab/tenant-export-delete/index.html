@@ -1663,6 +1663,8 @@
       
         
       
+        
+      
     
     
     
@@ -3402,6 +3404,64 @@
   
   
   
+    <a href="../tenant-backup-upgrade/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-backup-upgrade/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../tenant-cell-sqlite/index.html" class="md-nav__link">
       
   
@@ -3573,7 +3633,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8_33" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8_34" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -3596,8 +3656,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_8_33_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_8_33">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_8_34_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_8_34">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5004,10 +5064,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision-questions-not-agent-defaults" class="md-nav__link">
+  <a href="#adopted-decisions-and-remaining-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision questions (not agent defaults)
+        Adopted decisions and remaining questions
       
     </span>
   </a>
@@ -5043,7 +5103,7 @@
 
 
 <h1 id="tenant-exportimport-fidelity-and-deletion-early-batch-c-proof">Tenant export/import fidelity and deletion: early Batch C proof<a class="headerlink" href="#tenant-exportimport-fidelity-and-deletion-early-batch-c-proof" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>fbf184322</code>.</em></p>
 <p>Contributor-facing research instrument, 2026-11-06. This is the Batch C early proof the
 <a href="../../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion plan</a>
 names in its "Populated restore/import and contention" row and the roadmap's
@@ -5183,7 +5243,7 @@ Vault version strings, every count, each control's exact red text, and cleanup v
 <p>A control that stays green is a mismatch, and a control red for a reason other than the
 predicted one is reported as such; neither is a pass.</p>
 <h2 id="captured-result-2026-11-07-utc-two-runs">Captured result (2026-11-07 UTC, two runs)<a class="headerlink" href="#captured-result-2026-11-07-utc-two-runs" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/274b99272de0496051868a7d4443e6a95b1f31d3/tools/lab/tenant-export-delete/results/2026-11-07/report.json">results/2026-11-07/report.json</a> is the record; figures below
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/586f8c831fba4b413836a7100fe8f682f7b3ff01/tools/lab/tenant-export-delete/results/2026-11-07/report.json">results/2026-11-07/report.json</a> is the record; figures below
 are copied from it. Application tree <code>fd827e350a185ad73c838b013b25fe889434b036</code>
 (branch <code>codex/tenant-export-delete-20261106</code>), fixture sha256 <code>e6afbf4e7a26…</code>,
 PostgreSQL <code>16.15 (Debian 16.15-1.pgdg13+2)</code> from <code>postgres:16</code>, Vault <code>2.2.1</code> from the pinned
@@ -5219,14 +5279,15 @@ digest, wall clock 00:02:49 to 00:02:59 UTC, free disk 77,813,408 KB before and 
   anonymous volumes verified absent by <code>docker inspect</code>; the PostgreSQL data directory was a
   tmpfs with no volume.</li>
 </ul>
-<h2 id="decision-questions-not-agent-defaults">Decision questions (not agent defaults)<a class="headerlink" href="#decision-questions-not-agent-defaults" title="Permanent link">&para;</a></h2>
+<h2 id="adopted-decisions-and-remaining-questions">Adopted decisions and remaining questions<a class="headerlink" href="#adopted-decisions-and-remaining-questions" title="Permanent link">&para;</a></h2>
 <ul>
-<li>DECISION: key retention after tenant deletion. Secrets rows go only after their ciphertext
-  and key references are verified in the artifact; Vault Transit keys are never deleted by this
-  proof, so the artifact stays decryptable. Destroying keys, and how long artifacts and the
-  <code>tenant_lifecycle_requests</code> tombstone are retained, is policy.</li>
-<li>DECISION: re-homing under a new tenant id. The secrets envelope binds the tenant id
-  (<code>lib/secrets/component.js</code>), so the import target must equal the artifact's tenant.</li>
+<li><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-deletion-key-retention">Key/artifact retention policy is adopted</a>.
+  R69 measures retained keys and artifact decryptability. Operator key destruction
+  and restore-after-window refusal remain UNMEASURED; request-tombstone retention
+  remains a separate policy question.</li>
+<li><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-identity-and-cloning">Restore identity and cloning policy is adopted</a>.
+  This probe exercises original-tenant restore. Cloning implementation and native
+  acceptance remain UNMEASURED.</li>
 <li>DECISION: artifact size and transaction bounds; one transaction, no numeric cap here.</li>
 <li>DECISION: who calls <code>requestDeletion</code> (owner request) versus <code>executeDeletion</code> (private
   operator plane); the module enforces no authorization.</li>

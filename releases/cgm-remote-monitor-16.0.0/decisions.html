@@ -2186,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>e95108d74</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>586f8c831</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3108,25 +3108,25 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td><strong>M2 is held to the roadmap's cell</strong>: tenant-local config and versioned writes, unknown-tenant refusal, A's token fails on B by signature, no environment/root/key leakage, separate owner/data/operator routes. The dashboard's four additions (human issuer/refresh, existing-grant clamping, tenant lifecycle, production trust for resolution) are M6 criteria and move there in the dashboard and status overlay</td>
 <td>maintainer, 2026-11-06 (open-decisions item 2, "roadmap cell")</td>
 <td><code>T30-WIRING</code>, <code>T30-TENANT-ADMIN</code>, <code>TEN-RESOLVE</code></td>
-<td>M2 promotes once versioned writes (<code>011802ba</code>) re-run on the final head and the two-listener route separation is inside a comprehensive campaign. Not yet promoted.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> accepts actual typed/versioned owner settings and comprehensive OWNER/DATA/operator separation; M2 promoted under this bar. Human issuer/refresh, wider catalogue/lifecycle and production trust retain M6 scope.</td>
 </tr>
 <tr>
 <td><strong>M4 promotes on executed headless clients plus source-pattern replay for the rest</strong>, with the "no all-client claim" line in the record; an Android emulator lab (xDrip+, AndroidAPS) is a batch C item, not an M4 prerequisite; iOS execution stays out of the automated lab</td>
 <td>maintainer, 2026-11-06 (open-decisions item 4)</td>
 <td><code>TEN-LAB</code>, <code>M4-CLIENT-LAB</code></td>
-<td>Headless cgmsim/oref0 measured 82/82 on <code>87133959</code> (R62) and on <code>4cd95d06</code> (campaign of 2026-11-06, default gate only). M4 still waits on M3 through the dependency edge.</td>
+<td><a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> accepts M3 and then M4 through actual pinned headless clients and source-pattern replay. No all-client claim; Android emulator C, iOS outside automated execution.</td>
 </tr>
 <tr>
 <td><strong>The optional subject-reader catalogue-clamping mode ("selected owner mode", joined dormant in R62, measured against actual clients in R63) is dropped.</strong> It breaks backward compatibility: a tenant's own API_SECRET, sent as the <code>api-secret</code> header by cgmsim and most legacy uploaders, has no subject row under the mode and is refused (503 observed). The maintainer wants backward-compatible solutions only: a tenant's api-secret gets 200 on its own tenant resource. Per-subject clamping, if it returns, comes through the M6 lifecycle work (lifecycle packet Q4) in a form that keeps existing credentials working</td>
 <td>maintainer, 2026-11-06 (open-decisions item 1: "I don't recall creating these modes; this mode would destroy backwards compatibility and should be dropped; we want backward compat solutions")</td>
 <td><code>MT-CONFIG-MIN</code>, <code>T30-WIRING</code>, <code>T30-TENANT-ADMIN</code></td>
-<td>Removal from the candidate is application source work for the integration coordinator: the <code>ownerPolicy</code> reader option (<code>lib/subject-admin/owner-policy.js</code> <code>createOwnerReadPolicy</code>, <code>lib/tenant-authorization/access-postgres.js:18</code>), its owner-preview config field, the owner-reader opt-in suite and the selected-owner-clients lab instrument. R62's unselected default behaviour (82/82 actual clients) is what ships. R63 stays as the record of why. Removed on lane <code>claude/drop-reader-clamping-20261106</code> head <code>98118fb2</code> (9 files, +51 / −589; unit 39 / 0; two edited Docker suites UNMEASURED at runtime); not yet joined to #8898.</td>
+<td>Removed and joined in accepted/published <code>74d7b3fc</code> on draft #8898. <a href="../../docs/30-design/remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> preserves own-tenant legacy API_SECRET compatibility and management-writer fences. R62/R63 remain historical source-attributed measurements; no replacement reader mode is introduced.</td>
 </tr>
 <tr>
 <td><strong>Batch C's backup/restore and upgrade/rollback get their own lane now</strong>, opened by the open-decisions session off <code>83582e87</code>, depending only on the migration runner and R62's populated restore lab; bounds wait for the benchmark window and the final-tree review for the frozen C candidate</td>
 <td>maintainer, 2026-11-06 (open-decisions item 5, "new lane now, this session")</td>
 <td><code>MT-RUNTIME-PLAN</code>, <code>MIG-RUNNER</code></td>
-<td>Lane <code>claude/tenant-backup-upgrade-20261106</code>; source-only until one focused run. Export/import and deletion stay with session -8c's <code>codex/tenant-export-delete-20261106</code>.</td>
+<td>Representative entries/clock proof on <code>f77c025f</code> passes its <a href="../../reports/tenancy/backup-upgrade-native-f77-2026-11-06.html">native boundary</a>. Original Claude worktree preserved; broader catalogue/durable backup/operations acceptance remains separate C work. Its application source is not joined to the A candidate.</td>
 </tr>
 <tr>
 <td><strong>Numeric bounds and performance budgets are deferred to batch C</strong>: no threshold is approved now; M1 may promote with "resource bounds: deferred, measured in C" stated; one controlled benchmark window (benchmark flag on, quiet machine, steady state, independent stored-count oracle) sets thresholds. The PostgreSQL sort-key cap stays at 5 and is recorded as an intentional PG-only difference</td>
@@ -3135,10 +3135,16 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td>R65's figures stay descriptive. The benchmark window has no lane yet.</td>
 </tr>
 <tr>
-<td><strong>Tenant deletion keeps the tenant's Transit keys and export artifact for a retention window, then an operator destroys the keys</strong> (lifecycle decision 1, option (a)): executing a deletion removes secret and audit rows only after the artifact holds every ciphertext and key reference; keys are never deleted at execute time, so a restore within the window recovers credentials in full; at the window's end key destruction cryptographically erases the artifact's secrets. Retention window: 30 days, the recommended default; the maintainer set no other value</td>
+<td><a id="tenant-deletion-key-retention"></a><strong>Tenant deletion keeps the tenant's Transit keys and export artifact for a retention window, then an operator destroys the keys</strong> (lifecycle decision 1, option (a)): executing a deletion removes secret and audit rows only after the artifact holds every ciphertext and key reference; keys are never deleted at execute time, so a restore within the window recovers credentials in full; at the window's end key destruction cryptographically erases the artifact's secrets. Retention window: 30 days, the recommended default; the maintainer set no other value</td>
 <td>maintainer, 2026-11-07, via session -8c ("a")</td>
 <td><code>MT-RUNTIME-PLAN</code>, Batch C</td>
 <td>mechanism measured in R69 on <code>fd827e35</code> (keys retained, artifact decrypts after re-import); the destroy step and the restore-after-window refusal are UNMEASURED and are the first controls when wired</td>
+</tr>
+<tr>
+<td><a id="restore-identity-and-cloning"></a><strong>Restore preserves the original tenant ID; cloning/import into another tenant is a separate operation with new destination secrets and credentials.</strong> Clinical/data import and synchronization do not migrate credential authority. Cross-tenant cryptographic remapping requires a separately reviewed contract.</td>
+<td>maintainer, 2026-11-06 (restore-versus-clone reply in the completion review)</td>
+<td><code>MT-RUNTIME-PLAN</code>, Batch C / M6</td>
+<td>Existing original-tenant import binding remains. R69 retains its historical executed source and results; representative backup/upgrade proof remains at its entries/clock scope. Cloning implementation and native acceptance are UNMEASURED. This adds no M1–M4 gate.</td>
 </tr>
 </tbody>
 </table>
