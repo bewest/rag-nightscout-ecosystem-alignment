@@ -2186,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>56951c808</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>656caac2a</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3120,13 +3120,25 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td><strong>The optional subject-reader catalogue-clamping mode ("selected owner mode", joined dormant in R62, measured against actual clients in R63) is dropped.</strong> It breaks backward compatibility: a tenant's own API_SECRET, sent as the <code>api-secret</code> header by cgmsim and most legacy uploaders, has no subject row under the mode and is refused (503 observed). The maintainer wants backward-compatible solutions only: a tenant's api-secret gets 200 on its own tenant resource. Per-subject clamping, if it returns, comes through the M6 lifecycle work (lifecycle packet Q4) in a form that keeps existing credentials working</td>
 <td>maintainer, 2026-11-06 (open-decisions item 1: "I don't recall creating these modes; this mode would destroy backwards compatibility and should be dropped; we want backward compat solutions")</td>
 <td><code>MT-CONFIG-MIN</code>, <code>T30-WIRING</code>, <code>T30-TENANT-ADMIN</code></td>
-<td>Removal from the candidate is application source work for the integration coordinator: the <code>ownerPolicy</code> reader option (<code>lib/subject-admin/owner-policy.js</code> <code>createOwnerReadPolicy</code>, <code>lib/tenant-authorization/access-postgres.js:18</code>), its owner-preview config field, the owner-reader opt-in suite and the selected-owner-clients lab instrument. R62's unselected default behaviour (82/82 actual clients) is what ships. R63 stays as the record of why. Not yet removed.</td>
+<td>Removal from the candidate is application source work for the integration coordinator: the <code>ownerPolicy</code> reader option (<code>lib/subject-admin/owner-policy.js</code> <code>createOwnerReadPolicy</code>, <code>lib/tenant-authorization/access-postgres.js:18</code>), its owner-preview config field, the owner-reader opt-in suite and the selected-owner-clients lab instrument. R62's unselected default behaviour (82/82 actual clients) is what ships. R63 stays as the record of why. Removed on lane <code>claude/drop-reader-clamping-20261106</code> head <code>98118fb2</code> (9 files, +51 / −589; unit 39 / 0; two edited Docker suites UNMEASURED at runtime); not yet joined to #8898.</td>
+</tr>
+<tr>
+<td><strong>Batch C's backup/restore and upgrade/rollback get their own lane now</strong>, opened by the open-decisions session off <code>83582e87</code>, depending only on the migration runner and R62's populated restore lab; bounds wait for the benchmark window and the final-tree review for the frozen C candidate</td>
+<td>maintainer, 2026-11-06 (open-decisions item 5, "new lane now, this session")</td>
+<td><code>MT-RUNTIME-PLAN</code>, <code>MIG-RUNNER</code></td>
+<td>Lane <code>claude/tenant-backup-upgrade-20261106</code>; source-only until one focused run. Export/import and deletion stay with session -8c's <code>codex/tenant-export-delete-20261106</code>.</td>
 </tr>
 <tr>
 <td><strong>Numeric bounds and performance budgets are deferred to batch C</strong>: no threshold is approved now; M1 may promote with "resource bounds: deferred, measured in C" stated; one controlled benchmark window (benchmark flag on, quiet machine, steady state, independent stored-count oracle) sets thresholds. The PostgreSQL sort-key cap stays at 5 and is recorded as an intentional PG-only difference</td>
 <td>maintainer, 2026-11-06 (open-decisions item 3)</td>
 <td><code>ST-PG</code>, <code>MT-RUNTIME-PLAN</code></td>
 <td>R65's figures stay descriptive. The benchmark window has no lane yet.</td>
+</tr>
+<tr>
+<td><strong>Tenant deletion keeps the tenant's Transit keys and export artifact for a retention window, then an operator destroys the keys</strong> (lifecycle decision 1, option (a)): executing a deletion removes secret and audit rows only after the artifact holds every ciphertext and key reference; keys are never deleted at execute time, so a restore within the window recovers credentials in full; at the window's end key destruction cryptographically erases the artifact's secrets. Retention window: 30 days, the recommended default; the maintainer set no other value</td>
+<td>maintainer, 2026-11-07, via session -8c ("a")</td>
+<td><code>MT-RUNTIME-PLAN</code>, Batch C</td>
+<td>mechanism measured in R69 on <code>fd827e35</code> (keys retained, artifact decrypts after re-import); the destroy step and the restore-after-window refusal are UNMEASURED and are the first controls when wired</td>
 </tr>
 </tbody>
 </table>

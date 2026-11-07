@@ -5416,7 +5416,7 @@ unimplemented (rows "Human management issuer/refresh", "Existing-grant clamping"
 lifecycle"; ranked item 7). Nothing here is a decision: a decision taken from this packet is one row
 in <code>releases/cgm-remote-monitor-16.0.0/decisions.md</code>, after which this packet points at it. No code
 was written; no gate was run. Companion: <a href="multitenant-open-decisions-2026-11-06.html">the five critical-path decisions</a>,
-whose items 1 and 2 overlap Q4 below and are cited rather than re-asked.</em></p>
+whose items 1 and 2 overlap Q4 below and are cited rather than re-asked; item 1 was decided on 2026-11-06 after this packet was drafted, and Q4 records that decision.</em></p>
 <p><strong>Anchors, read from <code>git</code> at the moment of writing.</strong></p>
 <table>
 <thead>
@@ -6015,15 +6015,18 @@ recommends mapping the root carrier to <strong>401 with no effect</strong>.</p>
 on the next request (401 for a subject whose grant was clamped to nothing, R63). Owners of an
 unselected tenant: nothing. Operators: (a) gives them a per-tenant switch and a list of what blocks
 it; (d) gives them a cohort-wide incident the first time a wildcard role exists. <strong>Multitenant only.</strong></p>
-<p><strong>Recommendation: (a), with the open-decisions note's item 1(a) adopted first</strong> (root carrier →
-401 with no effect) and with <code>ACCESS_AUTHORITY_INVALID</code> for a stored wildcard reclassified to a
-refusal the preflight can name, so that 503 is reserved for the authority store being unreachable.
-Direction: it is the contract's semantic and R62's mechanism. Architecture: no new writer.
-Compatibility: per-tenant selection is the only shape that honours R63's condition. Maintenance: a
-preflight query against tables the reader already joins. Reliability: deterministic refusals.
-Performance: already inside the measured snapshot. <strong>Unmeasured:</strong> the preflight, the reclassified
-status, and clamping under a ceiling change that lands between a proposal's locks and its commit
-(R53 names that ordering as not establishing cancellation guarantees).</p>
+<p><strong>Decided by the maintainer on 2026-11-06, overtaking this question's draft recommendation.</strong> Open-decisions
+item 1 is decided as a backward-compatibility rule: a tenant's api-secret keeps <strong>200</strong> on its own tenant
+resource, and the subject-reader clamping mode (R62's optional <code>createOwnerReadPolicy</code> and its two reader
+consumers) is <strong>dropped</strong>, because selecting it anywhere is a compatibility break ("we want backward compat
+solutions"); a lane <code>claude/drop-reader-clamping-20261106</code> removes it, while the management-side
+<code>createOwnerPolicy</code> and the proposed-grant catalogue (R53) stay. Against the options above that is <strong>(c) for
+stored grants</strong>: new proposals are bounded by catalogue ∩ ceiling ∩ delegation at the management
+transaction, and existing credentials keep working. The draft recommendation (a) is kept above as the
+analysis record only. If per-subject clamping ever returns, it comes through Q5's lifecycle work in a shape
+that keeps existing credentials working (reissuance the owner initiates, not a reader-side refusal), and
+never as a 503 to an api-secret client. <strong>Unmeasured:</strong> nothing remains to measure for Q4 as decided;
+the R62 and R63 captures stay historical evidence of the dropped mode.</p>
 <h3 id="q5-ownership-lifecycle">Q5. Ownership lifecycle<a class="headerlink" href="#q5-ownership-lifecycle" title="Permanent link">&para;</a></h3>
 <p><strong>Mechanism.</strong> The contract (owner-authority.md:38-48): "Owner is an explicit tenant relationship,
 separate from legacy data wildcards"; initial capabilities include "export and deletion requests";
@@ -6176,8 +6179,8 @@ and a restoration. Predicted results are written before the run.</p>
 </tr>
 <tr>
 <td>Q4 clamping</td>
-<td>preflight on a tenant with <code>admin: ['*']</code> refuses selection naming the role; after the role is rewritten to concrete permissions, selection succeeds; narrowing the ceiling makes the next upload 401 with no stored effect (R63's shape); a root-carrier upload on a selected tenant is 401 with no effect (open-decisions item 1(a))</td>
-<td>remove the intersection: the narrowed upload is 200 and stored (R62's control, re-run); remove the preflight: selection succeeds on the wildcard tenant and its next operation is 503</td>
+<td><strong>superseded by the 2026-11-06 decision</strong> (reader clamping dropped; api-secret keeps 200): the remaining positive is the R53 shape, a proposal outside catalogue ∩ ceiling ∩ delegation refuses with no effect, and an existing api-secret upload on its own tenant is 200 and stored</td>
+<td>remove one R53 fence: the over-ceiling proposal persists (R53's control, HTTP 200 versus 403 with persisted effects); the reader-side controls of R62/R63 are retired with the mode</td>
 </tr>
 <tr>
 <td>Q5 lifecycle</td>
@@ -6193,8 +6196,7 @@ recommends homing issuer and lifecycle under M6, which this order is consistent 
    listener's missing half: the issuer role and the session extension. They do not touch the data
    verifier and can run under the same full/browser/corpus campaign as A's freeze. Predicted: the R48
    7 new-format cases and R53's 22 stay green; the new controls above go red and restore.</li>
-<li><strong>Q4, in Batch A after the M4 client dispositions</strong>, because its first step is the open-decisions
-   item 1(a) status change and the preflight, both of which R63's lab re-runs with a predicted 401.</li>
+<li><strong>Q4 needs no lane</strong>: decided 2026-11-06 as (c) with the reader mode removed by <code>claude/drop-reader-clamping-20261106</code>; its entry bar collapses to R53's existing control.</li>
 <li><strong>Q1, its own lane gated on the compliance owner</strong>, source-only until a provider adapter can be
    run against the real listener; it joins at a batch boundary and never with real identities.</li>
 <li><strong>Q5, in Batch C beside the export/delete tooling lane</strong> (<code>codex/tenant-export-delete-20261106</code>),
