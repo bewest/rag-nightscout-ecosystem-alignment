@@ -224,6 +224,15 @@ says so in its health report; it does not invent one.
 
 ## 7. Evaluator and notification state
 
+The later [tenant-wide suppression decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-wide-alarm-suppression)
+settles first-preview ack/snooze effects: shared within the tenant for the alarm
+group/level, original absolute expiry retained through restart, and no extension
+from repeats during the active window. Preserve the existing default duration and
+level-2-to-level-1 effect. Per-user/device suppression is separate. Storage shape
+and historical retention are engineering/operational work; the unchanged client
+protocol supplies no durable request identity for indefinite post-expiry deduplication.
+Persistence, crash/retry and cross-tenant acceptance remain unmeasured.
+
 Where that state lives **today** at `35903069`, **read-derived**:
 
 | State | Home today | Scope today |
@@ -258,7 +267,8 @@ and the seams plan's identity rule:
    replay and `realtime` holds no storage write authority. A forward that fails
    yields no acknowledgement, so the client's existing no-ack retry applies. The roadmap keeps "owner
    ack/snooze and actual notification delivery" on their separate gates, so the
-   row's shape and retention are not decided here, only its key and its writer.
+   row's shape and historical retention remain implementation/operational work; the
+   later decision above settles suppression scope, original expiry and active-window repeats.
 4. The retained cycle's inputs are the tenant's rows at or below the
    consumer's checkpoint; the evaluation instant is recorded with the cycle and
    is not a database revision (R49).

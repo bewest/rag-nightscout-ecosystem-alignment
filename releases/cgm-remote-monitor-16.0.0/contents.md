@@ -1828,3 +1828,5 @@ Validation: queue-check, docs-links, Markdown heading/explicit-anchor targets an
 | Execution | Existing M5 runtime lane continues independently; owner/auth contracts and current decision list reflect the adopted direction. | No M5/M6 promotion, browser UI requirement or production/default enablement follows. No new application test result is asserted. |
 
 Validation: queue-check, docs-links, Markdown fragment targets using site-compatible HTML/heading parsing, and whitespace checks pass. Application suites and site rebuild were skipped because only prose changed; the OIDC direction is not implementation acceptance.
+
+Tenant-wide alarm suppression was also adopted during this review: [decision](decisions.md#tenant-wide-alarm-suppression). Preserve original expiry across restart and ignore active-window repeats. M5 can implement durable state under the existing D23/API boundary; native persisted/restart acceptance and historical retention remain separate, with no indefinite post-expiry deduplication claim.
