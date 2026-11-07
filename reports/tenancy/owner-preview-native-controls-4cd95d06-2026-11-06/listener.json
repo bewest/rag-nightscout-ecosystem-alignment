@@ -1,0 +1,61 @@
+{
+  "applicationHead": "4cd95d069675b650e1173779057a7927f4873702",
+  "gateCommit": "71be44effe0e18315e49f63174fc60bec4d32472",
+  "phase": "listener",
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-06T23:44:12.325Z",
+    "end": "2026-11-06T23:44:16.454Z",
+    "duration": 4129
+  },
+  "nativeFailures": [
+    {
+      "case": "explicit headless owner executable composition uses separate actual API and owner listeners in one CLI process with real PostgreSQL and Vault",
+      "error": {
+        "code": "ERR_ASSERTION",
+        "actual": "true",
+        "expected": "false",
+        "message": "owner DATA listener changed physical owner state before refusal assertion\n\ntrue !== false\n"
+      }
+    }
+  ],
+  "gateVerdict": "accepted expected semantic regression failure",
+  "observations": [
+    {
+      "kind": "listener",
+      "status": 200,
+      "auditDelta": 1,
+      "beforeSha256": "9a2ecb497879086da8455f7f4a58b38101aa9343d7650bff68428828ca6012e2",
+      "beforeAuditCount": 0,
+      "beforeTargetCount": 1,
+      "currentSha256": "c475f1af96c31c97718b05c53288db56eddde800f9b342403aea3a12eaba223a",
+      "currentAuditCount": 1,
+      "currentTargetCount": 1,
+      "newAuditRows": 1,
+      "newAuditActorMatchesConfigured": true,
+      "targetNameChanged": true,
+      "foreignStateUnchanged": true
+    }
+  ],
+  "ownedResourceAudit": {
+    "containersAbsent": 3,
+    "mountedVolumesAbsent": 4,
+    "actualCLIWorkersAbsent": 3,
+    "observedNodeIdentitiesAbsent": 5,
+    "observerErrors": [],
+    "volumesObservedAfter": 462,
+    "networkScope": "existing default bridge; no owned network created"
+  },
+  "rawSha256": {
+    "listener.log": "d58c51ce6cb4338b49924eedbb56eb6b993d2aad3fba6be33f742e533688678a",
+    "listener-artifacts/run.json": "5a6cdecf2df519e38f55826965867d41bf9de165adc54283ff9630531543c099",
+    "listener-artifacts/mocha.json": "3bf34ace01d855b7cd27f94726486a7acb8fc43b96c33351c857ae1d8a6d4e73",
+    "listener-artifacts/physical-proofs.json": "be02ec72852342355e45f74d473397f2586aef6cd5754ef30b8f75497b07a5bf",
+    "listener-artifacts/scratch-test.js": "09d4177f43cc9792ed0a2e21a7df11914abd7980c08c543df31d3cb92946e30f",
+    "listener-cleanup-audit.json": "fe0de9a646c95ae76d526839b93f17f04723b8ce0ae7407d974a34cfea5f671c"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "applicationHead": "4cd95d069675b650e1173779057a7927f4873702",
+  "gateCommit": "71be44effe0e18315e49f63174fc60bec4d32472",
+  "phase": "snapshot",
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-06T23:43:07.749Z",
+    "end": "2026-11-06T23:43:08.787Z",
+    "duration": 1038
+  },
+  "nativeFailures": [
+    {
+      "case": "explicit headless owner executable composition observes current credential/session/key/tenant revocation on the next operation across two independent workers",
+      "error": {
+        "code": "ERR_ASSERTION",
+        "actual": "true",
+        "expected": "false",
+        "message": "owner protected request changed physical subject/link/credential/audit state before status assertion\n\ntrue !== false\n"
+      }
+    }
+  ],
+  "gateVerdict": "accepted expected semantic regression failure",
+  "observations": [
+    {
+      "kind": "warmup",
+      "status": 200,
+      "index": 0,
+      "auditDelta": 1,
+      "beforeSha256": "b2624ac511dfa073d7413f9d9d92c81b700059a7a32fd839696db2fa8a62dd47",
+      "beforeAuditCount": 0,
+      "beforeTargetCount": 1,
+      "currentSha256": "44efe42dc2f00d318a70b0bb8f7fb9d6f1b7b05914c39a973fbed92b9605be8f",
+      "currentAuditCount": 1,
+      "currentTargetCount": 1,
+      "newAuditRows": 1,
+      "newAuditActorMatchesConfigured": true,
+      "targetNameChanged": true,
+      "foreignStateUnchanged": true
+    },
+    {
+      "kind": "warmup",
+      "status": 200,
+      "index": 1,
+      "auditDelta": 1,
+      "beforeSha256": "44efe42dc2f00d318a70b0bb8f7fb9d6f1b7b05914c39a973fbed92b9605be8f",
+      "beforeAuditCount": 1,
+      "beforeTargetCount": 1,
+      "currentSha256": "55590e57574aa259a01b5e6b6dddbd34c62768bc107e214c4c731d060209595d",
+      "currentAuditCount": 2,
+      "currentTargetCount": 1,
+      "newAuditRows": 1,
+      "newAuditActorMatchesConfigured": true,
+      "targetNameChanged": true,
+      "foreignStateUnchanged": true
+    },
+    {
+      "kind": "protected",
+      "phase": "revocation",
+      "status": 200,
+      "expectedStatus": 401,
+      "auditDelta": 1,
+      "revocation": {
+        "table": "credentials",
+        "column": "enabled",
+        "disabled": false,
+        "observed": [
+          false
+        ]
+      },
+      "beforeSha256": "55590e57574aa259a01b5e6b6dddbd34c62768bc107e214c4c731d060209595d",
+      "beforeAuditCount": 2,
+      "beforeTargetCount": 1,
+      "currentSha256": "58c3614c8b354dd87ce85f9f49e873b6cdc62b5d2f9ff7b9b9a5bb9a59a672ab",
+      "currentAuditCount": 3,
+      "currentTargetCount": 1,
+      "baselineAfterWarmupSha256": "55590e57574aa259a01b5e6b6dddbd34c62768bc107e214c4c731d060209595d",
+      "baselineAfterWarmupAuditCount": 2,
+      "baselineAfterWarmupTargetCount": 1,
+      "newAuditRows": 1,
+      "newAuditActorMatchesConfigured": true,
+      "targetNameChanged": true,
+      "foreignStateUnchanged": true
+    }
+  ],
+  "ownedResourceAudit": {
+    "containersAbsent": 1,
+    "mountedVolumesAbsent": 1,
+    "actualCLIWorkersAbsent": 2,
+    "observedNodeIdentitiesAbsent": 4,
+    "observerErrors": [],
+    "volumesObservedAfter": 462,
+    "networkScope": "existing default bridge; no owned network created"
+  },
+  "rawSha256": {
+    "snapshot.log": "cf9c371ba909687ebd0c1ad4f7f5abfde299d35339f8e34acc1cfddb8a22c6d5",
+    "snapshot-artifacts/run.json": "6735a965829beac818b258325e6a4ddcf916cbea48a0d62e13ecd4edc23d5ab7",
+    "snapshot-artifacts/mocha.json": "80cefa0b364ce58fd2b18d308efba6ec4ea3537334ebb5082437cc73d4d91afd",
+    "snapshot-artifacts/physical-proofs.json": "604af7f88fc48de61f4e3753bf028620dbf1aa0317a541c5d259aabac1741413",
+    "snapshot-artifacts/scratch-test.js": "09d4177f43cc9792ed0a2e21a7df11914abd7980c08c543df31d3cb92946e30f",
+    "snapshot-cleanup-audit.json": "dbf91cbc0f4c0260ed8c1ad419fa5410b714e7e2acf685a0a2d4105c1f760958"
+  }
+}

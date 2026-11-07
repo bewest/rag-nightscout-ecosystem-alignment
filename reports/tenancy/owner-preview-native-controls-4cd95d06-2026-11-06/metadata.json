@@ -1,0 +1,60 @@
+{
+  "scope": "bounded synthetic defensive archived regression controls and ordinary restoration; no deployed service/user data/external account",
+  "applicationHead": "4cd95d069675b650e1173779057a7927f4873702",
+  "initialGateCommit": "71be44effe0e18315e49f63174fc60bec4d32472",
+  "repairedGateCommit": "c67e6739eff87a27f2f35057f82ef11a85f50e3e",
+  "alignmentBase": "938c27fe195de23dd940670f40eeaa4637fd1af5",
+  "nativeInvocations": 4,
+  "controlNativeInvocations": 2,
+  "ordinaryNativeInvocations": 2,
+  "repairedGateRestoration": "9 passing/0 pending/0 failing; gate PASS",
+  "runtimeWindows": [
+    {
+      "claimed": "2026-11-06T23:42:29Z",
+      "released": "2026-11-06T23:47:25Z"
+    },
+    {
+      "claimed": "2026-11-06T23:55:14Z",
+      "released": "2026-11-06T23:56:46Z"
+    }
+  ],
+  "commandBase": [
+    "node",
+    "tools/queue/gates/multitenant-next-slices.js",
+    "--suite",
+    "owner-preview",
+    "--ref",
+    "4cd95d069675b650e1173779057a7927f4873702"
+  ],
+  "explicitControlArguments": {
+    "snapshot": [
+      "--control",
+      "snapshot"
+    ],
+    "listener": [
+      "--control",
+      "listener"
+    ],
+    "restored": [],
+    "repaired-restored": []
+  },
+  "environmentKeys": [
+    "PATH",
+    "HOME",
+    "NODE_ENV=test",
+    "TZ=UTC",
+    "NS_REST_GATE_REPO",
+    "NS_REST_GATE_DEPENDENCIES"
+  ],
+  "environmentScope": "cleared caller environment; private matching locked dependencies and newly provisioned fixture state; no caller database",
+  "lockSha256": "3062eef5c7e3953d19a877d2a691544ee1a60d4226accc3373425b4a6b562a6b",
+  "privateRawCapture": "owner-preview-native-controls-20261106; complete raw logs/proofs/identities retained unchanged, hashes in each phase",
+  "publicProjection": "sanitized aggregates only; no credential/session row objects, token/header/key values, connection URLs or private resource identities",
+  "limits": [
+    "Original gate failure preserved separately from its nine passing native tests and fresh repaired-gate restoration.",
+    "Only lifecycle instrumentation changed; product mutations and physical verdict function byte-identical, so two semantic controls were not repeated.",
+    "Executed source is exactly4cd; no later payload/product head is relabeled as executed.",
+    "SQL permission refusal is not network/transport outage proof.",
+    "No human session/provider/production JOSE, performance, milestone or ordering-rollout adoption claim."
+  ]
+}
