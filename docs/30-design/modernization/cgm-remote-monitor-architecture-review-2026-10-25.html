@@ -3537,6 +3537,8 @@
       
         
       
+        
+      
     
     
     
@@ -5003,7 +5005,7 @@ discussion; it proposes no new design.</em><em> It maps the register entries of 
 onto the designs that already exist, and asks the maintainers seven questions (§4). Defect facts and
 ids: <a href="../remedial/nightscout-backfix-register.html">backfix register</a> (ids below link to it; find the id there). Item state:
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>. Decisions: the
-<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a> (D1–D20) and the
+<a href="../tenancy/multitenancy-decisions.html">execution plan</a> (D1–D20) and the
 documents each row cites. Code refs are those the cited documents name; nothing was re-measured for
 this review.</em></p>
 <h2 id="1-purpose-and-scope">1. Purpose and scope<a class="headerlink" href="#1-purpose-and-scope" title="Permanent link">&para;</a></h2>
@@ -5140,7 +5142,7 @@ bears on.</p>
 <tbody>
 <tr>
 <td>P1</td>
-<td><a href="../tenancy/write-contract-spec-2026-10-07.html">Write contract</a> §2 (one step <code>write(intent)</code> in <code>collectionFor</code>), §3 (U1–U8), §5 (gates G1–G8); <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#41-the-write-contract-belongs-behind-the-seam">execution plan §4.1</a>; <a href="../platform/spec/sync-transport.html">sync-transport</a> T1–T4</td>
+<td><a href="../tenancy/write-contract-spec-2026-10-07.html">Write contract</a> §2 (one step <code>write(intent)</code> in <code>collectionFor</code>), §3 (U1–U8), §5 (gates G1–G8); <a href="../tenancy/multitenancy-decisions.html#2-storage-resolution-and-profiles">execution plan §4.1</a>; <a href="../platform/spec/sync-transport.html">sync-transport</a> T1–T4</td>
 <td>§6.1 (2026-10-12): merge on match (Q1, with RFC 7386 null removal), identical re-send keeps each path's behaviour (Q2 b1), entries <code>date</code>+<code>type</code> and profile <code>created_at</code> keys (Q3), the socket's ±2 s match kept as <code>near</code> (Q4), activity like the rest (Q5), two releases: step with the matrix pinned (patch), then the changes (minor) (Q6)</td>
 <td>the four 15.0.9 rule modules (<code>object-id-forms</code>, <code>srv-dates</code>, <code>soft-deleted</code>, <code>treatment-fallback-key</code>), called by 18 files; <code>tools/qc/write-contract-matrix.js</code>; the step itself is not built</td>
 <td><code>WRITE-CONTRACT</code> is blocked on <code>SEAM-REFRESH</code>, so each P1 defect is fixed per path. On <code>dev</code> <code>43289dde</code> stored state differed between paths in 33 of 66 groups, and a cross-path re-send was stored twice in 38 of 66 path pairs (write contract §0)</td>

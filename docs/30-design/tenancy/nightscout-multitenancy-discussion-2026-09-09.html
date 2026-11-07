@@ -16,7 +16,7 @@
         <link rel="prev" href="nightscout-deployable-components-2026-09-14.html">
       
       
-        <link rel="next" href="nightscout-multitenancy-execution-plan-2026-09-14.html">
+        <link rel="next" href="nightscout-seam-ordering-translation.html">
       
       
         
@@ -2736,6 +2736,34 @@
   
   
     <li class="md-nav__item">
+      <a href="multitenancy-decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy decisions and architectural contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="multitenant-delivery-dashboard.html" class="md-nav__link">
         
   
@@ -2764,14 +2792,14 @@
   
   
     <li class="md-nav__item">
-      <a href="multitenant-delivery-roadmap-2026-11-02.html" class="md-nav__link">
+      <a href="multitenant-delivery-roadmap.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Multitenant delivery roadmap: current-dev integration
+    Multitenant delivery roadmap
   
 
     
@@ -3960,34 +3988,6 @@
   
   
     <li class="md-nav__item">
-      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenancy execution plan: decisions, tasks, and the context each one needs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="nightscout-seam-ordering-translation.html" class="md-nav__link">
         
   
@@ -4770,6 +4770,8 @@
       
         
           
+        
+      
         
       
         
@@ -7048,7 +7050,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-09. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-09, revised through 2026-09-14. Status: superseded for decisions; retained as the evidence base.</strong> Current decisions: <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. Where a recommendation below contradicts a decision, a bracketed note says so in place.</p>
+<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-09, revised through 2026-09-14. Status: superseded for decisions; retained as the evidence base.</strong> Current decisions: <a href="multitenancy-decisions.html#1-decisions">execution plan §1</a>. Where a recommendation below contradicts a decision, a bracketed note says so in place.</p>
 <p>Date: 2026-09-09. Companion to
 <a href="../../60-research/modernization/nightscout-modernization-next-steps-2026-09-09.html">Nightscout modernization review and proposed next steps</a>;
 deliberately <em>tangential</em> to that work and not dependent on its outcome.</p>
@@ -7097,7 +7099,7 @@ half. The isolation and runtime clauses stand. Current recommendation:
 <p><strong>Recommendation: extend cgm-remote-monitor to hold many tenants in one process; adopt
 Postgres RLS (or an equivalent storage-enforced predicate) as the isolation primitive; stay
 on Node.</strong> [Decided since: D2 shared storage with a tenant discriminator and D3 PostgreSQL + RLS
-for the multitenant service; D4 keeps MongoDB permanently for single-tenant — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">plan §1</a>.] Confident on the architecture axis; "10 000 tenants" is a target to design
+for the multitenant service; D4 keeps MongoDB permanently for single-tenant — <a href="multitenancy-decisions.html#1-decisions">plan §1</a>.] Confident on the architecture axis; "10 000 tenants" is a target to design
 towards and then verify, not a number demonstrated (§10.1).</p>
 <p><strong>Five findings that should change the intuition</strong> — all reproduced on a re-verification
 pass (§1 explains the confidence tiers):</p>
@@ -9091,7 +9093,7 @@ collapse and the <code>mongodump</code>-per-tenant export are unaffected — but
 than a refinement.</p>
 <p>[Not adopted. D2 rejected database-per-tenant (stage 2 / A′) on the EXP-MT-040b measurement
 above, and D3 made stage 3 — PostgreSQL + RLS — the multitenant target rather than an
-optional end state. See <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">plan §1</a>.]</p>
+optional end state. See <a href="multitenancy-decisions.html#1-decisions">plan §1</a>.]</p>
 </blockquote>
 <p><strong>Stage 2 is the recommendation for what to build next</strong>, and stage 3 is the recommendation
 for where to end up. Splitting them is the point: stage 2 delivers the density result that
@@ -10418,7 +10420,7 @@ feature currently in production use gets silently dropped by that migration.</p>
 permanently; Hydra is deferred; one cohort-wide Ory Kratos pool for human identity is direction
 of travel, <strong>held</strong> pending <code>T30-ORY-PROOF</code>; NRG's unfinished <code>nsjwt</code> exchange — minting a
 per-tenant Nightscout token after authentication (D14) — is the bridge under any outcome.
-See <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">plan §2.9</a>.]</p>
+See <a href="multitenancy-decisions.html">plan §2.9</a>.]</p>
 <hr />
 <h2 id="10-at-scale-the-recommendation-and-what-is-still-unmeasured">10. At scale: the recommendation and what is still unmeasured<a class="headerlink" href="#10-at-scale-the-recommendation-and-what-is-still-unmeasured" title="Permanent link">&para;</a></h2>
 <h3 id="101-is-there-enough-evidence-for-a-recommendation">10.1 Is there enough evidence for a recommendation?<a class="headerlink" href="#101-is-there-enough-evidence-for-a-recommendation" title="Permanent link">&para;</a></h3>
@@ -10515,7 +10517,7 @@ design forgoes a measured, working, lower-maintenance option (§5.5) for the one
 does not need to be stateful at all.</strong></p>
 <h3 id="103-can-it-support-both-mongodb-and-postgres">10.3 Can it support both MongoDB and Postgres?<a class="headerlink" href="#103-can-it-support-both-mongodb-and-postgres" title="Permanent link">&para;</a></h3>
 <p>[Decided since as D4: MongoDB is permanent for the single-tenant target, so the storage seam carries
-two mature backends permanently and both stay in CI — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">plan §1, §4</a>.
+two mature backends permanently and both stay in CI — <a href="multitenancy-decisions.html">plan §1, §4</a>.
 The heading's "permanently no" applies only to MongoDB <em>inside the multitenant service</em>.]</p>
 <p><strong>Temporarily yes; permanently no — and this document is not recommending the latter.</strong></p>
 <p>The §6.2 seam plus §6.3's per-tenant backfill → bounded dual-write → verify → cutover is the
@@ -10722,14 +10724,14 @@ gates the most expensive work.</p>
    property, which is an honest resting place for non-hostile tenants and <strong>cannot truthfully
    promise "the database refuses"</strong>. The remaining question is therefore not <em>whether</em> but
    <em>when</em> that promise is made, and to whom. [Settled since: D2 rejected stage 2; D3 makes the
-   storage-enforced promise the multitenant design — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">plan §1</a>.]</li>
+   storage-enforced promise the multitenant design — <a href="multitenancy-decisions.html#1-decisions">plan §1</a>.]</li>
 <li>~~<strong>Host-based routing</strong> or path prefix?~~ <strong>ANSWERED: leaning host-based</strong>, to avoid
    forcing configuration changes on edge devices and mobile uploaders — which is the same
    reasoning that makes it Nocturne-compatible. The cost to accept explicitly is wildcard
    TLS and per-tenant hostname provisioning. This should be treated as decided for design
    purposes, because every uploader configured in the field is a change that cannot be
    recalled later. [Settled since as D10: the slug is a host label resolved by a configured rule
-   with one capture group — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">plan §2.5</a>.]</li>
+   with one capture group — <a href="multitenancy-decisions.html">plan §2.5</a>.]</li>
 <li>Do we accept a <strong>hard dependency on Nocturne</strong>, or align on shared contracts and shared
    algorithm cores (§4.1)?</li>
 <li>Who owns per-tenant <strong>safety</strong>? Alarm delivery for idle tenants is the requirement most

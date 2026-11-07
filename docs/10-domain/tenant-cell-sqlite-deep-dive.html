@@ -6911,6 +6911,8 @@
       
         
       
+        
+      
     
     
     
@@ -8507,10 +8509,10 @@ it does not establish a supported third backend or production cost advantage.</p
 </tr>
 </tbody>
 </table>
-<p>The existing D1-D4 <a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">decision record</a>
+<p>The existing D1-D4 <a href="../30-design/tenancy/multitenancy-decisions.html#1-decisions">decision record</a>
 retains single-tenant MongoDB and shared hosted PG/RLS. The later delivery
 roadmap explicitly excludes celld from that integration stream (alignment
-<code>ae4ad1827</code>, <code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md:1-12</code>).
+<code>ae4ad1827</code>, <code>docs/30-design/tenancy/multitenant-delivery-roadmap.md:1-12</code>).
 The user's request here authorizes investigation, not a silent amendment of
 those decisions or an extra v16 dependency.</p>
 <p>Read this report in four passes: <strong>what was measured</strong>, <strong>what the alternatives
@@ -8573,7 +8575,7 @@ plane are still needed; they need not store copies of tenant clinical records.</
 </tr>
 <tr>
 <td>Measured output</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/tools/lab/tenant-cell-sqlite/results/local.json">local.json</a>, timestamp <code>2026-11-02T20:33:09.545Z</code></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/tools/lab/tenant-cell-sqlite/results/local.json">local.json</a>, timestamp <code>2026-11-02T20:33:09.545Z</code></td>
 </tr>
 <tr>
 <td>Runtime</td>
@@ -8605,12 +8607,12 @@ provider credentials were used.</p>
 <tbody>
 <tr>
 <td><strong>CELL-LOCAL</strong>, November 2</td>
-<td>This celld 0.6.3 lab; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/tools/lab/tenant-cell-sqlite/results/local.json">raw JSON</a>; source/runtime hashes pinned</td>
+<td>This celld 0.6.3 lab; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/tools/lab/tenant-cell-sqlite/results/local.json">raw JSON</a>; source/runtime hashes pinned</td>
 <td>Bounded synthetic cell storage semantics and same-disk restarts. Not NS compatibility or fleet durability.</td>
 </tr>
 <tr>
 <td><strong>MONGO-SHAPES</strong>, September 14</td>
-<td>MongoDB 7.0.43 / driver 5.9.2, transcribed dataloader queries; <a href="../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.html">report</a>, raw <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/tools/mt-bench/results/exp-mt-040b.json">per-database</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/tools/mt-bench/results/exp-mt-011b.json">shared</a> results</td>
+<td>MongoDB 7.0.43 / driver 5.9.2, transcribed dataloader queries; <a href="../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.html">report</a>, raw <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/tools/mt-bench/results/exp-mt-040b.json">per-database</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/tools/mt-bench/results/exp-mt-011b.json">shared</a> results</td>
 <td>Resource effects of two MongoDB layouts under that workload. The report pins no NS source commit; not a current full-server benchmark.</td>
 </tr>
 <tr>
@@ -8636,7 +8638,7 @@ provider credentials were used.</p>
 </tbody>
 </table>
 <p>PG-FOUNDATION provenance: alignment <code>ae4ad1827</code>,
-<code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md:150-178</code>;
+<code>docs/30-design/tenancy/multitenant-delivery-roadmap.md:150-178</code>;
 NS <code>ce14d637</code>,
 <code>externals/cgm-remote-monitor-official/lib/storage/postgres-connection.js:9-29,48-89</code>
 and <code>externals/cgm-remote-monitor-official/tests/postgres-connection.test.js:97-205</code>.

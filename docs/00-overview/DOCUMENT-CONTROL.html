@@ -2644,7 +2644,7 @@
 
 
 <h1 id="document-control--proposal">Document control — proposal<a class="headerlink" href="#document-control--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>a7af645d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>What this is: a proposal (contributor- and maintainer-facing). Read after the <a href="DEFINITION-OF-DONE.html">definition of
 done</a>; leads back to the <a href="index.html">overview</a>. </em><em>DRAFT PROPOSAL, requiring review by the maintainer and by
 a quality-management professional before it is adopted or relied on.</em><em> Written 2026-09-25 against
@@ -2804,7 +2804,9 @@ follows the procedure piloted on 2026-09-25:</p>
    already out of date and was dropped.</li>
 <li><strong>Move design content that has no other home</strong> to the document that owns that topic (for
    example, tenancy designs to the execution plan) instead of deleting it.</li>
-<li><strong>Add a history row</strong> for each superseded version, linking to it at a pushed commit.</li>
+<li><strong>Add a retention entry</strong> for each retired document or thematic journal archive, naming its
+   period, scope and current successor. Git retains intermediate revisions; a per-commit listing
+   is not required for the reading path.</li>
 <li><strong>Rewrite every inbound link</strong>, including queue evidence paths, generated views, reviewer
    packets and copies of posted PR bodies.</li>
 <li><strong>Remove the superseded files</strong> from the working tree.</li>
@@ -2813,10 +2815,14 @@ follows the procedure piloted on 2026-09-25:</p>
 </ol>
 <h3 id="36-obsolete-documents">3.6 Obsolete documents<a class="headerlink" href="#36-obsolete-documents" title="Permanent link">&para;</a></h3>
 <ul>
-<li>A superseded document is <strong>removed from the working tree</strong>, not kept beside the current one with a
-  "superseded" banner.</li>
-<li>It stays <strong>retrievable</strong>: through the history row of its successor, by <code>git show &lt;commit&gt;:&lt;path&gt;</code>,
-  or at a GitHub URL pinned to a pushed commit.</li>
+<li>A superseded document is <strong>removed from the active reading path</strong>, not kept beside the current
+  one with a "superseded" banner. Consolidate useful decisions, contracts and findings by topic.</li>
+<li>Execution journals may be retained under a thematic <code>docs/archive/</code> index, with their captured
+  scope, successor and evidence boundaries stated. Preserve the original narrative, failures and
+  measurements; relocation may rewrite links without changing the claims. The archive is not an
+  alternative current plan. This is the maintainer's tenancy consolidation direction of 2026-11-06.</li>
+<li>Retired material stays <strong>retrievable</strong> through that index, a successor's retention entry,
+  <code>git show &lt;commit&gt;:&lt;path&gt;</code>, or a GitHub URL pinned to a pushed commit.</li>
 <li><strong>Snapshots that quote a removed file</strong> (a dated research note citing a line of an old readiness
   document) keep the citation, repointed to the pinned URL, so the quotation stays checkable.</li>
 <li><strong>Proposed:</strong> a pushed annotated tag at each consolidation (<code>archive/&lt;date&gt;</code>), so retrieval does

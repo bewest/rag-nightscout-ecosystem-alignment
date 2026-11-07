@@ -2926,6 +2926,34 @@
   
   
     <li class="md-nav__item">
+      <a href="multitenancy-decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy decisions and architectural contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="multitenant-delivery-dashboard.html" class="md-nav__link">
         
   
@@ -2954,14 +2982,14 @@
   
   
     <li class="md-nav__item">
-      <a href="multitenant-delivery-roadmap-2026-11-02.html" class="md-nav__link">
+      <a href="multitenant-delivery-roadmap.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Multitenant delivery roadmap: current-dev integration
+    Multitenant delivery roadmap
   
 
     
@@ -3158,34 +3186,6 @@
     
   
     Nightscout multitenancy: evidence and options
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenancy execution plan: decisions, tasks, and the context each one needs
   
 
     
@@ -3988,6 +3988,8 @@
       
         
           
+        
+      
         
       
         
@@ -5529,13 +5531,13 @@ the independent evaluator's retained-cycle policy (R50, R55, seams plan).</p>
 <li>The event as built at <code>35903069</code> is <code>storage-intent-committed</code>
   (<code>lib/storage/write-intent.js:4635</code>), documented at <code>:4622-4634</code> as
   "INTERNAL: nothing in lib/ listens". <strong>Read-derived.</strong></li>
-<li>D6 (<a href="nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a> §1,
+<li>D6 (<a href="multitenancy-decisions.html">execution plan</a> §1,
   row D6): change feed = replication slot (spine) + <code>NOTIFY</code> (latency) + bounded
   aggregate poll (backstop), <code>NOTIFY</code> emitted by the slot reader, never by a
   trigger. T4.1 (same plan, Phase 4) <strong>reproduced</strong> 200/200 rows delivered after
   a stopped reader returned, 0 on re-consume, and a 0.000000% notification-queue
   gauge with reader-emitted <code>NOTIFY</code> against 0.019073% from a trigger.</li>
-<li>The <a href="multitenant-delivery-roadmap-2026-11-02.html">roadmap</a> §4 names this
+<li>The <a href="multitenant-delivery-roadmap.html">roadmap</a> §4 names this
   reconciliation as a design task, and its MT-RUNTIME-PLAN packet asks for
   durable checkpoint ownership, commit coupling, ordering, duplicates, hard and
   soft deletes, configuration invalidation and restart boundaries, with
@@ -6109,11 +6111,11 @@ choices remain revisitable when experiments refute their assumptions.</p>
 <ul>
 <li><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">decisions.md</a>, D-EVENT rows (2026-10-31) and Q9 release-2 row</li>
 <li><a href="../platform/guides/write-intent.html">write-intent guide</a> "What the step does not do"; <a href="../platform/wc-step-design-note-2026-10-27.html">wc-step design note</a> Q-B, Q-C, Q-F and the D-EVENT bench reference</li>
-<li><a href="nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a> D4, D6, D15, D22, §7b and Phase 4 T4.1; <a href="nightscout-storage-seam-interface-2026-09-14.html">storage seam interface</a> §9 and §11</li>
+<li><a href="multitenancy-decisions.html">execution plan</a> D4, D6, D15, D22, §7b and Phase 4 T4.1; <a href="nightscout-storage-seam-interface-2026-09-14.html">storage seam interface</a> §9 and §11</li>
 <li><a href="postgres-tenant-clock-proof.html">clock proof plan</a>; <a href="../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.html">lower-port proof</a>; <a href="../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.html">HTTP fixed recovery</a>; <a href="../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.html">backend-abort diagnostic</a></li>
 <li><a href="../remedial/rc-16.0.0-integration-record.html">integration record</a> R48, R49, R50, R51, R55</li>
 <li><a href="architecture-seams-execution-plan-2026-11-05.html">seams plan</a> "Shared frame join and multitenant recovery", "Shared-frame inventory", "Reproduced frame acquisition and concurrent reads"</li>
-<li><a href="multitenant-delivery-roadmap-2026-11-02.html">roadmap</a> §4 and the MT-RUNTIME-PLAN packet; <a href="multitenant-integration-batching-plan-2026-11-06.html">batching plan</a> B2 and B7</li>
+<li><a href="multitenant-delivery-roadmap.html">roadmap</a> §4 and the MT-RUNTIME-PLAN packet; <a href="multitenant-integration-batching-plan-2026-11-06.html">batching plan</a> B2 and B7</li>
 <li>CRM <code>35903069</code>: <code>lib/storage/write-intent.js</code>, <code>lib/storage/postgres-intent-common.js</code>, <code>lib/storage/postgres-connection.js</code>, <code>lib/storage/postgres-entries-intent.js:56</code>, <code>lib/storage/postgres-collection-intent.js:114</code>, <code>lib/storage/PORT-CONTRACT.md</code>, <code>lib/notifications.js</code>, <code>lib/server/bootevent.js</code>, <code>lib/server/websocket.js</code>, <code>lib/server/serve/roles.js</code></li>
 </ul>
 

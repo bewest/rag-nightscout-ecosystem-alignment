@@ -4769,6 +4769,8 @@
       
         
       
+        
+      
     
     
     
@@ -6187,12 +6189,12 @@
 
 
 <h1 id="l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost">L4 Sync transport: how writes are matched, ordered and delivered over REST and the socket, and at what cost<a class="headerlink" href="#l4-sync-transport-how-writes-are-matched-ordered-and-delivered-over-rest-and-the-socket-and-at-what-cost" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>4fcb76f23</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>Contributor-facing. Living specification, current at <code>main</code> <code>df621fa7</code> (2026-10-18). Layer L4 of
 the <a href="../index.html">platform index</a>; terms are in the <a href="glossary.html">glossary</a>; how a re-send is
 matched is in the <a href="identity.html">identity specification</a> §3. Decisions: the
 <a href="../../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract's §6.1</a>
-(2026-10-12) and <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">D6</a>
+(2026-10-12) and <a href="../../tenancy/multitenancy-decisions.html#1-decisions">D6</a>
 (the change feed under multi). Queue: <code>SPEC-SYNC-TRANSPORT</code>.</em></p>
 <p><em>Specification 7 of 8 in the <a href="../index.html#reading-order">reading order</a>; after the layers whose records it moves, before authority. Expect the decided write path (T1–T4), each client's declared sync endpoints, the proposed read, cursor and socket rules (T5–T16), and the conformance cases.</em></p>
 <p>How writes are applied, ordered and delivered, over REST and the socket, and what a client pays to

@@ -4747,6 +4747,8 @@
       
         
       
+        
+      
     
     
     
@@ -6143,7 +6145,7 @@
 
 
 <h1 id="platform-glossary-the-terms-the-eight-specifications-share-and-where-each-is-defined">Platform glossary: the terms the eight specifications share, and where each is defined<a class="headerlink" href="#platform-glossary-the-terms-the-eight-specifications-share-and-where-each-is-defined" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>9ea0af8cd</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>Contributor-facing. Living, current at <code>main</code> <code>5a9a49cc</code> (2026-10-18). Each term links to where
 it is specified; the definition here is a summary, and the linked section is the authority. Therapy
 terms (profile, override, temporary target) are in the <a href="../../../10-domain/glossary.html">domain glossary</a>.
@@ -6211,7 +6213,7 @@ A <em>carrier</em> is the composite shape an element is written in when it is no
 <code>wire</code> declaration (collection, <code>eventType</code>, duration unit, indefinite sentinel, how "ended" is
 encoded).</p>
 <p><strong>Decomposition.</strong> Turning a composite document into observation primitives on write, keeping the
-composite as well. <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#26-d11--devicestatus-is-a-decomposition-problem-not-a-column-selection-problem">D11</a>.</p>
+composite as well. <a href="../../tenancy/multitenancy-decisions.html#2-storage-resolution-and-profiles">D11</a>.</p>
 <p><strong>Evidence grade.</strong> <code>measured</code> (a wire path in the corpus populates it), <code>declared</code> (a typed model
 has it and the corpus does not show it), <code>proposed</code> (asked for). In registrations, evidence is
 <code>read</code> (from source) or <code>measured</code>.</p>
@@ -6227,7 +6229,7 @@ or <code>aggregate</code>, each with its own cadence and retention.</p>
 <code>(vendor, product)</code> per tenant. The product resource holds the binding, the state (<code>active</code>,
 <code>retired</code>, <code>blocked</code>), the etag and the per-element results. <a href="registration.html#5-the-product-resource">REG §5</a>.</p>
 <p><strong>Tier.</strong> <em>Well-known</em>: registrations the hub ships for controllers that declare nothing, so
-legacy writers need no change. <em>Controller-owned</em>: registrations a controller submits. <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18</a>.</p>
+legacy writers need no change. <em>Controller-owned</em>: registrations a controller submits. <a href="../../tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">D18</a>.</p>
 <p><strong>Capability document.</strong> <code>GET /.well-known/nightscout/sync</code>: unauthenticated and cacheable. It says
 which grammar majors, members, type keywords, horizons, limits, roles and shared slots the hub
 supports. It never lists a tenant's registrations.</p>
@@ -6238,7 +6240,7 @@ extension namespace, a typed settings field or a typed replay input. The result 
 <p><strong>Fallback.</strong> What a controller writes when an element is not accepted: the element's carrier.
 Decided per element, from the response to this registration only.</p>
 <p><strong>Definition.</strong> An immutable, content-addressed statement of what a controller's data means. Many
-coexist under one product; ten simulators on one build share one. <a href="../../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">D19</a>.</p>
+coexist under one product; ten simulators on one build share one. <a href="../../tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">D19</a>.</p>
 <p><strong>Meaning members, <code>version-conflict</code>.</strong> The members of a kind, extension or field that define
 what it means (<a href="registration.html#7-definitions">REG §7</a>'s table). Within one product, one element at one version has one meaning. A
 different meaning at the same version is rejected <code>version-conflict</code>; a new meaning needs a new

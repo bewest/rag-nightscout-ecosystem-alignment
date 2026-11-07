@@ -4481,6 +4481,8 @@
       
         
       
+        
+      
     
     
     
@@ -5938,7 +5940,7 @@
 
 
 <h1 id="controller-descriptions-nightscout-describes-the-controllers-it-already-recognises--proposal">Controller descriptions: Nightscout describes the controllers it already recognises — proposal<a class="headerlink" href="#controller-descriptions-nightscout-describes-the-controllers-it-already-recognises--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-26 at <code>789446fd4</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>What this is: a proposal (contributor-facing). Read after the <a href="nightscout-hub-sync-architecture-2026-09-11.html">hub-and-spoke sync
 sketch</a>; leads to the <a href="PROPOSAL-replay-fidelity-changes-2026-09-11.html">replay-fidelity
 changes</a> and the <a href="spec/registration.html">registration
@@ -5947,7 +5949,7 @@ controller-description proposal.</strong> Status: proposed to the named projects
 projects is <code>PROPOSAL-REG-CONTROLLERS</code>. <strong>Corrected in place 2026-10-18:</strong> §4 says what the proposal
 is and which ideas it takes from Kubernetes, mapped to D18–D20 as specified.
 Its §5 <code>decomposesTo</code> mechanism is the direction adopted for <code>devicestatus</code> storage by
-<strong>D11</strong> — <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.
+<strong>D11</strong> — <a href="../tenancy/multitenancy-decisions.html#1-decisions">execution plan §1</a>.
 Measurements are over the 11-site corpus (snapshots 2026-04-01 and 2026-04-26). §2.2 was added
 2026-09-27, checked against Nocturne <code>42275c81</code>. <strong>One page of proposal, then a worked example, then
 the evidence.</strong></p>
@@ -6281,7 +6283,7 @@ exist. A controller writes with a token as it does today and calls nothing first
 no description, and a reader that cannot fetch one, behave as they do today. The closest everyday
 analogy is a browser's list of known user agents served at a <code>.well-known</code> path: a description of
 something that already exists, which the thing described may correct.</p>
-<p><strong>The controller-owned tier (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">D18</a>).</strong>
+<p><strong>The controller-owned tier (<a href="../tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">D18</a>).</strong>
 A controller that wants typed support for its own features submits a registration, and the hub
 derives typed API from it. Several ideas in that tier come from what Kubernetes does well for
 declared, typed resources:</p>
@@ -6345,7 +6347,7 @@ declared, typed resources:</p>
 dosing state. It records what controllers report, routes a command to the instance that holds the
 role (<a href="spec/commands.html">commands</a>, proposed), and refuses what its checks refuse; the controller decides, enacts and validates (D18).
 Version-scoped quirks record how stored documents from a given controller version deviate, and the
-mapping the hub applies to each (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>,
+mapping the hub applies to each (<a href="../tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">D20</a>,
 <a href="spec/registration.html#16-version-scoped-quirks">registration §16</a>).</p>
 <h2 id="5-worked-example">5. Worked example<a class="headerlink" href="#5-worked-example" title="Permanent link">&para;</a></h2>
 <p>The whole of phase 1 for Loop, which involves no change to Loop.</p>

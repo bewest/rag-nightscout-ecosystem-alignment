@@ -1301,11 +1301,15 @@
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenancy-decisions.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenant-delivery-dashboard.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html</loc>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenant-delivery-roadmap.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
@@ -1334,10 +1338,6 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.html</loc>
-         <lastmod>2026-11-07</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>
@@ -3962,6 +3962,18 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/progress-archive-2026-03-18-to-31.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/index.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html</loc>
+         <lastmod>2026-11-07</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html</loc>
          <lastmod>2026-11-07</lastmod>
     </url>
     <url>

@@ -6838,6 +6838,8 @@
       
         
       
+        
+      
     
     
     
@@ -8317,7 +8319,7 @@
 
 
 <h1 id="record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys">Record identity in cgm-remote-monitor: <code>_id</code>, <code>identifier</code> and time keys<a class="headerlink" href="#record-identity-in-cgm-remote-monitor-_id-identifier-and-time-keys" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-29 at <code>c47dbe6a9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>Contributor-facing. Living reference, </em><em>as of 2026-10-18</em><em>. Pinned to cgm-remote-monitor
 </em><em>15.0.8</em><em> (<code>92d08342</code>, the shipping release) and </em><em>dev</em><em> (<code>fade2299</code>, the 15.0.9 candidate).
 Queue item <code>DOCS-RECORD-IDENTITY</code>. It describes what the code does today; it proposes nothing.</em></p>
@@ -8670,7 +8672,7 @@ and <code>PATCH</code> refuse a client-supplied body <code>_id</code> with 400 [
 <a href="../30-design/platform/spec/identity.html#1-rules">identity I2</a> states that rule.</p>
 <h3 id="27-what-a-re-send-does-by-collection-and-path-added-2026-10-29">2.7 What a re-send does, by collection and path (added 2026-10-29)<a class="headerlink" href="#27-what-a-re-send-does-by-collection-and-path-added-2026-10-29" title="Permanent link">&para;</a></h3>
 <p>This section has its own pin: the write-contract matrix on <code>dev</code> <code>db3b9e4e</code>
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json"><code>dev-db3b9e4e-v2.json</code></a>,
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/tools/qc/results/write-contract-matrix/dev-db3b9e4e-v2.json"><code>dev-db3b9e4e-v2.json</code></a>,
 measured 2026-10-27, form <code>resend-identity</code>). The record re-sent is identical to the first and carries no
 <code>identifier</code>, so it is matched by each collection's own key. <strong>[M]</strong></p>
 <table>
@@ -8774,10 +8776,10 @@ reached <code>dev</code> in #8456) [R].</p>
   finds it [M]. <code>$in</code> lists are not rewritten [R]. Devicestatus lookups do not pass the flag [R].</li>
 <li><strong>Version-scoped quirks it serves</strong> (D20 rule 7: today's handling becomes a registry entry
   scoped to the versions that send it, its behaviour unchanged).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/specs/quirks/treatments.yaml">QUIRK-TREATMENTS-006</a>: Loop sends a Temporary Override's
   <code>syncIdentifier</code> UUID as <code>_id</code> (read at LoopWorkspace <code>f8412858</code>, Loop 3.14.8; measured in the
   corpus: every stored document it fires on is an override with an upper-case UUID).
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/specs/quirks/entries.yaml">QUIRK-ENTRIES-004</a>: upper-case UUIDs and 24-character
   non-hex strings stored as entries <code>_id</code> on two corpus sites, attributed to older Trio versions
   by a backlog, unmeasured. Trio 1.0.1 (<code>e41c9db3</code>) sends <code>_id</code> on carbs and temporary targets
   (<code>CarbsEntry.swift:29</code>, <code>TempTarget.swift:50</code>) and its other treatments' UUID as <code>id</code>, which
@@ -8939,7 +8941,7 @@ crash path is read, not run]</p>
 <a href="../30-design/tenancy/write-contract-spec-2026-10-07.html">write contract</a> (its §1.4 measures
 cross-path re-sends at dev <code>43289dde</code>),
 <a href="../../reports/consumer-impact-15.0.9/clients-8758.html">consumer-impact survey of #8758</a> (which
-clients send which id), <a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">D20</a>.</p>
+clients send which id), <a href="../30-design/tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">D20</a>.</p>
 
 
 

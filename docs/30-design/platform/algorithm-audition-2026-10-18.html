@@ -4620,6 +4620,8 @@
       
         
       
+        
+      
     
     
     
@@ -6227,7 +6229,7 @@ Status: current. The harness in §4 is proposed, not specified; no decision rest
 facts are read at this repository's <code>ef29293a</code>; counts marked <strong>measured</strong> were taken that day with
 the command or method named beside them. Facts about an independent implementation (§3) are
 <strong>read-derived from its source and documents, 2026-10-18; not reproduced here</strong>. Current decisions:
-<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.</p>
+<a href="../tenancy/multitenancy-decisions.html#1-decisions">execution plan §1</a>.</p>
 <p><strong>The question.</strong> Can a dosing algorithm be compared with others on the same recorded inputs, in
 shadow — computing what it would do, with no path to the pump — and what would the ecosystem need
 for that comparison to be trustworthy? "Auditioning" here means exactly that: an algorithm is heard,
@@ -6303,7 +6305,7 @@ never given control.</p>
 shadow instance on another; one instance can be moved from shadow to control without any change
 to its code. An audition is about the first two; it must never change the third (§4.6).</p>
 <h3 id="12-what-d19-covers-and-what-it-does-not">1.2 What D19 covers, and what it does not<a class="headerlink" href="#12-what-d19-covers-and-what-it-does-not" title="Permanent link">&para;</a></h3>
-<p>D19 (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">execution plan §2.6.2</a>;
+<p>D19 (<a href="../tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">execution plan §2.6.2</a>;
 specified in <a href="spec/registration.html#7-definitions">registration specification §7–§9</a>,
 not implemented) has the same three-way split, for <strong>controllers</strong>:</p>
 <table>
@@ -6576,14 +6578,14 @@ first intermediate value that differs (ADR-005's comparison granularity: predict
 glucose, IOB arrays). The harness also runs the same snapshot with faults, as the labs already do
 for the hub: missing data; out-of-order arrival, as in the
 <a href="../../../tools/lab/hub-active-state/index.html">hub-active-state</a> backfill cases and the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/tools/lab/connector-soak/disturb.js">connector soak's</a> backdated records; and duplicates
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/tools/lab/connector-soak/disturb.js">connector soak's</a> backdated records; and duplicates
 and re-sends, as in the
 <a href="../../../tools/lab/v3-identifier-immutable/index.html">v3-identifier-immutable</a> lab.</p>
 <h3 id="46-no-audition-result-is-promoted-to-control">4.6 No audition result is promoted to control<a class="headerlink" href="#46-no-audition-result-is-promoted-to-control" title="Permanent link">&para;</a></h3>
 <p>The harness has no path to a pump and no way to change which algorithm a controller enacts.
 Execution authority is a separate, recorded decision outside it. Under D18 the controller
 validates and enacts
-(<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">execution plan §2.6.1</a>),
+(<a href="../tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">execution plan §2.6.1</a>),
 and a proposed change reaches it only through a lifecycle such as
 <a href="agent-trust-boundaries-2026-10-18.html#43-what-a-proposal-lifecycle-would-add--proposed-not-specified">agents in the ecosystem §4.3</a>:
 propose, validate, approve against the exact payload, command, outcome. An audition result is

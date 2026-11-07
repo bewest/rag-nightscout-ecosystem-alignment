@@ -2687,7 +2687,7 @@
 
 
 <h1 id="aid-alignment-workspace---progress-tracker">AID Alignment Workspace - Progress Tracker<a class="headerlink" href="#aid-alignment-workspace---progress-tracker" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>a7af645d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p>This document is the dated journal of the <strong>ecosystem research</strong> facets (mappings, specs,
 conformance, deep dives). Programme state for cgm-remote-monitor (merges, decisions, test runs,
 handoffs) is recorded in <code>releases/&lt;product&gt;-&lt;version&gt;/</code>, not here; see <code>AGENTS.md</code> §3.</p>
@@ -2780,7 +2780,7 @@ pass on 5.0.32 and 8.3.9. Lint: zero errors/two filesystem-path warnings;
 466 files classify, diff checks pass, fixtures removed. Both runner commits
 are integrated at <code>436ef543</code>. Single-node process recovery is not HA,
 host/disk failure or production RPO/RTO acceptance.</p>
-<p>See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02">acceptance/handoff record</a>.</p>
+<p>See the <a href="docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02">acceptance/handoff record</a>.</p>
 <h2 id="parallel-transactional-mongodb-operator-migrations-2026-11-02">Parallel Transactional MongoDB Operator Migrations (2026-11-02)<a class="headerlink" href="#parallel-transactional-mongodb-operator-migrations-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Integrated <strong><code>562f6206</code></strong> adds the bounded MongoDB replica-set transactional lane
 to the explicit Umzug operator command: renewable server-time leases, shared
@@ -2800,7 +2800,7 @@ the CLI, <strong>15 passing</strong> on MongoDB 5.0.32, ESLint zero errors/two f
 warnings, and <strong>466 test files</strong> classified. No upstream push or serving
 enablement. Standalone/index fencing, catalogues and full runner acceptance
 remain open.
-See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-mig-runner-transactional-mongodb-slice-2026-11-02">acceptance and handoff</a>.</p>
+See the <a href="docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-mig-runner-transactional-mongodb-slice-2026-11-02">acceptance and handoff</a>.</p>
 <h2 id="parallel-current-authority-and-scalar-settings-acceptance-2026-11-02">Parallel Current Authority and Scalar Settings Acceptance (2026-11-02)<a class="headerlink" href="#parallel-current-authority-and-scalar-settings-acceptance-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Control-plane commits <strong><code>1dd8990b</code></strong> and <strong><code>011802ba</code></strong> complete bounded
 dormant persistent subject authority and the typed units/seconds settings
@@ -2814,7 +2814,7 @@ files classified. These dormant services do not enable routes or serving.
 Persistent operator policy and atomic policy/write fencing, tenant resolution,
 management authentication and runtime wiring remain open; the full M2
 milestone is not promoted.</p>
-<p>See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-control-plane-acceptance-and-next-handoff-2026-11-02">acceptance and handoff record</a>.</p>
+<p>See the <a href="docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#parallel-control-plane-acceptance-and-next-handoff-2026-11-02">acceptance and handoff record</a>.</p>
 <h2 id="multitenancy-secrets-recovery-integration-2026-11-02">Multitenancy Secrets Recovery Integration (2026-11-02)<a class="headerlink" href="#multitenancy-secrets-recovery-integration-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Local merge <strong><code>0de90852</code></strong> joins entries <code>a8dd162d</code> and parallel recovery
 <code>78b915ab</code>. The imported change is tests/fixture/documentation only: actual
@@ -2832,7 +2832,7 @@ MT-CONFIG-MIN and implement a dormant tenant-local subject-policy/current-
 authority slice. Prove fresh cross-worker checks, revocation/outage refusal,
 version conflicts and floors using real persistence; do not enable routes or
 claim socket/data enforcement. This session keeps entries schema/import/
-compatibility work. See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02">integration and bounded handoff</a>.</p>
+compatibility work. See the <a href="docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02">integration and bounded handoff</a>.</p>
 <h2 id="multitenancy-entries-upserts-and-post-commit-v3-intents-2026-11-02">Multitenancy Entries Upserts and Post-Commit v3 Intents (2026-11-02)<a class="headerlink" href="#multitenancy-entries-upserts-and-post-commit-v3-intents-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Local upstream <strong><code>14ae16db</code></strong> extends merge upserts/resends, replacement/batch
 and every-form persistence, with constraint-specific duplicate mapping and
@@ -2852,7 +2852,7 @@ full v1/socket intent and route authorization/validation/current-grant wiring,
 resource bounds and backend suites remain open. M1/M2 are not promoted; the
 previous broad no-database AJV failure is not waived. Parallel secrets/
 control-plane ownership is unchanged.</p>
-<p>See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02">acceptance and continuation record</a>.</p>
+<p>See the <a href="docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02">acceptance and continuation record</a>.</p>
 <h2 id="multitenancy-entries-and-secrets-integration-2026-11-02">Multitenancy Entries and Secrets Integration (2026-11-02)<a class="headerlink" href="#multitenancy-entries-and-secrets-integration-2026-11-02" title="Permanent link">&para;</a></h2>
 <p>Local upstream merge <strong><code>6943dccb</code></strong> preserves both parents: entries <code>7bcfc8b0</code>
 and secrets <code>fec19ba5</code> (including <code>a3888080</code>/<code>cbbe9179</code>). Dormant provider-neutral
@@ -2870,7 +2870,7 @@ green. Owned lab containers removed; other sessions' resources preserved.</p>
 baseline, then pursue synthetic backup/restore and actual process-crash/retry
 acceptance without runtime consumer enablement. Entries upsert/batch/retry,
 MongoDB MIG-RUNNER and settings/subject policy remain separate unfinished work.
-See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-entries-and-vault-facing-secrets-2026-11-02">integration record and commands</a>.</p>
+See the <a href="docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-entries-and-vault-facing-secrets-2026-11-02">integration record and commands</a>.</p>
 <p><strong>Source references:</strong>
 <code>externals/work/crm-multitenant-20261102/lib/secrets/component.js:16-140</code>,
 <code>externals/work/crm-multitenant-20261102/lib/secrets/postgres.js:34-153</code>,
@@ -2890,7 +2890,7 @@ existing write-boundary check pass. Owned lab containers removed.</p>
 <p><strong>Remaining:</strong> complete upsert/resend/batch/every-form outcomes,
 constraint-specific retry, events/source/validation integration and full M1.
 The parallel session owns MIG-RUNNER, settings/subject policy and secrets.
-See the <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-dormant-entries-writes-2026-11-02">acceptance and reproduction record</a>.</p>
+See the <a href="docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-dormant-entries-writes-2026-11-02">acceptance and reproduction record</a>.</p>
 <p><strong>Source references:</strong>
 <code>externals/work/crm-multitenant-20261102/lib/storage/postgres-entries-write.js:65-155</code>,
 <code>externals/work/crm-multitenant-20261102/tests/postgres-entries-write.test.js:155-263</code>.</p>
@@ -2918,7 +2918,7 @@ integration branch; <strong>no upstream push or hosted enablement</strong>.</p>
 </tr>
 <tr>
 <td>Decisions, gates and limits</td>
-<td><a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">Delivery roadmap</a>, <code>queue/work-queue.yaml</code></td>
+<td><a href="docs/30-design/tenancy/multitenant-delivery-roadmap.html">Delivery roadmap</a>, <code>queue/work-queue.yaml</code></td>
 <td>MIG-RUNNER now in progress, not complete; next-operation current authorization selected across workers, failing closed when unavailable.</td>
 </tr>
 </tbody>
@@ -2965,7 +2965,7 @@ No upstream push or hosted backend enablement.</p>
 </tr>
 <tr>
 <td>Decisions and remaining acceptance</td>
-<td><code>docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.md</code></td>
+<td><code>docs/30-design/tenancy/multitenant-delivery-roadmap.md</code></td>
 <td>Owner grants/bounded token lifetimes included under pinned floors; explicit operator-run hosted migrations; recommend Vault-facing adapter next.</td>
 </tr>
 </tbody>
@@ -2985,7 +2985,7 @@ normal generated files and single-site behavior remain unchanged.</p>
 <code>tools/lab/postgres-foundation/harness.js:148-340</code>.</p>
 <h2 id="multitenancy-priorities-and-celld-assessment-2026-11-02">Multitenancy Priorities and Celld Assessment (2026-11-02)<a class="headerlink" href="#multitenancy-priorities-and-celld-assessment-2026-11-02" title="Permanent link">&para;</a></h2>
 <p><strong>Subsequent maintainer decisions and execution:</strong> Celld removed from scope.
-Adopted <a href="docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">the multitenant delivery roadmap</a>:
+Adopted <a href="docs/30-design/tenancy/multitenant-delivery-roadmap.html">the multitenant delivery roadmap</a>:
 storage first, one local upstream integration branch; headless owner API,
 UI deferred; operator-only provisioning; legacy per-tenant credentials; small
 reviewed config catalogue; human identity separately planned; registration/

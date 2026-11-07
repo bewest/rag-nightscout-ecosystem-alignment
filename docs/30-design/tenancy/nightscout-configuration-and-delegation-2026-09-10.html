@@ -2736,6 +2736,34 @@
   
   
     <li class="md-nav__item">
+      <a href="multitenancy-decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy decisions and architectural contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="multitenant-delivery-dashboard.html" class="md-nav__link">
         
   
@@ -2764,14 +2792,14 @@
   
   
     <li class="md-nav__item">
-      <a href="multitenant-delivery-roadmap-2026-11-02.html" class="md-nav__link">
+      <a href="multitenant-delivery-roadmap.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Multitenant delivery roadmap: current-dev integration
+    Multitenant delivery roadmap
   
 
     
@@ -3264,34 +3292,6 @@
     
   
     Nightscout multitenancy: evidence and options
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenancy execution plan: decisions, tasks, and the context each one needs
   
 
     
@@ -4094,6 +4094,8 @@
       
         
           
+        
+      
         
       
         
@@ -5696,7 +5698,7 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-09-10. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-10. Status: current as analysis; its auth-related framing predates D13–D17.</strong> Current decisions: <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>. §5's delegation requirements are carried as DR1–DR7 in the <a href="../platform/spec/authority.html#7-delegation-not-decided">authority specification §7</a>, which is proposed to supersede the delegation parts of the earlier draft in cgm-remote-monitor's <code>docs/proposals</code>.</p>
+<p><em>Contributor-facing.</em> <strong>Snapshot — describes 2026-09-10. Status: current as analysis; its auth-related framing predates D13–D17.</strong> Current decisions: <a href="multitenancy-decisions.html#1-decisions">execution plan §1</a>. §5's delegation requirements are carried as DR1–DR7 in the <a href="../platform/spec/authority.html#7-delegation-not-decided">authority specification §7</a>, which is proposed to supersede the delegation parts of the earlier draft in cgm-remote-monitor's <code>docs/proposals</code>.</p>
 <p>Date: 2026-09-10. Fourth in a
 series with
 <a href="../platform/nightscout-typed-schema-evidence-2026-09-10.html">Typed schemas</a>,
@@ -6038,7 +6040,7 @@ Nightscout does not implement credentials, on liability grounds, and treats
 access as consent-granted rather than credential-proven. So delegation has
 to ride on an external identity provider — which is what the roles gateway's
 Mode B does — and cannot become a bespoke auth system.</p>
-<p>[Decided since for the hosted target (D13, D17 — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">plan §2.8–§2.9</a>):
+<p>[Decided since for the hosted target (D13, D17 — <a href="multitenancy-decisions.html">plan §2.8–§2.9</a>):
 each tenant holds its own root credential and devices keep a native per-tenant credential
 permanently; an external identity provider for <em>human</em> identity (one cohort-wide Ory Kratos pool)
 is direction of travel, <strong>held</strong> pending <code>T30-ORY-PROOF</code>; Hydra is deferred.]</p>

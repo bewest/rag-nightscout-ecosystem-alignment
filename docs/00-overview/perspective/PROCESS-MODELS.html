@@ -2833,7 +2833,7 @@
 
 
 <h1 id="process-models-what-we-believe-and-how-it-works">Process models: what we believe, and how it works<a class="headerlink" href="#process-models-what-we-believe-and-how-it-works" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-19 at <code>35ec9da5a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>What this is: a map (part 2 of the overview, perspective; <a href="../index.html">how the overview is organised</a>), for the Nightscout Foundation board, the maintainers of the ecosystem projects, and the community. Read after <a href="STRUCTURES.html">who controls what</a>; leads to <a href="CONWAY.html">the Conway's Law case study</a>. Living page,
 written 2026-10-17; 1·teams added 2026-10-18. Companion to <a href="STRUCTURES.html">control structures</a>, whose conventions,
 legend and icons apply here. Every node and edge comes from a source cited under the drawing;
@@ -3318,7 +3318,7 @@ Commercial offerings would show they track the shared contract with the same pub
 suite, CNCF's model (<a href="../ECOSYSTEM-PROGRAMME.html#2-the-picture">ECOSYSTEM-PROGRAMME §2</a>). And the
 multitenancy design takes bulk hosting as its target, with one operator running many tenants while
 "self-hosted single-tenant stays first-class permanently" (D1, with per-tenant credentials in D13;
-<a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>); adopted, not released.</p>
+<a href="../../30-design/tenancy/multitenancy-decisions.html#1-decisions">execution plan §1</a>); adopted, not released.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
 <li><strong>The licence disclaims the software's warranty; it does not disclaim the operator's duties.</strong>
@@ -3380,7 +3380,7 @@ This is the access model as the code and the README document it. It is not a sec
 of any release, and it does not show how well each part of the server enforces it.</p>
 <p><img alt="3·identity as proposed: a hosting operator mints the tenant root credential from ns-admin on an unreachable port; the owner holds and rotates it and acts on ns-tenant-admin, a second socket; devices hold native per-subject credentials and per-tenant signed tokens; people log in through Ory Kratos (gated); a controller registration is bound to the subject that created it, and the owner can retire, block, release or transfer it" src="diagrams/3-identity--proposed.svg" /></p>
 <p><strong>As proposed</strong> (hosted, <code>TENANCY_MODE=multi</code>; self-hosted single-tenant keeps <code>API_SECRET</code>, D1).
-The decisions are in the <a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>,
+The decisions are in the <a href="../../30-design/tenancy/multitenancy-decisions.html#1-decisions">execution plan §1</a>,
 §2.8 and §2.9:
 - <strong>D13</strong>: there is no deployment-wide secret. Each tenant holds its own root credential, which the
   hosting operator mints through <code>ns-admin</code>. That port is unreachable from outside (<strong>D7</strong>), and
@@ -3491,14 +3491,14 @@ grants are "not implemented" (<a href="../../10-domain/authority-model.html">aut
 <p><strong>As decided (D18–D20): specified, not built.</strong> D18: well-known declarations ship with the hub for
 today's writers, and controllers own typed registrations; the hub is responsible for observability,
 the controller for sending accurately and reconciling, and the hub records composition results
-rather than computing them (<a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#261-d18--two-tier-controller-registration">plan §2.6.1</a>).
+rather than computing them (<a href="../../30-design/tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">plan §2.6.1</a>).
 A registration is bound to the subject that created it, not to a token; the owner may block, retire,
 release or transfer it, never edit it (<a href="../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.html#35-negotiation">hub-sync §3.5</a>).
 D19 separates the definition (what data means, identified by its content hash) from the instance
 (one connected copy with a lease and <code>device</code> or <code>simulated</code> provenance per role). Each role has one
 source of record, an overlap is flagged, and a command goes only to the live <code>device</code> command sink,
 or is refused <code>no-command-destination</code>; that role needs the product's binding or the owner's
-transfer (<a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#262-d19--definitions-and-instances-maintainer-2026-10-14">plan §2.6.2</a>,
+transfer (<a href="../../30-design/tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">plan §2.6.2</a>,
 <a href="../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.html#36-definitions-and-instances">hub-sync §3.6</a>).
 D20 scopes quirks to the versions that produce them and splits the client-assigned <code>identifier</code>
 from the hub-assigned <code>_id</code> (<a href="../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.html#37-version-scoped-quirks-and-the-two-ids">hub-sync §3.7</a>).
@@ -3506,7 +3506,7 @@ An agent would register its own instance; role types are open "so roles such as 
 acting can be added for agents" (D19 rule 5). <strong>Open:</strong> the command API, proposed in the
 <a href="../../30-design/platform/spec/commands.html">commands specification</a> and not decided, the
 contract per tenancy mode (<code>SPEC-REG-MODES</code>), the first hub (<code>HUB-REG-CRM</code>), the proposals to
-Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/queue/work-queue.yaml">queue</a>); and how an
+Nocturne and the controllers, all not started (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/queue/work-queue.yaml">queue</a>); and how an
 agent is scoped, limited and revoked, which no decision covers.</p>
 <p><em>Interpretation.</em> Properties the three panels show:</p>
 <ol>
@@ -3583,7 +3583,7 @@ security contact, complaint workflow, SBOM or build-provenance record was found
 (<a href="../PARTNER-READINESS.html#3-what-a-manufacturer-will-need-to-see">partner readiness §3</a>). The
 conformance suite lives in this repository: 85 vector files, an oref0 runner, and AndroidAPS and
 Loop runners not implemented (<a href="../../../conformance/index.html"><code>conformance/</code></a>;
-<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/.github/workflows/ci.yml">CI</a> runs
+<code>tools/conformance_suite.py:43-55</code>). This repository's <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/.github/workflows/ci.yml">CI</a> runs
 Python syntax and spec validation; the suite and the <a href="../../../queue/index.html">queue gates</a> run by
 <code>make</code>, outside CI. The 15.0.9 run records are the nearest thing to release evidence
 (<a href="../QUALITY-SYSTEM.html#41-the-record-every-run-leaves">quality system §4.1</a>).</p>

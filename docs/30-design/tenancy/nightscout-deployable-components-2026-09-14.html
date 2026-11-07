@@ -2736,6 +2736,34 @@
   
   
     <li class="md-nav__item">
+      <a href="multitenancy-decisions.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenancy decisions and architectural contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="multitenant-delivery-dashboard.html" class="md-nav__link">
         
   
@@ -2764,14 +2792,14 @@
   
   
     <li class="md-nav__item">
-      <a href="multitenant-delivery-roadmap-2026-11-02.html" class="md-nav__link">
+      <a href="multitenant-delivery-roadmap.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Multitenant delivery roadmap: current-dev integration
+    Multitenant delivery roadmap
   
 
     
@@ -3258,34 +3286,6 @@
     
   
     Nightscout multitenancy: evidence and options
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-execution-plan-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenancy execution plan: decisions, tasks, and the context each one needs
   
 
     
@@ -4088,6 +4088,8 @@
       
         
           
+        
+      
         
       
         
@@ -5687,7 +5689,7 @@
 <p><em>Contributor-facing.</em> <strong>Snapshot, written 2026-09-14. Current: the only statement of the
 deployable-component decomposition.</strong> Its recommendation was adopted as <strong>D5</strong> (four hosted
 entrypoints plus <code>single</code>) and <strong>D6</strong> (the change feed), and is extended by <strong>D7</strong> (<code>ns-admin</code>,
-the platform-admin plane) and <strong>D16</strong> (three listeners by audience) — <a href="nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>.
+the platform-admin plane) and <strong>D16</strong> (three listeners by audience) — <a href="multitenancy-decisions.html#1-decisions">execution plan §1</a>.
 Task state lives in <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>. Measurements carry their own dates
 and are post-#8733. Companion to <a href="nightscout-multitenancy-discussion-2026-09-09.html">Nightscout multitenancy: evidence and options</a>
 and <a href="../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.html">What sets K</a>.</p>
@@ -5698,7 +5700,7 @@ talk to each other, and which arrangement is cheapest for an operator to run.</p
 two quadratic scans over the treatment window, with differential tests over 636 randomised
 fixtures and a measured 6.3×–43× improvement — is the baseline. It is <strong>merged</strong> to <code>dev</code>
 (2026-09-17) and not released (<code>origin/master</code> = <code>15.0.8</code>). Every number below is post-#8733.
-This document is the <em>why</em>; the <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a> is the decisions and the tasks.</p>
+This document is the <em>why</em>; the <a href="multitenancy-decisions.html">execution plan</a> is the decisions and the tasks.</p>
 <p><strong>Objective function, as stated by the maintainer: minimise operator cost first, then
 maximise performance.</strong> So the units here are processes, gigabytes and database operations
 per second — not milliseconds.</p>
@@ -5745,7 +5747,7 @@ latency, decide it:</p>
 </table>
 <p><strong>The two things that made residency look necessary both dissolve on measurement.</strong> Alarms
 for idle tenants need a small <strong>transient</strong> working set — measured at <strong>32.7 KB and 1.94 ms p50 per
-tenant per evaluation</strong> (2026-09-15, <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">plan §7b</a>), not a resident <code>ddata</code> — and its
+tenant per evaluation</strong> (2026-09-15, <a href="multitenancy-decisions.html">plan §7b</a>), not a resident <code>ddata</code> — and its
 only durable part is ack/snooze state, a few hundred bytes that belong in storage anyway. The
 socket delta needs a <em>change</em>, which both storage engines already produce.</p>
 <p><strong>What residency genuinely buys, and it is one endpoint</strong>: <code>/api/v1/entries.json</code> is served
@@ -6019,7 +6021,7 @@ deletes code the single-tenant target needs; it selects a different subset of it
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  realtime.js           ns-realtime  — socket.io + change feed, no storage writes
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  vcpool.js             ns-vcpool    — connect actors + egress proxy
 </code></pre></div>
-<p><em>Amended 2026-10-26 and 2026-11-03 by </em><em>D21</em><em>: the roles below are started by one executable. <code>nightscout single</code> remains the single-tenant monolith; <code>nightscout multitenant &lt;roles&gt;</code> names the separate PostgreSQL/RLS multitenant target. This changes neither the role decomposition nor which factories each role calls (<a href="nightscout-multitenancy-execution-plan-2026-09-14.html#212-d21--one-entrypoint-explicit-tenancy-subcommands-maintainer-amended-2026-11-03">execution plan §2.12</a>).</em></p>
+<p><em>Amended 2026-10-26 and 2026-11-03 by </em><em>D21</em><em>: the roles below are started by one executable. <code>nightscout single</code> remains the single-tenant monolith; <code>nightscout multitenant &lt;roles&gt;</code> names the separate PostgreSQL/RLS multitenant target. This changes neither the role decomposition nor which factories each role calls (<a href="multitenancy-decisions.html#2-storage-resolution-and-profiles">execution plan §2.12</a>).</em></p>
 <p><strong>Four multitenant service roles and one legacy entrypoint, over one <code>package.json</code> and one CI
 pipeline</strong> — not five repositories. {M} §10.5 already argued this and it holds: these are
 thin <code>bin/</code> scripts selecting which factories to call, not independent products with

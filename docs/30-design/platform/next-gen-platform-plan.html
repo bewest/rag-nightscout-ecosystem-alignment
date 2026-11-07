@@ -4387,6 +4387,8 @@
       
         
       
+        
+      
     
     
     
@@ -5750,7 +5752,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>97594198c</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
 <a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>
 and <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>:
@@ -6071,7 +6073,7 @@ manual confirmation. Two records already sharing an identifier is a question for
 <p>For multitenant status and sequencing, use the
 <a href="../tenancy/multitenant-delivery-dashboard.html">multitenant delivery dashboard</a>.
 It owns M0-M6 prerequisites, parallel lanes, bounded slices and current
-acceptance. The <a href="../tenancy/multitenant-delivery-roadmap-2026-11-02.html">roadmap</a>
+acceptance. The <a href="../tenancy/multitenant-delivery-roadmap.html">roadmap</a>
 retains decisions, limits and detailed execution evidence; this platform
 overview intentionally summarizes rather than duplicates those tenancy gates.</p>
 <!-- chart: map -->
@@ -6325,7 +6327,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 </tbody>
 </table>
-<p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. Which listener and role owns each API is mapped in <a href="interface-ownership-2026-10-27.html">interface ownership</a>, with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D23 are in the <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>.</p>
+<p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. Which listener and role owns each API is mapped in <a href="interface-ownership-2026-10-27.html">interface ownership</a>, with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D23 are in the <a href="../tenancy/multitenancy-decisions.html">execution plan</a>.</p>
 <p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. The current preview uses request-local loader/cache frames; it does not enable multitenant evaluator/realtime or establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the local joined candidate. R67 bounds recovered clinical constructor evidence. No common atomic revision, live profile/evaluator role or notification handoff is accepted.</p>
 <h2 id="5-open-decisions">5. Open decisions<a class="headerlink" href="#5-open-decisions" title="Permanent link">&para;</a></h2>
 <p>Select <strong>Show on the map</strong> on a card to see which items it holds up. Release questions (the 16.0.0 quiet period, cohort requests, when dev reopens) are Q13–Q16 in the <a href="release-allocation-2026-10-27.html#5-open-decisions">release allocation</a>.</p>
@@ -6344,7 +6346,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 <h2 id="7-sources">7. Sources<a class="headerlink" href="#7-sources" title="Permanent link">&para;</a></h2>
 <ul>
 <li>cgm-remote-monitor dev <code>604de1cb</code>; open PR heads, CI and <code>dev</code> distance read with <code>gh pr list</code>, <code>gh pr checks</code> and <code>gh api .../compare</code> on 2026-10-31 (re-read about 22:00Z). The test workflow runs only on pull requests to <code>dev</code> or <code>master</code>, so #8886 (base <code>feat/id-first-match</code>) shows only <code>auto-close</code> until it is retargeted.</li>
-<li><a href="../tenancy/nightscout-storage-seam-interface-2026-09-14.html">Storage seam interface</a>, <a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a>, <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>, <a href="../modernization/pr-8854-alignment-2026-10-26.html">#8854 alignment brief</a>.</li>
+<li><a href="../tenancy/nightscout-storage-seam-interface-2026-09-14.html">Storage seam interface</a>, <a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a>, <a href="../tenancy/multitenancy-decisions.html">execution plan</a>, <a href="../modernization/pr-8854-alignment-2026-10-26.html">#8854 alignment brief</a>.</li>
 <li><a href="spec/registration.html">Registration specification</a>, <a href="spec/identity.html">identity specification</a>, <a href="spec/records.html">records specification</a>.</li>
 <li>Nocturne <code>970031f6</code>, re-checked at <code>36d5ef4a2</code>. Tenant scope is an <code>ITenantScoped</code> marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves <code>identifier</code> equal to <code>_id</code> (issue #1932).</li>
 <li>Controllers, read at AndroidAPS dev <code>325e5623</code>, NightscoutKit <code>6efa02d4</code>, Trio dev <code>7ff1f777e</code>, xDrip+ <code>c42cf55c</code>. AndroidAPS is the only API v3 client and keeps the server's <code>identifier</code>. Loop sends <code>syncIdentifier</code>, and Trio sends <code>id</code>.</li>

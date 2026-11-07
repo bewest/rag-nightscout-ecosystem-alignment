@@ -6509,6 +6509,8 @@
       
         
       
+        
+      
     
     
     
@@ -8221,7 +8223,7 @@
 <p>Record as of 2026-09-14. A point-in-time document; it is not kept up to date.</p>
 </div>
 <blockquote>
-<p><strong>Snapshot — research as of 2026-09-14, measured against MongoDB 7.0.43 with driver 5.9.2 and queries transcribed from <code>lib/data/dataloader.js</code> (the doc names no <code>cgm-remote-monitor</code> commit). Status: superseded in part — tenancy research, not on a shipping path; §8's feed-poll sweep bound was revised by T4.2 (2026-09-15, in place below) and pgbouncer is now measured in <a href="pgbouncer-tenant-binding-2026-09-15.html">pgbouncer and the D3 binding</a>. Current facts: <a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>.</strong></p>
+<p><strong>Snapshot — research as of 2026-09-14, measured against MongoDB 7.0.43 with driver 5.9.2 and queries transcribed from <code>lib/data/dataloader.js</code> (the doc names no <code>cgm-remote-monitor</code> commit). Status: superseded in part — tenancy research, not on a shipping path; §8's feed-poll sweep bound was revised by T4.2 (2026-09-15, in place below) and pgbouncer is now measured in <a href="pgbouncer-tenant-binding-2026-09-15.html">pgbouncer and the D3 binding</a>. Current facts: <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>.</strong></p>
 </blockquote>
 <p><em>Audience: contributors.</em></p>
 <p><strong>Experiments</strong>: EXP-MT-026 (query cost, load cycle, cold wake, event-loop behaviour under
@@ -8242,7 +8244,7 @@ anything.
 <strong>Confidence</strong>: <strong>measured</strong>, with the scope limits in §L. RTT arms use <code>tc netem</code> inside the
 database container — kernel-level delay, not a userspace shim.</p>
 <p>Decisions taken on the strength of this report are recorded in
-<a href="../../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">the execution plan</a>.</p>
+<a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">the execution plan</a>.</p>
 <p>Answers the question every other experiment in this programme deferred: <strong>all of them ran
 with no database.</strong> That was tolerable while the question was how much CPU the resident path
 burns. It became the largest open risk the moment the recommendation moved to a stateless

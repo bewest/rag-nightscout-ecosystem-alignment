@@ -2544,7 +2544,7 @@
 
 
 <h1 id="the-nightscout-ecosystem-programme-the-stack-and-four-shared-commons">The Nightscout ecosystem programme: the stack and four shared commons<a class="headerlink" href="#the-nightscout-ecosystem-programme-the-stack-and-four-shared-commons" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-21 at <code>59b35119d</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><em>What this is: a proposal (part 3 of the overview, recommendations; <a href="index.html">how the overview is
 organised</a>), for the foundation board, the maintainers of the ecosystem projects, and the
 community. Read after <a href="perspective/PROCESS-MODELS.html">process models</a>; leads to the
@@ -2726,7 +2726,7 @@ and hosting. The work on it runs in three horizons (<a href="PROGRAMME-STATUS.ht
   (<a href="ROADMAP.html#2-modernization-the-release-train">ROADMAP §2</a>).</li>
 <li><strong>Multitenancy.</strong> A second deployment target for hosting providers, on PostgreSQL. Self-hosted,
   single-tenant Nightscout on MongoDB stays first-class permanently (decisions D1 and D4,
-  <a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">execution plan</a>).</li>
+  <a href="../30-design/tenancy/multitenancy-decisions.html">execution plan</a>).</li>
 </ul>
 <p>Accepting controller registrations (§4) is queued for it as <code>HUB-REG-CRM</code>, single-tenant first.</p>
 <p>What bounds this work is review capacity. The generated reviewer-load table on PROGRAMME-STATUS
@@ -2803,7 +2803,7 @@ registers. D19 separates the immutable, content-addressed definition from each r
 (a phone, simulator, lab rig or agent), which holds a lease and declares whether it is a device or
 simulated. The roles are fixed: the hub is responsible for observability, the controller for
 sending data accurately and for syncing and reconciling, and the hub decides nothing about dosing
-(<a href="../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan §1</a>).
+(<a href="../30-design/tenancy/multitenancy-decisions.html#1-decisions">execution plan §1</a>).
 The evidence behind D18 is the
 <a href="../30-design/platform/nightscout-intent-workflow-landscape-2026-10-09.html">intent and workflow landscape</a>,
 which measured where the controllers and hubs disagree about what is active.</p>

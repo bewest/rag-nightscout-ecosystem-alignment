@@ -6795,6 +6795,8 @@
       
         
       
+        
+      
     
     
     
@@ -8231,20 +8233,20 @@
 
 
 <h1 id="nightscout-multitenancy-next-priorities-postgresql-rls-and-celld">Nightscout multitenancy: next priorities, PostgreSQL RLS and Celld<a class="headerlink" href="#nightscout-multitenancy-next-priorities-postgresql-rls-and-celld" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-02 at <code>4b299c159</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
 <p><strong>Assessment: 2026-11-02. Recommendations, not newly adopted decisions or
 production acceptance.</strong> Public <code>dev</code> was checked through GitHub and read from
 the local <code>official/dev</code> ref at <code>61eb37335954ae42c91345a0823bd67331025165</code>.
 No database, Celld fleet, client or failure experiment was run for this assessment.</p>
 <p><strong>Maintainer follow-up:</strong> Celld is now out of scope. The adopted
-<a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a>
+<a href="../30-design/tenancy/multitenant-delivery-roadmap.html">delivery roadmap</a>
 supersedes the experimental recommendations below: storage first, one local
 integration branch, headless owner API with UI deferred, operator-only lifecycle,
 legacy per-tenant credentials, a reviewed settings subset and early Vault
 feasibility work. Human identity and next-generation execution have separate
 gates. The Celld section remains evidence of the evaluated alternative, not
 scheduled work.</p>
-<p><strong>Measured continuation:</strong> the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">roadmap's execution follow-up</a>
+<p><strong>Measured continuation:</strong> the <a href="../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-pooler-proof-and-typed-identity-primitive-2026-11-02">roadmap's execution follow-up</a>
 now records 9 current-connection PgBouncer/DDL checks and 4 typed-identity
 checks. The historical JSON key collapses ObjectId/string copies; the opt-in
 typed-key candidate and dormant codec preserve both. This does not certify
@@ -8257,7 +8259,7 @@ the new codec is at
 PostgreSQL-only operator runner, with atomic SQL/ledger commits, a pinned-client
 advisory lock and read-only compatibility inspection. <strong>39 migration/CLI checks
 pass</strong>, including 12 disposable-PG acceptance checks and failure controls.
-See the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-explicit-postgresql-operator-migrations-2026-11-02">execution record</a>.
+See the <a href="../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-explicit-postgresql-operator-migrations-2026-11-02">execution record</a>.
 MongoDB leases/resumability, production catalogues and serving-role wiring
 remain open; the command does not change default server boot.</p>
 <p><strong>Authorization decision, not implementation acceptance:</strong> grant removal or
@@ -8273,7 +8275,7 @@ four unit checks run in the <strong>145-passing combined regression</strong>; th
 full M1. Regex/v1/dotted paths/projections, unsupported operands/types and
 array/object sorting refuse, and results are materialized without cursor caps.
 Writes/events/current indexes and backend registration remain absent. The
-<a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-readfilter-subset-2026-11-02">bounded acceptance and reproduction record</a>
+<a href="../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-readfilter-subset-2026-11-02">bounded acceptance and reproduction record</a>
 distinguishes this measured slice from full client/API compatibility.</p>
 <p><strong>Write continuation:</strong> local upstream <code>7bcfc8b0</code> adds dormant inserts, scalar
 patches and deletes through five persistence methods. Eight real PG/MongoDB
@@ -8284,7 +8286,7 @@ that run remain regression evidence, not PG write-intent integration. A
 stale-snapshot no-op comparison was corrected and three actual mutations fail.
 Bulk/replace/every-form writes, constraint-specific retries and commit-event
 integration remain; no backend is enabled. See the
-<a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-dormant-entries-writes-2026-11-02">write acceptance record</a>.
+<a href="../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-dormant-entries-writes-2026-11-02">write acceptance record</a>.
 The other session owns migrations, settings/subject policy and provider-neutral
 secrets/Vault-facing work; this slice leaves those files unchanged.</p>
 <p><strong>Integrated continuation:</strong> local merge <code>6943dccb</code> now joins the entries slice
@@ -8295,7 +8297,7 @@ without pending</strong>, including real Vault/PG, migration and entries checks
 together; all <strong>465 test files</strong> classify. Unit/DOM/core/harness tiers pass
 after building local bundles. The dependency tier remains non-green because
 its unchanged <code>har-validator</code> assertion resolves old AJV outside the worktree.
-See the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-entries-and-vault-facing-secrets-2026-11-02">integration acceptance and parallel handoff</a>.
+See the <a href="../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-entries-and-vault-facing-secrets-2026-11-02">integration acceptance and parallel handoff</a>.
 The next isolated secrets objective is backup/restore and actual process-crash
 acceptance; owner-policy APIs, MongoDB migrations and runtime consumers remain
 unfinished. This is no backend promotion or production-Vault acceptance.</p>
@@ -8307,14 +8309,14 @@ V3 resend POST retains replacement behavior, not v1's merge behavior.
 JSON-equal replacements owing exact modification counts refuse because JSONB
 does not preserve BSON field order. Production DDL/import, full v1/socket and
 route authorization/validation/current-grant wiring, bounds and backend suites
-remain open. See the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02">bounded acceptance record</a>.</p>
+remain open. See the <a href="../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#continuation-entries-upserts-and-post-commit-v3-intents-2026-11-02">bounded acceptance record</a>.</p>
 <p><strong>Latest recovery integration:</strong> merge <code>0de90852</code> imports <code>78b915ab</code> without
 runtime/migration/entries-source changes. The combined command passes <strong>879
 checks, zero pending</strong>, including 34 secrets checks and actual PG dump/restore,
 encrypted single-node Vault snapshot recovery and before-CAS/after-commit
 worker SIGKILL/retry. Production recovery remains open. The next parallel
 slice is the minimum policy/current-authority service, not more provider
-features; see the <a href="../30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02">acceptance and handoff</a>.</p>
+features; see the <a href="../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02">acceptance and handoff</a>.</p>
 <h2 id="1-bottom-line">1. Bottom line<a class="headerlink" href="#1-bottom-line" title="Permanent link">&para;</a></h2>
 <p>The next useful delivery is <strong>an entries-first PostgreSQL RLS slice on current
 dev</strong>, alongside a <strong>tenant configuration/authentication integration workstream</strong>.
@@ -8392,7 +8394,7 @@ an untested idea.</p>
 </ul>
 <h3 id="a-coordination-blocker-two-generations-of-planning">A coordination blocker: two generations of planning<a class="headerlink" href="#a-coordination-blocker-two-generations-of-planning" title="Permanent link">&para;</a></h3>
 <p>At the initial assessment, the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/docs/30-design/platform/next-gen-platform-plan.json">platform map</a> had ST-PG,
 TEN-RESOLVE and TEN-LAB without corresponding executable-work items in
 <code>queue/work-queue.yaml</code>. The adopted roadmap has since added those queue items
 and bounded M0/Vault checks. Their complete acceptance is still open.

@@ -2186,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--contents">cgm-remote-monitor 16.0.0 — contents<a class="headerlink" href="#cgm-remote-monitor-1600--contents" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>6be7e6dc1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>a2ed8bd9b</code>.</em></p>
 <p><strong>Current update, 2026-11-03:</strong> <code>official/dev</code> <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
 is the current 16.0.0 release candidate. Release preparation is <strong>in progress</strong>,
 not blocked; the candidate is not tagged or released. Informal cohort/real-rig
@@ -2219,11 +2219,11 @@ and production/service environments work. The maintainer dispositions #8829
 <tr>
 <td>2026-11-03</td>
 <td>Separate multitenant foundations PR #8898 remains open at remote head <code>a19b549c</code>. Local CI fix <code>04321de0</code> and current-dev merge <code>0afdb87f</code> are integrated on <code>workspace/multitenant-20261102</code>, unpushed. No release-candidate merge or operator-visible behavior change is asserted.</td>
-<td>Reproduced: eight disabled integration labs caused execution-accounting failures, not lab assertion failures; explicit opt-in pending accounting and its negative control pass. On the combined tree, seven non-browser tiers pass 6711/100 pending/0 failing; focused regressions pass 39; selected enabled PG/Vault/lab checks pass 36. Read-derived review and API read-back: three test-only CodeQL alerts individually dismissed as false positives. Browser and remaining opt-in campaigns are unmeasured; fresh remote CI is pending publication. See the <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#pr-8898-database-ci-accounting-fix-2026-11-03">bounded CI-fix evidence</a> and <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#pr-8898-security-check-disposition-2026-11-03">security disposition</a>.</td>
+<td>Reproduced: eight disabled integration labs caused execution-accounting failures, not lab assertion failures; explicit opt-in pending accounting and its negative control pass. On the combined tree, seven non-browser tiers pass 6711/100 pending/0 failing; focused regressions pass 39; selected enabled PG/Vault/lab checks pass 36. Read-derived review and API read-back: three test-only CodeQL alerts individually dismissed as false positives. Browser and remaining opt-in campaigns are unmeasured; fresh remote CI is pending publication. See the <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#pr-8898-database-ci-accounting-fix-2026-11-03">bounded CI-fix evidence</a> and <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#pr-8898-security-check-disposition-2026-11-03">security disposition</a>.</td>
 </tr>
 <tr>
 <td>2026-11-03</td>
-<td>Update at 17:19-08:00: #8898 is published at <code>0afdb87f83c3b66a5206fa8bd9e5046696bcc2d1</code>, still open/draft, not merged to the candidate. The <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#execution-phases-and-subagent-plan-2026-11-03">execution phases and subagent plan</a> sequences entries compatibility and deployment authority/runtime wiring in parallel, then integrated HTTP, broader REST/client acceptance, realtime and operations.</td>
+<td>Update at 17:19-08:00: #8898 is published at <code>0afdb87f83c3b66a5206fa8bd9e5046696bcc2d1</code>, still open/draft, not merged to the candidate. The <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#execution-phases-and-subagent-plan-2026-11-03">execution phases and subagent plan</a> sequences entries compatibility and deployment authority/runtime wiring in parallel, then integrated HTTP, broader REST/client acceptance, realtime and operations.</td>
 <td>Read-derived from fresh PR metadata/checks: CodeQL, four database jobs, both no-database jobs, Docker validations and npm install/build pass; browsers and maintained MongoDB remain pending. Reproduced selected queue measurement: ST-PG identity unit gate PASS; integrations skipped, other selected items UNMEASURED. This is a plan and bounded CI follow-up, not milestone promotion, all-REST acceptance, role enablement or a new release gate. No operator-visible change; no new implementation agent dispatched.</td>
 </tr>
 <tr>
@@ -2298,7 +2298,7 @@ Historical status/measurement sections below retain their dates.</p>
 </tr>
 <tr>
 <td>Next: proven adapter consolidation, continued compatibility and independent profile/shared-frame characterization.</td>
-<td><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-composition-and-direct-identity-continuation-2026-11-05">Current roadmap</a>. Owner identity/ceilings, logical no-op admission, remaining REST/client/import/resource/lifecycle and durable M5/M6 gates stay open; SQLite remains deferred.</td>
+<td><a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-composition-and-direct-identity-continuation-2026-11-05">Current roadmap</a>. Owner identity/ceilings, logical no-op admission, remaining REST/client/import/resource/lifecycle and durable M5/M6 gates stay open; SQLite remains deferred.</td>
 </tr>
 <tr>
 <td>QMS generated views and rich progress page validated.</td>
@@ -2325,7 +2325,7 @@ Historical status/measurement sections below retain their dates.</p>
 </tr>
 <tr>
 <td>Five selected current-source queue gates PASS with five NON-VACUOUS controls.</td>
-<td>Updated authority/subject gates plus bounded port, management and independent profile instruments. Each card's broader no-gate acceptance remains open. Current interface/write-contract amendments retain old captures while defining measured capabilities. <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-contract-management-and-independent-profile-wave-2026-11-05">Current next work</a> is backend/domain and error/HTTP composition, then proven consolidation and wider acceptance.</td>
+<td>Updated authority/subject gates plus bounded port, management and independent profile instruments. Each card's broader no-gate acceptance remains open. Current interface/write-contract amendments retain old captures while defining measured capabilities. <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-contract-management-and-independent-profile-wave-2026-11-05">Current next work</a> is backend/domain and error/HTTP composition, then proven consolidation and wider acceptance.</td>
 </tr>
 <tr>
 <td><a href="../../reports/compat-rest-next-2026-11-05/index.html">Direct final-head bounded historical capture</a> accepted in its stated scope.</td>
@@ -2375,7 +2375,7 @@ Historical status/measurement sections below retain their dates.</p>
 </tr>
 <tr>
 <td>New archived read-only subject instrument is wired under MT-CONFIG-MIN.</td>
-<td>Queue integration PASS and control NON-VACUOUS measure only the bounded service. Separate management HTTP, owner ceilings, full role CRUD, remaining REST side effects/client binaries/import/resources and M0–M6 completion remain open. <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-subject-administration-and-compatibility-continuation-2026-11-05">Current next packets</a> supersede the delivered dispatch packets.</td>
+<td>Queue integration PASS and control NON-VACUOUS measure only the bounded service. Separate management HTTP, owner ceilings, full role CRUD, remaining REST side effects/client binaries/import/resources and M0–M6 completion remain open. <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-subject-administration-and-compatibility-continuation-2026-11-05">Current next packets</a> supersede the delivered dispatch packets.</td>
 </tr>
 <tr>
 <td><a href="../../reports/compat-refresh-2026-11-05/index.html">Historical comparison</a> completed at old-release/current-dev/published-PR-single pins.</td>
@@ -2402,7 +2402,7 @@ Historical status/measurement sections below retain their dates.</p>
 <tbody>
 <tr>
 <td>Maintainer prioritizes subject administration and remaining REST/client acceptance, with parallel current and historical compatibility.</td>
-<td><a href="decisions.html#rest-and-compatibility-priority-2026-11-05">Decision</a> and <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#prioritized-rest-and-compatibility-execution-2026-11-05">bounded priority packets</a>. Fresh remote read-back remains OPEN/draft ded254b9 against dev 4a482627. Three lanes dispatched from that tree: persisted subject administration, mixed-version Mongo/PG differential tests, and repeated release/dev/PR-single write comparison. New lane acceptance is UNMEASURED at dispatch.</td>
+<td><a href="decisions.html#rest-and-compatibility-priority-2026-11-05">Decision</a> and <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#prioritized-rest-and-compatibility-execution-2026-11-05">bounded priority packets</a>. Fresh remote read-back remains OPEN/draft ded254b9 against dev 4a482627. Three lanes dispatched from that tree: persisted subject administration, mixed-version Mongo/PG differential tests, and repeated release/dev/PR-single write comparison. New lane acceptance is UNMEASURED at dispatch.</td>
 </tr>
 <tr>
 <td>Existing M0–M6 dependencies remain; partial compatibility work proceeds while M3/M4 promotion prerequisites are open.</td>
@@ -2452,7 +2452,7 @@ Historical status/measurement sections below retain their dates.</p>
 </tr>
 <tr>
 <td>Reviewed current PR CodeQL comments and merge-ref alerts.</td>
-<td><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#published-rest-checkpoint-codeql-review-2026-11-04">The bounded audit and proposed follow-up</a> records open production alerts 147 and 148, inherited compatibility constraints, and proposed tenant referrer-header parity. No application patch, dismissal, comment or risk acceptance was performed. Isolated status checks pass 8; the initial mixed boot-fixture invocation fails as recorded there.</td>
+<td><a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#published-rest-checkpoint-codeql-review-2026-11-04">The bounded audit and proposed follow-up</a> records open production alerts 147 and 148, inherited compatibility constraints, and proposed tenant referrer-header parity. No application patch, dismissal, comment or risk acceptance was performed. Isolated status checks pass 8; the initial mixed boot-fixture invocation fails as recorded there.</td>
 </tr>
 <tr>
 <td>Audit document checks pass: <code>make queue-check</code>, <code>make docs-links</code>, <code>git diff --check</code>.</td>
@@ -2567,7 +2567,7 @@ Historical status/measurement sections below retain their dates.</p>
 </tr>
 <tr>
 <td>Maintainer authorized derived reads, pinned-client replay and independent authority review in parallel, coordinated by isolated integration/QMS lanes.</td>
-<td><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#rest-continuation-and-qms-reconciliation-2026-11-04">Lane ownership and acceptance</a>. New delivery results are UNMEASURED; already incorporated domain/cherry histories must not be applied twice. No operator-visible default, candidate or milestone change.</td>
+<td><a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#rest-continuation-and-qms-reconciliation-2026-11-04">Lane ownership and acceptance</a>. New delivery results are UNMEASURED; already incorporated domain/cherry histories must not be applied twice. No operator-visible default, candidate or milestone change.</td>
 </tr>
 <tr>
 <td>Reproduced targeted queue status: ST-PG unit gate passes; remaining selected configuration/secrets/runner/resolution/wiring/lab cards are UNMEASURED.</td>
@@ -2775,7 +2775,7 @@ change to the shipping 16.0.0 candidate is authorized by this dispatch.</p>
 <tbody>
 <tr>
 <td>Maintainer requested alignment records merged to main, updated todos/completion plan, and assessment of updating existing foundations PR #8898.</td>
-<td>Queue notes and generated dashboard are brought through accepted cumulative <code>c527fb7e</code>; the <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#completion-checkpoints-and-publication-2026-11-04">completion checkpoints</a> define remaining method/import/resource, provisioning/trust/lifecycle, executable gate, client, realtime and operational exits. No M0-M6 promotion. PATCH and provisioning packets continue independently; their new results remain UNMEASURED until reported.</td>
+<td>Queue notes and generated dashboard are brought through accepted cumulative <code>c527fb7e</code>; the <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#completion-checkpoints-and-publication-2026-11-04">completion checkpoints</a> define remaining method/import/resource, provisioning/trust/lifecycle, executable gate, client, realtime and operational exits. No M0-M6 promotion. PATCH and provisioning packets continue independently; their new results remain UNMEASURED until reported.</td>
 </tr>
 <tr>
 <td>Read-derived publication assessment: current local CRM <code>c527fb7e0d309b7fc567861a41e8f3862e0922df</code> is a descendant of published PR head <code>81bc71e634c0c2e60ac4e86cfba2e063501c9192</code>; a normal fast-forward update of <code>workspace/multitenant-20261102</code> can carry the accepted work.</td>
@@ -2931,10 +2931,10 @@ change to the shipping 16.0.0 candidate is authorized by this dispatch.</p>
 <tbody>
 <tr>
 <td>nightscout/cgm-remote-monitor#8898 is published at <code>81bc71e6</code>, open/draft; local <code>c10290d2</code> remains the accepted cumulative search head.</td>
-<td>Read-derived current PR checks: tests/build/browsers pass; three new CodeQL fixture alerts were individually dismissed after source review, without exclusions or protocol changes. API read-back confirms dismissal and CodeQL/Tests pass SUCCESS. <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#published-exchange-checkpoint-codeql-disposition-2026-11-04">Disposition</a> distinguishes dismissal from a new scan. No merge to dev or release acceptance follows.</td>
+<td>Read-derived current PR checks: tests/build/browsers pass; three new CodeQL fixture alerts were individually dismissed after source review, without exclusions or protocol changes. API read-back confirms dismissal and CodeQL/Tests pass SUCCESS. <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#published-exchange-checkpoint-codeql-disposition-2026-11-04">Disposition</a> distinguishes dismissal from a new scan. No merge to dev or release acceptance follows.</td>
 </tr>
 <tr>
-<td><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#preview-dispatch-packets-m1-m6-2026-11-04">Fresh-context M1-M6 preview packets</a> scope the next six milestones; M0 acceptance remains required within the foundations.</td>
+<td><a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#preview-dispatch-packets-m1-m6-2026-11-04">Fresh-context M1-M6 preview packets</a> scope the next six milestones; M0 acceptance remains required within the foundations.</td>
 <td>Two isolated agents prepare entries mutation and real-provider/runtime packets from <code>c10290d2</code>, stopping before implementation approval. Coordinator owns records/joins/decisions. Later integration, pinned-client, realtime and operational packets are staged behind their acceptance inputs, not dispatched as six competing implementations. Current selected queue measurement: ST-PG unit gate passes; seven other items unmeasured, integration gates skipped.</td>
 </tr>
 <tr>
@@ -2973,7 +2973,7 @@ change to the shipping 16.0.0 candidate is authorized by this dispatch.</p>
 <tbody>
 <tr>
 <td>Durable DNS-friendly internal tenant name is distinct from optional disposable public aliases and stable tenant ID.</td>
-<td>Maintainer adopted a provider-neutral authoritative mapping and explicit trusted internal-ingress mode, preserving direct aliases and vendor-private routing. Current resolver's forwarded-alias precedence does not yet implement that mode; the <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#canonical-internal-hostname-boundary-2026-11-04">measured gap and next packet</a> are recorded. No production trust, durable registry or Consul integration is asserted.</td>
+<td>Maintainer adopted a provider-neutral authoritative mapping and explicit trusted internal-ingress mode, preserving direct aliases and vendor-private routing. Current resolver's forwarded-alias precedence does not yet implement that mode; the <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#canonical-internal-hostname-boundary-2026-11-04">measured gap and next packet</a> are recorded. No production trust, durable registry or Consul integration is asserted.</td>
 </tr>
 <tr>
 <td>Entries POST packet approved; implementation runs separately from the real-provider composition lab.</td>
@@ -2996,11 +2996,11 @@ change to the shipping 16.0.0 candidate is authorized by this dispatch.</p>
 </tr>
 <tr>
 <td><code>workspace/authority-next-20261103</code> at <code>ad0cbdac058789bd806ae49047c7f95a6670332c</code>, isolated and unpushed; not merged to <code>dev</code>. Read-only tenant-scoped PostgreSQL/RLS Shiro authority candidate, preserving anonymous access modes.</td>
-<td>Read-derived agent-executed evidence: 26 focused passes, zero pending/failing; current-grant and RLS controls; actual idle database termination leaves the worker alive and its next authorization unavailable. Lint/tier checks pass. See the <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#p2-authority-slice-handoff-2026-11-03">authority slice handoff</a> for commands and limits. No coordinator replay, full-suite pass, production verifier/HTTP wiring, in-flight outage acceptance or role enablement; no operator-visible change.</td>
+<td>Read-derived agent-executed evidence: 26 focused passes, zero pending/failing; current-grant and RLS controls; actual idle database termination leaves the worker alive and its next authorization unavailable. Lint/tier checks pass. See the <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#p2-authority-slice-handoff-2026-11-03">authority slice handoff</a> for commands and limits. No coordinator replay, full-suite pass, production verifier/HTTP wiring, in-flight outage acceptance or role enablement; no operator-visible change.</td>
 </tr>
 <tr>
 <td><code>workspace/entries-next-20261103</code> at <code>cabb5eecb5a15ee9050f8894299a78ae300ae731</code>, isolated and unpushed; not merged to <code>dev</code>. Dotted inclusion projection for dormant PostgreSQL entries reads.</td>
-<td>Read-derived agent-executed evidence: 50 focused PG/Mongo/API3 passes, including nested arrays, missing paths and conditional responses; refusal and array-recursion mutations fail as expected. Lint/tier checks pass. See the <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#p2-entries-projection-slice-handoff-2026-11-03">entries slice handoff</a>. Full-suite, combined integration and broader REST acceptance remain UNMEASURED; no operator-visible default change or PR-ready claim.</td>
+<td>Read-derived agent-executed evidence: 50 focused PG/Mongo/API3 passes, including nested arrays, missing paths and conditional responses; refusal and array-recursion mutations fail as expected. Lint/tier checks pass. See the <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#p2-entries-projection-slice-handoff-2026-11-03">entries slice handoff</a>. Full-suite, combined integration and broader REST acceptance remain UNMEASURED; no operator-visible default change or PR-ready claim.</td>
 </tr>
 <tr>
 <td>Combined <code>workspace/p2-integration-20261103</code> at <code>8b193e187fecaa93b41b5f3ced786a80d3e219f0</code>, clean and unpushed; includes both bounded slices and current <code>official/dev</code> <code>4a482627</code>.</td>
@@ -4906,7 +4906,7 @@ No verification record is captured yet: <code>verification-record.{json,md}</cod
 <code>tools/queue/verification-record.py</code> once, at release time, from the state being cut
 (<a href="../VERIFICATION-RECORDS.html">VERIFICATION-RECORDS.md</a>), and is never hand-written, so this directory
 has none until then. The items it is captured over are listed in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/releases/cgm-remote-monitor-16.0.0/verification-selection.txt">verification-selection.txt</a> (98 queue ids on 2026-10-31, 90 on 2026-10-30; 65 at the
 2026-10-27 dry run: every item this file or <a href="decisions.html">decisions.md</a> names, and the release items), with
 the capture command. The 25 added on 2026-10-30 are the items named since the dry run, fourteen of them from
 the 2026-10-27 and 2026-10-28 merges.</p>
@@ -5334,7 +5334,7 @@ their separately captured remote heads until the maintainer publishes this work.
 </tbody>
 </table>
 <p>Lane figures are <strong>read-derived</strong> from the local handoffs and immutable replica
-capture; the accepted baseline remains in R49/R50. The <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#next-lanes-and-shared-capacity-hold-2026-11-05">dated continuation</a>
+capture; the accepted baseline remains in R49/R50. The <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#next-lanes-and-shared-capacity-hold-2026-11-05">dated continuation</a>
 owns sequencing and limits. Unique timestamp allocation alone is read-derived
 insufficient for commit ordering; a same-data-commit/fencing design is still under
 investigation. No production clock fix, operator-visible runtime change, release
@@ -5375,7 +5375,7 @@ admission or push was made by this upkeep.</p>
 </tr>
 </tbody>
 </table>
-<p><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-settings-differential-and-serial-recovery-2026-11-06">R51 and serial continuation</a>
+<p><a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-settings-differential-and-serial-recovery-2026-11-06">R51 and serial continuation</a>
 links the adopted proof plan and scope. Local evidence: <code>HANDOFF-settings-verification-20261106.md</code>
 and <code>HANDOFF-cleanup-settings-runtime-20261106.md</code>; raw Docker identifiers remain local.
 No operator runtime deployment, release admission, candidate CI or application push claimed.</p>
@@ -5411,7 +5411,7 @@ No operator runtime deployment, release admission, candidate CI or application p
 </tr>
 </tbody>
 </table>
-<p><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-private-acquisition-and-pending-composition-2026-11-06">R52 continuation</a>
+<p><a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-private-acquisition-and-pending-composition-2026-11-06">R52 continuation</a>
 and the R52 integration record retain exact native acceptance commands/limits.
 Local evidence: <code>HANDOFF-private-acquisition-extraction-20261105.md</code> and its
 home recovery logs/audits. Original incomplete ENOSPC campaign remains preserved.</p>
@@ -5447,7 +5447,7 @@ home recovery logs/audits. Original incomplete ENOSPC campaign remains preserved
 </tr>
 </tbody>
 </table>
-<p><a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-selected-owner-policy-and-pending-composition-2026-11-06">R53 continuation</a>
+<p><a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-selected-owner-policy-and-pending-composition-2026-11-06">R53 continuation</a>
 and <a href="../../reports/owner-subject-policy-acceptance-2026-11-06.html">public C record</a>
 retain exact scope. Human issuer/refresh, full wildcard/default catalogue,
 existing-grant clamping, DELETE policy and production listener remain unimplemented.
@@ -5485,7 +5485,7 @@ No M0–M6 promotion or application push.</p>
 </tbody>
 </table>
 <p><a href="../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.html">Public cumulative capture</a>
-and <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06">R54 continuation</a>
+and <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06">R54 continuation</a>
 retain exact commands/hashes/limits. No application push, RC/deployment admission or
 new policy decision is made by this measurement.</p>
 <h3 id="update--independent-profile-acceptance-and-focused-clock-repair-2026-11-06">Update — independent profile acceptance and focused clock repair (2026-11-06)<a class="headerlink" href="#update--independent-profile-acceptance-and-focused-clock-repair-2026-11-06" title="Permanent link">&para;</a></h3>
@@ -5511,7 +5511,7 @@ new policy decision is made by this measurement.</p>
 </tbody>
 </table>
 <p><a href="../../reports/private-acquisition-profile-2026-11-06/index.html">Canonical profile report</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
 and <a href="../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.html">focused recovery record</a>
 retain exact scopes. No new numbered clock acceptance, milestone/RC promotion,
 production enablement or application push; no policy decision changed.</p>
@@ -5538,7 +5538,7 @@ production enablement or application push; no policy decision changed.</p>
 </tr>
 </tbody>
 </table>
-<p><a href="../../reports/tenancy/gate-controls-65bb8456-2026-11-06.html">Partial report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/reports/tenancy/gate-controls-65bb8456-2026-11-06.json">machine capture</a>. Lane detail: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code> (local). No maintainer policy decision changed. Root coordinator owns disposition and queue ref moves.</p>
+<p><a href="../../reports/tenancy/gate-controls-65bb8456-2026-11-06.html">Partial report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/reports/tenancy/gate-controls-65bb8456-2026-11-06.json">machine capture</a>. Lane detail: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code> (local). No maintainer policy decision changed. Root coordinator owns disposition and queue ref moves.</p>
 <h3 id="update--frozen-head-b4a-continuation-complete-2026-11-06">Update — frozen-head B4a continuation complete (2026-11-06)<a class="headerlink" href="#update--frozen-head-b4a-continuation-complete-2026-11-06" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -5561,7 +5561,7 @@ production enablement or application push; no policy decision changed.</p>
 </tr>
 </tbody>
 </table>
-<p><a href="../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.html">Continuation report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.json">machine capture</a>. Lane detail: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code> (local). No maintainer policy decision changed.</p>
+<p><a href="../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.html">Continuation report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.json">machine capture</a>. Lane detail: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code> (local). No maintainer policy decision changed.</p>
 <h3 id="update--completion-batches-adopted-2026-11-06">Update — completion batches adopted (2026-11-06)<a class="headerlink" href="#update--completion-batches-adopted-2026-11-06" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -5768,7 +5768,7 @@ Lane detail: <code>externals/work/HANDOFF-codex-completion-coordination-20261106
 </tr>
 </tbody>
 </table>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/reports/tenancy/batch-a-publication-d89a44e1-2026-11-06.json">publication snapshot</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/reports/tenancy/batch-a-publication-d89a44e1-2026-11-06.json">publication snapshot</a>
 owns exact remote job state. The connector lacked PR metadata-write permission;
 the verified author CLI applied the prepared description while retaining draft
 state. No comments, reviews or correspondence were sent.</p>
@@ -5895,7 +5895,7 @@ preserves precise scope and independently audited cleanup. No activation decisio
 </tr>
 </tbody>
 </table>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/072ef9e37b6643d66d00248308fa6979d75f559b/reports/tenancy/control-recovery-publication-83582e87-2026-11-06.json">publication snapshot</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/reports/tenancy/control-recovery-publication-83582e87-2026-11-06.json">publication snapshot</a>
 and <a href="../../reports/tenancy/2026-11-06-clock-http-workload/index.html">workload capsule</a>
 own measurements and limitations. Next socket/evaluator composition proceeds in a
 separate source batch; no later code is included by these successful checks.</p>
@@ -6006,7 +6006,7 @@ own source attribution, proof/observation changes, raw hashes and resource absen
 </tr>
 <tr>
 <td>Documents re-pinned to <code>83582e87</code></td>
-<td><a href="../../docs/30-design/tenancy/single-and-multitenant-architecture.html">Architecture comparison</a> (every source link re-verified at the head; the write-clock anchor moved from line 62 to 64; a table of every dormant module the PR holds, with its governing record), <a href="../../docs/30-design/platform/next-gen-platform-plan.html">next-gen plan</a> and its data file, <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a> current-acceptance paragraph, <a href="../../docs/30-design/tenancy/index.html">tenancy reading guide</a>, <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html">batching plan</a> (live read-back row, B1/B2 closure, R62–R64 in §5), <a href="../../docs/00-overview/PROGRAMME-STATUS.html">programme status</a> (D1–D23, the preview named), <a href="../../docs/00-overview/NEEDS-A-HUMAN.html">NEEDS-A-HUMAN</a> (what waits on a person for the preview).</td>
+<td><a href="../../docs/30-design/tenancy/single-and-multitenant-architecture.html">Architecture comparison</a> (every source link re-verified at the head; the write-clock anchor moved from line 62 to 64; a table of every dormant module the PR holds, with its governing record), <a href="../../docs/30-design/platform/next-gen-platform-plan.html">next-gen plan</a> and its data file, <a href="../../docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html">delivery roadmap</a> current-acceptance paragraph, <a href="../../docs/30-design/tenancy/index.html">tenancy reading guide</a>, <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html">batching plan</a> (live read-back row, B1/B2 closure, R62–R64 in §5), <a href="../../docs/00-overview/PROGRAMME-STATUS.html">programme status</a> (D1–D23, the preview named), <a href="../../docs/00-overview/NEEDS-A-HUMAN.html">NEEDS-A-HUMAN</a> (what waits on a person for the preview).</td>
 <td>Read-derived reconciliation; no application campaign rerun and no milestone promoted. R40–R43 citations are retained as history where pages cite them.</td>
 </tr>
 <tr>
@@ -6051,6 +6051,47 @@ own source attribution, proof/observation changes, raw hashes and resource absen
 </tbody>
 </table>
 <p>Lane ownership and runtime phase: <code>externals/work/HANDOFF-codex-completion-coordination-20261106.md</code> (local, untracked). The final-floor source snapshot is preserved beside its public measurement; raw credential/state traces remain private.</p>
+<h3 id="update--tenancy-execution-journals-consolidated-and-archived-2026-11-06">Update — tenancy execution journals consolidated and archived (2026-11-06)<a class="headerlink" href="#update--tenancy-execution-journals-consolidated-and-archived-2026-11-06" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Disposition</th>
+<th>Evidence and limits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current reading path</td>
+<td><a href="../../docs/30-design/tenancy/multitenancy-decisions.html">Tenancy decisions</a> preserves D1–D23 and their qualifications; the <a href="../../docs/30-design/tenancy/multitenant-delivery-roadmap.html">delivery roadmap</a> preserves journeys, boundaries and promotion criteria.</td>
+<td>Read-derived reorganization, not a new architecture decision, application campaign or milestone promotion. Later amendments retain their existing contract/release homes.</td>
+</tr>
+<tr>
+<td>Retention</td>
+<td>The complete decision/execution and delivery journals are in the <a href="../../docs/archive/tenancy/index.html">thematic archive</a>, with original headings, failed experiments, controls and measured-source boundaries retained.</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/reports/tenancy/tenancy-journal-consolidation-2026-11-06.json">Preservation record</a>: source prose and headings preserved; changes to retained bodies are Markdown-link destinations plus an explicit archive notice. Git retains intermediate revisions.</td>
+</tr>
+<tr>
+<td>References and generated views</td>
+<td>Reading guide, inbound references, queue evidence and platform-map sources distinguish current rules from archived evidence. Dashboard slice evidence now names its own document and heading, so new captures do not extend an archived journal.</td>
+<td>Reproduced queue validation/generation/check and affected decision/specification gates pass. Dashboard tests cover local report references, broken paths/anchors, stale output and nonlocal refusal. Link controls reject both a restored dead active-plan reference and a broken archive link, then pass after exact restoration.</td>
+</tr>
+<tr>
+<td>Claude continuation</td>
+<td>Fresh backup/upgrade source continuation delivered local <code>f4e0548793f0c472233984b1ae2667eeba8da0e0</code>, with ACL prewrite refusal, rollback-target preflight, contract documentation and an opt-in native suite.</td>
+<td>Read-derived handoff/source review: source-only unit/control evidence belongs to the continuation lane; original Claude worktree preserved. Native PostgreSQL and assembled-tree operational acceptance remain UNMEASURED. Integration/runtime ownership stays with the existing coordinator; no application push or role enablement.</td>
+</tr>
+</tbody>
+</table>
+<p>Backup/upgrade lane detail: <code>externals/work/HANDOFF-codex-backup-upgrade-continuation-20261106.md</code> (local, untracked).</p>
+<p>Reproduced validation for the consolidation: five dashboard tests pass; all 224
+references with heading fragments into the migrated documents resolve with the
+site's GitHub-compatible slugifier. The affected T30-AUTH, registration, records
+and authority gates pass; removing each current specification pointer produces
+its expected failure and exact restoration passes. The separate default
+queue-status baseline remains PASS=198 / FAIL=43 / UNMEASURED=124, with integration
+gates skipped; this documentation work does not make those wider gates green.</p>
+<p>Consolidation lane detail: <code>externals/work/HANDOFF-tenancy-journal-archive-2026-11-06.md</code> (local, untracked).</p>
 
 
 

@@ -4542,6 +4542,8 @@
       
         
       
+        
+      
     
     
     
@@ -6066,7 +6068,7 @@
 </div>
 <p><em>What this is: an analysis (contributor-facing). Read after the <a href="index.html">platform index</a> and
 <a href="spec/glossary.html">glossary</a> (§2 and §9 first); leads to the <a href="spec/identity.html">identity specification</a>.</em> <strong>Snapshot — describes 2026-10-09. Status: current; the evidence for D18.</strong> Every claim is <strong>read-derived</strong> (from source, a hypothesis about behaviour) unless marked
-<strong>measured</strong>. Sources and commits are in §1. Current decisions: <a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#1-decisions">execution plan
+<strong>measured</strong>. Sources and commits are in §1. Current decisions: <a href="../tenancy/multitenancy-decisions.html#1-decisions">execution plan
 §1</a>.
 <strong>Corrected in place 2026-10-12:</strong> §5 is measured on both hubs (TL;DR and §12 follow it); the §10 rows for the hub-sync design and <code>specs/sync/registrations/</code> record what the
 registrations now declare and what remains; the registrations row also records the D18 addendum grammar (<code>SCHEMA-REG-EXT</code>, 2026-10-12). <strong>Also 2026-10-18:</strong> §2 records the maintainer's decision on agent initiators (P5); the AndroidAPS items marked <strong>4.0.0 prerelease</strong> ship in <code>4.0.0-beta1</code> and <code>4.0.0-rc1</code> (§1); §4 and §5 carry figures generated from the registrations and the lab results (<code>tools/diagrams</code>), and §4 an animation (<code>tools/animations</code>) of the instances changing as records arrive. §6.1 draws the remote-command paths of §6 as sequences (channels and acknowledgements only). The rules this evidence supports are maintained in the <a href="spec/state-intent.html">state and intent specification</a>.</p>
@@ -6238,7 +6240,7 @@ Trio preset-join statement is read-derived.</p>
 </table>
 <p><em>P5, decided 2026-10-18 (maintainer):</em> no <code>agent</code> value is added to any initiator vocabulary; an
 agent initiator is written in the open-vocabulary form <code>{value: other, controllerTerm}</code>, as the
-registration specification (<a href="spec/registration.html#9-channels-roles-and-provenance">§9</a>) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. (<a href="../tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#263-d20--version-scoped-quirks-and-the-two-id-rule-maintainer-2026-10-16">execution plan</a>,
+registration specification (<a href="spec/registration.html#9-channels-roles-and-provenance">§9</a>) does for an agent's roles. No controller records an agent as initiator today. The registrations are built for needs that are latent but measured and demonstrated — in the corpus, in controller source and in the labs — not only for what apps send now; the open form lets a controller, simulator or lab record an agent initiator today, and a shared value can be named once the corpus or a lab shows one in use. (<a href="../tenancy/multitenancy-decisions.html#4-typed-controllers-provenance-and-compatibility">execution plan</a>,
 row 17; <a href="agent-trust-boundaries-2026-10-18.html#42-the-earlier-draft-and-the-rules-proposed-to-supersede-it">agents in the ecosystem §4.2</a>).</p>
 <h2 id="3-per-controller-matrix">3. Per-controller matrix<a class="headerlink" href="#3-per-controller-matrix" title="Permanent link">&para;</a></h2>
 <table>
