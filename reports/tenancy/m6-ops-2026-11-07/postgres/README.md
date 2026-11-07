@@ -1,8 +1,9 @@
-# M6 operations: bounded PostgreSQL recorded evidence — review candidate
+<a id="m6-sql-operations-record"></a>
+# M6 operations: bounded PostgreSQL recorded evidence
 
 This bundle validates an archived synthetic SQL-core measurement: initial **five cases**, **eleven distinct semantic failures with physical witnesses**, **eleven targeted restorations**, and a fresh final **five cases**. It is **RECORDED-EVIDENCE**. The gate reads observations and pinned app git objects; it does not execute a database run or assert current-HEAD, whole-M6, journey/client, browser, provider or production-availability acceptance.
 
-The coordinator accepted the bounded SQL result with a precise offline process-audit reconciliation and an independently indexed resource-release witness. The original parent `accepted:false` and `runtimeReleased:false` remain unchanged. This public projection and gate are proposed files in an isolated alignment worktree. No programme R entry, queue state, release claim or publication changes here.
+The coordinator accepted the bounded SQL result with a precise offline process-audit reconciliation and an independently indexed resource-release witness. The original parent `accepted:false` and `runtimeReleased:false` remain unchanged. [R73](../../../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) references this accepted bounded archive, and `TEN-RESOLVE` declares its recorded gate. M6 remains open; the gate does not enable roles or make a release claim.
 
 ## Actual attribution
 
@@ -96,4 +97,4 @@ node tools/queue/gates/_m6-ops-recorded/build.cjs \
 
 Two independent exports of the same indexed inputs produced byte-identical projection and plan files. The canonical projection digest is `3de6e8ccae2b6f9f9532316d1dca902d40a9c431d72e78d2916bbe8e1de22d28`.
 
-The coordinator owns future queue/control-registry wiring and one coherent programme record after joined B acceptance and broader verification. This review candidate leaves those records unchanged.
+R73, `TEN-RESOLVE` and the authored physical-corruption control now record the bounded queue wiring. Complete owner/identity/lifecycle, same-ID tenant restore, operating-envelope and production-admission contracts remain open.

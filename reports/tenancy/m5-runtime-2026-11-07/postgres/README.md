@@ -1,8 +1,9 @@
-# M5 bounded PostgreSQL recorded evidence — review candidate
+<a id="m5-postgres-runtime-record"></a>
+# M5 bounded PostgreSQL recorded evidence
 
 This bundle validates an archived synthetic measurement: initial ordinary **23**, **19 distinct controlled failures**, and fresh complete restoration **23**. It is **RECORDED-EVIDENCE**, not a fresh database run, current-HEAD acceptance, performance measurement, provider delivery, or complete M5/M6 acceptance. Public API/realtime recipient authority, broader roles and browser acceptance remain **UNMEASURED** here. The selected evaluator lifecycle and controlled UDS consumer boundary are included in the recorded PostgreSQL scope.
 
-The public projection and runnable gate are candidates for coordinator review. No programme acceptance row, queue state, or release claim is changed by this bundle.
+This accepted bounded archive is referenced by [R73](../../../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch). R73 owns the joined M5 functional-reference disposition; this PostgreSQL archive alone does not promote a milestone or establish current-HEAD/provider acceptance.
 
 ## Actual attribution and retained failures
 
@@ -83,13 +84,13 @@ env -u NS_TEST_POSTGRES_ADMIN_URI \
 
 This is a **broader fresh file-level reproduction**, including the additional current-state cases in the first file. It is not the archived exact 23-title selection and was not run for packaging. It requires an independently authorized disposable runtime environment. Exact archived selection, all 19 controlled source patch definitions and the invalid old mutation are in [plan.json](plan.json); the public gate does not pretend to execute them against a database.
 
-## Queue wiring proposal
+## Recorded queue wiring
 
-For the coordinator's future single coherent roadmap/milestone evidence update, add the following gate to `MT-RUNTIME-PLAN` while retaining explicit remaining role/browser/performance/provider work:
+R73 wires the following recorded gate to `MT-RUNTIME-PLAN`, alongside the separately attributed joined-role record. Broader provider/operating contracts remain explicit:
 
 ```yaml
 - run: node tools/queue/gates/m5-runtime-recorded.js
-  kind: static
+  kind: integration
   describe: >-
     RECORDED-EVIDENCE: validates the pinned synthetic PostgreSQL23/19/23
     record, per-phase source attribution, controlled physical observations,
@@ -103,7 +104,7 @@ Matching `queue/gate-controls.yaml` entry:
 - gate: node tools/queue/gates/m5-runtime-recorded.js
   control: node tools/queue/gates/m5-runtime-recorded.js --control physical
   positive-control: node tools/queue/gates/m5-runtime-recorded.js
-  control-kind: static
+  control-kind: integration
   proves: >-
     A rehashed recorded mean222 contradicts the independently captured
     two-reading166.5 bucket and fails EXPLICIT_ACQUISITION_FAILED; the
@@ -111,4 +112,4 @@ Matching `queue/gate-controls.yaml` entry:
     and missing complete restoration independently refuse.
 ```
 
-These are reviewable wiring proposals, not applied programme claims. Existing integration gates and `no-gate` coverage are not replaced by test-tier counts or this archival validator.
+These entries validate recorded evidence, not a new native run. Historical R62/R67/R68 attribution remains in its records; current gates replay the R73 archives rather than rerun accepted leaf campaigns. Broader `no-gate` contracts are not replaced by test-tier counts.

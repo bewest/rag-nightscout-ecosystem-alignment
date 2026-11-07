@@ -1,10 +1,11 @@
-# Joined M5 roles recorded evidence — review candidate
+<a id="m5-joined-roles-record"></a>
+# Joined M5 roles recorded evidence
 
 This gate validates an archived synthetic measurement: six ordinary phases, six distinct semantic controls, and six fresh restored phases at the source objects declared in `plan.json`. It replays the actual frozen physical predicates and timestamp/BSON oracle. It does **not** start PostgreSQL, MongoDB, Vault, API, realtime, evaluator or a browser.
 
 The six phases cover recovery/connected storage, data compatibility, durable notification handoff and cold control clear, plugin snooze/ACK compatibility, authority/config epochs, and an unchanged client on a controlled same-origin browser fixture. Server handoff, recipient event and browser presentation are separate observations. The browser fixture does not claim an evaluator-to-device journey. External providers, device delivery, capacity/performance and whole-programme acceptance remain **UNMEASURED**.
 
-The recorded PostgreSQL boundary has its separate sibling home. `m5-runtime-batch-recorded.js` validates both homes without inventing an aggregate application head. Its PostgreSQL portion requires the separately reviewed PG package to be joined by the coordinator. No queue, milestone or release status is changed by this candidate.
+This accepted archive is referenced by [R73](../../../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch), which owns the joined functional M5 promotion and remaining M6 boundaries. The recorded PostgreSQL boundary has its separate sibling home. `m5-runtime-batch-recorded.js` validates both homes without inventing an aggregate application head. Its PostgreSQL portion uses the separately reviewed PG package. The queue now declares the separate PG/roles gates; milestone promotion belongs to the complete R73 criterion disposition rather than this archive alone.
 
 ## Replay the record
 
@@ -45,7 +46,7 @@ node tools/queue/gates/m5-roles-recorded.js \
   --control retry-control-green
 ```
 
-That command must fail the physical control oracle. Existing native controls are not rerun to package this record. Coordinator review, gate-control registration and coherent programme wiring remain pending.
+That command must fail the physical control oracle. Existing native controls are not rerun to package this record. The authored retry-control corruption is registered in `queue/gate-controls.yaml`; R73 and `MT-RUNTIME-PLAN` record its current bounded wiring.
 
 ## Reproduce the projection
 
