@@ -1868,4 +1868,4 @@ preserved them as baseline and removed every newly created resource. The origina
 failed cleanup remains recorded. Local lane ownership, exact captures and pending
 approval details: `externals/work/HANDOFF-codex-completion-coordination-20261106.md`.
 
-Validation: application acceptance is reproduced in R73. Queue validation and generation, queue-check, docs-links, the three selected recorded gates and their break-it controls pass. The site render and site-check for the combined visualizations remain pending.
+Validation: application acceptance is reproduced in R73. Queue validation and generation, queue-check, docs-links, the three selected recorded gates and their break-it controls pass. The combined next-generation render/source provenance, new local fragment targets and site-check pass: zero build warnings or unresolved links, with noindex on all 1,771 HTML pages. Initial sandbox queue/link checks stopped at Node child-Git EPERM; unchanged host reruns pass. The visualization lane ran no application tests or source changes after final prcheck.

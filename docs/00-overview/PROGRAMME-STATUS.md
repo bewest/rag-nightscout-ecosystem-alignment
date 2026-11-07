@@ -82,9 +82,12 @@ shows the dependencies and bounded acceptance stages. These records distinguish 
 branch acceptance, combined integration and milestone completion; `make queue-status`
 measures the queue's claims.
 
-The accepted preview candidate is `74d7b3fc` on draft PR #8898. [R72](../30-design/remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06)
-owns its criterion verdicts; the release contents own publication/remote verification.
-The PR remains open/draft, without dev merge or operator release. The
+[R72](../30-design/remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06)
+retains the M0–M4 baseline; [R73](../30-design/remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch)
+accepts the functional M5 reference on one host at its recorded local source.
+M6 remains blocked. The [release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md)
+own the current published head and remote verification for draft PR #8898.
+Local acceptance does not imply remote publication, dev merge or operator release. The
 [architecture comparison](../30-design/tenancy/single-and-multitenant-architecture.md)
 lists what it holds and which record governs each module.
 Decisions D1–D23 live in the
