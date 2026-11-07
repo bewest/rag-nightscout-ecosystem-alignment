@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+        <meta name="description" content="Write or refresh a vendor-neutral capability-lane handoff with source anchors, acceptance limits, next integration boundary and ownership. Use for an ownership or context transfer, or when a capability stops or completes.">
       
       
       
@@ -27,7 +27,7 @@
     
     
       
-        <title>SKILL - Nightscout ecosystem alignment</title>
+        <title>Session handoff - Nightscout ecosystem alignment</title>
       
     
     
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SKILL
+              Session handoff
             
           </span>
         </div>
@@ -2185,7 +2185,7 @@
   <span class="md-ellipsis">
     
   
-    SKILL
+    Session handoff
   
 
     
@@ -2203,7 +2203,7 @@
   <span class="md-ellipsis">
     
   
-    SKILL
+    Session handoff
   
 
     
@@ -2227,6 +2227,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#handoff-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handoff granularity
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#1-record-the-programme-state-tracked" class="md-nav__link">
@@ -2655,6 +2666,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#handoff-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handoff granularity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-record-the-programme-state-tracked" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2715,15 +2737,21 @@
 
 
 
-<hr />
-<p>name: session-handoff
-description: Write a handoff that an agent of any vendor, with none of this session's context, can resume from: anchored commits, what is done and where it is recorded, what is next with its gates, what is local and unpushed, traps, and lane ownership. Use at the end of a lane, when stopping mid-task, or when another session or tool takes over.</p>
-<hr />
 <h1 id="session-handoff">Session handoff<a class="headerlink" href="#session-handoff" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>a7af645d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>e95108d74</code>.</em></p>
 <p>Two layers, linked: the <strong>programme-level state</strong> goes in the release records (shared, tracked),
 and the <strong>lane-level detail</strong> goes in a local handoff file (untracked, because it names worktrees
 and ports on this machine). Vendor memory is private to one tool and is never the only copy.</p>
+<h2 id="handoff-granularity">Handoff granularity<a class="headerlink" href="#handoff-granularity" title="Permanent link">&para;</a></h2>
+<p>Keep one evolving handoff for a capability lane. Update it when the next owner,
+blocker, acceptance verdict or integration boundary changes; link immutable
+captures instead of restating every run. A helper commit or individual control
+is not a new lane or a reason to create another chat/handoff.</p>
+<p>Lead with capability/criterion closed, remaining blockers and next join/owner.
+Keep the source anchors and evidence needed to resume safely. Programme acceptance
+is recorded per coherent batch; substantive failures, decisions and ownership
+transfers are still recorded promptly. Follow the repository's completion-focused
+coordination contract in <code>AGENTS.md</code> and the applicable batch plan.</p>
 <h2 id="1-record-the-programme-state-tracked">1. Record the programme state (tracked)<a class="headerlink" href="#1-record-the-programme-state-tracked" title="Permanent link">&para;</a></h2>
 <p>Append a dated Update table to <code>releases/&lt;product&gt;-&lt;version&gt;/contents.md</code> and any decision rows to
 <code>decisions.md</code> (the <code>release-record</code> skill). Hashes come from <code>git log</code> run now, not from a brief.</p>
@@ -2777,6 +2805,9 @@ owner, and the two file paths. Report a failing or skipped gate as such.</p>
 
 
 
+
+  
+  
 
 
 

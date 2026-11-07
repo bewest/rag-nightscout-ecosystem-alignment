@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+        <meta name="description" content="Measure a cgm-remote-monitor change or a defined cross-ecosystem compatibility claim using shipping-module labs, comparative matrices and meaningful failure controls. Use before claiming a fix reproduced or a client compatible; scale verification to capability and batch boundaries.">
       
       
       
@@ -27,7 +27,7 @@
     
     
       
-        <title>SKILL - Nightscout ecosystem alignment</title>
+        <title>Evidence harness: measure, control, record - Nightscout ecosystem alignment</title>
       
     
     
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SKILL
+              Evidence harness: measure, control, record
             
           </span>
         </div>
@@ -2005,7 +2005,7 @@
   <span class="md-ellipsis">
     
   
-    SKILL
+    Evidence harness: measure, control, record
   
 
     
@@ -2023,7 +2023,7 @@
   <span class="md-ellipsis">
     
   
-    SKILL
+    Evidence harness: measure, control, record
   
 
     
@@ -2047,6 +2047,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#choose-the-verification-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose the verification boundary
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#pick-the-instrument" class="md-nav__link">
@@ -2666,6 +2677,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#choose-the-verification-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose the verification boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pick-the-instrument" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2737,16 +2759,26 @@
 
 
 
-<hr />
-<p>name: evidence-harness
-description: Verify a cgm-remote-monitor change or a cross-ecosystem compatibility claim by measurement rather than by reading: boot the shipping module by path in a lab under tools/lab or tools/qc, run the write-contract matrix and classify the differing cells, prove every check with a break-it control, and record the run as a dated, labelled record. Use before calling any fix verified, any claim reproduced, or any client compatible.</p>
-<hr />
 <h1 id="evidence-harness-measure-control-record">Evidence harness: measure, control, record<a class="headerlink" href="#evidence-harness-measure-control-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-03 at <code>a7af645d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>e95108d74</code>.</em></p>
 <p>The programme's evidence has one shape. A harness <code>require()</code>s the shipping module <strong>by path from
 a worktree</strong> so the thing measured is the thing that ships; it runs against a throwaway database
-with synthetic data; it asserts liveness before and after each measured step; and every check is
-shown to fail on a known-bad state before its green is believed.</p>
+with synthetic data; it asserts liveness before and after each measured step; and each claimed
+property has a meaningful known-bad control before its green is believed. One independent control may
+exercise several assertions when it exposes the same failure mechanism.</p>
+<h2 id="choose-the-verification-boundary">Choose the verification boundary<a class="headerlink" href="#choose-the-verification-boundary" title="Permanent link">&para;</a></h2>
+<p>Finish a complete capability or adopted milestone criterion within its lane.
+Use focused/affected checks during implementation. For cgm-remote-monitor, the
+integration coordinator owns full/browser/enabled-corpus acceptance on the coherent frozen candidate;
+resumption, a helper commit or another control does not trigger that campaign.
+Retain exact-head attribution and required semantic/clinical safeguards.</p>
+<p>An early native proof is useful when its result could change the architecture or
+establish a critical boundary. State its question and exit condition, then join
+its result into the capability. After an unexpected failure, preserve the symptom
+and diagnose narrowly. Setup-only failures need preflight repair before another
+campaign, with the invalid capture retained. Record one capability/batch evidence
+bundle and link it from the evolving handoff; individual control logs stay in
+that bundle rather than each becoming a new programme acceptance record.</p>
 <h2 id="pick-the-instrument">Pick the instrument<a class="headerlink" href="#pick-the-instrument" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2796,7 +2828,10 @@ shown to fail on a known-bad state before its green is believed.</p>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--out<span class="w"> </span>/tmp/&lt;scratch&gt;/after.json
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--compare<span class="w"> </span>tools/qc/results/write-contract-matrix/&lt;pin&gt;.json<span class="w"> </span>/tmp/&lt;scratch&gt;/after.json
 </code></pre></div>
-<p>Run each tree <strong>twice</strong>; a cell that differs between a tree's own runs is noise, not a finding.
+<p>For a new differential matrix capture, run each compared tree <strong>twice</strong>; a cell
+that differs between a tree's own runs is noise, not a finding. This repeatability
+check belongs to the comparative experiment, not every helper validation or
+full-suite campaign; justified reuse of an accepted capture retains its source scope.
 Predict the differing cells before the run and write the prediction down; a result that matches a
 prediction is evidence, a result that surprises is a finding to stop and report. Pins live in
 <code>tools/qc/results/write-contract-matrix/</code>; the settings and database version of every run are part
@@ -2807,9 +2842,11 @@ of the record.</p>
    command, the expected output and the control; a runner that boots from <code>WC_WORKTREE</code> or an
    explicit worktree path; results under <code>results/</code> with the tree SHA in the file name.</li>
 <li>Seed synthetic data only. Database names contain <code>test</code>. Drop the database at the end.</li>
-<li><strong>Controls are authored, never derived.</strong> For each assertion, write the state in which it must
-   fail and run it there. Record both results. A revert that does not reproduce the original
-   symptom proves nothing about the check.</li>
+<li><strong>Controls are authored, never derived.</strong> For each claimed property, define and run a meaningful
+   failing state. A control family may cover several assertions sharing a failure mechanism.
+   Restore each break; run the unmodified focused capability suite after the control family.
+   Record positive, semantic failure and restoration results. A revert that does not reproduce
+   the original symptom proves nothing about the check.</li>
 <li>Stop and report when the code does not match the brief. Do not substitute the nearest thing that
    works; most real defects in this programme surfaced exactly at that point.</li>
 </ol>
@@ -2840,6 +2877,9 @@ of the record.</p>
 
 
 
+
+  
+  
 
 
 

@@ -2186,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>e95108d74</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3085,10 +3085,10 @@ contracts; future schema upload does not waive current compatibility testing.</p
 </thead>
 <tbody>
 <tr>
-<td><strong>Complete the roadmap in larger implementation batches, retaining targeted checks and early uncertainty proofs.</strong> A covers data/control/clients (M0–M4), B durable runtime (M5), C synthetic operations (M6); each frozen completion candidate receives comprehensive labs/V&amp;V, full regression and final prcheck.</td>
-<td>maintainer, 2026-11-06, approving the completion-batch recommendation in this session</td>
-<td>Existing multitenant items; manifest claims unchanged</td>
-<td>Adopted <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule and criterion-to-test matrix</a>. Two sub-batches of A are accepted and published on draft #8898: R60 <code>d89a44e1</code> (M0 promoted) and R62 <code>83582e87</code> (optional subject-reader policy, first dormant durable replay, populated PG recovery lab), the latter verified by R64 with CI and CodeQL green; R63 leaves the selected-reader mode unselected pending a 503 disposition for root clients. Implementation/test preparation may proceed in parallel; runtime overlap requires isolated owned fixtures and measured capacity. Small stamp/recovery, client-difference, authority/lifecycle and populated-restore/resource proofs remain before dependent assumptions expand. Exact-head acceptance, milestone criteria, separate notification/production gates and maintainer publication remain unchanged.</td>
+<td><strong>Complete the roadmap in capability/criterion lanes and coherent implementation batches, with targeted checks and early uncertainty proofs.</strong> A covers data/control/clients (M0–M4), B durable runtime (M5), C synthetic operations (M6).</td>
+<td>maintainer, 2026-11-06, completion batches adopted and completion-focused coordination reaffirmed</td>
+<td>Existing multitenant items; milestone scope and manifest claims unchanged</td>
+<td>The <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule and criterion matrix</a> define delivery. <a href="../../docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#completion-focused-coordination">Coordination rules</a> keep helper changes, fixtures and controls within one owned capability. Focused checks support implementation; the coordinator freezes the combined candidate for comprehensive full/browser/enabled-corpus acceptance and final prcheck. Preserve failures and diagnose narrowly before freezing planned repairs; do not repeat broad campaigns per leaf, control or resumption. Repair/preflight setup-only failures before retrying the intended campaign. Early architectural/critical-boundary proofs remain, with explicit exit conditions. Report criteria closed, remaining blockers and next join/owner with evidence links, using one evolving lane handoff and coherent batch acceptance record. Exact-source attribution, meaningful controls, milestone criteria, notification/production gates and publication authority remain unchanged.</td>
 </tr>
 </tbody>
 </table>

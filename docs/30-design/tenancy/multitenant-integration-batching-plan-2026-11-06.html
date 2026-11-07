@@ -2880,6 +2880,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#completion-focused-coordination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion-focused coordination
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-historical-measured-basis" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5295,6 +5306,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#completion-focused-coordination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion-focused coordination
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#1-historical-measured-basis" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5436,12 +5458,51 @@
 multitenant preview is batched, what verification runs at each stage, and which
 completion batches cover M0–M6 and where an early proof is still required.
 Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a2ed8bd9b3a22b66b14ecd610a3e3c63de912313/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e95108d74a7dfb69a1ed1c9dee3cc7d0dfecc2ae/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap.html">REST delivery roadmap</a>
 and the <a href="architecture-seams-execution-plan-2026-11-05.html">architecture seams plan</a>
 without changing release placement or promoting M0–M6.</em></p>
+<h2 id="completion-focused-coordination">Completion-focused coordination<a class="headerlink" href="#completion-focused-coordination" title="Permanent link">&para;</a></h2>
+<p><strong>Maintainer direction, 2026-11-06:</strong> organize sessions and subagents around complete
+capabilities and adopted milestone criteria. The acceptance ladder and A–C schedule
+below remain the plan; this section governs task size, test timing and reporting.</p>
+<ul>
+<li>A lane has an observable deliverable, one owner, an exit criterion, focused
+  positive/negative checks, unresolved decisions and a next integration boundary.
+  Helpers, fixture repairs and controls belong inside it. A new chat is useful for
+  an independently deliverable capability or context/ownership transfer.</li>
+<li>Complete the coherent implementation package before comprehensive acceptance.
+  During development, choose changed-code lint and affected/focused suites for
+  the behavior at risk. Preserve semantic controls for isolation, authorization,
+  clinical behavior and compatibility. Do not run full/browser/whole-corpus per
+  helper, leaf commit or resumption, or replay valid captures merely to repeat them.</li>
+<li>Keep small early proofs when an architectural unknown could invalidate dependent
+  work, a critical boundary needs native evidence, or an observed mismatch needs
+  diagnosis. Name the question and its stop condition; once resolved, incorporate
+  the result into the capability instead of extending a chain of proof-only tasks.</li>
+<li>The coordinator freezes the assembled candidate and runs one comprehensive
+  campaign plus final prcheck. If it fails, retain the failure and diagnose with
+  focused assertions/controls. Join the planned repairs, freeze the replacement,
+  and repeat acceptance when material inputs changed. Exact-head attribution and
+  justified source-identity reuse remain required; this changes no milestone bar.</li>
+<li>Resolve setup-only failures with preflight/startup checks before retrying the
+  intended campaign. Preserve their captures as invalid attempts, not product
+  results or separate milestone events. Valid in-flight work may finish.</li>
+<li>Report the capability delivered, criterion verdict, remaining blocker and next
+  integration boundary/owner, with an evidence link. Preserve supporting logs and
+  source identities without turning every checkpoint into a new programme update.
+  Use one evolving lane handoff and one acceptance bundle/update per coherent batch;
+  substantive failures, decisions and ownership changes still need prompt records.</li>
+</ul>
+<p>The immediate completion path is to finish the adopted M1/M2 capability gaps,
+freeze their combined candidate, and give explicit M1/M2 verdicts before M3/M4
+acceptance. B/M5 runtime and C operations continue as parallel capabilities.
+Use the <a href="multitenant-delivery-roadmap.html#milestones-and-continuous-integration">current roadmap</a>
+for scope; resource budgets, human identity or other explicitly deferred C/M6 work
+must not become invented prerequisites to earlier milestones. Current ownership
+and executed evidence remain in the dashboard, release records and local handoffs.</p>
 <p><a id="1-measured-basis"></a></p>
 <h2 id="1-historical-measured-basis">1. Historical measured basis<a class="headerlink" href="#1-historical-measured-basis" title="Permanent link">&para;</a></h2>
 <p>The following capture is the basis of the original B1–B7 dispatch, not a live
@@ -5566,7 +5627,7 @@ not the lane's nerves.</p>
 <tr>
 <td>Locally accepted</td>
 <td>this lane's change does what it says on its own head</td>
-<td>lint on changed JS; <code>npm run test:affected</code>; the lane's focused suites; every authored break-it control, red then restored</td>
+<td>changed-code lint and affected/focused capability suites; meaningful authored controls, then restoration; no separate full campaign per leaf</td>
 <td>the lane, in its handoff</td>
 </tr>
 <tr>
@@ -5583,7 +5644,7 @@ not the lane's nerves.</p>
 </tr>
 <tr>
 <td>Milestone promoted</td>
-<td>a roadmap section 4 criterion list is fully met</td>
+<td>an adopted roadmap milestone criterion list is fully met</td>
 <td>the milestone's own list; controls rerun on the cumulative tree; client-binary replay where the milestone claims client compatibility; benchmark where it claims capacity</td>
 <td>maintainer decision, recorded in the roadmap and dashboard</td>
 </tr>
@@ -5623,8 +5684,8 @@ lane does not rerun an accepted campaign.</p>
    the source inventory before freezing, including joined clock suites.
    An explicitly disabled benchmark stays named pending, never a functional pass.</li>
 <li><strong>CI runs the corpus.</strong> A PostgreSQL plus Vault job on #8898 moves the
-   stage-three campaign off the single local slot. The roadmap's section 4 already
-   calls for explicit PG jobs as applicable suites execute.</li>
+   stage-three campaign off the single local slot. The current roadmap's milestone
+   criteria call for explicit PG jobs as applicable suites execute.</li>
 <li><strong>Queue gates measure the batch head.</strong> After a batch's campaign passes,
    move each member item's <code>--ref</code> to the frozen batch head and run
    <code>make queue-status</code> with the admin URI set, inside the slot. Native refs stay
@@ -5882,11 +5943,11 @@ partial R57 preserved; its instrument repair is a separate change. B5's joined
 clock corpus required an inventory repair; source listing is verified but expanded
 runtime acceptance remains UNMEASURED. These bounded results are inputs to A,
 not completion of A.</p>
-<p>Current ownership: root coordinator owns Batch A integration and acceptance;
-the existing M4 chat owns the independent client lab; the M4 application-repair
-agent owns diagnosed UUID-default and literal-regexp compatibility work; the M5
-agent owns the executable recovery prototype and first dormant durable replay
-implementation. B7 direction is adopted in the
+<p>The following ownership notes retain their captured dispatch context; the
+current dashboard and coordinator's evolving handoff own active assignments.
+Do not redispatch a completed lane from this narrative. The coordinator owns
+criterion closure, coherent source freeze and comprehensive acceptance. B7 direction
+is adopted in the
 <a href="durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">contract acceptance</a>;
 its approval record has been reconciled from the separate decision lane.
 Recovery semantics and checkpoint bookkeeping require explicit implementation
