@@ -4705,7 +4705,7 @@
 
 
 <h1 id="1600-integration-record">16.0.0 integration record<a class="headerlink" href="#1600-integration-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>0ef07c77d</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>d654d29e7</code>.</em></p>
 <p><em>Contributor-facing. Living record of how the cgm-remote-monitor 16.0.0 candidate is assembled and
 tested, in the form of the <a href="rc-15.0.9-integration-record.html">15.0.9 integration record</a>. Item state is
 in <code>queue/work-queue.yaml</code>; defect facts are in the <a href="nightscout-backfix-register.html">backfix register</a>;
@@ -8148,7 +8148,7 @@ parent consolidation handoff.</p>
 <code>3d5eac196256e447859373beadf7abf2efbfb2ce</code>, branch
 <code>codex/owner-local-auth-20261105</code>, a clean descendant of R46 <code>44331668</code>.
 The <a href="../tenancy/owner-authority.html">owner authority contract</a> owns the adopted
-policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
+policy; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/tools/lab/owner-authority/results/2026-11-05-application-acceptance.json">application acceptance and log hashes</a>
 retain the campaign summary. This is locally fixed code, not merged/released or
 published on #8898 by this lane. The coordinator has incorporated this clean
 application commit into its separate frame-integration tree, pending its own
@@ -8224,10 +8224,10 @@ invalid token's actual POST answer201 instead of401. Removing session-active
 checking makes a revoked session's GET answer200 instead of403. Reusing an earlier
 snapshot makes committed grant removal's next GET answer200 instead of403. Every
 mutant fails at the intended HTTP assertion; setup failure is not accepted as red.
-See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
+See <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/tools/lab/owner-authority/results/2026-11-05-http-controls.json">raw control summary</a>.</p>
 <p><strong>Repeated authorization-pipeline lab using the actual application verifier:</strong>
 16 semantic checks, 4 non-vacuous verifier/state controls, 24 timing cases/2880
-operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
+operations. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/tools/lab/owner-authority/results/2026-11-05-application-module.json">Raw repeat</a>
 pins instrument <code>f814f967c</code>, application <code>ab09297b</code> and application-module SHA256.
 A direct git comparison confirms unchanged verifier bytes at final <code>3d5eac19</code>;
 this carries the component measurement forward without relabeling its source head. At concurrency8, current
@@ -8661,7 +8661,7 @@ arbitrary lock-order guarantees. Native full records18containers/26volume
 references, browser3/5, final database1/1 and affected2/2, all recorded absent.
 Unknown unrelated resources remain untouched; no global cleanup guarantee.</p>
 <p>Public <a href="../../../reports/owner-subject-policy-acceptance-2026-11-06.html">native acceptance</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/tools/lab/owner-subject-policy/results/17f9a457-acceptance.json">machine capture</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/tools/lab/owner-subject-policy/results/17f9a457-acceptance.json">machine capture</a>
 record original output hashes/environment/controls. This records lane acceptance;
 root combined full and clock/profile work remain pending. Clock lower report8+
 controls/oldSQL42703/corrected9 is separate; no clock HTTP/full/bench acceptance
@@ -8724,7 +8724,7 @@ files0600. Bounded successful-campaign audit, not global leak freedom. Clock and
 independent profile2ee not joined; clockHTTP/full/bench acceptance separately
 pending. No new Dresult, M0–M6/RC promotion, defaultproduction enablement or push.</p>
 <p><a href="../../../reports/tenancy/serial-cumulative-acceptance-2026-11-06.html">Public record</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/serial-cumulative-acceptance-2026-11-06.json">machine capture</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/serial-cumulative-acceptance-2026-11-06.json">machine capture</a>
 contain exact inputpins/counts/hash-only original-output index and sanitized
 cleanup aggregates. Local source manifestSHA256
 <code>348c35f65831664479e6b0b263453206091a0c783d6e0675cf17bed71056a9c2</code>;
@@ -8790,8 +8790,8 @@ change. Outer PG/Vault services supplied by broad runner do not establish PG
 evaluator behavior. Captured7serial campaigns/11containers/20volumes all recorded
 absent; unknown/named/attached resources and failed creates without IDs outside audit.</p>
 <p><a href="../../../reports/private-acquisition-profile-2026-11-06/index.html">Canonical profile report</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/private-acquisition-profile-2026-11-06/acceptance.json">acceptance capture</a>
-and additive <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/private-acquisition-profile-2026-11-06/acceptance.json">acceptance capture</a>
+and additive <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/private-acquisition-profile-2026-11-06/artifact-index.json">artifact index</a>
 were adopted without altering original capture/README. All22indexed artifact
 lengths/hash verified. AcceptanceSHA256
 <code>9645a8d630f874877466e46186f55b75db97714a195cb2d726e89b0ca2eb73c4</code>;
@@ -8858,15 +8858,15 @@ Contention/latency benchmark, Mongo comparison, mixed writers, bulk ties, SIGKIL
 cleanup bound and CI on this head remain UNMEASURED. Clock opt-in, default off. No
 M0–M6 promotion, no application push.</p>
 <p><a href="../../../reports/tenancy/tenant-clock-join-2026-11-06.html">Canonical report</a> and
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/tenant-clock-join-2026-11-06.json">machine capture</a>.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/tenant-clock-join-2026-11-06.json">machine capture</a>.</p>
 <h3 id="r57---frozen-head-controls-stopped-on-invalid-authority-instrument-2026-11-06">R57 - frozen-head controls stopped on invalid authority instrument (2026-11-06)<a class="headerlink" href="#r57---frozen-head-controls-stopped-on-invalid-authority-instrument-2026-11-06" title="Permanent link">&para;</a></h3>
 <p><strong>INCOMPLETE, no B4a acceptance.</strong> Frozen CRM <code>65bb8456618df9816106692a32f0dd5c76e216d1</code>, alignment base <code>88902eba2532c42bf83a91a8104f9ea64da2ca18</code>. Reproduced captured logs: 11/12 positive instruments, 27 semantic-red controls, 1 invalid control, 8/12 restored instruments. Owner-policy/settings originals were re-read without rerun. Profile excluded because absent on this head.</p>
 <p><code>rest-authority --control authority</code> exits 1 before Mocha: <code>CONTROL-INVALID: expected source boundary missing</code>. Read-derived cause: the gate searches <code>authority.authorize</code> while frozen data-access uses <code>currentAuthority.authorize</code>. This is not semantic evidence. No source repair, queue ref move, milestone promotion, default enablement or push. B5 acceptance prerequisite remains unsatisfied. Missing controls/restores and subject-admin remain UNMEASURED.</p>
-<p>Earlier local classifier stop (Supertest Error rather than AssertionError) is preserved and manually classified by its intended HTTP500 versus503 assertion. The control was not rerun. Runtime released on mismatch; identified gate-owned cleanup audited, older fixture anonymous volumes preserved with ownership limits. <a href="../../../reports/tenancy/gate-controls-65bb8456-2026-11-06.html">Partial report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/gate-controls-65bb8456-2026-11-06.json">machine capture</a> retain exact symptoms, per-suite counts, artifact hashes and limitations. Local handoff: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code>.</p>
+<p>Earlier local classifier stop (Supertest Error rather than AssertionError) is preserved and manually classified by its intended HTTP500 versus503 assertion. The control was not rerun. Runtime released on mismatch; identified gate-owned cleanup audited, older fixture anonymous volumes preserved with ownership limits. <a href="../../../reports/tenancy/gate-controls-65bb8456-2026-11-06.html">Partial report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/gate-controls-65bb8456-2026-11-06.json">machine capture</a> retain exact symptoms, per-suite counts, artifact hashes and limitations. Local handoff: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code>.</p>
 <h3 id="r58---frozen-head-b4a-controls-complete-after-instrument-repair-2026-11-06">R58 - frozen-head B4a controls complete after instrument repair (2026-11-06)<a class="headerlink" href="#r58---frozen-head-b4a-controls-complete-after-instrument-repair-2026-11-06" title="Permanent link">&para;</a></h3>
 <p><strong>Bounded gate evidence complete:</strong> unchanged application <code>65bb8456618df9816106692a32f0dd5c76e216d1</code>; authority instrument <code>3845b3a156e19fec77b9bb495117c12403a5a953</code>, other instruments unchanged. R57 remains an immutable incomplete capture. This continuation adds ten runs and combines them by instrument: <strong>12 positive instruments, 32 semantic controls, 12 restored positives</strong>. Profile excluded because absent on this head.</p>
 <p>Reproduced: repaired authority3passing/2failing (expected401/503got200), audience4passing/1failing(expected401got200), restored5; subject-admin positive13, current/tenant/atomic each0passing/1failing, restored13; owner restored22/settings restored12. All positive/restored runs have0pending/0failing. Authority controls fail HTTP assertions before later effect checks; no separately quantified mutated-effects claim. Original invalid control and local classifier stop remain preserved.</p>
-<p>Runtime released after complete measurements; recorded gate-owned cleanup audited, older fixture anonymous volumes preserved. No application change, queue ref move, milestone promotion, default enablement, full/browser/corpus run or push. B5 joined-head acceptance remains separate. <a href="../../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.html">Continuation report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.json">machine capture</a> retain exact symptoms, artifact/source hashes and cleanup limits. Local handoff: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code>.</p>
+<p>Runtime released after complete measurements; recorded gate-owned cleanup audited, older fixture anonymous volumes preserved. No application change, queue ref move, milestone promotion, default enablement, full/browser/corpus run or push. B5 joined-head acceptance remains separate. <a href="../../../reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.html">Continuation report</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/gate-controls-65bb8456-continuation-2026-11-06.json">machine capture</a> retain exact symptoms, artifact/source hashes and cleanup limits. Local handoff: <code>externals/work/HANDOFF-codex-b4a-20261106.md</code>.</p>
 <h3 id="r59---completion-batch-source-incorporation-and-recovery-model-2026-11-06">R59 - completion-batch source incorporation and recovery model (2026-11-06)<a class="headerlink" href="#r59---completion-batch-source-incorporation-and-recovery-model-2026-11-06" title="Permanent link">&para;</a></h3>
 <p><strong>Source-stage evidence only:</strong> Batch A application <code>863c8a2b3fa7ac3e13ecb5f7dca90de6766bb7e0</code>
 incorporates the corpus inventory repair, typed role table and narrow M4
@@ -8982,7 +8982,7 @@ also completed successfully. The PR remains draft and its description now cites
 the accepted head, actual execution/reuse boundaries and successful remote runs.</p>
 <p>Accepted alignment records at <code>ed18a7bceb096fc52e155fc5a005106f7e91263d</code> were
 published and their <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42296363495">CI/site workflow</a>
-passed. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/batch-a-publication-d89a44e1-2026-11-06.json">immutable publication snapshot</a>
+passed. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/batch-a-publication-d89a44e1-2026-11-06.json">immutable publication snapshot</a>
 records job names, conclusions and exact source scope. R60's benchmark pending
 case and remaining M1–M6 criteria are unchanged by remote CI success. Later owner,
 replay and populated-recovery branches remain outside this published batch.</p>
@@ -9164,7 +9164,7 @@ with the peer's prior public main ancestry retained. Its
 <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42303565719">CI/site workflow</a>
 passed, including build/check/gh-pages publication. The PR description now cites
 R62/R63 scope, source-identity reuse and these successful current-head remote runs.
-It remains open and draft. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/control-recovery-publication-83582e87-2026-11-06.json">Immutable publication snapshot</a>.</p>
+It remains open and draft. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/control-recovery-publication-83582e87-2026-11-06.json">Immutable publication snapshot</a>.</p>
 <p>R62's last application gate is scoped to the 835 publication worktree. Separate
 archived-source controls retain their actual 871 source and lane attribution;
 no later experiment is relabelled as a prerequisite execution on 835. The selected
@@ -9507,15 +9507,15 @@ An initial zero-service preflight stop and initial reporter-string aggregate
 extraction are preserved; normalized scalar comparison changes no execution/source.
 Actual execution belongs to1acb only. Root independently verifies26 protected
 source groups/files unchanged on later readermode-removale2; scoped reuse is not
-new-head execution. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/owner-event-reader-removal-source-2026-11-06.json">Source failure/repair/removal evidence</a>
+new-head execution. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/owner-event-reader-removal-source-2026-11-06.json">Source failure/repair/removal evidence</a>
 records the two stale socket gate registrations, meaningful retained mutation
 coverage, repaired unit2306 and removal unit2304. Full/default-client/pooler/browser/
 whole39-corpus/prcheck acceptance on frozene2 remains separate. No M5/M6 promotion.</p>
 <h3 id="r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72 - admitted entries and owner configuration completion batch (2026-11-06)<a class="headerlink" href="#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06" title="Permanent link">&para;</a></h3>
 <p><strong>Reproduced comprehensive acceptance on <code>74d7b3fc25c7e3c496c438847c95e89ec7fe6061</code>, containing official/dev <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>.</strong>
 <a href="../../../reports/tenancy/completion-batch-74d7-2026-11-06/index.html">Immutable aggregate and source attribution</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/completion-batch-74d7-2026-11-06/summary.json">summary</a> and
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/reports/tenancy/completion-batch-74d7-2026-11-06/artifact-index.json">52-artifact index</a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/completion-batch-74d7-2026-11-06/summary.json">summary</a> and
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4440e4d723aa0182008bc97cd4f2052bb3bd5b87/reports/tenancy/completion-batch-74d7-2026-11-06/artifact-index.json">52-artifact index</a>.
 Root independently verifies every indexed artifact. Source remains clean and unchanged after final prcheck.</p>
 <table>
 <thead>
@@ -9652,6 +9652,199 @@ engines and enabled corpus, succeed; three release-image publication jobs skip.
 The alignment promotion/map publication586f8c83 has <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42331010678">successful CI</a>.
 These are remote measurements after the accepted local campaign; no application
 source or test was changed/replayed after final prcheck.</p>
+<p><a id="r73-durable-runtime-operations-batch"></a></p>
+<h3 id="r73---durable-runtime-and-bounded-operations-batch-2026-11-07">R73 - durable runtime and bounded operations batch (2026-11-07)<a class="headerlink" href="#r73---durable-runtime-and-bounded-operations-batch-2026-11-07" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced joined acceptance; M5 functional one-host reference promoted locally;
+M6 remains open.</strong> The
+assembled application candidate is <code>f0fac99a2fccee259c9a76eba0123058bf288d96</code>,
+tree <code>09dd7baf52d51f2725e7cac732fabd3f8280b482</code>. Fresh remote inspection retains
+<code>official/dev</code> at <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>; the application
+candidate is local, not merged to dev or released. R72's accepted M0–M4 scope is
+retained. The joined criterion disposition below promotes M5, rather than any
+component record alone. M6, default/production enablement and publication retain
+their separate status.</p>
+<table>
+<thead>
+<tr>
+<th>Recorded family</th>
+<th>Actual executed source</th>
+<th>Reproduced boundary and record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M5 PostgreSQL recovery, evaluator, alarm and durable requests</td>
+<td><code>f4e3f7e7b9eab6388cee1fb3470d380506917e05</code> and <code>353bb4445143bc85fe9f52e6ba3295247b23a96a</code></td>
+<td>Initial23,19 distinct physical semantic controls and fresh complete23 restoration. <a href="../../../reports/tenancy/m5-runtime-2026-11-07/postgres/index.html">The PostgreSQL record</a> owns exact per-phase attribution, original stopped verdicts, precise regrades and the excluded timed-out control.</td>
+</tr>
+<tr>
+<td>Joined API/realtime/evaluator and browser consumers</td>
+<td><code>b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952</code></td>
+<td>Six fresh ordinary phases, six intended physical semantic reds, six fresh ordinary restorations. <a href="../../../reports/tenancy/m5-runtime-2026-11-07/roles/index.html">The roles record</a> retains every original process, physical predicate, controlled patch and source binding. Independent replay matched all18 verdicts;54 containers,90 volumes and87 observed process births were absent. The87 include20 Chromium births.</td>
+</tr>
+<tr>
+<td>Bounded populated SQL operations</td>
+<td><code>9298d79305e941fcfd36effa594e0e0bccf79994</code>, with OLD <code>a7f5cbf71ab9016855976fae74730727d0a78024</code></td>
+<td>Initial C1–C5,11 physical semantic controls,11 targeted restorations and fresh final C1–C5. <a href="../../../reports/tenancy/m6-ops-2026-11-07/postgres/index.html">The SQL operations record</a> compares all37 CURRENT and31 OLD tables, ledgers, rows, identities, ACL/RLS, relations and inheritance. Original parent false closure remains explicit; only nine exact terminal-Z/empty-command audit samples are reconciled against independent live identities and resource release.</td>
+</tr>
+</tbody>
+</table>
+<p>These are separate executed heads, not an invented aggregate native head. Against
+the final candidate,118 of119 joined-role source references are byte-identical;
+the exception is test registration. Sixty of61 SQL-core references are identical;
+the exception is the independently checked process-audit collector correction.
+Application SQL, runtime and protocol bytes covered by those comparisons are
+unchanged. Source equivalence does not relabel an old execution as a new one.</p>
+<p>The joined roles exercise current-state recovery and connected storage,
+12 physical Mongo/PostgreSQL DATA comparisons across six domains, durable
+same-identity notification retry, cold authorized control clear, actual private
+plugin snooze/ACK, current authority/configuration epochs, and the unchanged
+client's same-origin sockets and urgent UI. The browser event is supplied at the
+actual realtime boundary; evaluator-to-realtime handoff is measured separately.
+This is not a single evaluator-to-device journey or external-provider delivery
+proof. Stable request identity prevents duplicate request creation; it does not
+undo an external effect accepted before its response was lost. Original
+suppression expiry, active-window behavior and single-tenant defaults retain
+their separate default/consumer verification.</p>
+<p>Clinical acquisition failure cannot create a new ordinary clinical notification
+request. Independently authorized, committed ACK/snooze controls may still create
+a durable control-clear request; the cold-clear control exercises that distinction.</p>
+<p><strong>Retained combined-run failure and causal repair.</strong> The first assembled run on
+<code>e8827e1d77bfe0c58c4cfe4ff65e10304a4d9b31</code> completed7,620 passing,
+165 pending and nine dependency failures. The private wrapper's injected
+<code>NODE_PATH</code> made intentionally tool-absent scratch installations find the shared
+webpack/parser dependencies. The same two actual test files reproduced5 pass /
+9 fail with that variable,14 pass with the key removed, the same nine failures
+when reintroduced, and14 pass after restoration. No application assertions were
+weakened. The corrected wrapper removes both inherited and forced <code>NODE_PATH</code>.</p>
+<p>That run also reproduced19 retained anonymous volumes: nested fixtures removed
+their owned containers without requesting anonymous-volume removal. All22
+containers and166 observed process births were absent. The original failed
+cleanup verdict is immutable. Deletion of those exact old volumes awaits explicit
+local authorization; later runs preserve them as known baseline residuals and
+never adopt or delete them. The final fixture changes add volume removal only to
+24 owned terminal calls in15 files. Four actual-source failed-creation probes
+also exposed cleanup of uncreated names in two fixtures: old4 fail → fixed4 pass
+→ old-behavior ablation4 fail → restored4 pass. Post-success ownership tracking
+now protects those paths. These probes fake only Docker's external boundary;
+they do not fabricate successful database operations or native cleanup evidence.</p>
+<p><strong>Final candidate verification.</strong> A fresh production build at <code>f0fac99a</code> completed
+with zero webpack errors and three performance warnings; all16 asset hashes were
+checked. The private verification checkout has its own cache and synthetic test
+key and consumes that build. Default browser verification preserves the original
+<code>playwright.chromium.launch()</code> call: actual installed option normalization selects
+the headless-shell binary, separately from the named-reference fixture's explicit
+full-Chromium binary. The observer must see the selected executable's birth.</p>
+<table>
+<thead>
+<tr>
+<th>Final-tree check</th>
+<th>Current disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full nonbrowser suite through the actual owned runner</td>
+<td><strong>Reproduced:7,633 passing,165 pending,0 failing.</strong> Unit2,645; DOM205; dependency368 with2 pending; core319; harness99; integration3,979 with163 pending; stress18. Source head/tree stayed clean and unchanged. All22 new containers,32 new volumes and165 observed process births were absent; baseline preserved, including the old19 residual volumes.</td>
+</tr>
+<tr>
+<td>Entire default browser tier</td>
+<td><strong>Reproduced:684 passing,0 pending,0 failing</strong>, actual Chromium153.0.8010.12. The unchanged launch selected the pinned headless shell;285 such births and7 Node births were absent. All3 new containers/5 new volumes were absent; old19 preserved.</td>
+</tr>
+<tr>
+<td>Entire enabled multitenant corpus</td>
+<td><strong>Reproduced:all45 suites,528 passing,1 pending,0 failing</strong>, no filter, no signal, no remaining resources. The sole pending case is the disabled end-to-end clock latency/throughput benchmark. Independent raw-report, selected-inventory and pending-title checks pass. All41 new containers,58 new volumes and128 observed births were absent; old19 preserved.</td>
+</tr>
+<tr>
+<td>Final <code>prcheck.sh</code></td>
+<td><strong>Reproduced:exit0</strong>, after the accepted full/browser/corpus campaign. Exact head, tree, lock, empty index and clean publishing/verification trees retained; <code>official/dev</code> unchanged. The first sandbox invocation could not resolve GitHub; its unchanged-source setup failure is preserved separately. The same script with host network access passed. No application test or source change followed the successful final check.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>M5 criterion disposition under the adopted reference bar:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Required family</th>
+<th>Applicable reproduced evidence</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typed consistent current-state/absence recovery and refusal without partial persistence</td>
+<td>PG record plus actual corpus hard-delete restart, unstamped v1/internal and socket activity, row/byte/persistence rollback, and concurrent commit across snapshot pages</td>
+<td>Accepted.</td>
+</tr>
+<tr>
+<td>Actual evaluator consumption, retained/time-only cycles, config changes, failure and shutdown</td>
+<td>PG lifecycle/notification record plus actual executable recovery and joined separate roles</td>
+<td>Accepted.</td>
+</tr>
+<tr>
+<td>Separate API/realtime/evaluator startup, scheduling, missed/duplicate wakes and restart</td>
+<td>Actual joined-role recovery and fresh restoration; selected roles on one machine</td>
+<td>Accepted; no multi-node ownership claim.</td>
+</tr>
+<tr>
+<td>Existing socket namespace/source/replies/retry and current authority/configuration</td>
+<td>Twelve ordinary DATA pairs, connected typed storage, current collections and socket/config epochs, with physical red/restored controls</td>
+<td>Accepted at the declared wire/client scope.</td>
+</tr>
+<tr>
+<td>Durable original suppression/default-level effects, private plugin ACK and restart</td>
+<td>PG alarm record plus actual plugin/consumer socket effects and control-clear evidence</td>
+<td>Accepted.</td>
+</tr>
+<tr>
+<td>Persisted request intent, same-identity ambiguous retry, current consumer admission and shutdown</td>
+<td>PG notification/consumer record plus actual realtime handoff, cold control clear and UUID/plugin/clear controls</td>
+<td>Accepted; external effects can repeat.</td>
+</tr>
+<tr>
+<td>Preserved default/single consumers and unchanged browser behavior</td>
+<td>Full default suite, entire default browser, entire enabled corpus and separate actual recipient/browser observation</td>
+<td>Accepted without an evaluator-to-device or all-client claim.</td>
+</tr>
+</tbody>
+</table>
+<p>The transport mapping is explicit: <a href="../tenancy/durable-event-delivery-contract-2026-11-06.html#9-what-this-contract-does-not-decide">B7 §9</a>
+permits a slot, polling or both while provider selection remains deferred. This
+reference uses initial and scheduled consistent snapshots. It does <strong>not</strong> execute
+a PostgreSQL <code>LISTEN</code> catch-up/handshake or establish notification latency. The
+startup/concurrency proof composes actual consistent paging/interleaving/rollback,
+scheduled role recovery and downstream subscription/authority epochs. Conditional
+direct-connection guidance still applies if a LISTEN/NOTIFY provider is selected.
+No every-transition history or capacity guarantee is added.</p>
+<p>The portable gates replay archived synthetic evidence without starting services:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>node<span class="w"> </span>tools/queue/gates/m5-runtime-batch-recorded.js<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span>--repo<span class="w"> </span><span class="s2">"</span><span class="nv">$APP_OBJECT_REPOSITORY</span><span class="s2">"</span><span class="w"> </span>--deps<span class="w"> </span><span class="s2">"</span><span class="nv">$APP_NODE_MODULES</span><span class="s2">"</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nv">NS_M6_OPS_RECORDED_REPO</span><span class="o">=</span><span class="s2">"</span><span class="nv">$APP_OBJECT_REPOSITORY</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span>node<span class="w"> </span>tools/queue/gates/m6-ops-recorded.js
+</code></pre></div>
+<p>Root independently measured ordinary → deliberately rehashed corruption →
+restored acceptance for the PostgreSQL record, all13 roles controls and all13
+SQL operations controls. The aggregate M5 gate checks both separate record homes.
+The three wired recorded gates pass, and each authored control is NON-VACUOUS.
+The broader parent items retain their explicit no-gate boundaries. The selected
+vacuity command also reports pre-existing duplicate registry entries:15 extra
+entries remain, compared with17 at the baseline; none of the three new gate keys
+is duplicated. This is not a claim of a clean global control registry.
+Missing committed app objects or lock-matched BSON dependencies are not a green
+result. The gates read objects into owned scratch; they never fetch or check out
+a peer tree. Private environments, credentials, raw logs and global machine
+inventories are excluded from the public projections.</p>
+<p><strong>Remaining criterion boundaries.</strong> M5's functional one-host reference is accepted
+and promoted; publication and remote CI readback are pending. Live provider/device delivery,
+performance/capacity, production trust and human identity/session effects are not
+established by these functional records. Same-ID identity-bearing tenant restore
+remains <code>OPEN/UNSUPPORTED</code>; whole-deployment fresh-target restore and tenant-local
+fixture quiescence do not establish a shared allocator fence. The optional
+allocator/fence discriminator remains source-only and cannot hold or promote the
+current bounded SQL result. Current-cycle state and local coordination are linked
+from release contents; no dev merge, operator release or real-data admission is
+claimed here. The blocked publication attempt did not update the remote draft PR;
+its published source remains R72's <code>74d7b3fc25c7e3c496c438847c95e89ec7fe6061</code>.</p>
 <h2 id="known-test-defects-on-dev">Known test defects on <code>dev</code><a class="headerlink" href="#known-test-defects-on-dev" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

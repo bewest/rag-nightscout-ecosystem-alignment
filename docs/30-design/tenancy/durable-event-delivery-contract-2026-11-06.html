@@ -5927,6 +5927,8 @@ time-based alarms; it never silently repairs lost write events. A consumer that
 finds its checkpoint missing starts from the floor the operator provisioned, and
 says so in its health report; it does not invent one.</p>
 <h2 id="7-evaluator-and-notification-state">7. Evaluator and notification state<a class="headerlink" href="#7-evaluator-and-notification-state" title="Permanent link">&para;</a></h2>
+<p><a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a> owns current functional M5 acceptance. The historical source inventory below
+remains anchored to the earlier source in §0; it is not a current code inventory.</p>
 <p>The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-wide-alarm-suppression">tenant-wide suppression decision</a>
 settles first-preview ack/snooze effects: shared within the tenant for the alarm
 group/level, original absolute expiry retained through restart, and no extension
@@ -5934,8 +5936,9 @@ from repeats during the active window. Preserve the existing default duration an
 level-2-to-level-1 effect. Per-user/device suppression is separate. Storage shape
 and historical retention are engineering/operational work; the unchanged client
 protocol supplies no durable request identity for indefinite post-expiry deduplication.
-Persistence, crash/retry and cross-tenant acceptance remain unmeasured.</p>
-<p>Where that state lives <strong>today</strong> at <code>35903069</code>, <strong>read-derived</strong>:</p>
+R73 records bounded persistence, crash/retry and cross-tenant acceptance.
+Live provider/device delivery and operating/retention budgets remain separate.</p>
+<p>Historical state locations at <code>35903069</code>, <strong>read-derived</strong>:</p>
 <table>
 <thead>
 <tr>
@@ -5992,9 +5995,12 @@ and the seams plan's identity rule:</p>
    <code>(tenant, settings version, plugin set)</code></strong> with a bounded lifetime; a key
    change discards the retained cycle rather than carrying it across versions.
    There is no process-global mutable clinical frame.</li>
-<li>A failed cycle retains the entire prior successful result and timestamp and
-   performs no notification handoff; the next real trigger recovers (R50, R55
-   <code>frame-retention</code> control: null replacing the kept properties is the red).</li>
+<li>A failed clinical cycle retains the prior successful result and timestamp
+   and creates no new ordinary/alarm notification request; the next real trigger
+   recovers (R50, R55 <code>frame-retention</code> control: null replacing the kept properties
+   is the red). Independently committed, authorized ACK/snooze controls under D23
+   remain effective and may produce a control-clear while acquisition fails.
+   That control effect does not mark the clinical cycle successful.</li>
 <li>Ack and snooze are <strong>per tenant</strong> writes. D23 names their writer: the
    client acks on the <code>/alarm</code> socket as today, <code>realtime</code> forwards the ack,
    like every other socket write, unchanged to <code>api</code>'s internal write endpoint,
@@ -6028,7 +6034,10 @@ for retry; joined implementation acceptance remains separate.</p>
 <li>Preserve existing normal alarm/snooze/repeat-window behavior and tenant-wide
    suppression/original expiry. Current authority, configuration identity and
    suppression must govern dispatch/retry; a queued request cannot bypass them.
-   Failed cycles enqueue no new handoff. Shutdown fences late dispatch/publication.</li>
+   Failed clinical cycles enqueue no new ordinary/alarm request. Independently
+   committed, authorized ACK/snooze controls may enqueue a control-clear; their
+   effects are distinct from clinical-cycle success. Shutdown fences late
+   dispatch/publication.</li>
 <li>Preserve the single-tenant path and existing client/wire shapes. New durable
    preview recovery is not evidence of equivalent external failure behavior:
    retrying an uncertain send can repeat an alert. Reuse shared seams only with
@@ -6053,8 +6062,10 @@ budget or live egress is authorized by this decision.</p>
 <h2 id="8-entry-bar-before-any-implementation">8. Entry bar before any implementation<a class="headerlink" href="#8-entry-bar-before-any-implementation" title="Permanent link">&para;</a></h2>
 <p>The roadmap asks for executable controls before one producer/consumer recovery
 slice. Each row names the predicted green and the exact red symptom; a control
-that goes red for a setup reason is not evidence (clock proof plan). All are
-<strong>UNMEASURED</strong> today.</p>
+that goes red for a setup reason is not evidence (clock proof plan). The rows
+below retain the original predicted controls. R73 owns the actual executed
+mechanisms, physical observations and criterion mapping; a predicted mutation
+is not evidence that that exact experiment ran.</p>
 <table>
 <thead>
 <tr>
@@ -6111,8 +6122,9 @@ that goes red for a setup reason is not evidence (clock proof plan). All are
 </tr>
 </tbody>
 </table>
-<p>These rows are the gate <code>MT-RUNTIME-PLAN</code> lacks today; the queue item keeps
-<code>no-gate</code> until a runnable instrument exists in <code>tools/queue/gates/</code>.</p>
+<p>The executable recorded-evidence gates and source applicability are linked from
+R73 and the queue. They replay the archived measurements rather than starting a
+fresh native campaign.</p>
 <h2 id="9-what-this-contract-does-not-decide">9. What this contract does not decide<a class="headerlink" href="#9-what-this-contract-does-not-decide" title="Permanent link">&para;</a></h2>
 <p>For the current decision queue, use the <a href="m5-m6-decision-list.html">M5/M6 decision list</a>.
 The later snapshot-reconciliation choice in §11 settles the initial current-state
@@ -6193,8 +6205,9 @@ sentence the entry bar in §8 can falsify:</p>
 <h2 id="11-maintainer-acceptance-and-experiments">11. Maintainer acceptance and experiments<a class="headerlink" href="#11-maintainer-acceptance-and-experiments" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m5-bounded-snapshot-reconciliation">bounded snapshot reconciliation decision</a>
 selects the initial M5 current-state recovery path. It preserves existing writer
-contracts and requires explicit row/byte refusal; implementation/native acceptance
-and scan cadence/capacity remain separate measurements. Every-transition and
+contracts and requires explicit row/byte refusal. R73 records bounded functional
+implementation/native acceptance for the first reference; scan cadence/capacity
+budgets remain separate measurements. Every-transition and external
 notification-delivery guarantees retain their own contracts.</p>
 <p>The maintainer adopted B7's design direction on 2026-11-06 in the B7 approval
 chat: proceed with tenant-local durable checkpoints, commit-coupled ordering,
@@ -6203,7 +6216,9 @@ scalability and performance. The decision is recorded in the
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#b7-durable-multitenant-delivery-2026-11-06">release decisions</a>.
 This accepts the direction and the executable entry bar, not measured distributed
 recovery, a performance budget, a provider, milestone promotion or release admission.
-<code>MT-RUNTIME-PLAN</code> remains in-progress with <code>no-gate</code> until its instrument exists.</p>
+R73 supplies the functional M5 disposition and recorded instruments. The queue
+owns broader item state and remaining admission gates; this design document does
+not make a fresh current-HEAD or production acceptance claim.</p>
 <p><strong>What UNMEASURED means.</strong> The named behavior has no applicable executed capture
 on the stated assembled source and workload. It is neither a failure nor a pass.
 A source reading is a hypothesis; a focused positive and mechanism-specific red
