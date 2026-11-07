@@ -1,0 +1,179 @@
+{
+  "measurement": "reproduced",
+  "scope": "headless owner request-wire fixture and affected native followup",
+  "initial": {
+    "head": "f07804b33c057c693335eb353757df60691b22fa",
+    "passing": 9,
+    "pending": 0,
+    "failing": 7,
+    "ownerPassing": 2,
+    "evaluatorPassing": 7,
+    "ownerFailures": "request fixture returned tenant refusal before intended checks; combined canary and SQL refusal not reached"
+  },
+  "diagnosis": {
+    "mechanism": "Node fetch replaced the synthetic tenant Host with its loopback connection host; node:http preserves the explicit header",
+    "sourceChange": [
+      "tests/owner-preview.integration.test.js"
+    ],
+    "productSchemaDefaultsOtherTestsIdentical": true,
+    "resolverOrPolicyBypass": false
+  },
+  "followup": {
+    "head": "4cd95d069675b650e1173779057a7927f4873702",
+    "passing": 9,
+    "pending": 0,
+    "failing": 0,
+    "combinedCLI": {
+      "sameProcess": true,
+      "distinctSockets": true,
+      "realProviders": [
+        "PostgreSQL",
+        "Vault"
+      ],
+      "dataManagementStatus": 405,
+      "ownerManagementStatus": 200,
+      "dataCanaryStatus": 201,
+      "independentAuditDelta": 1,
+      "dataUnchangedByOwnerUpdate": true
+    },
+    "readerSQLRefusal": {
+      "workers": 2,
+      "refusedStatus": 503,
+      "sanitized": true,
+      "noOwnerMutation": true,
+      "restoredStatus": 200,
+      "restoredAuditDelta": 1
+    }
+  },
+  "cleanup": {
+    "initialReleased": "2026-11-06T23:11:58Z",
+    "followupReleased": "2026-11-06T23:16:44Z",
+    "eachContainersAbsent": 3,
+    "eachMountedVolumesAbsent": 4,
+    "eachObservedNodeIdentitiesAbsent": 8,
+    "eachVolumesAfter": 462,
+    "observerErrors": 0
+  },
+  "limits": [
+    "SQL SELECT privilege refusal is not a network or transport outage test.",
+    "Original transient evaluator producer PID was not independently observed; native kill/exit assertion passed.",
+    "Evaluator positives execute on f078 and are not relabeled as 4cd.",
+    "Separate semantic owner gate captures establish their own control/restoration boundary.",
+    "No joined full/browser/corpus acceptance, human issuer/refresh, production trust or M2 promotion."
+  ],
+  "privateArtifactIndexes": [
+    {
+      "privateCapture": "owner-evaluator-native-f078-20261106",
+      "indexSha256": "74489ae4f6e4c932b2f0085a2a34ede8a24caa9384551b53c3a9b5ceac8f528d",
+      "artifacts": [
+        {
+          "file": "cleanup-audit.json",
+          "bytes": 4596,
+          "sha256": "0a7453753f846710f9498df857fc1a3eb36fdeb7103b7f45c9c010aa3286c7d5"
+        },
+        {
+          "file": "observe-resources-processes.py",
+          "bytes": 3150,
+          "sha256": "bd00d4cca555eae7c9e2c7dca4f2dc046f991d99d1acb71c1feccd090bb6d5cf"
+        },
+        {
+          "file": "resources-processes.json",
+          "bytes": 1643,
+          "sha256": "0bedcca624ed0f6b52e7942382ca9e895aebeddcfadf7bb2dff9037f60296d8e"
+        },
+        {
+          "file": "resources.json",
+          "bytes": 13104,
+          "sha256": "db5ac04c2082114604df880bfcfbff33965de10d90678a81cb158ceb2c59a609"
+        },
+        {
+          "file": "run.json",
+          "bytes": 986,
+          "sha256": "f79243cd6c80ede2c30e142b165293c606aa1e0e5ca36e02cd96e0f9cecc9501"
+        },
+        {
+          "file": "run.log",
+          "bytes": 11719,
+          "sha256": "fb8667ff9513f590ad8c52fe565f04203fe3e94a559d9fe5d9c51aa4babdf86d"
+        },
+        {
+          "file": "summary.json",
+          "bytes": 1861,
+          "sha256": "0ba097d93fd55725ba9fd6fba32d4c93528ee012440677aff9d56995a2b32aba"
+        }
+      ]
+    },
+    {
+      "privateCapture": "owner-wire-diagnostic-20261106",
+      "indexSha256": "982506de984fc435ad6c345aea5f27c1e7845ef199a74b9d20b0f2a6e01fe4a9",
+      "artifacts": [
+        {
+          "file": "echo-wire.js",
+          "bytes": 2276,
+          "sha256": "73bd8adca131440d7654c1c7e288615f8f1e0b09fd86f17ffdd5e364e7d07fd6"
+        },
+        {
+          "file": "echo-wire.json",
+          "bytes": 1300,
+          "sha256": "1381aa1c71b5d55df17b04b5f71e65289373178c0d44c7527f30d851efd82c90"
+        },
+        {
+          "file": "echo-wire.log",
+          "bytes": 848,
+          "sha256": "420015a827b004fb48c473d7bab1c0acb695449237eedbb0363c40fb4f13650c"
+        },
+        {
+          "file": "lint.log",
+          "bytes": 606,
+          "sha256": "82460f61dd51076ac7e25f3d79e33c352a5533c3f05b5e97c2bc793712939b7b"
+        },
+        {
+          "file": "source-checks.log",
+          "bytes": 1747,
+          "sha256": "0535de7baa26691740c44303b75e7d48edd5e38a77f61d995978b8ac7ca8bafe"
+        }
+      ]
+    },
+    {
+      "privateCapture": "owner-native-wire-fixed-20261106",
+      "indexSha256": "0f715f0fcc6e4b8699d93df0a0612684ec974dfbc82728e9f8c9d2b824281fe2",
+      "artifacts": [
+        {
+          "file": "cleanup-audit.json",
+          "bytes": 4367,
+          "sha256": "89f73bd4ae382086e0fa7a870e8f919b0ccfb565d041b410fabb26f770629a06"
+        },
+        {
+          "file": "observe-resources-processes.py",
+          "bytes": 3150,
+          "sha256": "bd00d4cca555eae7c9e2c7dca4f2dc046f991d99d1acb71c1feccd090bb6d5cf"
+        },
+        {
+          "file": "resources-processes.json",
+          "bytes": 1643,
+          "sha256": "958078702443f12aa25811584312333a76dcc13816828475b9d0b2631fb71120"
+        },
+        {
+          "file": "resources.json",
+          "bytes": 13102,
+          "sha256": "fb70a9648b4375e5c4d1ebc66422b3288384f343e6edf51991094f30db02fd12"
+        },
+        {
+          "file": "run.json",
+          "bytes": 925,
+          "sha256": "105c29a5af5dd8adb70ac4cdf94442bfbae29279c5e2f9b3b1a4a235a4258d97"
+        },
+        {
+          "file": "run.log",
+          "bytes": 3094,
+          "sha256": "74ca81a1d15baa2bf3b70d31c4bbbd31253e3c816f42edd155f16ea2a64afd76"
+        },
+        {
+          "file": "summary.json",
+          "bytes": 1899,
+          "sha256": "446076618991385c65858bd19fe597f0337264a3f692389047b0af6e90d4f09b"
+        }
+      ]
+    }
+  ]
+}
