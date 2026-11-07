@@ -90,7 +90,7 @@ to the table above; they are not line references into the joined source.
    3 already reserved "later the tenant". A consumer that receives an event
    without a stamp treats it as a wake-up only and reads from its checkpoint.
    **Current joined implementation:** after-COMMIT callbacks receive the final
-   transaction floor; unclocked, no-allocation and settle events carry null.
+   transaction floor; `stamp` is null for unclocked, no-allocation and settle events.
    [R71](../remedial/rc-16.0.0-integration-record.md#r71---transaction-final-floor-postgresql-component-control-2026-11-06)
    owns the physical component proof and [R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06)
    owns comprehensive integration and the explicit nullable single-site settle
@@ -321,6 +321,12 @@ sentence the entry bar in §8 can falsify:
     it locally; R56 owns the joined baseline and its measured limits.
 
 ## 11. Maintainer acceptance and experiments
+
+The [bounded snapshot reconciliation decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation)
+selects the initial M5 current-state recovery path. It preserves existing writer
+contracts and requires explicit row/byte refusal; implementation/native acceptance
+and scan cadence/capacity remain separate measurements. Every-transition and
+notification-delivery guarantees retain their own contracts.
 
 The maintainer adopted B7's design direction on 2026-11-06 in the B7 approval
 chat: proceed with tenant-local durable checkpoints, commit-coupled ordering,
