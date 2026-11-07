@@ -1900,3 +1900,17 @@ Current owned worktrees, exact captures, original failure symptoms and next owne
 `externals/work/HANDOFF-m6-restore-fence-20261107.md`. No active native resources
 or reusable grant remain after the recorded closure. Queue validation/generation, queue-check, docs-links and whitespace checks pass
 for this coherent document/queue batch; no application-source readiness is inferred.
+
+
+### Update — M6 admission continuation and adopted outage direction (2026-11-07)
+
+| Scope | Result / claimed state | Next boundary |
+|---|---|---|
+| Original history integration | Original guidance and architecture commits remain in the evidence branch ancestry; original outage-policy commit `a5aef2b149d84f4a5ab65da814004b7067bfbf7f` merged normally. | Local and unpushed; retain original commits when integrating this branch. |
+| Human access policy | Maintainer adopted the [existing-access outage policy](decisions.md#oidc-provider-outage-existing-access). | Policy adoption only; shared OIDC implementation and outage acceptance remain unmeasured. |
+| Operation-window source | Local source `53fa7912cb7b6c0aafcf30023193fe1081563bf0` adds required common-lower selection and reserved startup metadata read-only enforcement. Native [R75](../../docs/30-design/remedial/rc-16.0.0-integration-record.md#r75-operation-lifetime-early-proof-and-cache-parameter-mismatch) remains attributed to its earlier source. | Exact schema/role admission is in its owned source lane; CLI/cohort selection, operator drain and allocator admission remain open. Same-ID identity-bearing import stays unsupported. |
+| Characterization preparation | Reproduced pure parent and HTTP-guard controls pass for the reviewed finite packet. Native execution has not started; the unrelayed grant is suspended. | Coordination awaits explicit outbound-chat messaging permission after automatic approval review rejected the relay. This restriction does not establish a runtime failure or architectural verdict. |
+
+Current exact branch heads, local packets, runtime ownership and next integration boundary:
+`externals/work/HANDOFF-m6-restore-fence-20261107.md`. No operator-visible behavior,
+default, deployment or milestone promotion changes in this update.
