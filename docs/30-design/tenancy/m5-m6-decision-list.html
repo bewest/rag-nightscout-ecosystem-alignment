@@ -5336,7 +5336,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>e3ad7d6de</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>cda54ab55</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-06. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5375,6 +5375,10 @@ production permission or waive an existing criterion from that preference.</p>
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-wide-alarm-suppression">Tenant-wide group/level suppression</a>, original expiry retained across restart, active-window repeats do not extend it. Per-user/device scope follows separately.</td>
 </tr>
 <tr>
+<td>Notification retry responsibility</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#durable-notification-requests-and-retries">Persist request intent before dispatch; retry same identity</a>. Preserve suppression/dedup/single behavior; joined notification-consumer verification required. No exactly-once external delivery claim.</td>
+</tr>
+<tr>
 <td>First-preview ownership changes</td>
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">Operator-assisted</a>; self-service co-owner/transfer follows separately. Last-owner, current authority, audit and secret boundaries remain required.</td>
 </tr>
@@ -5400,7 +5404,8 @@ production permission or waive an existing criterion from that preference.</p>
 <p>These are bounded topics for a concrete proposal, not blanket implementation stops.
 A recommendation remains a proposal until recorded in release decisions.
 Shared OIDC/provider-backed renewal and tenant-wide alarm suppression are adopted.
-Review remaining session effects and notification handoff while implementation continues.</p>
+Review remaining session effects and operational parameters while implementation continues.
+Notification retry responsibility is settled; joined consumer acceptance is implementation work.</p>
 <table>
 <thead>
 <tr>
@@ -5416,9 +5421,9 @@ Review remaining session effects and notification handoff while implementation c
 <td>Durable tenant-wide alarm-state implementation and focused restart/failure/retry controls may proceed. Per-user/device enhancement is not a preview requirement.</td>
 </tr>
 <tr>
-<td>M5 notification handoff</td>
-<td>Define durable request identity and crash/retry responsibility before enabling handoff; separate request persistence from delivery to a device. Select a provider only when its enabled capability needs it.</td>
-<td>Current-state recovery; synthetic handoff experiments. Do not promise exactly-once external effects.</td>
+<td>M5 notification adapter/operations</td>
+<td>Durable intent/same-identity retry is settled. Define a concrete adapter contract and measured retry/retention bounds before its enabled use; do not mistake an acceptance receipt for device delivery.</td>
+<td>Durable handoff implementation and joined actual-consumer tests may proceed with controlled adapters. Provider selection/live delivery remains separately gated.</td>
 </tr>
 <tr>
 <td>M6 human session effects</td>

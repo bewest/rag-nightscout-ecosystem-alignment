@@ -5488,7 +5488,7 @@
 multitenant preview is batched, what verification runs at each stage, and which
 completion batches cover M0–M6 and where an early proof is still required.
 Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e3ad7d6de84c6f773700a1cdf7a8635978e5723d/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cda54ab5568d27a97b4f0c7984845d5bc3c21e8a/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap.html">REST delivery roadmap</a>
@@ -5913,7 +5913,7 @@ cannot substitute for that mapping.</p>
 <tr>
 <td>M5 sockets/evaluator/ack</td>
 <td>B: D23 forwarding with actual ack/no-ack behavior, current authorization/reconnect, tenant rooms/caches, replay-equivalent evaluation and durable ack/snooze recovery</td>
-<td>Implementation after interfaces are proven; ack schema/retention and notification delivery retain their own decision/acceptance gates. Live external notifications are not admitted by evaluator lab success.</td>
+<td>Implementation after interfaces are proven; ack schema/retention and notification delivery retain their own decision/acceptance gates. Live external notifications are not admitted by evaluator lab success. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#durable-notification-requests-and-retries">Durable request/retry responsibility</a> is adopted; joined ordinary/snooze/repeat/restart/ambiguous-send/foreign/failed-cycle/shutdown consumer tests are required, not inferred from uploader passes.</td>
 </tr>
 <tr>
 <td>M6 populated operations and bounds</td>

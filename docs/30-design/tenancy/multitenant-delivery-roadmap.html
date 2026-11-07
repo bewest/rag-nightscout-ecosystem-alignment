@@ -5402,12 +5402,12 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>e3ad7d6de</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>cda54ab55</code>.</em></p>
 <p><em>Contributor-facing living plan. Consolidated 2026-11-06 from the delivery journal
 and the adopted release decisions, without a new application measurement or
 milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/e3ad7d6de84c6f773700a1cdf7a8635978e5723d/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cda54ab5568d27a97b4f0c7984845d5bc3c21e8a/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5659,6 +5659,10 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 <tr>
 <td>M5 durable alarm state</td>
 <td>Apply the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-wide-alarm-suppression">adopted tenant-wide group/level suppression contract</a>: API-persisted state and original expiry survive restart, active-window repeats do not extend suppression, and existing default/level effects remain. No indefinite post-expiry deduplication is inferred from the unchanged client protocol. Exercise persistence failure and restart boundaries against actual client behavior. Live external notification delivery remains a separate gate; enabled durable request handoff needs its own crash/retry oracle.</td>
+</tr>
+<tr>
+<td>M5 durable notification handoff</td>
+<td>Apply the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#durable-notification-requests-and-retries">durable request/retry decision</a>: tenant-bound intent persisted before dispatch, stable identity across restart/ambiguous retry, no new request from a failed cycle. Verify joined notification consumers for ordinary alarm, snooze/repeat window, restart, ambiguous acceptance, foreign authority/configuration and shutdown. Preserve normal dedup/suppression and single behavior. Distinguish possible duplicate external effects from duplicate clinical records; uploader compatibility is not notification acceptance. Live provider/device delivery remains separate.</td>
 </tr>
 <tr>
 <td>M6 bounded owner API</td>
