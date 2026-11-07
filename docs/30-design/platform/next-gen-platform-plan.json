@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-06: R62/R64 published835 acceptance remains historical; optional reader clamping is withdrawn by maintainer decision after R63 root incompatibility. Application removal and fresh comprehensive candidate verification are pending. Writer ownerPolicy remains. M0 promoted; M1/M2/M5 in progress and M3/M4/M6 blocked. M2 uses the roadmap cell; human issuer/refresh, existing-grant lifecycle and production resolution trust belong to M6. M1 resource budgets deferred to C. M4 bar: headless actual clients plus source-pattern replay, no all-client claim; Android emulator in C. Local R67/R68 native evidence and final-floor component proof do not establish fresh full acceptance.",
+ "measured": "2026-11-06: R62/R64 published835 acceptance remains historical; optional reader clamping is withdrawn by maintainer decision after R63 root incompatibility. Removed in the local candidate; comprehensive verification pending. Writer ownerPolicy remains. M0 promoted; M1/M2/M5 in progress and M3/M4/M6 blocked. M2 uses the roadmap cell; human issuer/refresh, existing-grant lifecycle and production resolution trust belong to M6. M1 resource budgets deferred to C. M4 bar: headless actual clients plus source-pattern replay, no all-client claim; Android emulator in C. Local R67/R68 native evidence and final-floor component proof do not establish fresh full acceptance.",
  "tracks": [
   {
    "id": "storage",
@@ -772,7 +772,7 @@
    "phase": "boundary",
    "state": "progress",
    "short": "Per-tenant config table",
-   "title": "Writer owner-authority policy and proposed-grant fencing are retained. Optional subject-reader catalogue clamping is withdrawn for backward compatibility; source removal is pending. M2 requires tenant-local config/versioned writes and route separation.",
+   "title": "Writer owner-authority policy and proposed-grant fencing are retained. Optional subject-reader catalogue clamping is withdrawn for backward compatibility; removed in the local candidate; comprehensive verification pending. M2 requires tenant-local config/versioned writes and route separation.",
    "ref": "Selected R40 services are separate from the older seam catalogue. Current T30-SCHEMA-CONFIG static gate fails its crm-seam D15 table predicate; see the architecture evidence gaps. No full-catalogue promotion.",
    "depends": [
     "T30-RESEARCH",
@@ -841,7 +841,7 @@
    "state": "progress",
    "short": "Tenant-scoped auth",
    "title": "Current persisted tenant authority and optional local Ed25519 verification remain. Optional subject-reader clamping is withdrawn; legacy tenant api-secret access must keep working. M2 requires cross-tenant signature refusal and no environment/root/key leakage.",
-   "ref": "R62/R63 reader-mode measurements remain history, not current direction. Removal and final-head verification are pending. Human issuer/refresh, lifecycle clamping and production resolution trust are M6 criteria. Headless owner writer config.ownerPolicy is retained.",
+   "ref": "R62/R63 reader-mode measurements remain history, not current direction. Removed in the local candidate; comprehensive final-head verification pending. Human issuer/refresh, lifecycle clamping and production resolution trust are M6 criteria. Headless owner writer config.ownerPolicy is retained.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
@@ -976,7 +976,7 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current policy / settings",
-   "title": "Optional subject-reader clamping is withdrawn as backward incompatible. Retain tenant-local config, versioned writes and owner writer-policy enforcement; application reader-option removal and candidate verification are pending.",
+   "title": "Optional subject-reader clamping is withdrawn as backward incompatible. Retain tenant-local config, versioned writes and owner writer-policy enforcement; reader option is removed in the local candidate; comprehensive verification pending.",
    "ref": "M2 bar is the roadmap cell. Versioned-write re-execution and comprehensive owner/data/operator listener separation remain pending. Human issuer/refresh, existing-grant lifecycle policy and production resolution trust move to M6.",
    "spec": [
     {

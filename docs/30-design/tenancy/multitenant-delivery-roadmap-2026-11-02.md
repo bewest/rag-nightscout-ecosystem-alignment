@@ -32,8 +32,7 @@ ownership. The dashboard supersedes them for coordination.
 **Current acceptance and direction:** R62/R64 published #8898 acceptance and
 R63 client measurements retain their historical scope. The maintainer has
 **withdrawn optional subject-reader clamping**, rather than leaving it unselected:
-a tenant's own legacy `api-secret` must retain authorized200. Application removal
-and fresh broad-candidate verification are pending. Headless owner
+a tenant's own legacy `api-secret` must retain authorized200. Removed in the local candidate; comprehensive verification is pending. Headless owner
 `config.ownerPolicy` is writer policy and stays.
 
 The [promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
