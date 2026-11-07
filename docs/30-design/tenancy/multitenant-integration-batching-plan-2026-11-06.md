@@ -360,7 +360,14 @@ Local integration ownership and exact unpushed anchors are in
   `lib/server/socket-write-handlers.js` (the comprehensive campaign on `4cd95d06` stopped at
   the unit tier with 22 failures from that one cause; default-client gate 82/82 and its
   oracle control red as predicted; record in `claude-owner-evaluator-campaign-20261106/`), then
-  reruns the whole campaign on the repaired head; `claude/drop-reader-clamping-20261106` off
+  reruns the whole campaign on the repaired head (**superseded**: the coordinator fixed the
+  same defect in `1acb4eee`, inside the R72 batch `74d7b3fc`, keeping `websocket.js` enrolled
+  and adding the new module whole; the Claude repair `c2000084` is kept only as evidence that
+  the unit tier goes 22 red → 0 with either enrolment; its rerun then hit 8 legacy REST
+  differential failures at 00:10 UTC on 2026-11-07 that had passed at 23:45 UTC the day
+  before, which R72's `386dba33` "anchor legacy REST differential fixtures to a captured UTC
+  day" addresses; a focused classification run on `c2000084` is recorded in
+  `externals/work/claude-flake-classification-20261107/`); `claude/drop-reader-clamping-20261106` off
   `4cd95d06` removes the subject-reader clamping mode per the decision of 2026-11-06
   (source-only, no slot; **done at `98118fb2`**, 9 files, +51 / −589: `createOwnerReadPolicy`
   and both readers' `ownerPolicy` branches gone, the management proposed-grant policy and its
@@ -369,7 +376,7 @@ Local integration ownership and exact unpushed anchors are in
   UNMEASURED at runtime; the alignment items that now describe a removed mode are the
   `owner-reader` gate and controls in `queue/work-queue.yaml` and `queue/gate-controls.yaml`,
   `tools/lab/selected-owner-clients/` and `reports/selected-owner-clients/2026-11-06/`, to be
-  marked historical by the coordinator when the lane joins); `claude/tenant-backup-upgrade-20261106` off `83582e87` is the batch C
+  marked historical by the coordinator; **joined** in `a7422f16` inside the R72 batch `74d7b3fc`); `claude/tenant-backup-upgrade-20261106` off `83582e87` is the batch C
   backup/restore and upgrade/rollback lane (source-only until one focused run). Each joins
   #8898 at a batch boundary through the integration coordinator; none is pushed on its own.
 - **Lane handoffs** are `externals/work/HANDOFF-<lane>-<date>.md`, local and
