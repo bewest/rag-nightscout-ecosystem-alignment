@@ -276,7 +276,7 @@ egress and forwarding; distinguish a reader's checkpoint bookkeeping from data
 write authority. Hold one `LISTEN` per held/served tenant, on a direct
 connection rather than transaction pooling.
 Re-run the socket-writer inventory when client pins change. The retained
-[D23 analysis](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#214-d23-realtime-is-a-reader-socket-writes-and-acks-are-forwarded-to-api-maintainer-2026-11-06-amended-the-same-day)
+[D23 analysis](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#214-d23--realtime-is-a-reader-socket-writes-and-acks-are-forwarded-to-api-maintainer-2026-11-06-amended-the-same-day)
 contains original corpus/rationale and entry-control design.
 
 The evaluator materializes a transient bounded slice rather than resident

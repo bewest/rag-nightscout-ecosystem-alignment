@@ -21,7 +21,7 @@ pages:
   nightscout-ecosystem-programme.html:
     kind: living
     sources: [docs/00-overview/ECOSYSTEM-PROGRAMME.md]
-    source_commit: 59b35119
+    source_commit: 773c8bc599af52ab6b3b93672250f0a8cd2f9137
     render: tools/site/render_programme.py
   cgm-remote-monitor-15.0.9-release-readiness-2026-09-27.html:
     kind: snapshot
@@ -50,7 +50,7 @@ pages:
   nightscout-next-gen-platform.html:
     kind: living
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
-    source_commit: 97594198c9cd74d02c9b30106ac45279a7c56ba0
+    source_commit: 773c8bc599af52ab6b3b93672250f0a8cd2f9137
     render: tools/site/render_nextgen.py
   api-aid-commands-2025.html:
     kind: living

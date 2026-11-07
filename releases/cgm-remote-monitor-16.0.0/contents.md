@@ -1775,4 +1775,16 @@ Lane ownership and runtime phase: `externals/work/HANDOFF-codex-completion-coord
 | Current reading path | [Tenancy decisions](../../docs/30-design/tenancy/multitenancy-decisions.md) preserves D1–D23 and their qualifications; the [delivery roadmap](../../docs/30-design/tenancy/multitenant-delivery-roadmap.md) preserves journeys, boundaries and promotion criteria. | Read-derived reorganization, not a new architecture decision, application campaign or milestone promotion. Later amendments retain their existing contract/release homes. |
 | Retention | The complete decision/execution and delivery journals are in the [thematic archive](../../docs/archive/tenancy/README.md), with original headings, failed experiments, controls and measured-source boundaries retained. | [Preservation record](../../reports/tenancy/tenancy-journal-consolidation-2026-11-06.json): source prose and headings preserved; changes to retained bodies are Markdown-link destinations plus an explicit archive notice. Git retains intermediate revisions. |
 | References and generated views | Reading guide, inbound references, queue evidence and platform-map sources distinguish current rules from archived evidence. Dashboard slice evidence now names its own document and heading, so new captures do not extend an archived journal. | Reproduced queue validation/generation/check and affected decision/specification gates pass. Dashboard tests cover local report references, broken paths/anchors, stale output and nonlocal refusal. Link controls reject both a restored dead active-plan reference and a broken archive link, then pass after exact restoration. |
-| Claude continuation | A fresh backup/upgrade continuation chat was dispatched after auditing the paused source and existing coordinator. | Source inspection and database-free work only; preserve the original Claude worktree. Native PostgreSQL, assembled-tree and operational acceptance remain separate and UNMEASURED by this documentation lane. No runtime slot claimed or application branch published. |
+| Claude continuation | Fresh backup/upgrade source continuation delivered local `f4e0548793f0c472233984b1ae2667eeba8da0e0`, with ACL prewrite refusal, rollback-target preflight, contract documentation and an opt-in native suite. | Read-derived handoff/source review: source-only unit/control evidence belongs to the continuation lane; original Claude worktree preserved. Native PostgreSQL and assembled-tree operational acceptance remain UNMEASURED. Integration/runtime ownership stays with the existing coordinator; no application push or role enablement. |
+
+Backup/upgrade lane detail: `externals/work/HANDOFF-codex-backup-upgrade-continuation-20261106.md` (local, untracked).
+
+Reproduced validation for the consolidation: five dashboard tests pass; all 224
+references with heading fragments into the migrated documents resolve with the
+site's GitHub-compatible slugifier. The affected T30-AUTH, registration, records
+and authority gates pass; removing each current specification pointer produces
+its expected failure and exact restoration passes. The separate default
+queue-status baseline remains PASS=198 / FAIL=43 / UNMEASURED=124, with integration
+gates skipped; this documentation work does not make those wider gates green.
+
+Consolidation lane detail: `externals/work/HANDOFF-tenancy-journal-archive-2026-11-06.md` (local, untracked).

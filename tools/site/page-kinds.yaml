@@ -18,6 +18,14 @@ overrides:
     kind: record
     as_of: "2026-11-02"
     reason: "Dated synthetic experiment and comparative decision report, not production backend acceptance."
+  - path: docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
+    kind: record
+    as_of: "2026-11-06"
+    reason: "Complete execution journal retained at consolidation; current architectural rules live in multitenancy-decisions.md."
+  - path: docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md
+    kind: record
+    as_of: "2026-11-06"
+    reason: "Complete delivery journal retained at consolidation; current boundaries and criteria live in the undated delivery roadmap."
   # ---- Living: dated file names, but kept current (evidence 2026-09-30) ----
   - path: docs/30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md
     kind: living
