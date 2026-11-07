@@ -1,0 +1,785 @@
+{
+  "completed": true,
+  "observations": [
+    {
+      "sourceHead": "df7215ac4abfc2ce16514db584d745429c787e02",
+      "scope": "Read-only advisory planner; entries-only actual schema/ledger/artifact; no restore or serving admission",
+      "privileges": {
+        "table_write": false,
+        "sequence_select": true,
+        "sequence_usage": false,
+        "sequence_update": false
+      }
+    },
+    {
+      "label": "ordinary-covered-live-floor",
+      "verdict": "PASS",
+      "result": {
+        "advisory": true,
+        "authorized": false,
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "artifactDigest": "518dec5687f8a011c2521b79b7d1eb4ca2cc2d37f6545d7f2675dd024ecd09ec",
+        "requiredExclusion": "all-admitted-tenant-serving-and-writer-operations",
+        "tables": [
+          {
+            "key": "entries.entries",
+            "namespace": "planner_entries",
+            "table": "entries",
+            "count": 2,
+            "allocator": {
+              "column": "insertion_ordinal",
+              "tableOid": "16394",
+              "sequenceOid": "16429",
+              "sequenceNamespace": "planner_entries",
+              "sequenceName": "entries_insertion_ordinal_seq",
+              "observedFloor": "3",
+              "artifactFloor": "3",
+              "cache": "1"
+            }
+          }
+        ]
+      },
+      "allTenantRowsLedgerAndSequenceUnchanged": true,
+      "physicalBefore": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      },
+      "physicalAfter": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      }
+    },
+    {
+      "label": "uncovered-artifact-floor",
+      "verdict": "EXPECTED_REFUSAL",
+      "expected": "LIFECYCLE_ALLOCATOR_FLOOR_UNCOVERED",
+      "actual": "LIFECYCLE_ALLOCATOR_FLOOR_UNCOVERED",
+      "allTenantRowsLedgerAndSequenceUnchanged": true,
+      "physicalBefore": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      },
+      "physicalAfter": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      }
+    },
+    {
+      "label": "unsafe-sequence-setter",
+      "verdict": "EXPECTED_REFUSAL",
+      "expected": "LIFECYCLE_ALLOCATOR_ROLE_UNSAFE",
+      "actual": "LIFECYCLE_ALLOCATOR_ROLE_UNSAFE",
+      "allTenantRowsLedgerAndSequenceUnchanged": true,
+      "physicalBefore": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      },
+      "physicalAfter": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      }
+    },
+    {
+      "label": "fresh-after-privilege-restoration",
+      "verdict": "PASS",
+      "result": {
+        "advisory": true,
+        "authorized": false,
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "artifactDigest": "518dec5687f8a011c2521b79b7d1eb4ca2cc2d37f6545d7f2675dd024ecd09ec",
+        "requiredExclusion": "all-admitted-tenant-serving-and-writer-operations",
+        "tables": [
+          {
+            "key": "entries.entries",
+            "namespace": "planner_entries",
+            "table": "entries",
+            "count": 2,
+            "allocator": {
+              "column": "insertion_ordinal",
+              "tableOid": "16394",
+              "sequenceOid": "16429",
+              "sequenceNamespace": "planner_entries",
+              "sequenceName": "entries_insertion_ordinal_seq",
+              "observedFloor": "3",
+              "artifactFloor": "3",
+              "cache": "1"
+            }
+          }
+        ]
+      },
+      "allTenantRowsLedgerAndSequenceUnchanged": true,
+      "physicalBefore": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      },
+      "physicalAfter": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "30",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      }
+    },
+    {
+      "label": "unsupported-cache-fixture",
+      "verdict": "EXPECTED_REFUSAL",
+      "expected": "LIFECYCLE_ALLOCATOR_SEMANTICS_UNSUPPORTED",
+      "actual": "LIFECYCLE_ALLOCATOR_SEMANTICS_UNSUPPORTED",
+      "allTenantRowsLedgerAndSequenceUnchanged": true,
+      "physicalBefore": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "0",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "8",
+          "seqcycle": false
+        }
+      },
+      "physicalAfter": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "0",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "8",
+          "seqcycle": false
+        }
+      }
+    },
+    {
+      "label": "fresh-after-cache-restoration",
+      "verdict": "PASS",
+      "result": {
+        "advisory": true,
+        "authorized": false,
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "artifactDigest": "518dec5687f8a011c2521b79b7d1eb4ca2cc2d37f6545d7f2675dd024ecd09ec",
+        "requiredExclusion": "all-admitted-tenant-serving-and-writer-operations",
+        "tables": [
+          {
+            "key": "entries.entries",
+            "namespace": "planner_entries",
+            "table": "entries",
+            "count": 2,
+            "allocator": {
+              "column": "insertion_ordinal",
+              "tableOid": "16394",
+              "sequenceOid": "16429",
+              "sequenceNamespace": "planner_entries",
+              "sequenceName": "entries_insertion_ordinal_seq",
+              "observedFloor": "3",
+              "artifactFloor": "3",
+              "cache": "1"
+            }
+          }
+        ]
+      },
+      "allTenantRowsLedgerAndSequenceUnchanged": true,
+      "physicalBefore": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "0",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      },
+      "physicalAfter": {
+        "rows": [
+          {
+            "tenant_id": "22222222-2222-4222-8222-222222222222",
+            "doc": {
+              "_id": "b-current",
+              "sgv": 100,
+              "date": 1000,
+              "type": "sgv",
+              "identifier": "b-current"
+            },
+            "id_kind": "string",
+            "_id": "b-current",
+            "date": "1000",
+            "type": "sgv",
+            "sgv": "100",
+            "mbg": null,
+            "sysTime": null,
+            "dateString": null,
+            "identifier": "b-current",
+            "created_at": null,
+            "srvModified": null,
+            "isValid": null,
+            "insertion_ordinal": "2"
+          }
+        ],
+        "ledger": [
+          {
+            "name": "0001_entries",
+            "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+          },
+          {
+            "name": "0002_entries_insertion_order",
+            "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+          }
+        ],
+        "counter": {
+          "last_value": "3",
+          "log_cnt": "0",
+          "is_called": true
+        },
+        "metadata": {
+          "seqtypid": "20",
+          "seqstart": "1",
+          "seqincrement": "1",
+          "seqmax": "9223372036854775807",
+          "seqmin": "1",
+          "seqcache": "1",
+          "seqcycle": false
+        }
+      }
+    },
+    {
+      "label": "production-identity-import-still-refuses",
+      "actual": "LIFECYCLE_IDENTITY_IMPORT_UNSUPPORTED",
+      "allTenantRowsLedgerAndSequenceUnchanged": true
+    },
+    {
+      "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+      "queries": [
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum",
+        "SELECT \"tenant_id\", \"doc\", \"id_kind\", \"insertion_ordinal\" FROM \"planner_entries\".\"entries\" WHERE tenant_id = $1",
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum",
+        "SELECT count(*)::int AS n FROM \"planner_entries\".\"entries\" WHERE tenant_id = $1",
+        "/* allocator-preserving-advisory-plan */\nSELECT t.oid::text AS table_oid, q.oid::text AS sequence_oid,\n       n.nspname AS sequence_namespace, q.relname AS sequence_name,\n       a.attidentity AS identity_kind, s.seqtypid = 'pg_catalog.int8'::regtype AS bigint_sequence,\n       s.seqincrement::text AS increment, s.seqmin::text AS minimum,\n       s.seqmax::text AS maximum, s.seqstart::text AS start,\n       s.seqcache::text AS cache, s.seqcycle AS cycle, v.last_value::text AS last_value,\n       pg_get_serial_sequence($1,$2)::regclass::oid::text AS attached_oid,\n       pg_has_role(current_user,q.relowner,'MEMBER') AS owns_sequence,\n       has_sequence_privilege(current_user,q.oid,'UPDATE') AS can_set_sequence,\n       r.rolsuper OR r.rolbypassrls OR r.rolcreaterole AS unsafe_role\n  FROM pg_class t JOIN pg_attribute a ON a.attrelid=t.oid\n  JOIN pg_depend d ON d.refclassid='pg_class'::regclass AND d.refobjid=t.oid\n       AND d.refobjsubid=a.attnum AND d.classid='pg_class'::regclass AND d.deptype='i'\n  JOIN pg_class q ON q.oid=d.objid AND q.relkind='S'\n  JOIN pg_namespace n ON n.oid=q.relnamespace\n  JOIN pg_sequence s ON s.seqrelid=q.oid\n  LEFT JOIN pg_sequences v ON v.schemaname=n.nspname AND v.sequencename=q.relname\n  JOIN pg_roles r ON r.rolname=current_user\n WHERE t.oid=to_regclass($1) AND a.attname=$2 AND NOT a.attisdropped",
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum",
+        "SELECT count(*)::int AS n FROM \"planner_entries\".\"entries\" WHERE tenant_id = $1",
+        "/* allocator-preserving-advisory-plan */\nSELECT t.oid::text AS table_oid, q.oid::text AS sequence_oid,\n       n.nspname AS sequence_namespace, q.relname AS sequence_name,\n       a.attidentity AS identity_kind, s.seqtypid = 'pg_catalog.int8'::regtype AS bigint_sequence,\n       s.seqincrement::text AS increment, s.seqmin::text AS minimum,\n       s.seqmax::text AS maximum, s.seqstart::text AS start,\n       s.seqcache::text AS cache, s.seqcycle AS cycle, v.last_value::text AS last_value,\n       pg_get_serial_sequence($1,$2)::regclass::oid::text AS attached_oid,\n       pg_has_role(current_user,q.relowner,'MEMBER') AS owns_sequence,\n       has_sequence_privilege(current_user,q.oid,'UPDATE') AS can_set_sequence,\n       r.rolsuper OR r.rolbypassrls OR r.rolcreaterole AS unsafe_role\n  FROM pg_class t JOIN pg_attribute a ON a.attrelid=t.oid\n  JOIN pg_depend d ON d.refclassid='pg_class'::regclass AND d.refobjid=t.oid\n       AND d.refobjsubid=a.attnum AND d.classid='pg_class'::regclass AND d.deptype='i'\n  JOIN pg_class q ON q.oid=d.objid AND q.relkind='S'\n  JOIN pg_namespace n ON n.oid=q.relnamespace\n  JOIN pg_sequence s ON s.seqrelid=q.oid\n  LEFT JOIN pg_sequences v ON v.schemaname=n.nspname AND v.sequencename=q.relname\n  JOIN pg_roles r ON r.rolname=current_user\n WHERE t.oid=to_regclass($1) AND a.attname=$2 AND NOT a.attisdropped",
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum",
+        "SELECT count(*)::int AS n FROM \"planner_entries\".\"entries\" WHERE tenant_id = $1",
+        "/* allocator-preserving-advisory-plan */\nSELECT t.oid::text AS table_oid, q.oid::text AS sequence_oid,\n       n.nspname AS sequence_namespace, q.relname AS sequence_name,\n       a.attidentity AS identity_kind, s.seqtypid = 'pg_catalog.int8'::regtype AS bigint_sequence,\n       s.seqincrement::text AS increment, s.seqmin::text AS minimum,\n       s.seqmax::text AS maximum, s.seqstart::text AS start,\n       s.seqcache::text AS cache, s.seqcycle AS cycle, v.last_value::text AS last_value,\n       pg_get_serial_sequence($1,$2)::regclass::oid::text AS attached_oid,\n       pg_has_role(current_user,q.relowner,'MEMBER') AS owns_sequence,\n       has_sequence_privilege(current_user,q.oid,'UPDATE') AS can_set_sequence,\n       r.rolsuper OR r.rolbypassrls OR r.rolcreaterole AS unsafe_role\n  FROM pg_class t JOIN pg_attribute a ON a.attrelid=t.oid\n  JOIN pg_depend d ON d.refclassid='pg_class'::regclass AND d.refobjid=t.oid\n       AND d.refobjsubid=a.attnum AND d.classid='pg_class'::regclass AND d.deptype='i'\n  JOIN pg_class q ON q.oid=d.objid AND q.relkind='S'\n  JOIN pg_namespace n ON n.oid=q.relnamespace\n  JOIN pg_sequence s ON s.seqrelid=q.oid\n  LEFT JOIN pg_sequences v ON v.schemaname=n.nspname AND v.sequencename=q.relname\n  JOIN pg_roles r ON r.rolname=current_user\n WHERE t.oid=to_regclass($1) AND a.attname=$2 AND NOT a.attisdropped",
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum",
+        "SELECT count(*)::int AS n FROM \"planner_entries\".\"entries\" WHERE tenant_id = $1",
+        "/* allocator-preserving-advisory-plan */\nSELECT t.oid::text AS table_oid, q.oid::text AS sequence_oid,\n       n.nspname AS sequence_namespace, q.relname AS sequence_name,\n       a.attidentity AS identity_kind, s.seqtypid = 'pg_catalog.int8'::regtype AS bigint_sequence,\n       s.seqincrement::text AS increment, s.seqmin::text AS minimum,\n       s.seqmax::text AS maximum, s.seqstart::text AS start,\n       s.seqcache::text AS cache, s.seqcycle AS cycle, v.last_value::text AS last_value,\n       pg_get_serial_sequence($1,$2)::regclass::oid::text AS attached_oid,\n       pg_has_role(current_user,q.relowner,'MEMBER') AS owns_sequence,\n       has_sequence_privilege(current_user,q.oid,'UPDATE') AS can_set_sequence,\n       r.rolsuper OR r.rolbypassrls OR r.rolcreaterole AS unsafe_role\n  FROM pg_class t JOIN pg_attribute a ON a.attrelid=t.oid\n  JOIN pg_depend d ON d.refclassid='pg_class'::regclass AND d.refobjid=t.oid\n       AND d.refobjsubid=a.attnum AND d.classid='pg_class'::regclass AND d.deptype='i'\n  JOIN pg_class q ON q.oid=d.objid AND q.relkind='S'\n  JOIN pg_namespace n ON n.oid=q.relnamespace\n  JOIN pg_sequence s ON s.seqrelid=q.oid\n  LEFT JOIN pg_sequences v ON v.schemaname=n.nspname AND v.sequencename=q.relname\n  JOIN pg_roles r ON r.rolname=current_user\n WHERE t.oid=to_regclass($1) AND a.attname=$2 AND NOT a.attisdropped",
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum",
+        "SELECT count(*)::int AS n FROM \"planner_entries\".\"entries\" WHERE tenant_id = $1",
+        "/* allocator-preserving-advisory-plan */\nSELECT t.oid::text AS table_oid, q.oid::text AS sequence_oid,\n       n.nspname AS sequence_namespace, q.relname AS sequence_name,\n       a.attidentity AS identity_kind, s.seqtypid = 'pg_catalog.int8'::regtype AS bigint_sequence,\n       s.seqincrement::text AS increment, s.seqmin::text AS minimum,\n       s.seqmax::text AS maximum, s.seqstart::text AS start,\n       s.seqcache::text AS cache, s.seqcycle AS cycle, v.last_value::text AS last_value,\n       pg_get_serial_sequence($1,$2)::regclass::oid::text AS attached_oid,\n       pg_has_role(current_user,q.relowner,'MEMBER') AS owns_sequence,\n       has_sequence_privilege(current_user,q.oid,'UPDATE') AS can_set_sequence,\n       r.rolsuper OR r.rolbypassrls OR r.rolcreaterole AS unsafe_role\n  FROM pg_class t JOIN pg_attribute a ON a.attrelid=t.oid\n  JOIN pg_depend d ON d.refclassid='pg_class'::regclass AND d.refobjid=t.oid\n       AND d.refobjsubid=a.attnum AND d.classid='pg_class'::regclass AND d.deptype='i'\n  JOIN pg_class q ON q.oid=d.objid AND q.relkind='S'\n  JOIN pg_namespace n ON n.oid=q.relnamespace\n  JOIN pg_sequence s ON s.seqrelid=q.oid\n  LEFT JOIN pg_sequences v ON v.schemaname=n.nspname AND v.sequencename=q.relname\n  JOIN pg_roles r ON r.rolname=current_user\n WHERE t.oid=to_regclass($1) AND a.attname=$2 AND NOT a.attisdropped",
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum",
+        "SELECT count(*)::int AS n FROM \"planner_entries\".\"entries\" WHERE tenant_id = $1",
+        "/* allocator-preserving-advisory-plan */\nSELECT t.oid::text AS table_oid, q.oid::text AS sequence_oid,\n       n.nspname AS sequence_namespace, q.relname AS sequence_name,\n       a.attidentity AS identity_kind, s.seqtypid = 'pg_catalog.int8'::regtype AS bigint_sequence,\n       s.seqincrement::text AS increment, s.seqmin::text AS minimum,\n       s.seqmax::text AS maximum, s.seqstart::text AS start,\n       s.seqcache::text AS cache, s.seqcycle AS cycle, v.last_value::text AS last_value,\n       pg_get_serial_sequence($1,$2)::regclass::oid::text AS attached_oid,\n       pg_has_role(current_user,q.relowner,'MEMBER') AS owns_sequence,\n       has_sequence_privilege(current_user,q.oid,'UPDATE') AS can_set_sequence,\n       r.rolsuper OR r.rolbypassrls OR r.rolcreaterole AS unsafe_role\n  FROM pg_class t JOIN pg_attribute a ON a.attrelid=t.oid\n  JOIN pg_depend d ON d.refclassid='pg_class'::regclass AND d.refobjid=t.oid\n       AND d.refobjsubid=a.attnum AND d.classid='pg_class'::regclass AND d.deptype='i'\n  JOIN pg_class q ON q.oid=d.objid AND q.relkind='S'\n  JOIN pg_namespace n ON n.oid=q.relnamespace\n  JOIN pg_sequence s ON s.seqrelid=q.oid\n  LEFT JOIN pg_sequences v ON v.schemaname=n.nspname AND v.sequencename=q.relname\n  JOIN pg_roles r ON r.rolname=current_user\n WHERE t.oid=to_regclass($1) AND a.attname=$2 AND NOT a.attisdropped",
+        "SELECT name, checksum FROM \"planner_entries\".\"schema_migrations\" ORDER BY name COLLATE \"C\"",
+        "SELECT /* reviewed-relation-inventory */ c.relname AS name,c.relkind AS kind,c.relispartition AS partition,\n      EXISTS(SELECT 1 FROM pg_inherits i WHERE i.inhrelid=c.oid OR i.inhparent=c.oid) AS inherited\n    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace\n    WHERE n.nspname=$1 AND c.relkind IN ('r','p','f','m','v') ORDER BY c.relname COLLATE \"C\"",
+        "SELECT a.attname AS name, format_type(a.atttypid, a.atttypmod) AS type,\n       a.attidentity <> '' AS identity\n     FROM pg_attribute a\n     WHERE a.attrelid = to_regclass($1) AND a.attnum > 0 AND NOT a.attisdropped AND a.attgenerated = ''\n     ORDER BY a.attnum"
+      ]
+    }
+  ]
+}

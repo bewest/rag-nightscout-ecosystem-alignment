@@ -1,0 +1,151 @@
+{
+  "completed": true,
+  "scope": "Actual server consumer reads on native PG; not HTTP or mobile binary execution",
+  "observations": [
+    {
+      "phase": "baseline",
+      "profileSelected": {
+        "_id": "z-first",
+        "store": {
+          "Synthetic": {
+            "dia": 3
+          }
+        },
+        "startDate": "2026-11-06",
+        "NSCLIENT_ID": "synthetic"
+      },
+      "entriesDateSorted": [
+        {
+          "_id": "e-new",
+          "sgv": 110,
+          "date": 2000,
+          "type": "sgv",
+          "identifier": "entry-new"
+        },
+        {
+          "_id": "e-old",
+          "sgv": 100,
+          "date": 1000,
+          "type": "sgv",
+          "identifier": "entry-old"
+        }
+      ]
+    },
+    {
+      "phase": "renumber-preserving-order",
+      "verdict": "PASS",
+      "rawOrdinals": [
+        100,
+        200
+      ],
+      "profileSelected": {
+        "_id": "z-first",
+        "store": {
+          "Synthetic": {
+            "dia": 3
+          }
+        },
+        "startDate": "2026-11-06",
+        "NSCLIENT_ID": "synthetic"
+      },
+      "entriesDateSorted": [
+        {
+          "_id": "e-new",
+          "sgv": 110,
+          "date": 2000,
+          "type": "sgv",
+          "identifier": "entry-new"
+        },
+        {
+          "_id": "e-old",
+          "sgv": 100,
+          "date": 1000,
+          "type": "sgv",
+          "identifier": "entry-old"
+        }
+      ],
+      "publicDocumentsExactlyEqual": true
+    },
+    {
+      "phase": "reverse-order-control",
+      "verdict": "EXPECTED_SEMANTIC_RED_PROFILE",
+      "rawOrdinals": [
+        200,
+        100
+      ],
+      "profileSelected": {
+        "_id": "a-second",
+        "store": {
+          "Synthetic": {
+            "dia": 9
+          }
+        },
+        "startDate": "2026-11-06",
+        "NSCLIENT_ID": "synthetic"
+      },
+      "changedProfileIDAndStore": true,
+      "entriesDateSorted": [
+        {
+          "_id": "e-new",
+          "sgv": 110,
+          "date": 2000,
+          "type": "sgv",
+          "identifier": "entry-new"
+        },
+        {
+          "_id": "e-old",
+          "sgv": 100,
+          "date": 1000,
+          "type": "sgv",
+          "identifier": "entry-old"
+        }
+      ],
+      "explicitDateReaderUnaffected": true
+    },
+    {
+      "phase": "fresh-restoration",
+      "verdict": "PASS",
+      "profileSelected": {
+        "_id": "z-first",
+        "store": {
+          "Synthetic": {
+            "dia": 3
+          }
+        },
+        "startDate": "2026-11-06",
+        "NSCLIENT_ID": "synthetic"
+      },
+      "entriesDateSorted": [
+        {
+          "_id": "e-new",
+          "sgv": 110,
+          "date": 2000,
+          "type": "sgv",
+          "identifier": "entry-new"
+        },
+        {
+          "_id": "e-old",
+          "sgv": 100,
+          "date": 1000,
+          "type": "sgv",
+          "identifier": "entry-old"
+        }
+      ],
+      "privateOrdinalNotReturned": true
+    },
+    {
+      "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+      "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+      "readQueries": [
+        "SELECT id_kind, doc FROM \"consumer_profile\".\"profile\" WHERE COALESCE((CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" = $2::text ELSE false END OR (jsonb_typeof((doc -> $1::text)) = 'array' AND EXISTS (SELECT 1 FROM jsonb_array_elements((doc -> $1::text)) AS el(v) WHERE CASE WHEN jsonb_typeof(el.v) = 'string' THEN (el.v #>> '{}') COLLATE \"C\" = $3::text ELSE false END))), false) ORDER BY insertion_ordinal ASC LIMIT $4",
+        "SELECT id_kind, doc, bool_or(jsonb_typeof((doc -> $1::text)) IN ('array', 'object')) OVER () AS unsortable FROM \"consumer_entries\".\"entries\" WHERE true ORDER BY CASE COALESCE(jsonb_typeof((doc -> $1::text)), 'null') WHEN 'null' THEN 1 WHEN 'number' THEN 2 WHEN 'string' THEN 3 WHEN 'boolean' THEN 8 WHEN 'object' THEN 4 ELSE 5 END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'number' THEN ((doc -> $1::text))::numeric END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'boolean' THEN ((doc -> $1::text))::boolean END DESC LIMIT $2",
+        "SELECT id_kind, doc FROM \"consumer_profile\".\"profile\" WHERE COALESCE((CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" = $2::text ELSE false END OR (jsonb_typeof((doc -> $1::text)) = 'array' AND EXISTS (SELECT 1 FROM jsonb_array_elements((doc -> $1::text)) AS el(v) WHERE CASE WHEN jsonb_typeof(el.v) = 'string' THEN (el.v #>> '{}') COLLATE \"C\" = $3::text ELSE false END))), false) ORDER BY insertion_ordinal ASC LIMIT $4",
+        "SELECT id_kind, doc, bool_or(jsonb_typeof((doc -> $1::text)) IN ('array', 'object')) OVER () AS unsortable FROM \"consumer_entries\".\"entries\" WHERE true ORDER BY CASE COALESCE(jsonb_typeof((doc -> $1::text)), 'null') WHEN 'null' THEN 1 WHEN 'number' THEN 2 WHEN 'string' THEN 3 WHEN 'boolean' THEN 8 WHEN 'object' THEN 4 ELSE 5 END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'number' THEN ((doc -> $1::text))::numeric END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'boolean' THEN ((doc -> $1::text))::boolean END DESC LIMIT $2",
+        "SELECT id_kind, doc FROM \"consumer_profile\".\"profile\" WHERE COALESCE((CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" = $2::text ELSE false END OR (jsonb_typeof((doc -> $1::text)) = 'array' AND EXISTS (SELECT 1 FROM jsonb_array_elements((doc -> $1::text)) AS el(v) WHERE CASE WHEN jsonb_typeof(el.v) = 'string' THEN (el.v #>> '{}') COLLATE \"C\" = $3::text ELSE false END))), false) ORDER BY insertion_ordinal ASC LIMIT $4",
+        "SELECT id_kind, doc, bool_or(jsonb_typeof((doc -> $1::text)) IN ('array', 'object')) OVER () AS unsortable FROM \"consumer_entries\".\"entries\" WHERE true ORDER BY CASE COALESCE(jsonb_typeof((doc -> $1::text)), 'null') WHEN 'null' THEN 1 WHEN 'number' THEN 2 WHEN 'string' THEN 3 WHEN 'boolean' THEN 8 WHEN 'object' THEN 4 ELSE 5 END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'number' THEN ((doc -> $1::text))::numeric END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'boolean' THEN ((doc -> $1::text))::boolean END DESC LIMIT $2",
+        "SELECT id_kind, doc FROM \"consumer_profile\".\"profile\" WHERE COALESCE((CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" = $2::text ELSE false END OR (jsonb_typeof((doc -> $1::text)) = 'array' AND EXISTS (SELECT 1 FROM jsonb_array_elements((doc -> $1::text)) AS el(v) WHERE CASE WHEN jsonb_typeof(el.v) = 'string' THEN (el.v #>> '{}') COLLATE \"C\" = $3::text ELSE false END))), false) ORDER BY insertion_ordinal ASC LIMIT $4",
+        "SELECT id_kind, doc, bool_or(jsonb_typeof((doc -> $1::text)) IN ('array', 'object')) OVER () AS unsortable FROM \"consumer_entries\".\"entries\" WHERE true ORDER BY CASE COALESCE(jsonb_typeof((doc -> $1::text)), 'null') WHEN 'null' THEN 1 WHEN 'number' THEN 2 WHEN 'string' THEN 3 WHEN 'boolean' THEN 8 WHEN 'object' THEN 4 ELSE 5 END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'number' THEN ((doc -> $1::text))::numeric END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'string' THEN ((doc -> $1::text) #>> '{}') COLLATE \"C\" END DESC, CASE WHEN jsonb_typeof((doc -> $1::text)) = 'boolean' THEN ((doc -> $1::text))::boolean END DESC LIMIT $2"
+      ]
+    }
+  ]
+}

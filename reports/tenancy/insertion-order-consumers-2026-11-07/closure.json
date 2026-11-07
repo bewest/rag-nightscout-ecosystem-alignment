@@ -1,0 +1,19 @@
+{
+  "nativeCompleted": true,
+  "containerAbsent": true,
+  "volumeAbsent": true,
+  "childExit": 0,
+  "stdoutBytes": 0,
+  "stderrBytes": 0,
+  "inventoryUnchanged": true,
+  "durationSeconds": 2.2390129142440856,
+  "sourceHead": "f0fac99a2fccee259c9a76eba0123058bf288d96",
+  "instrumentSha256": "aa31cabd8268c3fa5a9e73443ef1a9a4054b7d5d959aefed430d05579ff78ecd",
+  "parentSha256": "8cb1a3f1d1e255e76ed6a948ad4682d29b533902a232f66d48ef36ec8f76a40a",
+  "rootReview": {
+    "instrumentHashMatches": true,
+    "parentHashMatches": true,
+    "ownedContainerAbsent": true,
+    "ownedVolumeAbsent": true
+  }
+}

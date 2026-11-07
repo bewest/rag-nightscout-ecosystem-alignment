@@ -93,3 +93,57 @@ Keep the tenant-local history clock while measuring allocator-preserving restore
 Investigate concrete natural-order consumers before adding another counter or
 requiring a shared pause. Future versioned cursors and restore generations are
 incremental architecture options, not prerequisites silently added to the preview.
+
+
+## Fault isolation and the selected next step
+
+The maintainer [selected per-tenant insertion semantics and a tenant-local state prototype](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics). Cross-tenant ordering is not required; same-deployment restore must preserve other tenants' current state. The global
+counter concern is shared mutable state under faulty or malicious behavior, not
+an observed requirement for cross-tenant ordinal values.
+
+Ordinary atomic sequence allocation and privileged sequence maintenance have
+different authority. PostgreSQL `nextval` requires USAGE or UPDATE; `setval`
+requires UPDATE. Aborted transactions can leave gaps, which do not by themselves
+break relative order. The [sequence contract](https://www.postgresql.org/docs/16/functions-sequence.html)
+does not turn the allocator into a global application transaction lock held
+until every writer commits. Avoid all-tenant read/modify/write counter code.
+
+A faulty actor with privileged sequence mutation can affect tenants sharing that
+sequence. Per-tenant allocation reduces this state coupling, but does not protect
+against a compromised database administrator or a worker authorized across tenants,
+or isolate shared CPU/pools. Complete admission must verify actual privileges;
+table RLS alone does not bound sequence setters. The f0 serving-readiness survey
+has not established a complete sequence-privilege check across all roles. The
+new planner's own role check does not fill that broader boundary.
+
+The narrower compatibility finding is in the [native consumer proof](../../../reports/tenancy/insertion-order-consumers-2026-11-07/README.md):
+renumbering while preserving order retains the selected full profile; reversing
+order selects a different duplicate-match profile. Explicit date-sorted entries
+are unchanged. Source tracing reaches the released AndroidAPS NSClient v1 profile
+upload/ack path, but no Android binary was executed. No observed client requires
+cross-tenant ordinal numbers or exact private ordinal values.
+
+
+## Minimal tenant-local state prototype
+
+Use a counter row per tenant in each existing ordered collection namespace,
+with forced RLS and an invoker INSERT trigger. Keep history timestamps separate.
+Migration preserves existing ordinal values and seeds each tenant floor; ordinary
+inserts increment only their tenant's row transactionally. Explicit operator
+restoration preserves original ordinal values while advancing only the restored
+tenant floor. Updates cannot change ordinal/tenant identity. Serving column
+INSERT excludes the private ordinal; operator restore has separate rights.
+
+This trades an extra small relation/trigger and per-tenant transaction lock for
+removing cross-tenant allocator state and restore counter-maintenance machinery.
+It is an operational simplification, not a claim of fewer SQL statements or of
+Byzantine tolerance against a trusted all-tenant worker/DBA. Shared pools/CPU remain.
+No new service, per-tenant native sequence or SECURITY DEFINER is needed.
+
+The first prototype is explicit standalone SQL, not a runnable catalogue/default
+selection. Current migration validation rejects LOCK, SET and DO statement forms;
+runner-compatible transaction/precondition integration remains explicit work.
+Do not hide those controls in an unreviewed migration function to make validation
+pass. Lifecycle inventories, role grants, read-only trigger/counter readiness,
+old/new upgrade/rollback and final client/cursor/cache acceptance also remain.
+A normal one-time schema DDL lock is distinct from a recurring shared restore pause.
