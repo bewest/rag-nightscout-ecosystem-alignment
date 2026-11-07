@@ -5488,7 +5488,7 @@
 multitenant preview is batched, what verification runs at each stage, and which
 completion batches cover M0–M6 and where an early proof is still required.
 Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/59cbce7aed205a7e885000974d3c54048f22656f/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="multitenant-delivery-roadmap.html">REST delivery roadmap</a>
@@ -6045,7 +6045,17 @@ Local integration ownership and exact unpushed anchors are in
   <code>lib/server/socket-write-handlers.js</code> (the comprehensive campaign on <code>4cd95d06</code> stopped at
   the unit tier with 22 failures from that one cause; default-client gate 82/82 and its
   oracle control red as predicted; record in <code>claude-owner-evaluator-campaign-20261106/</code>), then
-  reruns the whole campaign on the repaired head; <code>claude/drop-reader-clamping-20261106</code> off
+  reruns the whole campaign on the repaired head (<strong>superseded</strong>: the coordinator fixed the
+  same defect in <code>1acb4eee</code>, inside the R72 batch <code>74d7b3fc</code>, keeping <code>websocket.js</code> enrolled
+  and adding the new module whole; the Claude repair <code>c2000084</code> is kept only as evidence that
+  the unit tier goes 22 red → 0 with either enrolment; its rerun then hit 8 legacy REST
+  differential failures at 00:10 UTC on 2026-11-07 that had passed at 23:45 UTC the day
+  before, which R72's <code>386dba33</code> "anchor legacy REST differential fixtures to a captured UTC
+  day" addresses; a focused classification run on <code>c2000084</code> (two <code>owned.js focused</code> runs,
+  03:54–04:02 UTC, same lab services and seed) reproduced exactly the same eight titles both
+  times, 396 / 1 / 8 each, so the failure is deterministic on that branch at that date; the
+  comparison on the parent head was not run because that worktree had moved; record in
+  <code>externals/work/claude-flake-classification-20261107/</code>); <code>claude/drop-reader-clamping-20261106</code> off
   <code>4cd95d06</code> removes the subject-reader clamping mode per the decision of 2026-11-06
   (source-only, no slot; <strong>done at <code>98118fb2</code></strong>, 9 files, +51 / −589: <code>createOwnerReadPolicy</code>
   and both readers' <code>ownerPolicy</code> branches gone, the management proposed-grant policy and its
@@ -6054,8 +6064,21 @@ Local integration ownership and exact unpushed anchors are in
   UNMEASURED at runtime; the alignment items that now describe a removed mode are the
   <code>owner-reader</code> gate and controls in <code>queue/work-queue.yaml</code> and <code>queue/gate-controls.yaml</code>,
   <code>tools/lab/selected-owner-clients/</code> and <code>reports/selected-owner-clients/2026-11-06/</code>, to be
-  marked historical by the coordinator when the lane joins); <code>claude/tenant-backup-upgrade-20261106</code> off <code>83582e87</code> is the batch C
-  backup/restore and upgrade/rollback lane (source-only until one focused run). Each joins
+  marked historical by the coordinator; <strong>joined</strong> in <code>a7422f16</code> inside the R72 batch <code>74d7b3fc</code>); <code>claude/tenant-backup-upgrade-20261106</code> off <code>83582e87</code> is the batch C
+  backup/restore and upgrade/rollback lane (source-only until one focused run; <strong>done at
+  <code>b06be86e</code></strong>, three commits, 12 files, +1853: a draft contract <code>docs/multitenant-backup-upgrade.md</code>,
+  a dormant <code>lib/tenant-operations/</code> module over an injected connection and migration runner
+  (one repeatable-read read-only backup snapshot; restore refuses before the first INSERT on
+  ledger, catalogue, columns, emptiness and identity, and re-verifies its own writes with an
+  in-transaction oracle; upgrade is status → backup → up → check; rollback is restore of the
+  pre-upgrade backup with the older catalogue's <code>check</code> as the refusal oracle), unit 18 / 0
+  with every refusal code exercised, one true break-it (digest check removed → the oracle
+  layer catches the tamper after inserts), eslint 0, tiers 516 ok, and one opt-in suite
+  <code>tests/tenant-operations.integration.test.js</code> registered in the corpus (36 / 22 at this
+  base) but <strong>not run: UNMEASURED</strong>. It takes the catalogue list as input because
+  <code>lib/tenant-lifecycle/</code> is not in its base; shared helpers are credited for later merging.
+  Open in its contract: advancing the write clock past the lost window, clearing consumer
+  checkpoints on restore, artifact size/retention/encryption, CLI wiring and authorisation). Each joins
   #8898 at a batch boundary through the integration coordinator; none is pushed on its own.</li>
 <li><strong>Lane handoffs</strong> are <code>externals/work/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>, local and
   untracked. The coordinating session's own notes are in
