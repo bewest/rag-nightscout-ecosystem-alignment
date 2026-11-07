@@ -33,6 +33,7 @@ enhancements; that preference grants no production permission or criterion waive
 |---|---|
 | Current-state recovery | [Bounded full snapshot reconciliation first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation); preserve producer deletes/timestamps/replies. Cadence/capacity is measurement work. No every-transition promise. |
 | Shared human authentication | [Shared optional OIDC, provider-backed renewal first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#shared-oidc-provider-renewal), equivalent single/multitenant support; preferred single opt-in `ENABLE=oidc`. Separate authorization adapters; no implicit root/management grant. |
+| OIDC provider outage | [Existing valid access until existing expiry](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#oidc-provider-outage-existing-access), with current local authority/session checks, no new login or renewal and unchanged sensitive-action freshness. Equivalent optional single/multitenant behavior; provider-only revocation may remain unknown until expiry/recovery. Implementation and outage acceptance remain open. |
 | Alarm suppression scope and restart | [Tenant-wide group/level suppression](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-wide-alarm-suppression), original expiry retained across restart, active-window repeats do not extend it. Per-user/device scope follows separately. |
 | Notification retry responsibility | [Persist request intent before dispatch; retry same identity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#durable-notification-requests-and-retries). Preserve suppression/dedup/single behavior; joined notification-consumer verification required. No exactly-once external delivery claim. |
 | Deletion ceremony | [Explicit request + operator confirmation; cancellable before execution; no mandatory wait](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-deletion-confirmation). Post-deletion 30-day key/artifact retention remains separate. |
@@ -46,7 +47,8 @@ enhancements; that preference grants no production permission or criterion waive
 
 These are bounded topics for a concrete proposal, not blanket implementation stops.
 A recommendation remains a proposal until recorded in release decisions.
-Shared OIDC/provider-backed renewal and tenant-wide alarm suppression are adopted.
+Shared OIDC/provider-backed renewal, bounded existing access during provider outage
+and tenant-wide alarm suppression are adopted.
 Review remaining session effects and operational parameters while implementation continues.
 Notification retry responsibility and deletion ceremony policy are settled. Their
 bounded proofs do not resolve live-provider admission or wider M6 identity/trust.
@@ -54,7 +56,7 @@ bounded proofs do not resolve live-provider admission or wider M6 identity/trust
 | Topic | Decision needed | Work that need not wait |
 |---|---|---|
 | Live notification provider admission | Select the live adapter/provider and operating bounds before live use. Durable intent/same-identity retry is settled; an acceptance receipt does not prove device delivery. | Controlled joined-consumer proof is recorded. Live egress, retry/retention budgets and selected provider/device delivery keep separate gates. |
-| M6 human session effects | Shared OIDC/provider-backed renewal is settled. Specify local versus provider logout, propagation, provider outage, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain. | Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh. |
+| M6 human session effects | Shared OIDC/provider-backed renewal is settled. Specify local versus provider logout, propagation, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain. | Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh. |
 | M6 bounded owner surface | Approve the exact first-preview settings, credentials and enabled integrations; identify unsupported names/operations. Operator-assisted ownership is settled. | Census and proposed catalogue with consuming-runtime tests; do not silently declare the full catalogue implemented. |
 | M6 deployment/trust | Review concrete trusted-ingress and secrets/identity adapter contracts for the reference deployment before production use. | Synthetic spoof/conflict/outage probes and provider-neutral interfaces. |
 
