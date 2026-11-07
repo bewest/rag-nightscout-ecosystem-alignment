@@ -1186,7 +1186,7 @@
    "phase": "multi",
    "state": "progress",
    "short": "Durable runtime / replay",
-   "title": "R73 joins bounded current-state/evaluator, durable alarm/request and reference-role/browser evidence. Final assembled verification remains open; component passes alone do not promote M5/M6.",
+   "title": "R73 joins bounded current-state and evaluator recovery, durable alarm/request state, and reference roles and browser evidence on one host using polling. Final assembled verification remains open; component passes alone do not promote M5/M6.",
    "ref": "Live provider/device delivery, capacity/freshness/egress budgets, multi-node ownership and M6 identity-bearing tenant restore retain separate acceptance.",
    "spec": [
     {

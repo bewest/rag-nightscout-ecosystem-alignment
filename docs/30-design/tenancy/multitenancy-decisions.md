@@ -273,8 +273,12 @@ recheck current tenant authority. A failed forward yields no acknowledgement, pr
 Durable tenant-keyed alarm acknowledgement must survive process/restart changes.
 Typed role metadata records listener, data-storage authority, feed consumer,
 egress and forwarding; distinguish a reader's checkpoint bookkeeping from data
-write authority. Hold one `LISTEN` per held/served tenant, on a direct
-connection rather than transaction pooling.
+write authority. [B7 leaves provider selection deferred](durable-event-delivery-contract-2026-11-06.md#9-what-this-contract-does-not-decide):
+a slot, polling or both may satisfy the durable contract. When a `LISTEN`/`NOTIFY`
+provider is selected, hold one `LISTEN` per held/served tenant on a direct
+connection rather than transaction pooling. The [R73 first reference](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch)
+uses polling over consistent tenant snapshots; it establishes no `LISTEN`
+handshake or notification-transport latency result.
 Re-run the socket-writer inventory when client pins change. The retained
 [D23 analysis](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#214-d23--realtime-is-a-reader-socket-writes-and-acks-are-forwarded-to-api-maintainer-2026-11-06-amended-the-same-day)
 contains original corpus/rationale and entry-control design.
