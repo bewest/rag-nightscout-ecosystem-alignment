@@ -25551,3 +25551,90 @@ items:
       The takeover owner confirmed replacement of the exact archived draft; root
       retired only verified matching paths and preserved the original archive.
       Broader M4 milestone and connector limits remain open.
+
+  - id: MT-DOC-DEPLOY
+    title: 'Deployment scenarios, rig testing and topology diagrams'
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: codex/session-restore-policy-20261107
+    base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
+    state: not-started
+    blast_radius: >
+      Alignment documentation and diagrams. Single-site compatibility baseline; bounded one-host multitenant preview; split API/evaluator/realtime roles; restart and tenant-local restore scenarios.
+    review: maintainer; tenancy, compatibility and operations review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Documentation backlog; no shipped application behavior changes.
+    register: []
+    gates:
+      - no-gate: >
+          Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED.
+          Document runnable preparation, credential boundaries, ports/TLS, synthetic rig data, client configuration, teardown and failure observations. Distinguish measured scenarios from proposed multi-host topologies; link diagrams and evidence to exact source heads.
+          Run queue-check and docs-links after authoring; link executed scenario
+          evidence separately from structural documentation checks.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/README.md
+    notes: >
+      Integrate into existing current contract homes after the joined migration,
+      readiness and lifecycle candidate settles. Preserve one home per fact and
+      source/instrument attribution. This item does not block implementation or
+      claim deployment, capacity or recovery acceptance.
+
+  - id: MT-DOC-REALTIME
+    title: 'Evaluator and realtime communication architecture'
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: codex/session-restore-policy-20261107
+    base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
+    state: not-started
+    blast_radius: >
+      Alignment documentation and diagrams. Evaluator output, durable checkpoints and notifications; realtime acquisition, browser sockets, private API forwarding and alarm acknowledgement.
+    review: maintainer; tenancy, compatibility and operations review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Documentation backlog; no shipped application behavior changes.
+    register: []
+    gates:
+      - no-gate: >
+          Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED.
+          Trace producer, transport, consumer, tenant binding, authority checks, retry/replay and invalidation through source anchors and sequence diagrams. Explain disconnect, restart, stale output and restore behavior with existing client compatibility and measured limitations.
+          Run queue-check and docs-links after authoring; link executed scenario
+          evidence separately from structural documentation checks.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/README.md
+    notes: >
+      Integrate into existing current contract homes after the joined migration,
+      readiness and lifecycle candidate settles. Preserve one home per fact and
+      source/instrument attribution. This item does not block implementation or
+      claim deployment, capacity or recovery acceptance.
+
+  - id: MT-DOC-SQL
+    title: 'SQL tables, migrations and recovery architecture'
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: codex/session-restore-policy-20261107
+    base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
+    state: not-started
+    blast_radius: >
+      Alignment documentation and diagrams. Domain schemas, tenant binding/RLS, role grants, tenant write clock, insertion ordering, catalogue/ledger and lifecycle control state.
+    review: maintainer; tenancy, compatibility and operations review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: Documentation backlog; no shipped application behavior changes.
+    register: []
+    gates:
+      - no-gate: >
+          Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED.
+          Publish table relationships and migration sequences, immutable-prefix upgrade and readiness rules, transactional ordering and rollback, backup/restore inclusion and exclusions. Separate tenant-local counters from shared resources; document public history convergence and retained-state requirements when settled.
+          Run queue-check and docs-links after authoring; link executed scenario
+          evidence separately from structural documentation checks.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/README.md
+    notes: >
+      Integrate into existing current contract homes after the joined migration,
+      readiness and lifecycle candidate settles. Preserve one home per fact and
+      source/instrument attribution. This item does not block implementation or
+      claim deployment, capacity or recovery acceptance.

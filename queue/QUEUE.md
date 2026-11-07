@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 365 |
+| items | 368 |
 | runnable gates | 428 |
-| explicit `no-gate:` markers | 386 |
+| explicit `no-gate:` markers | 389 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 814 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 389 of the 817 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 74 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE |
+| `not-started` | 77 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL |
 | `in-progress` | 23 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | T30-AUTH, WS-LAB |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 65 items
+`parcel: tenancy` &mdash; 68 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8442,6 +8442,9 @@ alarm-readiness items, and the seam branch refresh.
 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/serial-integration-20261106` | n/a | 2 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `M4-CLIENT-LAB` | M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo | `done` | `main` | n/a | 1 run + 1 no-gate |
+| `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `not-started` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
+| `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `not-started` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
+| `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `not-started` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -10512,6 +10515,90 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/m4-client-binaries/2026-11-06-revised-freeze/README.md`
 
 **Notes.** Complete bounded measurement, canonically integrated by the coordinator in R60; final client gate and semantic controls are directly measured on c0e8. Exact registered default gate passed on c0e8 with zero differences after focused semantic controls and restoration. Prior failed captures and the combined 863 connector scope remain immutable. Current reports hold counts, client provenance, limitations and source ancestry. No general M4 promotion. The takeover owner confirmed replacement of the exact archived draft; root retired only verified matching paths and preserved the original archive. Broader M4 milestone and connector limits remain open.
+
+### `MT-DOC-DEPLOY` &mdash; Deployment scenarios, rig testing and topology diagrams
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `codex/session-restore-policy-20261107` |
+| base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; tenancy, compatibility and operations review |
+
+**Blast radius.** Alignment documentation and diagrams. Single-site compatibility baseline; bounded one-host multitenant preview; split API/evaluator/realtime roles; restart and tenant-local restore scenarios.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Documentation backlog; no shipped application behavior changes.
+
+**Gates.**
+
+- **NO GATE** &mdash; Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED. Document runnable preparation, credential boundaries, ports/TLS, synthetic rig data, client configuration, teardown and failure observations. Distinguish measured scenarios from proposed multi-host topologies; link diagrams and evidence to exact source heads. Run queue-check and docs-links after authoring; link executed scenario evidence separately from structural documentation checks.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/README.md`
+
+**Notes.** Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
+
+### `MT-DOC-REALTIME` &mdash; Evaluator and realtime communication architecture
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `codex/session-restore-policy-20261107` |
+| base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; tenancy, compatibility and operations review |
+
+**Blast radius.** Alignment documentation and diagrams. Evaluator output, durable checkpoints and notifications; realtime acquisition, browser sockets, private API forwarding and alarm acknowledgement.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Documentation backlog; no shipped application behavior changes.
+
+**Gates.**
+
+- **NO GATE** &mdash; Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED. Trace producer, transport, consumer, tenant binding, authority checks, retry/replay and invalidation through source anchors and sequence diagrams. Explain disconnect, restart, stale output and restore behavior with existing client compatibility and measured limitations. Run queue-check and docs-links after authoring; link executed scenario evidence separately from structural documentation checks.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/README.md`
+
+**Notes.** Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
+
+### `MT-DOC-SQL` &mdash; SQL tables, migrations and recovery architecture
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `codex/session-restore-policy-20261107` |
+| base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; tenancy, compatibility and operations review |
+
+**Blast radius.** Alignment documentation and diagrams. Domain schemas, tenant binding/RLS, role grants, tenant write clock, insertion ordering, catalogue/ledger and lifecycle control state.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** Documentation backlog; no shipped application behavior changes.
+
+**Gates.**
+
+- **NO GATE** &mdash; Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED. Publish table relationships and migration sequences, immutable-prefix upgrade and readiness rules, transactional ordering and rollback, backup/restore inclusion and exclusions. Separate tenant-local counters from shared resources; document public history convergence and retained-state requirements when settled. Run queue-check and docs-links after authoring; link executed scenario evidence separately from structural documentation checks.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/README.md`
+
+**Notes.** Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
 
 ---
 

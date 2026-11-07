@@ -44,6 +44,16 @@ schedule for work state.
 | [Clock proof plan](postgres-tenant-clock-proof.md) | Invariants and experiment design. Correctness, descriptive timing and capacity acceptance retain separate records. |
 | [Deployable components](nightscout-deployable-components-2026-09-14.md) | Original decomposition/rationale; apply current tenancy decisions, CLI amendments and B7. |
 
+## Queued documentation additions
+
+The work queue tracks three requested additions: **MT-DOC-DEPLOY** for practical
+preview deployments, rig tests and topology diagrams; **MT-DOC-REALTIME** for
+evaluator/realtime/socket communication and sequence diagrams; **MT-DOC-SQL** for
+tables, SQL, migrations and recovery architecture. These are pending documentation,
+with acceptance criteria in the queue. Integrate them into the current references
+above as the joined implementation settles; proposed topologies and executed
+scenarios must retain distinct labels and evidence.
+
 ## Historical evidence and earlier proposals
 
 These retain distinct evidence or alternatives; they are not current work instructions.
