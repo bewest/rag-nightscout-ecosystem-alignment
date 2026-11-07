@@ -5336,7 +5336,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>cda54ab55</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>59cbce7ae</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-06. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5377,6 +5377,10 @@ production permission or waive an existing criterion from that preference.</p>
 <tr>
 <td>Notification retry responsibility</td>
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#durable-notification-requests-and-retries">Persist request intent before dispatch; retry same identity</a>. Preserve suppression/dedup/single behavior; joined notification-consumer verification required. No exactly-once external delivery claim.</td>
+</tr>
+<tr>
+<td>Deletion ceremony</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">Explicit request + operator confirmation; cancellable before execution; no mandatory wait</a>. Post-deletion 30-day key/artifact retention remains separate.</td>
 </tr>
 <tr>
 <td>First-preview ownership changes</td>
@@ -5436,9 +5440,9 @@ Notification retry responsibility is settled; joined consumer acceptance is impl
 <td>Census and proposed catalogue with consuming-runtime tests; do not silently declare the full catalogue implemented.</td>
 </tr>
 <tr>
-<td>M6 deletion ceremony</td>
-<td>Set request confirmation/cancellation and operator recovery procedure. Distinguish pre-deletion cancellation from adopted post-deletion key retention.</td>
-<td>Synthetic export/delete/recovery tooling and artifact-fidelity controls.</td>
+<td>M6 deletion implementation</td>
+<td>Request/confirmation/cancellation/no-wait policy is settled. Implement operator recovery and atomic cancellation-versus-execution claiming with current authority and verified artifact.</td>
+<td>Synthetic export/delete/recovery and artifact-fidelity/transaction controls; no waiting-period decision is needed.</td>
 </tr>
 <tr>
 <td>M6 deployment/trust</td>

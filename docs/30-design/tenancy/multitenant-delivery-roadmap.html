@@ -5402,12 +5402,12 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>cda54ab55</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>59cbce7ae</code>.</em></p>
 <p><em>Contributor-facing living plan. Consolidated 2026-11-06 from the delivery journal
 and the adopted release decisions, without a new application measurement or
 milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/cda54ab5568d27a97b4f0c7984845d5bc3c21e8a/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/59cbce7aed205a7e885000974d3c54048f22656f/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5438,7 +5438,9 @@ dormant slice remains separate from enabling its roles.</p>
 <p>Initial lifecycle operations are private-operator actions: provision, suspend,
 export and delete, without public signup. An owner may export or request deletion;
 the operator authorizes and executes deletion. A request never bypasses
-confirmation, retention or recovery policy. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">Ownership changes are operator-assisted</a>
+confirmation, retention or recovery policy. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">preview deletion ceremony</a>
+requires explicit operator confirmation, allows cancellation before execution starts,
+and imposes no mandatory waiting period. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">Ownership changes are operator-assisted</a>
 for the first preview; self-service co-owner addition and transfer follow separately.
 Operator execution still preserves last-owner protection and owner-secret boundaries.</p>
 <table>
@@ -5674,7 +5676,7 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 </tr>
 <tr>
 <td>M6 lifecycle and trust</td>
-<td>Provision/suspend/export/delete and restore respect current authority and trusted tenant resolution. Artifact fidelity is independently checked; capture required ciphertext/key references before deletion. Exercise retained-key recovery, operator destruction and after-window refusal. Same-ID restore and new-secret cloning remain distinct. Deletion request/confirmation/cancellation policy needs an explicit answer.</td>
+<td>Provision/suspend/export/delete and restore respect current authority and trusted tenant resolution. Artifact fidelity is independently checked; capture required ciphertext/key references before deletion. Exercise retained-key recovery, operator destruction and after-window refusal. Same-ID restore and new-secret cloning remain distinct. Apply the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">adopted request/operator-confirmation/cancellation/no-wait policy</a>. Verify confirmation bound to tenant/request/artifact; committed cancellation prevents execution, and cancellation/execution cannot both win. Refused or interrupted execution cannot leave partial deletion.</td>
 </tr>
 <tr>
 <td>M6 operations and clients</td>

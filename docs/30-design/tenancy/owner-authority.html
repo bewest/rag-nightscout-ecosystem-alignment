@@ -5380,7 +5380,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>7f872707e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-06 at <code>59cbce7ae</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5440,7 +5440,10 @@ Initial capabilities cover reading effective configuration/provenance, changing
 permitted settings, managing uploader/follower credentials and grants, configuring
 enabled integrations, export and deletion requests. Operator provisioning,
 suspension, policy changes and execution of lifecycle deletion remain on the private
-operator plane. Controller commands require their own reviewed authority.</p>
+operator plane. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">preview deletion ceremony</a>
+requires an explicit request/operator confirmation, permits cancellation before
+execution starts and imposes no mandatory waiting period. Current authority and
+verified artifact/recovery prerequisites still apply. Controller commands require their own reviewed authority.</p>
 <p>Secret reveal is a separate permission with recent reauthentication. Ownership
 transfer and adding co-owners are sensitive explicit operations; last-owner removal
 must not orphan the tenant. Transactional transfer/recovery details require a

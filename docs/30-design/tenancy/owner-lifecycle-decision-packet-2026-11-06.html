@@ -6033,8 +6033,11 @@ are sufficient initially. Self-service co-owner/transfer proposals below are lat
 enhancements, not first-preview gates. The operator path still needs current
 authority, last-owner protection, audit and recovery without secret disclosure.
 The earlier recommendation (a) below is retained as a future proposal, not the
-adopted preview implementation. Deletion confirmation/cancellation policy is a
-separate open question; the adopted 30-day key/artifact retention does not settle it.</p>
+adopted preview implementation. The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">deletion ceremony decision</a>
+requires explicit request and operator confirmation, cancellation until execution
+starts, and no mandatory waiting period. It supersedes the proposed 14-day
+pre-execution window below. The adopted 30-day post-deletion key/artifact retention
+remains separate; other future invitation/self-service proposals are not adopted.</p>
 <p><strong>Later decision, separate from this draft's recommendations:</strong> the maintainer's
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision record</a>
 adopts retaining Transit keys and the export artifact for 30 days, followed by
@@ -6147,7 +6150,7 @@ from the dashboard, with a fresh sign-in for each; (b) makes each a support requ
 delete a site in one sitting; (d) means a lost phone is a support request. Operators: (a) gives them
 two commands (<code>recover-owner</code>, <code>execute-deletion</code>) and a request queue to watch; (b) gives them every
 request. <strong>Multitenant only.</strong></p>
-<p><strong>Values the maintainer must set.</strong> Deletion retention window between <code>requested</code> and <code>scheduled</code>:
+<p><strong>Historical proposed values, not current preview requirements.</strong> The later deletion-ceremony decision above selects no mandatory pre-execution wait. The original alternative was a deletion retention window between <code>requested</code> and <code>scheduled</code>:
 recommended <strong>14 days</strong>, basis: long enough for an owner who did not intend it to notice and cancel,
 short enough that R62's populated restore lab (the only recovery instrument) bounds what must be
 kept; <strong>unmeasured</strong>, and an operator policy may lengthen it. Invitation validity: recommended
