@@ -63,10 +63,43 @@ Vault version strings, every count, each control's exact red text, and cleanup v
 A control that stays green is a mismatch, and a control red for a reason other than the
 predicted one is reported as such; neither is a pass.
 
-## Captured result
+## Captured result (2026-11-07 UTC, two runs)
 
-See `results/<date>/report.json` beside this file once a run has been recorded; the handoff
-and the release record quote its figures from that file, never from this page.
+[results/2026-11-07/report.json](results/2026-11-07/report.json) is the record; figures below
+are copied from it. Application tree `fd827e350a185ad73c838b013b25fe889434b036`
+(branch `codex/tenant-export-delete-20261106`), fixture sha256 `e6afbf4e7a26…`,
+PostgreSQL `16.15 (Debian 16.15-1.pgdg13+2)` from `postgres:16`, Vault `2.2.1` from the pinned
+digest, wall clock 00:02:49 to 00:02:59 UTC, free disk 77,813,408 KB before and 77,813,304 KB after.
+
+- **Run 1** (`report-run1-fatal.json`, application tree `7255414e`): fatal at the first migration;
+  the lifecycle ledger candidate's CHECK patterns had lost their quotes when generated through a
+  shell string (`syntax error at or near "^"`). No stage ran; its two containers and two volumes
+  were verified absent. Fixed in `fd827e35`; trap recorded in the handoff.
+- **Run 2**: `result: pass`. Positive stage: tenant A **39 rows across 29 admitted tables**
+  (entries 6 with the ObjectId/string twins, treatments 2, food 2, tenant_settings_history 2,
+  secret_records 2, secret_audit 2, one row in each of the other 23), tenant B 17 rows across
+  16 tables. All 14 checks green: export counts equal the oracle; twins kept as
+  `[objectid,string]`; 2 ciphertexts, no plaintext; backend terminated after row 5 left the target
+  at 0 rows; rerun imported 39 rows, oracle equal across 29 tables; typed identity at the target;
+  2 secrets decrypted at the target; request recorded with nothing deleted;
+  `LIFECYCLE_ARTIFACT_STALE` with 40 rows intact; deletion thrown after the second table rolled
+  back to 39 rows with B unchanged; execution deleted 39 rows, 29 tables at zero, B unchanged at
+  17 rows, request `executed`; re-import restored 39 rows with 2 ciphertexts byte-identical;
+  2 secrets decrypted after re-import; the Transit key present and non-exportable.
+- **Controls**, each red for the predicted mechanism: `empty-catalogue` →
+  `oracle: treatments.treatments: expected 2 rows, got 0` (import had accepted 37 rows);
+  `drop-catalogue` → `LIFECYCLE_CATALOGUE_INCOMPLETE: treatments`, target 0 rows;
+  `flatten-objectid` → `typed identity for 0123456789abcdef01234567: expected kinds
+  [objectid,string] …, got kinds [string]` (38 rows imported); `omit-ciphertext` →
+  `LIFECYCLE_KEY_REFERENCE_WITHOUT_CIPHERTEXT: secrets.secret_records.vendor-cloud`, target
+  0 rows; `wrong-binding-delete` → `foreign tenant B changed:` 16 tables `expected N rows,
+  got 0 | A (the deletion target) differences: none, A rows remain`; `no-rollback` →
+  `interrupted import left 5 rows in the target (expected 0): entries.entries=5`.
+- **Restored** stage: all 14 checks green again (export digest differs from the positive stage
+  only by `exportedAt`; counts identical).
+- Cleanup: both containers (`ns-lifecycle-04383f99-pg`, `-vault`) and the Vault container's two
+  anonymous volumes verified absent by `docker inspect`; the PostgreSQL data directory was a
+  tmpfs with no volume.
 
 ## Decision questions (not agent defaults)
 

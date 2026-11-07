@@ -1,0 +1,1555 @@
+{
+ "format": "nightscout-tenant-lifecycle-research-artifact",
+ "version": 1,
+ "manifest": {
+  "format": "nightscout-tenant-lifecycle-research-artifact",
+  "version": 1,
+  "tenant": "11111111-1111-4111-8111-111111111111",
+  "sourceCommit": "fd827e350a185ad73c838b013b25fe889434b036",
+  "exportedAt": 1794009772040,
+  "keyNames": {
+   "encryptionKey": "s1_a-data",
+   "signingKey": "s1_a-signing"
+  },
+  "catalogues": [
+   {
+    "kind": "entries",
+    "namespace": "s1_entries",
+    "ledger": [
+     {
+      "name": "0001_entries",
+      "checksum": "44c79e68411bf7fcfe088fc0446327bd13181fafc17ff9c05b0acd86d95623f7"
+     },
+     {
+      "name": "0002_entries_insertion_order",
+      "checksum": "edda7b234df342d121cda2e655b2a6fdae1c59a0c92a0bdf604007204c278cce"
+     }
+    ],
+    "tables": [
+     {
+      "table": "entries",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "doc",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "id_kind",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "insertion_ordinal",
+        "type": "bigint",
+        "identity": true
+       }
+      ],
+      "count": 6,
+      "digest": "48469b583e1c67840b87e6264ec8c08b7a756081f923bb4174ec3bb7e3a2b1ab"
+     }
+    ]
+   },
+   {
+    "kind": "treatments",
+    "namespace": "s1_treatments",
+    "ledger": [
+     {
+      "name": "0001_treatments",
+      "checksum": "b29ddcf7789472ad87fa14e309a47e45e275fb123b549814595dc7aaed2977a5"
+     }
+    ],
+    "tables": [
+     {
+      "table": "treatments",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "doc",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "id_kind",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 2,
+      "digest": "d66667bed51471d4955684a55345dcd96c844bc0ebee8aeffc3fc613a69e50b4"
+     }
+    ]
+   },
+   {
+    "kind": "devicestatus",
+    "namespace": "s1_devicestatus",
+    "ledger": [
+     {
+      "name": "0001_devicestatus",
+      "checksum": "46bc46a67a529129a09861a9b19d487a4ace64d0dd150e819a7e73effe03e3e3"
+     }
+    ],
+    "tables": [
+     {
+      "table": "devicestatus",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "doc",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "id_kind",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "e3f387f72c542d0f7a0b4bfe42256f8ad1c54ece9790a04f9bde0a024e7a567c"
+     }
+    ]
+   },
+   {
+    "kind": "profile",
+    "namespace": "s1_profile",
+    "ledger": [
+     {
+      "name": "0001_profile",
+      "checksum": "9fe44ff376aa7ad61e0273e294d71ac76bbf5efe16a3619f9f187c28eab5e19b"
+     }
+    ],
+    "tables": [
+     {
+      "table": "profile",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "id_kind",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "doc",
+        "type": "jsonb",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "874bbd7b691a207a5c65b1e753575c96c1817299df663e8876f7f974fafdb0d4"
+     }
+    ]
+   },
+   {
+    "kind": "food",
+    "namespace": "s1_food",
+    "ledger": [
+     {
+      "name": "0001_food",
+      "checksum": "a14ca01a345a686ce754c9066db71b83f17aa465a18b65ff5ff99814593bba78"
+     }
+    ],
+    "tables": [
+     {
+      "table": "food",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "id_kind",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "doc",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "insertion_ordinal",
+        "type": "bigint",
+        "identity": true
+       }
+      ],
+      "count": 2,
+      "digest": "884c6ef3eac204ebf8037bac1c686a01c3b75f982b2fc698c40c601e367d37b1"
+     }
+    ]
+   },
+   {
+    "kind": "activity",
+    "namespace": "s1_activity",
+    "ledger": [
+     {
+      "name": "0001_activity",
+      "checksum": "f0c4f976d276f18ad11b694755411e8c61b8dec50700a0ed0d6aaa484440431b"
+     }
+    ],
+    "tables": [
+     {
+      "table": "activity",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "doc",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "id_kind",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "39035bb8011db6d4b2a4bb2b6e5ada09d1f10c9bf766b53f7f5003bd9776b2e4"
+     }
+    ]
+   },
+   {
+    "kind": "settings",
+    "namespace": "s1_settings",
+    "ledger": [
+     {
+      "name": "0001_settings",
+      "checksum": "62e107c27422aefa8f0a93222fb439678bea06b3541d312ed5580a071e541a3c"
+     }
+    ],
+    "tables": [
+     {
+      "table": "settings",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "doc",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "id_kind",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "d4a4334ad7ce52a2d718818b04f8cc5f8b795dea6dfc5412a1f6e992f3a4272b"
+     }
+    ]
+   },
+   {
+    "kind": "clock",
+    "namespace": "s1_clock",
+    "ledger": [
+     {
+      "name": "0001_tenant_write_clock",
+      "checksum": "704d5a8d0fc9162f9ff4ec652109c466ccc903d77e249bd7ec879012b900554d"
+     }
+    ],
+    "tables": [
+     {
+      "table": "tenant_write_clock",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "last_stamp",
+        "type": "bigint",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "71fa79836cbf9a0133cc02579acc0e5543c9103adfe4497a18c32789899ba146"
+     }
+    ]
+   },
+   {
+    "kind": "checkpoint",
+    "namespace": "s1_checkpoint",
+    "ledger": [
+     {
+      "name": "0001_consumer_checkpoint_projection",
+      "checksum": "daa0055e54ada5f0a7465d605c69c7bee0a4b0fdfb8e0eb3276ec8c7ee71748f"
+     }
+    ],
+    "tables": [
+     {
+      "table": "tenant_consumer_checkpoint",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "consumer",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "contract_digest",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "checkpoint",
+        "type": "bigint",
+        "identity": false
+       },
+       {
+        "name": "projection",
+        "type": "jsonb",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "bb51f41d13cff2a2b6a3d6544a4780fc742e476fb2a37315b38e57eb560eda63"
+     }
+    ]
+   },
+   {
+    "kind": "authorization",
+    "namespace": "s1_authorization",
+    "ledger": [
+     {
+      "name": "0001_tenant_authorization",
+      "checksum": "394f7abe92ada63ef192d5668785880ab02338785e000c2009fa0ed8c52687da"
+     },
+     {
+      "name": "0002_subject_display_name",
+      "checksum": "5c3ae2cd33a1e097fb3f4fcc176c681f651a85b88ca08b447190f017a643530c"
+     },
+     {
+      "name": "0003_subject_management_metadata",
+      "checksum": "69932c5cdc4aa8040005994f1382150e0e55383224cbc88ba59e771bab025576"
+     },
+     {
+      "name": "0004_owner_policy_fencing",
+      "checksum": "2ee34edbe4b0d9f4072308af914f235b992584933034020fe89b3e43ae3c1087"
+     }
+    ],
+    "tables": [
+     {
+      "table": "tenant_authorization_config",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "anonymous_roles",
+        "type": "text[]",
+        "identity": false
+       },
+       {
+        "name": "owner_fence",
+        "type": "boolean",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "3a15fbaf040114b950e22cf68b1036837238b3604e7148e1f33ab46a5e5a2e21"
+     },
+     {
+      "table": "tenant_authorization_roles",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "name",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "permissions",
+        "type": "text[]",
+        "identity": false
+       },
+       {
+        "name": "owner_fence",
+        "type": "boolean",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "670511d86921b9b1a0bcd45903db13fd2c3d071dd41c92521941a0d8985124a0"
+     },
+     {
+      "table": "tenant_authorization_subjects",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "subject_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "display_name",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "notes",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "created_at",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "9ece601e6ef0bf1ab607e0e515c8ea933a38b508b4b1e63494c48b19a774a89a"
+     },
+     {
+      "table": "tenant_authorization_subject_roles",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "subject_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "role_name",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "bb2343d92b5a288cdd94ab95c8c9dcccb383ead4f19490d0793035f179b39d71"
+     },
+     {
+      "table": "tenant_subject_admin_audit",
+      "columns": [
+       {
+        "name": "event_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "principal",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "consumer",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "subject_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "operation",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "event_time",
+        "type": "bigint",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "ab615c5bc5efda9796b8c27ccb81608c331ad5b0ee8d4a967d573c5521199362"
+     },
+     {
+      "table": "tenant_owner_policy",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "catalogue_digest",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "ceiling",
+        "type": "text[]",
+        "identity": false
+       },
+       {
+        "name": "owner_fence",
+        "type": "boolean",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "36bcc396db9a828a64013942ea64ccca74e88c364f6c25952a0b9a3f32993449"
+     },
+     {
+      "table": "tenant_owner_actors",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "principal",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "consumer",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "active",
+        "type": "boolean",
+        "identity": false
+       },
+       {
+        "name": "can_update",
+        "type": "boolean",
+        "identity": false
+       },
+       {
+        "name": "delegable",
+        "type": "text[]",
+        "identity": false
+       },
+       {
+        "name": "owner_fence",
+        "type": "boolean",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "87fc9302b32897d82aef281acda22c086e94fab44a41120b4c89eb257089e5bd"
+     }
+    ]
+   },
+   {
+    "kind": "access",
+    "namespace": "s1_access",
+    "ledger": [
+     {
+      "name": "0001_access_state",
+      "checksum": "d09cf6a2990dd68af735c6b2ed658a56ab4fa5c23355272896c6408af3628893"
+     }
+    ],
+    "tables": [
+     {
+      "table": "access_tenants",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "active",
+        "type": "boolean",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "ea5578447664f5dd5a92e27d6cecc3c62d4929273eadf2cbec8886764792cc12"
+     },
+     {
+      "table": "access_credentials",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "credential_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "subject_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "generation",
+        "type": "integer",
+        "identity": false
+       },
+       {
+        "name": "enabled",
+        "type": "boolean",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "bf24aa69f49d782dbf97dc22d0305567f243d348d9477d6101f09b5a67b65626"
+     },
+     {
+      "table": "access_sessions",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "session_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "subject_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "credential_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "generation",
+        "type": "integer",
+        "identity": false
+       },
+       {
+        "name": "expires_at",
+        "type": "bigint",
+        "identity": false
+       },
+       {
+        "name": "active",
+        "type": "boolean",
+        "identity": false
+       },
+       {
+        "name": "purpose",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "b1b46c58430333d3802abdde0f3a330de99fbcb3c8ae393e756dbc8799772c4b"
+     },
+     {
+      "table": "access_keys",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "kid",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "purpose",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "active",
+        "type": "boolean",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "7a50126697c7d4d6e4a636fd933bbb55421d1f55249fa1562c134a3dfd8b3f49"
+     }
+    ]
+   },
+   {
+    "kind": "subject_policy",
+    "namespace": "s1_subject_policy",
+    "ledger": [
+     {
+      "name": "0001_subject_policy",
+      "checksum": "e087badeacb6e02e4f9e41a45492826ddb2b4efed974638ad4b344e571998ebd"
+     }
+    ],
+    "tables": [
+     {
+      "table": "subject_policy",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "version",
+        "type": "integer",
+        "identity": false
+       },
+       {
+        "name": "grants",
+        "type": "jsonb",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "e154cd350065c366cea10441fd2c8e540c9f71a8c6ee4b0c80ab7b773982b799"
+     },
+     {
+      "table": "subject_policy_audit",
+      "columns": [
+       {
+        "name": "event_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "principal",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "consumer",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "operation",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "phase",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "event_time",
+        "type": "bigint",
+        "identity": false
+       },
+       {
+        "name": "version",
+        "type": "integer",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "2e3b56df9958b24cd82ed49377d59ab86f93e9953156ffa3b6adc2ac17c47c33"
+     }
+    ]
+   },
+   {
+    "kind": "operator_policy",
+    "namespace": "s1_operator_policy",
+    "ledger": [
+     {
+      "name": "0001_tenant_operator_policy",
+      "checksum": "c556544646b76fa84836087169334653867c778283d6249b290b82aa20427971"
+     }
+    ],
+    "tables": [
+     {
+      "table": "tenant_operator_policy",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "generation",
+        "type": "integer",
+        "identity": false
+       },
+       {
+        "name": "policy",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "principal",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "consumer",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "event_time",
+        "type": "bigint",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "09f5a2118c753f1cc68fe3fcb5d7e52e5c84344fa39571da439d6c8595bcf395"
+     }
+    ]
+   },
+   {
+    "kind": "tenant_settings",
+    "namespace": "s1_tenant_settings",
+    "ledger": [
+     {
+      "name": "0001_tenant_settings",
+      "checksum": "aa1cbc036cf23e2930cd08a91ecb5027a9c80fb82dfa0f05ef6e57f06ddab9d2"
+     }
+    ],
+    "tables": [
+     {
+      "table": "tenant_settings",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "version",
+        "type": "integer",
+        "identity": false
+       },
+       {
+        "name": "values",
+        "type": "jsonb",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "436fe2a4a4b5800130cada44f5b4a90f68ab74b529767ed9fa6224fb64a5d76e"
+     },
+     {
+      "table": "tenant_settings_history",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "version",
+        "type": "integer",
+        "identity": false
+       },
+       {
+        "name": "values",
+        "type": "jsonb",
+        "identity": false
+       },
+       {
+        "name": "principal",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "consumer",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "operation",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "event_time",
+        "type": "bigint",
+        "identity": false
+       },
+       {
+        "name": "restored_from",
+        "type": "integer",
+        "identity": false
+       }
+      ],
+      "count": 2,
+      "digest": "9a2c9d3256de84743df602ea176fda8a605f7637dfac59d9ffd9845f6a25ca32"
+     }
+    ]
+   },
+   {
+    "kind": "legacy",
+    "namespace": "s1_legacy",
+    "ledger": [
+     {
+      "name": "0001_legacy_credentials",
+      "checksum": "cc32b97365b20e4f5ab74c7c1c6f7146a1331a5878b990035d43a3d8f42d25a0"
+     }
+    ],
+    "tables": [
+     {
+      "table": "legacy_credential_config",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "root_reference_id",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "4860c1077c09c15fc92435378d2f06d6046abb3efa579c53b1cec477026ab7bb"
+     },
+     {
+      "table": "legacy_credential_subjects",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "subject_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "token_prefix",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 1,
+      "digest": "13e46c2219c5708078af4d2b082d6781d9304bb2c791b97bdbf192f22d4f6f1b"
+     }
+    ]
+   },
+   {
+    "kind": "secrets",
+    "namespace": "s1_secrets",
+    "ledger": [
+     {
+      "name": "0001_secrets",
+      "checksum": "fabba64185a4b931667047d794ae2557862f9bad521135197c9a5c4ebd20f99a"
+     },
+     {
+      "name": "0002_secrets_rewrap",
+      "checksum": "2fac5b180d049094e4d06b242f5e5d7c067eaa1e841ce6ebe97e39b4c41b77a6"
+     }
+    ],
+    "tables": [
+     {
+      "table": "secret_records",
+      "columns": [
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "format",
+        "type": "integer",
+        "identity": false
+       },
+       {
+        "name": "ciphertext",
+        "type": "text",
+        "identity": false
+       }
+      ],
+      "count": 2,
+      "digest": "e292d35a4e90f131cc41c906d99041c0c8a2cbe361d5b8832c43b036d740da6f",
+      "keyReferences": [
+       {
+        "id": "root-a",
+        "keyReference": {
+         "scheme": "vault-transit",
+         "keyVersion": 1
+        }
+       },
+       {
+        "id": "vendor-cloud",
+        "keyReference": {
+         "scheme": "vault-transit",
+         "keyVersion": 1
+        }
+       }
+      ]
+     },
+     {
+      "table": "secret_audit",
+      "columns": [
+       {
+        "name": "event_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "tenant_id",
+        "type": "uuid",
+        "identity": false
+       },
+       {
+        "name": "principal",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "consumer",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "operation",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "secret_id",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "phase",
+        "type": "text",
+        "identity": false
+       },
+       {
+        "name": "event_time",
+        "type": "bigint",
+        "identity": false
+       },
+       {
+        "name": "target_version",
+        "type": "bigint",
+        "identity": false
+       }
+      ],
+      "count": 2,
+      "digest": "61aa8e1693ecc391e46ea918410ccc859451fe5050b09f5c9ede57ace619d790"
+     }
+    ]
+   }
+  ]
+ },
+ "tables": {
+  "entries.entries": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "synthetic-entry-equal-time-a",
+     "sgv": 104,
+     "date": 4000,
+     "type": "sgv"
+    },
+    "id_kind": "string",
+    "insertion_ordinal": "5"
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "synthetic-entry-equal-time-b",
+     "sgv": 105,
+     "date": 4000,
+     "type": "sgv"
+    },
+    "id_kind": "string",
+    "insertion_ordinal": "6"
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "0123456789abcdef01234568",
+     "mbg": 110,
+     "date": 3000,
+     "type": "mbg",
+     "dateString": "1970-01-01T00:00:03.000Z"
+    },
+    "id_kind": "objectid",
+    "insertion_ordinal": "4"
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "synthetic-entry-2",
+     "sgv": 102,
+     "date": 2000,
+     "type": "sgv",
+     "isValid": false,
+     "extension": {
+      "nested": {
+       "_id": "keep-nested",
+       "date": null
+      }
+     },
+     "srvModified": 9001
+    },
+    "id_kind": "string",
+    "insertion_ordinal": "3"
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "0123456789abcdef01234567",
+     "sgv": 100,
+     "date": 1000,
+     "type": "sgv",
+     "source": {
+      "app": "synthetic-import",
+      "channel": "device"
+     },
+     "extension": {
+      "flags": [
+       false,
+       0,
+       ""
+      ],
+      "ordered": [
+       3,
+       1,
+       2
+      ],
+      "nullable": null
+     }
+    },
+    "id_kind": "objectid",
+    "insertion_ordinal": "1"
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "0123456789abcdef01234567",
+     "sgv": 101,
+     "date": 1000,
+     "type": "sgv",
+     "source": {
+      "app": "synthetic-import",
+      "channel": "simulated"
+     },
+     "extension": {
+      "ordered": [
+       3,
+       1,
+       2
+      ]
+     }
+    },
+    "id_kind": "string",
+    "insertion_ordinal": "2"
+   }
+  ],
+  "treatments.treatments": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "0123456789abcdef01234570",
+     "carbs": 12,
+     "duration": 0,
+     "eventType": "Synthetic Carbs",
+     "created_at": "1970-01-01T00:00:01.000Z"
+    },
+    "id_kind": "objectid"
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "synthetic-treatment-2",
+     "notes": "synthetic",
+     "eventType": "Synthetic Note",
+     "created_at": "1970-01-01T00:00:02.000Z",
+     "identifier": "synthetic-treatment-2-identifier"
+    },
+    "id_kind": "string"
+   }
+  ],
+  "devicestatus.devicestatus": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "0123456789abcdef01234571",
+     "device": "synthetic-device",
+     "uploader": {
+      "battery": 55
+     },
+     "created_at": "1970-01-01T00:00:01.000Z"
+    },
+    "id_kind": "objectid"
+   }
+  ],
+  "profile.profile": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "id_kind": "objectid",
+    "doc": {
+     "_id": "0123456789abcdef01234572",
+     "store": {
+      "Synthetic": {
+       "dia": 5,
+       "basal": [
+        {
+         "time": "00:00",
+         "value": 0.5
+        }
+       ],
+       "timezone": "UTC"
+      }
+     },
+     "defaultProfile": "Synthetic"
+    }
+   }
+  ],
+  "food.food": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "id_kind": "string",
+    "doc": {
+     "_id": "synthetic-food-1",
+     "name": "Synthetic apple",
+     "type": "food",
+     "carbs": 15
+    },
+    "insertion_ordinal": "1"
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "id_kind": "objectid",
+    "doc": {
+     "_id": "0123456789abcdef01234573",
+     "name": "Synthetic bread",
+     "type": "food",
+     "carbs": 20
+    },
+    "insertion_ordinal": "2"
+   }
+  ],
+  "activity.activity": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "synthetic-activity-1",
+     "date": 5000,
+     "type": "synthetic",
+     "created_at": "1970-01-01T00:00:05.000Z"
+    },
+    "id_kind": "string"
+   }
+  ],
+  "settings.settings": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "doc": {
+     "_id": "synthetic-settings-1",
+     "units": "mmol",
+     "identifier": "synthetic-settings-identifier"
+    },
+    "id_kind": "string"
+   }
+  ],
+  "clock.tenant_write_clock": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "last_stamp": "4000"
+   }
+  ],
+  "checkpoint.tenant_consumer_checkpoint": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "consumer": "synthetic-consumer",
+    "contract_digest": "0000000000000000000000000000000000000000000000000000000000000001",
+    "checkpoint": "4000",
+    "projection": [
+     {
+      "key": "synthetic"
+     }
+    ]
+   }
+  ],
+  "authorization.tenant_authorization_config": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "anonymous_roles": [
+     "denied"
+    ],
+    "owner_fence": false
+   }
+  ],
+  "authorization.tenant_authorization_roles": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "name": "viewer",
+    "permissions": [
+     "api:entries:read",
+     "api:treatments:read"
+    ],
+    "owner_fence": false
+   }
+  ],
+  "authorization.tenant_authorization_subjects": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "subject_id": "000000000000000000000001",
+    "display_name": "Synthetic Viewer A",
+    "notes": null,
+    "created_at": "1970-01-01T00:00:00.000Z"
+   }
+  ],
+  "authorization.tenant_authorization_subject_roles": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "subject_id": "000000000000000000000001",
+    "role_name": "viewer"
+   }
+  ],
+  "authorization.tenant_subject_admin_audit": [
+   {
+    "event_id": "aaaaaaaa-0001-4000-8000-000000000001",
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "principal": "synthetic-owner",
+    "consumer": "synthetic-admin",
+    "subject_id": "000000000000000000000001",
+    "operation": "update",
+    "event_time": "7"
+   }
+  ],
+  "authorization.tenant_owner_policy": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "catalogue_digest": "0000000000000000000000000000000000000000000000000000000000000002",
+    "ceiling": [
+     "api:entries:read"
+    ],
+    "owner_fence": false
+   }
+  ],
+  "authorization.tenant_owner_actors": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "principal": "synthetic-owner",
+    "consumer": "synthetic-admin",
+    "active": true,
+    "can_update": true,
+    "delegable": [
+     "api:entries:read"
+    ],
+    "owner_fence": false
+   }
+  ],
+  "access.access_tenants": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "active": true
+   }
+  ],
+  "access.access_credentials": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "credential_id": "synthetic-credential",
+    "subject_id": "000000000000000000000001",
+    "generation": 1,
+    "enabled": true
+   }
+  ],
+  "access.access_sessions": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "session_id": "synthetic-session",
+    "subject_id": "000000000000000000000001",
+    "credential_id": "synthetic-credential",
+    "generation": 1,
+    "expires_at": "4102444800000",
+    "active": true,
+    "purpose": "data"
+   }
+  ],
+  "access.access_keys": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "kid": "key1",
+    "purpose": "data",
+    "active": true
+   }
+  ],
+  "subject_policy.subject_policy": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "version": 1,
+    "grants": [
+     {
+      "subject": "000000000000000000000001",
+      "permissions": [
+       "api:entries:read"
+      ]
+     }
+    ]
+   }
+  ],
+  "subject_policy.subject_policy_audit": [
+   {
+    "event_id": "aaaaaaaa-0002-4000-8000-000000000002",
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "principal": "synthetic-owner",
+    "consumer": "synthetic-admin",
+    "operation": "policy-replace",
+    "phase": "committed",
+    "event_time": "8",
+    "version": 1
+   }
+  ],
+  "operator_policy.tenant_operator_policy": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "generation": 1,
+    "policy": {
+     "egress": {
+      "allow": []
+     }
+    },
+    "principal": "synthetic-operator",
+    "consumer": "synthetic-admin",
+    "event_time": "9"
+   }
+  ],
+  "tenant_settings.tenant_settings": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "version": 2,
+    "values": {
+     "SHOW_SECONDS": true,
+     "DISPLAY_UNITS": "mmol"
+    }
+   }
+  ],
+  "tenant_settings.tenant_settings_history": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "version": 1,
+    "values": {
+     "DISPLAY_UNITS": "mg/dl"
+    },
+    "principal": "synthetic-owner",
+    "consumer": "synthetic-admin",
+    "operation": "replace",
+    "event_time": "10",
+    "restored_from": null
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "version": 2,
+    "values": {
+     "SHOW_SECONDS": true,
+     "DISPLAY_UNITS": "mmol"
+    },
+    "principal": "synthetic-owner",
+    "consumer": "synthetic-admin",
+    "operation": "replace",
+    "event_time": "11",
+    "restored_from": null
+   }
+  ],
+  "legacy.legacy_credential_config": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "root_reference_id": "root-a"
+   }
+  ],
+  "legacy.legacy_credential_subjects": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "subject_id": "000000000000000000000001",
+    "token_prefix": "sameviewer"
+   }
+  ],
+  "secrets.secret_records": [
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "id": "root-a",
+    "format": 1,
+    "ciphertext": "vault:v1:2axZ3YvxKT3+dTDCtT2sNxOErkLpSGnsL1GUClkQPSTDEFlH0YKXPs7VAlqHxTxD8L/9pLCjo9YskQpODLZZG4riuplHgjGSsr9ae7zmqv9cAI4hKLIvM1lkCMevKC1g01YNQIiwrN7ybMZ0CqLp6aO5CNgVAqx/sWmiSzNQNMKaMc5XSoHQDScl/Z29OpIAKf0RzZU="
+   },
+   {
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "id": "vendor-cloud",
+    "format": 1,
+    "ciphertext": "vault:v1:djF7u9+17UNd2Nw9+elvovb2OOYNbVNcld/jyYivhAIJjb5K0njlP+w28xJqWaW468NfQjwgt3ja5AUUpy15+23kZDqquoLG3aXe+b6OvsJRUVaLFYFlZV+TfV8Ug+QaxXsAGgc2FSqP46Em8eL8O8s7ILlYOs6TbJiyZPPjrEwKkDSd/DemuM6yr0IFlmEt3nbQ"
+   }
+  ],
+  "secrets.secret_audit": [
+   {
+    "event_id": "c4a020a9-623c-4073-a6b9-e4f97dc9f5b5",
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "principal": "synthetic-issuer",
+    "consumer": "synthetic-lab",
+    "operation": "encrypt",
+    "secret_id": "root-a",
+    "phase": "authorized",
+    "event_time": "1794009772005",
+    "target_version": null
+   },
+   {
+    "event_id": "5852c071-b935-4af4-aa54-9748384c0a04",
+    "tenant_id": "11111111-1111-4111-8111-111111111111",
+    "principal": "synthetic-issuer",
+    "consumer": "synthetic-lab",
+    "operation": "encrypt",
+    "secret_id": "vendor-cloud",
+    "phase": "authorized",
+    "event_time": "1794009772011",
+    "target_version": null
+   }
+  ]
+ },
+ "digest": "74a5455b7c7e08e77e5a442872c4a09d5a7410e4c65d7d2124003043b553f40b"
+}

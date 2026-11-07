@@ -1,0 +1,398 @@
+{
+  "lab": "tenant-export-delete",
+  "startedAt": "2026-11-07T00:02:49.804Z",
+  "owner": "04383f99-ff4b-4370-9ea2-d0afe140615c",
+  "worktree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-export-delete-20261106",
+  "stages": [
+    {
+      "name": "positive",
+      "kind": "positive",
+      "predicted": "green",
+      "checks": [
+        {
+          "name": "export",
+          "ok": true,
+          "text": "39 rows across 29 tables, digest 74a5455b7c7e"
+        },
+        {
+          "name": "typed-identity-in-artifact",
+          "ok": true,
+          "text": "twins kept as [objectid,string]"
+        },
+        {
+          "name": "ciphertext-only",
+          "ok": true,
+          "text": "2 ciphertexts with key references, no plaintext"
+        },
+        {
+          "name": "interrupted-import-kill",
+          "ok": true,
+          "text": "backend terminated after row 5, target rows 0"
+        },
+        {
+          "name": "import-rerun",
+          "ok": true,
+          "text": "39 rows imported, oracle equal across 29 tables"
+        },
+        {
+          "name": "typed-identity-at-target",
+          "ok": true,
+          "text": "typed identity for 0123456789abcdef01234567: observed kinds [objectid,string] decoding to one ObjectId and one string, got kinds [objectid,string]"
+        },
+        {
+          "name": "decrypt-at-target",
+          "ok": true,
+          "text": "2 secrets decrypted through the component against retained Vault keys"
+        },
+        {
+          "name": "request-deletion",
+          "ok": true,
+          "text": "request 9d0f3737 recorded, nothing deleted"
+        },
+        {
+          "name": "stale-artifact-refusal",
+          "ok": true,
+          "text": "LIFECYCLE_ARTIFACT_STALE with 40 rows intact"
+        },
+        {
+          "name": "interrupted-delete-throw",
+          "ok": true,
+          "text": "thrown after secrets.secret_audit then secrets.secret_records; rollback left A at 39 rows, B unchanged"
+        },
+        {
+          "name": "execute-deletion",
+          "ok": true,
+          "text": "39 rows deleted, 29 admitted tables at zero rows, B unchanged at 17 rows, request executed"
+        },
+        {
+          "name": "reimport-after-deletion",
+          "ok": true,
+          "text": "39 rows restored, oracle equal, 2 ciphertexts byte-identical"
+        },
+        {
+          "name": "decrypt-after-reimport",
+          "ok": true,
+          "text": "2 secrets decrypted through the component against retained Vault keys"
+        },
+        {
+          "name": "vault-keys-retained",
+          "ok": true,
+          "text": "s1_a-data present, non-exportable (never deleted by this proof)"
+        }
+      ],
+      "counts": {
+        "A": {
+          "entries.entries": 6,
+          "treatments.treatments": 2,
+          "devicestatus.devicestatus": 1,
+          "profile.profile": 1,
+          "food.food": 2,
+          "activity.activity": 1,
+          "settings.settings": 1,
+          "clock.tenant_write_clock": 1,
+          "checkpoint.tenant_consumer_checkpoint": 1,
+          "authorization.tenant_authorization_config": 1,
+          "authorization.tenant_authorization_roles": 1,
+          "authorization.tenant_authorization_subjects": 1,
+          "authorization.tenant_authorization_subject_roles": 1,
+          "authorization.tenant_subject_admin_audit": 1,
+          "authorization.tenant_owner_policy": 1,
+          "authorization.tenant_owner_actors": 1,
+          "access.access_tenants": 1,
+          "access.access_credentials": 1,
+          "access.access_sessions": 1,
+          "access.access_keys": 1,
+          "subject_policy.subject_policy": 1,
+          "subject_policy.subject_policy_audit": 1,
+          "operator_policy.tenant_operator_policy": 1,
+          "tenant_settings.tenant_settings": 1,
+          "tenant_settings.tenant_settings_history": 2,
+          "legacy.legacy_credential_config": 1,
+          "legacy.legacy_credential_subjects": 1,
+          "secrets.secret_records": 2,
+          "secrets.secret_audit": 2
+        },
+        "B": {
+          "entries.entries": 2,
+          "treatments.treatments": 1,
+          "devicestatus.devicestatus": 1,
+          "profile.profile": 1,
+          "food.food": 1,
+          "activity.activity": 0,
+          "settings.settings": 0,
+          "clock.tenant_write_clock": 1,
+          "checkpoint.tenant_consumer_checkpoint": 0,
+          "authorization.tenant_authorization_config": 1,
+          "authorization.tenant_authorization_roles": 1,
+          "authorization.tenant_authorization_subjects": 1,
+          "authorization.tenant_authorization_subject_roles": 1,
+          "authorization.tenant_subject_admin_audit": 0,
+          "authorization.tenant_owner_policy": 0,
+          "authorization.tenant_owner_actors": 0,
+          "access.access_tenants": 1,
+          "access.access_credentials": 0,
+          "access.access_sessions": 0,
+          "access.access_keys": 0,
+          "subject_policy.subject_policy": 0,
+          "subject_policy.subject_policy_audit": 0,
+          "operator_policy.tenant_operator_policy": 0,
+          "tenant_settings.tenant_settings": 1,
+          "tenant_settings.tenant_settings_history": 0,
+          "legacy.legacy_credential_config": 1,
+          "legacy.legacy_credential_subjects": 1,
+          "secrets.secret_records": 1,
+          "secrets.secret_audit": 1
+        },
+        "totalA": 39,
+        "totalB": 17
+      },
+      "outcome": "green"
+    },
+    {
+      "name": "empty-catalogue",
+      "kind": "control",
+      "predicted": "red",
+      "checks": [],
+      "outcome": "red",
+      "redText": "ERR_ASSERTION oracle: treatments.treatments: expected 2 rows, got 0\n+ actual - expected\n\n+ [\n+   'treatments.treatments: expected 2 rows, got 0'\n+ ]\n- []\n",
+      "asPredicted": true,
+      "targetRowsAfter": 37
+    },
+    {
+      "name": "drop-catalogue",
+      "kind": "control",
+      "predicted": "red",
+      "checks": [],
+      "outcome": "red",
+      "redText": "LIFECYCLE_CATALOGUE_INCOMPLETE LIFECYCLE_CATALOGUE_INCOMPLETE: treatments",
+      "asPredicted": true,
+      "targetRowsAfter": 0
+    },
+    {
+      "name": "flatten-objectid",
+      "kind": "control",
+      "predicted": "red",
+      "checks": [],
+      "outcome": "red",
+      "redText": "ERR_ASSERTION typed identity for 0123456789abcdef01234567: expected kinds [objectid,string] decoding to one ObjectId and one string, got kinds [string]\n+ actual - expected\n\n  [\n-   'objectid',\n    'string'\n  ]\n",
+      "asPredicted": true,
+      "targetRowsAfter": 38
+    },
+    {
+      "name": "omit-ciphertext",
+      "kind": "control",
+      "predicted": "red",
+      "checks": [],
+      "outcome": "red",
+      "redText": "LIFECYCLE_KEY_REFERENCE_WITHOUT_CIPHERTEXT LIFECYCLE_KEY_REFERENCE_WITHOUT_CIPHERTEXT: secrets.secret_records.vendor-cloud",
+      "asPredicted": true,
+      "targetRowsAfter": 0
+    },
+    {
+      "name": "wrong-binding-delete",
+      "kind": "control",
+      "predicted": "red",
+      "checks": [],
+      "outcome": "red",
+      "redText": "ERR_ASSERTION foreign tenant B changed: entries.entries: expected 2 rows, got 0; treatments.treatments: expected 1 rows, got 0; devicestatus.devicestatus: expected 1 rows, got 0; profile.profile: expected 1 rows, got 0; food.food: expected 1 rows, got 0; clock.tenant_write_clock: expected 1 rows, got 0; authorization.tenant_authorization_config: expected 1 rows, got 0; authorization.tenant_authorization_roles: expected 1 rows, got 0; authorization.tenant_authorization_subjects: expected 1 rows, got 0; authorization.tenant_authorization_subject_roles: expected 1 rows, got 0; access.access_tenants: expected 1 rows, got 0; tenant_settings.tenant_settings: expected 1 rows, got 0; legacy.legacy_credential_config: expected 1 rows, got 0; legacy.legacy_credential_subjects: expected 1 rows, got 0; secrets.secret_records: expected 1 rows, got 0; secrets.secret_audit: expected 1 rows, got 0 | A (the deletion target) differences: none, A rows remain\n+ actual - expected\n\n+ [\n+   'entries.entries: expected 2 rows, got 0',\n+   'treatments.treatments: expected 1 rows, got 0',\n+   'devicestatus.devicestatus: expected 1 rows, got 0',\n+   'profile.profile: expected 1 rows, got 0',\n+   'food.food: expected 1 rows, got 0',\n+   'clock.tenant_write_clock: expected 1 rows, got 0',\n+   'authorization.tenant_authorization_config: expected 1 rows, got 0',\n+   'authorization.tenant_authorization_roles: expected 1 rows, got 0',\n+   'authorization.tenant_authorization_subjects: expected 1 rows, got 0',\n+   'authorization.tenant_authorization_subject_roles: expected 1 rows, got 0',\n+   'access.access_tenants: expected 1 rows, got 0',\n+   'tenant_settings.tenant_settings: expected 1 rows, got 0',\n+   'legacy.legacy_credential_config: expected 1 rows, got 0',\n+   'legacy.legacy_credential_subjects: expected 1 rows, got 0',\n+   'secrets.secret_records: expected 1 rows, got 0',\n+   'secrets.secret_audit: expected 1 rows, got 0'\n+ ]\n- []\n",
+      "asPredicted": true,
+      "targetRowsAfter": 0
+    },
+    {
+      "name": "no-rollback",
+      "kind": "control",
+      "predicted": "red",
+      "checks": [],
+      "outcome": "red",
+      "redText": "ERR_ASSERTION interrupted import left 5 rows in the target (expected 0): entries.entries=5\n\n5 !== 0\n",
+      "asPredicted": true,
+      "targetRowsAfter": 5
+    },
+    {
+      "name": "restored",
+      "kind": "restored",
+      "predicted": "green",
+      "checks": [
+        {
+          "name": "export",
+          "ok": true,
+          "text": "39 rows across 29 tables, digest 022be5aee535"
+        },
+        {
+          "name": "typed-identity-in-artifact",
+          "ok": true,
+          "text": "twins kept as [objectid,string]"
+        },
+        {
+          "name": "ciphertext-only",
+          "ok": true,
+          "text": "2 ciphertexts with key references, no plaintext"
+        },
+        {
+          "name": "interrupted-import-kill",
+          "ok": true,
+          "text": "backend terminated after row 5, target rows 0"
+        },
+        {
+          "name": "import-rerun",
+          "ok": true,
+          "text": "39 rows imported, oracle equal across 29 tables"
+        },
+        {
+          "name": "typed-identity-at-target",
+          "ok": true,
+          "text": "typed identity for 0123456789abcdef01234567: observed kinds [objectid,string] decoding to one ObjectId and one string, got kinds [objectid,string]"
+        },
+        {
+          "name": "decrypt-at-target",
+          "ok": true,
+          "text": "2 secrets decrypted through the component against retained Vault keys"
+        },
+        {
+          "name": "request-deletion",
+          "ok": true,
+          "text": "request 65a84ea8 recorded, nothing deleted"
+        },
+        {
+          "name": "stale-artifact-refusal",
+          "ok": true,
+          "text": "LIFECYCLE_ARTIFACT_STALE with 40 rows intact"
+        },
+        {
+          "name": "interrupted-delete-throw",
+          "ok": true,
+          "text": "thrown after secrets.secret_audit then secrets.secret_records; rollback left A at 39 rows, B unchanged"
+        },
+        {
+          "name": "execute-deletion",
+          "ok": true,
+          "text": "39 rows deleted, 29 admitted tables at zero rows, B unchanged at 17 rows, request executed"
+        },
+        {
+          "name": "reimport-after-deletion",
+          "ok": true,
+          "text": "39 rows restored, oracle equal, 2 ciphertexts byte-identical"
+        },
+        {
+          "name": "decrypt-after-reimport",
+          "ok": true,
+          "text": "2 secrets decrypted through the component against retained Vault keys"
+        },
+        {
+          "name": "vault-keys-retained",
+          "ok": true,
+          "text": "s8_a-data present, non-exportable (never deleted by this proof)"
+        }
+      ],
+      "counts": {
+        "A": {
+          "entries.entries": 6,
+          "treatments.treatments": 2,
+          "devicestatus.devicestatus": 1,
+          "profile.profile": 1,
+          "food.food": 2,
+          "activity.activity": 1,
+          "settings.settings": 1,
+          "clock.tenant_write_clock": 1,
+          "checkpoint.tenant_consumer_checkpoint": 1,
+          "authorization.tenant_authorization_config": 1,
+          "authorization.tenant_authorization_roles": 1,
+          "authorization.tenant_authorization_subjects": 1,
+          "authorization.tenant_authorization_subject_roles": 1,
+          "authorization.tenant_subject_admin_audit": 1,
+          "authorization.tenant_owner_policy": 1,
+          "authorization.tenant_owner_actors": 1,
+          "access.access_tenants": 1,
+          "access.access_credentials": 1,
+          "access.access_sessions": 1,
+          "access.access_keys": 1,
+          "subject_policy.subject_policy": 1,
+          "subject_policy.subject_policy_audit": 1,
+          "operator_policy.tenant_operator_policy": 1,
+          "tenant_settings.tenant_settings": 1,
+          "tenant_settings.tenant_settings_history": 2,
+          "legacy.legacy_credential_config": 1,
+          "legacy.legacy_credential_subjects": 1,
+          "secrets.secret_records": 2,
+          "secrets.secret_audit": 2
+        },
+        "B": {
+          "entries.entries": 2,
+          "treatments.treatments": 1,
+          "devicestatus.devicestatus": 1,
+          "profile.profile": 1,
+          "food.food": 1,
+          "activity.activity": 0,
+          "settings.settings": 0,
+          "clock.tenant_write_clock": 1,
+          "checkpoint.tenant_consumer_checkpoint": 0,
+          "authorization.tenant_authorization_config": 1,
+          "authorization.tenant_authorization_roles": 1,
+          "authorization.tenant_authorization_subjects": 1,
+          "authorization.tenant_authorization_subject_roles": 1,
+          "authorization.tenant_subject_admin_audit": 0,
+          "authorization.tenant_owner_policy": 0,
+          "authorization.tenant_owner_actors": 0,
+          "access.access_tenants": 1,
+          "access.access_credentials": 0,
+          "access.access_sessions": 0,
+          "access.access_keys": 0,
+          "subject_policy.subject_policy": 0,
+          "subject_policy.subject_policy_audit": 0,
+          "operator_policy.tenant_operator_policy": 0,
+          "tenant_settings.tenant_settings": 1,
+          "tenant_settings.tenant_settings_history": 0,
+          "legacy.legacy_credential_config": 1,
+          "legacy.legacy_credential_subjects": 1,
+          "secrets.secret_records": 1,
+          "secrets.secret_audit": 1
+        },
+        "totalA": 39,
+        "totalB": 17
+      },
+      "outcome": "green"
+    }
+  ],
+  "unmeasured": [
+    "real tenant data, real backup tooling, M6 acceptance",
+    "capacity thresholds, artifact size bounds, retention periods (DECISION, not measured)",
+    "MongoDB-backed catalogues (this proof is PostgreSQL lower-port only)",
+    "Vault key destruction after deletion (DECISION; keys retained here)",
+    "concurrent writers during export (stopped-write snapshot only)"
+  ],
+  "crmCommit": "fd827e350a185ad73c838b013b25fe889434b036",
+  "fixtureSha256": "e6afbf4e7a26ec527ff57da0696ebcf745d97348410e5ed2a48b5deda99c60d5",
+  "freeDiskKbBefore": 77813408,
+  "postgres": {
+    "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "image": "postgres:16",
+    "imageId": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b"
+  },
+  "vault": {
+    "version": "2.2.1",
+    "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+    "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8"
+  },
+  "cleanup": [
+    {
+      "name": "ns-lifecycle-04383f99-pg",
+      "id": "ecf0c9f7600c269ec72723c7a4c54e6560c2c8df0f740cb9d8d79301c9984a2b",
+      "volumes": [],
+      "containerAbsent": true,
+      "volumesAbsent": true
+    },
+    {
+      "name": "ns-lifecycle-04383f99-vault",
+      "id": "990a3c866102d361719e6aa1d70151dfd948c89fac5d42218ec2c8a487627ff6",
+      "volumes": [
+        "c8274b7010093fcdf9c2e02a9ea3aaa6db81f72cc64ef5b6a5f12d1b8c281f16",
+        "78fd12b6eaa544f2270bf6202986abccd8625bb481567840d337347d8de0111a"
+      ],
+      "containerAbsent": true,
+      "volumesAbsent": true
+    }
+  ],
+  "freeDiskKbAfter": 77813304,
+  "finishedAt": "2026-11-07T00:02:59.667Z",
+  "result": "pass"
+}
