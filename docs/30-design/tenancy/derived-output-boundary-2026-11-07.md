@@ -51,6 +51,11 @@ still apply current authority and endpoint-specific field/secret filtering.
 
 ## Ordered work and ownership
 
+The [bounded characterization](../../../reports/tenancy/derived-output-2026-11-07/README.md)
+now records actual f0 evaluator/realtime/API comparisons, instrumented costs,
+semantic controls and physical closure. It supports scoped reuse, not a
+publication-service decision or distributed admission.
+
 1. **ARCH-DERIVED-FRAME owner: characterize overlap.** Compare actual evaluator,
    realtime data frame and HTTP properties with identical synthetic inputs,
    settings and explicit instants. Inventory which calculations execute, and
@@ -81,6 +86,6 @@ egress from a read; and restored ordinary journeys after each break. Explicitly
 test refused versus stale-labeled versus synchronous-refresh behavior once chosen.
 Duplicate external delivery must not be described as exactly-once.
 
-Implementation, measurements, transport selection and policy adoption remain
-UNMEASURED. Existing recorded functional runtime evidence is not invalidated by
+Publication implementation, transport selection, operating budgets and policy
+adoption remain UNMEASURED. Existing recorded functional runtime evidence is not invalidated by
 this follow-up; it does not establish these additional publication guarantees.

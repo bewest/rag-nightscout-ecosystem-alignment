@@ -25454,10 +25454,16 @@ items:
       - ARCH-SEAM-CONTRACT
       - ST-VIEWS-PROFILE
     evidence:
+      - reports/tenancy/derived-output-2026-11-07/README.md
       - docs/30-design/tenancy/derived-output-boundary-2026-11-07.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
     notes: >
+      The 2026-11-07 bounded f0 characterization records selected current-property
+      agreement, distinct realtime frame work, actual instrumented query/CPU costs,
+      six intended controls/restorations and independent physical closure. It
+      recommends scoped reuse and projection-cost investigation; publication,
+      distributed ownership and operating budgets remain unmeasured.
       The 2026-11-07 derived-output-boundary follow-up specifies read-derived
       evaluator/realtime/HTTP distinctions and ordered characterization, output
       identity/freshness decision and conditional runtime-ownership work. It
