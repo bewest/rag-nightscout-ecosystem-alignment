@@ -1,0 +1,183 @@
+{
+  "classification": "early architectural proof and failed hypothesis; NOT complete M6/restore/source acceptance",
+  "sourceHead": "6a245c09f652f020dc07f774aa0f2fe8e22e973f",
+  "sourceTree": "3da8cde2491ad21d35e25a47322f14a803af1c8d",
+  "sourcePublication": "local unpushed prototype",
+  "focusedSourceTests": {
+    "passing": 95,
+    "failing": 0,
+    "grade": "reproduced; protocol doubles/actual consumer functions, not full PostgreSQL/CLI acceptance"
+  },
+  "captures": [
+    {
+      "sourceHead": "6a245c09f652f020dc07f774aa0f2fe8e22e973f",
+      "completedGroups": [],
+      "failure": {
+        "name": "error",
+        "code": "42501",
+        "message": "new row violates row-level security policy for table \"entries\""
+      },
+      "sqlDiscriminatorPassed": false,
+      "driverExit": 1,
+      "parentErrors": [
+        {
+          "type": "AssertionError",
+          "message": "PARENT_DRIVER_FAILED"
+        }
+      ],
+      "immediateBaselineInventoryUnchanged": true,
+      "immediateBaselineMetadataUnchanged": true,
+      "childBirthAbsent": true,
+      "rootPhysicalRelease": {
+        "exactContainerAbsent": true,
+        "exactVolumeAbsent": true,
+        "exactChildAbsent": true,
+        "baselineInventoryUnchanged": true,
+        "componentAccepted": false
+      },
+      "parentRuntimeReleased": false,
+      "programmeAccepted": false,
+      "nativeCaptureIndexSha256": "49886530a686bfced2c4d2147137ae23b2246b0b43fe637281f85ff7d6fd0d61"
+    },
+    {
+      "sourceHead": "6a245c09f652f020dc07f774aa0f2fe8e22e973f",
+      "completedGroups": [
+        {
+          "id": "sql_ordinary",
+          "kind": "ordinary-or-restored",
+          "assertion": "actual-A-transaction-drain-B-progress"
+        },
+        {
+          "id": "sql_control",
+          "kind": "intended-red",
+          "assertion": "WINDOW_LOWER_BYPASS"
+        },
+        {
+          "id": "sql_restored",
+          "kind": "ordinary-or-restored",
+          "assertion": "actual-A-transaction-drain-B-progress"
+        },
+        {
+          "id": "http_ordinary",
+          "kind": "ordinary-or-restored",
+          "assertion": "actual-response-and-operation-record-drain"
+        },
+        {
+          "id": "http_control",
+          "kind": "intended-red",
+          "assertion": "WINDOW_HTTP_COVERAGE_BYPASS"
+        },
+        {
+          "id": "http_restored",
+          "kind": "ordinary-or-restored",
+          "assertion": "actual-response-and-operation-record-drain"
+        },
+        {
+          "id": "http_orphan",
+          "kind": "actual-connection-loss-and-counterexample",
+          "assertion": "WINDOW_PENDING_OPERATION_REFUSED"
+        }
+      ],
+      "failure": {
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    '1',\n    '101',\n    '1',\n+   '109'\n-   '2'\n  ]\n"
+      },
+      "sqlDiscriminatorPassed": false,
+      "driverExit": 1,
+      "parentErrors": [
+        {
+          "type": "AssertionError",
+          "message": "PARENT_DRIVER_FAILED"
+        }
+      ],
+      "immediateBaselineInventoryUnchanged": true,
+      "immediateBaselineMetadataUnchanged": true,
+      "childBirthAbsent": true,
+      "rootPhysicalRelease": {
+        "exactContainerAbsent": true,
+        "exactVolumeAbsent": true,
+        "exactChildAbsent": true,
+        "baselineInventoryUnchanged": true,
+        "componentAccepted": false
+      },
+      "parentRuntimeReleased": false,
+      "programmeAccepted": false,
+      "nativeCaptureIndexSha256": "a2beb716bbacf42605288be53fcbf07e55fbdb2259b8059e79038d87e6f4f6be"
+    },
+    {
+      "sourceHead": "6a245c09f652f020dc07f774aa0f2fe8e22e973f",
+      "completedGroups": [
+        {
+          "id": "setval-only",
+          "meaning": "originalR74 retained-cache counterexample reproduced"
+        },
+        {
+          "id": "alter-cache-parameter",
+          "meaning": "actual pinned behavior refutes proposed retained2-after-ALTER expectation; not restore procedure"
+        }
+      ],
+      "failure": null,
+      "sqlDiscriminatorPassed": true,
+      "driverExit": 0,
+      "parentErrors": [],
+      "immediateBaselineInventoryUnchanged": true,
+      "immediateBaselineMetadataUnchanged": true,
+      "childBirthAbsent": true,
+      "rootPhysicalRelease": {
+        "exactContainerAbsent": true,
+        "exactVolumeAbsent": true,
+        "exactChildAbsent": true,
+        "baselineInventoryUnchanged": true,
+        "immediateBaselineMetadataUnchanged": true,
+        "diagnosticAcceptedAsRestore": false
+      },
+      "parentRuntimeReleased": true,
+      "programmeAccepted": false,
+      "nativeCaptureIndexSha256": "feef7055726de803b780ed4932b91747e692453c942d8f3ffbd84eb040a4537f"
+    }
+  ],
+  "cacheDiagnostic": {
+    "version": {
+      "server": {
+        "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+        "number": "160015"
+      },
+      "pgClient": "8.23.1"
+    },
+    "profiles": [
+      {
+        "parameterAltered": false,
+        "first": "1",
+        "newBackend": "101",
+        "retainedBackendNext": "2",
+        "currentCounter": "108",
+        "currentCache": "8",
+        "sameBackend": true,
+        "sameSequenceOID": true,
+        "sameRelfilenode": true
+      },
+      {
+        "parameterAltered": true,
+        "first": "1",
+        "newBackend": "101",
+        "retainedBackendNext": "109",
+        "currentCounter": "109",
+        "currentCache": "1",
+        "sameBackend": true,
+        "sameSequenceOID": true,
+        "sameRelfilenode": false
+      }
+    ],
+    "sourceMechanismGrade": "read-derived PostgreSQL REL_16_15 sequence.c rewrite/cache invalidation matches reproduced relfilenode observations"
+  },
+  "programmeAccepted": false,
+  "sameIdRestore": "OPEN/UNSUPPORTED",
+  "remaining": [
+    "complete operator phase/claim/drain control",
+    "exact schema/privilege/ledger admission and complete actual CLI cohort wiring",
+    "unknown/unconfigured/raw writer exclusion",
+    "actual supported allocator/backend history and above-floor/import refusal/rollback proofs",
+    "joined comprehensive source acceptance after coherent candidate freeze"
+  ]
+}

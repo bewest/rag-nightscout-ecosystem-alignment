@@ -13,6 +13,11 @@ Inspected application `9298d79305e941fcfd36effa594e0e0bccf79994`; alignment base
 `6114cfecf5a6bc4bdcefb161a04a7ded45d3af0d`. References below are application
 paths at that source, not a claim about a later integrated head.
 
+Coordinator read-derived recheck against published f0fac99a and local prototype
+6a245c09 found the six referenced calculation/input modules byte-identical to
+9298d793. The prototype changes operation lifetimes in runtime wrappers, not
+those calculation bodies; it selects no evaluated-result publication service.
+
 | Consumer | Source and operation | Output and effects |
 |---|---|---|
 | Evaluator | `lib/data/tenant-projection-evaluator.js` acquires a durable projection, materializes properties and calls `views.evaluateCycle`; `lib/data/views/index.js:282` returns one calculation pass | Properties plus requested/emitted notification results. Latest evaluated output is process-local; notification consumer state/outbox are separate durable boundaries. |

@@ -592,6 +592,7 @@ items:
       - reports/tenancy/m5-runtime-2026-11-07/postgres/README.md
       - reports/tenancy/m5-runtime-2026-11-07/roles/README.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
+      - reports/tenancy/m6-operation-window-2026-11-07/README.md
       - docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap.md
     notes: >
