@@ -42,6 +42,7 @@ enhancements; that preference grants no production permission or criterion waive
 | Restore versus cloning | [Restore original tenant ID; clone establishes new secrets/credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning). Clinical sync does not transfer credential authority. |
 | Deleted-tenant keys/artifact | [Retain 30 days, then operator destroys keys](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention). Destroy/after-window refusal still needs evidence; this does not set a deletion cancellation period. |
 | Tenant-local restore and ordering | [Per-tenant/collection ordering only; pursue tenant-local insertion state](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics). Preserve other tenants' current state and supported client ordering. [Standalone native proof](../../../reports/tenancy/tenant-local-insertion-2026-11-07/README.md) passes its bounded SQL bar; migration-runner/readiness/lifecycle admission remains open. No global restore pause selected. |
+| First-preview owner surface | [Projected display catalogue](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-settings-projected-catalogue), [bounded owner thresholds and alarm enables](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-alarm-thresholds), [single-tenant-equivalent credentials within the 37-permission catalogue and operator ceiling](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-credentials-single-tenant-equivalent), [no owner integrations yet](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-integrations-none-first-preview). D22 floors stand. Implementation and consuming-runtime tests remain open. |
 | Legacy authority and management split | [Reader clamp withdrawn; preserve own-tenant credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06); [owner authority](owner-authority.md) governs separate management audience, current authority and adopted lifetimes. |
 | Socket writer and recovery direction | [D23](multitenancy-decisions.md#d23): realtime forwards to API with existing protocol/source; failure gives no acknowledgement. First runtime proof uses separate roles on one machine. No multi-node lease claim. |
 
@@ -54,12 +55,12 @@ and tenant-wide alarm suppression are adopted.
 Review remaining session effects and operational parameters while implementation continues.
 Notification retry responsibility and deletion ceremony policy are settled. Their
 bounded proofs do not resolve live-provider admission or wider M6 identity/trust.
+The first-preview owner surface (settings, thresholds, credentials, integrations) is settled.
 
 | Topic | Decision needed | Work that need not wait |
 |---|---|---|
 | Live notification provider admission | Select the live adapter/provider and operating bounds before live use. Durable intent/same-identity retry is settled; an acceptance receipt does not prove device delivery. | Controlled joined-consumer proof is recorded. Live egress, retry/retention budgets and selected provider/device delivery keep separate gates. |
 | M6 human session effects | Shared OIDC/provider-backed renewal is settled. Existing access/current-authority and local logout/provider-outage rules are adopted. Specify upstream logout propagation, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain. | Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh. |
-| M6 bounded owner surface | Approve the exact first-preview settings, credentials and enabled integrations; identify unsupported names/operations. Operator-assisted ownership is settled. | Census and proposed catalogue with consuming-runtime tests; do not silently declare the full catalogue implemented. |
 | M6 deployment/trust | Review concrete trusted-ingress and secrets/identity adapter contracts for the reference deployment before production use. | Synthetic spoof/conflict/outage probes and provider-neutral interfaces. |
 
 The [owner lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md)

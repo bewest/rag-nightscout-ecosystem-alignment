@@ -55,8 +55,10 @@ protection, current authority and audit remain required for the operator path.
 
 A grant must fit all three: project delegable catalogue, operator tenant ceiling,
 and actor's explicit delegation authority. Possessing a permission does not grant
-the right to delegate it. Start with reviewed roles and bounded assignment;
-arbitrary role editing follows separately. Unknown permissions/roles refuse.
+the right to delegate it. For the first preview the owner defines roles from any
+combination of the data-plane catalogue under the ceiling
+([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-credentials-single-tenant-equivalent)).
+Unknown permissions/roles refuse.
 An upgrade must not silently add new capabilities to an existing delegated role.
 Role edits have the same ceiling checks as direct assignments. Tightening current
 policy bounds effective authority even when an old stored assignment remains.
