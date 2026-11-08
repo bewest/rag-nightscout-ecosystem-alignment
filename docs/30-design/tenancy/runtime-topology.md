@@ -48,6 +48,24 @@ Network locations, public TLS and optional human identity retain their own
 implementation/admission boundaries. PostgreSQL grants, Vault use and private
 operator reachability remain role-specific; being in one zone grants no authority.
 
+## Logical REST cohesion and worker placement
+
+A logical application component, an HTTP listener and a deployed process are
+separate boundaries. The diagrams show one valid process composition, not a
+requirement to make each REST module a separate service. Data, authorization and
+owner-management REST modules may form one logical API component, retaining their
+separate credentials/audiences and listener requirements. The existing owner
+contract permits colocation with API; it does not collapse private operator
+privileges into ordinary request-serving credentials.
+
+The source-backed [component placement and admission review](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
+is the home of the REST/worker placement assessment. It identifies private
+operator restore execution, generic admission/invalidation in API participants,
+and the distinction between evaluator/connector workers and request serving.
+The declared `vcpool` role has no runnable start in inspected ed2 and therefore
+is not an accepted box in these capability diagrams. Desired activity/resource
+policy remains the review's open proposal, not an implemented restore feature.
+
 ## Cohesion and coupling contracts
 
 | Responsibility | Contract to keep cohesive | Coupling to avoid |

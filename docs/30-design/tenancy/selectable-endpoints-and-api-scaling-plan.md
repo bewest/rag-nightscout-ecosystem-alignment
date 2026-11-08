@@ -45,6 +45,15 @@ explicit endpoints. Kubernetes is a conceptual architecture frame here. Jsonnet,
 resource manifests, cluster installation and platform rollout acceptance are
 deferred and are not either capability's gate.
 
+The [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
+is independent of listener/process packaging: owner REST can be colocated with API
+under its existing audience/bind contract. The private lifecycle controller remains
+an operator execution boundary. APIs consume generic operation admission and
+invalidation; they do not each implement a restore engine. The
+[activity/admission proposal](tenant-admission-and-activity.md) is a separate open
+policy topic. These two source capabilities preserve current maintenance semantics
+without implementing a new inactive-tenant schema, scheduler or policy default.
+
 ## Boundary audit: keep responsibilities separate
 
 | Boundary | Stable application responsibility | Adapter/platform responsibility | Current implementation scope |

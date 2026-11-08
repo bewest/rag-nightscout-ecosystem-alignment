@@ -33,6 +33,12 @@ The [endpoint/API implementation plan](selectable-endpoints-and-api-scaling-plan
 defines the queued capabilities and planned gates; Kubernetes proof and Jsonnet
 are deferred.
 
+For REST-module/process placement and operator inactivity versus recovery, read
+the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
+and [tenant-admission review](tenant-admission-and-activity.md). The latter is an
+open policy proposal with source-backed implementation limits, not an admitted
+inactive-tenant feature.
+
 ## Start with the task
 
 | You need | Read | What stays current |

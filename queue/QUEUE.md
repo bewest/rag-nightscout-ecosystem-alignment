@@ -33,9 +33,9 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 |---|---|
 | items | 370 |
 | runnable gates | 431 |
-| explicit `no-gate:` markers | 390 |
+| explicit `no-gate:` markers | 391 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 390 of the 821 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 391 of the 822 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8380,7 +8380,7 @@ alarm-readiness items, and the seam branch refresh.
 | `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 6 run + 1 no-gate |
 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
-| `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 1 run + 1 no-gate |
+| `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 1 run + 2 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `done` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
 | `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `codex/m5-m6-completion-acceptance-20261107` | n/a | 2 run + 1 no-gate |
 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `in-progress` | `codex/shared-oidc-sessions-20261107` | n/a | 0 run + 1 no-gate |
@@ -8587,15 +8587,18 @@ alarm-readiness items, and the seam branch refresh.
 
 - `[integration]` `node tools/queue/gates/m6-ops-recorded.js`
   - RECORDED-EVIDENCE only: actual9298 five initial SQL cases/11 physical controls/11 targeted restorations/five fresh final cases,37 CURRENT/31 OLD tables and exact process-audit reconciliation with original false closure retained. Reads pinned git objects; no native execution or whole-M6 claim.
-- **NO GATE** &mdash; R72's headless M2 reference promotion is retained. R73 adds bounded populated SQL backup/restore/upgrade/rollback and synthetic lifecycle evidence, not production trust, a complete owner/human identity adapter or identity-bearing same-ID tenant restore. Deployment/issuer/current authority and lifecycle completion remain separate broader contracts; fresh deployment-target restoration does not supply a shared allocator fence or an approved tenant-B write outage.
+- **NO GATE** &mdash; R72 accepts the bounded headless control plane; R73 retains its own SQL backup/upgrade/deletion scope. Later c23 native and ed2 packaged evidence accepts bounded same-ID clinical restore/history and tenant-local restart, not identity/credential cloning, provider trust or complete lifecycle. Wider deployment/issuer/current authority, key recovery and operator lifecycle acceptance remain open; no production availability claim.
+- **NO GATE** &mdash; Operator inactivity/resource eligibility is an open policy topic, not implemented by the restore window or an authorization active flag. No instrument yet covers the proposed capability matrix, current eligibility across workers, policy changes during restore, or restart/ restore completion preserving an operator-disabled tenant. Define policy and transition authority before schema/consumer implementation.
 
 **Evidence.**
 
 - `reports/tenancy/m6-ops-2026-11-07/postgres/README.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap.md`
+- `docs/30-design/tenancy/tenant-admission-and-activity.md`
+- `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** R72 accepts the declared headless M2 preview; this broader parent remains blocked on production/lifecycle contracts. R73's actual9298 SQL core keeps OLD a7f5 and subsequent source-only ec0f collector correction distinct. Same-ID identity import remains OPEN/UNSUPPORTED. SQL artifact/row fidelity, current synthetic authority and cancellation/execution controls do not establish provider/real identity/client or production availability acceptance.
+**Notes.** R72 accepts the declared headless M2 preview; this broader parent remains blocked on production/lifecycle contracts. R73's actual9298 SQL core keeps OLD a7f5 and subsequent source-only ec0f collector correction distinct. Same-ID clinical restore is boundedly accepted in the later operation-window family; identity/credential import remains OPEN/UNSUPPORTED. Operator activity vs maintenance state is an unresolved design boundary; full resource eligibility is not accepted. SQL artifact/row fidelity, current synthetic authority and cancellation/execution controls do not establish provider/real identity/client or production availability acceptance.
 
 ### `TEN-LAB` &mdash; Two-tenant entries HTTP lab on PostgreSQL
 
@@ -8992,7 +8995,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Blast radius.** First bounded step: a dormant standalone subject-management HTTP factory using trusted management authentication and the R41 persisted service. The full target remains a second listen() in the API process on its own bind address, serving only the tenant-owner surface, authenticated and RLS-scoped, resolving the tenant through T30-WIRING's extracted module. Multi mode only; single is unchanged.
 
-**What an operator sees.** The management listener remains unavailable in this preview.
+**What an operator sees.** A bounded headless owner-management listener exists on the preview branch. Human login and the full operator lifecycle are not admitted for production.
 
 **Why `minor`.** a new listener in multi mode, which is developer-only; single unchanged
 
@@ -9002,16 +9005,17 @@ alarm-readiness items, and the seam branch refresh.
   - R70 archived headless management-purpose owner CLI: nine native cases, real PG/Vault separate OWNER/DATA sockets and canary, current snapshots, proposed-grant fences and SQL-permission refusal. Cached-snapshot and listener substitutions fail with independently observed target/audit effects; fresh restoration passes. No human issuer or M2 promotion.
 - `[integration]` `node tools/queue/gates/multitenant-next-slices.js --suite management --ref d4570e585d0e12e46386ed26772790b269b2b736`
   - Standalone trusted management HTTP: persisted subject updates/deletes, current grants, matching tenant, request/error/header bounds and data-plane refusal. Not a bound owner listener or identity policy.
-- **NO GATE** &mdash; Exact joined-candidate versioned-write and comprehensive admission remain pending. Human issuer/refresh, existing-grant lifecycle and production trust belong to M6 under the maintainer's promotion-bar decision; bounded headless operator credentials do not complete them.
+- **NO GATE** &mdash; R72 accepts bounded typed/versioned owner writes and separate route boundaries. Wider catalogue and full admission remain open. Human issuer/refresh, existing-grant lifecycle and production trust belong to M6 under the maintainer's promotion-bar decision; bounded headless operator credentials do not complete them.
 
 **Evidence.**
 
 - `reports/tenancy/owner-preview-native-controls-4cd95d06-2026-11-06/README.md`
 - `tools/lab/multitenant-next-slices/README.md`
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
+- `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** R70 accepts bounded actual4cd native owner9 and two physical semantic controls, with the first lifecycle-classifier failure preserved. The optional reader-clamp mode is withdrawn by maintainer decision; writer ownerPolicy fences remain. New e2 candidate is in comprehensive verification; no M2 promotion or human lifecycle acceptance. 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts the bounded proposed-grant policy and optional subject- reader clamping; an actual cgmsim root upload gets 503 under selected mode (R63) and awaits a disposition; DELETE policy, human issuer/refresh and production owner composition remain open. The management gate keeps its native pin d4570e58; frozen-head replay UNMEASURED. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 selected ownerPolicy accepted native17f9a457; canonical bounded owner- policy runtime gate and four controls live on MT-CONFIG-MIN. R54 cumulative acceptance adds no complete owner/listener admission. Current 2026-11-06: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. R53 adds explicitly selected ownerPolicy proposed-grant enforcement for REST37. CLI binding, new identity provider and production owner listener remain unimplemented; selected store/factory acceptance is not full D16 completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns-api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
+**Notes.** Current documentation separates logical REST modules, listeners and deployed processes. Owner REST may co-locate with API under D16 audience/bind rules; operator restore execution remains a private CLI/job/worker boundary. Operator activity/resource policy is under review, not an implemented owner lifecycle flag. Earlier dated checkpoints below retain their captured scope. R70 accepts bounded actual4cd native owner9 and two physical semantic controls, with the first lifecycle-classifier failure preserved. The optional reader-clamp mode is withdrawn by maintainer decision; writer ownerPolicy fences remain. New e2 candidate is in comprehensive verification; no M2 promotion or human lifecycle acceptance. 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts the bounded proposed-grant policy and optional subject-reader clamping; an actual cgmsim root upload gets 503 under selected mode (R63) and awaits a disposition; DELETE policy, human issuer/refresh and production owner composition remain open. The management gate keeps its native pin d4570e58; frozen-head replay UNMEASURED. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 selected ownerPolicy accepted native17f9a457; canonical bounded owner-policy runtime gate and four controls live on MT-CONFIG-MIN. R54 cumulative acceptance adds no complete owner/listener admission. Current 2026-11-06: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. R53 adds explicitly selected ownerPolicy proposed-grant enforcement for REST37. CLI binding, new identity provider and production owner listener remain unimplemented; selected store/factory acceptance is not full D16 completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns- api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
 
 ### `T31-REM` &mdash; T3.1 remainder - per-tenant signing key replaces the install-wide one
 
@@ -10676,9 +10680,10 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
 - `docs/30-design/tenancy/sql-and-migration-architecture.md`
+- `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** Source implementation is not started; branch name is proposed, not created. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.
+**Notes.** Source implementation is not started; branch name is proposed, not created. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.
 
 ---
 

@@ -198,6 +198,10 @@ and [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md
 Do not infer current deletion behavior from the original seam's admin prototype.
 Shared-role startup follows the adopted [tenant-local startup admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission).
 The release record owns its implementation and acceptance state.
+Operator inactivity/resource allocation is a separate [open admission-policy
+review](tenant-admission-and-activity.md), not another meaning silently assigned
+to pause/suspend or the claim-bound restore window. Existing definitions above
+remain unchanged while the capability/transition policy is prepared.
 Deployment support-contact metadata remains a recommendation, not an adopted
 schema: its privacy/availability rationale is retained in the [journal](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#211-deployment-metadata-a-recommendation-not-a-decision).
 

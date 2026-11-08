@@ -148,10 +148,10 @@ def proposed():
     p.arrow([(614,708),(614,730)])
     p.arrow([(986,708),(986,730)])
     p.arrow([(1358,708),(1358,730)])
-    for x,title,lines,term in [(64,'Evaluator — one producer',['Singleton; no replication','Stable partitions are future work'],'PG declared grant  ·  N2 / C4'),(572,'Tenant-admin',['Private OWNER control','Separate auth and listener'],'PG management grant  ·  C5'),(1080,'Private maintenance controller',['Platform/config roster input','C1…C5 per-instance fanout'],'PG maintenance grant  ·  C')]:
+    for x,title,lines,term in [(64,'Evaluator — one producer',['Singleton; no replication','Stable partitions are future work'],'PG declared grant  ·  N2 / C4'),(572,'Owner REST module',['May co-locate with API','Separate auth and listener'],'PG management grant  ·  C5'),(1080,'Private maintenance controller',['Platform/config roster input','C1…C5 per-instance fanout'],'PG maintenance grant  ·  C')]:
         p.card(x,920,456,title,lines,term,h=120)
     p.rect(48,1073,1504,62,'#fff4dd','none')
-    p.text(68,1100,'PHYSICAL PLACEMENT: proposed generic hosts / node pools carry this same fixed roster; zones above are trust zones.',18,INK,'600')
+    p.text(68,1100,'PLACEMENT IS FLEXIBLE: role boxes do not require separate deployments; REST modules may co-locate.',18,INK,'600')
     p.text(68,1125,'Host count does not select replica ownership. L4/API load balancing never replaces per-instance maintenance endpoints.',18,MUTED)
     p.zone(1153,158,'6  BACKING RESOURCES', 'Durability, recovery and effective grants remain explicit', '#f0f7f3')
     for x,title,lines in [(64,'PostgreSQL',['Tenant / operation authority','Aggregate API pools need limits']), (572,'Vault Transit — TLS',['Scoped keys / service login','Renewal and recovery admission']), (1080,'Durable recovery artifacts',['Declared store and ownership','Verify restores and retained keys'])]:

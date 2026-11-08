@@ -482,23 +482,34 @@ items:
           tables and exact process-audit reconciliation with original false closure
           retained. Reads pinned git objects; no native execution or whole-M6 claim.
       - no-gate: >
-          R72's headless M2 reference promotion is retained. R73 adds bounded
-          populated SQL backup/restore/upgrade/rollback and synthetic lifecycle
-          evidence, not production trust, a complete owner/human identity adapter
-          or identity-bearing same-ID tenant restore. Deployment/issuer/current
-          authority and lifecycle completion remain separate broader contracts;
-          fresh deployment-target restoration does not supply a shared allocator
-          fence or an approved tenant-B write outage.
+          R72 accepts the bounded headless control plane; R73 retains its own SQL
+          backup/upgrade/deletion scope. Later c23 native and ed2 packaged evidence
+          accepts bounded same-ID clinical restore/history and tenant-local restart,
+          not identity/credential cloning, provider trust or complete lifecycle.
+          Wider deployment/issuer/current authority, key recovery and operator
+          lifecycle acceptance remain open; no production availability claim.
+      - no-gate: >
+          Operator inactivity/resource eligibility is an open policy topic, not
+          implemented by the restore window or an authorization active flag.
+          No instrument yet covers the proposed capability matrix, current
+          eligibility across workers, policy changes during restore, or restart/
+          restore completion preserving an operator-disabled tenant. Define
+          policy and transition authority before schema/consumer implementation.
     blocks_on: [MT-CONFIG-MIN, MIG-RUNNER, PLAT-SERVE]
     evidence:
       - reports/tenancy/m6-ops-2026-11-07/postgres/README.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
       - docs/30-design/tenancy/multitenant-delivery-roadmap.md
+      - docs/30-design/tenancy/tenant-admission-and-activity.md
+      - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
     notes: >
       R72 accepts the declared headless M2 preview; this broader parent remains
       blocked on production/lifecycle contracts. R73's actual9298 SQL core keeps
       OLD a7f5 and subsequent source-only ec0f collector correction distinct.
-      Same-ID identity import remains OPEN/UNSUPPORTED. SQL artifact/row fidelity,
+      Same-ID clinical restore is boundedly accepted in the later operation-window
+      family; identity/credential import remains OPEN/UNSUPPORTED. Operator
+      activity vs maintenance state is an unresolved design boundary; full resource
+      eligibility is not accepted. SQL artifact/row fidelity,
       current synthetic authority and cancellation/execution controls do not
       establish provider/real identity/client or production availability acceptance.
 
@@ -6992,7 +7003,8 @@ items:
       T30-WIRING's extracted module. Multi mode only; single is unchanged.
     review: maintainer
     operator_visible: >
-      The management listener remains unavailable in this preview.
+      A bounded headless owner-management listener exists on the preview branch.
+      Human login and the full operator lifecycle are not admitted for production.
     semver: minor
     semver_reason: a new listener in multi mode, which is developer-only; single unchanged
     register: []
@@ -7012,8 +7024,9 @@ items:
           current grants, matching tenant, request/error/header bounds and
           data-plane refusal. Not a bound owner listener or identity policy.
       - no-gate: >
-          Exact joined-candidate versioned-write and comprehensive admission
-          remain pending. Human issuer/refresh, existing-grant lifecycle and
+          R72 accepts bounded typed/versioned owner writes and separate route
+          boundaries. Wider catalogue and full admission remain open. Human
+          issuer/refresh, existing-grant lifecycle and
           production trust belong to M6 under the maintainer's promotion-bar
           decision; bounded headless operator credentials do not complete them.
     blocks_on: [T30-WIRING]
@@ -7021,8 +7034,14 @@ items:
       - reports/tenancy/owner-preview-native-controls-4cd95d06-2026-11-06/README.md
       - tools/lab/multitenant-next-slices/README.md
       - docs/30-design/remedial/rc-16.0.0-integration-record.md
+      - docs/30-design/tenancy/tenant-admission-and-activity.md
       - docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
     notes: >
+      Current documentation separates logical REST modules, listeners and deployed
+      processes. Owner REST may co-locate with API under D16 audience/bind rules;
+      operator restore execution remains a private CLI/job/worker boundary.
+      Operator activity/resource policy is under review, not an implemented owner
+      lifecycle flag. Earlier dated checkpoints below retain their captured scope.
       R70 accepts bounded actual4cd native owner9 and two physical semantic
       controls, with the first lifecycle-classifier failure preserved. The
       optional reader-clamp mode is withdrawn by maintainer decision; writer
@@ -25762,6 +25781,7 @@ items:
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
       - docs/30-design/tenancy/deployment-bindings-and-public-names.md
       - docs/30-design/tenancy/sql-and-migration-architecture.md
+      - docs/30-design/tenancy/tenant-admission-and-activity.md
       - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
     notes: >
       Source implementation is not started; branch name is proposed, not created.
@@ -25769,6 +25789,9 @@ items:
       existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config
       inventory as a supplied roster; do not build a parallel membership service
       or custom evaluator scheduler.
+      APIs consume shared operation admission and local invalidation, not a restore
+      orchestrator in every replica. Broader inactive-resource policy stays with
+      TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics.
       Evaluator remains one active owner; partitioning/replication, realtime
       replication, dynamic membership/autoscaling, transaction poolers, Kubernetes
       proof and Jsonnet are outside this capability. No parent milestone promotion.

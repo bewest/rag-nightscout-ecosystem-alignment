@@ -85,6 +85,13 @@ membership and lifetime binding; merely adding Services does not close that gap.
 explains storage encryption and access controls. The production trust record must
 cover those controls as well as the existing database/Vault/edge boundary.
 
+A role box is not a mandatory service deployment. The
+[logical REST/worker placement map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
+permits cohesive data/authorization/owner REST modules with separate audiences;
+background connectors/evaluation and privileged maintenance execution have their
+own responsibilities. The [admission review](tenant-admission-and-activity.md)
+distinguishes generic participant gating from owning the restoration workflow.
+
 ### Configurable transports and independently scaled API
 
 **Read-derived mechanism assessment:** there is no architectural requirement

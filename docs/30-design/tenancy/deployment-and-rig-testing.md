@@ -50,14 +50,14 @@ analysis**; executed acceptance is linked separately.
 | Datastore | MongoDB for `single`; PostgreSQL/RLS in the multitenant preview | Backend conformance, isolation, migrations, backup/recovery and operational acceptance; a new adapter alone does not qualify a server. |
 | Computation | Resident single-site runtime; request-local API frames plus independent multitenant evaluator/realtime projections | The separate nonresident-single prototype and reusable derived-result proposal need their own admission. |
 | Process/container | Existing combined single-site server; separate API, realtime, evaluator and tenant-admin preview processes | Role authority, private communication, operation lifetime and recovery must work across the actual processes. A container is packaging, not a tenant boundary. |
-| Host/replicas | One-host fixed-cohort multitenant reference | Multiple hosts or replicas need reviewed membership, producer fencing, transport trust, failover and recovery acceptance. |
+| Host/replicas | One-host fixed-cohort multitenant reference | Fixed-roster API replicas need endpoint trust, instance-complete drain/invalidation and recovery acceptance; they do not replicate evaluator production. Multi-host/HA additionally needs partition/failover acceptance and explicit producer ownership where work is partitioned. See the [scaling plan](selectable-endpoints-and-api-scaling-plan.md). |
 
 | Deployment model | Scope of a failure | Evidence and decision use |
 |---|---|---|
 | Independent single-site servers | A server process failure affects its site. Shared database/host/ingress still couple whichever sites use them. | Existing compatibility baseline; inspect the operator's actual infrastructure before calling sites independent. |
 | One-host multitenant reference | Tenant authority/history/restore are scoped; role processes, PostgreSQL, Vault, ingress and host remain shared. | Actual cold UI/socket/restore and tenant-local restart proofs inform one-host composition and protocol design. They do not establish HA or capacity. |
 | Per-tenant database/process/host cells | Isolation depends on what each cell actually owns; a shared controller, identity provider or ingress can still couple cells. | An architectural alternative, with no admission from the current RLS/cohort proof. Define and test cell provisioning, migration, credentials, recovery and cross-cell operations first. |
-| Replicated or multi-host roles | New partitions, split ownership, delayed messages and failover can affect tenants across hosts. | Later topology research. Replicas or an orchestrator do not supply the missing application ownership/recovery contract. |
+| Replicated or multi-host roles | New partitions, split ownership, delayed messages and failover can affect tenants across hosts. | Fixed-roster API scaling is planned separately from multi-host/HA. Platform inventory and stable worker identities can supply placement/assignment; actual operation lifetime, invalidation and disjoint producer ownership remain application contracts. |
 
 The distinction matters during failures:
 
@@ -68,7 +68,7 @@ The distinction matters during failures:
 | PostgreSQL, shared schema/privileges or pool fails | Unsafe shared readiness refuses rather than serving through it. | Shared tenants/roles depend on that infrastructure; RLS isolates rows, not database uptime or resource exhaustion. |
 | Vault or credential service becomes unavailable | Current-authority and secret-dependent paths retain their refusal rules. | Do not infer that every operation fails or survives identically; production service login, key recovery and dependency-outage acceptance remain separate. |
 | nginx or the host fails | No redundant public path or host is accepted in this reference. | Public reachability or all local roles can be lost together. |
-| Independently authorized direct SQL bypasses the cohort | A current-session census can detect and refuse known unexpected actors. | The cooperative protocol cannot exclude a new raw SQL actor; database/authentication fencing needs a separate design and proof. |
+| Independently authorized direct SQL bypasses the cohort | A current-session census can detect and refuse known unexpected actors. | The [adopted application ownership contract](sql-and-migration-architecture.md#supported-database-ownership-contract) excludes independent direct writers. Stronger fencing would be needed only to support that additional writer model; it is not a prerequisite for the supported cooperative topology. |
 
 These boundaries explain why tenant-local restore can be useful before a
 production topology is qualified. The accepted experiment narrows the recovery
