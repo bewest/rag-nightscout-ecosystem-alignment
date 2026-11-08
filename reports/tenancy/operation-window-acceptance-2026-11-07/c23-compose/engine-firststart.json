@@ -1,0 +1,46 @@
+{
+  "classification": "reproduced; isolated Engine owned first-start mechanism only",
+  "imageSource": "c23cf1f35d819738842041babc0aef2dbde96c21",
+  "imageId": "sha256:1b82fb9549c02239a7bcbcf758ea0c8a06b1e37caacc8ceb145324a6caf7396f",
+  "verdict": {
+    "verdict": "EXPECTED_FALSE_TO_NULL",
+    "uniqueChangedFields": [
+      "HostConfig.OomKillDisable"
+    ],
+    "onlyFalseProjectionMatchesCompleteBefore": true,
+    "beforeFingerprint": {
+      "profile": "docker-config-hostconfig-canonical-v1",
+      "sha256": "1796fa9a8459abb04114566411b984f925b2fd4aedc485a69bc991216cf03f2f"
+    },
+    "afterFingerprint": {
+      "profile": "docker-config-hostconfig-canonical-v1",
+      "sha256": "998e46e9a8aff5b93385061fb987b0b3f7268642ab7e1c8a40b65a78aff02097"
+    }
+  },
+  "state": "EXPECTED_FALSE_TO_NULL",
+  "cleanup": true,
+  "independentRelease": {
+    "scope": "ISOLATED_ENGINE_OWNED_FIRST_START_ONLY",
+    "sourceImage": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "actualVerdict": "EXPECTED_FALSE_TO_NULL",
+    "onlyChangedField": "HostConfig.OomKillDisable",
+    "uniqueWholeFingerprintProjectionReproduced": true,
+    "syntheticNaturalExit0AndExactStdout": true,
+    "exactOwnedContainerAbsent": true,
+    "exactInventory": true,
+    "completeNonTargetConfigAndHostConfigFingerprintsPreserved": true,
+    "baselineEndpointStableEquality": true,
+    "baselineEndpointFullEquality": true,
+    "allRetainedAndOwnerBirthsIndependentlyAbsent": true,
+    "retainedBirthsVerified": 59,
+    "runtimeReleased": true,
+    "receiptSha256": "55ae057c1852392acb986428e30b7037d1bc481d9b3bbd9c53c65da76a59f36e",
+    "applicationAcceptance": "NOT_EVALUATED"
+  },
+  "artifactSha256": {
+    "compose-engine-oom-lifecycle-primitive-20261107/receipt.json": "55ae057c1852392acb986428e30b7037d1bc481d9b3bbd9c53c65da76a59f36e",
+    "compose-engine-oom-lifecycle-primitive-20261107/field-verdict.json": "fe3e26200300ab66da515d27e9118d09c50e10cababbc3d6f31fc123088bacb0",
+    "compose-engine-oom-lifecycle-primitive-20261107/synthetic-command.json": "1260f4ce12e8fa6caf868562162555fb51e2555f9385357404cb50fe7fe20e62",
+    "m6-acceptance-continuation-20261107/engine-firststart-independent-release.json": "22de57b50297ea4b9e288ec0283f1c3bfb7b340de4fad915d873612e1d33fdea"
+  }
+}

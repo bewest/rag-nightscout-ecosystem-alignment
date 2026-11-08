@@ -1,0 +1,28 @@
+{
+  "classification": "reproduced",
+  "sourceHead": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "sourceTree": "42c8bc392edfd0dd3f6c235b8b7834b273c05aa7",
+  "result": {
+    "passing": 537,
+    "pending": 1,
+    "failing": 0
+  },
+  "inventoryCount": 47,
+  "onlyFilter": false,
+  "benchmarkMode": "0",
+  "elapsedSeconds": 271.2673489660956,
+  "ownedContainers": 41,
+  "ownedVolumes": 58,
+  "observedBirths": 125,
+  "observerErrors": [],
+  "independentBaselineChecks": {
+    "exactInventory": true,
+    "baselineMetadataUnchanged": true,
+    "observedProcessBirthsAbsent": true
+  },
+  "retainedSupervisorAndOwnerBirths": 265,
+  "allRetainedBirthsAbsent": true,
+  "runtimeReleased": true,
+  "supervisorReceiptSha256": "1f2abd6f8a602592ceac8e4dccbfe91cc7c482034666de86aed99dbafd14b5c2",
+  "assets": "Private copied host assets built at c23; reused by measured product/build-input equality, not a fresh39 host build."
+}

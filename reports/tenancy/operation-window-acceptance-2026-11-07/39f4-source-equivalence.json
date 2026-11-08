@@ -1,0 +1,56 @@
+{
+  "baseline": "c23cf1f35d819738842041babc0aef2dbde96c21",
+  "candidate": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "tree": "42c8bc392edfd0dd3f6c235b8b7834b273c05aa7",
+  "changedPaths": [
+    "tests/fixtures/tenant-operations-current.js",
+    "tests/tenant-operations.integration.test.js",
+    "tests/tenant-operations.test.js",
+    "tests/tenant-projection-evaluator.integration.test.js",
+    "tests/tenant-projection-evaluator.test.js"
+  ],
+  "unchangedOtherTrackedPaths": 2013,
+  "identicalProductPaths": 817,
+  "identicalDockerCopyInputs": 823,
+  "allOtherTrackedBlobModesAndHashesIdentical": true,
+  "packageAndLockIdentical": true,
+  "bothDockerIgnoreProfilesExcludeAllChangedTests": true,
+  "changedFixtureReferencesInProductJavaScript": [],
+  "actualCopySources": [
+    "package.json",
+    "package-lock.json",
+    ".babelrc",
+    "bundle/",
+    "webpack/",
+    "bin/",
+    "lib/",
+    "static/",
+    "views/",
+    "translations/",
+    "migrations/",
+    "scripts/diagnose-data.js",
+    "deploy/multitenant/",
+    "server.js",
+    ".browserslistrc"
+  ],
+  "meaningfulInMemoryGuardControls": [
+    {
+      "mutation": "lib/tenant-lifecycle/maintenance-window.js",
+      "rejected": true,
+      "symptom": "UNEXPECTED_CHANGED_PATH: lib/tenant-lifecycle/maintenance-window.js"
+    },
+    {
+      "mutation": "package-lock.json",
+      "rejected": true,
+      "symptom": "UNEXPECTED_CHANGED_PATH: package-lock.json"
+    },
+    {
+      "mutation": "deploy/multitenant/Dockerfile",
+      "rejected": true,
+      "symptom": "UNEXPECTED_CHANGED_PATH: deploy/multitenant/Dockerfile"
+    }
+  ],
+  "restoredActualSourceProofPassed": true,
+  "candidateClean": true,
+  "scope": "Git blob/mode identity, actual Docker COPY and ignore review, static changed-fixture reference review. No new native/browser/full execution or blanket dynamic-import claim."
+}

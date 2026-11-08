@@ -1,0 +1,16 @@
+{
+  "source": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "imageId": "sha256:48152af92e2fa4c1164f56a816d3e2a0a92e333d975c398fdc6bd6cd38db75fb",
+  "buildExitCode": 0,
+  "scientificAccepted": false,
+  "refusal": {
+    "state": "REFUSED",
+    "failure": "CACHE_REUSE_ORDERED_ROOTFS_MISMATCH"
+  },
+  "exactInventory": true,
+  "originalSelectedBaselineMetadataUnchanged": true,
+  "clientBirthAndGroupAbsent": true,
+  "buildReceiptSha256": "c22377b7b4baca02d505f9c77964941952da8364c4a2e2176d8d09f0a81f19b8",
+  "serviceGrant": false,
+  "runtimeReleased": true
+}

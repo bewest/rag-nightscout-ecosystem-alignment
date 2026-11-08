@@ -1,0 +1,27 @@
+{
+  "sourceHead": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "sourceTree": "42c8bc392edfd0dd3f6c235b8b7834b273c05aa7",
+  "classification": "reproduced",
+  "scope": "FOCUSED_SIX_ONLY_NOT_WHOLE_CORPUS",
+  "result": {
+    "passing": 6,
+    "pending": 0,
+    "failing": 0
+  },
+  "elapsedSeconds": 7.772363163065165,
+  "suites": 2,
+  "ownedContainers": 2,
+  "ownedVolumes": 2,
+  "observerErrors": [],
+  "independentBaselineChecks": {
+    "exactInventory": true,
+    "baselineMetadataUnchanged": true,
+    "observedProcessBirthsAbsent": true
+  },
+  "retainedSupervisorAndOwnerBirths": 14,
+  "allRetainedBirthsAbsent": true,
+  "runtimeReleased": true,
+  "assetBuildSource": "c23cf1f35d819738842041babc0aef2dbde96c21",
+  "assetReuseBasis": "measured unchanged product/build inputs; private copied dependencies/assets; not a fresh39 host build",
+  "receiptSha256": "052d143aa786cb531ae16e15cda463dfe1e35599dfb359afe50ddfaf6f375cae"
+}
