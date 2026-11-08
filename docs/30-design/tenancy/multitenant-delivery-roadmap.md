@@ -226,7 +226,8 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 | M6 operating envelope and final review | Declare synthetic workload and freshness/recovery expectations, then measure shared-pool/hot-tenant interference, row/byte limits, scan cadence, latency and egress refusal before approving bounds. Complete the final criterion matrix and review. Functional passes do not establish capacity. |
 
 The accepted M5 reference does not select a live external notification provider
-or promise retained every-transition history. Multi-node failover,
+or promise retained every-transition history; the [first-preview channel decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#first-preview-no-push-provider)
+admits no push provider and makes Nightscout-to-Nightscout synchronization the first external channel. Multi-node failover,
 every-transition history and self-service ownership are separate enhancements.
 Real identities/data, production/default role enablement and release admission keep
 their existing explicit approval boundaries.
