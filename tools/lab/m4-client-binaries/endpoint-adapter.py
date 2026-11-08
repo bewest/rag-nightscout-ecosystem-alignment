@@ -57,19 +57,19 @@ def baseline_snapshot(raw_batches):
             raise ValueError('M4_CONTAINER_SANDBOX_ID')
         observed, live = {}, set()
         for name, endpoint in ns['Networks'].items():
-            if type(name) is not str or type(endpoint) is not dict or type(endpoint.get('NetworkID')) is not str:
+            if type(name) is not str or not name or len(name) > 255 or any(ord(c) < 32 for c in name) or type(endpoint) is not dict or type(endpoint.get('NetworkID')) is not str:
                 raise ValueError('M4_CONTAINER_NETWORK_SHAPE')
             nid = endpoint['NetworkID']
-            if nid not in maps or nid in observed or name != network['identities'][nid]['name']:
+            if not re.fullmatch('[a-f0-9]{64}', nid) or nid in observed or (nid in maps and name != network['identities'][nid]['name']):
                 raise ValueError('M4_CONTAINER_GLOBAL_MEMBERSHIP')
             if type(endpoint.get('Gateway')) is not str or (endpoint.get('Aliases') is not None and (type(endpoint['Aliases']) is not list or any(type(alias) is not str for alias in endpoint['Aliases']))):
                 raise ValueError('M4_CONTAINER_GATEWAY_ALIAS_TYPE')
-            if cid not in maps[nid]:
+            if nid not in maps or cid not in maps[nid]:
                 # Configured membership survives stop/create; no live endpoint
                 # or authority is inferred. Keep ALL configured fields exact.
                 if not inactive_configured(row, endpoint, lifecycle):
                     raise ValueError('M4_CONTAINER_INACTIVE_ENDPOINT_REFUSED')
-                observed[nid] = {'mode': 'inactive-configured', 'EndpointID': '', 'MacAddress': ''}
+                observed[nid] = {'mode': 'inactive-orphan-configured' if nid not in maps else 'inactive-configured', 'EndpointID': '', 'MacAddress': ''}
                 continue
             live.add(nid)
             global_endpoint = maps[nid][cid]

@@ -55,7 +55,10 @@ configured network absent from the live global map is admitted only for typed ex
 state with Running/Restarting/Paused/Dead all false, empty SandboxID/Key, empty endpoint/MAC/
 address/gateway strings and zero integer prefixes. All configured network fields remain
 exact, including NetworkID, name, aliases and unknowns; active absence or a nonempty endpoint
-refuses. This distinction is supported by the retained stopped-container diagnostic, not a
+refuses. A stale configured network absent from actual global inventory uses the SAME
+typed-empty inactive predicate; it stays an exact configured reference, never a fabricated
+global row, ignored field, or ownership/mutation handle. Actual global inventory remains
+complete and exact, so later network additions/removals still refuse. This distinction is supported by the retained stopped-container diagnostic, not a
 claim that every possible Docker baseline shape was measured. The retained inactive
 representative was exited; created-state support is source-derived and covered synthetically. SandboxID
 and SandboxKey are typed lifecycle observations retained before/after, with no mutation
