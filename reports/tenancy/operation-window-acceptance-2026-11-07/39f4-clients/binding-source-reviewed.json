@@ -1,0 +1,19 @@
+{
+  "evidenceBasis": "reproduced source controls; runtime unmeasured",
+  "state": "SOURCE_UNBOUND",
+  "packetIndexSha256": "4e7567c66f0767770c9615fa1d948c627cfe2fa3a0baa13cc8297b7da1514dbe",
+  "verifiedFiles": 63,
+  "actualBudgetProtocolTestsPassing": 9,
+  "fixedFinalizerProtocolTestsPassing": 6,
+  "meaningfulOmissionControls": {
+    "originalCleanupDeadlineRestore": "M4_CLEANUP_BUDGET_GROWTH",
+    "mainReceiptHash": "forged receipt accepted; expected refusal absent",
+    "unknownChildCheck": "unknown actor accepted; expected refusal absent"
+  },
+  "originalRestored": true,
+  "scope": "Modeled receipts, fake Docker transport and pinned pure Python JSON helper; no actual Family, service, client or network execution.",
+  "initialSandboxReplay": "Endpoint-helper spawn setup refused; retained separately. Same source passed guarded pure-helper escalation.",
+  "clientCompatibility": "UNMEASURED",
+  "runtimeGrant": false,
+  "finalCandidateBinding": false
+}
