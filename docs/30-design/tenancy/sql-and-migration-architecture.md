@@ -58,6 +58,52 @@ not a reason to require a stronger database fence for the supported topology.
 PostgreSQL documents [advisory locks](https://www.postgresql.org/docs/current/explicit-locking.html#ADVISORY-LOCKS)
 as application-coordinated locks.
 
+## Logical API, workers and admission
+
+### One logical REST/API component
+
+Data REST, credential authorization and owner-management REST are cohesive
+application modules. Their logical grouping does not prescribe a single listener,
+process or privilege set. Owner management retains its own audience and listener
+contract and may be colocated with API serving under the existing
+[owner-authority boundary](owner-authority.md#shared-oidc-integration). The accepted
+separate-role reference remains one concrete composition, not a requirement that
+every REST responsibility become a separate service.
+
+### Headless workload owners
+
+Realtime owns live connections; the evaluator is a headless worker and remains
+one current workload owner. Connector actors (`vcpool`) belong to background
+polling/egress work and submit clinical writes through the canonical API boundary;
+the [ed2 role declaration](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/roles.js#L81)
+has no runnable start. Evaluator partitioning and realtime replication are separate future capabilities, not
+prerequisites for the queued request-serving API scale-out.
+
+### Private maintenance execution
+
+The lifecycle/restore controller executes as a private operator CLI, job or
+worker; the [ed2 operator tool](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/restore.js#L97)
+composes it outside API serving. Each serving instance supplies generic
+operation-admission, lifetime and invalidation hooks; those hooks do not place a restore engine or maintenance
+credentials in every API replica. A future command/status REST surface could
+request or observe maintenance while the privileged worker executes it separately;
+no new endpoint or process layout is selected here. The
+[logical placement map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
+owns the broader component explanation.
+
+### Maintenance safety is distinct from desired activity
+
+The existing claim/generation-bound maintenance window determines whether an
+operation can run safely during recovery. Operator-controlled resource/activity
+policy asks which serving, ingestion, evaluation or connector work should run at
+all; that policy remains **proposed and undecided** in the
+[tenant-admission review](tenant-admission-and-activity.md). A maintenance phase
+named `active` is not evidence of operator enablement or background-work
+eligibility. Preserve the existing pause/suspend meanings and captured restore
+behavior; no activity field, transition or automatic inactive-tenant resource
+control is implemented by this database design. Observed health is a further
+separate fact. No new activity-policy gate is claimed by the diagrams below.
+
 ## Component ownership and internal application APIs
 
 **Read-derived architecture direction:** place commands at the component that
@@ -75,7 +121,7 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.
 | Clinical acquisition and consumer recovery state | Evaluator and realtime each read through tenant-bound storage interfaces and own separate projection/checkpoint namespaces. | Existing bounded snapshot acquisition. Direct admitted reads and atomic projection/checkpoint persistence remain appropriate; sending every read through API would add dependency and transport cost without establishing stronger semantics. |
 | Notification intent, attempts and handoff | Evaluator's notification component owns durable producer/request/attempt state; realtime owns connected-browser fanout. Deliver an application handoff with stable request identity and durable retry outcome. | Existing [notification handoff](evaluator-realtime-communication.md#notification-intents-retries-and-alarm-handoff). Other components should not insert producer requests or edit attempt rows to impersonate its protocol. |
 | Credentials, owner configuration and current policy | Management/authority components own mutation checks, audit and invalidation. Consumers use their admitted authority/settings interfaces; data-plane requests retain their own current authorization. | Separate management audience and component interfaces exist. Cross-process consumers should invoke owned commands rather than edit these tables; this is not a claim that every authority operation has a new network endpoint. |
-| Suspension, restore, deletion and activation | Lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants. | Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony. |
+| Maintenance exclusion, restore, deletion and activation | Private operator lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants. | Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony. |
 
 ### Application command paths
 
@@ -92,28 +138,31 @@ flowchart LR
 ### Component storage ownership
 
 **Read-derived ownership matrix.** Each row is an admitted component's storage
-responsibility, not a separate physical database. Realtime and evaluator read the
-same clinical tables, but own distinct checkpoint namespaces. Privilege checks
+responsibility, not a mandatory process or a separate physical database. The two
+REST/API rows are responsibilities within one logical component, retaining their
+separate authority/listener contracts. Realtime and evaluator read the same clinical tables, but own distinct checkpoint namespaces. Privilege checks
 remain specific to the selected catalogue and operation.
 
 | Component | Admitted reads | Owned persistence / controlled writes |
 |---|---|---|
-| API | Clinical records; current authority and configuration | Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression |
+| Logical REST/API — data handlers | Clinical records; current authority and configuration | Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression |
 | Realtime | Clinical records; current configuration and admitted authority | Realtime projection and checkpoint namespace |
 | Evaluator / notification component | Clinical records; current configuration and suppression | Evaluator projection and checkpoint namespace; notification producer state, requests and attempts |
-| Management / authority components | Current authority, policy, owner configuration and secret references | Admitted credential, session, policy, owner-settings and secret mutations with audit |
-| Lifecycle controller | Current authority, durable operations and pinned participant identities | Lifecycle windows, claims and audit; controlled clinical restore and forward history |
+| Logical REST/API — owner/authority modules | Current authority, policy, owner configuration and secret references | Admitted credential, session, policy, owner-settings and secret mutations with audit |
+| Private operator lifecycle worker | Current authority, durable operations and pinned participant identities | Lifecycle windows, claims and audit; controlled clinical restore and forward history |
 
 ### Lifecycle control boundary
 
 **Read-derived control diagram.** The participant group means every declared
 instance, including replicas. A load-balanced endpoint reaching just one instance
-cannot replace this control boundary. The restore sequence below gives the
-ordering and uncertainty rules.
+cannot replace this control boundary. Controller orchestration belongs to the
+private operator worker; the receiving instances host participation hooks, not
+restoration engines. The restore sequence below gives ordering and uncertainty
+rules, not administrative activity-policy transitions.
 
 ```mermaid
 flowchart LR
-  LC["Lifecycle controller"] -->|"pin / drain / invalidate each instance"| Roles["API / realtime / evaluator / admin"]
+  LC["Private operator controller<br/>CLI / job / worker"] -->|"pin / drain / invalidate each instance"| Roles["Participant hooks<br/>API / realtime / evaluator / tenant-admin"]
 ```
 
 Application APIs preserve existing client payloads, authority and reply behavior.
@@ -136,19 +185,23 @@ those replicas from consumers, but does not itself make either end stateless.
 | Static UI serving | Replaceable replica candidate. | Consistent assets/configuration and edge behavior. |
 | Request-scoped API and management handlers | Natural replica candidates when local state is reconstructible and durable authority/transactions remain shared. | Current authority/config consistency, safe concurrent writes, graceful drain, bounded aggregate pools and actual participation of every replica in restore. Existing canonical serialization still bounds same-tenant write throughput. |
 | Realtime | Connection-owning service with retained frames and subscriptions. | Admitted session routing, cross-instance fanout and reconnect/recovery; a load-balanced alarm call does not reach every viewer by itself. |
-| Evaluator / notification producer | Recoverable workers with logical producer and checkpoint ownership. | Explicit partition/claim ownership, exclusion of stale producers and durable retry/deduplication under replacement. External persistence alone does not make duplicate active workers safe. |
+| Evaluator / notification producer | One current workload owner with durable recovery; partitioning is deferred. | Preserve current producer/checkpoint identity, eligibility and durable retry under restart/replacement. No new scheduler or replicated evaluator is required for API scaling; future disjoint assignments need their own contract. |
 | Lifecycle controller / migrations | Controlled operations with exclusive authority. | Maintenance claims, every participant's incarnation and uncertain-outcome handling; Kubernetes placement or Job completion cannot substitute for application ownership. |
 
 The current fixed cohort needs a declared roster containing every serving replica.
 A load-balanced API endpoint can route an ordinary command to any equivalent
 admitted API, whereas restore control must address every instance. Dynamic HPA
-membership and cross-Pod authenticated transport need qualification. Deployments
+membership and Kubernetes-specific bindings are deferred. Selectable private
+network transport and fixed-roster API serving have their own queued native
+acceptance. Reuse platform/configuration inventory and identities as application
+inputs; no parallel membership product or evaluator scheduler is selected. Deployments
 can overlap old/new Pods during rolling updates, so replica count is not an
 exclusion guarantee. A StatefulSet's stable identity/storage does not supply the
 application's producer or restore protocol either. See the [deployment binding
 and replica assessment](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
-for endpoint semantics and acceptance cases. Kubernetes execution, autoscaling,
-throughput and failover remain **UNMEASURED** by this documentation update.
+for endpoint semantics and acceptance cases. Kubernetes is an architectural frame;
+cluster proof and Jsonnet are deferred. Throughput, failover and any later actual
+binding retain their own acceptance; no new runtime measurement follows here.
 
 ## Tables and their ownership
 
@@ -424,9 +477,10 @@ It compares actual backend PID, birth, role and datastore identity; application
 names are not membership. The [actor census][actor-census] refreshes PostgreSQL's
 statistics snapshot on the same operator client before reading actors. It remains
 a diagnostic/refusal check, not a physical database fence against a newly opened
-raw client with already-authorized DATA credentials. Supporting such independent
-writers needs an explicit database/authentication fence beyond this cooperative
-preview. A trusted all-tenant worker or DBA remains within the deployment trust
+raw client with already-authorized DATA credentials. Such external writers are
+unsupported under the [application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership);
+arbitrary-writer exclusion is not a supported-topology admission gate. A trusted
+all-tenant worker or DBA remains within the deployment trust
 boundary. See the [deployment/trust decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07).
 
 Tenant-local state removes cross-tenant counter maintenance during restore; it

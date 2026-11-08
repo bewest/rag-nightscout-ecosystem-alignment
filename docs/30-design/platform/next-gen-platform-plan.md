@@ -68,6 +68,23 @@ The [current M5/M6 decision list](../tenancy/m5-m6-decision-list.md) owns remain
 policy questions; the [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md)
 own adopted answers. A deferred decision keeps its prototypes and benches running.
 
+### Current architecture clarifications
+
+For current module/worker placement, read the
+[logical REST/API map](../tenancy/runtime-topology.md#logical-rest-cohesion-and-worker-placement)
+and the [database ownership visual review](../../../site/pages/multitenant-database-design.html).
+Data, authorization and owner REST belong to one logical API responsibility while
+retaining their audience/listener contracts. Realtime, singleton evaluation,
+connector work and private operator maintenance have separate workload roles;
+API participants consume admission/invalidation hooks rather than run restoration
+orchestration. This is a clarification of responsibilities, not a new process layout.
+
+[Endpoint transport and fixed-roster API scaling](../tenancy/selectable-endpoints-and-api-scaling-plan.md)
+are queued source capabilities; Kubernetes/Jsonnet proof and evaluator partitioning
+are deferred. [Operator activity/resource policy](../tenancy/tenant-admission-and-activity.md)
+is proposed and undecided, separate from existing maintenance safety and observed
+health. The map's acceptance states and historical measurements remain unchanged.
+
 | Earlier overview | Retained evidence |
 |---|---|
 | [R62–R72 overview at the prior revision](https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/53cda175990e9bc0cd351eb6b7758f6fe3b4311e/docs/30-design/platform/next-gen-platform-plan.md#1-where-things-stand) | Earlier publication checks, prototype failures and small clock HTTP evidence; the integration record and named capsules retain their original verdicts. |
