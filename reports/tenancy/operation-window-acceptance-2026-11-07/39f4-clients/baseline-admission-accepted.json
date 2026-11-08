@@ -1,0 +1,18 @@
+{
+  "instrumentOriginal": "b57e55cc5c811d3f9415343e6d29bbd4780901cf",
+  "scope": "READ_ONLY_CURRENT_HOST_M4_BASELINE_ADMISSION_NOT_COMPATIBILITY",
+  "actualFullHostShapeAdmitted": true,
+  "mutations": false,
+  "realNetworkInventoryIdentityMapCoverage": true,
+  "supervisorPassed": true,
+  "hostProcessesClosed": true,
+  "directChildrenReaped": true,
+  "allRetainedAndOwnerBirthsAbsent": true,
+  "retainedBirthCount": 2,
+  "nativeClientCompatibility": "UNMEASURED",
+  "futureCampaignNeedsFreshBaseline": true,
+  "supervisorReceiptSha256": "4f15dcb269b39359a8888f341e3220181d8e0c0b6d880c6722c795378cf785fc",
+  "runtimeReleased": true,
+  "classification": "reproduced actual complete current-host read-only metadata admission",
+  "applicationExecuted": false
+}
