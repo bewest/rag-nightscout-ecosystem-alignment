@@ -62,13 +62,19 @@ as application-coordinated locks.
 
 ### One logical REST/API component
 
-Data REST, credential authorization and owner-management REST are cohesive
-application modules. Their logical grouping does not prescribe a single listener,
-process or privilege set. Owner management retains its own audience and listener
+REST v1, v2 and v3 belong to one logical stateless request-serving API
+component, together with credential authorization and owner-management modules.
+Version-specific adapters retain their request, authorization and response
+semantics; protocol versions are not separate application services. Stateless
+means durable authority/data are external and request state is reconstructible,
+not that the process has no in-flight work or retained readiness state. This
+logical grouping does not prescribe a single listener, process or privilege set. Owner management retains its own audience and listener
 contract and may be colocated with API serving under the existing
 [owner-authority boundary](owner-authority.md#shared-oidc-integration). The accepted
 separate-role reference remains one concrete composition, not a requirement that
-every REST responsibility become a separate service.
+every REST responsibility become a separate service. Grouping the versions does
+not admit additional routes: the [recorded compatibility scope](single-and-multitenant-architecture.md#current-bounded-compatibility)
+and admitted handler/storage contracts still bound actual coverage.
 
 ### Headless workload owners
 
@@ -126,13 +132,14 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.
 ### Application command paths
 
 **Read-derived command diagram.** These are private application calls, not SQL
-relationships. The alarm handoff and socket mutation have separate authorization
-and acknowledgement contracts; the arrows do not imply one chained transaction.
+relationships. REST v1/v2/v3 share one logical API component; this label does
+not claim every version/route is already admitted. The alarm handoff and socket
+mutation have separate authorization and acknowledgement contracts; the arrows do not imply one chained transaction.
 
 ```mermaid
 flowchart LR
   EV["Evaluator notification consumer"] -->|"alarm handoff"| RT["Realtime"]
-  RT -->|"authorize / mutate / ack"| API["API"]
+  RT -->|"authorize / mutate / ack"| API["Unified REST/API<br/>v1 / v2 / v3 adapters"]
 ```
 
 ### Component storage ownership
@@ -145,7 +152,7 @@ remain specific to the selected catalogue and operation.
 
 | Component | Admitted reads | Owned persistence / controlled writes |
 |---|---|---|
-| Logical REST/API — data handlers | Clinical records; current authority and configuration | Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression |
+| Logical REST/API — v1/v2/v3 data adapters | Clinical records; current authority and configuration | Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression |
 | Realtime | Clinical records; current configuration and admitted authority | Realtime projection and checkpoint namespace |
 | Evaluator / notification component | Clinical records; current configuration and suppression | Evaluator projection and checkpoint namespace; notification producer state, requests and attempts |
 | Logical REST/API — owner/authority modules | Current authority, policy, owner configuration and secret references | Admitted credential, session, policy, owner-settings and secret mutations with audit |
@@ -183,7 +190,7 @@ those replicas from consumers, but does not itself make either end stateless.
 | Component | Scale-out implication | Required boundary before claiming it works |
 |---|---|---|
 | Static UI serving | Replaceable replica candidate. | Consistent assets/configuration and edge behavior. |
-| Request-scoped API and management handlers | Natural replica candidates when local state is reconstructible and durable authority/transactions remain shared. | Current authority/config consistency, safe concurrent writes, graceful drain, bounded aggregate pools and actual participation of every replica in restore. Existing canonical serialization still bounds same-tenant write throughput. |
+| Unified v1/v2/v3 REST/API and management modules | Stateless request-serving replica candidates when local state is reconstructible and durable authority/transactions remain shared; versions are adapters within the same component. | Current authority/config consistency, safe concurrent writes, graceful drain, bounded aggregate pools and actual participation of every replica in restore. Existing canonical serialization still bounds same-tenant write throughput. |
 | Realtime | Connection-owning service with retained frames and subscriptions. | Admitted session routing, cross-instance fanout and reconnect/recovery; a load-balanced alarm call does not reach every viewer by itself. |
 | Evaluator / notification producer | One current workload owner with durable recovery; partitioning is deferred. | Preserve current producer/checkpoint identity, eligibility and durable retry under restart/replacement. No new scheduler or replicated evaluator is required for API scaling; future disjoint assignments need their own contract. |
 | Lifecycle controller / migrations | Controlled operations with exclusive authority. | Maintenance claims, every participant's incarnation and uncertain-outcome handling; Kubernetes placement or Job completion cannot substitute for application ownership. |

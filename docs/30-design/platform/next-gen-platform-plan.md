@@ -73,8 +73,10 @@ own adopted answers. A deferred decision keeps its prototypes and benches runnin
 For current module/worker placement, read the
 [logical REST/API map](../tenancy/runtime-topology.md#logical-rest-cohesion-and-worker-placement)
 and the [database ownership visual review](../../../site/pages/multitenant-database-design.html).
-Data, authorization and owner REST belong to one logical API responsibility while
-retaining their audience/listener contracts. Realtime, singleton evaluation,
+REST v1/v2/v3, authorization and owner REST form one logical stateless
+request-serving API component, retaining version-specific adapters and
+audience/listener contracts. This grouping neither splits services by protocol
+version nor admits routes outside the recorded compatibility scope. Realtime, singleton evaluation,
 connector work and private operator maintenance have separate workload roles;
 API participants consume admission/invalidation hooks rather than run restoration
 orchestration. This is a clarification of responsibilities, not a new process layout.
