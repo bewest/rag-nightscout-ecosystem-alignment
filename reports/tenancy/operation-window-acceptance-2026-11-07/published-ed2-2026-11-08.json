@@ -1,0 +1,43 @@
+{
+  "evidenceBasis": "reproduced; independent remote source, PR metadata and alignment readback",
+  "capturedAt": "2026-11-08 09:29:48 UTC",
+  "application": {
+    "repository": "nightscout/cgm-remote-monitor",
+    "head": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+    "ref": "workspace/multitenant-20261102",
+    "pr": 8898,
+    "url": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "base": "dev",
+    "baseHead": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+    "publication": "normal fast-forward of the existing ref; no duplicate commits or new PR",
+    "metadataReadback": {
+      "bodyUpdated": true,
+      "bodyCharacters": 10802,
+      "titleHeadBaseAndDraftPreserved": true,
+      "currentFullAndPinnedClientAcceptancePresent": true
+    }
+  },
+  "alignment": {
+    "repository": "bewest/rag-nightscout-ecosystem-alignment",
+    "main": "a16e3dbf89ae6c4680393a80df0dcce0db85dc26",
+    "tree": "0edca13820d75a9231f839582fdc152dc5ef6a95",
+    "publication": "normal original-history fast-forward; independent git ls-remote matches",
+    "localChecks": [
+      "queue-check PASS",
+      "docs-links PASS",
+      "MT-DOC-DEPLOY PASS",
+      "MT-DOC-REALTIME PASS",
+      "MT-DOC-SQL PASS",
+      "whitespace PASS"
+    ],
+    "ci": {
+      "run": 42467087964,
+      "conclusion": "success",
+      "url": "https://github.com/bewest/rag-nightscout-ecosystem-alignment/actions/runs/42467087964"
+    }
+  },
+  "scope": "Published draft preview and accepted bounded capabilities. No dev merge, release, default or production enablement, next-batch native acceptance or whole-M6 admission."
+}
