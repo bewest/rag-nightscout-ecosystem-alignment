@@ -74,7 +74,8 @@ flowchart LR
   end
   clock["tenant_write_clock<br/>tenant_id / last_stamp"] -. "history stamps" .-> doc
   checkpoint["tenant_consumer_checkpoint<br/>tenant_id / consumer"] -. "replay / reconciliation" .-> doc
-  producer["notification state / heads / requests"] -. "current evaluated output" .-> checkpoint
+  checkpoint -. "acquisition input" .-> evaluated["Current evaluator runtime output"]
+  evaluated -. "eligible current cycle" .-> producer["notification state / heads / requests"]
   suppression["tenant_alarm_suppression"] -. "current eligibility" .-> producer
   subgraph control[Operation-control namespace]
     window[tenant_lifecycle_windows]
@@ -248,7 +249,8 @@ sequenceDiagram
   Op->>Op: Publish acknowledged post-commit effects
   Op->>Cohort: Fresh A invalidation request; await every pinned ACK
   Op->>Control: Recheck authority / claim / audit; COMMIT activation
-  Note over Control,Cohort: Loss, uncertainty or orphan retains suspension; no automatic reopening
+  Note over Control,Cohort: Before activation, failure retains suspension
+  Note over Op,Control: Activation ACK loss may leave active state; inspect, do not auto-retry
 ```
 
 The [logical planner][logical-plan] preserves public/typed identities and sorts
@@ -273,7 +275,10 @@ A DATA COMMIT whose acknowledgement is lost has an uncertain outcome. Retrying
 or reopening automatically could publish contradictory history or reuse stale
 cache state. A committed suspension, unresolved unfinished operation, missing
 invalidation acknowledgement or uncertain activation requires verification and
-operator recovery. The [controller commit handling][maintenance-commit] preserves
+operator recovery. If the activation COMMIT acknowledgement is lost, the stored
+window may already be active and its audit activated; the uncertain response
+does not prove continued suspension. Inspect the committed state rather than
+automatically replaying activation. The [controller commit handling][maintenance-commit] preserves
 those distinctions; no deterministic outage bound or automatic orphan-resume
 command follows from this implementation.
 
