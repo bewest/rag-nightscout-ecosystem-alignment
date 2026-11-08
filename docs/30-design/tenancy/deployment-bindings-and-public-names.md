@@ -77,6 +77,75 @@ membership and lifetime binding; merely adding Services does not close that gap.
 explains storage encryption and access controls. The production trust record must
 cover those controls as well as the existing database/Vault/edge boundary.
 
+### Configurable transports and independently scaled API
+
+**Read-derived mechanism assessment:** there is no architectural requirement
+that the request-serving API have a single replica or share a host with realtime.
+The [current cohort specification](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/docs/tenant-operation-cohort.md#L3)
+already permits explicitly declared API replicas as separate participants.
+The [API implementation](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/preview-api.js#L129)
+acquires fresh request frames and exposes invalidation of local startup/readiness
+state. Stateless request handling means durable authority is external and local
+state can be reconstructed; it does not mean an instance has no connections,
+caches, in-flight responses or restore obligations.
+
+The current [private transport](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/realtime/ipc.js#L107)
+already carries bounded HTTP POST/JSON over Unix sockets. Configuration resolves
+an environment reference into `socketPath`; the parser currently accepts only
+that transport. Node supports HTTP over a Unix `socketPath` or a TCP host/port,
+and a [separate HTTPS request adapter](https://nodejs.org/api/https.html#httpsrequestoptions-callback).
+See [HTTP request options](https://nodejs.org/api/http.html#httprequestoptions-callback).
+Adding a network transport is feasible without changing operation payloads or
+requiring realtime to share API memory. It needs an admitted client/listener and
+trust profile, not merely a new value in the current socket-only field.
+
+**Proposed configuration boundary:** operator environment or mounted config
+selects an endpoint kind and address; the normalized adapter implements the same
+bounded invoke/response contract. A name such as `NS_PRIVATE_API_ENDPOINT` with
+`unix:/run/ns-ipc/api.sock` or `https://api.internal:8443` illustrates that design;
+**this variable and URL syntax are proposals, not shipping options**. Keep listen
+binding distinct from the client's service destination. CA/client identity and
+other credentials use separate private file/secret references, not ConfigMap
+plaintext or credentials embedded in the URL. An HTTP endpoint needs an explicitly
+admitted private trust profile; HTTPS still needs caller authorization. Verify
+service identity before granting the internal transport capability, in addition
+to the unchanged tenant/client credential checks. Refuse unsupported schemes,
+redirects or trust failures; do not fall back silently between transports.
+
+The calls have different addressing semantics:
+
+| Call / component | Appropriate destination | What changes with replicas |
+|---|---|---|
+| Realtime to API authorization/mutation | A trusted service endpoint may select any equivalently configured, admitted API replica. | Each request still resolves the tenant and checks current authority, RLS and operation lifetime. No inherent affinity to one API is needed for these request-scoped calls; joined concurrency/compatibility acceptance remains required. |
+| Restore controller to each participant | A separately addressable instance endpoint, with authenticated identity and pinned boot incarnation. | The controller must reach every relevant instance for status/drain/invalidation. A single load-balanced endpoint cannot stand in for the complete roster: repeated calls could reach the same replica while missing another. |
+| Evaluator notification to realtime | A destination whose receipt/fanout contract reaches the intended connected viewers. | Load-balancing one handoff to one realtime replica does not broadcast it to sockets on other replicas. Qualify fanout or explicit delivery ownership and durable retry/deduplication. |
+| Browser to realtime | A connection-owning realtime instance. | Socket connections, rooms and local projections are retained state. Current polling plus WebSocket compatibility needs session affinity for polling, and correct cross-instance delivery. A generic URL alone does not solve that. See [Socket.IO multiple-node guidance](https://socket.io/docs/v4/using-multiple-nodes/). |
+
+Start API scale-out with an explicit fixed roster if desired. Prove concurrent
+requests on different APIs, current revocation/config consistency, actual drain
+of an in-flight response, all-replica invalidation, replica death/replacement,
+foreign-tenant refusal and unchanged mutation replies. Database pool/connection
+limits and load tests must account for the aggregate across replicas. Ordinary
+API replication does not inherently need the evaluator's single-producer
+ownership protocol. Dynamic joins/leaves still need an admission/drain rule
+serialized with maintenance; that can use the existing authoritative database
+and does not inherently require a new consensus/discovery product.
+
+Preserve deadlines, cancellation, byte bounds and actual acknowledgement
+semantics across both transports. An ambiguous mutation response must not cause
+a new transparent retry: the current forwarder returns no acknowledgement rather
+than fabricating success. Network/partition tests add cases to prove; they do not
+make API scale-out theoretically invalid. Evaluator scheduling/notification
+production and realtime fanout retain their own independent ownership questions.
+
+The inspected node-multienv source provides narrower prior art: its
+[redirector listener](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L160)
+passes configured listen values through and handles a filesystem socket, while
+[backend selection](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L97)
+constructs a remote URL. This source reading does not establish one uniformly
+interchangeable Unix/HTTP/HTTPS client abstraction across that project. No
+transport-parity or replica runtime campaign was run for this assessment.
+
 ### Jsonnet and node-multienv integration boundary
 
 A proposed Jsonnet binding should take a deployment identifier, named role set,
