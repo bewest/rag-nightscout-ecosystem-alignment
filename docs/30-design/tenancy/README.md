@@ -17,6 +17,11 @@ Use the [current decision list](m5-m6-decision-list.md) to separate already adop
 policy from implementation and evidence still needed. Keep historical journals
 for rationale and failed predictions; their “next” does not assign current work.
 
+For the path beyond the accepted preview, read the
+[production critical path](production-critical-path.md): blockers, closing evidence,
+conditional HA deferrals and prior art from node-multienv and the gateway projects.
+Its initial topology and operating envelope are proposals for review.
+
 ## Start with the task
 
 | You need | Read | What stays current |

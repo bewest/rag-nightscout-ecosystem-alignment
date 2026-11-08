@@ -1987,3 +1987,14 @@ the original lane commits are preserved by normal integration.
 | Verification | **Reproduced:** archive preservation comparison, queue-check/docs-links, dead-link and stale-dashboard controls with restored success; rendered map/site-check and targeted Mermaid parsing pass. [Grooming record](../../reports/tenancy/alignment-grooming-2026-11-08.json) records exact source, checks and evidence limits. | Fresh queue-status reports existing failures and skipped/UNMEASURED gates; documentation checks do not make them green. No application campaign, policy adoption, release or default/production change. |
 
 Local lane handoff: `externals/work/HANDOFF-alignment-groom-20261108.md`.
+
+
+### Update — production dependency and operational prior-art map (2026-11-08)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| Preview-to-production path | **Read-derived:** the [production critical path](../../docs/30-design/tenancy/production-critical-path.md) links current milestone/authority/trust requirements to observable closure, dependency order and conditional HA deferrals. The fixed-cohort first production scope is a recommendation for review; M6, release and per-deployment admission remain distinct. | No topology/SLO choice, numeric limit, new policy, milestone promotion or production admission adopted. Existing source and acceptance owners retain their work. |
+| Prior art | Tracked local HEAD inspection of node-multienv, roles gateway and gateway-www identifies reusable provisioning/reconcile states, routing/authority decomposition and consent/invitation journeys. Exact source pins and code links live in the guide. No private environment, customer data or operational logs were used; the pre-existing WWW invitations edit was excluded. | Source reading supplies design input, not runtime or security acceptance. Existing provider experience still needs aggregate workloads, incident shapes and recovery/support objectives before it supplies acceptance thresholds. |
+| Evidence | Existing ed2/c23/39f4 acceptance keeps its executed source attribution; current PR metadata was independently re-read as the same open draft. Coherent documentation review found no material sequencing or scope mismatch. | No application/native/full/browser/client campaign was run for this analysis. Documentation/link/diagram validation is separate from application readiness. |
+
+Local lane handoff: `externals/work/HANDOFF-production-path-20261108.md`.

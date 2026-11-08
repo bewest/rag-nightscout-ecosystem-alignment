@@ -84,6 +84,13 @@ tenant-local insertion prototype removes cross-tenant allocation state while
 preserving supported per-tenant order; exact physical and logical backup fidelity
 retain their separate contracts.
 
+## From preview to production
+
+The [production critical path](production-critical-path.md) maps these adopted
+requirements to closing evidence and conditional topology choices. It separates
+M6 completion, a coherent released candidate and per-deployment production
+admission. Its proposed one-cohort scope and HA deferrals are not adopted policy.
+
 ## Measure before setting limits
 
 Operations owners first propose representative active/idle tenant counts, stored

@@ -139,6 +139,11 @@ domains. Remaining measurement work continues under adopted policy; a deferred
 policy question retains its prototypes and benches.
 
 <a id="5-lane-ownership-and-coordination"></a>
+The [production dependency map](production-critical-path.md#dependency-map)
+continues beyond C through actual deployment qualification and release/admission.
+It proposes sequencing and closing evidence, without assigning new lanes or
+changing the adopted milestone bars.
+
 ## 6. Lane ownership and coordination
 
 The programme coordinator owns criterion closure, source freeze, queue/status
