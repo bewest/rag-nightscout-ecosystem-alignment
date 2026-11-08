@@ -2,7 +2,8 @@
 
 *Contributor-facing living runbook. Deployment structure and commands are
 **read-derived** from cgm-remote-monitor
-`151de0248a1e4301c85b5c638185eec3ca8c38e6`, inspected 2026-11-07. Executed
+`151de0248a1e4301c85b5c638185eec3ca8c38e6`, with the nginx edge-network correction
+in `4935aa77049c66793669a7be940e40ed6ba5b386`, inspected 2026-11-07. Executed
 results retain their own source in the linked records. This document implements
 the documentation scope of MT-DOC-DEPLOY; current claims live in the
 [work queue](../../../queue/work-queue.yaml) and
@@ -18,7 +19,7 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 | Physical mobile or pump/CGM rig | Verify the chosen client, network path, upload/history and reconnect behavior | A separately recorded experiment using synthetic input. Device execution is not implied by source-pattern replay. |
 | Multi-host, orchestrated replicas or failover | Explore later deployment design | Proposed topology: the current private socket roster is a one-host contract, not distributed discovery or HA. |
 
-The [application Compose guide](https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/README.md)
+The [application Compose guide](https://github.com/nightscout/cgm-remote-monitor/blob/4935aa77049c66793669a7be940e40ed6ba5b386/deploy/multitenant/README.md)
 owns runnable packaging instructions. The
 [service-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes)
 owns the deployment requirement. Compose is implemented; a Jsonnet generator is
@@ -57,7 +58,7 @@ The UI renders the shipping templates/assets; API and realtime decide data
 authority. See the [communication architecture](evaluator-realtime-communication.md)
 for the two distinct record-frame and evaluator-output paths.
 
-The [Compose file](https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/compose.yaml#L1)
+The [Compose file](https://github.com/nightscout/cgm-remote-monitor/blob/4935aa77049c66793669a7be940e40ed6ba5b386/deploy/multitenant/compose.yaml#L1)
 declares internal service ports: API 1337, realtime 1339, UI 1340 and tenant-admin
 1341. Only nginx's 8080 is published, by default at `127.0.0.1:18080`.
 The [nginx route map](https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/nginx.conf#L14)
@@ -66,11 +67,11 @@ headers. Public tenant-management/operator routes are refused. The preview's
 public origin is HTTP; Vault's internal connection uses the generated CA and TLS.
 An external TLS ingress requires its own declared trust configuration and test.
 
-At this inspected source, nginx attaches to the internal backend network.
-Host publication is under diagnosis following the first cold Compose attempt;
-do not infer that a healthy container establishes a reachable browser origin.
-Any corrected topology must retain private backend services and expose only
-the intended ingress.
+nginx alone attaches to both the internal `backend` network and the `edge`
+bridge. The edge bridge permits host publication; every application, database,
+Vault and maintenance service stays on the internal backend network. A healthy
+container does not establish a reachable browser origin: actual cold Compose
+UI/API and restore acceptance on the joined candidate remain pending.
 
 ## Prepare a disposable synthetic instance
 
