@@ -1,0 +1,18 @@
+{
+  "evidenceBasis": "reproduced source controls",
+  "source": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+  "tree": "3956ed7771378e47feb8efca38cb8141d8ecf0b6",
+  "focusedPassing": 13,
+  "focusedFailing": 0,
+  "deniedIOCalls": 0,
+  "checks": [
+    "actual default transport/tenant Host/method/body",
+    "tenant-local exchanged JWT without credential substitute",
+    "default-fetch and Host omission reds/restoration",
+    "wrong tenant refusal",
+    "redirect refusal and redacted transport/JSON errors",
+    "response size bound and omission control",
+    "same absolute deadline through headers and streaming body"
+  ],
+  "scope": "Actual module and in-memory wire/authorization paths, listeners/transports/process launches denied. No actual new image or cold exchange/restore acceptance follows."
+}

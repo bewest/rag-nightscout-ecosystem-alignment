@@ -1,6 +1,6 @@
 # Actual clients — acceptance pending
 
-Current application candidate is 39f4. Actual cgmsim and oref0 compatibility remains **UNMEASURED** for this batch; no client or application process was started by the metadata experiment below.
+Current application candidate is ed2; earlier metadata admission retains its actual39 attribution. Actual cgmsim and oref0 compatibility remains **UNMEASURED** for this batch; no client or application process was started by the metadata experiment below.
 
 **Reproduced:** read-only full current-host baseline admission through the actual 25-file M4 instrument at original `dd167ad39a5310bc978fc4474533b33bab1df655` refused before resource creation. Its exact Python adapter reported `M4_CONTAINER_GLOBAL_MEMBERSHIP`: a stopped container retained a nonempty configured network reference whose network was absent from the global inventory, while its endpoint and sandbox fields were empty. The earlier retained-sample controls passed; they did not establish complete-host fit. [Immutable measurement](baseline-admission-stopped.json).
 
@@ -9,3 +9,9 @@ The original correction at `b57e55cc5c811d3f9415343e6d29bbd4780901cf` then passe
 Both read-only probes and the focused diagnosis are physically closed. The initial root binding with cleanup 30 was refused before execution by the unchanged supervisor; the actual read used a new packet with the required one 120-second cleanup bound. This does not establish client compatibility, global host quiescence or M4 milestone admission. Exact local artifacts and ownership remain in the lane handoff.
 
 The source-only packet review verified the frozen files, replayed the actual Budget and fixed finalizer protocols, and reproduced the original-deadline, receipt-hash and unknown-child omission failures before restoration. [Immutable source-review scope](binding-source-reviewed.json). Main and post-action descendants require separate closure receipts within the same original absolute cleanup deadline. The real client checkouts and private dependencies are prepared locally; no actual client result follows from that preparation or these modeled controls.
+
+## Bound ed2 attempt — read-only preflight stopped
+
+**Reproduced:** the actual bound ed2 campaign stopped at `M4_BASELINE_CHANGED` in its first read-only preflight. The scientific step, cgmsim/oref0, application services and resource creation never started. Original post-action verification remained stopped: there was no journal, and baseline verification refused. The independent checker correctly refused a failed physical post-action. [Immutable stopped measurement](../ed2-client-preflight-stopped.json).
+
+A read-only diagnostic completed under the same original deadline and retained exact inventory with differing static fingerprints. The precise field causing the original refusal was not retained. A source-only Mounts permutation counterfactual is a hypothesis for further measurement, not attribution of this failure. Fresh final readback found all main/post/diagnostic and outer births absent and no created resources; it landed outside the original cleanup deadline, explicitly recorded as false for within-deadline verification. No budget was reset or compatibility result promoted. The same instrument owner retains diagnosis and successor responsibility.

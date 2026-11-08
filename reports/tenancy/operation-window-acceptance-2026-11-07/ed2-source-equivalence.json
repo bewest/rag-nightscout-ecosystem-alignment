@@ -1,0 +1,50 @@
+{
+  "baseline": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "candidate": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+  "tree": "3956ed7771378e47feb8efca38cb8141d8ecf0b6",
+  "changedPaths": [
+    "deploy/multitenant/demo.js",
+    "tests/compose-deployment-protocol.test.js"
+  ],
+  "unchangedOtherTrackedPaths": 2016,
+  "identicalApplicationInputPaths": 795,
+  "unchangedApplicationInputRoots": [
+    "lib/",
+    "bin/",
+    "bundle/",
+    "webpack/",
+    "static/",
+    "views/",
+    "translations/",
+    "migrations/"
+  ],
+  "allOtherTrackedBlobModesAndHashesIdentical": true,
+  "dockerCopyInputCount": 823,
+  "changedDockerCopyInputs": [
+    "deploy/multitenant/demo.js"
+  ],
+  "packageAndLockAndDockerfileAndBrowserPolicyIdentical": true,
+  "bothDockerIgnoreProfilesExcludeChangedTest": true,
+  "newImageAndWholeColdRestoreProofRequired": true,
+  "priorScientificResultsRetainActualSourceAttribution": true,
+  "meaningfulInMemoryGuardControls": [
+    {
+      "mutation": "lib/tenant-lifecycle/maintenance-window.js",
+      "rejected": true,
+      "symptom": "UNEXPECTED_CHANGED_PATHS:['lib/tenant-lifecycle/maintenance-window.js']"
+    },
+    {
+      "mutation": "package-lock.json",
+      "rejected": true,
+      "symptom": "UNEXPECTED_CHANGED_PATHS:['package-lock.json']"
+    },
+    {
+      "mutation": "deploy/multitenant/Dockerfile",
+      "rejected": true,
+      "symptom": "UNEXPECTED_CHANGED_PATHS:['deploy/multitenant/Dockerfile']"
+    }
+  ],
+  "restoredActualProofPassed": true,
+  "candidateClean": true,
+  "scope": "Git blob/mode identity and actual Docker COPY/ignore analysis. Exact c23 native/full/browser and39 focused/corpus attribution retained; no fresh image/runtime/client pass or blanket dynamic-import claim."
+}

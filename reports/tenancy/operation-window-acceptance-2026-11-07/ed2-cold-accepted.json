@@ -1,0 +1,30 @@
+{
+  "source": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+  "originalState": "PASS",
+  "originalCleanup": true,
+  "demoAccepted": true,
+  "demoObservations": {
+    "restoredClinicalValue": true,
+    "publicIdPreserved": true,
+    "bCommittedDuringRestore": true,
+    "priorAndConcurrentBRowsPreserved": true,
+    "historyCorrection": true,
+    "historyDeletion": true,
+    "clientConverged": true,
+    "actualControllerCommittedAndReactivated": true
+  },
+  "demoReceiptSha256": "90db2047cd73530c6265f240e70211a8e82b28622e644798e06404c7febe481d",
+  "browserAccepted": true,
+  "exactInventory": true,
+  "completeConfigHostFingerprintsUnchanged": true,
+  "stableEndpointEquality": true,
+  "fullEndpointEquality": false,
+  "allRetainedAndOwnerBirthsAbsent": true,
+  "retainedBirthCount": 492,
+  "ownedBrowserTmpRemovedVerified": true,
+  "readOnlyVerifierChildrenClosed": true,
+  "runtimeReleased": true,
+  "receiptSha256": "45b96af2cc1f6ff0695aaf42bc0469d4a328012197e807e1aa2dd78f4e4932b3",
+  "browserReceiptSha256": "3c74ee7495173cd5936b22b608b2463f42ee3fab084e046d2bea895419b2053b",
+  "actualColdTerminalReceipts": 0
+}

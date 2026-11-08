@@ -1,0 +1,28 @@
+{
+  "source": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+  "state": "STOPPED",
+  "failure": "M4_BASELINE_CHANGED_READONLY_PREFLIGHT",
+  "actualClientsStarted": false,
+  "applicationServicesStarted": false,
+  "custodyJournalCreated": false,
+  "actualOwnedResourceCreations": 0,
+  "resourceInventoryExact": true,
+  "baselineStaticFingerprintsEqual": false,
+  "allMainPostDiagnosticAndOuterBirthsAbsent": true,
+  "observedRetainedAndOwnerCount": 8,
+  "runtimeReleased": true,
+  "originalCleanupDeadline": 3684146.549244733,
+  "verifiedAtMonotonic": 3684154.104875454,
+  "verifiedInsideOriginalCleanup": false,
+  "receipts": {
+    "supervised-main": "b273c4947466b2b44ab290afeab808f83fa3d21896c2e3686c441b63cd8f4533",
+    "supervised-post": "3523857421ce581601d5bc8e39608be907b06aef5ba0fa86e33194c7be4f3427",
+    "supervised-diagnostic": "b680a73470615f4396a52e22b723f74ccac98a15943dd0434b09aeddfb87c84d"
+  },
+  "originalMainReceiptSha256": "b273c4947466b2b44ab290afeab808f83fa3d21896c2e3686c441b63cd8f4533",
+  "scope": "Read-only preflight refused before scientific step; exact no-created-resource path and host closure only, original baseline failure remains.",
+  "evidenceBasis": "reproduced",
+  "originalFailureCause": "UNMEASURED; static fingerprints differ, precise original field not retained",
+  "originalPostVerdict": "STOPPED: missing journal after read-only preflight refusal and baseline mismatch; no independent checker receipt",
+  "scientificCompatibility": "UNMEASURED"
+}
