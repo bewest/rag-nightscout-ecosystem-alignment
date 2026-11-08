@@ -7,6 +7,11 @@ filename do not establish currency. Reconciled 2026-11-08 to the published draft
 
 ## What can inform a decision now
 
+For a diagram-first review, open the [multitenant database and component ownership
+page](../../../site/pages/multitenant-database-design.html). Its grid and static
+diagrams are rendered from the current SQL guide; source revision and evidence
+limits remain visible beside the diagrams.
+
 Start with the [deployment models and fault domains](deployment-and-rig-testing.md)
 and [architecture comparison](single-and-multitenant-architecture.md). The published
 one-host reference answers bounded component, tenant isolation and recovery questions.

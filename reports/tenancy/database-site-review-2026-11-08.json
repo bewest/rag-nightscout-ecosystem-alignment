@@ -1,0 +1,68 @@
+{
+  "record_type": "documentation-verification",
+  "date": "2026-11-08",
+  "source": {
+    "alignment_base": "f99c3922a8f38b6485f6f0eae203ba4f725356a3",
+    "canonical_sql_source_commit": "7d9a8e86fdea2adc6c310ce8d7deaf646c970cec",
+    "mermaid_fix_commit": "b1b65c74ab3265c82bd668659d9043419ffcef5e",
+    "joined_before_page_commit": "dd3815a8b536b701bb9a7a09b38440355550ac90"
+  },
+  "classification": {
+    "architecture_figures": "read-derived",
+    "checks_and_browser_observations": "reproduced"
+  },
+  "checks": [
+    {
+      "command": "python3 tools/site/mermaid_check.py",
+      "result": "PASS",
+      "blocks": 55,
+      "files": 23,
+      "mermaid": "11.17.2"
+    },
+    {
+      "command": "python3 tools/site/mermaid_check.py --published-dir build/site-src",
+      "result": "PASS",
+      "blocks": 55,
+      "files": 23
+    },
+    {
+      "command": "make site-check -o tools/site/.venv/.installed",
+      "result": "PASS",
+      "note": "Uses already installed identical pinned runtime. Subsequent integration/site build retains its own logs in local handoff."
+    },
+    {
+      "command": "python3 -m py_compile tools/site/render_database.py tools/site/mermaid_check.py",
+      "result": "PASS"
+    },
+    {
+      "command": "bash -n tools/site/publish.sh",
+      "result": "PASS"
+    }
+  ],
+  "negative_control": {
+    "source": "git show f99c3922a:docs/30-design/tenancy/evaluator-realtime-communication.md, saved only to scratch",
+    "command": "python3 tools/site/mermaid_check.py /tmp/database-site-broken-sequences.md",
+    "exit": 1,
+    "result": "0/3 blocks parse; raw semicolons terminate sequence labels at source lines 68, 118 and 174",
+    "restored": "Joined full and staged-source parser pass"
+  },
+  "browser": {
+    "surface": "local built site via in-app browser",
+    "static_svg_count": 8,
+    "desktop": "Ownership grid, application command and lifecycle-control labels inspected; CSS label collision corrected",
+    "narrow_viewport": {
+      "width": 390,
+      "height": 844,
+      "page_width": 375,
+      "global_horizontal_overflow": false
+    },
+    "interaction": "Clinical/document family restore treatment expands with source text",
+    "preview_limit": "IAB showed empty dynamic Mermaid containers on an existing public Markdown page, while public raw HTML retained sources. No runtime cause inferred. New review uses static SVG."
+  },
+  "limits": [
+    "No application/native/browser regression campaign or Kubernetes execution",
+    "Syntax checks do not establish universal layout readability",
+    "No new safety, production, default or milestone acceptance",
+    "Publication and final integration readback retained in local lane handoff"
+  ]
+}

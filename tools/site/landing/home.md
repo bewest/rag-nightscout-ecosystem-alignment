@@ -33,6 +33,9 @@ under **More**.
 
 ## Where to start
 
+- [Multitenant database and component ownership](site/pages/multitenant-database-design.html):
+  the storage ownership grid, database families, command paths, foreign keys and
+  restore sequences, rendered from the current SQL design guide.
 - [Reviewer onboarding](docs/00-overview/REVIEWER-ONBOARDING.md): read this
   first if you are considering reviewing work here.
 - [The Nightscout ecosystem programme](site/pages/nightscout-ecosystem-programme.html):

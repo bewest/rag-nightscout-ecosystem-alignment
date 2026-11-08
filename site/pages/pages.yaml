@@ -18,6 +18,11 @@
 # tracked .md page the banner links to). The page must show an
 # element with data-site-banner="api-status" whose data-api-status matches.
 pages:
+  multitenant-database-design.html:
+    kind: living
+    sources: [docs/30-design/tenancy/sql-and-migration-architecture.md]
+    source_commit: 7d9a8e86fdea2adc6c310ce8d7deaf646c970cec
+    render: tools/site/render_database.py
   nightscout-ecosystem-programme.html:
     kind: living
     sources: [docs/00-overview/ECOSYSTEM-PROGRAMME.md]
