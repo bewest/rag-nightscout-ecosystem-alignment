@@ -5440,7 +5440,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>a5aef2b14</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>36fc998a8</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5513,8 +5513,11 @@ Self-service co-owner addition and transfer are later enhancements; last-owner
 protection, current authority and audit remain required for the operator path.</p>
 <p>A grant must fit all three: project delegable catalogue, operator tenant ceiling,
 and actor's explicit delegation authority. Possessing a permission does not grant
-the right to delegate it. Start with reviewed roles and bounded assignment;
-arbitrary role editing follows separately. Unknown permissions/roles refuse.
+the right to delegate it. For the first preview the owner defines roles from any
+permission string single tenant accepts, wildcards included, under the ceiling
+(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-credentials-single-tenant-equivalent">decision</a>);
+a stricter permission model is a <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#permission-tightening-applies-to-both">separate proposal for both modes</a>.
+Unknown roles refuse.
 An upgrade must not silently add new capabilities to an existing delegated role.
 Role edits have the same ceiling checks as direct assignments. Tightening current
 policy bounds effective authority even when an old stored assignment remains.</p>
@@ -5545,7 +5548,10 @@ both modes; storage and tenant-resolution differences remain explicit. The inten
 single-tenant opt-in is <code>ENABLE=oidc</code>, or an equivalent explicit flag if integration
 measurement refutes that spelling. Default-off behavior preserves current startup,
 web/data authentication and unattended clients. No OIDC feature is implemented or
-enabled merely by setting that value today.</p>
+enabled merely by setting that value today.
+The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">identity provider decision</a>
+adopts a generic adapter with Authentik as the intended reference, subject to the
+Kratos proof, and Kratos as the measured fallback.</p>
 <p>Share the provider-facing protocol and session integration. Single-tenant maps
 verified provider/subject to local current authority; multitenant resolves the
 selected tenant and maps it to current membership, session and grants under RLS.
@@ -5564,9 +5570,11 @@ No first-party browser UI is required by this integration decision.</p>
 valid provider authentication and current Nightscout authority. It does not require
 Nightscout-owned rotating refresh credentials initially. The provider's login
 cookie/session, any Nightscout browser-session cookie, the current server-side
-Nightscout session and access bearer token are distinct. Cookie scope/transport,
-local and provider logout propagation, idle activity and concurrent renewal need
-explicit contracts before acceptance. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">adopted provider-outage policy</a>
+Nightscout session and access bearer token are distinct. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-human-session-effects-2026-11-07">adopted session
+contracts</a>
+scope idle/absolute lifetimes to management sessions, order logout local-first with
+an optional provider call, fence concurrent renewal and default browsers to an
+HttpOnly cookie with direct-token mode retained. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">adopted provider-outage policy</a>
 allows existing valid access only until existing expiry under current local
 checks, with no new login/renewal or relaxed freshness. Adopted lifetimes below
 remain; provider activity alone cannot bypass current Nightscout authority.</p>
@@ -5577,7 +5585,7 @@ provider outage and ordinary legacy data-client compatibility. Multitenant adds
 foreign-tenant/selector refusal and isolated current authority; single-tenant must
 not require multitenant PostgreSQL, a cohort identity service or extra role listeners.
 Record unsupported provider capabilities rather than silently weakening guarantees.
-Choose browser cookie versus direct-token transport through its own bounded review.</p>
+Both browser transports are adopted, cookie default; each needs its own acceptance.</p>
 <h2 id="management-authentication-and-lifetime-policy">Management authentication and lifetime policy<a class="headerlink" href="#management-authentication-and-lifetime-policy" title="Permanent link">&para;</a></h2>
 <p>The owner listener stays separate from data/private-operator listeners. Human
 authentication uses an interchangeable identity provider; Nightscout maps verified
@@ -5654,7 +5662,7 @@ renewal refuses. Local logout/revocation takes effect on the next protected
 operation across workers; unavailable current authority refuses even with an
 unexpired token. No grace extension or Nightscout-owned refresh system is added.
 Provider logout propagation, qualifying idle activity, concurrent renewal and
-browser transport still require explicit implementation/acceptance. Upstream
+browser transport have adopted contracts and still require implementation/acceptance. Upstream
 logout cannot take immediate local effect until it is known locally. Human
 login/session implementation remains UNIMPLEMENTED/UNMEASURED.</p>
 <p>The <a href="../../../tools/lab/owner-authority/index.html">lab</a> compares the actual current

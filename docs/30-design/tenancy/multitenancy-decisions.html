@@ -5496,7 +5496,7 @@
 
 
 <h1 id="multitenancy-decisions-and-architectural-contracts">Multitenancy decisions and architectural contracts<a class="headerlink" href="#multitenancy-decisions-and-architectural-contracts" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>49b319089</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>e3c257ec1</code>.</em></p>
 <p><em>Contributor-facing living decision reference. Consolidated 2026-11-06 from the
 maintainer's D1–D23 decisions and their later amendments. This is a read-derived
 reorganization, not new implementation acceptance or a new decision. The
@@ -5508,7 +5508,7 @@ amendment; the <a href="durable-event-delivery-contract-2026-11-06.html">durable
 owns B7's consumer/recovery rules. Later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>
 own promotion-bar, compatibility and lifecycle decisions. Their amendments take
 precedence over earlier journal text. The <a href="multitenant-delivery-dashboard.html">dashboard</a>
-owns milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/908f8a91681911222e884fd138dd35c63899532e/queue/work-queue.yaml">queue</a> owns item state
+owns milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fca6459be238ff433ad6e0b6d4e63b30c66b4b06/queue/work-queue.yaml">queue</a> owns item state
 and gates, and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 owns integration/publication status. Read the <a href="index.html">tenancy guide</a> for the
 current execution plan; archived “next” instructions are historical.</p>
@@ -5767,6 +5767,8 @@ frozen charts are not sufficient. Destructive lifecycle preconditions, export
 coverage and key retention now live in the <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner-lifecycle packet</a>
 and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">release decisions</a>.
 Do not infer current deletion behavior from the original seam's admin prototype.
+Shared-role startup follows the adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-startup-admission">tenant-local startup admission decision</a>.
+The release record owns its implementation and acceptance state.
 Deployment support-contact metadata remains a recommendation, not an adopted
 schema: its privacy/availability rationale is retained in the <a href="../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html#211-deployment-metadata-a-recommendation-not-a-decision">journal</a>.</p>
 <h2 id="4-typed-controllers-provenance-and-compatibility">4. Typed controllers, provenance and compatibility<a class="headerlink" href="#4-typed-controllers-provenance-and-compatibility" title="Permanent link">&para;</a></h2>

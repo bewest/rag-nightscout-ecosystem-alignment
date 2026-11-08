@@ -5396,7 +5396,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>95a82753d</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>36fc998a8</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-07. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5473,6 +5473,22 @@ enhancements; that preference grants no production permission or criterion waive
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-insertion-semantics">Per-tenant/collection ordering only; pursue tenant-local insertion state</a>. Preserve other tenants' current state and supported client ordering. <a href="../../../reports/tenancy/tenant-local-insertion-2026-11-07/index.html">Standalone native proof</a> passes its bounded SQL bar; migration-runner/readiness/lifecycle admission remains open. No global restore pause selected.</td>
 </tr>
 <tr>
+<td>First-preview owner surface</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-settings-projected-catalogue">Projected display catalogue</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-alarm-thresholds">bounded owner thresholds and alarm enables</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-credentials-single-tenant-equivalent">single-tenant-equivalent credentials, wildcards accepted as single tenant accepts them, under the operator ceiling</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#permission-tightening-applies-to-both">tightening applies to both and is a separate proposal</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-integrations-none-first-preview">no owner integrations yet</a>. D22 floors stand. Implementation and consuming-runtime tests remain open.</td>
+</tr>
+<tr>
+<td>First-preview external delivery</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#first-preview-no-push-provider">No live push provider; Nightscout-to-Nightscout sync via nightscout-connect in both directions, outbound first</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#integration-credential-parts">per-kind operator/owner credential parts</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#notification-bounds-single-tenant-constants">single-tenant constants as first bounds</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#external-delivery-admission-by-probe">admission by probes and lab sync</a>. Pushover/Maker deferred. Connector actor and lab sync remain open.</td>
+</tr>
+<tr>
+<td>M6 human session effects</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-idle-scope-management-only">Idle/absolute lifetimes scoped to management sessions only; always-on displays unchanged</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-logout-local-first">local-first logout, provider optional, signal-less providers admitted with disclosure</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-renewal-fenced">fenced idempotent renewal</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-transport-cookie-default">both browser transports, HttpOnly cookie default, headless bearer unchanged</a>. Login/session implementation and acceptance remain open.</td>
+</tr>
+<tr>
+<td>M6 deployment and trust</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-ingress-peer-list-trust">Peer-list ingress trust, one list for tenant selection and client IP</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-secrets-ladder-vault-all-stages">Vault Transit at every stage, service-login adapter before production</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">generic OIDC adapter, Authentik intended reference subject to the Kratos proof</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">admission by trust record plus live probes</a>. Live edge, HTTPS Vault, provider proof and production deployment remain UNMEASURED.</td>
+</tr>
+<tr>
 <td>Legacy authority and management split</td>
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">Reader clamp withdrawn; preserve own-tenant credentials</a>; <a href="owner-authority.html">owner authority</a> governs separate management audience, current authority and adopted lifetimes.</td>
 </tr>
@@ -5489,38 +5505,13 @@ Shared OIDC/provider-backed renewal, bounded existing access during provider out
 and tenant-wide alarm suppression are adopted.
 Review remaining session effects and operational parameters while implementation continues.
 Notification retry responsibility and deletion ceremony policy are settled. Their
-bounded proofs do not resolve live-provider admission or wider M6 identity/trust.</p>
-<table>
-<thead>
-<tr>
-<th>Topic</th>
-<th>Decision needed</th>
-<th>Work that need not wait</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Live notification provider admission</td>
-<td>Select the live adapter/provider and operating bounds before live use. Durable intent/same-identity retry is settled; an acceptance receipt does not prove device delivery.</td>
-<td>Controlled joined-consumer proof is recorded. Live egress, retry/retention budgets and selected provider/device delivery keep separate gates.</td>
-</tr>
-<tr>
-<td>M6 human session effects</td>
-<td>Shared OIDC/provider-backed renewal is settled. Existing access/current-authority and local logout/provider-outage rules are adopted. Specify upstream logout propagation, qualifying activity, concurrent renewal and browser cookie/token transport. Adopted lifetimes and current-authority checks remain.</td>
-<td>Shared single/multitenant prototypes, explicit optional enablement and parity/refusal controls. No custom password/recovery system or initial NS-owned rotating refresh.</td>
-</tr>
-<tr>
-<td>M6 bounded owner surface</td>
-<td>Approve the exact first-preview settings, credentials and enabled integrations; identify unsupported names/operations. Operator-assisted ownership is settled.</td>
-<td>Census and proposed catalogue with consuming-runtime tests; do not silently declare the full catalogue implemented.</td>
-</tr>
-<tr>
-<td>M6 deployment/trust</td>
-<td>Review concrete trusted-ingress and secrets/identity adapter contracts for the reference deployment before production use.</td>
-<td>Synthetic spoof/conflict/outage probes and provider-neutral interfaces.</td>
-</tr>
-</tbody>
-</table>
+bounded proofs do not resolve live-provider admission or wider M6 identity/trust.
+The first-preview owner surface (settings, thresholds, credentials, integrations) is settled.
+The first-preview external delivery channel (no push provider; Nightscout-to-Nightscout sync) is settled.
+M6 human session effects (idle scope, logout, renewal, transport) are settled.
+M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, generic OIDC adapter with Authentik as intended reference, probe-plus-record admission) are settled.</p>
+<p>No human-policy topic is open as of 2026-11-07. A new topic is added here as a row
+(topic, decision needed, work that need not wait) when a packet is ready.</p>
 <p>The <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner lifecycle packet</a>
 retains source surveys and alternatives; its recommended grace periods, invitation
 lifetimes and self-service operations are not approved defaults. The <a href="multitenant-open-decisions-2026-11-06.html">earlier

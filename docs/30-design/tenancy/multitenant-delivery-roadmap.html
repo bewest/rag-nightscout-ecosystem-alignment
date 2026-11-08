@@ -5484,12 +5484,12 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>c3cf4d1d7</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>36fc998a8</code>.</em></p>
 <p><em>Contributor-facing living plan. Consolidated 2026-11-06 from the delivery journal
 and the adopted release decisions, without a new application measurement or
 milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/908f8a91681911222e884fd138dd35c63899532e/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fca6459be238ff433ad6e0b6d4e63b30c66b4b06/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5601,7 +5601,10 @@ is an explicitly authorized audited action, not a data-API decrypt. The built-in
 encrypted development/small-operator option remains adopted; production adapters
 must meet the same contract. A disposable Vault lab does not establish TLS,
 unseal/recovery, production identity, HA or operational suitability. Failures
-never fall back to plaintext, another tenant's key or an unapproved signer.</p>
+never fall back to plaintext, another tenant's key or an unapproved signer.
+The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deployment-and-trust-2026-11-07">deployment and trust decisions</a>
+keep Vault Transit at every stage, with a service-login adapter required before
+production use, and admit a deployment by trust record plus live probes.</p>
 <h2 id="tenant-identity-migrations-and-import">Tenant identity, migrations and import<a class="headerlink" href="#tenant-identity-migrations-and-import" title="Permanent link">&para;</a></h2>
 <p>Keep disposable public aliases, durable DNS-friendly internal names and stable
 tenant IDs distinct. Deployment-owned mapping binds internal name to ID; alias
@@ -5613,7 +5616,8 @@ refuse. Durable allocation, collision, rename/reassignment/deletion and mapping
 consistency require explicit contracts before operator-writer admission. Consul,
 Kubernetes and vendor discovery are optional adapters, not dependencies adopted
 by this roadmap. Public domains, certificates and private edge implementation
-remain deployment concerns.</p>
+remain deployment concerns. The reference deployment <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-ingress-peer-list-trust">trusts its edge by immediate
+peer address, one list for tenant selection and client IP</a>.</p>
 <p>Multitenant schema migration is <strong>explicit operator execution</strong>. Serving checks
 compatibility read-only and refuses stale/unsafe schema; it never migrates at
 boot. Keep committed catalogue bytes/checksums immutable. Two-store runner
@@ -5783,7 +5787,7 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 </tr>
 <tr>
 <td>M6 bounded owner API</td>
-<td>Declare the exact reviewed configuration/credential/integration catalogue and refusals. Shared optional OIDC/provider-backed renewal provides equivalent single/multitenant human authentication with separate authority adapters; single opt-in prefers <code>ENABLE=oidc</code>. Human issuer/renewal implements adopted lifetimes, current authority, reauthentication and cross-worker revocation through synthetic identities. Enabled/disabled parity and legacy-client controls are required. Provider logout, idle activity and outage behavior require explicit contracts; operator-provisioned credentials alone do not close human identity.</td>
+<td>Implement the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#first-preview-owner-surface-2026-11-07">adopted first-preview catalogue and refusals</a>: projected display settings, bounded owner thresholds, single-tenant-equivalent credentials (wildcards accepted as single tenant does) under the ceiling, no owner integrations. Shared optional OIDC/provider-backed renewal provides equivalent single/multitenant human authentication with separate authority adapters; single opt-in prefers <code>ENABLE=oidc</code>. Human issuer/renewal implements adopted lifetimes, current authority, reauthentication and cross-worker revocation through synthetic identities. Enabled/disabled parity and legacy-client controls are required. Apply the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-human-session-effects-2026-11-07">adopted session contracts</a>: management-only idle scope, local-first logout, fenced renewal, cookie-default dual transport; outage behavior follows the provider-outage row. Operator-provisioned credentials alone do not close human identity.</td>
 </tr>
 <tr>
 <td>M6 operator-assisted ownership</td>
@@ -5804,7 +5808,8 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 </tbody>
 </table>
 <p>The accepted M5 reference does not select a live external notification provider
-or promise retained every-transition history. Multi-node failover,
+or promise retained every-transition history; the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#first-preview-no-push-provider">first-preview channel decision</a>
+admits no push provider and makes Nightscout-to-Nightscout synchronization the first external channel. Multi-node failover,
 every-transition history and self-service ownership are separate enhancements.
 Real identities/data, production/default role enablement and release admission keep
 their existing explicit approval boundaries.</p>

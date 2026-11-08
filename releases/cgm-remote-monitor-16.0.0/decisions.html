@@ -2186,7 +2186,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>908f8a916</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>e3c257ec1</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3286,6 +3286,213 @@ existing-access, expiry, renewal and local-revocation policy.</p>
 <td>maintainer, 2026-11-07, deployment clarification</td>
 <td><code>MT-RUNTIME-PLAN</code>, <code>MT-DOC-DEPLOY</code>, M6</td>
 <td>The maintainer expects container/process composition, potentially Compose or jsonnet and shared private sockets. No particular packaging generator is selected. A single-process cohort was a prototype limitation, not an adopted deployment requirement. Extend actual participant registration, tenant-local operation draining and cache/socket invalidation across configured processes. Separate processes do not by themselves require a new database-enforced fence; assess concrete bypasses under the declared credential and ingress trust boundary. An observed-session census is diagnostic/refusal, not physical exclusion of future raw clients. Preserve tenant B and existing clients without a global pause; cross-process native acceptance remains required.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="first-preview-owner-surface-2026-11-07">First-preview owner surface (2026-11-07)<a class="headerlink" href="#first-preview-owner-surface-2026-11-07" title="Permanent link">&para;</a></h2>
+<p>Decided in the owner-surface discussion (packet read from the M5 head <code>f0fac99a</code>, the
+<a href="../../docs/60-research/tenancy/t30-census-dev-2026-10-27.html">dev census</a> and the
+<a href="../../docs/30-design/tenancy/tenant-config-schema-2026-10-27.html">schema candidate</a>).
+The D22 floors restated on 2026-10-27 stand and were not re-asked: <code>API_SECRET</code>/<code>API_SECRET_FILE</code>
+and <code>IMPORT_CONFIG</code> refuse under multi; <code>TRUST_PROXY</code> and <code>API3_SECURITY_ENABLE</code> are deployment
+floors; <code>DEBUG_LOGGING</code> is pinned off; <code>DBSIZE_*</code> and <code>TREATMENTS_AUTH</code> are not offered; <code>BASE_URL</code>
+is derived; <code>API3_AUTOPRUNE_*</code> is pinned off unless an operator sets a minimum; anonymous roles are
+limited to <code>denied</code>, <code>readable</code> and <code>status-only</code>.</p>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="owner-settings-projected-catalogue"></a><strong>First-preview owner-writable settings are the projected display catalogue:</strong> the client keys the tenant environment already projects (<code>lib/server/tenant-app/environment.js:6-16</code> on <code>f0fac99a</code>: units, time format, day start/end, night mode, show seconds, edit mode, raw BG, custom title, theme, the alarm enables and minute windows, time-ago warnings, pump battery warning, language, scale, show plugins/forecast, focus hours, heartbeat, clock delta/last time, authentication prompt) plus the plugin <code>enable</code> list, each typed and under operator open/bounded/pinned policy. Every other name is unsupported on the owner surface and refuses by name.</td>
+<td>maintainer, 2026-11-07 ("Projected display keys (Recommended)")</td>
+<td><code>MT-CONFIG-MIN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>Only <code>DISPLAY_UNITS</code> and <code>SHOW_SECONDS</code> are implemented and measured (R72). The remaining keys are operator-static JSON per tenant today (<code>lib/server/serve/preview-config.js:135</code>); their owner-writable path, operator policy rows and the evaluator/presentation consumers reading a committed change are UNIMPLEMENTED/UNMEASURED. The full per-tenant census class is not declared implemented.</td>
+</tr>
+<tr>
+<td><a id="owner-alarm-thresholds"></a><strong>Glucose thresholds (<code>bgHigh</code>, <code>bgTargetTop</code>, <code>bgTargetBottom</code>, <code>bgLow</code>) and the four alarm enables are owner-writable in the first preview,</strong> stored in mg/dL, bounded 30–600 as decided on 2026-10-29, partial threshold input refused, an operator default per threshold. This supersedes the 2026-10-27 "hidden until the alarm gate" direction now that R73 accepted the durable M5 evaluator and alarm suppression on one host.</td>
+<td>maintainer, 2026-11-07 ("Owner-writable, bounded (Recommended)")</td>
+<td><code>MT-CONFIG-MIN</code>, <code>MT-RUNTIME-PLAN</code>, M6</td>
+<td>UNIMPLEMENTED/UNMEASURED. Required evidence: the evaluator consumes a committed owner threshold on its next cycle, a partial or out-of-bounds write refuses without a partial row, and a mmol display setting never rewrites a stored mg/dL threshold (BF-67). Live external delivery remains the separate provider decision.</td>
+</tr>
+<tr>
+<td><a id="owner-credentials-single-tenant-equivalent"></a><strong>Owner credential management is single-tenant equivalent within the data-plane catalogue:</strong> an owner creates and revokes subjects and defines roles from any Shiro permission string single tenant accepts, <strong>wildcards included</strong> (<code>*</code>, <code>*:*:read</code>, <code>api:treatments:*</code>), under the operator ceiling if one is set. Role permissions are evaluated by the same shiro-trie checker as single tenant (<code>lib/tenant-authorization/postgres.js:41-46</code>, <code>lib/tenant-authorization/access-postgres.js:70-76</code>). Shipped default roles are provisioned per tenant as single tenant ships them (<code>lib/authorization/storage.js:239-245</code>: <code>admin</code> = <code>*</code>, <code>readable</code> = <code>*:*:read</code>). Management authority is the owner relationship, not a data permission string.</td>
+<td>maintainer, 2026-11-07 ("Single-tenant equivalent (Recommended)"; amended the same day: "it should accept wildcards, same as single tenant", replacing the wildcards-expanded, 37-terminal form first recorded)</td>
+<td><code>T30-TENANT-ADMIN</code>, M6</td>
+<td>The ceiling check is measured (R53) <strong>but only over the 37-terminal universe</strong>: <code>lib/subject-admin/owner-policy.js:38-41</code> refuses any permission outside it, so the implementation lane must replace the set-intersection ceiling check with a Shiro-implication check that accepts wildcard grants under a wildcard or concrete ceiling, and the R53 controls must be re-run on that. Subject creation, credential issuance, role creation and per-tenant default-role provisioning are UNIMPLEMENTED/UNMEASURED. Anonymous roles stay clamped to <code>:read</code> (<code>lib/tenant-authorization/postgres.js:51-55</code>). This replaces the "reviewed roles first, role editing later" phasing in owner-authority.md. Clients holding today's <code>admin</code> token keep data-route behaviour under <code>*</code>; management calls through the authorization API differ by design.</td>
+</tr>
+<tr>
+<td><a id="permission-tightening-applies-to-both"></a><strong>A proposal to tighten permission strings (refusing wildcards, bounding roles to a terminal catalogue) applies to single and multitenant alike and is handled as a separate proposal.</strong> The multitenant effort targets the same behaviour as single tenant; it does not introduce a stricter permission model on its own.</td>
+<td>maintainer, 2026-11-07 ("If there's a proposal to tighten, it should probably affect both, let's treat such a proposal separately; this large effort has been towards same behavior")</td>
+<td><code>T30-TENANT-ADMIN</code>, M6</td>
+<td>No such proposal is open. The terminal-universe bound in <code>lib/subject-admin/owner-policy.js</code> and its README ("wildcard role permissions refuse") is an artefact of the R53 bounded acceptance, not a product decision, and is superseded by the row above.</td>
+</tr>
+<tr>
+<td><a id="owner-integrations-none-first-preview"></a><strong>No owner-configurable integrations in the first preview.</strong> The four lab kinds (push relay, app push, webhook, CGM connector) and the secret-reference schema stay ready; the owner surface lists them as unsupported. Revisit after the live notification provider is admitted. The first integration kind is the <a href="#first-preview-no-push-provider">tenant-side Nightscout connector</a>, operator-entered in the first preview.</td>
+<td>maintainer, 2026-11-07 ("None in first preview (Recommended)")</td>
+<td><code>MT-SECRETS-CONTRACT</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>No integration code is owner-reachable on <code>f0fac99a</code>; the notification component takes an explicitly supplied adapter and selects no provider. Operator-side kind limits and host allow-lists remain the schema candidate's measured lab contract, not product code.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="first-preview-external-delivery-channel-2026-11-07">First-preview external delivery channel (2026-11-07)<a class="headerlink" href="#first-preview-external-delivery-channel-2026-11-07" title="Permanent link">&para;</a></h2>
+<p>Decided in the live-notification-provider discussion (packet read from the M5 head <code>f0fac99a</code>:
+<code>lib/server/pushnotify.js</code>, <code>lib/tenant-notifications/README.md</code>, <code>lib/server/serve/roles.js:81-87</code>
+and the pinned <code>nightscout-connect</code> 0.1.0 Nightscout source driver). The 2026-10-27 outbound-endpoint
+floor stands: connector endpoints under an operator allow-list or public-address rule, <code>BASE_URL</code> derived.</p>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="first-preview-no-push-provider"></a><strong>The first multitenant preview admits no live push provider.</strong> Alarms reach the unchanged client over the socket (in-app). The first external channel is Nightscout-to-Nightscout synchronization through the existing <code>nightscout-connect</code> Nightscout source driver (<code>CONNECT_SOURCE=nightscout</code>, source endpoint, optional source API secret), <strong>in both directions, outbound admitted first</strong>: a family's existing single-tenant site pulls from the tenant using a pre-issued tenant reader credential (an existing-client read, no new tenant code); the tenant-side connector (tenant pulls from the family's existing site) is built as the first integration kind in the declared <code>vcpool</code> connector role, writing through the tenant's own API as a tenant-bound subject with operator-entered endpoint/secret held as tenant secrets. Pushover and Maker are deferred; Pushover is next when a push provider is taken up. Loop APNs is a command channel, not an alarm provider, and the arbitrary-host webhook plugin stays out until a host allow-list exists.</td>
+<td>maintainer, 2026-11-07 ("in-app alarms or Nightscout configuration for nightscout-connect nightscout:nightscout sync"; "Let's do Nightscout-Connect using the Nightscout backend first"; "Both; admit outbound first (Recommended)")</td>
+<td><code>MT-RUNTIME-PLAN</code>, <code>MT-SECRETS-CONTRACT</code>, M6</td>
+<td>Outbound direction is covered by M4's measured existing-client surface but no connector sync has been run against a tenant: UNMEASURED. The driver's auto-creation of its <code>nightscout-connect-reader</code> subject does not work against a tenant until subject creation lands, so the first preview issues the reader credential first. The <code>vcpool</code> role has no start and no per-tenant code: UNIMPLEMENTED. No push adapter exists.</td>
+</tr>
+<tr>
+<td><a id="integration-credential-parts"></a><strong>Integration credentials are split into parts per kind; a part is operator-owned or owner-owned, and neither side can read the other's parts.</strong> When Pushover is adopted, all its parts are owner-owned by default (the family's own application token and keys, single-tenant equivalent), with an operator-owned alternative where a kind needs it.</td>
+<td>maintainer, 2026-11-07 ("Owner-owned, all parts (Recommended)"; "some plugins we may need flexibility for operator to own it, and/or for owner to bring their own, without leaking operator creds to the owners and vice versa")</td>
+<td><code>MT-SECRETS-CONTRACT</code>, M6</td>
+<td>The schema candidate's lab measured per-kind owner/operator credential parts and the no-plaintext scan; product code holds no integration credentials yet. Secret reveal remains a separate reauthenticated permission under owner authority.</td>
+</tr>
+<tr>
+<td><a id="notification-bounds-single-tenant-constants"></a><strong>Initial notification and connector operating bounds are the single-tenant constants</strong> (15-minute normal dedup, one-hour receipt window, 30-second minimum retry, the connector's existing page size and poll alignment) together with the durable component's existing explicit page/payload/inflight/attempt-timeout/retry-delay limits. Retention, backlog, cadence and egress budgets are measured in the batch C benchmark window before any production or capacity claim.</td>
+<td>maintainer, 2026-11-07 ("Single-tenant constants first (Recommended)")</td>
+<td><code>MT-RUNTIME-PLAN</code>, Batch C</td>
+<td>No budget value is approved as a pass threshold; functional passes establish none.</td>
+</tr>
+<tr>
+<td><a id="external-delivery-admission-by-probe"></a><strong>External delivery is admitted by probes and tests appropriate to the channel, not by a human-observed device.</strong> Nightscout-to-Nightscout sync is admitted by a lab sync between the frozen candidate's tenant and a local single-tenant Nightscout in each direction, with an independent stored-state oracle and a second tenant shown untouched. A push provider, when adopted, is admitted on synthetic consumer proofs plus a recorded request/response contract; its first live delivery is on an operator's own deployment.</td>
+<td>maintainer, 2026-11-07 ("we prioritized Nightscout:Nightscout plugin, can't we use probes/test as appropriate")</td>
+<td><code>MT-RUNTIME-PLAN</code>, M6</td>
+<td>R73 measured the durable handoff with a synthetic consumer only. The two-direction lab sync is UNMEASURED and needs a local single-tenant Nightscout beside the candidate; credentials for any lab come only from the environment.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="m6-human-session-effects-2026-11-07">M6 human session effects (2026-11-07)<a class="headerlink" href="#m6-human-session-effects-2026-11-07" title="Permanent link">&para;</a></h2>
+<p>Decided in the human-session discussion (packet read from the M5 head <code>f0fac99a</code>:
+<code>lib/server/serve/owner-preview-authentication.js:7-19</code> (600-second management ceiling, bearer
+only), <code>lib/server/subject-management-app.js:70-86</code>, <code>lib/tenant-authorization/access-postgres.js</code>
+(read-only current-authority snapshot; <code>access_sessions</code> carries <code>purpose</code>, <code>expires_at</code>, <code>active</code>
+and no idle timestamp), <code>lib/client/hashauth.js:244-256</code> (secret hash in localStorage; sign-out
+forgets it locally) and <code>lib/client/browser-settings.js:166-182</code> (<code>?token=</code> carried on links); no
+cookie infrastructure exists in the application). The <a href="#shared-oidc-provider-renewal">shared OIDC</a>,
+<a href="#oidc-provider-outage-existing-access">provider-outage</a> and 2026-11-05 lifetime rows stand and
+were not re-asked. Everything below is adopted policy; human login, sessions, cookies and provider
+logout remain UNIMPLEMENTED/UNMEASURED.</p>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="human-session-idle-scope-management-only"></a><strong>The adopted idle (30-minute) and absolute (12-hour) lifetimes apply to the human management session only; data viewing is unchanged.</strong> Ambient and always-on displays keep today's non-expiring data credentials (secret hash, read token, 8-hour device exchange with silent renewal) in both modes, and a viewer signed in through OIDC receives a data session with no idle limit. Any successful authenticated request on a management route advances the management idle deadline; data polling, socket keepalives, stream delivery, health checks and renewal never do.</td>
+<td>maintainer, 2026-11-07 ("1? How easy is this to change later?", after asking whether an idle lifetime had been decided and that always-on tablets must not be affected)</td>
+<td><code>MT-IDENTITY-PLAN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>The lifetimes were adopted on 2026-11-05 for management access; this row fixes their scope. Change cost: lifetimes are per-purpose policy values and route classification is a per-route attribute, so widening idle to data sessions or changing the numbers later needs no schema or client change (read-derived from the <code>purpose</code> column and the adopted policy table; the lifecycle writer that enforces idle does not exist yet). Check and touch happen atomically; a touch never resets the absolute deadline or the 5-minute sensitive-action freshness. Headless callers need no activity. An explicit client activity signal may be added later on top; it is not required.</td>
+</tr>
+<tr>
+<td><a id="human-session-logout-local-first"></a><strong>Where a server-side session exists, logout commits Nightscout session invalidation first, then clears the browser credential, then calls the provider's logout when it has one; where no server session exists, sign-out stays browser-only as today.</strong> Provider-originated logout is applied when the provider sends a verifiable signal bound to the configured issuer and the mapped session; providers without a logout or revocation signal are admitted with the limitation disclosed (provider revocation becomes visible at expiry or renewal). Logout never revokes unrelated device credentials or other sessions implicitly; an all-sessions logout, if offered, is a separate explicit action.</td>
+<td>maintainer, 2026-11-07 ("1 or 3 as appropriate", confirmed as this reading)</td>
+<td><code>MT-IDENTITY-PLAN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>A provider timeout after the local commit cannot restore the session; a provider response alone never counts as local revocation. If the session store is unavailable, clear the browser material and return an explicit local-revocation-unconfirmed result. Legacy secret-hash and <code>?token=</code> sign-in (<code>hashauth.js:252-256</code>) keeps its current local-forgetting meaning and is not repurposed. Acceptance: two workers share one session, logout through one, replay through the other and protected stream delivery refuse; break durable invalidation and the copied token must stay authorized (red). No propagation delay is promised.</td>
+</tr>
+<tr>
+<td><a id="human-session-renewal-fenced"></a><strong>Concurrent renewal is fenced and idempotent per session.</strong> Renewal re-checks idle, absolute, revocation and current Nightscout authority inside one transaction on the session row; expired or revoked state is never resurrected; concurrent renewals of a live session all succeed with tokens bound to the same session; renewal never resets the absolute deadline or authentication freshness. A new session after explicit re-authentication is distinguishable from rolling renewal.</td>
+<td>maintainer, 2026-11-07 ("Fenced, idempotent per session")</td>
+<td><code>MT-IDENTITY-PLAN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>No Nightscout-owned single-use rotating grant is introduced (the shared OIDC row defers it); last-writer-wins without fencing is rejected because a renewal racing a logout could issue a token after revocation committed. Acceptance: expire or revoke before a pending renewal releases and no usable token appears; break the fence and a new accepted token must appear (red); verify stored absolute and fresh-authentication timestamps independently of the helper that writes them.</td>
+</tr>
+<tr>
+<td><a id="human-session-transport-cookie-default"></a><strong>Both browser transports are supported, with the HttpOnly cookie as the default when OIDC is enabled; headless bearer is unchanged.</strong> The human session rides an HttpOnly, Secure, SameSite cookie scoped to the serving host with CSRF/origin checks on state-changing routes. Direct-token mode remains available so the legacy client behaviour and single/multitenant parity hold under OIDC optionality. Both modes receive the same acceptance in single and multitenant.</td>
+<td>maintainer, 2026-11-07 ("3, 1", confirmed as both with cookie default: "this ordering supports OIDC optionality and keeps single and multitenant the same")</td>
+<td><code>MT-IDENTITY-PLAN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>The application has no cookie layer today; cookie mode adds cookie parsing, CSRF/origin checks and browser tests (scope, logout, back button, cross-tab); direct-token mode needs the equivalent replay and session-boundary tests. A page-script compromise can read a direct token but not an HttpOnly cookie, which is why cookie is the default. Existing management bearer authentication (<code>owner-preview-authentication.js</code>) is not replaced. No provider, library or route spelling is selected.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="m6-deployment-and-trust-2026-11-07">M6 deployment and trust (2026-11-07)<a class="headerlink" href="#m6-deployment-and-trust-2026-11-07" title="Permanent link">&para;</a></h2>
+<p>Decided in the deployment-trust discussion (packet read from the M5 head <code>f0fac99a</code>:
+<code>lib/tenant-resolution/index.js</code> and <code>README.md</code> (direct-alias rejects proxy headers; canonical-internal
+requires an exact synchronous trusted-peer predicate on every request; measured R33),
+<code>lib/server/serve/preview-config.js:92-148</code> (peer list by socket address; one static Vault token per
+tenant from an environment reference), <code>lib/secrets/vault-transit.js:29-49</code> (HTTPS required except
+loopback; async <code>getToken</code> seam; no renewal), <code>lib/server/client-ip.js</code> (single-tenant <code>TRUST_PROXY</code>,
+empty by default), the compose deployment lane (<code>deploy/multitenant/*</code> on <code>b029f5d8</code>: four role
+containers, nginx, PostgreSQL, Vault over HTTPS from a local CA, one-share unseal, bootstrap-issued
+scoped tokens; image built, cold compose smoke UNMEASURED) and the <a href="../../docs/60-research/tenancy/ory-proof-2026-10-07.html">Ory proof</a>
+(Kratos, Hydra, PostgreSQL, a mail catcher and the lab's own Node login page; 23/23). Everything below
+is adopted policy; no real edge, operator CA, service login, provider over HTTPS or production
+deployment has run.</p>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="deployment-ingress-peer-list-trust"></a><strong>The reference deployment trusts its edge by immediate peer address, and one explicit peer list serves both tenant selection and client-IP trust.</strong> Canonical-internal mode runs with the edge on a private network and the app trusting the immediate peer by socket address. The same list feeds <code>TRUST_PROXY</code>; an empty <code>TRUST_PROXY</code> refuses to start a multitenant role. Direct-alias remains for a single edge that passes the public Host through. Authenticated transport (mTLS, unix socket) is a later adapter behind the same predicate, not a precondition.</td>
+<td>maintainer, 2026-11-07 ("Peer-list trust, one list for both")</td>
+<td><code>TEN-RESOLVE</code>, <code>T30-WIRING</code>, M6</td>
+<td>Today the preview peer list and <code>TRUST_PROXY</code> are separate settings; joining them and the empty-refusal are implementation. Forwarded selectors stay refused outside the trusted peer; conflict and spoof fail closed as measured in R33. Public domains, certificates and the edge implementation remain deployment concerns.</td>
+</tr>
+<tr>
+<td><a id="deployment-secrets-ladder-vault-all-stages"></a><strong>One secrets provider, Vault Transit, at every stage, so no record is ever re-encrypted between stages; the service-login adapter is the one code item and is required before production use.</strong> Developer: dev-mode Vault on loopback HTTP as the lab runs. Staging: the compose deployment as built (local CA over HTTPS, one-share unseal, static scoped tokens from bootstrap). Production: the same compose and configuration shape with an operator or public CA, multi-share or auto-unseal custody, and a service login with lease renewal behind the existing <code>getToken</code> seam. Every other transition is configuration.</td>
+<td>maintainer, 2026-11-07 ("All of these options are good; is it increasing work? Can we do 1 and then add the other incrementally?")</td>
+<td><code>MT-SECRETS-CONTRACT</code>, <code>T30-WIRING</code>, M6</td>
+<td>Incremental by construction: the login adapter may land in staging as soon as it exists (that is ordering, not extra work), and the adopted built-in encrypted signer remains a later additional provider behind the same interface. Ciphertext is bound to its provider key, so a tenant that later moves between providers must re-encrypt every record; that cost is why the ladder keeps one provider. Static tokens are operator-rotated with no renewal; loopback HTTP stays lab-only. Nothing here changes single-tenant MongoDB or legacy defaults.</td>
+</tr>
+<tr>
+<td><a id="deployment-identity-generic-adapter-authentik-reference"></a><strong>Generic OIDC adapter; Authentik is the intended reference provider because it bundles the login UI, the OIDC provider and administration in one deployment, subject to passing the same proof Kratos passed; Kratos stays the measured fallback reference.</strong> The adapter contract is issuer, audience, subject and session claims and optional back-channel logout; any conforming provider is configuration. Single tenant uses the same adapter under <code>ENABLE=oidc</code>.</td>
+<td>maintainer, 2026-11-07 ("Is 2 easier to test/develop since it includes login UI? Otherwise 1.")</td>
+<td><code>MT-IDENTITY-PLAN</code>, <code>T30-TENANT-ADMIN</code>, M6</td>
+<td>Read, not run: every Authentik claim. Kratos is headless by design, so its reference needs a separate self-service UI; the Ory proof used the lab's own Node page. Before Authentik ships as the reference, repeat the Ory proof's isolation, revocation, cookie and logout cases against it on the generic adapter, including the local-first logout row. If it fails, Kratos configuration ships as the reference. No first-party login UI is added either way.</td>
+</tr>
+<tr>
+<td><a id="deployment-admission-probes-and-trust-record"></a><strong>A deployment is admitted for production use by a written trust record plus spoof, conflict and outage probes run against its live edge and Vault.</strong> The trust record names edge peers, TLS and CA, Vault authentication and unseal custody, identity provider and <code>TRUST_PROXY</code>. The maintainer reviews the reference deployment's record once; any other deployment is admitted the same way by its operator. Real-data and default role enablement remain separate approvals.</td>
+<td>maintainer, 2026-11-07 ("Probes per deployment plus a trust record")</td>
+<td><code>MT-RUNTIME-PLAN</code>, <code>T30-WIRING</code>, M6</td>
+<td>The probes exist as synthetic resolver and lab controls; running them against a live edge, an HTTPS Vault and a provider is UNMEASURED. The compose deployment's CREDENTIALS.md is the seed of the reference trust record. Admission is not milestone promotion.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tenant-local-startup-admission-2026-11-07">Tenant-local startup admission (2026-11-07)<a class="headerlink" href="#tenant-local-startup-admission-2026-11-07" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>queue</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="tenant-local-startup-admission"></a><strong>A suspended tenant must not prevent other tenants from becoming ready when shared service processes restart. Resolve this coupling as a defect.</strong></td>
+<td>maintainer, 2026-11-07, explicit rejection of the shared-role restart limitation</td>
+<td><code>TEN-RESOLVE</code>, <code>MT-RUNTIME-PLAN</code>, M6</td>
+<td>Start shared infrastructure while deferring only the suspended tenant's clinical admission. Preserve that tenant's unavailable responses, unresolved recovery state, leases, orphans and commit/invalidation uncertainty; do not clear a phase or serve stale output to make startup succeed. Shared schema, binding, ledger, ACL, datastore and transport failures still refuse startup. Acceptance requires fresh replacement processes to serve tenant B through actual HTTP, realtime and evaluator paths while tenant A remains unavailable and its protected state is unchanged. Running B continuity alone does not satisfy this criterion. Source implementation and native restart acceptance remain open; this does not adopt a broader HA or raw-private-writer guarantee.</td>
 </tr>
 </tbody>
 </table>
