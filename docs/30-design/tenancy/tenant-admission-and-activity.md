@@ -1,7 +1,8 @@
 # Tenant admission, activity and recovery
 
-*Contributor-facing decision-preparation guide, 2026-11-08. **Proposed policy;
-not adopted or implemented by this document.** The maintainer raised whether operator-controlled tenant inactivity should
+*Contributor-facing decision-preparation guide, 2026-11-08. **Activity policy proposed;
+not adopted or implemented.** The REST component direction below is recorded
+separately in the [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#rest-api-component-and-replica-placement-2026-11-08). The maintainer raised whether operator-controlled tenant inactivity should
 prevent unnecessary background work and asks how business APIs,
 connector workers, evaluator and restoration fit together. This guide separates
 that proposal from the existing maintenance protocol. Mechanism assessment is
@@ -14,9 +15,33 @@ and [owner authority](owner-authority.md) retain their adopted meaning.*
 
 ## One logical API does not require one listener or process
 
-The business REST surface can be understood as one logical component with data,
-authorization and owner-management capabilities. A logical component describes
-responsibility. A listener describes who can reach which interface and with which
+**Architecture direction: REST APIs (v1/v2/v3) are one stateless request-serving
+component.** Version-specific routers/adapters live inside that component; API
+version numbers do not select separate processes, services or scaling groups.
+Each replica serves the same configured, admitted route set. Compose service
+instances and a Kubernetes Deployment are alternative placement/lifecycle
+mechanisms for that component; neither is a new route-acceptance claim or a
+requirement to demonstrate Kubernetes now.
+
+“Stateless” means no replica owns authoritative tenant data or an exclusive
+clinical evaluation workload. Durable authority, clinical state and operation
+records remain in their backing stores. Each replica still owns connections,
+in-flight responses, pools and reconstructible startup/cache state, so it must
+participate in maintenance drain and invalidation. Do not require client affinity
+or introduce per-version deployment boundaries as part of API scale-out.
+
+The source already composes configured API3 and legacy routers in one API role:
+[preview-api.js:110](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/preview-api.js#L110),
+[tenant-app/index.js:187](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/tenant-app/index.js#L187),
+[:217](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/tenant-app/index.js#L217).
+These read-derived mechanisms support the component boundary; the acceptance
+family still owns exactly which routes/clients were exercised. Internal
+v1/v2/v3 adapters retain their reply, authentication and compatibility rules.
+
+The business REST surface groups data, authorization and owner-management
+capabilities. Owner operations retain their separate audience/listener and
+privileges, even when their module is colocated with request-serving API. A
+logical component describes responsibility. A listener describes who can reach which interface and with which
 audience. A process describes placement, resource custody and failure coupling.
 Grouping REST business APIs does not merge their credentials, privileges or trust
 boundaries, and it does not put every worker or maintenance engine inside HTTP

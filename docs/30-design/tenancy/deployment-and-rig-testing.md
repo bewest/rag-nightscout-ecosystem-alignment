@@ -89,7 +89,7 @@ flowchart LR
   Rig["Synthetic rig / API client"] --> Edge["nginx: one published origin"]
   Browser["Existing browser"] --> Edge
   Edge -->|"pages and assets"| UI["UI process"]
-  Edge -->|"/api"| API["API process"]
+  Edge -->|"/api"| API["REST APIs process<br/>admitted v1 / v2 / v3 adapters"]
   Edge -->|"/socket.io"| RT["Realtime process"]
   RT -->|"private API socket"| API
   Eval["Evaluator process"] -->|"private alarm socket"| RT

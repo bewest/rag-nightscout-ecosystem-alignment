@@ -42,7 +42,8 @@ production ingress, capacity or identity integration.
 
 This is the proposed architecture for the queued endpoint/API capability, not a
 Kubernetes resource design, an accepted multihost deployment or a replicated
-clinical workload. API1/API2 are the minimal explicit scale-out fixture. Realtime
+clinical workload. REST replica A and replica B are two instances of the same component, not API
+versions. They are the minimal explicit scale-out fixture. Realtime
 retains its connected clients and evaluator remains one active workload owner.
 Network locations, public TLS and optional human identity retain their own
 implementation/admission boundaries. PostgreSQL grants, Vault use and private
@@ -50,13 +51,21 @@ operator reachability remain role-specific; being in one zone grants no authorit
 
 ## Logical REST cohesion and worker placement
 
-A logical application component, an HTTP listener and a deployed process are
-separate boundaries. The diagrams show one valid process composition, not a
+**REST APIs (v1/v2/v3) form one stateless request-serving component.** Version
+routers/adapters stay together; replicas serve the same configured admitted
+routes. A logical application component, an HTTP listener and a deployed process
+are separate boundaries. The diagrams show one valid process composition, not a
 requirement to make each REST module a separate service. Data, authorization and
 owner-management REST modules may form one logical API component, retaining their
 separate credentials/audiences and listener requirements. The existing owner
 contract permits colocation with API; it does not collapse private operator
 privileges into ordinary request-serving credentials.
+
+Compose service instances or a Kubernetes Deployment can place replicas of that
+same component. Replica count and host/Pod placement are separate from API
+versioning; this architecture choice does not claim cluster or scaling acceptance.
+Stateless replicas retain in-flight work and reconstructible local state, so
+every actual instance still participates in maintenance drain/invalidation.
 
 The source-backed [component placement and admission review](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
 is the home of the REST/worker placement assessment. It identifies private

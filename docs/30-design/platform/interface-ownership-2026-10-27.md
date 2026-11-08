@@ -10,6 +10,15 @@ plan" the [execution plan](../tenancy/multitenancy-decisions.md), "v4 doc"
 the [v4 surface](v4-surface-and-nocturne-2026-10-26.md), "§F.1" the
 [tenant-owner configuration surface](../tenancy/tenant-owner-config-surface-2026-09-15.md).*
 
+**Current architecture clarification, 2026-11-08 (read-derived):** the
+[REST component contract](../tenancy/tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
+places v1/v2/v3 routers/adapters together in one stateless REST API component.
+Replicas and Compose/Kubernetes placement are separate dimensions. The questions
+below retain this snapshot's historical alternatives; §5 question 7's separate
+v1-role option is superseded by that component direction. Its original source
+claims are not current route-acceptance claims. Owner and operator audiences retain
+their existing listener/privilege boundaries.
+
 **Summary.** On dev today one listener serves everything: API v1, v2 and v3, the socket.io channels,
 the pages and, in #8857 behind a flag, `/.well-known` and `/api/v4`. `API_SECRET` is both the device
 credential and the owner credential.

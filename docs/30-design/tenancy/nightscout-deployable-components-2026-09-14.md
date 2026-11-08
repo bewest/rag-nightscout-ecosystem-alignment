@@ -1,12 +1,19 @@
 # Deployable components: entrypoints, program structure, and what an operator actually runs
 
-*Contributor-facing.* **Snapshot, written 2026-09-14. Current: the only statement of the
-deployable-component decomposition.** Its recommendation was adopted as **D5** (four hosted
+*Contributor-facing.* **Snapshot, written 2026-09-14.** Its recommendation was adopted as **D5** (four hosted
 entrypoints plus `single`) and **D6** (the change feed), and is extended by **D7** (`ns-admin`,
 the platform-admin plane) and **D16** (three listeners by audience) — [execution plan §1](multitenancy-decisions.md#1-decisions).
 Task state lives in [`queue/QUEUE.md`](../../../queue/QUEUE.md). Measurements carry their own dates
 and are post-#8733. Companion to [Nightscout multitenancy: evidence and options](nightscout-multitenancy-discussion-2026-09-09.md)
 and [What sets K](../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.md).
+
+**Current component interpretation, 2026-11-08:** the
+[REST component contract](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
+keeps version-specific v1/v2/v3 adapters together in one stateless REST API
+component. Replica count and physical deployment are separate from versioning;
+current accepted placement is in the [runtime topology](runtime-topology.md).
+The snapshot below retains its original measurements and recommendations; it does
+not independently admit scaling, scale-to-zero or complete route coverage.
 
 **Nothing here is a proposal to merge.** This answers a specific question: given everything
 the experiments measured, *what are the deployable units*, what goes in each, how do they

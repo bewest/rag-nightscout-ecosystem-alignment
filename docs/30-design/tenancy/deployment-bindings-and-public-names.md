@@ -94,6 +94,13 @@ distinguishes generic participant gating from owning the restoration workflow.
 
 ### Configurable transports and independently scaled API
 
+REST APIs (v1/v2/v3) are one stateless request-serving component with internal
+version-specific adapters. A Compose service or Kubernetes Deployment runs
+instances of that component; replica count and placement do not split API
+versions. Each replica serves the same configured admitted route set. See the
+[component contract](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
+for transient-state, maintenance and owner-audience boundaries.
+
 **Read-derived mechanism assessment:** there is no architectural requirement
 that the request-serving API have a single replica or share a host with realtime.
 The [current cohort specification](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/docs/tenant-operation-cohort.md#L3)

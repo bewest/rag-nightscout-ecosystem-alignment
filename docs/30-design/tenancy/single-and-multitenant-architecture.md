@@ -150,7 +150,7 @@ flowchart LR
     direction TB
     MClient["Supported client<br/>request shapes"] --> Resolve["Configured Host / trusted edge<br/>to stable tenant identity"]
     Resolve --> MAuth["Tenant credential verification<br/>current persisted grants"]
-    MAuth --> MAPI["Reused version handlers<br/>explicit route admission"]
+    MAuth --> MAPI["REST APIs — one stateless component<br/>v1 / v2 / v3 adapters, admitted routes"]
     MAPI --> MRules["Reused domain normalization<br/>and write-intent rules"]
     MRules --> MPG["Injected PostgreSQL ports<br/>tenant transaction and RLS"]
     MPG --> Frame["Request-local tenant snapshot<br/>and property calculations"]
@@ -162,6 +162,11 @@ flowchart LR
   classDef shared fill:#e2eff0,stroke:#1d6b73,color:#17262a
   class SAPI,SRules,MAPI,MRules shared
 ```
+
+The multitenant [REST component contract](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
+keeps versioned routers together; replicas and Compose/Kubernetes placement are
+separate from versioning. This diagram groups admitted handlers and does not
+extend route coverage.
 
 The default single process retains its resident runtime. The preview builds
 request-local frames using the shipping loader/cache and property setters for

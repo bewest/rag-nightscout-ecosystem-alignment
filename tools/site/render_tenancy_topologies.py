@@ -97,12 +97,12 @@ def accepted():
     p.zone(350, 167, '2  EDGE TRUST BOUNDARY', 'Accepted public-facing protocol: HTTP', '#eef6f6')
     p.card(64, 392, 1472, 'nginx — logical routing', ['Preserve configured Host; strip selector headers; public owner/operator paths refused'], h=94)
     p.zone(535, 105, '3  LOGICAL PUBLIC ENDPOINTS', 'Endpoints are not extra processes', '#f3f5fa')
-    for x,w,title,lines in [(64,456,'UI / assets',['Shipping UI']), (572,456,'DATA / API',['Existing versioned routes']), (1080,456,'DATA / realtime',['Main and alarm sockets'])]:
+    for x,w,title,lines in [(64,456,'UI / assets',['Shipping UI']), (572,456,'REST APIs',['Admitted versioned routes']), (1080,456,'DATA / realtime',['Main and alarm sockets'])]:
         p.card(x,577,w,title,lines,h=60)
     for x in [292,800,1308]:
         p.arrow([(x,486),(x,535)])
     p.zone(659, 330, '4  PRIVATE APPLICATION RUNTIME', 'Separate role processes; fixed participant roster', '#f8f9fb')
-    for x,title,lines,terminal in [(64,'UI process',['Templates and assets','No DB credentials'],'DATA: public edge only'),(572,'API process',['Request frames / writes','Current tenant authority'],'PG: role grant  ·  Vault: scoped'),(1080,'Realtime process',['Owns connections / frames','Forwards mutations to API'],'PG: reader grant  ·  U1 / U2')]:
+    for x,title,lines,terminal in [(64,'UI process',['Templates and assets','No DB credentials'],'DATA: public edge only'),(572,'REST APIs process',['Admitted v1 / v2 / v3 adapters','Stateless request serving'],'PG: role grant  ·  Vault: scoped'),(1080,'Realtime process',['Owns connections / frames','Forwards mutations to API'],'PG: reader grant  ·  U1 / U2')]:
         p.card(x,706,456,title,lines,terminal,h=120)
     for x in [292,800,1308]:
         p.arrow([(x,637),(x,659)])
@@ -137,12 +137,12 @@ def proposed():
     p.arrow([(800,439),(800,466)])
     p.zone(466,126,'3  TRUSTED HTTP EDGE', 'TLS + Host / client identity / access-policy boundary', '#eef6f6')
     p.card(64,503,1472,'nginx — TLS termination and logical routing',['DATA paths and socket upgrades; OWNER only through separately authenticated route/listener'],h=76)
-    p.zone(610,100,'4  LOGICAL SERVICE ENDPOINTS', 'Not an all-role load-balancing layer', '#f3f5fa')
-    for x,w,title,lines in [(64,330,'UI endpoint',['Pages / assets']),(436,728,'API service endpoint',['Selects one admitted API1 / API2 instance']),(1206,330,'Realtime endpoint',['One connection owner'])]:
+    p.zone(610,100,'4  LOGICAL COMPONENT / SERVICE DESTINATIONS', 'API versions are internal adapters, not deployments', '#f3f5fa')
+    for x,w,title,lines in [(64,330,'UI endpoint',['Pages / assets']),(436,728,'REST APIs — v1 / v2 / v3',['One stateless component / service destination']),(1206,330,'Realtime endpoint',['One connection owner'])]:
         p.card(x,650,w,title,lines,h=58)
     for x in [229,800,1371]:p.arrow([(x,579),(x,610)])
-    p.zone(730,327,'5  PRIVATE APPLICATION RUNTIME', 'Fixed roster; no autoscaling / dynamic membership claim', '#f8f9fb')
-    for x,title,lines,term in [(64,'UI process',['Templates / assets'],'No DB grant'),(436,'API1',['Stateless request serving','Reconstructible local state'],'PG role grant  ·  N1 / C1'),(808,'API2',['Stateless request serving','Reconstructible local state'],'PG role grant  ·  N1 / C2'),(1180,'Realtime',['Owns connected sockets','Single target instance'],'PG reader grant  ·  N2 / C3')]:
+    p.zone(730,327,'5  RUNTIME INSTANCES — PLACEMENT SEPARATE', 'Equivalent REST replicas; explicit maintenance participants', '#f8f9fb')
+    for x,title,lines,term in [(64,'UI process',['Templates / assets'],'No DB grant'),(436,'REST replica A',['Same admitted REST routes','In-flight work / local pools'],'PG role grant  ·  N1 / C1'),(808,'REST replica B',['Same admitted REST routes','In-flight work / local pools'],'PG role grant  ·  N1 / C2'),(1180,'Realtime',['Owns connected sockets','Single target instance'],'PG reader grant  ·  N2 / C3')]:
         p.card(x,780,356,title,lines,term,h=120)
     p.arrow([(229,708),(229,730)])
     p.arrow([(614,708),(614,730)])
@@ -151,8 +151,8 @@ def proposed():
     for x,title,lines,term in [(64,'Evaluator — one producer',['Singleton; no replication','Stable partitions are future work'],'PG declared grant  ·  N2 / C4'),(572,'Owner REST module',['May co-locate with API','Separate auth and listener'],'PG management grant  ·  C5'),(1080,'Private maintenance controller',['Platform/config roster input','C1…C5 per-instance fanout'],'PG maintenance grant  ·  C')]:
         p.card(x,920,456,title,lines,term,h=120)
     p.rect(48,1073,1504,62,'#fff4dd','none')
-    p.text(68,1100,'PLACEMENT IS FLEXIBLE: role boxes do not require separate deployments; REST modules may co-locate.',18,INK,'600')
-    p.text(68,1125,'Host count does not select replica ownership. L4/API load balancing never replaces per-instance maintenance endpoints.',18,MUTED)
+    p.text(68,1100,'PLACEMENT: REST replicas use a Compose service or Kubernetes Deployment; host/Pod layout is separate.',18,INK,'600')
+    p.text(68,1125,'Versions stay together in each REST replica. Load balancing never replaces per-instance maintenance endpoints.',18,MUTED)
     p.zone(1153,158,'6  BACKING RESOURCES', 'Durability, recovery and effective grants remain explicit', '#f0f7f3')
     for x,title,lines in [(64,'PostgreSQL',['Tenant / operation authority','Aggregate API pools need limits']), (572,'Vault Transit — TLS',['Scoped keys / service login','Renewal and recovery admission']), (1080,'Durable recovery artifacts',['Declared store and ownership','Verify restores and retained keys'])]:
         p.card(x,1195,456,title,lines,h=100)
@@ -160,9 +160,9 @@ def proposed():
     p.text(68,1387,'OIDC IdP ↔ optional shared human-session integration: separate current-authority adapter; no implicit DATA/root grant.',19,MUTED)
     y=p.table(1472,[
         ('DATA','Edge → UI / API service / realtime','TLS public ingress; tenant selection, current access policy and client authority still apply. Public operator ingress is forbidden.'),
-        ('N1','Realtime → API service → API1 or API2','Proposed configurable Unix or HTTP(S) client/listener binding. Network trust authenticates the internal caller; tenant/client authorization stays unchanged.'),
+        ('N1','Realtime → REST service → replica A or B','Proposed configurable Unix or HTTP(S) client/listener binding. Network trust authenticates the internal caller; tenant/client authorization stays unchanged.'),
         ('N2','Evaluator singleton → realtime singleton','Proposed qualified network alarm/notification handoff. Replicating realtime would separately require fanout/delivery ownership; not included here.'),
-        ('C1…C5','Controller → each exact role instance','Address API1, API2, realtime, evaluator and tenant-admin individually with authenticated identity and pinned incarnation. Status/drain/invalidate cannot use API load balancing.'),
+        ('C1…C5','Controller → each exact role instance','Address REST replicas A/B, realtime, evaluator and tenant-admin individually with authenticated identity and pinned incarnation. Status/drain/invalidate cannot use API load balancing.'),
         ('STORE','Each role → declared backing capabilities','Effective per-role PostgreSQL grants; scoped API/secret-provider Vault access. No blanket all-role database, Vault or artifact-store authority.'),
         ('OWNER','Owner client → authenticated private control','Separately authenticated listener or admitted edge route. Optional OIDC requires its own joined provider/session acceptance; operator control remains private.'),
     ])

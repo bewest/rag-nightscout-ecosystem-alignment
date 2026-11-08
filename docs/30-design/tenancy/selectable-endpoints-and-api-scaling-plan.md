@@ -20,12 +20,20 @@ filesystem Unix socket or an explicitly configured HTTP(S) endpoint. HTTPS needs
 verified service and caller identity; cleartext HTTP requires an explicitly
 admitted private deployment trust profile. An address alone grants no capability.
 
-After that capability is accepted, a fixed deployment can declare more than one
-API participant. Ordinary HTTP requests and realtime-to-API authorization/mutation
+The REST APIs (v1/v2/v3) remain one stateless request-serving component, with
+version-specific routers/adapters inside it. Replication scales that whole
+component; each equivalent replica serves the same configured admitted routes.
+Neither capability creates version-specific services or scaling groups. Compose
+service instances and a Kubernetes Deployment are alternative runtime placement
+mechanisms; platform proof remains deferred.
+
+After transport acceptance, a fixed deployment can declare more than one API
+participant. Ordinary HTTP requests and realtime-to-API authorization/mutation
 may use an admitted service destination. Restore addresses every actual API
 instance separately, pins its incarnation and awaits the existing drain and
 invalidation protocol. The minimal acceptance fixture moves from one API to two
-declared APIs with the same synthetic tenants; other role counts stay unchanged.
+declared APIs with the same synthetic tenants and admitted version-route configuration; other
+role counts stay unchanged. Version labels identify adapters, never replicas.
 
 These are capability boundaries within the existing preview. The accepted
 baseline is usable despite broader parent items remaining in progress. Neither
