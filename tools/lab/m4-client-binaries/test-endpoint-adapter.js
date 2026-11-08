@@ -78,3 +78,37 @@ if(engineBefore || engineAfter)test('retained actual engine Config/HostConfig pa
  // Only Config/HostConfig are ACTUAL retained engine data. Other identity fields
  // are synthetic: this replays the caller, not a native M4 fixture or image.
 });
+function explicitTransport (containers,networks) {
+ return args=>{
+  if(args[0]==='ps')return containers.map(row=>row.Id).join('\n');
+  if(args[0]==='volume' && args[1]==='ls')return '';
+  if(args[0]==='network' && args[1]==='ls')return networks.map(row=>row.Id).join('\n');
+  if(args[0]==='inspect')return JSON.stringify(args.slice(3).map(id=>containers.find(row=>row.Id===id)));
+  if(args[0]==='network' && args[1]==='inspect')return JSON.stringify(args.slice(2).map(id=>networks.find(row=>row.Id===id)));
+  throw new Error('M4_EXPLICIT_RECORDING_COMMAND_REFUSED');
+ };
+}
+function stoppedRows () {
+ const networkName='synthetic-network-'+nid;
+ const endpoint={NetworkID:nid,EndpointID:'',MacAddress:'',IPAddress:'',IPPrefixLen:0,GlobalIPv6Address:'',GlobalIPv6PrefixLen:0,Gateway:'',IPv6Gateway:'',Aliases:null,UnknownStatic:{preserved:true}};
+ return {containers:[{Id:cid,Name:'/synthetic-stopped',Created:'synthetic-created',Image:'sha256:'+'a'.repeat(64),Config:{Env:['SYNTHETIC_PRIVATE=value']},HostConfig:{OomKillDisable:false},Mounts:[],State:{Status:'exited',Running:false,Restarting:false,Paused:false,Dead:false},NetworkSettings:{Ports:{},Networks:{[networkName]:endpoint},SandboxID:'',SandboxKey:''}}],networks:[{Id:nid,Name:networkName,Containers:{},UnknownStatic:true}]};
+}
+test('actual adapter distinguishes typed inactive configured membership without weakening active correlation or exact configuration',()=>{
+ const observer=require('./custody-observer'),given=stoppedRows(),capture=()=>observer.baselineSnapshot(explicitTransport(given.containers,given.networks)),before=capture();
+ assert.equal(observer.verifyBaseline(explicitTransport(given.containers,given.networks),before).endpointComparison.fullEquality,true);
+ for(const mutate of [r=>{r.State.Running=true;},r=>{r.State.Status='running';},r=>{r.State.Paused=true;},r=>{r.State.Running=0;},r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].EndpointID='4'.repeat(64);},r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].MacAddress=0;},r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].IPPrefixLen=false;},r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].NetworkID='5'.repeat(64);}]){const changed=structuredClone(given);mutate(changed.containers[0]);assert.throws(()=>observer.baselineSnapshot(explicitTransport(changed.containers,changed.networks)),/M4_ENDPOINT_PROFILE_REFUSED/);assert.equal(capture().endpointProfile,adapter.PROFILE);}
+ for(const mutate of [r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].Aliases=['changed'];},r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].UnknownStatic.preserved=1;},r=>{r.HostConfig.OomKillDisable=null;},r=>{r.Config.Unknown='changed';}]){const changed=structuredClone(given);mutate(changed.containers[0]);assert.throws(()=>observer.verifyBaseline(explicitTransport(changed.containers,changed.networks),before),/M4_BASELINE_CHANGED/);}
+ const created=structuredClone(given);created.containers[0].State.Status='created';assert.equal(observer.baselineSnapshot(explicitTransport(created.containers,created.networks)).endpointProfile,adapter.PROFILE);
+});
+const shapesFile=process.env.NS_M4_BASELINE_SHAPES;
+if(shapesFile)test('retained actual stopped/live State and NetworkSettings representatives pass actual adapter in synthetic complete envelopes',()=>{
+ const observer=require('./custody-observer'),sample=JSON.parse(fs.readFileSync(shapesFile));
+ const envelope=row=>({Created:'synthetic-created',Image:'sha256:'+'a'.repeat(64),Config:{Env:['SYNTHETIC_PRIVATE=value']},HostConfig:{OomKillDisable:false},Mounts:[],Id:row.Id,Name:row.Name,State:row.State,NetworkSettings:row.NetworkSettings});
+ const containers=sample.containers.map(envelope),networks=sample.networks.map(row=>({Id:row.Id,Name:row.Name,Containers:row.Containers,UnknownStatic:'synthetic-envelope'}));
+ const captured=observer.baselineSnapshot(explicitTransport(containers,networks));assert.equal(observer.verifyBaseline(explicitTransport(containers,networks),captured).endpointComparison.fullEquality,true);
+ const stopped=sample.containers.find(row=>row.classification==='stopped-configured-not-live');assert(stopped);const index=containers.findIndex(row=>row.Id===stopped.Id);
+ for(const mutate of [r=>{r.State.Running=true;},r=>{Object.values(r.NetworkSettings.Networks)[0].EndpointID='4'.repeat(64);},r=>{Object.values(r.NetworkSettings.Networks)[0].MacAddress=1;}]){const changed=structuredClone(containers);mutate(changed[index]);assert.throws(()=>observer.baselineSnapshot(explicitTransport(changed,networks)),/M4_ENDPOINT_PROFILE_REFUSED/);}
+ const staticChange=structuredClone(containers);Object.values(staticChange[index].NetworkSettings.Networks)[0].UnknownStatic='drift';assert.throws(()=>observer.verifyBaseline(explicitTransport(staticChange,networks),captured),/M4_BASELINE_CHANGED/);
+ // Retained State/NetworkSettings + selected live map only are ACTUAL; all
+ // Config/HostConfig/creation/image/mount envelopes are explicitly synthetic.
+});

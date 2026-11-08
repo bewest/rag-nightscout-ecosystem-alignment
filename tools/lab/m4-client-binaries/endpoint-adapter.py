@@ -21,6 +21,19 @@ def fingerprint(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True, allow_nan=False).encode()).hexdigest()
 
 
+def inactive_configured(row, endpoint, lifecycle):
+    state = row.get('State')
+    if type(state) is not dict or state.get('Status') not in ['exited', 'created']:
+        return False
+    if any(type(state.get(field)) is not bool or state[field] for field in ['Running', 'Restarting', 'Paused', 'Dead']):
+        return False
+    if lifecycle['SandboxID'] != '' or lifecycle['SandboxKey'] != '':
+        return False
+    if any(type(endpoint.get(field)) is not str or endpoint[field] != '' for field in ['EndpointID', 'MacAddress', 'IPAddress', 'Gateway', 'IPv6Gateway', 'GlobalIPv6Address']):
+        return False
+    return all(type(endpoint.get(field)) is int and endpoint[field] == 0 for field in ['IPPrefixLen', 'GlobalIPv6PrefixLen'])
+
+
 def baseline_snapshot(raw_batches):
     rows = {kind: [row for batch in raw_batches[kind] for row in json.loads(batch)] for kind in ['containers', 'volumes', 'networks']}
     network = call({'operation': 'network-snapshot', 'rows': rows['networks']})
@@ -42,15 +55,23 @@ def baseline_snapshot(raw_batches):
             lifecycle[field] = field_value
         if lifecycle['SandboxID'] and not re.fullmatch('[a-f0-9]{64}', lifecycle['SandboxID']):
             raise ValueError('M4_CONTAINER_SANDBOX_ID')
-        observed = {}
+        observed, live = {}, set()
         for name, endpoint in ns['Networks'].items():
             if type(name) is not str or type(endpoint) is not dict or type(endpoint.get('NetworkID')) is not str:
                 raise ValueError('M4_CONTAINER_NETWORK_SHAPE')
             nid = endpoint['NetworkID']
-            if nid not in maps or cid not in maps[nid] or nid in observed or name != network['identities'][nid]['name']:
+            if nid not in maps or nid in observed or name != network['identities'][nid]['name']:
                 raise ValueError('M4_CONTAINER_GLOBAL_MEMBERSHIP')
             if type(endpoint.get('Gateway')) is not str or (endpoint.get('Aliases') is not None and (type(endpoint['Aliases']) is not list or any(type(alias) is not str for alias in endpoint['Aliases']))):
                 raise ValueError('M4_CONTAINER_GATEWAY_ALIAS_TYPE')
+            if cid not in maps[nid]:
+                # Configured membership survives stop/create; no live endpoint
+                # or authority is inferred. Keep ALL configured fields exact.
+                if not inactive_configured(row, endpoint, lifecycle):
+                    raise ValueError('M4_CONTAINER_INACTIVE_ENDPOINT_REFUSED')
+                observed[nid] = {'mode': 'inactive-configured', 'EndpointID': '', 'MacAddress': ''}
+                continue
+            live.add(nid)
             global_endpoint = maps[nid][cid]
             if global_endpoint['Name'] != row['Name'].removeprefix('/'):
                 raise ValueError('M4_CONTAINER_GLOBAL_NAME')
@@ -68,7 +89,7 @@ def baseline_snapshot(raw_batches):
                 elif endpoint[address] != '' or endpoint[prefix] != 0:
                     raise ValueError('M4_CONTAINER_GLOBAL_IP')
             observed[nid] = {field: endpoint.pop(field) for field in ['EndpointID', 'MacAddress']}
-        if set(observed) != {nid for nid, members in maps.items() if cid in members}:
+        if live != {nid for nid, members in maps.items() if cid in members}:
             raise ValueError('M4_CONTAINER_GLOBAL_MEMBERSHIP')
         static = {key: value for key, value in row.items() if key not in ['Config', 'HostConfig', 'NetworkSettings', 'State', 'RestartCount', 'ExecIDs']}
         static['configurationFingerprint'] = p.configuration_fingerprint(row['Config'], row['HostConfig'])

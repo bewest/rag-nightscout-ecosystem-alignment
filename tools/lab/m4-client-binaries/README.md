@@ -21,12 +21,17 @@ A reviewed finite parent must bind the application commit, these helper files, t
 client/build provenance, dependency source and four exact image IDs before executing
 `custody-run.js`. Its fixed arguments are `--plan <absolute-private-plan> --out <initially-absent-output>
 --ref <full-application-commit> --repository <absolute-source-repository> --dependencies
-<absolute-node_modules>`. It runs the existing queue gate with `--clients cgmsim,oref0`.
+<absolute-node_modules>`. It runs the existing queue gate with `--clients cgmsim,oref0`. The wrapper sets
+`NS_M4_EXTERNALS` from the required plan field after ambient environment values; an
+ambient override or missing field cannot select another client tree. The gate retains its
+three exact head/tracked-clean and compiler/provenance checks; untracked client dependencies
+are permitted. No client-root symlink bind or supervisor environment exception is needed.
 Direct lab execution requires `NS_M4_CUSTODY_PLAN` and an independently running observer;
 absence is a setup refusal. A parent plan is custody configuration, not execution permission.
 
 The private version-1 `m4-cgmsim-oref0-v1` plan has `status: PARENT_BOUND`, a fresh v4
-`ownerUUID`, `applicationHead`, `activeSeconds: 600`, `cleanupSeconds: 120`,
+`ownerUUID`, `applicationHead`, `pinnedClientRoot` (absolute normalized existing real directory),
+`activeSeconds: 600`, `cleanupSeconds: 120`,
 `dockerExecutable: /usr/bin/docker`, an absolute initially empty `dockerConfig`,
 `endpointProfile: network-endpoint-stable-v1`, `images` keyed exactly `postgres`, `mongo`,
 `vault`, `client` with full SHA256 image IDs, and `baseline` container/volume/network ID
@@ -45,7 +50,14 @@ Full private before/after maps and explicit fullEquality=false remain in the com
 
 Container NetworkSettings retains Ports and every other static/unknown field exactly.
 Only per-network EndpointID/MacAddress are observations, checked against authoritative
-global network maps by NetworkID, container ID, membership, name and IP/prefix. SandboxID
+global network maps by NetworkID, container ID, membership, name and IP/prefix. A
+configured network absent from the live global map is admitted only for typed exited/created
+state with Running/Restarting/Paused/Dead all false, empty SandboxID/Key, empty endpoint/MAC/
+address/gateway strings and zero integer prefixes. All configured network fields remain
+exact, including NetworkID, name, aliases and unknowns; active absence or a nonempty endpoint
+refuses. This distinction is supported by the retained stopped-container diagnostic, not a
+claim that every possible Docker baseline shape was measured. The retained inactive
+representative was exited; created-state support is source-derived and covered synthetically. SandboxID
 and SandboxKey are typed lifecycle observations retained before/after, with no mutation
 or ownership authority. State, RestartCount and ExecIDs remain runtime observations.
 No unrelated Sandbox transition has been reproduced by this source-only work; the

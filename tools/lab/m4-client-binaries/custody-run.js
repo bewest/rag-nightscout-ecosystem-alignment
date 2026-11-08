@@ -8,6 +8,10 @@ function run ({planFile,out,ref,repository,dependencies,spawn=cp.spawn,invoke}) 
   const plan=JSON.parse(fs.readFileSync(planFile,'utf8'));
   assert(plan.dockerExecutable==='/usr/bin/docker' && path.isAbsolute(plan.dockerConfig),'M4_OBSERVER_ENDPOINT');
   assert(plan.applicationHead===ref && plan.activeSeconds===600 && plan.cleanupSeconds===120,'M4_FIXED_PARENT_BINDING');
+  const clientRoot=plan.pinnedClientRoot;
+  assert(typeof clientRoot==='string' && path.isAbsolute(clientRoot) && path.resolve(clientRoot)===clientRoot,'M4_PINNED_CLIENT_ROOT_REQUIRED');
+  let clientDirectory;try{clientDirectory=fs.lstatSync(clientRoot).isDirectory() && fs.realpathSync(clientRoot)===clientRoot;}catch{clientDirectory=false;}
+  assert(clientDirectory,'M4_PINNED_CLIENT_ROOT_REQUIRED');
   const directory=path.join(out,'custody');
   const read=invoke || (args=>{
     const result=cp.spawnSync(plan.dockerExecutable,['--host','unix:///run/docker.sock','--config',plan.dockerConfig,...args],
@@ -18,7 +22,7 @@ function run ({planFile,out,ref,repository,dependencies,spawn=cp.spawn,invoke}) 
   const gate=path.resolve(__dirname,'../../queue/gates/m4-client-binaries.js');
   return new Promise((resolve,reject)=>{
     const child=spawn(process.execPath,[gate,'--ref',ref,'--clients','cgmsim,oref0'],{cwd:path.resolve(__dirname,'../../..'),stdio:'inherit',
-      env:{...process.env,NS_M4_CUSTODY_PLAN:planFile,NS_M4_GATE_OUT:out,NS_M4_GATE_REPO:repository,NS_M4_GATE_DEPENDENCIES:dependencies,TZ:'UTC'}});
+      env:{...process.env,NS_M4_CUSTODY_PLAN:planFile,NS_M4_GATE_OUT:out,NS_M4_GATE_REPO:repository,NS_M4_GATE_DEPENDENCIES:dependencies,NS_M4_EXTERNALS:clientRoot,TZ:'UTC'}});
     let failure;
     const scan=()=>{try{observer.scan();}catch(error){failure=error;clearInterval(timer);child.kill('SIGTERM');}};
     const timer=setInterval(scan,10);
