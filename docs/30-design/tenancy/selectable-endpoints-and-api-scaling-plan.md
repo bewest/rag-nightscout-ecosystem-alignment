@@ -84,6 +84,14 @@ wording. The alignment acceptance family records later native/cold executions on
 their actual heads; this plan does not turn either source prose or old green
 captures into new transport/replica acceptance.
 
+The later [exclusive application PostgreSQL ownership decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership)
+qualifies the supported participant set collectively across Nightscout components.
+External direct writers are unsupported, not an additional fencing target for
+these lanes. Preserve [component-owned commands and admitted persistence](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis):
+transport adapters expose the intended application operations, not generic SQL
+or permission to write another component's tables. Admitted reads and owned
+transactional persistence retain their direct storage contracts.
+
 ## Endpoint contract to settle before implementation
 
 The endpoint owner proposes the normalized configuration and both listener and

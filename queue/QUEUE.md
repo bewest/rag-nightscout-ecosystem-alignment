@@ -10642,6 +10642,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
+- `docs/30-design/tenancy/sql-and-migration-architecture.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
 **Notes.** Source implementation is not started; branch name is proposed, not created. Confirm actual current joined source and ownership with coordinator before dispatch, then preserve original history. The accepted ed2 reference is a bounded baseline, not a new-head runtime result. Kubernetes deployment proof, manifests and Jsonnet are deferred; topology diagrams audit coupling and cohesion only. No default, production admission or new 16.0.0 tag gate.
@@ -10674,6 +10675,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
+- `docs/30-design/tenancy/sql-and-migration-architecture.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
 **Notes.** Source implementation is not started; branch name is proposed, not created. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.

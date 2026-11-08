@@ -60,6 +60,12 @@ operator reachability remain role-specific; being in one zone grants no authorit
 | Restore coordination | Consume a complete supplied participant set, pin actual incarnations, drain actual operations and await every required invalidation before activation. | Discovering participants by sampling a load-balanced endpoint, treating readiness as proof that no old actor exists, or coupling correctness to a particular scheduler API. |
 | Platform/configuration adapter | Supply process lifecycle, endpoint inventory and stable instance/partition identities through existing primitives or explicit configuration. | Building a parallel membership service, custom workload scheduler or orchestrator in this capability. |
 
+The backing-store boxes follow the [component ownership map](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis).
+Nightscout collectively owns its selected PostgreSQL namespaces. Commands across
+component ownership use admitted application APIs; scoped reads and component-owned
+transactional state may use direct storage. This is not a SQL-over-HTTP layer and
+does not add support for external direct writers.
+
 ## What comes from the platform, and what the application consumes
 
 Use the platform's workload lifecycle and discovery. Kubernetes Services and

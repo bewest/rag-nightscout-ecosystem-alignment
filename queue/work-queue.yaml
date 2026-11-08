@@ -25712,6 +25712,7 @@ items:
     evidence:
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
       - docs/30-design/tenancy/deployment-bindings-and-public-names.md
+      - docs/30-design/tenancy/sql-and-migration-architecture.md
       - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
     notes: >
       Source implementation is not started; branch name is proposed, not created.
@@ -25760,6 +25761,7 @@ items:
     evidence:
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
       - docs/30-design/tenancy/deployment-bindings-and-public-names.md
+      - docs/30-design/tenancy/sql-and-migration-architecture.md
       - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
     notes: >
       Source implementation is not started; branch name is proposed, not created.
