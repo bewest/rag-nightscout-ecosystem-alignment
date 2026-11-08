@@ -2808,6 +2808,8 @@
       
         
       
+        
+      
     
     
     
@@ -3094,7 +3096,7 @@
 
 
 <h1 id="static-site-mkdocs-material">Static site (MkDocs Material)<a class="headerlink" href="#static-site-mkdocs-material" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-10-30 at <code>5dbb92c30</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b1b65c74a</code>.</em></p>
 <p><em>Contributor-facing.</em> Builds a browsable copy of this repository's
 documentation. It is deployed only by the maintainer, from a local build, on the
 <code>gh-pages</code> branch (see <a href="#publishing">Publishing</a>). Every page carries
@@ -3158,6 +3160,18 @@ version downloads the npm tarball, checks it against the integrity recorded in t
 keeps <code>dist/mermaid.min.js</code> under <code>~/.cache/nightscout-alignment/mermaid/&lt;version&gt;/</code>. To move
 the pin, change the URL in <code>overrides/main.html</code> and add the version's <code>npm view mermaid@&lt;v&gt;
 dist.integrity</code> to <code>INTEGRITY</code>.</p>
+<p>Publication also runs this pinned parser over <code>build/site-src/**/*.md</code>, after
+<code>site-check</code> and before touching the gh-pages worktree. That checks actual staged
+Markdown, including generated pages, and respects publication exclusions rather
+than making excluded archives a publication gate. Missing or empty staging refuses.
+Run that same check with
+<code>python3 tools/site/mermaid_check.py --published-dir build/site-src</code>.
+These are syntax checks; readable labels, crossings and viewport layout still
+need visual review.</p>
+<p>Publishing therefore needs Chrome/Chromium (<code>CHROME</code> can select its executable).
+The CI job's <code>ubuntu-24.04</code> image includes Google Chrome in its
+<a href="https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#browsers-and-drivers">browser inventory</a>;
+local publishers use an installed browser. No browser is installed by the gate.</p>
 <h2 id="exclusions">Exclusions<a class="headerlink" href="#exclusions" title="Permanent link">&para;</a></h2>
 <p><code>tools/site/exclusions.yaml</code> lists glob patterns for tracked paths that must not
 be published, each with an <code>axis</code>, a <code>reason</code> and who decided it (the schema is
@@ -3286,7 +3300,8 @@ the page, move <code>source_commit</code> and push again.</p>
 <p><strong>Locally</strong>, the same command works as before:</p>
 <p><code>make site-publish</code> refuses unless the working tree is clean, <code>HEAD</code> is on a
 remote branch (<code>git branch -r --contains HEAD</code>), <code>SITE_PSEUDONYM_KEY</code> is set
-and <code>make site-check</code> passes. It then fetches <code>origin/gh-pages</code>, copies
+and <code>make site-check</code> plus the staged-Markdown Mermaid syntax check pass. It then
+fetches <code>origin/gh-pages</code>, copies
 <code>build/site/</code> plus <code>.nojekyll</code> into the worktree <code>../rag-alignment-gh-pages</code>
 (created on first use), and commits it as one new commit whose parent is
 <code>origin/gh-pages</code>, with the source sha and build date in its message. It prints

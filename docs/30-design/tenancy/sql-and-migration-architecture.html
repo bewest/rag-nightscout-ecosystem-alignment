@@ -3552,6 +3552,39 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#application-command-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application command paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-storage-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component storage ownership
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-control-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle control boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#kubernetes-scalability-smell-test" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3575,6 +3608,45 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Tables and their ownership">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clinical-ordering-and-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clinical ordering and history
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-foreign-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication foreign keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-foreign-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle foreign keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -5513,6 +5585,8 @@
       
         
       
+        
+      
     
     
     
@@ -5689,6 +5763,39 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#application-command-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application command paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-storage-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component storage ownership
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-control-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle control boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#kubernetes-scalability-smell-test" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5712,6 +5819,45 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Tables and their ownership">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clinical-ordering-and-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clinical ordering and history
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-foreign-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication foreign keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-foreign-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle foreign keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -5788,7 +5934,7 @@
 
 
 <h1 id="sql-migrations-and-tenant-recovery-architecture">SQL, migrations and tenant recovery architecture<a class="headerlink" href="#sql-migrations-and-tenant-recovery-architecture" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>7d9a8e86f</code>.</em></p>
 <p><em>Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>
 (tree <code>3bb46431a19e604dc028768f0e72e6ad29616c26</code>). Mechanisms and diagrams below are
@@ -5803,6 +5949,9 @@ application ownership decision. Design recommendations and Kubernetes scale-out
 assessment are </em><em>read-derived</em><em>; no new runtime or cluster campaign was run.
 This guide explains their SQL implementation and does not promote M6.</em></p>
 <h2 id="scope-and-evidence">Scope and evidence<a class="headerlink" href="#scope-and-evidence" title="Permanent link">&para;</a></h2>
+<p>For diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">database and component ownership visual
+review</a>. It renders the
+tables and diagrams below from this guide, with the source revision recorded.</p>
 <p>The explicit multitenant PostgreSQL deployment shares physical tables among tenants.
 It maps each selected catalogue to an operator-configured schema; a schema is a
 component/domain namespace, not a new schema for each tenant. Single-tenant and
@@ -5831,7 +5980,7 @@ own admitted port behavior.</p>
 <td>Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound.</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6bc5c82f1a6e4d691e02b35f52fb3f714ea8f64f/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td><strong>Reproduced:</strong> packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure.</td>
 <td>Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate.</td>
 </tr>
@@ -5914,34 +6063,61 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.<
 </tr>
 </tbody>
 </table>
-<p><strong>Read-derived responsibility diagram.</strong> Solid arrows are application commands;
-dotted arrows are admitted SQL access, not foreign keys. Storage groups below
-are logical families within the selected namespaces, not separate databases.</p>
-<pre class="mermaid"><code>flowchart TB
-  RT["Realtime"] --&gt;|"authorize / mutate / ack"| API["API: canonical clinical writes"]
-  EV["Evaluator / notification component"] --&gt;|"alarm handoff"| RT
-  Admin["Management / authority components"]
-  LC["Lifecycle controller"] --&gt;|"pin / drain / invalidate each instance"| Roles["API / realtime / evaluator / admin"]
-  subgraph PG["Application-owned PostgreSQL namespaces"]
-    Clinical["Clinical documents + insertion counters + history clock"]
-    Checkpoints["Separate realtime and evaluator projections / checkpoints"]
-    Notifications["Notification state / requests / attempts"]
-    Suppression["Alarm suppression"]
-    Authority["Current authority / sessions / policy / owner settings / secrets"]
-    Windows["Lifecycle windows / operations / authority / audit"]
-  end
-  API -. "canonical writes" .-&gt; Clinical
-  API -. "authorized acknowledgement" .-&gt; Suppression
-  API -. "current authority" .-&gt; Authority
-  RT -. "clinical reads" .-&gt; Clinical
-  EV -. "clinical reads" .-&gt; Clinical
-  RT -. "own checkpoint" .-&gt; Checkpoints
-  EV -. "own checkpoint" .-&gt; Checkpoints
-  EV -. "owned producer persistence" .-&gt; Notifications
-  EV -. "current suppression" .-&gt; Suppression
-  Admin -. "owned mutations" .-&gt; Authority
-  LC -. "controlled clinical restore" .-&gt; Clinical
-  LC -. "maintenance protocol" .-&gt; Windows</code></pre>
+<h3 id="application-command-paths">Application command paths<a class="headerlink" href="#application-command-paths" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived command diagram.</strong> These are private application calls, not SQL
+relationships. The alarm handoff and socket mutation have separate authorization
+and acknowledgement contracts; the arrows do not imply one chained transaction.</p>
+<pre class="mermaid"><code>flowchart LR
+  EV["Evaluator notification consumer"] --&gt;|"alarm handoff"| RT["Realtime"]
+  RT --&gt;|"authorize / mutate / ack"| API["API"]</code></pre>
+<h3 id="component-storage-ownership">Component storage ownership<a class="headerlink" href="#component-storage-ownership" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived ownership matrix.</strong> Each row is an admitted component's storage
+responsibility, not a separate physical database. Realtime and evaluator read the
+same clinical tables, but own distinct checkpoint namespaces. Privilege checks
+remain specific to the selected catalogue and operation.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Admitted reads</th>
+<th>Owned persistence / controlled writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API</td>
+<td>Clinical records; current authority and configuration</td>
+<td>Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression</td>
+</tr>
+<tr>
+<td>Realtime</td>
+<td>Clinical records; current configuration and admitted authority</td>
+<td>Realtime projection and checkpoint namespace</td>
+</tr>
+<tr>
+<td>Evaluator / notification component</td>
+<td>Clinical records; current configuration and suppression</td>
+<td>Evaluator projection and checkpoint namespace; notification producer state, requests and attempts</td>
+</tr>
+<tr>
+<td>Management / authority components</td>
+<td>Current authority, policy, owner configuration and secret references</td>
+<td>Admitted credential, session, policy, owner-settings and secret mutations with audit</td>
+</tr>
+<tr>
+<td>Lifecycle controller</td>
+<td>Current authority, durable operations and pinned participant identities</td>
+<td>Lifecycle windows, claims and audit; controlled clinical restore and forward history</td>
+</tr>
+</tbody>
+</table>
+<h3 id="lifecycle-control-boundary">Lifecycle control boundary<a class="headerlink" href="#lifecycle-control-boundary" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived control diagram.</strong> The participant group means every declared
+instance, including replicas. A load-balanced endpoint reaching just one instance
+cannot replace this control boundary. The restore sequence below gives the
+ordering and uncertainty rules.</p>
+<pre class="mermaid"><code>flowchart LR
+  LC["Lifecycle controller"] --&gt;|"pin / drain / invalidate each instance"| Roles["API / realtime / evaluator / admin"]</code></pre>
 <p>Application APIs preserve existing client payloads, authority and reply behavior.
 Ambiguous mutation completion must preserve the existing no-acknowledgement/error
 contract rather than trigger a transparent new retry. Database-backed transaction
@@ -6075,37 +6251,31 @@ generic lifecycle module has its own admitted inventory; an arbitrary relation
 found in PostgreSQL is not automatically exported, restored or deleted. Exact
 outbox, suppression and control DDL lives in the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/tenant-notifications/postgres-candidate.json#L8">notification candidate</a>,
 <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/migrations/candidates/postgres-alarm-suppression-v1.json#L8">suppression candidate</a> and <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/tenant-lifecycle/postgres-candidate.json#L33">lifecycle candidate</a>.</p>
-<p><strong>Read-derived table map.</strong> Solid arrows below are declared foreign keys in the
-named candidates; dotted arrows are logical bindings/protocol use, not SQL foreign
-keys. Tenant labels and schema names represent roles in the architecture, not
-physical deployment identifiers.</p>
+<h3 id="clinical-ordering-and-history">Clinical ordering and history<a class="headerlink" href="#clinical-ordering-and-history" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived logical bindings.</strong> Dotted arrows describe allocation or history
+protocol use, not SQL foreign keys. Namespace ledgers govern catalogue admission;
+consumer checkpoints materialize each consumer's input separately.</p>
+<pre class="mermaid"><code>flowchart TB
+  ordinal["tenant_insertion_ordinal&lt;br/&gt;per tenant / collection"] -. "insert allocation" .-&gt; doc["Clinical documents&lt;br/&gt;tenant_id / typed identity / JSONB"]
+  clock["tenant_write_clock&lt;br/&gt;per tenant"] -. "history stamps" .-&gt; doc</code></pre>
+<h3 id="authentication-foreign-keys">Authentication foreign keys<a class="headerlink" href="#authentication-foreign-keys" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived declared foreign keys.</strong> These are a bounded relationship view;
+the table inventory above includes additional authorization and secret families.</p>
 <pre class="mermaid"><code>flowchart LR
-  subgraph domains[Selected domain namespaces]
-    doc["Clinical documents&lt;br/&gt;tenant_id / typed identity / doc"]
-    ordinal["tenant_insertion_ordinal&lt;br/&gt;tenant_id / last_ordinal"]
-    ledger["schema_migrations&lt;br/&gt;name / checksum"]
-    ordinal -. "BEFORE INSERT allocation" .-&gt; doc
-    ledger -. "catalogue admission" .-&gt; doc
-  end
-  clock["tenant_write_clock&lt;br/&gt;tenant_id / last_stamp"] -. "history stamps" .-&gt; doc
-  checkpoint["tenant_consumer_checkpoint&lt;br/&gt;tenant_id / consumer"] -. "replay / reconciliation" .-&gt; doc
-  checkpoint -. "acquisition input" .-&gt; evaluated["Current evaluator runtime output"]
-  evaluated -. "eligible current cycle" .-&gt; producer["notification state / heads / requests"]
-  suppression["tenant_alarm_suppression"] -. "current eligibility" .-&gt; producer
-  subgraph control[Operation-control namespace]
-    window[tenant_lifecycle_windows]
-    operation[tenant_lifecycle_operations]
-    authority[tenant_lifecycle_restore_authority]
-    audit[tenant_lifecycle_restore_audit]
-    operation --&gt;|tenant_id FK| window
-    authority --&gt;|tenant_id FK| window
-    audit --&gt;|tenant_id FK| window
-    ceremony[tenant_lifecycle_ceremony] --&gt;|request_id and tenant_id FK| request[tenant_lifecycle_requests]
-  end
-  window -. "tenant admission / suspension" .-&gt; doc
-  access[access_sessions] --&gt;|credential and subject FK| credential[access_credentials]
-  credential --&gt;|tenant_id FK| tenant[access_tenants]
-  keys[access_keys] --&gt;|tenant_id FK| tenant</code></pre>
+  sessions["access_sessions"] --&gt;|"credential + subject FK"| credentials["access_credentials"]
+  credentials --&gt;|"tenant_id FK"| tenants["access_tenants"]
+  keys["access_keys"] --&gt;|"tenant_id FK"| tenants</code></pre>
+<h3 id="lifecycle-foreign-keys">Lifecycle foreign keys<a class="headerlink" href="#lifecycle-foreign-keys" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived declared foreign keys.</strong> Operation, authority and audit rows bind
+to their tenant's window. The deletion ceremony has its own request relationship;
+a restore claim does not authorize deletion. These diagrams do not specify phase
+transitions; the restore sequence below describes the admitted protocol.</p>
+<pre class="mermaid"><code>flowchart BT
+  operation["tenant_lifecycle_operations"] --&gt;|"tenant_id FK"| window["tenant_lifecycle_windows"]
+  authority["tenant_lifecycle_restore_authority"] --&gt;|"tenant_id FK"| window
+  audit["tenant_lifecycle_restore_audit"] --&gt;|"tenant_id FK"| window</code></pre>
+<pre class="mermaid"><code>flowchart LR
+  ceremony["tenant_lifecycle_ceremony"] --&gt;|"request_id + tenant_id FK"| request["tenant_lifecycle_requests"]</code></pre>
 <h2 id="binding-forced-rls-and-privileges">Binding, forced RLS and privileges<a class="headerlink" href="#binding-forced-rls-and-privileges" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/storage/postgres-connection.js#L115">lower connection transaction</a> acquires the selected
 window lease before starting SQL, binds the tenant with transaction-local
@@ -6306,7 +6476,7 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#L74">application cohort guide</a>.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6bc5c82f1a6e4d691e02b35f52fb3f714ea8f64f/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
 adds the packaged ordinary-restore/UI/B-continuity scope. HA, multihost
 membership, capacity and whole M6 retain separate admission criteria. The
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>

@@ -5502,6 +5502,8 @@
       
         
       
+        
+      
     
     
     
@@ -5766,7 +5768,7 @@
 
 
 <h1 id="evaluator-realtime-and-api-communication">Evaluator, realtime and API communication<a class="headerlink" href="#evaluator-realtime-and-api-communication" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>a16e3dbf8</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b1b65c74a</code>.</em></p>
 <p><em>Contributor-facing living explanation, 2026-11-07. Mechanisms below are
 </em><em>read-derived</em><em> from cgm-remote-monitor <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>,
 tree <code>3bb46431a19e604dc028768f0e72e6ad29616c26</code>. Source file/line anchors were
@@ -5852,12 +5854,12 @@ and <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4
         Eval-&gt;&gt;PG: Tenant-bound bounded current snapshot
         Eval-&gt;&gt;PG: Persist evaluator input projection/checkpoint
         PG--&gt;&gt;Eval: Snapshot transaction COMMIT
-        Eval-&gt;&gt;Eval: Compute plugins; publish eligible output revision
+        Eval-&gt;&gt;Eval: Compute plugins, publish eligible output revision
     and Realtime recovery/refresh schedule
         RT-&gt;&gt;PG: Tenant-bound bounded current snapshot
         RT-&gt;&gt;PG: Persist realtime projection/checkpoint
         PG--&gt;&gt;RT: Snapshot transaction COMMIT
-        RT-&gt;&gt;RT: Build browser frame; recheck current configuration
+        RT-&gt;&gt;RT: Build browser frame, recheck current configuration
         RT--&gt;&gt;Browser: dataUpdate, full replacement (delta:false)
     end</code></pre>
 <p>The namespaces for evaluator and realtime checkpoints must be distinct.
@@ -5894,7 +5896,7 @@ when no consumer is selected, it opens no extra consumer pool, timer or socket.<
     Eval--&gt;&gt;Consumer: Current eligible output + configuration identity
     Consumer-&gt;&gt;PG: Reconcile producer state and enqueue stable intents
     PG--&gt;&gt;Consumer: Durable request state committed
-    Consumer-&gt;&gt;PG: Claim due attempt; commit dispatch token/deadline
+    Consumer-&gt;&gt;PG: Claim due attempt, commit dispatch token/deadline
     Consumer-&gt;&gt;Consumer: Recheck current eligibility and suppression
     Consumer-&gt;&gt;RT: POST JSON /alarm over private UDS
     RT-&gt;&gt;RT: Current tenant/socket authority checks
@@ -5942,7 +5944,7 @@ acquisition and before fanout; a long-lived connection is not a permanent grant.
     RT--&gt;&gt;Browser: Namespace-specific acknowledgement and admitted data
     Browser-&gt;&gt;RT: Existing mutation or ack event
     RT-&gt;&gt;API: /mutate (host + original tenant/credential/event envelope)
-    API-&gt;&gt;API: Resolve tenant; authenticate transport AND client authority
+    API-&gt;&gt;API: Resolve tenant, authenticate transport AND client authority
     API-&gt;&gt;PG: Existing socket write handler / suppression transaction
     PG--&gt;&gt;API: Canonical operation completes
     API--&gt;&gt;RT: Existing callback arguments
@@ -6043,12 +6045,12 @@ reproduces this bounded restart criterion on its exact later source; the inspect
 <td>Fixed trusted cooperative participants, private serving credentials and database ingress. No raw-SQL fence, automatic orphan clearance, suspended-restore resume command or recovery-time guarantee</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6bc5c82f1a6e4d691e02b35f52fb3f714ea8f64f/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td>Reproduced actual UI, main/alarm sockets and ordinary A restore with B committing work; public identity, forward history and synthetic client convergence preserved; independent configuration/resource/process closure</td>
 <td>Exact ed2 source and image, one-host synthetic scope. Actual pinned clients, final regression and wider M6 admission remain separate</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6bc5c82f1a6e4d691e02b35f52fb3f714ea8f64f/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client measurement</a></td>
 <td>Reproduced actual cgmsim/oref0 execution with matching stored outcomes and no unexplained or missing differences; independent baseline/resource/process closure within the original deadline</td>
 <td>Synthetic pinned-client scope; connector polling, Android/device, provider delivery and wider milestone admission remain separate</td>
 </tr>
