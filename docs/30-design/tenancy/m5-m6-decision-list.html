@@ -2575,6 +2575,8 @@
       
         
       
+        
+      
     
     
     
@@ -2918,6 +2920,17 @@
     <span class="md-ellipsis">
       
         Human policy review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-preview-to-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From preview to production
       
     </span>
   </a>
@@ -3390,6 +3403,34 @@
     
   
     Transactional PostgreSQL tenant clock: proof plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-critical-path.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From accepted one-host preview to production
   
 
     
@@ -5447,6 +5488,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#from-preview-to-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From preview to production
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#measure-before-setting-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5486,7 +5538,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>301f92777</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-08. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5618,6 +5670,11 @@ separates the tenant-local history clock from internal insertion order. The
 tenant-local insertion prototype removes cross-tenant allocation state while
 preserving supported per-tenant order; exact physical and logical backup fidelity
 retain their separate contracts.</p>
+<h2 id="from-preview-to-production">From preview to production<a class="headerlink" href="#from-preview-to-production" title="Permanent link">&para;</a></h2>
+<p>The <a href="production-critical-path.html">production critical path</a> maps these adopted
+requirements to closing evidence and conditional topology choices. It separates
+M6 completion, a coherent released candidate and per-deployment production
+admission. Its proposed one-cohort scope and HA deferrals are not adopted policy.</p>
 <h2 id="measure-before-setting-limits">Measure before setting limits<a class="headerlink" href="#measure-before-setting-limits" title="Permanent link">&para;</a></h2>
 <p>Operations owners first propose representative active/idle tenant counts, stored
 rows/bytes, ingestion bursts, reconnect backlog and a hot tenant sharing the pool.
