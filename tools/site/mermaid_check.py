@@ -2,6 +2,7 @@
 """Parse every ```mermaid block in the tracked docs with the pinned mermaid.
 
     python tools/site/mermaid_check.py [files...]      (make diagrams-check)
+    python tools/site/mermaid_check.py --published-dir build/site-src
 
 The mermaid version is the one tools/site/overrides/main.html pins, so the
 check and the site use the same parser. Each block goes through
@@ -17,6 +18,7 @@ local copy instead; CHROME=<binary> picks the browser.
 """
 from __future__ import annotations
 
+import argparse
 import base64
 import hashlib
 import html
@@ -118,9 +120,24 @@ def chrome() -> str:
 
 
 def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("files", nargs="*")
+    parser.add_argument("--published-dir", type=Path,
+                        help="check the actual staged Markdown tree, respecting publication exclusions")
+    args = parser.parse_args(argv)
+    if args.published_dir is not None:
+        if args.files:
+            parser.error("--published-dir cannot be combined with individual files")
+        directory = args.published_dir.resolve()
+        if not directory.is_dir() or not any(directory.iterdir()):
+            parser.error(f"published Markdown tree is missing or empty: {directory}; build the site first")
+        paths = [str(path) for path in sorted(directory.rglob("*.md"))]
+        if not paths:
+            parser.error(f"published tree has no Markdown files: {directory}")
+    else:
+        paths = args.files or subprocess.run(["git", "ls-files", "*.md"], cwd=REPO, capture_output=True, text=True, check=True).stdout.split()
     version = pinned_version()
     js = runtime(version)
-    paths = argv or subprocess.run(["git", "ls-files", "*.md"], cwd=REPO, capture_output=True, text=True, check=True).stdout.split()
     found = list(blocks(paths))
     if not found:
         print(f"diagrams-check: no mermaid blocks in {len(paths)} files")

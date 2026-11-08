@@ -13,7 +13,8 @@
 # which the script prints with a lease on the gh-pages it fetched.
 #
 # Refuses unless: the working tree is clean; HEAD is on a remote branch
-# (skipped with DRY_RUN=1); SITE_PSEUDONYM_KEY is set; make site-check passes.
+# (skipped with DRY_RUN=1); SITE_PSEUDONYM_KEY is set; make site-check and the
+# pinned Mermaid parser over the actual published Markdown tree pass.
 # DRY_RUN=1 stages the files into the worktree but does not commit.
 set -euo pipefail
 
@@ -43,6 +44,7 @@ fi
 [ -n "${SITE_PSEUDONYM_KEY:-}" ] || fail "SITE_PSEUDONYM_KEY is not set"
 
 make --no-print-directory site-check || fail "make site-check failed"
+python3 tools/site/mermaid_check.py --published-dir build/site-src || fail "published Markdown Mermaid syntax check failed"
 
 SRC_SHA="$(git rev-parse HEAD)"
 BUILT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
