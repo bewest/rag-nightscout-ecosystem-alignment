@@ -1,0 +1,20 @@
+{
+  "source": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "scope": "ISOLATED_SYNTHETIC_HOST_TRANSPORT",
+  "state": "STOPPED",
+  "wireHostHypothesis": "UNMEASURED",
+  "nodeCommandExit": 2,
+  "originalCleanup": true,
+  "exactInventory": true,
+  "completeConfigHostFingerprintsUnchanged": true,
+  "stableEndpointEquality": true,
+  "fullEndpointEquality": false,
+  "exactOwnedContainerAbsent": true,
+  "allOriginalRetainedAndOwnerBirthsAbsent": true,
+  "retainedBirthCount": 58,
+  "readOnlyVerifierChildrenClosed": true,
+  "runtimeReleased": true,
+  "receiptSha256": "c3513cb52096c1b18bced0e3642488d7ec3a6c21ccf0eaac2de53ad8597e3cf2",
+  "evidenceBasis": "reproduced",
+  "scopeLimit": "Synthetic isolated transport only; actual application exchange remains unmeasured."
+}

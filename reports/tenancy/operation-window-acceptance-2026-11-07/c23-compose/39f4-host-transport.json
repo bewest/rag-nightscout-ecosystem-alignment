@@ -1,0 +1,48 @@
+{
+  "source": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "scope": "ISOLATED_SYNTHETIC_HOST_TRANSPORT",
+  "state": "FETCH_HOST_OVERRIDE_IGNORED",
+  "wireHostHypothesis": "FETCH_HOST_OVERRIDE_IGNORED",
+  "syntheticTransport": {
+    "scope": "SYNTHETIC_HTTP_HOST_ROUTING_ONLY",
+    "node": "v24.22.1",
+    "undici": "7.30.1",
+    "observations": [
+      {
+        "operation": "fetch-selected",
+        "wireHost": "127.0.0.1:33725",
+        "status": 403
+      },
+      {
+        "operation": "http-selected",
+        "wireHost": "one.example.test",
+        "status": 204
+      },
+      {
+        "operation": "http-api-alias",
+        "wireHost": "api:1337",
+        "status": 403
+      },
+      {
+        "operation": "http-other-tenant",
+        "wireHost": "two.example.test",
+        "status": 403
+      }
+    ],
+    "serverClosed": true
+  },
+  "nodeCommandExit": 0,
+  "originalCleanup": true,
+  "exactInventory": true,
+  "completeConfigHostFingerprintsUnchanged": true,
+  "stableEndpointEquality": true,
+  "fullEndpointEquality": true,
+  "exactOwnedContainerAbsent": true,
+  "allOriginalRetainedAndOwnerBirthsAbsent": true,
+  "retainedBirthCount": 59,
+  "readOnlyVerifierChildrenClosed": true,
+  "runtimeReleased": true,
+  "receiptSha256": "b11c4347a2cade0a9bc5d5091c44d18b66de2e824473c5a58933bbda92c0cefd",
+  "evidenceBasis": "reproduced",
+  "scopeLimit": "Synthetic isolated transport only; actual application exchange remains unmeasured."
+}

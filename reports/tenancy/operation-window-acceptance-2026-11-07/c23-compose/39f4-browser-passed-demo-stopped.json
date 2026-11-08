@@ -1,0 +1,22 @@
+{
+  "source": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "originalState": "STOPPED",
+  "originalCleanup": true,
+  "failureStage": "demo",
+  "demoFailure": "COMPOSE_DEMO_EXCHANGE_REFUSED",
+  "browserAccepted": true,
+  "exactInventory": true,
+  "completeConfigHostFingerprintsUnchanged": true,
+  "stableEndpointEquality": true,
+  "fullEndpointEquality": false,
+  "allRetainedAndOwnerBirthsAbsent": true,
+  "retainedBirthCount": 532,
+  "ownedBrowserTmpRemovedVerified": true,
+  "readOnlyVerifierChildrenClosed": true,
+  "runtimeReleased": true,
+  "receiptSha256": "94373943184a8bf41e6904960a615c8aa63de90053997d4a8aae58f481f47f63",
+  "browserReceiptSha256": "69f0253266b808818a53816b0f9d13feea43563df15532e3acfe5bcb458ed67c",
+  "actualColdTerminalReceipts": 0,
+  "evidenceBasis": "reproduced",
+  "scopeLimit": "Browser UI and sockets accepted; demo exchange stopped; restore/history/B continuity not accepted."
+}
