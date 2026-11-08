@@ -161,11 +161,15 @@ queue dependencies; `make queue-status` measures its claimed states. Release rea
 is recorded separately in the
 [release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
-Single-tenant compatibility, tenant isolation, current authority, realtime and evaluator
-behavior each retain their acceptance gates in that roadmap. Alarms under
-`TENANCY_MODE=multi` remain off until `A7A-GATE` proves delivery through the real
-producer path to the correct tenant, with snooze state surviving a restart and
-process change ([execution plan §7a](../30-design/tenancy/multitenancy-decisions.md#5-runtime-isolation-and-clinical-acceptance)).
+The [published one-host reference](../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
+now includes cold Compose/UI/restore/client acceptance; native shared-role restart
+and the functional M5 runtime retain their exact source scope. This evidence can
+inform component and recovery decisions. M6 identity/owner admission, operating
+bounds and deployment trust remain open; multi-host failover has no acceptance.
+Use the [deployment models and fault domains](../30-design/tenancy/deployment-and-rig-testing.md)
+to distinguish these boundaries. Tenant-local suppression and controlled notification
+handoff are measured; live provider/device delivery remains separately gated by
+[runtime and clinical acceptance](../30-design/tenancy/multitenancy-decisions.md#5-runtime-isolation-and-clinical-acceptance).
 
 <!-- BEGIN GENERATED: road-tenancy -->
 

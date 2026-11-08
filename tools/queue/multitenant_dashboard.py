@@ -144,7 +144,7 @@ def render(data, queue):
         lines.append(f'| <a id="{anchor(w["id"])}"></a>**{w["id"]}**: {cell(item["state"])} | '
                      f'{cell(w["lane"])} | {cell(deps)} | {cell(w["next"])} |')
     lines.extend(["", "## Accepted slices and integration handoff", "",
-                  "A bounded slice below does **not** close its parent queue card or M0-M6.", "",
+                  "This ledger retains source-scoped checkpoints in chronological order; later acceptance can supersede an earlier pending boundary. Use the milestone table and next-action table for current work. A bounded slice does **not** close its parent queue card or M0-M6.", "",
                   "| Slice / parent | Acceptance stage | Commit / evidence | Recorded result and boundary |",
                   "|---|---|---|---|"])
     for s in data["slices"]:

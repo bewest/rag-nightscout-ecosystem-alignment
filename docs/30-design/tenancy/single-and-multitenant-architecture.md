@@ -1,36 +1,55 @@
 # Single and multitenant Nightscout: architecture and compatibility
 
-*Contributor-facing living explanation. Source inspection is **read-derived** at
-cgm-remote-monitor `83582e876dd193f4448f44c28e379fb5464a26c7`, the published head
-of draft PR #8898 on 2026-11-06, based on dev `4a482627bfdafb1fef8dcbe0ac6c484811cae563`
-(172 commits and 245 files over dev: 193 new, 52 modified, none deleted; read
-from `git` at the re-pin). Every source link below was re-verified to resolve at
-that head; the shared-code line anchors were re-read there. Test figures below are
-**recorded reproductions**, not new runs for this explanation. Current delivery
-and milestone claims live in the [delivery dashboard](multitenant-delivery-dashboard.md).
-[R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)
-accepts `83582e87`; [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
-verifies its publication and remote CI. The earlier
-[R40](../remedial/rc-16.0.0-integration-record.md#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04)
-preview acceptance on `ded254b9`, [R41](../remedial/rc-16.0.0-integration-record.md#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05),
-[R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
-and independent [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05)
-are retained as history where this page cites them. PR #8898 is open/draft, not
-merged or released.*
+*Contributor-facing living explanation, groomed 2026-11-08. The published
+candidate is cgm-remote-monitor `ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`,
+recorded in the [publication measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json).
+PR #8898 remains open/draft, not merged or released. Architecture interpretation
+is **read-derived**; linked runtime results are **recorded reproductions**, not
+new executions for this document. The retained shared-code/module survey is
+explicitly pinned to `83582e87`; it does not describe every file in the current
+candidate. Current delivery and milestone claims live in the
+[delivery dashboard](multitenant-delivery-dashboard.md).*
+
+## What the proofs can inform
+
+The useful result is an executable one-host multitenant reference with separate
+services and tenant-local restore. It gives current architecture decisions a
+measured basis. Production qualification and additional deployment models still
+need their own evidence; an accepted component is not a completed platform track.
+
+| Capability | Recorded basis | Useful for decisions now | Remaining admission |
+|---|---|---|---|
+| Separate API/realtime/evaluator/admin and packaged UI | [ed2 cold Compose acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) | One-host role composition, existing client/browser routes and private control channels work together. | Multi-host discovery, replicas/failover, production ingress/service identity and operating limits. |
+| Tenant-local restore and shared-role restart | [c23 native acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md), plus ed2 packaged ordinary restore above | A can stay suspended while B progresses; forward correction/deletion history allows tested clients to converge without a global pause. | Automatic orphan clearance, supported suspended-restore resume, arbitrary-writer exclusion and production recovery bounds. |
+| Functional durable evaluator/realtime reference | [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) | Bounded snapshots, durable suppression and stable notification-intent identities support the one-host runtime direction. | Provider/device delivery, distributed producer ownership and capacity/freshness/egress budgets. |
+| Existing client compatibility | [ed2 actual pinned clients](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json); [39f4 enabled corpus](../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/README.md) | Use the admitted API/history/credential shapes and the named clients' stored outcomes. | Wider/mobile clients, other query shapes and all-client acceptance. |
+| Derived calculation reuse | [f0 characterization](../../../reports/tenancy/derived-output-2026-11-07/README.md) | Selected evaluator/API current properties agree; time, settings and input identity matter. Realtime raw frames remain a separate product. | A shared immutable-result interface, full authorization/clinical equivalence and publication-service ownership/freshness. No service is selected by the characterization. |
+| Nonresident single-site execution or another backend | Independently attributed [R43](../remedial/rc-16.0.0-integration-record.md#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05) and later profile records in the platform plan | Inform seam and acquisition research within their measured caller policies. | Separate profile/backend admission; neither a computed-single default nor single-site PostgreSQL, multitenant MongoDB or SQLite/Celld follows. |
+
+A prototype answers a bounded feasibility or semantics question. An integrated
+functional reference proves cooperating components on a named topology. A
+production server additionally needs its actual trust and identity setup,
+credential/lifecycle recovery, selected workload limits and operator procedures
+accepted together. Merge, release and default enablement are separate decisions.
+The [deployment/fault-domain guide](deployment-and-rig-testing.md#deployment-choices-and-fault-domains)
+compares the independent tenancy, backend, computation, process and host axes.
 
 ## Current service composition and restore integration (2026-11-07)
 
-This section describes the separate-service implementation by source inspection
-at `151de0248a1e4301c85b5c638185eec3ca8c38e6`; the older survey below remains
-pinned to `83582e87`. [R73](../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07)
-records runtime composition on its own source. The
-[b029 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md)
-accepts 17 separate-process restore criteria on `b029f5d8`, not the newer startup
-implementation, Compose/browser deployment or whole M6. Pinned source links in
-the detailed guides require publication of the local `151de024` candidate.
+The separate-service structure was inspected at
+`151de0248a1e4301c85b5c638185eec3ca8c38e6`; later executed behavior is attributed
+in the [acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md).
+The c23 native matrix accepts the separate-process restore and tenant-local
+shared-role restart criteria. The ed2 cold image accepts UI/API/socket and
+ordinary restore/history/B-continuity; final ed2 full and pinned-client acceptance
+also passed. Browser regression remains attributed to c23, and enabled-corpus
+acceptance to 39f4. Input-equivalence records explain source deltas without
+transferring campaign credit. The older b029 matrix retains its narrower scope.
+
 The maintainer [reaffirmed separate service processes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes),
-including containers with shared private sockets where appropriate. Compose and
-jsonnet are packaging options; no generator is selected.
+including containers with shared private sockets where appropriate. Compose is
+implemented and functionally accepted for the one-host synthetic preview; a
+Jsonnet generator remains an optional packaging tool.
 
 | Role | Responsibility | Communication in the bounded reference |
 |---|---|---|
@@ -73,13 +92,15 @@ endpoints. A PostgreSQL advisory lock protects
 participating code. A database-enforced fence would reject bypassing operations
 in PostgreSQL itself. Process separation and that stronger fence are separate
 questions; neither a process list nor a configuration assertion proves exclusive
-credential custody. Native tests must exercise actual separate processes,
-restart/lost acknowledgement and late-connection behavior under the declared
-trust boundary. The
+credential custody. The [native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
+exercises the actual separate processes and uncertainty/restart cases under its
+declared fixed trusted-cohort boundary. Arbitrary direct SQL actors remain outside
+that proof. The
 [tenant-local startup requirement](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission)
 prevents a suspended tenant from blocking another tenant's shared-role restart.
-Its implementation is source-checked at `151de024`; native restart acceptance is
-pending. It does not clear claims or provide automatic uncertain-outcome recovery.
+The c23 native acceptance reproduces fresh API/realtime/evaluator startup and B
+operation while A remains suspended in the tested failure scenarios. It does not
+clear claims or provide automatic uncertain-outcome recovery.
 
 See [deployment/rig scenarios](deployment-and-rig-testing.md),
 [evaluator/realtime communication](evaluator-realtime-communication.md) and
@@ -140,9 +161,10 @@ flowchart LR
 
 The default single process retains its resident runtime. The preview builds
 request-local frames using the shipping loader/cache and property setters for
-v2 properties, ddata/as-of and summary. It does **not** thereby enable the
-multitenant evaluator, realtime or notification lifecycle, and it is not proof
-that the separate ST-VIEWS execution-profile prototype has been wired.
+v2 properties, ddata/as-of and summary. Request-local
+calculation alone does not enable an evaluator or notification lifecycle. Those
+roles now have their separately accepted one-host runtime reference; this does
+not integrate the independent ST-VIEWS single-site execution-profile prototype.
 
 The preview defaults to API3 entries. Explicit domain configuration, prepared
 catalogues and safe database roles are required for the wider implemented
@@ -157,11 +179,11 @@ for the full target surface.
 
 ## What actually changed in shared code
 
-These are **read-derived** source findings, pinned to `83582e87` (first read at
+This retained survey records **read-derived** source findings at `83582e87` (first read at
 `ded254b9`; the anchors were re-read at the new head, where only the write-clock
 entry point moved, from line 62 to 64). They refute a literal zero-code-change
-claim without alleging a single-tenant defect. Across the whole PR, 52 existing
-files are modified: the hooks below, the legacy v1 routers for activity,
+claim without alleging a single-tenant defect. At that historical checkpoint, 52 existing
+files were modified: the hooks below, the legacy v1 routers for activity,
 devicestatus, food, profile, status and treatments, the API3 generic operations
 and specific status/version/lastModified handlers, `lib/api2`, the serve roles,
 the CLI, `bin/nightscout.js`, the write-intent module, `package.json` (adds `pg`
@@ -182,8 +204,9 @@ one global backend flag that turns every existing Nightscout feature multitenant
 
 ### What the preview holds at `83582e87`
 
-The 193 new files are dormant, opt-in modules. Each directory carries its own
-README in the PR; the alignment contract that governs it is named beside it.
+This historical checkpoint had 193 new opt-in files. Its source/module inventory
+is retained for the shared-code analysis; later runtime/restore composition and
+acceptance are described above. The governing contract is named beside each row.
 
 | New module at `83582e87` | What it is | Governing record |
 |---|---|---|
@@ -191,14 +214,15 @@ README in the PR; the alignment contract that governs it is named beside it.
 | [`lib/storage/postgres-*`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/storage/PORT-CONTRACT.md), `lib/migrations`, `migrations/candidates` | PostgreSQL connection/transaction binding, entries/treatments/devicestatus/activity ports, identity codec, write limits, the tenant write clock, the migration catalogue and `nightscout migrate` | [storage seam §11](nightscout-storage-seam-interface-2026-09-14.md), [write contract §9](write-contract-spec-2026-10-07.md), [clock proof plan](postgres-tenant-clock-proof.md) |
 | [`lib/tenant-authorization`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/tenant-authorization/README.md), `lib/api3/tenant-authentication.js`, `lib/authorization/credential-extraction.js` | Tenant-bound credential exchange, current persisted grants, optional new-format data tokens verified locally | [owner authority](owner-authority.md); execution-plan D22 |
 | [`lib/secrets`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/secrets/README.md) | Secrets component, Vault Transit adapter, PostgreSQL persistence and rewrap | roadmap §3 |
-| [`lib/tenant-settings`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/tenant-settings), [`lib/subject-admin`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-admin/README.md), [`lib/subject-policy`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-policy/README.md), [`lib/operator-policy`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/operator-policy/README.md), `lib/server/subject-management-app.js` | Per-tenant settings with provenance and history; subject administration; the optional subject-reader policy that clamps stored grants to the reviewed catalogue and the current operator ceiling (unselected by default) | [tenant config schema](tenant-config-schema-2026-10-27.md), [owner authority](owner-authority.md); R53, R62, R63 |
+| [`lib/tenant-settings`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/tenant-settings), [`lib/subject-admin`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-admin/README.md), [`lib/subject-policy`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-policy/README.md), [`lib/operator-policy`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/operator-policy/README.md), `lib/server/subject-management-app.js` | Per-tenant settings with provenance and history; subject administration; the then-optional subject-reader clamp (subsequently withdrawn; writer policy retained) | [tenant config schema](tenant-config-schema-2026-10-27.md), [owner authority](owner-authority.md); R53, R62, R63 |
 | [`lib/storage/postgres-durable-replay.js`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/docs/durable-current-state-replay.md), `migrations/candidates/postgres-consumer-checkpoint-v1.json` | Dormant durable current-row replay: typed projection and checkpoint persisted atomically, repeatable-read bootstrap, publish after commit | [durable event delivery contract](durable-event-delivery-contract-2026-11-06.md) (B7); R62 |
 | [`lib/import`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/import/README.md), `tools/import-entries.js`, `lib/data/private-acquisition.js` | One-time API entries importer to a PostgreSQL target; private acquisition of a request-local frame | roadmap M1; R52, R55 |
 | [`docs/multitenant-test-corpus.md`](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/docs/multitenant-test-corpus.md), `scripts/test-multitenant.js`, the `multitenant-postgres` CI job | One command for the opt-in corpus, 35 suites at this head, with disposable PostgreSQL 16, MongoDB 8.0 and Vault; the same corpus runs in the PR's CI | [batching plan §3 rules 4–5](multitenant-integration-batching-plan-2026-11-06.md#3-batch-rules); R60, R61, R64 |
 
-Only the `api` role starts; `evaluator`, `realtime`, `vcpool`, `tenant-admin`
-and `admin` refuse with exit 64, and missing configuration or failed readiness
-refuses with exit 78 before listening. Nothing here changes `nightscout single`.
+At the historical `83582e87` checkpoint only `api` started; other roles refused.
+The current separate API/realtime/evaluator/tenant-admin implementation and its
+acceptance are described above. Unimplemented roles are not admitted by a role
+name in the target design; the default remains `nightscout single`.
 
 ## Isolation extends beyond the write boundary
 
@@ -233,9 +257,17 @@ new declarations that every exposed field has an independent collection grant.
 
 ## What evidence supports compatibility?
 
-### Preview versus current single/Mongo behavior
+### Current bounded compatibility
 
-The current accepted head is `83582e87`
+The current [acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
+links ed2 nonbrowser and actual pinned-client acceptance, c23 browser/native
+acceptance and 39f4 enabled-corpus acceptance. Those sources are distinct. Use
+that ledger for current verdicts and the explicit limits of each experiment;
+the following earlier comparisons retain their historical attribution.
+
+### Retained earlier comparisons: R40–R64
+
+The earlier accepted head was `83582e87`
 ([R62](../remedial/rc-16.0.0-integration-record.md#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06)):
 full nonbrowser 7,226 passing / 99 pending / 0 failing, browser 684 / 0 / 0, the
 35-suite opt-in corpus 460 / 1 pending (the disabled benchmark) / 0, and the actual
@@ -247,13 +279,13 @@ gates went red under their semantic controls and passed restored.
 bounds the optional selected-reader mode with actual clients: three oref0
 subject-token uploads match the reference, tightening the ceiling refuses the next
 upload with no effects, and an actual cgmsim root upload gets 503 under selected
-mode against 200 unselected, so that mode stays unselected and the 503 mapping
-awaits a disposition. [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
+mode against 200 unselected, at that checkpoint. The later [promotion decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+withdraws reader clamping and retains writer policy. [R64](../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)
 reads back the published head: all 15 CI jobs and CodeQL passed, including the
 opt-in corpus job; three release-image jobs were skipped by condition. The
 sections below retain the earlier records they cite.
 
-Latest local [R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
+Earlier [R42](../remedial/rc-16.0.0-integration-record.md#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05)
 adds real lower/preview/Mongo port characterization and a separate authenticated
 management factory, with current-head cumulative/control evidence. Independent
 R43 measures the opt-in single/nonresident prototype; it is not joined into the
@@ -296,7 +328,9 @@ shapes refuse, JSONB uses logical JSON equality rather than BSON key order, and
 an invalid selected credential does not silently become anonymous; carrier precedence remains version-specific. Unsupported route
 and error mappings can differ from the single application. See the pinned
 [tenant-app boundaries](https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/server/tenant-app/README.md).
-Full query/resource acceptance and populated import-order fidelity remain open.
+Full query/resource acceptance remains separate. The current tenant-local
+logical-restore ordering/history proof is recorded above; it does not establish
+universal import or physical-backup fidelity.
 
 ### New Nightscout versus older releases
 
@@ -320,9 +354,9 @@ flowchart LR
     direction TB
     Old["Nightscout v15.0.9<br/>c6a0d8ed"] -->|"recorded comparison"| Historic["Historical dev<br/>497d08c9"]
   end
-  subgraph Preview["Current HTTP / storage differential"]
+  subgraph Preview["Recorded R62 HTTP / storage differential"]
     direction TB
-    Current["Current single / Mongo handlers<br/>83582e87 (run on 87133959)"] <-->|"preview differential"| Multi["Multitenant PG preview<br/>83582e87 (run on 87133959)"]
+    Current["R62 single / Mongo handlers<br/>83582e87 (run on 87133959)"] <-->|"preview differential"| Multi["Multitenant PG preview<br/>83582e87 (run on 87133959)"]
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview
@@ -390,20 +424,19 @@ duplication can be consolidated without introducing a third backend.
 
 ## Remaining evidence gaps and next work
 
-The [milestone dashboard](multitenant-delivery-dashboard.md) deliberately does
-not promote M0–M6 on component evidence alone. Full REST administration/side
-effects, client binary execution, arbitrary extensions/localization, import and
-resource bounds, production identity/trust, lifecycle, durable events,
-realtime/evaluation, HA and operations remain unaccepted.
+The [dashboard](multitenant-delivery-dashboard.md) retains M0–M5 at their
+adopted functional scope and M6 blocked. The accepted one-host runtime,
+tenant-local restore/restart, cold Compose and pinned-client capabilities inform
+ongoing design; they do not close wider identity/lifecycle, production trust,
+workload limits, HA or whole-M6 admission. See the
+[current decision index](m5-m6-decision-list.md),
+[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) and
+[completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
+for policy, actual source acceptance and ownership rather than old survey tasks.
 
-A fresh selected queue audit also shows the historical
-`T30-SCHEMA-CONFIG` static gate fails its old `crm-seam` D15 configuration-table
-check; several broader cards are UNMEASURED when integrations are skipped. That
-old-seam predicate is distinct from R40's new-tree persisted settings/authority
-acceptance. It is an instrument/coverage boundary to keep visible, not evidence
-that the new preview has no settings table or that a full catalogue is complete.
-
-Next engineering is the bounded persisted subject mutation/known-role assignment
-packet, followed by the remaining REST side effects and wider client/operational
-acceptance. No new architecture, safety policy or milestone status is approved
-by drawing these diagrams.
+Historical old-seam gates and unmeasured broader cards must retain their real
+instrument status. A failing old configuration-table predicate is distinct from
+accepted new-tree persisted settings/authority; neither a prototype nor this
+diagram promotes the larger configuration catalogue. Run `make queue-status`
+for current gate measurements. This documentation change runs no new application
+or deployment campaign and adopts no new architecture or safety policy.

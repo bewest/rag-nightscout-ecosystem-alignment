@@ -3,7 +3,19 @@
 *Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the [tenancy archive](../../archive/tenancy/README.md); dates in a
-filename do not establish currency. Consolidated 2026-11-06.*
+filename do not establish currency. Reconciled 2026-11-08 to the published draft preview and retained acceptance records.*
+
+## What can inform a decision now
+
+Start with the [deployment models and fault domains](deployment-and-rig-testing.md)
+and [architecture comparison](single-and-multitenant-architecture.md). The published
+one-host reference answers bounded component, tenant isolation and recovery questions.
+The dashboard distinguishes accepted M0–M5 criteria from incomplete M6 admission;
+the platform map is a dependency guide, not a production readiness score.
+
+Use the [current decision list](m5-m6-decision-list.md) to separate already adopted
+policy from implementation and evidence still needed. Keep historical journals
+for rationale and failed predictions; their “next” does not assign current work.
 
 ## Start with the task
 
@@ -17,7 +29,7 @@ filename do not establish currency. Consolidated 2026-11-06.*
 | Owner, delegation and token rules; shared optional OIDC | [Owner authority](owner-authority.md), [shared integration](owner-authority.md#shared-oidc-integration) | Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters; implementation acceptance is separate. |
 | What needs a maintainer decision | [Current M5/M6 decision list](m5-m6-decision-list.md) | Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; older packets supply background only. |
 | Durable consumers and recovery | [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | Adopted B7 direction; runtime evidence retains its actual tree and limits. |
-| Separate service processes and restore coordination | [Current composition diagram](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07) | Fixed cross-process cohort and source-attributed restore evidence; newer independent-startup acceptance remains pending. |
+| Separate service processes and restore coordination | [Current composition diagram](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07) | Fixed cross-process cohort and source-attributed restore evidence; native tenant-local shared-role restart is accepted on c23; cold Compose restore is accepted on ed2. |
 | Deploy a synthetic prototype or connect a rig | [Deployment and rig testing](deployment-and-rig-testing.md) | Runnable Compose preparation, ingress/credential boundaries, client setup, restore/restart scenarios and evidence limits. |
 | Follow evaluator and socket messages | [Evaluator/realtime communication](evaluator-realtime-communication.md) | Independent clinical projections, durable notification handoff, private API forwarding, current authority and operation lifetimes. |
 | Understand SQL and recovery | [SQL/migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, catalogue migration/readiness and restore inclusion/exclusion. |
@@ -53,8 +65,7 @@ schedule for work state.
 The guides above provide the requested **MT-DOC-DEPLOY**, **MT-DOC-REALTIME** and
 **MT-DOC-SQL** documentation. Their source inspection, diagrams and structural
 checks are separate from runtime acceptance. Each links executed evidence at its
-actual source; pending Compose, restart, rig and capacity experiments remain
-explicit. The queue owns documentation status, and release records own accepted
+actual source; accepted cold Compose and restart proofs retain their executed sources; wider rig, identity and capacity experiments remain explicit. The queue owns documentation status, and release records own accepted
 application behavior.
 
 ## Historical evidence and earlier proposals

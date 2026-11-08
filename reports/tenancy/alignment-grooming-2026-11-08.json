@@ -1,0 +1,36 @@
+{
+  "kind": "documentation reconciliation and retention record",
+  "date": "2026-11-08",
+  "alignment_source": "8792fc7a3d62f59629ed94bac168dcad5d9aa3c7",
+  "basis": "read-derived reconciliation of retained application evidence; reproduced documentation checks and remote PR metadata readback",
+  "application": {
+    "pr": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "head": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+    "base": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+    "readback": "GitHub connector get_pr_info in this session; matches retained published-ed2-2026-11-08.json"
+  },
+  "scope": "Current reading path, map, dashboard, topology/fault-domain explanations and decision-use boundaries; no policy adoption, application change or milestone promotion.",
+  "retention": {
+    "original": "docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md",
+    "archive": "docs/archive/tenancy/multitenant-integration-batching-journal-2026-11-06.md",
+    "original_sha256": "231b9e033d3bca3db58742465164d2697b401e39284fcb3c1f6a4c0cfd0944d8",
+    "archive_sha256": "c369fb46e61686af43b90ede06e1b9bfaa9596570e24f3d3b479b15e2676a9bd",
+    "preservation": "PASS; coordinator independently compared git show source with archive body after only added notice and relative Markdown-link rebasing. Original title and all original body preserved. Existing current-plan section anchors retained.",
+    "platform_execution_table": "October priority/per-commit table retained through public source-commit URL in platform plan; current release allocation and queue remain successors."
+  },
+  "checks": {
+    "queue_status": "Executed before edits in main checkout; FAIL with existing unrelated gate failures and multiple skipped/UNMEASURED tenancy gates. No claimed global gate acceptance.",
+    "queue_check": "PASS on groomed worktree with read-only link to existing nc-jitter cwd; manifest unchanged.",
+    "docs_links": "PASS",
+    "dead_link_control": "PASS: appended missing-groom-control-target.md link to tenancy README; gate exit 1, exact BAD md-link symptom; restored original bytes and reran green.",
+    "dashboard_staleness_control": "PASS: extra generated-view newline produced exit 1/dashboard stale; restored original bytes and reran green.",
+    "site_check": "Pending plan commit and render",
+    "whitespace": "PASS"
+  },
+  "environment": "Initial sandbox Node child Git inventory failed spawnSync git EPERM; read-only escalated rerun passed. No failed semantic assertion was counted as a control. Worktree uses existing site Python runtime and existing nc-jitter cwd via untracked local symlinks.",
+  "runtime": "No new native/full/browser/client/Compose campaign. ed2 image/cold/client/full, c23 native/browser and 39f4 corpus retain their own executed source/instrument attribution.",
+  "remaining": "M6 blocked; native signed owner/OIDC acceptance, lifecycle/key recovery, connector sync, trust/service login, operating bounds and Android work retain current criteria. Multi-host ownership/HA are separate topology work. No dev merge, release or production/default admission."
+}

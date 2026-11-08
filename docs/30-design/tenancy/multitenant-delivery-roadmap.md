@@ -1,8 +1,7 @@
 # Multitenant delivery roadmap
 
-*Contributor-facing living plan. Consolidated 2026-11-06 from the delivery journal
-and the adopted release decisions, without a new application measurement or
-milestone promotion. This page owns delivery boundaries and promotion criteria.
+*Contributor-facing living plan. Reconciled 2026-11-08 to the published reference and adopted release decisions,
+without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The [dashboard](multitenant-delivery-dashboard.md) owns recorded milestone claims;
 the [queue](../../../queue/work-queue.yaml) owns item states, gates and blockers.*
 
@@ -143,7 +142,9 @@ and native acceptance remain UNMEASURED.
 ## Milestones and continuous integration
 
 [R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06)
-records the latest criterion verdicts; the [dashboard](multitenant-delivery-dashboard.md)
+records M0–M4; R73 records functional M5. The later
+[operation-window family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
+records restore/restart and packaged reference acceptance; the [dashboard](multitenant-delivery-dashboard.md)
 displays milestone claims. The criteria below retain their adopted scope.
 
 The [release promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
@@ -193,19 +194,23 @@ implementation and destroy/after-window refusal evidence remain separate.
 [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) accepts the functional M5 reference on one host and records its final
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
-observations, not a fresh current-HEAD campaign. M6 remains blocked despite its
-bounded SQL operations proof. Publication, remote CI and production/default
-admission are separate claims.
+observations, not a fresh current-HEAD campaign. M6 remains blocked. The later accepted ed2 reference is published on draft
+PR #8898; its [publication and alignment CI record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json)
+is distinct from dev merge, release and production/default admission.
 
 | Recorded proof | Boundary and remaining work |
 |---|---|
 | [M5 PostgreSQL](../../../reports/tenancy/m5-runtime-2026-11-07/postgres/README.md) | Current-state/evaluator recovery, restricted-role durable alarm/request state and controlled consumer handoff. Actual roles/browser have their separate home below. |
 | [M5 reference roles/browser](../../../reports/tenancy/m5-runtime-2026-11-07/roles/README.md) | Separate API/realtime/evaluator roles on one host using scheduled snapshot polling, typed write compatibility, current recipient/configuration authority, alarm controls and a controlled same-origin browser. Server handoff, recipient event and browser presentation are separate observations; no evaluator-to-device journey, `LISTEN` handshake, notification-transport latency or live provider delivery is established. |
-| [M6 SQL operations](../../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md) | Populated catalogue/artifact fidelity, supported upgrade/rollback, interruption and deletion ceremony under fixture quiescence. Identity-bearing same-ID tenant restore remains unsupported. Whole-deployment rollback includes other tenants; this is not a single-tenant restore or a serving/DDL/cache blackout. |
+| [M6 SQL operations](../../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md) | Populated catalogue/artifact fidelity, supported upgrade/rollback, interruption and deletion ceremony under fixture quiescence. This earlier whole-deployment restore proof does not establish tenant-local restore; later evidence is listed separately below. Whole-deployment rollback includes other tenants. |
+| [Native tenant-local restore and restart](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) | c23 fixed-cohort separate-role controller proof: restore with forward history, rollback/uncertainty refusal, B continuity and fresh shared-role restart while A remains suspended. Direct SQL writers and multi-host coordination remain outside this cooperative protocol. |
+| [Packaged Compose and clients](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md) | ed2 exact image/cold UI/main+alarm sockets, tenant-local restore/client convergence, actual pinned clients and full nonbrowser acceptance. Browser/native c23 and enabled corpus39f4 retain their own attribution. This answers feasibility and bounded compatibility questions; capacity, HA and production admission remain open. |
 
-Shared OIDC/session effects, operator-assisted ownership, full suspension,
+Shared OIDC/session effects, operator-assisted ownership, full lifecycle,
 retained-key destruction/after-window refusal and measured operating budgets
-remain M6 work. The [current decision index](m5-m6-decision-list.md) separates
+remain M6 work. Local OIDC/owner source is not native acceptance; the
+[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) records
+the next candidate and ownership. The [current decision index](m5-m6-decision-list.md) separates
 human choices from implementation and measurement work.
 
 ## M5/M6 acceptance families

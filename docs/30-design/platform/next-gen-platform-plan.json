@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-07: R73 accepts the functional M5 reference on one host using polling over consistent tenant snapshots. R72 retains M0 and M1\u2013M4 at their stated scopes. Bounded PostgreSQL and role/browser evidence retains each actual executed head; final assembled full/default-browser/current-corpus/PR checks are accepted at the R73 source. M6 remains blocked despite bounded SQL operations acceptance. Recorded-evidence gates replay archived measurements, not fresh current-HEAD execution. Live provider/device delivery, capacity, multi-node operation and identity-bearing tenant restore remain separate. Acceptance does not assert remote publication/CI, dev merge, operator release or production/default enablement.",
+ "measured": "2026-11-08 read-derived reconciliation: published draft #8898 carries ed2ced00. R72 retains M0\u2013M4 and R73 functional one-host M5. Later native/browser acceptance remains on c23, entire enabled corpus on 39f4, and exact-source image/cold Compose/UI/tenant-local restore/history/B continuity/pinned clients/final full on ed2. M6 stays blocked. Shared OIDC/session source is local with native acceptance UNMEASURED. Each named report owns executed source and instrument identity; recorded-evidence gates do not run a fresh current-HEAD campaign. Publication is distinct from dev merge, release, default and production admission. Capacity, multi-host ownership, provider/device and production trust remain open.",
  "tracks": [
   {
    "id": "storage",
@@ -54,14 +54,14 @@
    "label": "done",
    "mark": "\u2713",
    "style": "done",
-   "means": "merged to dev or a completed component/research item; not full multitenant milestone acceptance"
+   "means": "the named item/component is complete or merged to dev; inspect its scope/source; this does not mean released, whole-milestone accepted or production admitted"
   },
   {
    "id": "review",
    "label": "in review",
    "mark": "\u25d0",
    "style": "review",
-   "means": "a pull request is open"
+   "means": "a pull request is open, possibly draft; its existence does not establish acceptance"
   },
   {
    "id": "ready",
@@ -268,7 +268,7 @@
    "short": "Backend harness, tenant scope",
    "title": "Backend-selectable test harness, storage backend selection and the tenant-scope binding; no behaviour change in single mode",
    "where": "tests/support/backends.js, lib/storage/tenant-scope.js (old chain a2690bd4, 136f53e3, 8355c563, a492f2ed)",
-   "check": "NS_TEST_BACKEND controls: mongodb runs, postgres pending until ST-PG, an unknown name throws",
+   "check": "Original backend-selection checks cover mongodb, unavailable-postgres refusal/pending and unknown-name refusal. Current admitted PostgreSQL execution is measured by ST-PG/R72 and the named later campaigns.",
    "depends": [
     "WC-STEP-PATCH"
    ],
@@ -353,8 +353,12 @@
    "depends": [
     "ST-HARNESS"
    ],
-   "ref": "Resource bounds deferred C; sort cap5 and explicit unsupported operations retained. Global generic PG fixture availability and fresh-only socket-order migration are outside this acceptance.",
+   "ref": "R72 admitted backend/import scope is accepted. Later tenant-local insertion migration and restore are accepted within the fixed one-host cohort. Resource bounds deferred C; five-key PG sort cap and explicit unsupported operations retained.",
    "spec": [
+    {
+     "label": "Current operation-window deployment/recovery acceptance",
+     "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
+    },
     {
      "label": "R72 accepted criterion disposition",
      "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
@@ -724,14 +728,18 @@
    "phase": "dev",
    "state": "done",
    "short": "Multitenant CLI namespace",
-   "title": "D21 namespace and role split are merged to dev. #8899 renamed serve to multitenant; R72 accepts the bounded M1\u2013M4 preview contracts on draft #8898. Namespace completion and production/default role enablement are separate claims.",
+   "title": "D21 namespace is merged to dev; #8899 renamed serve to multitenant. Draft #8898 now contains a one-host separate-process API/realtime/evaluator/admin Compose preview with bounded cold deployment and recovery acceptance.",
    "where": "bin/nightscout.js, lib/server/bootevent.js, lib/server/server.js",
-   "check": "Merged namespace preserves single/legacy starts. R72 accepts admitted API/configuration route contracts with explicit configuration, prebind read-only readiness and owned shutdown; M5 runtime and M6 lifecycle acceptance remain separate.",
+   "check": "Merged namespace preserves single/legacy starts. R72 admits API/configuration routes; R73 accepts functional M5 roles. Later native restart and ed2 cold Compose acceptance retain actual source attribution; M6 and production admission stay open.",
    "depends": [
     "PLAT-ENTRY",
     "ST-READS"
    ],
    "spec": [
+    {
+     "label": "Current operation-window deployment/recovery acceptance",
+     "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
+    },
     {
      "label": "R72 accepted M1\u2013M4 criterion disposition",
      "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
@@ -753,7 +761,7 @@
      "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
-   "ref": "R72 accepts M1\u2013M4 on draft #8898. Writer owner policy and current-authority fences are retained; reader clamping is withdrawn. Runtime/lifecycle and production admission follow their own gates.",
+   "ref": "Namespace merge, accepted preview source, whole M6, operator release and production enablement are separate boundaries.",
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8899"
   },
   {
@@ -762,7 +770,7 @@
    "phase": "now",
    "state": "decision",
    "short": "Tenant config surface",
-   "title": "Which of the 264 settings on dev a tenant owner may change, which the hoster pins, which are secrets (12 contested)",
+   "title": "Classify the remaining tenant/operator/secret settings and permission catalogue. The pinned October dev census has 264 settings and 12 contested; bounded M2 accepts two reviewed display names.",
    "spec": [
     {
      "label": "config surface",
@@ -833,7 +841,7 @@
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
     },
     {
-     "label": "remaining M2 gates",
+     "label": "Resolution/lifecycle remaining scope",
      "href": "../tenancy/multitenant-delivery-dashboard.md#ten-resolve"
     },
     {
@@ -854,13 +862,17 @@
    "state": "progress",
    "short": "Current auth / M6 identity",
    "title": "R72 accepts M2 current tenant authority, signature/refusal and listener boundaries. Existing legacy API_SECRET authority is preserved after reader-clamp withdrawal.",
-   "ref": "Human issuer/refresh, compatible existing-grant lifecycle and production trust remain M6. Broader parent-card scope stays open.",
+   "ref": "Human OIDC/session implementation is fixed on a separate local branch with source checks; signed native DB/Vault/HTTPS/browser and provider acceptance remain UNMEASURED. Wider grant lifecycle and production trust remain M6.",
    "depends": [
     "TEN-RESOLVE",
     "MT-SECRETS-CONTRACT"
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "Separate local shared OIDC/session capability and remaining acceptance",
+     "href": "../../../reports/tenancy/shared-oidc-sessions-2026-11-07/README.md"
+    },
     {
      "label": "R72 accepted criterion disposition",
      "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
@@ -907,7 +919,7 @@
    "state": "done",
    "short": "Two-tenant / client lab M3-M4",
    "title": "R72 promotes M3 after M1/M2, then M4 using actual executable A/B HTTP/stored outcomes, unsafe startup refusal, pinned headless clients and source-pattern replay.",
-   "ref": "No all-client claim. Android emulator C; iOS outside automated lab. No default/production enablement or operator release.",
+   "ref": "Later ed2 actual pinned-client campaign passes at its declared instrument/source. Android emulator C; iOS outside automated lab. No all-client, default/production or operator-release claim.",
    "depends": [
     "ST-PG",
     "T30-WIRING",
@@ -915,6 +927,10 @@
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898",
    "spec": [
+    {
+     "label": "Current operation-window deployment/recovery acceptance",
+     "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
+    },
     {
      "label": "R72 accepted criterion disposition",
      "href": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06"
@@ -977,8 +993,12 @@
    "state": "progress",
    "short": "Operator migrations",
    "title": "Explicit operator migration catalogues and read-only preview readiness exist; complete two-store runner, import/resource and operational acceptance remain open. Serving never migrates automatically.",
-   "ref": "R60 promotes M0 foundations with current migration/startup refusal plus bounded pooler evidence. Complete two-store runner/import/resource/operational acceptance remains open.",
+   "ref": "R60 M0 and later append-only tenant-local allocator migration/readiness and restore acceptance retain their actual heads. Serving never migrates; complete two-store/import/resource/production operations remain open.",
    "spec": [
+    {
+     "label": "Current operation-window deployment/recovery acceptance",
+     "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
+    },
     {
      "label": "R60 current acceptance and milestone boundaries",
      "href": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06"
@@ -1052,8 +1072,12 @@
    "state": "progress",
    "short": "Tenant secrets / Vault",
    "title": "Vault Transit and encrypted PG references remain exercised. Adopted optional new-format local signature verification keeps private signing keys in the secrets component and current session/key/grants in PostgreSQL; production issuance/renewal, identity, HA and recovery remain open.",
-   "ref": "R48 accepts bounded local data-token verification at3d5eac19. Local Ed25519 data-token verification is separate from the unimplemented human management issuer and full provider/JOSE acceptance; legacy behavior remains supported.",
+   "ref": "R48 accepts bounded local data-token verification at3d5eac19. Separate shared human-session source exists with source checks, but signed native/provider acceptance is UNMEASURED. Production Vault service-login renewal, unseal custody and HA retain their contracts.",
    "spec": [
+    {
+     "label": "Separate local shared OIDC/session capability and remaining acceptance",
+     "href": "../../../reports/tenancy/shared-oidc-sessions-2026-11-07/README.md"
+    },
     {
      "label": "R48 bounded local data-token API acceptance",
      "href": "../remedial/rc-16.0.0-integration-record.md#r48---local-public-token-verification-through-actual-api-on-3d5eac19-2026-11-05"
@@ -1098,8 +1122,12 @@
    "depends": [
     "ARCH-SEAM-CONTRACT"
    ],
-   "ref": "R44 accepts local bc4ee1a9; published #8898 is bc4ee1a9. No new backend policy, milestone or RC gate.",
+   "ref": "R44 accepts bounded composition at bc4ee1a9; later published #8898 is ed2ced00. Current reference topology is one host with fixed service cohort; broader stable portability remains open.",
    "spec": [
+    {
+     "label": "Current operation-window deployment/recovery acceptance",
+     "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
+    },
     {
      "label": "architecture execution plan",
      "href": "../tenancy/architecture-seams-execution-plan-2026-11-05.md"
@@ -1133,15 +1161,19 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "Private allocation / separate accepted branches",
-   "title": "Published REST and independent R55 profile retain private allocation behind separate caller policies. R67 accepts bounded recovered clinical constructor controls; the joined clinical candidate is local and in verification.",
-   "check": "Nativee5fe0b5e full7080/80pending/0failure, prior same-head browser684/prcheckOK; acquisition14/concurrency4, six controls/restored14/4 and caller4/reused-target2fail/restored4.",
+   "short": "Current-property reuse / raw frames",
+   "title": "Bounded f0 characterization finds selected evaluator/API current properties agree; realtime retains a different raw browser-frame contract. Time, tenant, settings, input identity and expiry matter. A publication service is not selected.",
+   "check": "Derived-output characterization has intended corruption/stale/cross-tenant/settings/deletion/partial-input controls and restored success. This is synthetic component evidence, not complete public auth/role, provider or distributed publication acceptance.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "Whole R55 profile branch remains separate; only the private helper/evaluateCycle hunk joins the local candidate. No common atomic revision, live profile/evaluator role or notification handoff accepted.",
+   "ref": "Private acquisition helper reuse and independent R55 profile remain distinct. R73 accepts functional multitenant runtime; common immutable result interface/reuse, distributed publication, capacity and universal execution-profile admission remain open.",
    "spec": [
+    {
+     "label": "Derived-output characterization and limits",
+     "href": "../../../reports/tenancy/derived-output-2026-11-07/README.md"
+    },
     {
      "label": "R62/R64 published acceptance and verification",
      "href": "../remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06"
@@ -1187,8 +1219,12 @@
    "state": "progress",
    "short": "Durable runtime / replay",
    "title": "R73 accepts the functional M5 reference on one host using polling: bounded current-state and evaluator recovery, durable alarm/request state, and actual reference roles and browser consumers. Broader operating and delivery admission remain separate.",
-   "ref": "Live provider/device delivery, capacity/freshness/egress budgets, multi-node ownership and M6 identity-bearing tenant restore retain separate acceptance.",
+   "ref": "Later native restart/restore and cold Compose acceptance close bounded one-host capabilities. Live provider/device delivery, capacity/freshness/egress, dynamic/multi-host ownership and whole M6 retain separate acceptance.",
    "spec": [
+    {
+     "label": "Current operation-window deployment/recovery acceptance",
+     "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
+    },
     {
      "label": "R73 accepted functional M5 and bounded SQL operations",
      "href": "../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch"
@@ -1242,16 +1278,14 @@
    "id": "D-EVENT",
    "short": "Commit event (decided 2026-10-31)",
    "owner": "maintainer; decided 2026-10-31",
-   "question": "Decided by the maintainer on 2026-10-31, walked through with session -81. Reopen condition (4), a count of replica-set sites, was dropped because a replica set is optional, so the event's source is the write's own result. (1) Scope: an in-process event, with records named from the write step's WriteResult.items[]. It is complete because every supported write goes through Nightscout (direct writers to MongoDB are unsupported; xDrip+'s MongoDB upload is deprecated). The later multitenant direction uses the adopted B7 durable delivery contract and bounded full current-state snapshot reconciliation. The time-only alarm tick is separate from the reconciliation schedule; a wake or tick alone establishes no recovery guarantee. The event stays internal and unstable until a subscriber outside lib/ exists. (2) Two events: one per write(intent), equal to its WriteResult, for subscribers; and the per-database-call event kept as backend instrumentation for differential analysis across backends, which is not a contract. (3) Each record entry carries _id, identifier, outcome, and the problems list for refused records, plus collection, source and counts. There are no document contents and no filter. Above the 1,000 cap the event lists no records and says so, and readers reload. Under multitenancy each event also carries the tenant. (4) It ships with write(intent) release 2, aimed at 16.0.0 through the entry bar (nothing is ruled out of 16.0.0). Subscribers are added as each clears its gates: the one-person profile's alarm check, then the cache, then the socket's dataUpdate. Follow-up, separate: the CLI pattern for roles under each tenancy (nightscout single [roles,...] vs nightscout multitenant [roles,...]). The aim is one theory of operations for single-tenant and multitenant sites, since a single-tenant site already runs a headless API v3, with the monolithic single-tenant site staying the default (see D-EXEC-PROFILE).",
-   "holds": [
-    "ST-EVENT"
-   ],
+   "question": "Adopted: one internal in-process event per write(intent), naming WriteResult.items[] without document contents; above the cap readers reload. The per-database-call event is backend instrumentation. This ships with write(intent) release 2. Multitenant cross-process recovery follows the later B7 durable delivery and bounded full current-state reconciliation contracts; R73 accepts the functional one-host polling reference. A wake/tick alone supplies no recovery guarantee. Provider/device and multi-node delivery remain separately gated.",
+   "holds": [],
    "options": [
     {
      "label": "Per-write event from items[], in-process; per-call kept as instrumentation",
      "recommended": true,
      "gains": "exact on every site with no extra read (release 2 already resolves ids); one fact per write that a later transport can carry; backend comparison through the per-call event",
-     "risks": "durable runtime recovery needs its own bounded acceptance; live provider/device delivery remains separately gated"
+     "risks": "broader runtime budgets and provider/device/multi-node delivery require their own acceptance"
     }
    ]
   },
@@ -1259,7 +1293,7 @@
    "id": "D-EXEC-PROFILE",
    "short": "Tenancy \u00d7 execution: three profiles",
    "owner": "maintainer; framed 2026-10-31, evidence from the profile prototype",
-   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata; the explicit multitenant API preview now builds request-local loader frames. M5/M6 track multitenant evaluator/realtime acceptance; the independent computed-single prototype has a separate entry bar. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. single keeps its resident path either way. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan \u00a77b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
+   "question": "Tenancy (one site's data or many) and execution (a resident ddata kept current, or views computed from bounded queries when a write, a timer or a request needs them) are separate axes. Today the subcommand couples them: single is one tenant with a resident ddata; the explicit multitenant API preview now builds request-local loader frames. R73 accepts the functional one-host multitenant evaluator/realtime reference; the independent computed-single prototype has a separate entry bar. A third profile, one tenant computed on demand, would let an independent or low-cost single-tenant site skip the resident ddata without taking on multitenancy or PostgreSQL. It also takes the alarm trigger inside one process, so it does not wait on a cross-process change feed. Default single keeps its resident path. Current multitenant separate processes and the independent computed-single prototype do not select a universal process/host topology. Execution mode is chosen by evidence (maintainer, 2026-10-31): \"If the evidence suggested that single tenant needs ddata for cost savings/freemium quotas, then we need to keep that behavior as appropriate.\" Evidence needed: alarm and properties equality through the profile's own trigger (replay lab, the execution plan \u00a77b cases), and per-tenant memory, CPU per evaluation, database operations per write and per tick, idle cost, and the latest-reading latency, resident against computed, at the full windows the views need (60 h treatments, 24 h device statuses), giving the break-even between the two. Roles are a third axis (maintainer, 2026-10-31, follow-up open): a single-tenant site already runs a headless API v3, so `nightscout single [roles,...]` beside `nightscout multitenant [roles,...]` would give single-tenant and multitenant sites one theory of operations, with the monolithic single-tenant site staying the default.",
    "holds": [
     "ST-VIEWS-PROFILE"
    ],
@@ -1284,16 +1318,15 @@
   },
   {
    "id": "D-LOOP-ID",
-   "short": "identity rules decided 2026-10-29; Loop's answers awaited",
-   "owner": "maintainer (the reply's channel; the three rules after the Loop maintainers answer)",
-   "question": "The revised reply to the Loop maintainers was posted on the project site on 2026-10-27; their answers are awaited. The maintainer decided 2026-10-29 to proceed without waiting, revisable when Loop answers: (1) identifier format: 1 to 256 URL-safe characters, a UUID recommended, placeholders (invalid, undefined, null, NaN) refused; (2) _id: a client may still send an ObjectId _id over API v1 (legacy); going forward the server sets _id and the client sets identifier. (3) decided the same day after a client survey, and superseded on 2026-10-31 by compatibility B (a matched re-send replaces on every collection; WRITE_RESEND=merge is the opt-in way back): merge on match stays the default (Loop's doses and early-ended overrides and Trio's finalized doses and temp targets are re-sent by POST over v1 and rely on the update; a refusal makes them retry silently without end); API v3 keeps refusing a changed date, device or event type; PUT replaces; a site setting plus per-client D20 quirks may select keep-first or refuse for clients that opt in, and a default changes only in a major (16.0.0 if it clears the entry bar, otherwise 17.0.0). The published reply's case 2 is corrected and Loop's dropped carb edits (an _id cached for 24 h) raised. (Absent identifier, scope and re-send after delete were decided earlier, \u00a74.2.)",
+   "short": "Identity rules adopted; external feedback remains",
+   "owner": "maintainer; current identity specification owns the rules",
+   "question": "Proceed under the adopted identity specification and compatibility A/B/C. The server owns _id; clients own identifier, with legacy API v1 forms preserved. Current identifier format is 1\u2013256 characters with URL path encoding; strict/lenient handling is path/configuration-specific. Current resend modes are replace, merge-except-treatments, acknowledge and refuse; bare merge refuses startup. Per-client D20 overrides remain future work. Earlier Loop correspondence is retained as context; waiting for a reply does not block the already merged identifier-first work.",
    "holds": [],
    "options": [
     {
-     "label": "Send the reply, then settle the three",
-     "recommended": true,
-     "gains": "the answers come with Loop's view; ID-SIMPLE-MATCH is merged, so the reply points at working code",
-     "risks": "ID-FIRST-MATCH waits on another project's answer"
+     "label": "Apply current identity specification and compatibility modes",
+     "gains": "one named home for implemented identity behavior; external feedback can inform a later revision",
+     "risks": "new client requirements require measured compatibility and release review"
     }
    ]
   },
@@ -1326,7 +1359,7 @@
     {
      "label": "Walk through the sections",
      "recommended": true,
-     "gains": "unblocks the config table and every multitenant entrypoint",
+     "gains": "completes the wider catalogue beyond the two accepted display settings",
      "risks": "the configuration-surface document is partly stale; the census on dev (264 settings, 12 contested) is the current list"
     }
    ]
