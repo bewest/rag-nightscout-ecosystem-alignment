@@ -1,0 +1,43 @@
+{
+  "classification": "reproduced",
+  "source": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "imageId": "sha256:a2d2f08fd0a7097d8f6a6da3bb33ef6fe3e11e68d00c766411eef296618d18c4",
+  "originalState": "STOPPED",
+  "originalCleanup": false,
+  "failureStage": "browser",
+  "failure": "BROWSER_CHILDREN_NOT_CLOSED",
+  "cleanupError": "UNKNOWN_CHILD_OR_ADOPTED_MEMBER_RETAINED",
+  "completedZeroExitSteps": [
+    "prepare",
+    "config",
+    "infrastructure",
+    "bootstrap-create",
+    "bootstrap",
+    "roles",
+    "participant-preflight"
+  ],
+  "browserCompletedReceipt": false,
+  "restoreDemoExecuted": false,
+  "adoptedBirthsWithoutAdmittedCustody": 4,
+  "allFourInFinalBrowserLedger": true,
+  "witnessAvailabilityAtOriginalFirstClassification": "UNMEASURED",
+  "originalReceiptSha256": "f9644a3da79dfdb1f96ee674756344477323cd4b50c3339a0aa7ae8657277028",
+  "separateRecovery": {
+    "state": "RECOVERED",
+    "exactSavedResourceCounts": {
+      "containers": 9,
+      "volumes": 3,
+      "networks": 2
+    },
+    "recoveryReceiptSha256": "4366fe16d3fbab442ac5b1894cee59fa603eb7225faba9ddd2d1737bd5ec1d65",
+    "exactInventory": true,
+    "completeBaselineFingerprintsUnchanged": true,
+    "stableEndpointEquality": true,
+    "fullEndpointEquality": false,
+    "allOriginalAndRecoveryBirthsAbsent": true,
+    "birthCount": 436,
+    "emptyOwnedBrowserTmpVerified": true,
+    "runtimeReleased": true
+  },
+  "limits": "No retroactive browser/demo/cleanup pass, actor executable attribution or original scheduling-cause claim."
+}
