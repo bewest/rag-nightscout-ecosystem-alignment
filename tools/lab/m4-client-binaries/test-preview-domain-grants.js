@@ -107,7 +107,7 @@ test('actual lab bootstrap consumes selected grant helper, rather than retaining
     return local(name);
   }};
   vm.runInNewContext(script,sandbox,{filename});
-  await assert.rejects(sandbox.module.exports.Lab.prototype.openPreview.call({opt:{worktree:source},containers:[],state:'/unused'}),error=>error===stop);
+  await assert.rejects(sandbox.module.exports.Lab.prototype.openPreview.call({opt:{worktree:source},custody:{names:{postgres:'synthetic_pg',vault:'synthetic_vault'},stage:()=> 'a'.repeat(64),start:()=>{}},containers:[],state:'/unused'}),error=>error===stop);
   for(const logical of ['entries','food']){
     current=logical==='entries'?'preview_data':'preview_food';
     const expected=grants({load,catalogue:domainCatalogue.get(logical).catalogue,logical,namespace:current,role:'preview_app'});

@@ -10,7 +10,65 @@ The synthetic cgmsim driver and oref0 profile preload provide a fixed input cloc
 client source files are unchanged. Baseline-as-source comparison, mobile binaries and a socket
 forwarder remain separate scopes. This lab promotes no milestone.
 
-## Run
+## Current finite custody entrypoint (source checked; native pending)
+
+The current executable profile is **cgmsim + oref0 only**, with three static services
+(PostgreSQL, MongoDB and Vault), at most one live client container, and at most 64 serial
+client slots. Connector opt-in runs are setup-refused by this profile; their historical
+measurements remain in their dated records. No Android binary or device runs here.
+
+A reviewed finite parent must bind the application commit, these helper files, the installed
+client/build provenance, dependency source and four exact image IDs before executing
+`custody-run.js`. Its fixed arguments are `--plan <absolute-private-plan> --out <initially-absent-output>
+--ref <full-application-commit> --repository <absolute-source-repository> --dependencies
+<absolute-node_modules>`. It runs the existing queue gate with `--clients cgmsim,oref0`.
+Direct lab execution requires `NS_M4_CUSTODY_PLAN` and an independently running observer;
+absence is a setup refusal. A parent plan is custody configuration, not execution permission.
+
+The private version-1 `m4-cgmsim-oref0-v1` plan has `status: PARENT_BOUND`, a fresh v4
+`ownerUUID`, `applicationHead`, `activeSeconds: 600`, `cleanupSeconds: 120`,
+`dockerExecutable: /usr/bin/docker`, an absolute initially empty `dockerConfig`,
+`endpointProfile: stable-network-settings-v1`, `images` keyed exactly `postgres`, `mongo`,
+`vault`, `client` with full SHA256 image IDs, and `baseline` container/volume/network ID
+arrays. The independent parent captures full baseline fingerprints with
+`custody-observer.baselineSnapshot(invoke)` before resources. Inspect classes use strict
+32-ID batches, exact returned sets, full IDs, caps 256/1024/64 and a 128-KiB argv ceiling.
+Only digests of complete Config/HostConfig are retained, including Env; raw baseline Env
+is never persisted. The selected endpoint profile fingerprints NetworkSettings Ports,
+Networks and SandboxID; dynamic State/health/statistics are outside that profile.
+
+Each container is created stopped under a fixed initially absent name, journaled by exact ID,
+validated against the typed image/argv/env/mount specification, then independently inspected.
+`custody/custody.jsonl` is fsynced before `custody/observer.jsonl` and its exclusive receipt
+under `custody/receipts/`; actual `start` consumes that receipt. Anonymous image volumes
+are captured by exact identity before start. Cleanup uses saved IDs, fresh complete identity
+checks and fresh empty volume references. Unidentified create results remain unresolved;
+names and later absence never grant cleanup authority. A receipt wait is bounded to eight
+seconds and fails closed. Client output still comes from the attached process; its status
+comes from the completed container's actual ExitCode, preserving oref0's HTTP/exit distinction.
+
+After the reviewed host supervisor has reaped all children, the parent calls the M4-specific
+`normalize(entries, {owner, baseline, supervisor, run})` and
+`verifyBaseline(invoke, savedSnapshot)`. The supervisor phase must be explicitly
+`m4-clients`, with its actual fresh process readback/unknown-child/terminal-receipt fields;
+a full/browser result cannot be relabeled. On interrupted runs the parent may call
+`custody.recover({plan, directory})` within the **same** cleanup budget, using only durable
+identified resources. An unresolved create or missing journal is a failed release verdict.
+Scientific gate success and physical release are separate verdicts.
+
+The proposed finite envelope is 600 seconds active plus one shared 120-second cleanup
+budget, including observer and all exact-ID cleanup/verification. These are ceilings, not
+measured durations. The parent starts its deadline before all pre-resource commands and
+must reject insufficient remaining time; it must not reset cleanup or adopt unknown actors.
+The wrapper does not enforce the outer host deadline or claim host-process custody itself.
+Native performance, Docker metadata shape and complete physical closure remain unmeasured
+for this source until the acceptance lead binds and runs the reviewed parent.
+
+Offline checks: `node tools/lab/m4-client-binaries/test-custody.js`, existing `test-lab.js`,
+and `test-classify.py`. The custody checks use recording transports and synthetic rows;
+they do not execute Docker, a client, a server, or a listener.
+
+## Historical direct invocation and preparation
 
 Prepare private CRM dependencies and bundle in the worktree named below; installed clients
 and their dependencies must be present under `externals/` or the explicit `NS_M4_EXTERNALS` root.
@@ -23,6 +81,9 @@ missing dependencies/images. It starts only uniquely named owned fixtures on loo
 uses direct-alias resolution and `AUTH_DEFAULT_ROLES=denied`, and removes its own resources.
 Coordinate fixture ownership before running; never delete another lane's resources.
 
+The following invocation documents the earlier capture interface; current execution uses
+the finite custody entrypoint above and requires its bound plan/observer.
+
 ```bash
 NS_M4_GATE_DEPENDENCIES="$PWD/externals/work/crm-m4-client-lab-20261106/node_modules" \
 NS_M4_GATE_OUT=/tmp/m4-client-measurement-unique \
@@ -33,9 +94,9 @@ node tools/queue/gates/m4-client-binaries.js --ref 35903069b46974cfbaddd8dce00c9
 The gate archives the selected commit, verifies the private lockfile and passes the exact
 archived head to the runner. `NS_M4_GATE_REPO` and `NS_M4_EXTERNALS` support an isolated
 alignment worktree without relocating or editing a client checkout. The output directory
-must not exist; preserve each capture rather than overwrite it. Default gate clients are
-cgmsim and oref0. `--clients connect-share,connect-source,oref0,cgmsim` selects the broader
-lab; connector's scheduler can take several minutes. Logs contain synthetic data only;
+must not exist; preserve each capture rather than overwrite it. The historical broader selection was
+`--clients connect-share,connect-source,oref0,cgmsim`; it is outside the current finite
+custody profile. Logs contain synthetic data only;
 query values and exchange-token path segments are redacted.
 
 ## Oracle and classification

@@ -77,7 +77,13 @@ function stableJSON (value) {
 }
 const random = () => crypto.randomBytes(24).toString('hex');
 const sha1 = value => crypto.createHash('sha1').update(value).digest('hex');
-const docker = args => execFileSync('docker', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 60000 }).trim();
+let selectedCustody;
+const docker = args => {
+  if (selectedCustody) return selectedCustody.read(args);
+  // Import-only recording tests may supply a denied/mocked read transport.
+  assert(!['run','create','start','rm'].includes(args[0]), 'M4_CUSTODY_REQUIRED');
+  return execFileSync('docker', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000 }).trim();
+};
 function redactPath (url) { // keep the path and query keys, drop query values
   const [p, q] = String(url).split('?');
   const safePath = p.replace(/(\/authorization\/request\/)[^/]+/, '$1[redacted]');
@@ -192,6 +198,7 @@ function startProxy (target, label) {
 class Lab {
   constructor (opt) {
     this.opt = opt;
+    this.custody = opt.custody;
     this.state = path.join(opt.out, 'state');
     this.containers = [];
     this.children = [];
@@ -244,12 +251,12 @@ class Lab {
     for (const logical of domainNames) catalogues[logical] = req('lib/server/serve/postgres-domains').get(logical).catalogue;
     const permissions = domainNames.flatMap(d => ['read', 'create', 'update', 'delete'].map(a => 'api:' + d + ':' + a));
     const suffix = crypto.randomBytes(8).toString('hex');
-    const pgName = 'm4-lab-pg-' + suffix, vaultName = 'm4-lab-vault-' + suffix;
+    const pgName = this.custody.names.postgres, vaultName = this.custody.names.vault;
     const pv = { suffix, domainNames, allNamespaces, permissions, roots: [random(), random()], tokens: [] };
     const pgPassword = random();
-    execFileSync('docker', ['run', '--rm', '--name', pgName, '-d', '-p', '127.0.0.1::5432', '-e', 'POSTGRES_USER=operator',
-      '-e', 'POSTGRES_PASSWORD', '-e', 'POSTGRES_DB=m4lab_test', PG_IMAGE], { env: { ...process.env, POSTGRES_PASSWORD: pgPassword }, stdio: ['ignore', 'pipe', 'pipe'] });
-    this.containers.push(pgName);
+    const pgId = this.custody.stage('postgres', { ports: ['5432/tcp'], env: { POSTGRES_USER: 'operator',
+      POSTGRES_PASSWORD: pgPassword, POSTGRES_DB: 'm4lab_test' } });
+    this.custody.start(pgId);
     const pgPort = docker(['port', pgName, '5432/tcp']).split(':').pop();
     pv.adminURI = 'postgres://operator:' + pgPassword + '@127.0.0.1:' + pgPort + '/m4lab_test';
     await until(() => { try { docker(['exec', pgName, 'pg_isready', '-h', '127.0.0.1', '-U', 'operator', '-d', 'm4lab_test']); return true; } catch { return false; } }, 'owned PostgreSQL', 60000);
@@ -284,9 +291,9 @@ class Lab {
       await admin.query("INSERT INTO preview_auth.tenant_authorization_subject_roles VALUES ($1, $2, 'viewer')", [tenant, SUBJECT]);
     }
     const vaultRoot = random();
-    execFileSync('docker', ['run', '--name', vaultName, '-d', '-p', '127.0.0.1::8200', '-e', 'VAULT_DEV_ROOT_TOKEN_ID', VAULT_IMAGE,
-      'server', '-dev', '-dev-listen-address=0.0.0.0:8200'], { env: { ...process.env, VAULT_DEV_ROOT_TOKEN_ID: vaultRoot }, stdio: ['ignore', 'pipe', 'pipe'] });
-    this.containers.push(vaultName);
+    const vaultId = this.custody.stage('vault', { ports: ['8200/tcp'], env: { VAULT_DEV_ROOT_TOKEN_ID: vaultRoot },
+      command: ['server', '-dev', '-dev-listen-address=0.0.0.0:8200'] });
+    this.custody.start(vaultId);
     pv.vaultAddress = 'http://127.0.0.1:' + docker(['port', vaultName, '8200/tcp']).split(':').pop();
     const vault = async (resource, body) => {
       const response = await fetch(pv.vaultAddress + '/v1/' + resource, { method: 'POST', headers: { 'X-Vault-Token': vaultRoot, 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(5000) });
@@ -336,9 +343,9 @@ class Lab {
 
   async openBaseline () {
     const suffix = crypto.randomBytes(8).toString('hex');
-    const name = 'm4-lab-mongo-' + suffix;
-    docker(['run', '--rm', '--name', name, '-d', '--ulimit', 'nofile=64000:64000', '-p', '127.0.0.1::27017', MONGO_IMAGE, '--bind_ip_all']);
-    this.containers.push(name);
+    const name = this.custody.names.mongo;
+    const mongoId = this.custody.stage('mongo', { ports: ['27017/tcp'], command: ['--bind_ip_all'] });
+    this.custody.start(mongoId);
     const port = docker(['port', name, '27017/tcp']).split(':').pop();
     const bl = { container: name, secret: random(), uri: 'mongodb://127.0.0.1:' + port + '/m4lab_test_' + suffix };
     this.baseline = bl;
@@ -433,32 +440,34 @@ class Lab {
   lastRecord (stack, mark, filter) { const r = this.recordsSince(stack, mark, filter); return r[r.length - 1]; }
 
   // --- containers ----------------------------------------------------------------
-  dockerArgs (checkout, extraEnv, { detach } = {}) {
-    const ownedName = detach || 'm4-lab-client-' + crypto.randomBytes(8).toString('hex');
-    this.containers.push(ownedName);
-    const args = ['run', '--rm', '--name', ownedName, ...(detach ? ['-d'] : []), '--network', 'host', '--user', process.getuid() + ':' + process.getgid()];
-    if (this.opt.control !== 'hosts') for (const a of Object.values(ALIAS)) args.push('--add-host', a + ':127.0.0.1');
+  dockerArgs () { throw new Error('M4_CUSTODY_DEFAULT_CLIENT_PROFILE_ONLY'); }
+  clientSpec (checkout, extraEnv, command) {
     const modules = fs.realpathSync(path.join(checkout, 'node_modules'));
-    if (modules !== path.join(checkout, 'node_modules')) args.push('-v', modules + ':' + modules + ':ro');
-    args.push('-v', checkout + ':' + checkout + ':ro', '-v', this.state + ':' + this.state, '-v', LAB + ':' + LAB + ':ro', '-e', 'HOME=' + this.state, '-e', 'TZ=UTC', '-e', 'M4_BASE=' + this.base);
-    const clientEnv = { ...extraEnv, PATH: path.join(this.state, 'bin') + ':' + (extraEnv.PATH || '/usr/local/bin:/usr/bin:/bin') };
-    for (const [k, v] of Object.entries(clientEnv)) args.push('-e', k + '=' + v);
-    args.push('-w', this.state, CLIENT_IMAGE);
-    return args;
+    const mounts = [{ source: checkout, destination: checkout, readOnly: true },
+      { source: this.state, destination: this.state, readOnly: false }, { source: LAB, destination: LAB, readOnly: true }];
+    if (modules !== path.join(checkout, 'node_modules')) mounts.push({ source: modules, destination: modules, readOnly: true });
+    return { user: process.getuid() + ':' + process.getgid(), workdir: this.state, mounts, command,
+      hosts: this.opt.control === 'hosts' ? [] : Object.values(ALIAS).map(host => host + ':127.0.0.1'),
+      env: { HOME: this.state, TZ: 'UTC', M4_BASE: String(this.base), ...extraEnv,
+        PATH: path.join(this.state, 'bin') + ':' + (extraEnv.PATH || '/usr/local/bin:/usr/bin:/bin') } };
   }
   async runClient (checkout, env, cmd, label, timeout = 30000) {
-    const t0 = Date.now();
-    const result = await new Promise((resolve, reject) => {
-      const child = spawn('docker', [...this.dockerArgs(checkout, env), ...cmd], { stdio: ['ignore', 'pipe', 'pipe'] });
-      let stdout = '', stderr = '';
-      child.stdout.on('data', b => { stdout += b; });
-      child.stderr.on('data', b => { stderr += b; });
-      const timer = setTimeout(() => child.kill('SIGTERM'), timeout);
-      child.once('error', error => { clearTimeout(timer); reject(error); });
-      child.once('close', (status, signal) => { clearTimeout(timer); resolve({ status, signal, stdout, stderr }); });
-    });
+    const t0 = Date.now(), id = this.custody.stage('client', this.clientSpec(checkout, env, cmd));
+    let result;
+    try {
+      const [executable, ...argv] = this.custody.start(id, true);
+      result = await new Promise((resolve, reject) => {
+        const child = spawn(executable, argv, { stdio: ['ignore', 'pipe', 'pipe'] });
+        let stdout = '', stderr = '';
+        child.stdout.on('data', b => { stdout += b; }); child.stderr.on('data', b => { stderr += b; });
+        const timer = setTimeout(() => child.kill('SIGTERM'), timeout);
+        child.once('error', error => { clearTimeout(timer); reject(error); });
+        child.once('close', (status, signal) => { clearTimeout(timer); resolve({ status, signal, stdout, stderr }); });
+      });
+      if (result.signal) throw new Error('Client process interrupted: ' + label + ' signal=' + result.signal);
+      result.status = this.custody.finishClient(id, result);
+    } finally { this.custody.remove(id); }
     const out = { status: result.status, signal: result.signal, ms: Date.now() - t0, stdout: result.stdout || '', stderr: result.stderr || '' };
-    if (result.signal) throw new Error('Client process interrupted: ' + label + ' signal=' + result.signal);
     fs.appendFileSync(path.join(this.opt.out, 'clients.log'), '=== ' + new Date().toISOString() + ' ' + label + ' exit=' + out.status + '\n' + this.redactSecrets(out.stdout + out.stderr) + '\n');
     return out;
   }
@@ -909,12 +918,7 @@ class Lab {
     if (this.preview && this.preview.admin) await this.preview.admin.end().catch(() => {});
     for (const s of [this.preview && this.preview.proxy, this.baseline && this.baseline.proxy]) if (s) await s.close();
     for (const worker of this.children) fs.appendFileSync(path.join(this.opt.out, worker.label + '-server.log'), this.redactSecrets(worker.stdout + '\n' + worker.stderr), { mode: 0o600 });
-    const audit = [];
-    for (const name of this.containers) {
-      try { docker(['rm', '-f', '-v', name]); } catch {}
-      const r = spawnSync('docker', ['inspect', name], { encoding: 'utf8' });
-      audit.push({ name, absent: r.status !== 0 && /no such/i.test(r.stderr) });
-    }
+    const audit = this.custody.close();
     for (const f of ['preview.json', 'share.key']) { try { fs.unlinkSync(path.join(this.state, f)); } catch {} }
     return audit;
   }
@@ -922,6 +926,12 @@ class Lab {
 
 async function main () {
   const opt = parseArgs(process.argv.slice(2));
+  assert.deepEqual(opt.clients.slice().sort(), ['cgmsim','oref0'], 'M4_CUSTODY_DEFAULT_CLIENT_PROFILE_ONLY');
+  assert(process.env.NS_M4_CUSTODY_PLAN, 'M4_CUSTODY_PARENT_PLAN_REQUIRED');
+  const plan = JSON.parse(fs.readFileSync(process.env.NS_M4_CUSTODY_PLAN));
+  fs.mkdirSync(opt.out, { recursive: true, mode: 0o700 });
+  selectedCustody = require('./custody').create({ plan, directory: path.join(opt.out,'custody') });
+  selectedCustody.initialize(); opt.custody = selectedCustody;
   const problems = setupCheck(opt);
   if (problems.length) { console.error('setup refused:\n - ' + problems.join('\n - ')); process.exit(2); }
   fs.mkdirSync(opt.out, { recursive: true, mode: 0o700 });
