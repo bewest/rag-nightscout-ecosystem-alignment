@@ -132,3 +132,62 @@ if(orphanFile)test('retained actual orphan State/NetworkSettings replay through 
  // ACTUAL sanitized State/NetworkSettings and missing referenced global network;
  // other fields/universe are synthetic, NOT a replacement for the full baseline.
 });
+
+
+function mountedRows () {
+ const given=stoppedRows();
+ given.containers[0].Mounts=[
+  {Type:'bind',Source:'/synthetic/first',Destination:'/synthetic/one',RW:false,Propagation:'rprivate',UnknownMount:{preserved:true}},
+  {Type:'volume',Name:'synthetic-volume',Source:'/synthetic/second',Destination:'/synthetic/two',RW:true,Propagation:'',UnknownMount:{preserved:true}}
+ ];
+ return given;
+}
+test('baseline mount presentation order changes preserve complete Destination-keyed configuration',()=>{
+ const observer=require('./custody-observer'),before=mountedRows(),after=structuredClone(before);
+ after.containers[0].Mounts.reverse();
+ assert.notEqual(digest(before.containers[0].Mounts),digest(after.containers[0].Mounts),'MOUNT_ORDER_CONTROL_UNCHANGED');
+ const captured=observer.baselineSnapshot(explicitTransport(before.containers,before.networks));
+ const current=observer.verifyBaseline(explicitTransport(after.containers,after.networks),captured);
+ assert.equal(digest(captured.identities),digest(current.identities));
+ assert.equal(current.endpointComparison.stableEquality,true);
+ assert(!JSON.stringify(current).includes('SYNTHETIC_PRIVATE=value'));
+});
+test('baseline mount additions removals repoints and complete unknown configuration changes still refuse',()=>{
+ const observer=require('./custody-observer'),before=mountedRows(),captured=observer.baselineSnapshot(explicitTransport(before.containers,before.networks));
+ for(const mutate of [
+  r=>{r.Mounts.push({Type:'bind',Source:'/synthetic/third',Destination:'/synthetic/three',RW:false});},
+  r=>{r.Mounts.pop();},r=>{r.Mounts[0].Source='/synthetic/repoint';},r=>{r.Mounts[0].Destination='/synthetic/repoint';},
+  r=>{r.Mounts[0].Type='bind';},r=>{r.Mounts[0].RW=!r.Mounts[0].RW;},r=>{r.Mounts[0].RW=0;},r=>{r.Mounts[0].Propagation='rshared';},
+  r=>{r.Mounts[0].UnknownMount.preserved=1;},r=>{r.Mounts[0].AddedUnknown=true;},r=>{delete r.Mounts[0].UnknownMount;},
+  r=>{r.Config.NewUnknown=true;},r=>{r.HostConfig.NewUnknown=true;},r=>{r.NewUnknownTop=true;}
+ ]){const after=structuredClone(before);after.containers[0].Mounts.reverse();mutate(after.containers[0]);assert.throws(()=>observer.verifyBaseline(explicitTransport(after.containers,after.networks),captured),/M4_BASELINE_CHANGED/);}
+});
+test('baseline mount Destination requires unique absolute typed keys before capture',()=>{
+ const observer=require('./custody-observer');
+ for(const mutate of [r=>{r.Mounts={};},r=>{r.Mounts[0]=null;},r=>{r.Mounts[0].Destination='';},r=>{r.Mounts[0].Destination='relative';},
+  r=>{r.Mounts[0].Destination=1;},r=>{delete r.Mounts[0].Destination;},r=>{r.Mounts[0].Destination='/synthetic/\\u0000';r.Mounts[0].Destination=r.Mounts[0].Destination.replace('\\u0000',String.fromCharCode(0));},
+  r=>{r.Mounts[1].Destination=r.Mounts[0].Destination;}
+ ]){const given=mountedRows();mutate(given.containers[0]);assert.throws(()=>observer.baselineSnapshot(explicitTransport(given.containers,given.networks)),/M4_ENDPOINT_PROFILE_REFUSED/);}
+});
+
+test('actual persisted baseline and verification output omit raw errors health bodies and Env',()=>{
+ const observer=require('./custody-observer'),path=require('node:path'),os=require('node:os'),directory=fs.mkdtempSync(path.join(os.tmpdir(),'m4-runtime-output-'));
+ const given=mountedRows(),row=given.containers[0];
+ row.Config.Env=['M4_ENV_SECRET_SENTINEL'];
+ row.State={...row.State,Pid:0,ExitCode:0,OOMKilled:false,Error:'M4_ERROR_SECRET_SENTINEL',UnknownOutput:'M4_UNKNOWN_SECRET_SENTINEL',Health:{Status:'unhealthy',FailingStreak:2,Log:[{Output:'M4_HEALTH_SECRET_SENTINEL'}],Output:'M4_HEALTH_BODY_SENTINEL'}};
+ row.ExecIDs=['M4_EXECID_SECRET_SENTINEL'];row.RestartCount=3;
+ try{
+  const before=observer.baselineSnapshot(explicitTransport(given.containers,given.networks));
+  const after=observer.verifyBaseline(explicitTransport(given.containers,given.networks),before);
+  for(const [name,value] of [['baseline.json',before],['verify.json',after]]){const file=path.join(directory,name);fs.writeFileSync(file,JSON.stringify(value),{flag:'wx',mode:0o600});const bytes=fs.readFileSync(file,'utf8');assert(!bytes.includes('SECRET_SENTINEL')&&!bytes.includes('BODY_SENTINEL'),'M4_RAW_RUNTIME_OR_ENV_PERSISTED');}
+  assert.deepEqual(before.containerObservations[cid].runtime,{State:{Running:false,Paused:false,Restarting:false,OOMKilled:false,Dead:false,Status:'exited',Pid:0,ExitCode:0,Health:{Status:'unhealthy',FailingStreak:2}},RestartCount:3});
+  const changed=structuredClone(given);changed.containers[0].State.Running=true;
+  assert.throws(()=>observer.baselineSnapshot(explicitTransport(changed.containers,changed.networks)),/M4_ENDPOINT_PROFILE_REFUSED/,'raw inactive gate must run before observation projection');
+ }finally{fs.rmSync(directory,{recursive:true,force:true});}
+});
+test('persisted runtime observations require typed lifecycle and health scalars',()=>{
+ const observer=require('./custody-observer');
+ for(const mutate of [r=>{r.State.Pid=false;},r=>{r.State.ExitCode='0';},r=>{r.State.OOMKilled=0;},r=>{r.State.Status='private-body';},
+  r=>{r.State.Health={Status:'private-body'};},r=>{r.State.Health={Status:'healthy',FailingStreak:false};},r=>{r.RestartCount='0';}
+ ]){const given=mountedRows();mutate(given.containers[0]);assert.throws(()=>observer.baselineSnapshot(explicitTransport(given.containers,given.networks)),/M4_ENDPOINT_PROFILE_REFUSED/);}
+});
