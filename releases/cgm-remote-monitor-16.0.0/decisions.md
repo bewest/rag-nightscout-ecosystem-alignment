@@ -317,6 +317,12 @@ existing-access, expiry, renewal and local-revocation policy.
 |---|---|---|---|
 | <a id="restore-service-processes"></a>**Preserve separately deployable API, realtime, evaluator and tenant-admin processes for restore integration.** | maintainer, 2026-11-07, deployment clarification | `MT-RUNTIME-PLAN`, `MT-DOC-DEPLOY`, M6 | The maintainer expects container/process composition, potentially Compose or jsonnet and shared private sockets. No particular packaging generator is selected. A single-process cohort was a prototype limitation, not an adopted deployment requirement. Extend actual participant registration, tenant-local operation draining and cache/socket invalidation across configured processes. Separate processes do not by themselves require a new database-enforced fence; assess concrete bypasses under the declared credential and ingress trust boundary. An observed-session census is diagnostic/refusal, not physical exclusion of future raw clients. Preserve tenant B and existing clients without a global pause; cross-process native acceptance remains required. |
 
+## Tenant-local startup admission (2026-11-07)
+
+| decision | who, when | queue | as it stands |
+|---|---|---|---|
+| <a id="tenant-local-startup-admission"></a>**A suspended tenant must not prevent other tenants from becoming ready when shared service processes restart. Resolve this coupling as a defect.** | maintainer, 2026-11-07, explicit rejection of the shared-role restart limitation | `TEN-RESOLVE`, `MT-RUNTIME-PLAN`, M6 | Start shared infrastructure while deferring only the suspended tenant's clinical admission. Preserve that tenant's unavailable responses, unresolved recovery state, leases, orphans and commit/invalidation uncertainty; do not clear a phase or serve stale output to make startup succeed. Shared schema, binding, ledger, ACL, datastore and transport failures still refuse startup. Acceptance requires fresh replacement processes to serve tenant B through actual HTTP, realtime and evaluator paths while tenant A remains unavailable and its protected state is unchanged. Running B continuity alone does not satisfy this criterion. Source implementation and native restart acceptance remain open; this does not adopt a broader HA or raw-private-writer guarantee. |
+
 ---
 
 *Draft, 2026-10-26; rows added 2026-10-30 and 2026-10-31. Requires maintainer review before it is relied upon.*
