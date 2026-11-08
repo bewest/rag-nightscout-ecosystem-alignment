@@ -196,6 +196,8 @@ frozen charts are not sufficient. Destructive lifecycle preconditions, export
 coverage and key retention now live in the [owner-lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md)
 and [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06).
 Do not infer current deletion behavior from the original seam's admin prototype.
+Shared-role startup follows the adopted [tenant-local startup admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission).
+The release record owns its implementation and acceptance state.
 Deployment support-contact metadata remains a recommendation, not an adopted
 schema: its privacy/availability rationale is retained in the [journal](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#211-deployment-metadata-a-recommendation-not-a-decision).
 

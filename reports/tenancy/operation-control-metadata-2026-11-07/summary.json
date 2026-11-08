@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "capturedOn": "2026-11-07",
+  "basis": {
+    "nativeMeasurement": "reproduced by acceptance lead",
+    "projection": "independent readback of retained capture and verification of its indexed bytes; no rerun"
+  },
+  "source": {
+    "head": "facc5792c10bcf22d5dbd2d34de4e4498b0638f3",
+    "tree": "9d20d7163f9f4a97998b1b52e7f611469907e8fb",
+    "controlMigrationCount": 4,
+    "controlMigrations": [
+      {
+        "name": "0001_tenant_lifecycle_requests",
+        "checksum": "b2ba6bea2887d4661919992db2f816b0a1e1c79d490977b58070531972d0a00d"
+      },
+      {
+        "name": "0002_tenant_lifecycle_ceremony",
+        "checksum": "42cc13ca9fedd3b751d8b2ad1e37032ca84242901989574c43b978d5d264c31f"
+      },
+      {
+        "name": "0003_tenant_lifecycle_operation_windows",
+        "checksum": "bb6de44f9c21752e4f437f61b2c1b6b83298934ba6fcd983ea9fc48aff2db2db"
+      },
+      {
+        "name": "0004_tenant_restore_control",
+        "checksum": "f353bf4cd6a1ac348ae1da77e8416cce20e26164838e678a4127a65fb78c5b4c"
+      }
+    ]
+  },
+  "instrument": {
+    "parentSha256": "3a310939e4cd5c80efab7d0b828a71aa00df5c7483a429a569f68074bb81693d",
+    "childSha256": "b41b50ee2fe8f568fcdf058731ef0c6c72eb5d886838bec0a55cc32c920e3a40",
+    "packetIndexSha256": "8ec15da6ac60e85aa48f1634e3fa30d928580e670622b2b1e8acf381308ef7cb",
+    "captureIndexSha256": "1c67a1582f68dfff47bfb705d87c7230518d048e6c402f184c9c3010af95643f",
+    "indexedCaptureFilesVerified": 19
+  },
+  "runtime": {
+    "postgresVersion": "16.15",
+    "serverVersionNumber": "160015",
+    "nodeVersionAsserted": "v22.23.4",
+    "containerMemoryBytes": 268435456,
+    "containerCpus": 1,
+    "maximumObservedConcurrentChildDatabaseSessions": 2,
+    "successfulChildDatabaseConnections": 16,
+    "forbiddenEgressAttempts": 0
+  },
+  "outcome": {
+    "proofPassed": true,
+    "overallPassed": true,
+    "driverExit": 0,
+    "completionGroupCount": 10,
+    "completionGroups": [
+      "actual-control-migration-ready",
+      "lower-readiness",
+      "lifetime-readiness",
+      "maintenance-readiness",
+      "baseline-cross-role-birth-observed",
+      "stats-cross-role-birth-visible",
+      "authority-rls",
+      "authority-update-grant-intended-red",
+      "maintenance-fresh-restoration",
+      "independent-backend-release"
+    ],
+    "readinessProfiles": [
+      {
+        "profile": "lower",
+        "accepted": true
+      },
+      {
+        "profile": "lifetime",
+        "accepted": true
+      },
+      {
+        "profile": "maintenance",
+        "accepted": true
+      }
+    ],
+    "authority": {
+      "ownAuthorized": true,
+      "foreignAuthorityAbsent": true,
+      "selfMutationRefused": true
+    },
+    "crossRoleBackendBirthVisibility": [
+      {
+        "statisticsGrant": false,
+        "peerBirthVisible": false,
+        "exactBirthMatches": null
+      },
+      {
+        "statisticsGrant": true,
+        "peerBirthVisible": true,
+        "exactBirthMatches": true
+      }
+    ],
+    "control": {
+      "mechanism": "grant maintenance profile UPDATE(active) on restore authority",
+      "expectedError": "LIFECYCLE_WINDOW_SCHEMA_UNSAFE",
+      "verdict": "EXPECTED_RED",
+      "restoration": "revoke grant; fresh maintenance readiness accepted"
+    }
+  },
+  "closure": {
+    "runtimeReleased": true,
+    "ownedContainerAbsent": true,
+    "ownedVolumeAbsent": true,
+    "childBirthAbsent": true,
+    "processGroupAbsent": true,
+    "descendantsAbsent": true,
+    "exactInventoryRestored": true,
+    "selectedBaselineMetadataUnchanged": true,
+    "parentErrors": [],
+    "cleanupErrors": [],
+    "unknownResiduals": [],
+    "independentAcceptanceLeadReadback": true
+  },
+  "scope": "source-bound lifecycle control migration/readiness, authority RLS and cross-role backend-birth visibility with a synthetic statistics-role intervention",
+  "notEstablished": [
+    "actual serving cohort or backend census",
+    "maintenance-controller execution or drain/orphan acceptance",
+    "logical restore or client history convergence",
+    "separate-process or multi-node coordination",
+    "catalogue TEMP/search_path shadowing resistance",
+    "joined application acceptance or complete M6",
+    "production grants, default enablement, real identities, real data or provider delivery"
+  ],
+  "programmeAcceptance": "NOT_EVALUATED"
+}

@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "classification": "IMMUTABLE_SANITIZED_ACTUAL_CRM_NATIVE_ACCEPTANCE",
+  "status": "PASS_RUNTIME_PHYSICALLY_CLOSED",
+  "source": {
+    "commit": "b029f5d81f539a4846e51ab88e540cb4511910fa",
+    "tree": "0071642a5b6875ad822904cd3a9e2512eecd87e7"
+  },
+  "measurement_basis": "reproduced",
+  "completed_groups": [
+    "c1-actual-four-role-startup",
+    "c1-actual-HTTP-body-response-lifetime-drained",
+    "c1-ordinary-logical-restore",
+    "c1-row-rollback-keeps-suspension",
+    "c2-actual-four-role-startup",
+    "c2-ordinary-logical-restore",
+    "c2-preclaim-pin-incarnation-restart-refuses",
+    "c2-real-COMMIT-ACK-loss-keeps-suspension",
+    "c3-actual-four-role-startup",
+    "c3-ordinary-logical-restore",
+    "c3-actual-invalidation-ACK-loss-keeps-suspension",
+    "c4-actual-four-role-startup",
+    "c4-ordinary-logical-restore",
+    "c4-actual-killed-backend-durable-orphan",
+    "c4-privileged-seeded-samePID-differentbirth-refused",
+    "c4-actual-controller-refuses-unresolved-orphan",
+    "independent-final-PG-backend-release"
+  ],
+  "completed_group_count": 17,
+  "role_births": 17,
+  "actor_evidence_complete": true,
+  "forbidden_egress": 0,
+  "postgres_counters": {
+    "child_total": 560,
+    "driver_total": 172,
+    "driver_peak_active": 3,
+    "global_peak": "UNMEASURED",
+    "conservative_simultaneous_ceiling": 108,
+    "ceiling_is_not_observed_peak": true
+  },
+  "closure": {
+    "ownedContainersAbsent": true,
+    "ownedVolumesAbsent": true,
+    "childBirthAbsent": true,
+    "roleBirthsAbsent": true,
+    "processGroupAbsent": true,
+    "descendantsAbsent": true,
+    "exactInventoryRestored": true,
+    "selectedBaselineMetadataUnchanged": true,
+    "retainedPrivateDirectoryHasNoSockets": true,
+    "runtimeReleased": true
+  },
+  "timing": {
+    "classification": "single synthetic functional observations of existing required work; no extra request/query/workload or performance gate",
+    "clock": "one driver process.hrtime.bigint clock",
+    "samples": [
+      {
+        "id": "c1-ordinary",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": 384.61278200000015,
+          "body_to_ack_effect_including_restore_and_private_inspection": 518.8523409999998,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": 76.13840100000016,
+          "call_to_activation_observed": 979.6035240000001
+        },
+        "terminal": {
+          "kind": "resolved",
+          "state": "activated",
+          "fromCallMs": 979.6093280000005
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": 384.61278200000015,
+          "data_acknowledged_effect_callback_entered": 903.465123,
+          "activation_promise_resolved": 979.6035240000001,
+          "server_commit_frame_observed": null
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": {
+          "entries.entries": 3,
+          "profile.profile": 2
+        },
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": [
+          {
+            "relation": "before-call",
+            "requestedMs": 75
+          },
+          {
+            "relation": "inside-call",
+            "requestedMs": 75
+          }
+        ]
+      },
+      {
+        "id": "c1-row-rollback",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": 139.5272270000005,
+          "body_to_ack_effect_including_restore_and_private_inspection": null,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": null,
+          "call_to_activation_observed": null
+        },
+        "terminal": {
+          "kind": "rejected",
+          "code": null,
+          "fromCallMs": 221.89624999999978
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": 139.5272270000005,
+          "data_acknowledged_effect_callback_entered": null,
+          "activation_promise_resolved": null,
+          "server_commit_frame_observed": null
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": {
+          "entries.entries": 4,
+          "profile.profile": 2
+        },
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": []
+      },
+      {
+        "id": "c2-ordinary",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": 148.90858899999876,
+          "body_to_ack_effect_including_restore_and_private_inspection": 522.9847059999993,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": 82.76480100000117,
+          "call_to_activation_observed": 754.6580959999992
+        },
+        "terminal": {
+          "kind": "resolved",
+          "state": "activated",
+          "fromCallMs": 754.662637999998
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": 148.90858899999876,
+          "data_acknowledged_effect_callback_entered": 671.893294999998,
+          "activation_promise_resolved": 754.6580959999992,
+          "server_commit_frame_observed": null
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": {
+          "entries.entries": 3,
+          "profile.profile": 2
+        },
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": []
+      },
+      {
+        "id": "c2-DATA-ACK-uncertainty",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": 2207.263653000002,
+          "body_to_ack_effect_including_restore_and_private_inspection": null,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": null,
+          "call_to_activation_observed": null
+        },
+        "terminal": {
+          "kind": "rejected",
+          "code": "LIFECYCLE_RESTORE_RELEASE_FAILED",
+          "fromCallMs": 8090.1232080000045
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": 2207.263653000002,
+          "data_acknowledged_effect_callback_entered": null,
+          "activation_promise_resolved": null,
+          "server_commit_frame_observed": 8084.8268800000005
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": null,
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": []
+      },
+      {
+        "id": "c3-ordinary",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": 131.50116100000014,
+          "body_to_ack_effect_including_restore_and_private_inspection": 578.1036830000012,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": 105.32444300000498,
+          "call_to_activation_observed": 814.9292870000063
+        },
+        "terminal": {
+          "kind": "resolved",
+          "state": "activated",
+          "fromCallMs": 814.9350120000017
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": 131.50116100000014,
+          "data_acknowledged_effect_callback_entered": 709.6048440000013,
+          "activation_promise_resolved": 814.9292870000063,
+          "server_commit_frame_observed": null
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": {
+          "entries.entries": 3,
+          "profile.profile": 2
+        },
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": []
+      },
+      {
+        "id": "c3-invalidation-ACK-loss",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": 139.1853919999994,
+          "body_to_ack_effect_including_restore_and_private_inspection": 168.61283800000092,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": null,
+          "call_to_activation_observed": null
+        },
+        "terminal": {
+          "kind": "rejected",
+          "code": null,
+          "fromCallMs": 325.8132110000006
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": 139.1853919999994,
+          "data_acknowledged_effect_callback_entered": 307.79823000000033,
+          "activation_promise_resolved": null,
+          "server_commit_frame_observed": null
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": null,
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": []
+      },
+      {
+        "id": "c4-ordinary",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": 191.85886500000197,
+          "body_to_ack_effect_including_restore_and_private_inspection": 519.7024250000031,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": 113.49250499999471,
+          "call_to_activation_observed": 825.0537949999998
+        },
+        "terminal": {
+          "kind": "resolved",
+          "state": "activated",
+          "fromCallMs": 825.0581230000025
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": 191.85886500000197,
+          "data_acknowledged_effect_callback_entered": 711.5612900000051,
+          "activation_promise_resolved": 825.0537949999998,
+          "server_commit_frame_observed": null
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": {
+          "entries.entries": 3,
+          "profile.profile": 2
+        },
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": []
+      },
+      {
+        "id": "c4-orphan-refusal",
+        "observed_spans_ms": {
+          "call_to_body_including_preclaim_drain_and_fixture_hooks": null,
+          "body_to_ack_effect_including_restore_and_private_inspection": null,
+          "ack_effect_to_activation_including_callback_oracles_and_invalidation": null,
+          "call_to_activation_observed": null
+        },
+        "terminal": {
+          "kind": "rejected",
+          "code": "LIFECYCLE_RESTORE_DRAIN_TIMEOUT",
+          "fromCallMs": 5097.6429329999955
+        },
+        "anchors_ms_from_call": {
+          "restore_call": 0,
+          "maintenance_body_entered": null,
+          "data_acknowledged_effect_callback_entered": null,
+          "activation_promise_resolved": null,
+          "server_commit_frame_observed": null
+        },
+        "synthetic_artifact_clinical_rows": {
+          "entries.entries": 2,
+          "profile.profile": 2
+        },
+        "synthetic_current_clinical_rows": null,
+        "private_inspection_overhead_included": true,
+        "requested_held_waits": []
+      }
+    ],
+    "existing_B_HTTP_operations": [
+      {
+        "name": "existing-B-HTTP-write",
+        "restore_id": "c1-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 97.43744499999957
+      },
+      {
+        "name": "existing-B-HTTP-read",
+        "restore_id": "c1-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 57.02179199999955
+      },
+      {
+        "name": "existing-B-HTTP-write",
+        "restore_id": "c2-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 52.17478100000153
+      },
+      {
+        "name": "existing-B-HTTP-read",
+        "restore_id": "c2-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 55.3201169999993
+      },
+      {
+        "name": "existing-B-HTTP-write",
+        "restore_id": "c3-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 102.86166299999604
+      },
+      {
+        "name": "existing-B-HTTP-read",
+        "restore_id": "c3-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 97.38466700000572
+      },
+      {
+        "name": "existing-B-HTTP-write",
+        "restore_id": "c4-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 53.2096570000067
+      },
+      {
+        "name": "existing-B-HTTP-read",
+        "restore_id": "c4-ordinary",
+        "outcome": "resolved",
+        "observed_round_trip_ms": 57.88890399999946
+      }
+    ],
+    "private_inspection_operation_count": 70,
+    "private_spans_are_nested_and_not_additive": true,
+    "observer_errors": 0,
+    "dropped_operations": 0,
+    "no_capacity_SLO_or_earliest_recovery_claim": true
+  },
+  "limits": {
+    "original_V8_actor": "UNATTRIBUTED",
+    "earlier_failure_cause_proved_by_this_pass": false,
+    "cooperative_closed_actor_credential_ingress_boundary": true,
+    "database_enforced_raw_private_writer_fence": false,
+    "multihost_or_dynamic_membership_accepted": false,
+    "running_B_progress_is_not_B_restart_or_HA_acceptance": true,
+    "comprehensive_browser_and_Compose_acceptance": "SEPARATE_BOUNDARIES",
+    "M6_complete": false,
+    "operator_release": false
+  },
+  "sha256": {
+    "packet_index": "9e4b1d092d0c82652baa47e82819b36755e05f7aac9ac561f6bdfa3d1fcd0a7b",
+    "parent": "fbbc6f18d0490fa94b6368a1e5fc820ca654a4c522606c6dd718f384019b747c",
+    "instrument": "55b142c1ff636fdbb96e4b7918e47b61e17d2d161c56142761f4092245cf83aa",
+    "timing_instrument": "edd2162e10706c50fdfd576d605795526f3aaf51ac198c85f127ca10b9546031",
+    "capture_index": "14f2cd09cb8aa7ac37875bb21dc2231ad48f2666ea625fd50b8d615802c6d9f2",
+    "functional_result": "0fb23fd94285a3202f63cbb73afcfb87f92c150e8af64b28fcad28fb4bddb342",
+    "timing_observations": "1c2c9c910ef420cd0ead03ccc38eec707145f06e56591e91b2a3fe3681413c1f",
+    "parent_closure": "037b55f268158ac5ede17ab98cf3677527519a83653ece1307df5da3971133c6",
+    "independent_physical_release": "df228e4ba33899217134f57995a26dd1ce01d0f93e2d40ed1d25af1d1cf5a8ac",
+    "retained_private_file_manifest": "1915039269d9542d085a39cd973654c6f7f76e31389c5d6d9c98591d31671df6"
+  },
+  "publication_scope": "synthetic outcomes and counts plus portable hashes; excludes runtime identifiers, role names, backend births, paths, endpoints, credentials, payloads and private filenames"
+}

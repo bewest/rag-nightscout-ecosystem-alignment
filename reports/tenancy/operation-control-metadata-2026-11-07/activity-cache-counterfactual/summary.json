@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "classification": "IMMUTABLE_SANITIZED_NATIVE_PRIMITIVE_PROJECTION",
+  "status": "PASS_RUNTIME_CLOSED",
+  "acceptance_scope": "NATIVE_PG_PRIMITIVE_AND_MODELED_MEMBERSHIP_PROJECTION_ONLY",
+  "crm_acceptance": false,
+  "joined_acceptance": false,
+  "alignment_anchor": "af7234d5b1449db31c94d6bc7f462aa36199c553",
+  "source_attribution": {
+    "commit": "28c4cb12d80a2bb2c16022ca9adcaa9e1d49f744",
+    "tree": "c65d84ce96d928926c3bbc536a65b85cbbe83c6c",
+    "crm_source_modules_or_participants_executed": false,
+    "shipping_source_changed": false
+  },
+  "native_measurements": {
+    "postgres_server_version_num": "160015",
+    "completed_groups": 9,
+    "planned_groups": 9,
+    "counts_are_groups_not_crm_tests": true,
+    "total_postgres_clients": 5,
+    "peak_postgres_clients": 3,
+    "postgres_clients_active_at_end": 0,
+    "queries": 51,
+    "forbidden_egress": 0,
+    "independent_backend_release_observed": true
+  },
+  "results": [
+    {
+      "capability": "Retired actor cache omission control",
+      "native_observation": "An independent session observed the retired backend absent while the held transaction still returned its cached tuple",
+      "modeled_membership_result": "Omitting refresh produced the intended stale-retired-actor unknown refusal",
+      "scope": "Native PostgreSQL observation plus explicit membership model, not actual CRM cohort"
+    },
+    {
+      "capability": "Refresh retired-actor metadata",
+      "native_observation": "Refreshing statistics on the same held client removed the stale tuple",
+      "modeled_membership_result": "Empty current actor set passed strict modeled membership",
+      "scope": "Native PostgreSQL observation plus explicit membership model"
+    },
+    {
+      "capability": "New unregistered actor cache omission control",
+      "native_observation": "An independent session observed the new backend present while the held transaction returned an empty cached actor set",
+      "modeled_membership_result": "The assertion requiring unknown refusal failed as intended when refresh was omitted",
+      "scope": "Native PostgreSQL observation plus explicit membership model"
+    },
+    {
+      "capability": "Refresh reveals unknown actor",
+      "native_observation": "Refreshing statistics on the same held client exposed the independently observed new actor",
+      "modeled_membership_result": "Strict modeled membership refused the unregistered tuple",
+      "scope": "Native PostgreSQL observation plus explicit membership model"
+    }
+  ],
+  "transaction_sentinels": {
+    "native_samples": 3,
+    "same_held_backend_transaction_isolation_and_start_anchor": true,
+    "own_uncommitted_writes_preserved": true,
+    "independent_verifier_cannot_see_uncommitted_changes": true,
+    "independently_committed_sentinel_row_preserved_and_visible": true,
+    "own_transaction_advisory_lock_retained_across_refresh": true,
+    "independent_lock_acquisition_refused_before_rollback": true,
+    "explicit_rollback_discards_own_writes_and_releases_lock": true,
+    "independent_committed_row_survives_rollback": true
+  },
+  "closure": {
+    "parent_proof_passed": true,
+    "parent_overall_passed": true,
+    "child_exit": 0,
+    "cleanup_errors": 0,
+    "runtime_released": true,
+    "independent_physical_readback": true,
+    "owned_resources_absent": true,
+    "observed_process_birth_and_group_absent": true,
+    "descendants_absent": true,
+    "inventory_restored": true,
+    "selected_baseline_metadata_unchanged": true
+  },
+  "interpretation": {
+    "statistics_cache_primitive": "REPRODUCED_ON_NATIVE_POSTGRESQL",
+    "strict_membership_checker": "EXPLICIT_MODEL_NOT_ACTUAL_CRM_CHECKER",
+    "original_joined_attempt_actor": "UNATTRIBUTED",
+    "focused_c2_failure_cause_proved_by_this_run": false,
+    "actual_crm_fix_accepted": false,
+    "next_boundary": "Targeted same-client refresh before census must join the original coherent source and pass its own controls before full joined re-acceptance",
+    "performance_or_capacity_claim": false
+  },
+  "sha256": {
+    "packet_index": "fa98a200f6415cf5ca21292c6322a37fdfc8839637b98f9a6c1dc01c2b249e3a",
+    "source_anchor": "50dd6011f5dcff36d8246e8b91b6662f77989ba8b4924d60963ee700140263d2",
+    "plan": "f9a05b3748bec24d2903eb343db433f985844aa5267e86232772edb5d4969dff",
+    "driver_instrument": "2cc88d14aa19b95501383d52d97232ea5db91a28fef6cdd6c6b67031b9a73d92",
+    "parent_instrument": "7a552a5146c2da564b912e3166673568499b25fef8f621d75730686dfa7aa140",
+    "capture_index": "ad21f46cf8ca95e960e6277b3084769bc7846ae230d7c761789ed1eaabd3e6c5",
+    "functional_result": "44381cec6718b9dd98e3dcc2dbb452e48a344eeba0911852f71fe98a0c80d2f9",
+    "event_capture": "912f23f509983a8df78f5c7550c7e2d2afc351ef0c3f24d9cce74dbeaa93fbac",
+    "parent_closure": "f9b6173a96c2ebf1b0a419784f966bb0508d9ab49da9be1b569ab5e22221b0f8",
+    "independent_physical_release": "fcbc74249ae877a8f1642576dd789e5b84ffb34405ce2de0f3e42e5e2b9d86b6"
+  },
+  "publication_scope": "Synthetic primitive outcomes and portable hashes only; runtime identifiers, roles, backend timestamps, machine paths, endpoints, credentials and raw private filenames excluded",
+  "projection_activity": "Retained-byte read only; no tests or native experiments rerun"
+}
