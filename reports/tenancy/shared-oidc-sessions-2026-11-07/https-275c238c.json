@@ -1,0 +1,27 @@
+{
+  "grade": "reproduced",
+  "source_commit": "275c238c52a0e6204bf1ed7e5279d20309f16820",
+  "source_tree": "e6f3c626aa729c41c53071abb596400b15482df3",
+  "instrument": "tests/human-session-http-native.js",
+  "instrument_sha256": "fae86aefc913d7fca6ed063bbb49d3898859b4534746d70e74e03c3a0f27382a",
+  "command": "env -u HUMAN_BROWSER_RESERVED HUMAN_HTTPS_RESERVED=1 HUMAN_HTTPS_KEY=<owned scratch> HUMAN_HTTPS_CERT=<owned scratch> node --max-old-space-size=96 tests/human-session-http-native.js",
+  "transport": "actual HTTPS on two isolated loopback listeners",
+  "provider": "synthetic OIDC discovery, code exchange and JWKS",
+  "persistence": "actual aggregate adapter with source collection double",
+  "assertions": 18,
+  "exit_code": 0,
+  "closure": {
+    "owned_process_absent": true,
+    "owned_listener_ports_absent": true,
+    "temporary_tls_material_absent": true,
+    "independent_checks": "process census, exact-port listener census and owned-file absence"
+  },
+  "does_not_measure": [
+    "native MongoDB or PostgreSQL",
+    "browser execution",
+    "Authentik or Kratos deployment",
+    "full application or legacy compatibility acceptance",
+    "operating capacity or production admission"
+  ],
+  "verdict": "bounded actual HTTPS transport acceptance passed"
+}

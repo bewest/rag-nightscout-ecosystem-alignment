@@ -1,0 +1,55 @@
+{
+  "captured_at_utc": "2026-11-08 03:49:43 UTC",
+  "grade": "reproduced source-double and actual-crypto evidence; not native/runtime acceptance",
+  "source": {
+    "commit": "eadf41f889e48ab6762724e62d4e6c85d50fb654",
+    "tree": "36bb9aae866712c69c8511498e1ee192ce16c653",
+    "branch": "codex/shared-oidc-sessions-20261107",
+    "clean": true
+  },
+  "checks": {
+    "explicit_source_allowlist": {
+      "passed": 194,
+      "failed": 0,
+      "local_capture": "/tmp/oidc-evidence-20261107/signed-frozen-source.log"
+    },
+    "lint": {
+      "errors": 0,
+      "existing_warnings": 2,
+      "local_capture": "/tmp/oidc-evidence-20261107/signed-frozen-lint.log"
+    },
+    "tier_inventory": {
+      "test_files": 596,
+      "tiers": 8,
+      "passed": true
+    }
+  },
+  "physical_controls": {
+    "scope": "isolated exact-freeze source copies; original source never mutated",
+    "families": [
+      "Ed25519 signature with secondary-hash binding neutralized",
+      "current accepted signing key",
+      "current local authority",
+      "durable session invalidation",
+      "management lifetime",
+      "expired lookup cannot authorize access",
+      "global aggregate CAS fence"
+    ],
+    "expected_failure": "intended rejection is missing; CAS bypass returns renewed credential accepted by next protected operation",
+    "all_semantic_red": true,
+    "local_manifest": "/tmp/human-signed-frozen-controls-eadf41f8-20261107/manifest.json",
+    "restoration": "byte-exact; focused checks pass"
+  },
+  "remaining_unmeasured": [
+    "actual signed native MongoDB",
+    "actual signed native PostgreSQL",
+    "actual private Vault signing/nonexportability/ACL",
+    "actual signed HTTPS consumption",
+    "actual browser",
+    "full joined application acceptance",
+    "real reference provider",
+    "production admission"
+  ],
+  "candidate_joined": false,
+  "runtime_grant": "none; prior prototype grant consumed"
+}

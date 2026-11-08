@@ -639,9 +639,9 @@ items:
     title: "Human identity, tenant access grants and delegated consent plan"
     parcel: tenancy
     repo: rag-nightscout-ecosystem-alignment
-    branch: ""
+    branch: codex/shared-oidc-sessions-20261107
     base: main@28671cb4a
-    state: not-started
+    state: in-progress
     blast_radius: >
       Interchangeable identity-provider assertion/session validation, provider
       and subject binding, access grants, tenant-bound token exchange,
@@ -658,18 +658,21 @@ items:
           session and revocation tests. No custom password/recovery system.
     blocks_on: []
     evidence:
+      - reports/tenancy/shared-oidc-sessions-2026-11-07/README.md
       - docs/30-design/tenancy/owner-authority.md
       - docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md
       - docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md
     notes: >
-      2026-11-05 maintainer adopted owner authority and the D22 local-public-key
-      verification amendment; owner-authority.md owns permission/delegation
-      ceilings, separate management authentication, human token/session limits
-      and failure semantics. Synthetic prototype evidence is bounded; no
-      production wiring, full ceiling/session implementation or milestone promotion.
-      Maintainer 2026-11-02: device/token/API-secret first; identity needs
-      additional planning. Prior Ory/edge proofs remain dated evidence,
-      not production approval. Planning can proceed without blocking ST-PG.
+      2026-11-07 next-batch original local branch codex/shared-oidc-sessions-20261107
+      is frozen at eadf41f889e48ab6762724e62d4e6c85d50fb654. Common OIDC/session,
+      asymmetric access/current-key conformance, single aggregate CAS and
+      PostgreSQL/RLS adapters, browser cookie/bearer and current stream consumers
+      pass 194 explicit-file source checks. This is source-double/actual-crypto
+      evidence, not native persistence or browser acceptance. Historical opaque
+      275c238c HTTPS18 remains nonconforming prototype transport evidence only.
+      Actual signed DB/Vault/HTTPS/browser acceptance remains UNMEASURED pending
+      the sole lead's finite reservation; current Compose candidate is unchanged.
+      Full joined acceptance, real provider and production admission remain open.
 
 # ---------------------------------------------------------------------------
 # PARCEL: phase0

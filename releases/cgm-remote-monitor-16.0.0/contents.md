@@ -1965,3 +1965,9 @@ the next integration boundary are recorded in
 `externals/work/HANDOFF-m6-acceptance-continuation-20261107.md`. The acceptance coordinator
 owns this evolving batch update; source and packaging lanes retain their original
 commits for normal integration.
+
+### Update, 2026-11-07 — optional shared OIDC source lane, next batch
+
+| Capability | Measured state | Remaining boundary / owner |
+|---|---|---|
+| Shared optional human login and sessions (`MT-IDENTITY-PLAN`) | **Fixed on local original branch, frozen for bounded acceptance; not merged or released.** `codex/shared-oidc-sessions-20261107` at `eadf41f889e48ab6762724e62d4e6c85d50fb654` implements common OIDC/session flow, adopted asymmetric access with current accepted keys, distinct Mongo aggregate/PostgreSQL adapters and consumed browser/HTTP/stream paths. **Reproduced:** 194 explicit-file source checks pass; independent crypto/config source audit is clear within its scope. [Capability evidence and limits](../../reports/tenancy/shared-oidc-sessions-2026-11-07/README.md). Earlier reserved HTTPS18 is historical nonconforming opaque-prototype transport evidence, not signed-policy acceptance. | Actual signed native DB/Vault/HTTPS/browser acceptance remains **UNMEASURED**, pending the sole lead's finite owned reservation. This lane continues to bounded acceptance, then hands the complete original branch to the application source owner at the next coherent join. Current Compose candidate unchanged; no M6 or production admission. Lane detail: `externals/work/HANDOFF-shared-oidc-sessions-2026-11-07.md` (local). |
