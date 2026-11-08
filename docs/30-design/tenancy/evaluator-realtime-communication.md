@@ -5,8 +5,9 @@
 tree `3bb46431a19e604dc028768f0e72e6ad29616c26`. Source file/line anchors were
 checked against that local immutable tree. It is a local implementation candidate,
 not a released feature; pinned GitHub links require publication of that commit.
-Recorded reproductions retain their own source in the evidence section. In
-particular, independent tenant startup on this newer source is native **PENDING**.*
+Recorded reproductions retain their own source in the evidence section. The
+later c23 native matrix measures bounded tenant-local restart behavior; it does
+not relabel this inspected tree as the executed source.*
 
 This guide explains which process owns each result and which messages cross a
 boundary. Decisions remain in [tenancy decisions](multitenancy-decisions.md), the
@@ -255,8 +256,9 @@ to serve active B while suspended A remains unavailable, with no stale A output.
 [Realtime startup][realtime-runtime], [API startup][api-startup] and
 [evaluator startup][evaluator-preview] use that mechanism. Aggregate health can
 remain degraded while B is available: do not omit A from the roster or require A
-to become active merely to make a process health summary green. This new restart
-capability is **source-only; joined native acceptance is PENDING**.
+to become active merely to make a process health summary green. The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
+reproduces this bounded restart criterion on its exact later source; the inspected
+151de024 mechanisms above remain read-derived.
 
 ## What the evidence establishes
 
@@ -264,7 +266,8 @@ capability is **source-only; joined native acceptance is PENDING**.
 |---|---|---|
 | [R73 durable runtime and bounded operations](../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07) | Reproduced functional M5 reference on its recorded source: durable bounded acquisition, current socket authority/compatibility, suppression and stable-request handoff; complete named broad acceptance on that tree | Current polling/snapshot reference does not establish provider/device delivery, capacity, multi-node ownership or all later source |
 | [b029 native operation-window matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md) | Reproduced all 17 criteria on `b029f5d8`: actual four CLI roles, forward logical history, B progress, rollback, changed-participant refusal, real COMMIT/invalidation acknowledgement loss and orphan refusal; independent physical closure | Not new-source restart-while-A-suspended acceptance, Compose/browser acceptance, released feature or whole M6 |
-| Startup mechanism inspected here, `151de024` | Read-derived per-tenant deferred initialization and source-protocol controls owned by its implementation lane | Fresh coherent source native restart/isolation and final broad acceptance remain pending; no result is transferred from b029 |
+| [c23 native operation-window matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) | Reproduced actual fresh shared API/realtime/evaluator startup with B progress while A remained unavailable after the recorded failure cases; unsafe-clock API startup refused; independent physical closure | Fixed trusted cooperative participants, private serving credentials and database ingress. No raw-SQL fence, automatic orphan clearance, suspended-restore resume command or recovery-time guarantee |
+| Startup mechanism inspected here, `151de024` | Read-derived per-tenant deferred initialization and source-protocol controls owned by its implementation lane | Runtime measurements retain the c23 source attribution above; [current acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md) owns the remaining cold Compose/client/corpus boundaries |
 
 Application modules above are real code selected by explicit role configuration.
 Recording connections, monkey-patched observers, COMMIT-loss proxies, privileged

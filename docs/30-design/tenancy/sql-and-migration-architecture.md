@@ -25,7 +25,8 @@ own admitted port behavior.
 | Evidence | What it establishes | Boundary |
 |---|---|---|
 | [b029 native acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md) | **Reproduced:** all 17 stated native operation-window criteria on `b029f5d81f539a4846e51ab88e540cb4511910fa`, including separate roles, forward-history restore, running B progress and fault refusals. | Different source from this guide. It does not measure the new tenant-local startup admission or whole M6. |
-| [Application startup source guide][cohort-guide] and [startup controls][startup-controls] | The `151de024` source defers genuinely suspended tenants while retaining shared readiness failures and later full initialization. | Source/protocol checks; joined native cold-restart acceptance is **PENDING**. |
+| [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) | **Reproduced:** separate-role restore and fresh shared-role restarts with B progress while A remained unavailable in the recorded failure cases; unsafe-clock API startup refused; independent physical closure. | Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound. |
+| [Application startup source guide][cohort-guide] and [startup controls][startup-controls] | The `151de024` source defers genuinely suspended tenants while retaining shared readiness failures and later full initialization. | Source/protocol reading; actual runtime measurements retain their c23 attribution above. |
 | [Counter analysis](counter-and-restore-options.md) and [clock proof plan](postgres-tenant-clock-proof.md) | Rationale, alternatives and invariants, with individually scoped experiments. | Their earlier source anchors and feasibility results do not replace current catalogue/readiness verification. |
 
 ## Tables and their ownership
@@ -125,8 +126,9 @@ The reserved metadata tenant binding is a separate lower-connection path that
 requires a database-confirmed read-only transaction. It permits shared schema/ACL
 checks while normal tenants are suspended; it is not permission to read a paused
 tenant's documents. The source uses it for the consumer advisory-lock same-database
-challenge and unconditional metadata checks. That challenge's native startup
-verification remains pending on the new source. [Consumer startup source][consumer-startup]
+challenge and unconditional metadata checks. The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
+measures its stated actual startup cases; other guard controls retain their own
+source/protocol scope. [Consumer startup source][consumer-startup]
 
 ## History clock and insertion counter serve different contracts
 
@@ -210,7 +212,9 @@ not arbitrary errors with a matching string. Lazy initialization runs under the
 actual later tenant admission; invalidation rejects stale initializer completion.
 A suspended A therefore need not prevent B startup in the new source. The
 [startup decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission)
-requires fresh-process native proof, which is still pending for this guide's tree.
+requires fresh-process native proof. The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
+reproduces the bounded shared-role restart criterion on its exact later source;
+this guide retains the inspected source attribution above.
 
 ## Write transaction and restore transaction boundaries
 
@@ -279,8 +283,10 @@ operator recovery. If the activation COMMIT acknowledgement is lost, the stored
 window may already be active and its audit activated; the uncertain response
 does not prove continued suspension. Inspect the committed state rather than
 automatically replaying activation. The [controller commit handling][maintenance-commit] preserves
-those distinctions; no deterministic outage bound or automatic orphan-resume
-command follows from this implementation.
+those distinctions. This preview provides no automatic orphan clearance or
+supported suspended-restore resume command. Operator-verified recovery remains
+separate work; no deterministic recovery-time bound follows from the
+refusal/restart evidence.
 
 ## Shared resources and remaining fences
 
@@ -300,8 +306,10 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the [application cohort guide][cohort-guide].
-Neither this architecture reading nor the earlier native matrix establishes HA,
-multihost membership, capacity acceptance, Compose/browser completion or all M6.
+Neither this architecture reading nor the c23 native matrix establishes HA,
+multihost membership, capacity acceptance, cold Compose restore completion or all
+M6. The [current acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
+owns the distinct browser, cold Compose, client and corpus verdicts.
 
 [deployment-catalogues]: https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/config.js#L14
 [deployment-lifecycle]: https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/config.js#L131

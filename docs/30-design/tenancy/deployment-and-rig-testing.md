@@ -174,7 +174,7 @@ its explicitly authored new writes are expected differences.
 | Ordinary A restore | A's clinical values/public identity and relative ordering; normal forward history updates and deletions; B read/write progress | No global pause or indiscriminate rewind of current authority/consumer state. |
 | Interruption before activation | Durable claim, audit, unfinished operations and actual data outcome | Keep A unavailable; no blind replay, timeout-based reopening or orphan clearance. |
 | Activation acknowledgement lost | Actual persisted phase and the recorded uncertain result | Activation may already have committed after its prerequisites succeeded; inspect the outcome rather than assuming suspension or blindly repeating activation. |
-| Shared-role restart with A suspended | Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged | Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. Native acceptance on the new source is pending. |
+| Shared-role restart with A suspended | Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged | Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) reproduces the bounded shared-role restart criterion; cold Compose acceptance remains separate. |
 | Missing/restarted participant | Changed incarnation, missing acknowledgement or unresolved operation | Old restore pins cannot activate using replacement processes. |
 | Database/Vault/shared-host outage | Which shared dependency failed and what each tenant can still do | Tenant-local restore does not promise tenant-local infrastructure failures or HA. |
 
@@ -199,6 +199,10 @@ independently authorized raw SQL client from bypassing the protocol. A stronger
 database/authentication fence is separate work, not a requirement to combine API
 and realtime into one process. Direct PostgreSQL is required; transaction-pooling
 proxies and multihost coordination are outside this reference.
+
+The preview provides no automatic orphan clearance or supported suspended-restore
+resume command. Operator-verified recovery remains separate work; the native
+refusal and restart evidence does not establish a recovery-time bound.
 
 The lab Vault credentials expire after 24 hours and restart does not renew them.
 The generated CA expires after 30 days. Preserve verification and prepare a fresh
@@ -225,8 +229,13 @@ control, and verification that owned processes/sockets/containers are released.
 Separate elapsed observations from a recovery guarantee. Keep raw credentials,
 private identities and record payloads out of committed evidence.
 
-The [b029 native record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md)
-reproduces 17 separate-process restore criteria, with physical closure. It does
-not accept the new startup source, Compose/UI ingress, all rigs, capacity or M6.
+The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
+reproduces the separate-role restore and shared-role restart criteria, including
+B progress while A remains unavailable, with independent physical closure. Its
+fixed trusted cooperative cohort and private credential/ingress boundary remain
+load-bearing. The earlier [b029 record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md)
+retains its own narrower scope. The [current acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
+keeps cold Compose/UI/restore, client and corpus verdicts separate; native success
+does not establish all rigs, capacity, HA, production recovery or M6.
 The [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
 own the latest executed acceptance and remaining blockers.
