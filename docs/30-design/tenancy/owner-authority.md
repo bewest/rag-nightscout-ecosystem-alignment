@@ -97,6 +97,9 @@ single-tenant opt-in is `ENABLE=oidc`, or an equivalent explicit flag if integra
 measurement refutes that spelling. Default-off behavior preserves current startup,
 web/data authentication and unattended clients. No OIDC feature is implemented or
 enabled merely by setting that value today.
+The [identity provider decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-identity-generic-adapter-authentik-reference)
+adopts a generic adapter with Authentik as the intended reference, subject to the
+Kratos proof, and Kratos as the measured fallback.
 
 Share the provider-facing protocol and session integration. Single-tenant maps
 verified provider/subject to local current authority; multitenant resolves the

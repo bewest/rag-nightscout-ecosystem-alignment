@@ -99,6 +99,9 @@ encrypted development/small-operator option remains adopted; production adapters
 must meet the same contract. A disposable Vault lab does not establish TLS,
 unseal/recovery, production identity, HA or operational suitability. Failures
 never fall back to plaintext, another tenant's key or an unapproved signer.
+The [deployment and trust decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07)
+keep Vault Transit at every stage, with a service-login adapter required before
+production use, and admit a deployment by trust record plus live probes.
 
 ## Tenant identity, migrations and import
 
@@ -112,7 +115,8 @@ refuse. Durable allocation, collision, rename/reassignment/deletion and mapping
 consistency require explicit contracts before operator-writer admission. Consul,
 Kubernetes and vendor discovery are optional adapters, not dependencies adopted
 by this roadmap. Public domains, certificates and private edge implementation
-remain deployment concerns.
+remain deployment concerns. The reference deployment [trusts its edge by immediate
+peer address, one list for tenant selection and client IP](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-ingress-peer-list-trust).
 
 Multitenant schema migration is **explicit operator execution**. Serving checks
 compatibility read-only and refuses stale/unsafe schema; it never migrates at
