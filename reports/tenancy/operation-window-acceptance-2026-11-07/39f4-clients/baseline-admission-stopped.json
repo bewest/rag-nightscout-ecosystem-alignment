@@ -1,0 +1,39 @@
+{
+  "classification": "reproduced read-only current-host metadata admission",
+  "applicationCandidate": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "applicationExecuted": false,
+  "instrumentOriginal": "dd167ad39a5310bc978fc4474533b33bab1df655",
+  "instrumentTree": "de3f7bcb1f85689ab4a4e8987f72e4e851763e8c",
+  "scope": "actual complete current-host baselineSnapshot; no clients, services or resource mutation",
+  "admitted": false,
+  "outerCallerError": "M4_ENDPOINT_PROFILE_REFUSED",
+  "actualAdapterError": "M4_CONTAINER_GLOBAL_MEMBERSHIP",
+  "actualAdapterLine": 64,
+  "actualShape": {
+    "status": "exited",
+    "running": false,
+    "restarting": false,
+    "paused": false,
+    "dead": false,
+    "sandboxIdEmpty": true,
+    "sandboxKeyEmpty": true,
+    "configuredNetworkIdNonempty": true,
+    "configuredNetworkIdAbsentFromGlobalInventory": true,
+    "endpointIdEmpty": true,
+    "macEmpty": true,
+    "ipAddressesEmpty": true,
+    "prefixLengthsIntegerZero": true
+  },
+  "rawConfigEnvPersisted": false,
+  "readOnlyProbeAndDiagnosticHostClosure": "independently reproduced, all retained/owner births absent",
+  "runtimeReleased": true,
+  "clientCompatibility": "UNMEASURED",
+  "originalProtocolBindingRefusal": {
+    "symptom": "PHASE_BOUNDS",
+    "reason": "root supplied cleanup30; existing API requires exactly120",
+    "runtimeStarted": false,
+    "guardChanged": false,
+    "correctedReadOnlyBinding": "new60active+one120cleanup packet"
+  },
+  "limits": "A native metadata admission failure, not an application or client compatibility failure. Exact actual shape is private; no baseline substitution or admission waiver applied."
+}

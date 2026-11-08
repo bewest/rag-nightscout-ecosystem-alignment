@@ -1,0 +1,23 @@
+{
+  "scope": "ISOLATED_SYNTHETIC_TERMINAL_COMPONENT_ONLY",
+  "source": "39f4afb17f8ffeea2e672fdc2423a585f652e61d",
+  "state": "PASS",
+  "nativeFirstObservedZKernelSamePidfdReaped": true,
+  "nativeFirstObservedLiveRefusedAndSticky": true,
+  "nonchildAndWrongBirthMetadataNegativesRefused": true,
+  "liveFixtureCleanupSeparateFromRefusal": true,
+  "signals": [],
+  "retainedBirthCount": 5,
+  "actorCountByFixedConstruction": 7,
+  "runtimeReleased": true,
+  "actualOldColdKernelReceipt": "UNMEASURED",
+  "receiptSha256": "edccde7cc9eab5055f934fb4b15c694c4d3d06c8a50af8697974f6667f77bc2d",
+  "retainedBirthsIndependentlyAbsent": true,
+  "intermediateWaitReceipts": 2,
+  "intermediateBirthTicks": "UNMEASURED",
+  "budget": {
+    "activeSeconds": 10,
+    "cleanupSeconds": 5
+  },
+  "scopeLimit": "Synthetic kernel terminal-reap component only; no browser ancestry, executable attribution, live ownership, signal authority, old cold retro-pass or full cold acceptance."
+}
