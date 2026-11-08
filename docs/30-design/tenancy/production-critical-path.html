@@ -5568,7 +5568,7 @@
 
 
 <h1 id="from-accepted-one-host-preview-to-production">From accepted one-host preview to production<a class="headerlink" href="#from-accepted-one-host-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>07dc68438</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>30ab0bc4e</code>.</em></p>
 <p><em>Living contributor-facing decision-preparation guide, 2026-11-08. This is a
 </em><em>read-derived</em><em> dependency analysis and prior-art survey, not production
 acceptance or an adopted topology/SLO decision. Existing requirements retain their
@@ -5723,9 +5723,14 @@ capabilities, not prerequisites invented for the fixed one-host reference.</p>
 <td>Explicit membership, producer fencing, resource ownership and safe scale-down. See the <a href="deployment-bindings-and-public-names.html#what-a-kubernetes-binding-must-preserve">binding contract</a> for packaging equivalence.</td>
 </tr>
 <tr>
-<td>Multiple API/realtime/evaluator replicas</td>
-<td>One cohort meets workload and outage objectives.</td>
-<td>Per-tenant producer ownership/fencing, current authority across replicas, reconnect/routing behavior and duplicate/missed work controls. A checkpoint lock is not a distributed producer lease.</td>
+<td>Dynamic API membership</td>
+<td>A fixed declared API roster meets workload and outage objectives; API request serving need not be singleton.</td>
+<td>Every replica participates in current authority, drain/invalidation and replacement acceptance; dynamic membership must serialize admission/removal with maintenance. A load-balanced API destination and per-instance control endpoints serve different purposes. See <a href="deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">API scaling and endpoint contracts</a>.</td>
+</tr>
+<tr>
+<td>Replicated realtime/evaluator workloads</td>
+<td>The admitted runtime meets workload and outage objectives.</td>
+<td>Realtime connection affinity/fanout and consumer state, plus evaluator/notification producer ownership and duplicate/missed work controls. A checkpoint lock is not a distributed producer lease; these requirements are distinct from ordinary API replication.</td>
 </tr>
 <tr>
 <td>Cross-host restore and dynamic participant discovery</td>

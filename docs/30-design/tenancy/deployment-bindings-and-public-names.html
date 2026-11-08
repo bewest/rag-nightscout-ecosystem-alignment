@@ -2807,6 +2807,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#configurable-transports-and-independently-scaled-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurable transports and independently scaled API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#jsonnet-and-node-multienv-integration-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5520,6 +5531,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#configurable-transports-and-independently-scaled-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurable transports and independently scaled API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#jsonnet-and-node-multienv-integration-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5592,7 +5614,7 @@
 
 
 <h1 id="deployment-bindings-public-names-and-load-behavior">Deployment bindings, public names and load behavior<a class="headerlink" href="#deployment-bindings-public-names-and-load-behavior" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>07dc68438</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>30ab0bc4e</code>.</em></p>
 <p><em>Living contributor-facing requirements and decision-preparation guide, 2026-11-08.
 The maintainer clarified the target: ordinary Kubernetes resources should be able
 to express the bounded deployment, public-name lifetime must be distinct from
@@ -5695,6 +5717,91 @@ membership and lifetime binding; merely adding Services does not close that gap.
 <p><a href="https://kubernetes.io/docs/concepts/security/secrets-good-practices/">Kubernetes Secret guidance</a>
 explains storage encryption and access controls. The production trust record must
 cover those controls as well as the existing database/Vault/edge boundary.</p>
+<h3 id="configurable-transports-and-independently-scaled-api">Configurable transports and independently scaled API<a class="headerlink" href="#configurable-transports-and-independently-scaled-api" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived mechanism assessment:</strong> there is no architectural requirement
+that the request-serving API have a single replica or share a host with realtime.
+The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/docs/tenant-operation-cohort.md#L3">current cohort specification</a>
+already permits explicitly declared API replicas as separate participants.
+The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/preview-api.js#L129">API implementation</a>
+acquires fresh request frames and exposes invalidation of local startup/readiness
+state. Stateless request handling means durable authority is external and local
+state can be reconstructed; it does not mean an instance has no connections,
+caches, in-flight responses or restore obligations.</p>
+<p>The current <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/realtime/ipc.js#L107">private transport</a>
+already carries bounded HTTP POST/JSON over Unix sockets. Configuration resolves
+an environment reference into <code>socketPath</code>; the parser currently accepts only
+that transport. Node supports HTTP over a Unix <code>socketPath</code> or a TCP host/port,
+and a <a href="https://nodejs.org/api/https.html#httpsrequestoptions-callback">separate HTTPS request adapter</a>.
+See <a href="https://nodejs.org/api/http.html#httprequestoptions-callback">HTTP request options</a>.
+Adding a network transport is feasible without changing operation payloads or
+requiring realtime to share API memory. It needs an admitted client/listener and
+trust profile, not merely a new value in the current socket-only field.</p>
+<p><strong>Proposed configuration boundary:</strong> operator environment or mounted config
+selects an endpoint kind and address; the normalized adapter implements the same
+bounded invoke/response contract. A name such as <code>NS_PRIVATE_API_ENDPOINT</code> with
+<code>unix:/run/ns-ipc/api.sock</code> or <code>https://api.internal:8443</code> illustrates that design;
+<strong>this variable and URL syntax are proposals, not shipping options</strong>. Keep listen
+binding distinct from the client's service destination. CA/client identity and
+other credentials use separate private file/secret references, not ConfigMap
+plaintext or credentials embedded in the URL. An HTTP endpoint needs an explicitly
+admitted private trust profile; HTTPS still needs caller authorization. Verify
+service identity before granting the internal transport capability, in addition
+to the unchanged tenant/client credential checks. Refuse unsupported schemes,
+redirects or trust failures; do not fall back silently between transports.</p>
+<p>The calls have different addressing semantics:</p>
+<table>
+<thead>
+<tr>
+<th>Call / component</th>
+<th>Appropriate destination</th>
+<th>What changes with replicas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Realtime to API authorization/mutation</td>
+<td>A trusted service endpoint may select any equivalently configured, admitted API replica.</td>
+<td>Each request still resolves the tenant and checks current authority, RLS and operation lifetime. No inherent affinity to one API is needed for these request-scoped calls; joined concurrency/compatibility acceptance remains required.</td>
+</tr>
+<tr>
+<td>Restore controller to each participant</td>
+<td>A separately addressable instance endpoint, with authenticated identity and pinned boot incarnation.</td>
+<td>The controller must reach every relevant instance for status/drain/invalidation. A single load-balanced endpoint cannot stand in for the complete roster: repeated calls could reach the same replica while missing another.</td>
+</tr>
+<tr>
+<td>Evaluator notification to realtime</td>
+<td>A destination whose receipt/fanout contract reaches the intended connected viewers.</td>
+<td>Load-balancing one handoff to one realtime replica does not broadcast it to sockets on other replicas. Qualify fanout or explicit delivery ownership and durable retry/deduplication.</td>
+</tr>
+<tr>
+<td>Browser to realtime</td>
+<td>A connection-owning realtime instance.</td>
+<td>Socket connections, rooms and local projections are retained state. Current polling plus WebSocket compatibility needs session affinity for polling, and correct cross-instance delivery. A generic URL alone does not solve that. See <a href="https://socket.io/docs/v4/using-multiple-nodes/">Socket.IO multiple-node guidance</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>Start API scale-out with an explicit fixed roster if desired. Prove concurrent
+requests on different APIs, current revocation/config consistency, actual drain
+of an in-flight response, all-replica invalidation, replica death/replacement,
+foreign-tenant refusal and unchanged mutation replies. Database pool/connection
+limits and load tests must account for the aggregate across replicas. Ordinary
+API replication does not inherently need the evaluator's single-producer
+ownership protocol. Dynamic joins/leaves still need an admission/drain rule
+serialized with maintenance; that can use the existing authoritative database
+and does not inherently require a new consensus/discovery product.</p>
+<p>Preserve deadlines, cancellation, byte bounds and actual acknowledgement
+semantics across both transports. An ambiguous mutation response must not cause
+a new transparent retry: the current forwarder returns no acknowledgement rather
+than fabricating success. Network/partition tests add cases to prove; they do not
+make API scale-out theoretically invalid. Evaluator scheduling/notification
+production and realtime fanout retain their own independent ownership questions.</p>
+<p>The inspected node-multienv source provides narrower prior art: its
+<a href="https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L160">redirector listener</a>
+passes configured listen values through and handles a filesystem socket, while
+<a href="https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L97">backend selection</a>
+constructs a remote URL. This source reading does not establish one uniformly
+interchangeable Unix/HTTP/HTTPS client abstraction across that project. No
+transport-parity or replica runtime campaign was run for this assessment.</p>
 <h3 id="jsonnet-and-node-multienv-integration-boundary">Jsonnet and node-multienv integration boundary<a class="headerlink" href="#jsonnet-and-node-multienv-integration-boundary" title="Permanent link">&para;</a></h3>
 <p>A proposed Jsonnet binding should take a deployment identifier, named role set,
 image/config generation, private tenant-resolution configuration, edge placement,
