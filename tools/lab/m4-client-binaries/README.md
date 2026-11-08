@@ -28,14 +28,28 @@ absence is a setup refusal. A parent plan is custody configuration, not executio
 The private version-1 `m4-cgmsim-oref0-v1` plan has `status: PARENT_BOUND`, a fresh v4
 `ownerUUID`, `applicationHead`, `activeSeconds: 600`, `cleanupSeconds: 120`,
 `dockerExecutable: /usr/bin/docker`, an absolute initially empty `dockerConfig`,
-`endpointProfile: stable-network-settings-v1`, `images` keyed exactly `postgres`, `mongo`,
+`endpointProfile: network-endpoint-stable-v1`, `images` keyed exactly `postgres`, `mongo`,
 `vault`, `client` with full SHA256 image IDs, and `baseline` container/volume/network ID
 arrays. The independent parent captures full baseline fingerprints with
 `custody-observer.baselineSnapshot(invoke)` before resources. Inspect classes use strict
 32-ID batches, exact returned sets, full IDs, caps 256/1024/64 and a 128-KiB argv ceiling.
-Only digests of complete Config/HostConfig are retained, including Env; raw baseline Env
-is never persisted. The selected endpoint profile fingerprints NetworkSettings Ports,
-Networks and SandboxID; dynamic State/health/statistics are outside that profile.
+The verbatim approved `endpoint_profile.py` (SHA256
+`a37601bee57751c0bab58afbf57bfb5de624c12ce1aa068f5dc632d023d3f4b2`) is called
+through a fixed stdlib Python adapter; the parent must additionally pin `/usr/bin/python3.12`
+and its exact `-I -B endpoint-adapter.py` child argv. Complete Config/HostConfig, including
+Env, are fingerprinted in Python before leaving the raw inspect parser; raw baseline Env
+is never persisted. Every network-inspect field except Containers remains exact, including
+unknown fields. Containers uses exactly the helper's five typed fields: membership, Name
+and both IP strings remain exact; only EndpointID and MacAddress observations may vary.
+Full private before/after maps and explicit fullEquality=false remain in the comparison.
+
+Container NetworkSettings retains Ports and every other static/unknown field exactly.
+Only per-network EndpointID/MacAddress are observations, checked against authoritative
+global network maps by NetworkID, container ID, membership, name and IP/prefix. SandboxID
+and SandboxKey are typed lifecycle observations retained before/after, with no mutation
+or ownership authority. State, RestartCount and ExecIDs remain runtime observations.
+No unrelated Sandbox transition has been reproduced by this source-only work; the
+classification is prospective. It does not claim host quiescence or unchanged full endpoints.
 
 Each container is created stopped under a fixed initially absent name, journaled by exact ID,
 validated against the typed image/argv/env/mount specification, then independently inspected.
@@ -44,7 +58,14 @@ under `custody/receipts/`; actual `start` consumes that receipt. Anonymous image
 are captured by exact identity before start. Cleanup uses saved IDs, fresh complete identity
 checks and fresh empty volume references. Unidentified create results remain unresolved;
 names and later absence never grant cleanup authority. A receipt wait is bounded to eight
-seconds and fails closed. Client output still comes from the attached process; its status
+seconds and fails closed. A saved first-start intent admits either exact identity or the isolated-engine-measured
+OomKillDisable false-to-null transition, only when projecting that one field back to false
+reproduces the complete original identity. A fsynced first-start receipt retains complete
+before/after/projected fingerprints before the owned identity advances. True/malformed
+values, any other change and later drift refuse; baseline Config/HostConfig never use this
+transition. Recovery may finish this same proof only for a previously saved exact ID and
+first-start intent, before any cleanup. This is instrument lifecycle handling, not product
+or client compatibility acceptance. Client output still comes from the attached process; its status
 comes from the completed container's actual ExitCode, preserving oref0's HTTP/exit distinction.
 
 After the reviewed host supervisor has reaped all children, the parent calls the M4-specific
@@ -65,11 +86,16 @@ budget, including observer and all exact-ID cleanup/verification. These are ceil
 measured durations. The parent starts its deadline before all pre-resource commands and
 must reject insufficient remaining time; it must not reset cleanup or adopt unknown actors.
 The wrapper does not enforce the outer host deadline or claim host-process custody itself.
-Native performance, Docker metadata shape and complete physical closure remain unmeasured
-for this source until the acceptance lead binds and runs the reviewed parent.
+Native M4 performance, complete baseline/container shape and physical closure remain
+unmeasured for this source until the acceptance lead binds and runs the reviewed parent.
+The separate isolated engine proof measures only its first-start field transition.
 
 Offline checks: `node tools/lab/m4-client-binaries/test-custody.js`, existing `test-lab.js`,
-and `test-classify.py`. The custody checks use recording transports and synthetic rows;
+`test-endpoint-adapter.js`, and `test-classify.py`. Optional private retained endpoint/engine
+inputs use NS_M4_ENDPOINT_BEFORE/AFTER and NS_M4_FIRST_START_BEFORE/AFTER; never commit
+those captures. Actual retained maps/config are replayed inside explicit synthetic inspect
+and identity envelopes; that does not create native M4 evidence. The custody checks use
+recording transports and synthetic rows;
 they do not execute Docker, a client, a server, or a listener.
 
 ## Historical direct invocation and preparation

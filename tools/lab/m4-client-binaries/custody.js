@@ -14,18 +14,30 @@ const canonical = value => value && typeof value === 'object' ? Array.isArray(va
   ? value.map(canonical) : Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 const digest = value => crypto.createHash('sha256').update(JSON.stringify(canonical(value))).digest('hex');
 const same = (a, b) => digest(a) === digest(b);
-const endpoints = row => ({ profile: 'stable-network-settings-v1', Ports: row.NetworkSettings.Ports,
-  Networks: row.NetworkSettings.Networks, SandboxID: row.NetworkSettings.SandboxID });
 function identity (row) {
   assert(row && ID.test(row.Id) && row.Config && row.HostConfig && row.NetworkSettings && Array.isArray(row.Mounts), 'CUSTODY_INSPECT_SHAPE');
   return { id: row.Id, name: row.Name, image: row.Image, created: row.Created,
     config: digest(row.Config), hostConfig: digest(row.HostConfig),
-    mounts: row.Mounts.map(m => ({type:m.Type,name:m.Name || null,source:m.Source,destination:m.Destination,rw:m.RW})).sort((a,b)=>a.destination.localeCompare(b.destination)) };
+    mounts: structuredClone(row.Mounts).sort((a,b)=>a.Destination.localeCompare(b.Destination)) };
 }
-function baselineIdentity (row) { return {...identity(row), endpoint: digest(endpoints(row))}; }
 function volumeIdentity (row) {
   assert(row && typeof row.Name === 'string' && row.Name && row.Driver && row.CreatedAt, 'CUSTODY_VOLUME_SHAPE');
   return {name:row.Name,driver:row.Driver,created:row.CreatedAt,fingerprint:digest(row)};
+}
+function firstStartObservation (record,row) {
+  const after=identity(row),before=record.identity;
+  assert(row.State && typeof row.State.StartedAt==='string' && !row.State.StartedAt.startsWith('0001-'),'CUSTODY_FIRST_START_NOT_OBSERVED');
+  let transition='unchanged',projected=after;
+  if(!same(after,before)){
+    assert(record.firstStart.oomKillDisable===false && row.HostConfig.OomKillDisable===null,'CUSTODY_FIRST_START_TRANSITION_REFUSED');
+    projected={...after,hostConfig:digest({...row.HostConfig,OomKillDisable:false})};
+    assert(same(projected,before),'CUSTODY_FIRST_START_OTHER_DRIFT');transition='oom-kill-disable-false-to-null';
+  }
+  return {before,after,projected,transition};
+}
+function firstStartMatches ({before,after,projected,transition}) {
+  if(!before || !after || !projected || !same(before,projected) || !same({...after,hostConfig:before.hostConfig},before))return false;
+  return transition==='unchanged' ? same(after,before) : transition==='oom-kill-disable-false-to-null' && after.hostConfig!==before.hostConfig;
 }
 function create ({ plan, directory, invoke, append, recovery = false } = {}) {
   plan=structuredClone(plan);
@@ -33,7 +45,7 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
   assert(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(plan.ownerUUID), 'CUSTODY_OWNER');
   assert(plan.dockerExecutable === '/usr/bin/docker' && path.isAbsolute(plan.dockerConfig) &&
     fs.readdirSync(plan.dockerConfig).length === 0, 'CUSTODY_DOCKER_ENDPOINT');
-  assert(plan.endpointProfile === 'stable-network-settings-v1', 'CUSTODY_ENDPOINT_PROFILE');
+  assert(plan.endpointProfile === 'network-endpoint-stable-v1', 'CUSTODY_ENDPOINT_PROFILE');
   for (const kind of ['containers','volumes','networks']) assert(Array.isArray(plan.baseline[kind]) && new Set(plan.baseline[kind]).size === plan.baseline[kind].length, 'CUSTODY_BASELINE');
   assert(plan.baseline.containers.length <= 256 && plan.baseline.volumes.length <= 1024 && plan.baseline.networks.length <= 64, 'CUSTODY_BASELINE_CAP');
   assert(Object.keys(plan.images).sort().join(',') === 'client,mongo,postgres,vault' && Object.values(plan.images).every(value => /^sha256:[a-f0-9]{64}$/.test(value)), 'CUSTODY_IMAGE_PINS');
@@ -91,7 +103,7 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
     assert(same(row.Config.Cmd || [],command) && same(row.Config.Entrypoint || [],entry),'CUSTODY_ARGV_CONFIG');
     const execution=[...entry,...command];assert(row.Path===execution[0] && same(row.Args || [],execution.slice(1)),'CUSTODY_EXECUTION_ARGV');
     assert(row.Config.User===(spec.user || image.Config.User || '') && row.Config.WorkingDir===(spec.workdir || image.Config.WorkingDir || ''),'CUSTODY_USER_WORKDIR');
-    const h=row.HostConfig;assert(h.NetworkMode===(kind==='client'?'host':'bridge') && h.AutoRemove===false && h.Privileged===false &&
+    const h=row.HostConfig;assert(h.NetworkMode===(kind==='client'?'host':'bridge') && h.AutoRemove===false && h.Privileged===false && h.OomKillDisable===false &&
       !h.PublishAllPorts && !(h.CapAdd || []).length && !(h.Devices || []).length && !(h.SecurityOpt || []).length,'CUSTODY_HOST_CONFIG');
     assert(same((h.ExtraHosts || []).slice().sort(),(spec.hosts || []).slice().sort()),'CUSTODY_HOST_ALIASES');
     const expectedBinds=spec.mounts || [], destinations=new Set();
@@ -124,7 +136,7 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
       const found=JSON.parse(run(['volume','inspect',mount.Name]));assert(found.length===1 && found[0].Name===mount.Name,'CUSTODY_VOLUME_ID');
       const v=volumeIdentity(found[0]);volumes.set(v.name,v);ownedVolumes.push(v);
     }
-    const record={name,kind,id,identity:held,volumes:ownedVolumes};save('created-identified',record);records.set(id,record);unresolved.delete(name);return id;
+    const record={name,kind,id,identity:held,volumes:ownedVolumes,firstStart:{phase:'created',oomKillDisable:row.HostConfig.OomKillDisable}};save('created-identified',record);records.set(id,record);unresolved.delete(name);return id;
   }
   function receipt (record) {
     const file=path.join(receipts,record.id+'.json'),deadline=Date.now()+8000;
@@ -135,15 +147,22 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
     save('observer-admitted',{id:record.id,identity:ack.identity});
   }
   function held (id) {assert(!fault && records.has(id),'CUSTODY_UNKNOWN_OR_UNJOURNALED_ID');const r=records.get(id);assert(same(identity(inspect(id)),r.identity),'CUSTODY_IDENTITY_DRIFT');return r;}
-  function start (id, attached=false) {const r=held(id);receipt(r);save('start-intent',{id:r.id,attached});if(attached)return argv(['start','--attach',id]);run(['start',id]);held(id);save('started',{id});}
-  function finishClient (id, exit) {const r=held(id),row=inspect(id);assert(r.kind==='client' && row.State && row.State.Running===false && row.State.StartedAt && !row.State.StartedAt.startsWith('0001-') &&
+  function acceptFirstStart (id) {
+    const r=records.get(id);assert(r && r.firstStart.phase==='intent','CUSTODY_FIRST_START_INTENT_REQUIRED');
+    const observation=firstStartObservation(r,inspect(id));
+    // The old identity remains authoritative unless this complete receipt fsyncs.
+    save('first-start',{id,...observation});r.identity=observation.after;r.firstStart={phase:'started',before:observation.before,transition:observation.transition};
+    return r;
+  }
+  function start (id, attached=false) {const r=held(id);assert(r.firstStart.phase==='created','CUSTODY_FIRST_START_ALREADY_USED');receipt(r);save('start-intent',{id:r.id,attached});r.firstStart.phase='intent';if(attached)return argv(['start','--attach',id]);run(['start',id]);acceptFirstStart(id);held(id);save('started',{id});}
+  function finishClient (id, exit) {if(records.get(id)?.firstStart.phase==='intent')acceptFirstStart(id);const r=held(id),row=inspect(id);assert(r.kind==='client' && row.State && row.State.Running===false && row.State.StartedAt && !row.State.StartedAt.startsWith('0001-') &&
     row.State.FinishedAt && !row.State.FinishedAt.startsWith('0001-') && !row.State.Error && Number.isInteger(row.State.ExitCode) && !exit.signal,'CUSTODY_CLIENT_COMPLETION');
     save('client-exited',{id,exit:row.State.ExitCode,transportExit:exit.status});return row.State.ExitCode;}
   function references (name) {const ids=run(['ps','-aq','--no-trunc']).split('\n').filter(Boolean);assert(ids.length<=260 && new Set(ids).size===ids.length && ids.every(id=>ID.test(id)),'CUSTODY_REFERENCE_IDS');
     const refs=[];for(let i=0;i<ids.length;i+=32){const batch=ids.slice(i,i+32),rows=JSON.parse(run(['inspect',...batch]));assert(rows.length===batch.length && new Set(rows.map(r=>r.Id)).size===batch.length && same(rows.map(r=>r.Id).sort(),batch.slice().sort()),'CUSTODY_REFERENCE_EXACT_BATCH');for(const row of rows)if(row.Mounts.some(m=>m.Type==='volume' && m.Name===name))refs.push(row.Id);}return refs;}
   function remove (id) {assert(!fault && records.has(id),'CUSTODY_UNKNOWN_OR_UNJOURNALED_ID');const r=records.get(id);assert(!plan.baseline.containers.includes(id),'CUSTODY_BASELINE_CONTAINER');
     removing.add(id);const current=raw(['inspect','--type','container',id]);
-    if(current.status===0){assert(!r.containerAbsent && same(identity(JSON.parse(current.stdout)[0]),r.identity),'CUSTODY_IDENTITY_DRIFT');save('remove-intent',{id});assert(run(['rm','--force',id])===id,'CUSTODY_REMOVE_ID');}
+    if(current.status===0){if(recovery && r.firstStart.phase==='intent' && !same(identity(JSON.parse(current.stdout)[0]),r.identity))acceptFirstStart(id);assert(!r.containerAbsent && same(identity(inspect(id)),r.identity),'CUSTODY_IDENTITY_DRIFT');save('remove-intent',{id});assert(run(['rm','--force',id])===id,'CUSTODY_REMOVE_ID');}
     else assert(/no such (object|container)/i.test(current.stderr),'CUSTODY_ABSENCE_UNCONFIRMED');
     absent(id);save('container-absent',{id});
     for(const v of r.volumes){if(!volumes.has(v.name))continue;const currentVolume=raw(['volume','inspect',v.name]);if(currentVolume.status!==0){assert(recovery && /no such volume/i.test(currentVolume.stderr),'CUSTODY_VOLUME_ABSENCE');volumes.delete(v.name);save('volume-absent',{name:v.name});continue;}const found=JSON.parse(currentVolume.stdout);assert(found.length===1 && same(volumeIdentity(found[0]),v) && !plan.baseline.volumes.includes(v.name),'CUSTODY_VOLUME_DRIFT');assert(references(v.name).length===0,'CUSTODY_VOLUME_REFERENCED');save('volume-remove-intent',{name:v.name});assert(run(['volume','rm',v.name])===v.name,'CUSTODY_VOLUME_REMOVE');const missing=raw(['volume','inspect',v.name]);assert(missing.status!==0 && /no such volume/i.test(missing.stderr),'CUSTODY_VOLUME_ABSENCE');volumes.delete(v.name);save('volume-absent',{name:v.name});}
@@ -159,6 +178,8 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
         assert(ID.test(r.id) && !plan.baseline.containers.includes(r.id) && names.includes(r.name) && !records.has(r.id),'CUSTODY_RECOVERY_ID');
         records.set(r.id,r);unresolved.delete(r.name);for(const v of r.volumes){assert(!plan.baseline.volumes.includes(v.name));volumes.set(v.name,v);}
       }
+      if(entry.type==='start-intent'){assert(records.has(r.id) && records.get(r.id).firstStart.phase==='created','CUSTODY_RECOVERY_START');records.get(r.id).firstStart.phase='intent';}
+      if(entry.type==='first-start'){const record=records.get(r.id);assert(record && record.firstStart.phase==='intent' && same(record.identity,r.before) && firstStartMatches(r),'CUSTODY_RECOVERY_FIRST_START');record.identity=r.after;record.firstStart={phase:'started',before:r.before,transition:r.transition};}
       if(entry.type==='container-absent' && records.has(r.id))records.get(r.id).containerAbsent=true;
       if(entry.type==='volume-absent')volumes.delete(r.name);
       if(entry.type==='closed')alreadyClosed=true;
@@ -168,4 +189,4 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
   }
   return Object.freeze({initialize,stage,start,finishClient,remove,close,read,argv,identity:()=>({owner:plan.ownerUUID,profile:PROFILE,ledger}),names:Object.freeze({postgres:prefix+'-postgres',mongo:prefix+'-mongo',vault:prefix+'-vault'})});
 }
-module.exports={create,recover: options=>create({...options,recovery:true}).close(),identity,baselineIdentity,volumeIdentity,digest,PROFILE,LABEL};
+module.exports={create,recover: options=>create({...options,recovery:true}).close(),identity,volumeIdentity,digest,firstStartObservation,firstStartMatches,PROFILE,LABEL};

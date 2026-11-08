@@ -3,11 +3,11 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const custody=require('./custody'),observer=require('./custody-observer');
 const owner='44444444-4444-4444-8444-444444444444';
-function fixture ({mutate,append}={}){
+function fixture ({mutate,append,startMutate}={}){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'m4-custody-source-'));const config=path.join(root,'docker');fs.mkdirSync(config);
  const kinds=['postgres','mongo','vault','client'],images=Object.fromEntries(kinds.map((k,i)=>[k,'sha256:'+String(i+1).repeat(64)]));
  const plan={version:1,profile:custody.PROFILE,status:'PARENT_BOUND',ownerUUID:owner,dockerExecutable:'/usr/bin/docker',dockerConfig:config,
-  endpointProfile:'stable-network-settings-v1',baseline:{containers:[],volumes:[],networks:[]},images};
+  endpointProfile:'network-endpoint-stable-v1',baseline:{containers:[],volumes:[],networks:[]},images};
  const records=[],calls=[],containers=new Map(),volumes=new Map();let serial=0;
  const image=kind=>({Id:images[kind],Config:{Env:['PATH=/bin'],Labels:{},Cmd:[kind==='postgres'?'postgres':kind==='mongo'?'mongod':kind==='vault'?'server':'node'],Entrypoint:['entry'],Volumes:kind==='postgres'?{'/data':{}}:{},User:'',WorkingDir:''}});
  const transport=(args)=>{
@@ -17,8 +17,8 @@ function fixture ({mutate,append}={}){
    const at=args.findIndex(v=>v.startsWith('sha256:')),kind=kinds.find(k=>images[k]===args[at]),source=image(kind);
    const id=(++serial).toString(16).padStart(64,'0'),row={Id:id,Name:'/'+args[args.indexOf('--name')+1],Image:images[kind],Created:'synthetic-created',
     Config:{...source.Config,Image:images[kind],Labels:{},Env:['PATH=/bin'],Cmd:args.slice(at+1).length?args.slice(at+1):source.Config.Cmd},
-    HostConfig:{NetworkMode:kind==='client'?'host':'bridge',AutoRemove:false,Privileged:false,PublishAllPorts:false,CapAdd:null,Devices:[],SecurityOpt:null,ExtraHosts:[],PortBindings:{}},
-    Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:''},State:{Status:'created',Running:false,StartedAt:'0001-',FinishedAt:'0001-',ExitCode:0,Error:''}};
+    HostConfig:{NetworkMode:kind==='client'?'host':'bridge',AutoRemove:false,Privileged:false,OomKillDisable:false,PublishAllPorts:false,CapAdd:null,Devices:[],SecurityOpt:null,ExtraHosts:[],PortBindings:{}},
+    Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:'',SandboxKey:''},State:{Status:'created',Running:false,StartedAt:'0001-',FinishedAt:'0001-',ExitCode:0,Error:''}};
    const env=new Map([['PATH','/bin']]);for(let i=1;i<at;i++){
     if(args[i]==='--label'){const [k,v]=args[++i].split('=');row.Config.Labels[k]=v;}
     if(args[i]==='-e'){const k=args[++i];env.set(k,'synthetic-secret');}
@@ -36,7 +36,7 @@ function fixture ({mutate,append}={}){
    return ok(ids.map(id=>containers.get(id)));
   }
   if(args[0]==='ps')return ok(args.includes('--format')?[...containers].map(([id,row])=>id+' '+row.Name.slice(1)).join('\n'):[...containers.keys()].join('\n'));
-  if(args[0]==='start'){const row=containers.get(args[1]);row.State.Running=true;row.State.StartedAt='2026-start';return ok(args[1]);}
+  if(args[0]==='start'){const row=containers.get(args[1]);row.HostConfig.OomKillDisable=null;row.State.Running=true;row.State.StartedAt='2026-start';if(startMutate)startMutate(row);return ok(args[1]);}
   if(args[0]==='rm'){assert.equal(args[1],'--force');containers.delete(args[2]);return ok(args[2]);}
   if(args[0]==='volume' && args[1]==='inspect')return volumes.has(args[2])?ok([volumes.get(args[2])]):{status:1,stdout:'',stderr:'No such volume'};
   if(args[0]==='volume' && args[1]==='rm'){volumes.delete(args[2]);return ok(args[2]);}
@@ -63,7 +63,7 @@ test('wrong ID/name/config/argv/mount and missing journal never permit start or 
 test('changed complete Config or HostConfig fingerprint refuses cleanup; client exit comes from actual container state',()=>{
  const f=fixture();try{const id=f.api.stage('postgres',serviceSpec);f.containers.get(id).Config.Unexpected='changed';assert.throws(()=>f.api.remove(id),/IDENTITY_DRIFT/);delete f.containers.get(id).Config.Unexpected;f.api.remove(id);
   const client=f.api.stage('client',{command:['node','synthetic-program']});const argv=f.api.start(client,true);assert.deepEqual(argv.slice(-3),['start','--attach',client]);
-  Object.assign(f.containers.get(client).State,{Running:false,StartedAt:'2026-start',FinishedAt:'2026-finish',ExitCode:5});assert.equal(f.api.finishClient(client,{status:0,signal:null}),5);f.api.remove(client);f.api.close();
+  f.containers.get(client).HostConfig.OomKillDisable=null;Object.assign(f.containers.get(client).State,{Running:false,StartedAt:'2026-start',FinishedAt:'2026-finish',ExitCode:5});assert.equal(f.api.finishClient(client,{status:0,signal:null}),5);f.api.remove(client);f.api.close();
  }finally{f.close();}
 });
 test('four live containers and one serial client are hard bounds; held anonymous reference refuses volume deletion',()=>{
@@ -74,11 +74,11 @@ test('four live containers and one serial client are hard bounds; held anonymous
 });
 test('M4 observer consumes complete journal and refuses omitted start/cleanup or unknown host child',()=>{
  const f=fixture();try{
-  const ids=['postgres','mongo','vault'].map(kind=>f.api.stage(kind,kind==='postgres'?serviceSpec:{}));for(const id of ids)f.api.start(id);const client=f.api.stage('client',{});f.api.start(client,true);Object.assign(f.containers.get(client).State,{StartedAt:'2026-start',FinishedAt:'2026-end',ExitCode:0});f.api.finishClient(client,{status:0,signal:null});f.api.remove(client);f.api.close();
+  const ids=['postgres','mongo','vault'].map(kind=>f.api.stage(kind,kind==='postgres'?serviceSpec:{}));for(const id of ids)f.api.start(id);const client=f.api.stage('client',{});f.api.start(client,true);f.containers.get(client).HostConfig.OomKillDisable=null;Object.assign(f.containers.get(client).State,{StartedAt:'2026-start',FinishedAt:'2026-end',ExitCode:0});f.api.finishClient(client,{status:0,signal:null});f.api.remove(client);f.api.close();
   const supervisor={phase:'m4-clients',hostProcessesClosed:true,directChildrenReaped:true,processAudit:{unknownAdopted:[],freshReadbackWithinBudget:true,terminalReceiptFailures:[],lastReadback:{readbackComplete:true,knownPresent:[],unknownAdopted:[]}}};
   const input={owner,baseline:f.plan.baseline,supervisor,run:{clients:['cgmsim','oref0']}};assert.equal(observer.normalize(f.records,input).length,4);
   assert.throws(()=>observer.normalize(f.records.slice(0,-1),input),/CLEANUP/);
-  const noIntent=f.records.filter(r=>r.type!=='start-intent').map((r,i)=>({...r,sequence:i+1}));assert.throws(()=>observer.normalize(noIntent,input),/START_INTENT_REQUIRED|CLIENT_EXIT_MISSING/);
+  const noIntent=f.records.filter(r=>r.type!=='start-intent').map((r,i)=>({...r,sequence:i+1}));assert.throws(()=>observer.normalize(noIntent,input),/FIRST_START_RECEIPT_REQUIRED|START_INTENT_REQUIRED|CLIENT_EXIT_MISSING/);
   const omitted=f.records.filter(r=>r.type!=='started').map((r,i)=>({...r,sequence:i+1}));assert.throws(()=>observer.normalize(omitted,input),/START_OR_EXIT/);
   assert.throws(()=>observer.normalize(f.records,{...input,supervisor:{...supervisor,processAudit:{...supervisor.processAudit,unknownAdopted:[{pid:123}]}}}),/HOST_CUSTODY/);
  }finally{f.close();}
@@ -99,7 +99,7 @@ test('independent observer consumes actual journal, persists before ACK, and a m
  }finally{f.close();}
 });
 test('baseline full fingerprints use strict 32-ID exact batches; missing late rows and Config drift refuse',()=>{
- const rows=Array.from({length:65},(_,i)=>({Id:(i+1).toString(16).padStart(64,'0'),Name:'/synthetic-'+i,Image:'sha256:'+'a'.repeat(64),Created:'synthetic',Config:{Env:['SECRET=synthetic-private']},HostConfig:{Privileged:false},Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:''}}));
+ const rows=Array.from({length:65},(_,i)=>({Id:(i+1).toString(16).padStart(64,'0'),Name:'/synthetic-'+i,Image:'sha256:'+'a'.repeat(64),Created:'synthetic',Config:{Env:['SECRET=synthetic-private']},HostConfig:{Privileged:false},Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:'',SandboxKey:''}}));
  const calls=[];let missing=false,drift=false;
  const invoke=args=>{calls.push(args);if(args[0]==='ps')return rows.map(r=>r.Id).join('\n');if(args[1]==='ls')return '';
   assert.deepEqual(args.slice(0,3),['inspect','--type','container']);assert(args.length<=35);let selected=args.slice(3).map(id=>structuredClone(rows.find(r=>r.Id===id)));if(missing && args.length===4)selected=[];if(drift)selected[0].Config.Env.push('CHANGED=yes');return JSON.stringify(selected);};
@@ -148,4 +148,24 @@ test('initial validation rejects running or previously run containers before ind
 });
 test('an unresolved initial create forbids any subsequent creation',()=>{
  let first=true;const f=fixture({mutate:r=>{if(first){first=false;r.Name='/foreign';}}});try{assert.throws(()=>f.api.stage('postgres',serviceSpec),/CUSTODY_NAME_IMAGE/);const before=f.calls.filter(a=>a[0]==='create').length;assert.throws(()=>f.api.stage('client',{}),/CUSTODY_UNRESOLVED_RESOURCE/);assert.equal(f.calls.filter(a=>a[0]==='create').length,before);}finally{f.close();}
+});
+test('owned first start records complete false-to-null transition; later drift and every unproved change refuse',()=>{
+ const f=fixture();try{const id=f.api.stage('postgres',serviceSpec);f.api.start(id);const event=f.records.find(r=>r.type==='first-start');assert(event,'CUSTODY_FIRST_START_RECEIPT_REQUIRED');assert.equal(event.value.transition,'oom-kill-disable-false-to-null');assert(custody.firstStartMatches(event.value));assert.notEqual(event.value.before.hostConfig,event.value.after.hostConfig);assert.equal(event.value.before.config,event.value.after.config);assert.equal(custody.digest(event.value.projected),custody.digest(event.value.before));
+  assert.throws(()=>f.api.start(id),/ALREADY_USED/);f.containers.get(id).HostConfig.OomKillDisable=false;assert.throws(()=>f.api.remove(id),/IDENTITY_DRIFT/);f.containers.get(id).HostConfig.OomKillDisable=null;f.api.close();
+ }finally{f.close();}
+ for(const startMutate of [row=>{row.HostConfig.OomKillDisable=true;},row=>{row.HostConfig.OomKillDisable='false';},row=>{row.HostConfig.OtherStatic=true;},row=>{row.Config.Unexpected='drift';},row=>{row.Mounts[0].UnknownStatic='drift';},row=>{row.Name='/foreign';}]){
+  const bad=fixture({startMutate});try{const id=bad.api.stage('postgres',serviceSpec);assert.throws(()=>bad.api.start(id),/FIRST_START_TRANSITION_REFUSED|FIRST_START_OTHER_DRIFT/);assert(!bad.records.some(r=>r.type==='first-start'));}finally{bad.close();}
+ }
+ const failed=fixture({append:entry=>{if(entry.type==='first-start')throw new Error('durable first-start receipt failed');}});try{const id=failed.api.stage('postgres',serviceSpec);assert.throws(()=>failed.api.start(id),/JOURNAL_FAILED/);assert.throws(()=>failed.api.remove(id),/UNJOURNALED/);}finally{failed.close();}
+});
+test('actual normalizer refuses omitted first-start receipts rather than adopting a post-start identity silently',()=>{
+ const f=fixture();try{const id=f.api.stage('postgres',serviceSpec);f.api.start(id);f.api.close();const supervisor={phase:'m4-clients',hostProcessesClosed:true,directChildrenReaped:true,processAudit:{unknownAdopted:[],freshReadbackWithinBudget:true,terminalReceiptFailures:[],lastReadback:{readbackComplete:true,knownPresent:[],unknownAdopted:[]}}};
+ const input={owner,baseline:f.plan.baseline,supervisor};assert.equal(observer.normalize(f.records,input).length,1);const omitted=f.records.filter(r=>r.type!=='first-start').map((r,i)=>({...r,sequence:i+1}));assert.throws(()=>observer.normalize(omitted,input),/START_INTENT_REQUIRED/);
+ }finally{f.close();}
+});
+test('interrupted owned first start recovery requires the saved intent and durably proves the same exact transition before removal',()=>{
+ const f=fixture();try{const id=f.api.stage('client',{});f.api.start(id,true);const row=f.containers.get(id);row.HostConfig.OomKillDisable=null;row.State.StartedAt='2026-actual-start';
+ const directory=path.join(f.root,'interrupted-recovery');fs.mkdirSync(directory);fs.writeFileSync(path.join(directory,'custody.jsonl'),f.records.map(r=>JSON.stringify(r)).join('\n')+'\n');
+ assert.equal(custody.recover({plan:f.plan,directory,invoke:f.invoke})[0].id,id);const recovered=fs.readFileSync(path.join(directory,'custody.jsonl'),'utf8').trim().split('\n').map(JSON.parse);assert(recovered.some(r=>r.type==='first-start'));assert(recovered.findIndex(r=>r.type==='first-start')<recovered.findIndex(r=>r.type==='remove-intent'));
+ }finally{f.close();}
 });
