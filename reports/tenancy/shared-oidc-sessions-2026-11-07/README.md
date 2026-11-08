@@ -1,112 +1,141 @@
-# Shared optional OIDC human sessions: source capability
+# Shared optional OIDC human sessions: capability record
 
-This is a bounded implementation record, contributor-facing. The adopted
-[shared identity](../../../docs/30-design/tenancy/owner-authority.md#shared-oidc-integration)
+The shared optional human-login/session capability is **fixed on a local branch**
+and frozen for bounded acceptance. It is not merged or released. Actual signed
+MongoDB/PostgreSQL, Vault, HTTPS and browser acceptance remain **UNMEASURED**.
+The adopted [shared identity contract](../../../docs/30-design/tenancy/owner-authority.md#shared-oidc-integration)
 and [session decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-human-session-effects-2026-11-07)
-remain authoritative. This record does not promote M6, admit real identities,
-select a production provider or change the current Compose acceptance candidate.
+remain authoritative; no policy exception, M6 promotion or production identity
+admission follows from source checks.
 
-## Source and ownership
+## Frozen source and ownership
 
-Application branch `codex/shared-oidc-sessions-20261107` is local and unpushed:
-`b486f6f6ce2d07ec814c3095989970a8eb83e595`, tree
-`021296b0a5189130d40abb01d8aaadb6f11a9d52`, based on the original source
-integration `151de0248a1e4301c85b5c638185eec3ca8c38e6`. The application source
-owner retains original-branch joining and draft PR publication. This independent
-lane is for the next coherent batch. The alignment record branch starts at
-`fca6459be238ff433ad6e0b6d4e63b30c66b4b06` and changes only its own claim and record.
+Original application branch `codex/shared-oidc-sessions-20261107`, commit
+`eadf41f889e48ab6762724e62d4e6c85d50fb654`, tree
+`36bb9aae866712c69c8511498e1ee192ce16c653`, is local and unpushed at
+`/tmp/crm-shared-oidc-sessions-20261107`. Its original integration base is
+`151de0248a1e4301c85b5c638185eec3ca8c38e6`. The application source owner retains
+normal original-branch joining and PR publication; the coordinator owns alignment
+main integration. This independent next-batch source has not joined the current
+Compose candidate. Lane detail is in
+`externals/work/HANDOFF-shared-oidc-sessions-2026-11-07.md` (local).
 
-Lane detail: `externals/work/HANDOFF-shared-oidc-sessions-2026-11-07.md` (local).
+## Capability and contract repair
 
-## Implemented, fixed on the local branch
+The common adapter uses pinned `openid-client` and `jose`, authorization code/S256
+PKCE, state/nonce, explicit ID-token signature verification, issuer/audience,
+authentication time and exact expiry checks. Provider assertions identify a
+person; current local authority supplies permissions. Renewal requires provider
+proof and preserves management authentication, idle and absolute clocks.
+Successful qualifying foreground management operations alone advance idle;
+sensitive operations additionally require current authentication freshness.
 
-The common protocol adapter uses pinned `openid-client` and `jose`, authorization
-code/S256 PKCE, state/nonce, mandatory ID-token signature verification, issuer,
-audience, authentication time and exact expiry checks. Provider assertions supply
-identity only. The common lifecycle engine consumes explicit current local
-authority and keeps management access, idle, absolute and sensitive-action clocks
-separate. Provider-backed renewal never resets authentication/absolute time or
-counts as management activity. Logout commits local invalidation before browser
-clear and optional provider logout. Verified provider logout events receive
-durable replay handling and mapped session invalidation.
+The initial opaque-access prototype violated the existing asymmetric contract.
+That **read-derived audit finding** was confirmed independently and repaired
+without changing policy. Current human access uses actual Ed25519
+`ns-access+jwt`, explicit NS issuer/data/management audiences and provisioned
+purpose/tenant-bound public keys. Persisted hashes are secondary issuance
+bindings. Existing default/multitenant verification remains UUID-strict; the
+closed single-human profile accepts exactly `single`, separate from clinical
+storage's unchanged single scope. A distinct bound 64-byte Vault Transit signer
+performs issuance; the existing 32-byte legacy HMAC API is unchanged. Verification
+uses local public keys and current store authority, without a Vault verification
+call or expiry grace.
 
-Single MongoDB uses an operator-provisioned human principal aggregate that owns
-its current human grants and session state. Atomic revision comparison fences
-revocation and renewal without requiring MongoDB multi-document transactions.
-These grants are independent of legacy subject credentials; provider login does
-not import root or management membership. PostgreSQL uses additive forced-RLS
-tables and session-row transactions with current existing tenant, credential,
-subject/role and explicit management-actor authority. Serving does not migrate.
+Single Mongo uses one privately provisioned site authority aggregate containing
+global current keys, human mappings/grants and sessions. Bounded atomic CAS
+retries re-read all current state; a superseded or uncertain write returns no
+signed result. PostgreSQL uses additive forced-RLS session/identity tables and
+current existing tenant/credential/grant/management-actor/accepted-key state.
+Session-row transactions serialize logout and renewal; serving does not migrate
+or acquire key-update privileges. Native behavior, capacity and standalone-Mongo
+performance remain unmeasured.
 
-Both modes consume the shared HTTP login/callback/renew/logout/session flow.
-Default browser transport is Secure/HttpOnly host cookies with origin/CSRF checks;
-direct bearer remains available. Data and management cookies are separate, so
-entering management does not replace a display's data session. Concurrent provider
-flows use distinct state-bound cookies. Existing API authentication and stream
-consumers obtain current human authority per operation or delivery. Successful
-management responses qualify for idle activity; data polling, stream delivery,
-renewal and unsuccessful requests do not. Default-off single boot and existing
-headless authentication remain separate.
+Both modes consume login/callback/renew/logout/session HTTP routes, Secure and
+HttpOnly cookie default, direct bearer, separate data/management cookies and
+state-bound concurrent flow cookies. Current authorization is consumed per HTTP
+operation and stream delivery. Recognized human failures cannot fall through to
+headless authentication. The existing browser sign-in dialog consumes provider
+login and renewal; human mode suppresses dormant legacy credentials. Sign Out
+forgets this browser's legacy material, commits local revocation, clears its
+cookie, then follows the configured provider logout endpoint when available.
+Unconfirmed local revocation remains visible and never becomes a success reload.
+Default-off single behavior and headless authentication retain separate paths.
 
-## Reproduced source checks
+## Reproduced source evidence
 
-On this source, the focused command below passes 76 checks. The protocol fixture
-uses synthetic fetch Request/Response transport, the HTTP fixture uses an actual
-Express router without a kernel listener, aggregate persistence uses a source
-collection double, and stream factories use recording sockets. These are not
-actual MongoDB, PostgreSQL, browser, deployed-provider or full-application runs.
+The frozen source passes **194 explicit-file checks**, using actual crypto and
+application modules with synthetic fetch, request/response, collection and socket
+I/O doubles plus a hermetic DOM. Single stream tests use the actual aggregate
+adapter over doubled I/O; multitenant stream tests use an explicitly test-only
+store, not PostgreSQL. Ten Vault admission cases perform no transport. No native
+persistence, browser, full application or deployed-provider result is inferred.
+Root capture: `/tmp/oidc-evidence-20261107/signed-frozen-source.log` (local).
+The [immutable signed-source summary](signed-eadf41f8.json) owns the capture.
 
-```bash
-node node_modules/mocha/bin/mocha.js --timeout 10000 \
-  tests/human-session-provider.test.js tests/human-session-http.test.js \
-  tests/human-session-lifecycle.test.js tests/human-session-integration.test.js \
-  tests/human-session-stream.test.js tests/owner-preview.test.js \
-  tests/socket-write-handlers.test.js
-```
+Physical controls on isolated copies of the exact frozen source bypass signature,
+current-key, current-authority, durable invalidation, management lifetime, expired
+lookup separation and the global CAS fence one at a time. The intended refusal
+becomes `AssertionError: Missing expected rejection`; CAS bypass instead returns
+a renewed credential accepted by the next protected operation. Those are semantic
+reds, followed by byte-exact restoration and passing focused checks. The original
+checkout remains clean. Browser-consumer controls separately demonstrate ignored
+local logout, ignored provider navigation, false success after uncertain revocation
+and delivery after committed logout, with restoration passing. These remain
+source/DOM/socket-double evidence.
 
-Root re-ran physical source ablations individually. Bypassing durable session
-invalidation, access expiry, session idle/absolute expiry, or provider signature
-validation makes the intended refusal wrongly authorize: each selected test
-fails with `AssertionError: Missing expected rejection`. Bypassing aggregate
-revision fencing makes a renewal racing committed logout return a token accepted
-by the next protected operation; its test fails with that exact semantic
-assertion. These are semantic reds, not setup or dependency failures. Restored
-focused checks pass. Captures are local under
-`/tmp/oidc-evidence-20261107/controls/` and
-`/tmp/oidc-evidence-20261107/restored-source-focused.log`.
+Independent focused crypto/config audit found no load-bearing mismatch within
+its stated source scope. Changed production lint passes with two existing
+unsafe-regex warnings; test inventory passes at 596 files / 8 tiers and whitespace
+checks pass. Full application/browser/corpus/prcheck belongs to the next coherent
+joined candidate and was not run by this leaf.
 
-The wider queue measurement was not green: `make queue-status` exited nonzero
-with 198 PASS, 43 FAIL and 127 UNMEASURED; this item's prior claim had no runnable
-instrument. It is moved to `in-progress`, without claiming a green gate.
+A broader compatibility selection accidentally loaded the existing native
+`authorization-reload-boundary.test.js` setup hook. Its Mongo connection timed
+out; that setup failure is retained in `signed-headless-consumers-source.log`,
+not credited as native evidence. The process exited; a subsequent process scan
+found no matching Node process. The corrected source-double-only selection
+passed. Subsequent verification uses an explicit source-file allowlist, not a
+name grep that can load native hooks.
+
+The initial wider queue measurement was nonzero: 198 PASS, 43 FAIL and
+127 UNMEASURED. `MT-IDENTITY-PLAN` remains in-progress with no runnable complete
+acceptance gate; source tests do not make that programme item green.
+
+## Historical prototype capture
+
+The [immutable HTTPS summary](https-275c238c.json) retains the lead-reserved run
+on original `275c238c52a0e6204bf1ed7e5279d20309f16820`: 18 actual HTTPS assertions
+with synthetic provider/source-store and independently verified resource closure.
+It exercised transport on the **nonconforming opaque prototype**. It is not
+signed-policy conformance, native database, browser or current-source acceptance.
+The single grant was consumed and authorizes no further run. Earlier prototype
+source captures are retained locally with their original source attribution.
 
 ## Remaining acceptance and next owner
 
-Actual HTTPS synthetic-provider, native MongoDB/PostgreSQL, real browser cookie
-and bearer, current-source application compatibility and reference-provider
-acceptance are **UNMEASURED**. Explicit native instruments are prepared at
-`tests/human-session-http-native.js`, `tests/human-session-mongo-native.js` and
-`tests/human-session-postgres-native.js`. Syntax checking an instrument does not
-execute it. Runtime is reserved by the acceptance lead; no independent Docker,
-database or browser campaign starts while the current campaign owns capacity.
+The sole runtime lead must review and reserve the next finite, owned window.
+Prepared instruments refuse without explicit reservation/configuration before
+connecting or launching. They create only synthetic owned resources and retain
+cleanup failures. The proposed batch uses cached Mongo/PostgreSQL/Vault images,
+least-privilege PG identities, actual sign-only/nonexportable Vault issuance and
+native-store HTTPS consumption, then real cookie/bearer/browser cases if granted.
+A Vault pass alone is not a consumed HTTP or browser pass. Parent timeboxing and
+physical process/listener/service closure remain part of the reviewed runtime
+plan. No current-candidate capacity or idle interval is treated as a grant.
 
-The old Ory proof was inspected, not repeated. Its synthetic Kratos/Hydra source
-and immutable artifacts are under `tools/lab/ory-proof/`. Authentik remains the
-intended reference **subject to repeating that proof** on this generic adapter;
-no Authentik pass is inferred from the synthetic provider. The existing Kratos
-proof remains the measured fallback reference, not proof of this new application
-adapter. Production deployment, restore/lifecycle admission of the additive
-identity tables, operating capacity and real identity admission remain separate
-integration criteria.
+Authentik remains the intended reference subject to the existing Kratos proof;
+the historical Ory artifacts were inspected, not repeated on this adapter.
+Real reference-provider acceptance and production service-login, deployment,
+restore/lifecycle admission and operating capacity remain separate boundaries.
+After this lane closes bounded acceptance, the source owner receives the complete
+original branch at the next coherent join. No cherry-pick, push or PR mutation
+has occurred in this lane.
 
-Next owner is this source lane for bounded runtime acceptance once reserved,
-then the application source owner for an original-branch join at the next coherent
-batch. The coordinator owns alignment main integration and the acceptance lead
-owns final runtime freezing. No cherry-pick copy, publication or current-candidate
-mutation has occurred.
-
-Technical sources consulted: the maintained
+Technical inputs: maintained
 [openid-client authorization-code checks](https://github.com/panva/openid-client/blob/main/docs/functions/authorizationCodeGrant.md),
-[Authentik OIDC documentation](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/),
-[Authentik logout documentation](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/frontchannel_and_backchannel_logout/)
-and [MongoDB write-concern semantics](https://www.mongodb.com/docs/manual/reference/write-concern/#acknowledgment-behavior).
-Provider documentation is a design input, not executed provider acceptance.
+[Vault Transit signing API](https://developer.hashicorp.com/vault/api-docs/secret/transit#sign-data),
+[Authentik OIDC](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/),
+[Authentik logout](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/frontchannel_and_backchannel_logout/)
+and [Mongo write concern](https://www.mongodb.com/docs/manual/reference/write-concern/#acknowledgment-behavior).
+Documentation is a design input, not actual provider acceptance.
