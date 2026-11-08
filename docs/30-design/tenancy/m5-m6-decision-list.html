@@ -2585,6 +2585,8 @@
       
         
       
+        
+      
     
     
     
@@ -3579,6 +3581,34 @@
     
   
     SQL, migrations and tenant recovery architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-admission-and-activity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant admission, activity and recovery
   
 
     
@@ -5690,7 +5720,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-08. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5814,8 +5844,23 @@ The first-preview owner surface (settings, thresholds, credentials, integrations
 The first-preview external delivery channel (no push provider; Nightscout-to-Nightscout sync) is settled.
 M6 human session effects (idle scope, logout, renewal, transport) are settled.
 M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, generic OIDC adapter with Authentik as intended reference, probe-plus-record admission) are settled.</p>
-<p>The recorded policy index has no unresolved human-policy topic as of this review; implementation gaps and operating-limit proposals below remain open. A new topic is added here as a row
-(topic, decision needed, work that need not wait) when a packet is ready.</p>
+<p>The following topic is open; it does not reopen the settled choices above.</p>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Decision needed / source mechanism</th>
+<th>Work that need not wait</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operator activity/resource policy vs recovery admission (multitenant)</td>
+<td><a href="tenant-admission-and-activity.html">Tenant-admission review</a> records the proposed separation of desired activity, claim-bound maintenance state and observed health. Decide inactive behavior per serving/ingest/evaluator/connector capability, transition authority and how it composes with existing pause/suspend semantics. Source <code>operation-window.js:87–91</code> checks maintenance phase; <code>evaluator-runtime.js:101,152–154</code> iterates configured tenants. The proposal is read-derived; no new policy/schema or full inactive-resource behavior is accepted.</td>
+<td>Endpoint transport and fixed-roster APIs preserve existing admission/drain/invalidation. Existing owner/OIDC and lifecycle work can proceed within adopted contracts. Policy-specific consumer/schema changes wait for a bounded decision.</td>
+</tr>
+</tbody>
+</table>
 <p>The <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner lifecycle packet</a>
 retains source surveys and alternatives; its recommended grace periods, invitation
 lifetimes and self-service operations are not approved defaults. The <a href="multitenant-open-decisions-2026-11-06.html">earlier

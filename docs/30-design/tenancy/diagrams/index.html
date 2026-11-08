@@ -2585,6 +2585,8 @@
       
         
       
+        
+      
     
     
     
@@ -3486,6 +3488,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../tenant-admission-and-activity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant admission, activity and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tenant-config-schema-2026-10-27.html" class="md-nav__link">
         
   
@@ -3591,7 +3621,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_35" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_36" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -3614,8 +3644,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_35_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5_24_15_35">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_36_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15_36">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5517,7 +5547,7 @@
 
 
 <h1 id="tenancy-topology-plates">Tenancy topology plates<a class="headerlink" href="#tenancy-topology-plates" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>58b2b864c</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
 <p><em>Contributor-facing architecture figures, 2026-11-08. Interpretation is
 read-derived; linked acceptance retains its actual source. Trust zones do not
 mean physical hosts, and logical endpoints do not imply additional processes.</em></p>
@@ -5525,6 +5555,10 @@ mean physical hosts, and logical endpoints do not imply additional processes.</e
 <li><a href="accepted-one-host-topology.svg">Accepted one-host reference — SVG</a> / <a href="accepted-one-host-topology.png">PNG</a>: ed2 cold Compose/UI/restore and c23 native separate-role restart evidence, within the <a href="../../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>. Its public-facing synthetic origin uses HTTP; Vault uses TLS. No OIDC, external ingress TLS, capacity or production acceptance is added by the drawing.</li>
 <li><a href="proposed-fixed-roster-network-topology.svg">Proposed fixed-roster network target — SVG</a> / <a href="proposed-fixed-roster-network-topology.png">PNG</a>: the <a href="../deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">configurable transport/API-scale proposal</a>. API1/API2 are explicit instances, realtime owns connections, evaluator remains one producer, and maintenance uses per-instance endpoints plus platform/config-supplied roster input. No custom membership service, evaluator scheduler, dynamic roster or Kubernetes resource design is selected. Network transport, remote trust and scale acceptance remain open.</li>
 </ul>
+<p>The proposed role boxes do not mandate separate deployments: owner REST may
+co-locate with API while retaining its audience/listener boundary. Private
+maintenance execution remains separate from ordinary request serving. See the
+<a href="../runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/worker map</a>.</p>
 <p>Public routing alone uses arrows in the structural panel. The communication-plane
 ledger states private calls, transport and effective backing-resource grants;
 it avoids crossing connectors and implied all-to-all privileges. OWNER and
@@ -5534,7 +5568,7 @@ resource.</p>
 <p>Re-render from the repository root:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/site/render_tenancy_topologies.py<span class="w"> </span>--png
 </code></pre></div>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6bc5c82f1a6e4d691e02b35f52fb3f714ea8f64f/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4459e647e2c963aeeb3f0e5aec3c9435788367a5/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
 standard library for SVG and installed ImageMagick for PNG previews. These are
 repo-native vector diagrams. Rendering does not run application services or
 establish deployment acceptance.</p>

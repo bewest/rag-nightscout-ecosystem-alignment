@@ -3822,6 +3822,8 @@
       
         
       
+        
+      
     
     
     
@@ -5810,7 +5812,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
 <p><em>Contributor-facing living plan. Reconciled 2026-11-08 to the published
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>
 and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a>.
@@ -5898,12 +5900,12 @@ and failure recovery under the selected topology.</p>
 <tr>
 <td>Keep API, realtime and evaluator as explicit cooperating roles</td>
 <td>Functional one-host M5 and later cold Compose demonstrate consumed role boundaries and restart behavior.</td>
-<td>Independent replica ownership/fencing, failover and partition behavior before multi-host or HA use.</td>
+<td><a href="../tenancy/selectable-endpoints-and-api-scaling-plan.html">Fixed-roster API scaling</a> needs instance-complete drain/invalidation and endpoint trust, separately from singleton evaluator ownership. Multi-host/HA adds failover and partition acceptance; platform placement/assignment does not replace application operation lifetime.</td>
 </tr>
 <tr>
 <td>Keep restore tenant-local in the reference topology</td>
 <td>Actual restore/history convergence and B continuity, including B startup while A stays suspended.</td>
-<td>Broader membership/writer topology, orphan resolution policy and production recovery objectives. A cooperative cohort is not a database fence against separately authorized SQL writers.</td>
+<td>Broader membership, orphan resolution policy and production recovery objectives. The <a href="../tenancy/sql-and-migration-architecture.html#supported-database-ownership-contract">adopted ownership contract</a> excludes independent direct SQL writers; stronger fencing is not a production prerequisite for the supported cooperative topology.</td>
 </tr>
 <tr>
 <td>Continue the admitted PostgreSQL backend and migration path</td>

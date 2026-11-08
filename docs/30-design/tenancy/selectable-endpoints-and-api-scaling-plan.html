@@ -2585,6 +2585,8 @@
       
         
       
+        
+      
     
     
     
@@ -3601,6 +3603,34 @@
     
   
     SQL, migrations and tenant recovery architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-admission-and-activity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant admission, activity and recovery
   
 
     
@@ -5734,7 +5764,7 @@
 
 
 <h1 id="selectable-private-endpoints-and-fixed-roster-api-scaling">Selectable private endpoints and fixed-roster API scaling<a class="headerlink" href="#selectable-private-endpoints-and-fixed-roster-api-scaling" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>6c9758f53</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
 <p><em>Contributor-facing implementation plan, 2026-11-08. </em><em>PLANNED, not executed.</em><em>
 The maintainer requested selectable Unix-socket/HTTP(S) endpoints and independently
 scaled API instances. This plan defines two bounded capabilities and their
@@ -5774,6 +5804,14 @@ inventory/config adapter may supply the restore roster; native acceptance suppli
 explicit endpoints. Kubernetes is a conceptual architecture frame here. Jsonnet,
 resource manifests, cluster installation and platform rollout acceptance are
 deferred and are not either capability's gate.</p>
+<p>The <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/worker map</a>
+is independent of listener/process packaging: owner REST can be colocated with API
+under its existing audience/bind contract. The private lifecycle controller remains
+an operator execution boundary. APIs consume generic operation admission and
+invalidation; they do not each implement a restore engine. The
+<a href="tenant-admission-and-activity.html">activity/admission proposal</a> is a separate open
+policy topic. These two source capabilities preserve current maintenance semantics
+without implementing a new inactive-tenant schema, scheduler or policy default.</p>
 <h2 id="boundary-audit-keep-responsibilities-separate">Boundary audit: keep responsibilities separate<a class="headerlink" href="#boundary-audit-keep-responsibilities-separate" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
