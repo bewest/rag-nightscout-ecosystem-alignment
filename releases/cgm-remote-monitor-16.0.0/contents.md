@@ -1965,3 +1965,9 @@ the next integration boundary are recorded in
 `externals/work/HANDOFF-m6-acceptance-lead-20261107.md`. The acceptance coordinator
 owns this evolving batch update; source and packaging lanes retain their original
 commits for normal integration.
+
+### Update, 2026-11-07 — optional shared OIDC source lane, next batch
+
+| Capability | Measured state | Remaining boundary / owner |
+|---|---|---|
+| Shared optional human login and sessions (`MT-IDENTITY-PLAN`) | **Fixed on a local source branch; not merged or released.** Original application branch `codex/shared-oidc-sessions-20261107`, head `b486f6f6ce2d07ec814c3095989970a8eb83e595`, carries the common OIDC/session engine, distinct Mongo/PostgreSQL current-authority adapters, cookie and bearer HTTP flow, and current stream consumers. **Reproduced source fixtures:** 76 focused checks pass; individual durable invalidation, renewal fencing, access/session expiry and provider-signature ablations fail semantically, then restoration passes. [Capability evidence and limits](../../reports/tenancy/shared-oidc-sessions-2026-11-07/README.md). | Actual HTTPS, native databases, browser and reference-provider acceptance remain **UNMEASURED**. This source lane continues under the acceptance lead's runtime reservation and hands the complete original branch to the application source owner at the next coherent join. The current Compose candidate is unchanged. No M6 or production admission follows. Lane detail: `externals/work/HANDOFF-shared-oidc-sessions-2026-11-07.md` (local). |

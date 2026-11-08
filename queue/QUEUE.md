@@ -41,8 +41,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 75 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-DOC-SQL |
-| `in-progress` | 25 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-DOC-DEPLOY, MT-DOC-REALTIME |
+| `not-started` | 74 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-DOC-SQL |
+| `in-progress` | 26 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, MT-IDENTITY-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-DOC-DEPLOY, MT-DOC-REALTIME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | T30-AUTH, WS-LAB |
 | `blocked` | 13 | TEN-RESOLVE, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8383,7 +8383,7 @@ alarm-readiness items, and the seam branch refresh.
 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 1 run + 1 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `done` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
 | `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `codex/m5-m6-completion-acceptance-20261107` | n/a | 2 run + 1 no-gate |
-| `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `in-progress` | `codex/shared-oidc-sessions-20261107` | n/a | 0 run + 1 no-gate |
 | `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
 | `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `done` | `seam/t30-schema-cred` | n/a | 2 run + 2 no-gate |
@@ -8671,9 +8671,9 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `-` |
+| branch | `codex/shared-oidc-sessions-20261107` |
 | base | `main@28671cb4a` |
 | worktree | `-` |
 | semver | `n/a` |
@@ -8691,11 +8691,12 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/shared-oidc-sessions-2026-11-07/README.md`
 - `docs/30-design/tenancy/owner-authority.md`
 - `docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md`
 - `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer 2026-11-02: device/token/API-secret first; identity needs additional planning. Prior Ory/edge proofs remain dated evidence, not production approval. Planning can proceed without blocking ST-PG.
+**Notes.** 2026-11-07 next-batch source lane owns the shared optional human-session capability on original local application branch codex/shared-oidc- sessions-20261107. Source b486f6f6 implements common OIDC flow, single Mongo aggregate and PostgreSQL/RLS current-authority adapters, cookie/bearer transport and current stream consumers. Focused source fixtures reproduced; actual HTTPS/native stores/browser/reference-provider acceptance remains UNMEASURED. No current Compose candidate join or milestone promotion. The capability report owns the evidence boundary and runtime reservation/next-join owners. 2026-11-05 maintainer adopted owner authority and the D22 local- public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer 2026-11-02: device/token/API-secret first; identity needs additional planning. Prior Ory/edge proofs remain dated evidence, not production approval. Planning can proceed without blocking ST- PG.
 
 ### `T30-RESEARCH` &mdash; T3.0 part 1 - enumerate the per-tenant configuration surface
 
