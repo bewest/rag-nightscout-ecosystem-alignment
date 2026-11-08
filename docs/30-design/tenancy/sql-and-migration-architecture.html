@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/sql-and-migration-architecture.html">
       
       
-        <link rel="prev" href="single-and-multitenant-architecture.html">
+        <link rel="prev" href="runtime-topology.html">
       
       
         <link rel="next" href="tenant-admission-and-activity.html">
@@ -2648,14 +2648,366 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+      <a href="runtime-topology.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture seams and execution-profile integration
+    Runtime topology: zones, components and coordination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, migrations and tenant recovery architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="sql-and-migration-architecture.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, migrations and tenant recovery architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scope-and-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope and evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-database-ownership-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported database ownership contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logical-api-workers-and-admission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical API, workers and admission
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Logical API, workers and admission">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-logical-restapi-component" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One logical REST/API component
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headless-workload-owners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless workload owners
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-maintenance-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private maintenance execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintenance-safety-is-distinct-from-desired-activity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance safety is distinct from desired activity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-ownership-and-internal-application-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component ownership and internal application APIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component ownership and internal application APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#application-command-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application command paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-storage-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component storage ownership
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-control-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle control boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-scalability-smell-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes scalability smell test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tables-and-their-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tables and their ownership
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tables and their ownership">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clinical-ordering-and-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clinical ordering and history
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-foreign-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication foreign keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-foreign-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle foreign keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binding-forced-rls-and-privileges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binding, forced RLS and privileges
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history-clock-and-insertion-counter-serve-different-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        History clock and insertion counter serve different contracts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-and-readiness-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrade and readiness sequence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#write-transaction-and-restore-transaction-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write transaction and restore transaction boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shared-resources-and-remaining-fences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared resources and remaining fences
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tenant-admission-and-activity.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant admission, activity and recovery
   
 
     
@@ -2676,14 +3028,14 @@
   
   
     <li class="md-nav__item">
-      <a href="counter-and-restore-options.html" class="md-nav__link">
+      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Single and multitenant Nightscout: architecture and compatibility
   
 
     
@@ -2732,90 +3084,6 @@
   
   
     <li class="md-nav__item">
-      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment bindings, public names and load behavior
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Derived output ownership: evaluator, realtime and HTTP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Durable event delivery contract for multitenant consumers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="evaluator-realtime-communication.html" class="md-nav__link">
         
   
@@ -2844,14 +3112,14 @@
   
   
     <li class="md-nav__item">
-      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+      <a href="owner-authority.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    M4 existing-client surface: client-binary lab packet
+    Tenant owner authority and token verification
   
 
     
@@ -2880,34 +3148,6 @@
     
   
     M5/M6: current decisions and next review
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
   
 
     
@@ -3020,6 +3260,258 @@
     
   
     Multitenant integration batching plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-critical-path.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From accepted one-host preview to production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selectable private endpoints and fixed-roster API scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment bindings, public names and load behavior
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="counter-and-restore-options.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Counters, compatibility and tenant restore options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived output ownership: evaluator, realtime and HTTP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
   
 
     
@@ -3264,34 +3756,6 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-authority.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tenant owner authority and token verification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
         
   
@@ -3328,409 +3792,6 @@
     
   
     Transactional PostgreSQL tenant clock: proof plan
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="production-critical-path.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    From accepted one-host preview to production
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="runtime-topology.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Runtime topology: zones, components and coordination
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Selectable private endpoints and fixed-roster API scaling
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Single and multitenant Nightscout: architecture and compatibility
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SQL, migrations and tenant recovery architecture
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="sql-and-migration-architecture.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SQL, migrations and tenant recovery architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#scope-and-evidence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Scope and evidence
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-database-ownership-contract" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Supported database ownership contract
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#component-ownership-and-internal-application-apis" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Component ownership and internal application APIs
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Component ownership and internal application APIs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#application-command-paths" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Application command paths
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#component-storage-ownership" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Component storage ownership
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lifecycle-control-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lifecycle control boundary
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kubernetes-scalability-smell-test" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Kubernetes scalability smell test
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tables-and-their-ownership" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tables and their ownership
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Tables and their ownership">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#clinical-ordering-and-history" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Clinical ordering and history
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#authentication-foreign-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authentication foreign keys
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lifecycle-foreign-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Lifecycle foreign keys
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#binding-forced-rls-and-privileges" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Binding, forced RLS and privileges
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#history-clock-and-insertion-counter-serve-different-contracts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        History clock and insertion counter serve different contracts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#upgrade-and-readiness-sequence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Upgrade and readiness sequence
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#write-transaction-and-restore-transaction-boundaries" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Write transaction and restore transaction boundaries
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#shared-resources-and-remaining-fences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Shared resources and remaining fences
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="tenant-admission-and-activity.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tenant admission, activity and recovery
   
 
     
@@ -5781,6 +5842,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#logical-api-workers-and-admission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical API, workers and admission
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Logical API, workers and admission">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-logical-restapi-component" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One logical REST/API component
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headless-workload-owners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless workload owners
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-maintenance-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private maintenance execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintenance-safety-is-distinct-from-desired-activity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance safety is distinct from desired activity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#component-ownership-and-internal-application-apis" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5964,7 +6086,7 @@
 
 
 <h1 id="sql-migrations-and-tenant-recovery-architecture">SQL, migrations and tenant recovery architecture<a class="headerlink" href="#sql-migrations-and-tenant-recovery-architecture" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>7d9a8e86f</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>4fb6f4ed9</code>.</em></p>
 <p><em>Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>
 (tree <code>3bb46431a19e604dc028768f0e72e6ad29616c26</code>). Mechanisms and diagrams below are
@@ -6010,7 +6132,7 @@ own admitted port behavior.</p>
 <td>Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound.</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4459e647e2c963aeeb3f0e5aec3c9435788367a5/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9029fb6dd82b277fb92419bdc1ef9bbed7a21749/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td><strong>Reproduced:</strong> packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure.</td>
 <td>Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate.</td>
 </tr>
@@ -6044,6 +6166,49 @@ these supported participants. A direct writer ignoring it is outside the contrac
 not a reason to require a stronger database fence for the supported topology.
 PostgreSQL documents <a href="https://www.postgresql.org/docs/current/explicit-locking.html#ADVISORY-LOCKS">advisory locks</a>
 as application-coordinated locks.</p>
+<h2 id="logical-api-workers-and-admission">Logical API, workers and admission<a class="headerlink" href="#logical-api-workers-and-admission" title="Permanent link">&para;</a></h2>
+<h3 id="one-logical-restapi-component">One logical REST/API component<a class="headerlink" href="#one-logical-restapi-component" title="Permanent link">&para;</a></h3>
+<p>REST v1, v2 and v3 belong to one logical stateless request-serving API
+component, together with credential authorization and owner-management modules.
+Version-specific adapters retain their request, authorization and response
+semantics; protocol versions are not separate application services. Stateless
+means durable authority/data are external and request state is reconstructible,
+not that the process has no in-flight work or retained readiness state. This
+logical grouping does not prescribe a single listener, process or privilege set. Owner management retains its own audience and listener
+contract and may be colocated with API serving under the existing
+<a href="owner-authority.html#shared-oidc-integration">owner-authority boundary</a>. The accepted
+separate-role reference remains one concrete composition, not a requirement that
+every REST responsibility become a separate service. Grouping the versions does
+not admit additional routes: the <a href="single-and-multitenant-architecture.html#current-bounded-compatibility">recorded compatibility scope</a>
+and admitted handler/storage contracts still bound actual coverage.</p>
+<h3 id="headless-workload-owners">Headless workload owners<a class="headerlink" href="#headless-workload-owners" title="Permanent link">&para;</a></h3>
+<p>Realtime owns live connections; the evaluator is a headless worker and remains
+one current workload owner. Connector actors (<code>vcpool</code>) belong to background
+polling/egress work and submit clinical writes through the canonical API boundary;
+the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/roles.js#L81">ed2 role declaration</a>
+has no runnable start. Evaluator partitioning and realtime replication are separate future capabilities, not
+prerequisites for the queued request-serving API scale-out.</p>
+<h3 id="private-maintenance-execution">Private maintenance execution<a class="headerlink" href="#private-maintenance-execution" title="Permanent link">&para;</a></h3>
+<p>The lifecycle/restore controller executes as a private operator CLI, job or
+worker; the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/restore.js#L97">ed2 operator tool</a>
+composes it outside API serving. Each serving instance supplies generic
+operation-admission, lifetime and invalidation hooks; those hooks do not place a restore engine or maintenance
+credentials in every API replica. A future command/status REST surface could
+request or observe maintenance while the privileged worker executes it separately;
+no new endpoint or process layout is selected here. The
+<a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical placement map</a>
+owns the broader component explanation.</p>
+<h3 id="maintenance-safety-is-distinct-from-desired-activity">Maintenance safety is distinct from desired activity<a class="headerlink" href="#maintenance-safety-is-distinct-from-desired-activity" title="Permanent link">&para;</a></h3>
+<p>The existing claim/generation-bound maintenance window determines whether an
+operation can run safely during recovery. Operator-controlled resource/activity
+policy asks which serving, ingestion, evaluation or connector work should run at
+all; that policy remains <strong>proposed and undecided</strong> in the
+<a href="tenant-admission-and-activity.html">tenant-admission review</a>. A maintenance phase
+named <code>active</code> is not evidence of operator enablement or background-work
+eligibility. Preserve the existing pause/suspend meanings and captured restore
+behavior; no activity field, transition or automatic inactive-tenant resource
+control is implemented by this database design. Observed health is a further
+separate fact. No new activity-policy gate is claimed by the diagrams below.</p>
 <h2 id="component-ownership-and-internal-application-apis">Component ownership and internal application APIs<a class="headerlink" href="#component-ownership-and-internal-application-apis" title="Permanent link">&para;</a></h2>
 <p><strong>Read-derived architecture direction:</strong> place commands at the component that
 owns their semantics, and let that component persist its state. An internal API
@@ -6087,23 +6252,25 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.<
 <td>Separate management audience and component interfaces exist. Cross-process consumers should invoke owned commands rather than edit these tables; this is not a claim that every authority operation has a new network endpoint.</td>
 </tr>
 <tr>
-<td>Suspension, restore, deletion and activation</td>
-<td>Lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants.</td>
+<td>Maintenance exclusion, restore, deletion and activation</td>
+<td>Private operator lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants.</td>
 <td>Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony.</td>
 </tr>
 </tbody>
 </table>
 <h3 id="application-command-paths">Application command paths<a class="headerlink" href="#application-command-paths" title="Permanent link">&para;</a></h3>
 <p><strong>Read-derived command diagram.</strong> These are private application calls, not SQL
-relationships. The alarm handoff and socket mutation have separate authorization
-and acknowledgement contracts; the arrows do not imply one chained transaction.</p>
+relationships. REST v1/v2/v3 share one logical API component; this label does
+not claim every version/route is already admitted. The alarm handoff and socket
+mutation have separate authorization and acknowledgement contracts; the arrows do not imply one chained transaction.</p>
 <pre class="mermaid"><code>flowchart LR
   EV["Evaluator notification consumer"] --&gt;|"alarm handoff"| RT["Realtime"]
-  RT --&gt;|"authorize / mutate / ack"| API["API"]</code></pre>
+  RT --&gt;|"authorize / mutate / ack"| API["Unified REST/API&lt;br/&gt;v1 / v2 / v3 adapters"]</code></pre>
 <h3 id="component-storage-ownership">Component storage ownership<a class="headerlink" href="#component-storage-ownership" title="Permanent link">&para;</a></h3>
 <p><strong>Read-derived ownership matrix.</strong> Each row is an admitted component's storage
-responsibility, not a separate physical database. Realtime and evaluator read the
-same clinical tables, but own distinct checkpoint namespaces. Privilege checks
+responsibility, not a mandatory process or a separate physical database. The two
+REST/API rows are responsibilities within one logical component, retaining their
+separate authority/listener contracts. Realtime and evaluator read the same clinical tables, but own distinct checkpoint namespaces. Privilege checks
 remain specific to the selected catalogue and operation.</p>
 <table>
 <thead>
@@ -6115,7 +6282,7 @@ remain specific to the selected catalogue and operation.</p>
 </thead>
 <tbody>
 <tr>
-<td>API</td>
+<td>Logical REST/API — v1/v2/v3 data adapters</td>
 <td>Clinical records; current authority and configuration</td>
 <td>Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression</td>
 </tr>
@@ -6130,12 +6297,12 @@ remain specific to the selected catalogue and operation.</p>
 <td>Evaluator projection and checkpoint namespace; notification producer state, requests and attempts</td>
 </tr>
 <tr>
-<td>Management / authority components</td>
+<td>Logical REST/API — owner/authority modules</td>
 <td>Current authority, policy, owner configuration and secret references</td>
 <td>Admitted credential, session, policy, owner-settings and secret mutations with audit</td>
 </tr>
 <tr>
-<td>Lifecycle controller</td>
+<td>Private operator lifecycle worker</td>
 <td>Current authority, durable operations and pinned participant identities</td>
 <td>Lifecycle windows, claims and audit; controlled clinical restore and forward history</td>
 </tr>
@@ -6144,10 +6311,12 @@ remain specific to the selected catalogue and operation.</p>
 <h3 id="lifecycle-control-boundary">Lifecycle control boundary<a class="headerlink" href="#lifecycle-control-boundary" title="Permanent link">&para;</a></h3>
 <p><strong>Read-derived control diagram.</strong> The participant group means every declared
 instance, including replicas. A load-balanced endpoint reaching just one instance
-cannot replace this control boundary. The restore sequence below gives the
-ordering and uncertainty rules.</p>
+cannot replace this control boundary. Controller orchestration belongs to the
+private operator worker; the receiving instances host participation hooks, not
+restoration engines. The restore sequence below gives ordering and uncertainty
+rules, not administrative activity-policy transitions.</p>
 <pre class="mermaid"><code>flowchart LR
-  LC["Lifecycle controller"] --&gt;|"pin / drain / invalidate each instance"| Roles["API / realtime / evaluator / admin"]</code></pre>
+  LC["Private operator controller&lt;br/&gt;CLI / job / worker"] --&gt;|"pin / drain / invalidate each instance"| Roles["Participant hooks&lt;br/&gt;API / realtime / evaluator / tenant-admin"]</code></pre>
 <p>Application APIs preserve existing client payloads, authority and reply behavior.
 Ambiguous mutation completion must preserve the existing no-acknowledgement/error
 contract rather than trigger a transparent new retry. Database-backed transaction
@@ -6175,8 +6344,8 @@ those replicas from consumers, but does not itself make either end stateless.</p
 <td>Consistent assets/configuration and edge behavior.</td>
 </tr>
 <tr>
-<td>Request-scoped API and management handlers</td>
-<td>Natural replica candidates when local state is reconstructible and durable authority/transactions remain shared.</td>
+<td>Unified v1/v2/v3 REST/API and management modules</td>
+<td>Stateless request-serving replica candidates when local state is reconstructible and durable authority/transactions remain shared; versions are adapters within the same component.</td>
 <td>Current authority/config consistency, safe concurrent writes, graceful drain, bounded aggregate pools and actual participation of every replica in restore. Existing canonical serialization still bounds same-tenant write throughput.</td>
 </tr>
 <tr>
@@ -6186,8 +6355,8 @@ those replicas from consumers, but does not itself make either end stateless.</p
 </tr>
 <tr>
 <td>Evaluator / notification producer</td>
-<td>Recoverable workers with logical producer and checkpoint ownership.</td>
-<td>Explicit partition/claim ownership, exclusion of stale producers and durable retry/deduplication under replacement. External persistence alone does not make duplicate active workers safe.</td>
+<td>One current workload owner with durable recovery; partitioning is deferred.</td>
+<td>Preserve current producer/checkpoint identity, eligibility and durable retry under restart/replacement. No new scheduler or replicated evaluator is required for API scaling; future disjoint assignments need their own contract.</td>
 </tr>
 <tr>
 <td>Lifecycle controller / migrations</td>
@@ -6199,13 +6368,17 @@ those replicas from consumers, but does not itself make either end stateless.</p
 <p>The current fixed cohort needs a declared roster containing every serving replica.
 A load-balanced API endpoint can route an ordinary command to any equivalent
 admitted API, whereas restore control must address every instance. Dynamic HPA
-membership and cross-Pod authenticated transport need qualification. Deployments
+membership and Kubernetes-specific bindings are deferred. Selectable private
+network transport and fixed-roster API serving have their own queued native
+acceptance. Reuse platform/configuration inventory and identities as application
+inputs; no parallel membership product or evaluator scheduler is selected. Deployments
 can overlap old/new Pods during rolling updates, so replica count is not an
 exclusion guarantee. A StatefulSet's stable identity/storage does not supply the
 application's producer or restore protocol either. See the <a href="deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">deployment binding
 and replica assessment</a>
-for endpoint semantics and acceptance cases. Kubernetes execution, autoscaling,
-throughput and failover remain <strong>UNMEASURED</strong> by this documentation update.</p>
+for endpoint semantics and acceptance cases. Kubernetes is an architectural frame;
+cluster proof and Jsonnet are deferred. Throughput, failover and any later actual
+binding retain their own acceptance; no new runtime measurement follows here.</p>
 <h2 id="tables-and-their-ownership">Tables and their ownership<a class="headerlink" href="#tables-and-their-ownership" title="Permanent link">&para;</a></h2>
 <p>Every selected namespace has its own <code>schema_migrations(name,checksum,applied_at)</code>
 ledger. Tenant tables carry <code>tenant_id</code>; ledgers describe a whole namespace and
@@ -6496,9 +6669,10 @@ It compares actual backend PID, birth, role and datastore identity; application
 names are not membership. The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/server/serve/operation-cohort.js#L118">actor census</a> refreshes PostgreSQL's
 statistics snapshot on the same operator client before reading actors. It remains
 a diagnostic/refusal check, not a physical database fence against a newly opened
-raw client with already-authorized DATA credentials. Supporting such independent
-writers needs an explicit database/authentication fence beyond this cooperative
-preview. A trusted all-tenant worker or DBA remains within the deployment trust
+raw client with already-authorized DATA credentials. Such external writers are
+unsupported under the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">application ownership contract</a>;
+arbitrary-writer exclusion is not a supported-topology admission gate. A trusted
+all-tenant worker or DBA remains within the deployment trust
 boundary. See the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deployment-and-trust-2026-11-07">deployment/trust decision</a>.</p>
 <p>Tenant-local state removes cross-tenant counter maintenance during restore; it
 does not partition database capacity or remove shared service failure. Restarts,
@@ -6506,7 +6680,7 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#L74">application cohort guide</a>.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4459e647e2c963aeeb3f0e5aec3c9435788367a5/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9029fb6dd82b277fb92419bdc1ef9bbed7a21749/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
 adds the packaged ordinary-restore/UI/B-continuity scope. HA, multihost
 membership, capacity and whole M6 retain separate admission criteria. The
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>

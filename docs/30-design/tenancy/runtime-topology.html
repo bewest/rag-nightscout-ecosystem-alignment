@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/runtime-topology.html">
       
       
-        <link rel="prev" href="production-critical-path.html">
+        <link rel="prev" href="index.html">
       
       
-        <link rel="next" href="selectable-endpoints-and-api-scaling-plan.html">
+        <link rel="next" href="sql-and-migration-architecture.html">
       
       
         
@@ -2645,17 +2645,186 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime topology: zones, components and coordination
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="runtime-topology.html" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture seams and execution-profile integration
+    Runtime topology: zones, components and coordination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#read-the-diagrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read the diagrams
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Read the diagrams">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accepted-one-host-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accepted one-host reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposed-fixed-roster-apinetwork-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed fixed-roster API/network target
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logical-rest-cohesion-and-worker-placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical REST cohesion and worker placement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cohesion-and-coupling-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cohesion and coupling contracts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-comes-from-the-platform-and-what-the-application-consumes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What comes from the platform, and what the application consumes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sizing-is-separate-from-logical-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizing is separate from logical ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#immediate-implementation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immediate implementation boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sql-and-migration-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, migrations and tenant recovery architecture
   
 
     
@@ -2676,14 +2845,42 @@
   
   
     <li class="md-nav__item">
-      <a href="counter-and-restore-options.html" class="md-nav__link">
+      <a href="tenant-admission-and-activity.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Tenant admission, activity and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single and multitenant Nightscout: architecture and compatibility
   
 
     
@@ -2732,90 +2929,6 @@
   
   
     <li class="md-nav__item">
-      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment bindings, public names and load behavior
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Derived output ownership: evaluator, realtime and HTTP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Durable event delivery contract for multitenant consumers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="evaluator-realtime-communication.html" class="md-nav__link">
         
   
@@ -2844,14 +2957,14 @@
   
   
     <li class="md-nav__item">
-      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+      <a href="owner-authority.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    M4 existing-client surface: client-binary lab packet
+    Tenant owner authority and token verification
   
 
     
@@ -2880,34 +2993,6 @@
     
   
     M5/M6: current decisions and next review
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
   
 
     
@@ -3020,6 +3105,258 @@
     
   
     Multitenant integration batching plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-critical-path.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From accepted one-host preview to production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selectable private endpoints and fixed-roster API scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment bindings, public names and load behavior
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="counter-and-restore-options.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Counters, compatibility and tenant restore options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived output ownership: evaluator, realtime and HTTP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
   
 
     
@@ -3264,34 +3601,6 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-authority.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tenant owner authority and token verification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
         
   
@@ -3328,315 +3637,6 @@
     
   
     Transactional PostgreSQL tenant clock: proof plan
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="production-critical-path.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    From accepted one-host preview to production
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Runtime topology: zones, components and coordination
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="runtime-topology.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Runtime topology: zones, components and coordination
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#read-the-diagrams" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Read the diagrams
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Read the diagrams">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#accepted-one-host-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Accepted one-host reference
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#proposed-fixed-roster-apinetwork-target" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Proposed fixed-roster API/network target
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#logical-rest-cohesion-and-worker-placement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logical REST cohesion and worker placement
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cohesion-and-coupling-contracts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cohesion and coupling contracts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-comes-from-the-platform-and-what-the-application-consumes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What comes from the platform, and what the application consumes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sizing-is-separate-from-logical-ownership" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sizing is separate from logical ownership
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#immediate-implementation-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Immediate implementation boundary
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Selectable private endpoints and fixed-roster API scaling
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Single and multitenant Nightscout: architecture and compatibility
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="sql-and-migration-architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SQL, migrations and tenant recovery architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="tenant-admission-and-activity.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tenant admission, activity and recovery
   
 
     
@@ -5776,13 +5776,13 @@
 
 
 <h1 id="runtime-topology-zones-components-and-coordination">Runtime topology: zones, components and coordination<a class="headerlink" href="#runtime-topology-zones-components-and-coordination" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>3f736c118</code>.</em></p>
 <p><em>Living contributor-facing architecture guide, 2026-11-08. </em><em>Read-derived</em><em>
 structure with source-scoped acceptance links; target endpoints/API replication
 are planned, not executed. These grid diagrams separate trust zones, logical
 endpoints and physical placement. The <a href="selectable-endpoints-and-api-scaling-plan.html">implementation plan</a>
 owns the new capability boundaries and planned acceptance matrix; the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4459e647e2c963aeeb3f0e5aec3c9435788367a5/queue/work-queue.yaml">queue</a> owns implementation state. Kubernetes is
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9029fb6dd82b277fb92419bdc1ef9bbed7a21749/queue/work-queue.yaml">queue</a> owns implementation state. Kubernetes is
 an architectural frame here, not a deployment to build or prove. Jsonnet,
 cluster bindings and evaluator partitioning are deferred.</em></p>
 <h2 id="read-the-diagrams">Read the diagrams<a class="headerlink" href="#read-the-diagrams" title="Permanent link">&para;</a></h2>
@@ -5796,7 +5796,7 @@ not duplicate stores or new mandatory services.</p>
 <p><img alt="Accepted one-host reference topology" src="diagrams/accepted-one-host-topology.svg" /></p>
 <p><a href="diagrams/accepted-one-host-topology.png">PNG preview</a> ·
 <a href="diagrams/accepted-one-host-topology.svg">SVG source</a></p>
-<p>The actual <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4459e647e2c963aeeb3f0e5aec3c9435788367a5/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a>
+<p>The actual <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9029fb6dd82b277fb92419bdc1ef9bbed7a21749/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a>
 measures the synthetic one-host UI/socket/ordinary-restore deployment. Public
 publication is lab HTTP; Vault uses TLS. The actual
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a>
@@ -5809,19 +5809,27 @@ production ingress, capacity or identity integration.</p>
 <a href="diagrams/proposed-fixed-roster-network-topology.svg">SVG source</a></p>
 <p>This is the proposed architecture for the queued endpoint/API capability, not a
 Kubernetes resource design, an accepted multihost deployment or a replicated
-clinical workload. API1/API2 are the minimal explicit scale-out fixture. Realtime
+clinical workload. REST replica A and replica B are two instances of the same component, not API
+versions. They are the minimal explicit scale-out fixture. Realtime
 retains its connected clients and evaluator remains one active workload owner.
 Network locations, public TLS and optional human identity retain their own
 implementation/admission boundaries. PostgreSQL grants, Vault use and private
 operator reachability remain role-specific; being in one zone grants no authority.</p>
 <h2 id="logical-rest-cohesion-and-worker-placement">Logical REST cohesion and worker placement<a class="headerlink" href="#logical-rest-cohesion-and-worker-placement" title="Permanent link">&para;</a></h2>
-<p>A logical application component, an HTTP listener and a deployed process are
-separate boundaries. The diagrams show one valid process composition, not a
+<p><strong>REST APIs (v1/v2/v3) form one stateless request-serving component.</strong> Version
+routers/adapters stay together; replicas serve the same configured admitted
+routes. A logical application component, an HTTP listener and a deployed process
+are separate boundaries. The diagrams show one valid process composition, not a
 requirement to make each REST module a separate service. Data, authorization and
 owner-management REST modules may form one logical API component, retaining their
 separate credentials/audiences and listener requirements. The existing owner
 contract permits colocation with API; it does not collapse private operator
 privileges into ordinary request-serving credentials.</p>
+<p>Compose service instances or a Kubernetes Deployment can place replicas of that
+same component. Replica count and host/Pod placement are separate from API
+versioning; this architecture choice does not claim cluster or scaling acceptance.
+Stateless replicas retain in-flight work and reconstructible local state, so
+every actual instance still participates in maintenance drain/invalidation.</p>
 <p>The source-backed <a href="tenant-admission-and-activity.html#one-logical-api-does-not-require-one-listener-or-process">component placement and admission review</a>
 is the home of the REST/worker placement assessment. It identifies private
 operator restore execution, generic admission/invalidation in API participants,
@@ -5942,7 +5950,7 @@ plan's ordinary and meaningful red/restored controls. It does not require a
 cluster, Jsonnet, autoscaling, a new membership product or an evaluator scheduler.
 No implementation completion follows from this architecture/documentation work.</p>
 <p>Diagrams are maintained by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/4459e647e2c963aeeb3f0e5aec3c9435788367a5/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9029fb6dd82b277fb92419bdc1ef9bbed7a21749/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
 Render SVG with Python; use its PNG option for previews. Diagram rendering is
 separate from application runtime acceptance.</p>
 

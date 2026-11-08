@@ -16,7 +16,7 @@
         <link rel="prev" href="sql-and-migration-architecture.html">
       
       
-        <link rel="next" href="tenant-config-schema-2026-10-27.html">
+        <link rel="next" href="single-and-multitenant-architecture.html">
       
       
         
@@ -2648,14 +2648,14 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+      <a href="runtime-topology.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture seams and execution-profile integration
+    Runtime topology: zones, components and coordination
   
 
     
@@ -2676,14 +2676,183 @@
   
   
     <li class="md-nav__item">
-      <a href="counter-and-restore-options.html" class="md-nav__link">
+      <a href="sql-and-migration-architecture.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    SQL, migrations and tenant recovery architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant admission, activity and recovery
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="tenant-admission-and-activity.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant admission, activity and recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#one-logical-api-does-not-require-one-listener-or-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One logical API does not require one listener or process
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-every-api-instance-is-restore-aware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why every API instance is restore-aware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance-safety-is-not-a-complete-inactivity-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance safety is not a complete inactivity policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proposed-orthogonal-admission-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed orthogonal admission model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-choices-still-to-settle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy choices still to settle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#focused-future-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Focused future acceptance
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single and multitenant Nightscout: architecture and compatibility
   
 
     
@@ -2732,90 +2901,6 @@
   
   
     <li class="md-nav__item">
-      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployment bindings, public names and load behavior
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Derived output ownership: evaluator, realtime and HTTP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Durable event delivery contract for multitenant consumers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="evaluator-realtime-communication.html" class="md-nav__link">
         
   
@@ -2844,14 +2929,14 @@
   
   
     <li class="md-nav__item">
-      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+      <a href="owner-authority.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    M4 existing-client surface: client-binary lab packet
+    Tenant owner authority and token verification
   
 
     
@@ -2880,34 +2965,6 @@
     
   
     M5/M6: current decisions and next review
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
   
 
     
@@ -3020,6 +3077,258 @@
     
   
     Multitenant integration batching plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="production-critical-path.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    From accepted one-host preview to production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selectable private endpoints and fixed-roster API scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment bindings, public names and load behavior
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture-seams-execution-plan-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="counter-and-restore-options.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Counters, compatibility and tenant restore options
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Derived output ownership: evaluator, realtime and HTTP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="durable-event-delivery-contract-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="m4-client-binary-lab-packet-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 existing-client surface: client-binary lab packet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
   
 
     
@@ -3264,34 +3573,6 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-authority.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tenant owner authority and token verification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
         
   
@@ -3336,287 +3617,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="production-critical-path.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    From accepted one-host preview to production
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="runtime-topology.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Runtime topology: zones, components and coordination
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Selectable private endpoints and fixed-roster API scaling
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="single-and-multitenant-architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Single and multitenant Nightscout: architecture and compatibility
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="sql-and-migration-architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SQL, migrations and tenant recovery architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tenant admission, activity and recovery
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="tenant-admission-and-activity.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tenant admission, activity and recovery
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#one-logical-api-does-not-require-one-listener-or-process" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        One logical API does not require one listener or process
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-every-api-instance-is-restore-aware" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why every API instance is restore-aware
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#maintenance-safety-is-not-a-complete-inactivity-policy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Maintenance safety is not a complete inactivity policy
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#proposed-orthogonal-admission-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Proposed orthogonal admission model
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#policy-choices-still-to-settle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Policy choices still to settle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#focused-future-acceptance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Focused future acceptance
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -5720,9 +5720,10 @@
 
 
 <h1 id="tenant-admission-activity-and-recovery">Tenant admission, activity and recovery<a class="headerlink" href="#tenant-admission-activity-and-recovery" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
-<p><em>Contributor-facing decision-preparation guide, 2026-11-08. </em><em>Proposed policy;
-not adopted or implemented by this document.</em><em> The maintainer raised whether operator-controlled tenant inactivity should
+<p><em>Living document, last changed 2026-11-08 at <code>3f736c118</code>.</em></p>
+<p><em>Contributor-facing decision-preparation guide, 2026-11-08. </em><em>Activity policy proposed;
+not adopted or implemented.</em><em> The REST component direction below is recorded
+separately in the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#rest-api-component-and-replica-placement-2026-11-08">release decisions</a>. The maintainer raised whether operator-controlled tenant inactivity should
 prevent unnecessary background work and asks how business APIs,
 connector workers, evaluator and restoration fit together. This guide separates
 that proposal from the existing maintenance protocol. Mechanism assessment is
@@ -5733,9 +5734,30 @@ No new runtime, policy transition, deployment layout or production admission was
 measured. Existing <a href="multitenancy-decisions.html#suspension-and-lifecycle">tenancy decisions</a>
 and <a href="owner-authority.html">owner authority</a> retain their adopted meaning.</em></p>
 <h2 id="one-logical-api-does-not-require-one-listener-or-process">One logical API does not require one listener or process<a class="headerlink" href="#one-logical-api-does-not-require-one-listener-or-process" title="Permanent link">&para;</a></h2>
-<p>The business REST surface can be understood as one logical component with data,
-authorization and owner-management capabilities. A logical component describes
-responsibility. A listener describes who can reach which interface and with which
+<p><strong>Architecture direction: REST APIs (v1/v2/v3) are one stateless request-serving
+component.</strong> Version-specific routers/adapters live inside that component; API
+version numbers do not select separate processes, services or scaling groups.
+Each replica serves the same configured, admitted route set. Compose service
+instances and a Kubernetes Deployment are alternative placement/lifecycle
+mechanisms for that component; neither is a new route-acceptance claim or a
+requirement to demonstrate Kubernetes now.</p>
+<p>“Stateless” means no replica owns authoritative tenant data or an exclusive
+clinical evaluation workload. Durable authority, clinical state and operation
+records remain in their backing stores. Each replica still owns connections,
+in-flight responses, pools and reconstructible startup/cache state, so it must
+participate in maintenance drain and invalidation. Do not require client affinity
+or introduce per-version deployment boundaries as part of API scale-out.</p>
+<p>The source already composes configured API3 and legacy routers in one API role:
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/preview-api.js#L110">preview-api.js:110</a>,
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/tenant-app/index.js#L187">tenant-app/index.js:187</a>,
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/tenant-app/index.js#L217">:217</a>.
+These read-derived mechanisms support the component boundary; the acceptance
+family still owns exactly which routes/clients were exercised. Internal
+v1/v2/v3 adapters retain their reply, authentication and compatibility rules.</p>
+<p>The business REST surface groups data, authorization and owner-management
+capabilities. Owner operations retain their separate audience/listener and
+privileges, even when their module is colocated with request-serving API. A
+logical component describes responsibility. A listener describes who can reach which interface and with which
 audience. A process describes placement, resource custody and failure coupling.
 Grouping REST business APIs does not merge their credentials, privileges or trust
 boundaries, and it does not put every worker or maintenance engine inside HTTP

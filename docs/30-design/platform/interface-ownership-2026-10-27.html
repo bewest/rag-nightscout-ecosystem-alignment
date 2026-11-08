@@ -5791,6 +5791,14 @@ maintainer. "Read" means read from the path given. "{C}" is the
 plan" the <a href="../tenancy/multitenancy-decisions.html">execution plan</a>, "v4 doc"
 the <a href="v4-surface-and-nocturne-2026-10-26.html">v4 surface</a>, "§F.1" the
 <a href="../tenancy/tenant-owner-config-surface-2026-09-15.html">tenant-owner configuration surface</a>.</em></p>
+<p><strong>Current architecture clarification, 2026-11-08 (read-derived):</strong> the
+<a href="../tenancy/tenant-admission-and-activity.html#one-logical-api-does-not-require-one-listener-or-process">REST component contract</a>
+places v1/v2/v3 routers/adapters together in one stateless REST API component.
+Replicas and Compose/Kubernetes placement are separate dimensions. The questions
+below retain this snapshot's historical alternatives; §5 question 7's separate
+v1-role option is superseded by that component direction. Its original source
+claims are not current route-acceptance claims. Owner and operator audiences retain
+their existing listener/privilege boundaries.</p>
 <p><strong>Summary.</strong> On dev today one listener serves everything: API v1, v2 and v3, the socket.io channels,
 the pages and, in #8857 behind a flag, <code>/.well-known</code> and <code>/api/v4</code>. <code>API_SECRET</code> is both the device
 credential and the owner credential.</p>
