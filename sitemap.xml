@@ -1293,11 +1293,19 @@
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/deployment-and-rig-testing.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/derived-output-boundary-2026-11-07.html</loc>
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/evaluator-realtime-communication.html</loc>
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>
@@ -1374,6 +1382,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/single-and-multitenant-architecture.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/sql-and-migration-architecture.html</loc>
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>
@@ -5709,11 +5721,55 @@
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/39f4-clients/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/39f4-focused-accepted/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/4935-full-failed/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/a1-bounded-mechanisms/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/index.html</loc>
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/c23-browser-accepted/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/c23-compose/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/c23-corpus-failed/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/c23-full-accepted/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/e971-diagnostic/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-full-accepted/index.html</loc>
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>
@@ -5726,6 +5782,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/restore-history-continuity-2026-11-07/index.html</loc>
+         <lastmod>2026-11-08</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/shared-oidc-sessions-2026-11-07/index.html</loc>
          <lastmod>2026-11-08</lastmod>
     </url>
     <url>

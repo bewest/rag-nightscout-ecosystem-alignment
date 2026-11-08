@@ -2569,6 +2569,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2686,6 +2692,34 @@
   
   
     <li class="md-nav__item">
+      <a href="deployment-and-rig-testing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment scenarios and rig testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
         
   
@@ -2722,6 +2756,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evaluator-realtime-communication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator, realtime and API communication
   
 
     
@@ -3254,6 +3316,34 @@
     
   
     Single and multitenant Nightscout: architecture and compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sql-and-migration-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, migrations and tenant recovery architecture
   
 
     
@@ -5244,10 +5334,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#queued-documentation-additions" class="md-nav__link">
+  <a href="#source-backed-architecture-guides" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Queued documentation additions
+        Source-backed architecture guides
       
     </span>
   </a>
@@ -5294,7 +5384,7 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>908f8a916</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>ca7f85b0f</code>.</em></p>
 <p><em>Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the <a href="../../archive/tenancy/index.html">tenancy archive</a>; dates in a
@@ -5352,7 +5442,22 @@ filename do not establish currency. Consolidated 2026-11-06.</em></p>
 <tr>
 <td>Separate service processes and restore coordination</td>
 <td><a href="single-and-multitenant-architecture.html#current-service-composition-and-restore-integration-2026-11-07">Current composition diagram</a></td>
-<td>API/realtime/evaluator/tenant-admin responsibilities; cross-process restore coordination remains implementation and native acceptance work.</td>
+<td>Fixed cross-process cohort and source-attributed restore evidence; newer independent-startup acceptance remains pending.</td>
+</tr>
+<tr>
+<td>Deploy a synthetic prototype or connect a rig</td>
+<td><a href="deployment-and-rig-testing.html">Deployment and rig testing</a></td>
+<td>Runnable Compose preparation, ingress/credential boundaries, client setup, restore/restart scenarios and evidence limits.</td>
+</tr>
+<tr>
+<td>Follow evaluator and socket messages</td>
+<td><a href="evaluator-realtime-communication.html">Evaluator/realtime communication</a></td>
+<td>Independent clinical projections, durable notification handoff, private API forwarding, current authority and operation lifetimes.</td>
+</tr>
+<tr>
+<td>Understand SQL and recovery</td>
+<td><a href="sql-and-migration-architecture.html">SQL/migration architecture</a></td>
+<td>Table families, RLS and grants, tenant clock/order, catalogue migration/readiness and restore inclusion/exclusion.</td>
 </tr>
 <tr>
 <td>A picture of the system</td>
@@ -5418,14 +5523,13 @@ schedule for work state.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="queued-documentation-additions">Queued documentation additions<a class="headerlink" href="#queued-documentation-additions" title="Permanent link">&para;</a></h2>
-<p>The work queue tracks three requested additions: <strong>MT-DOC-DEPLOY</strong> for practical
-preview deployments, rig tests and topology diagrams; <strong>MT-DOC-REALTIME</strong> for
-evaluator/realtime/socket communication and sequence diagrams; <strong>MT-DOC-SQL</strong> for
-tables, SQL, migrations and recovery architecture. These are pending documentation,
-with acceptance criteria in the queue. Integrate them into the current references
-above as the joined implementation settles; proposed topologies and executed
-scenarios must retain distinct labels and evidence.</p>
+<h2 id="source-backed-architecture-guides">Source-backed architecture guides<a class="headerlink" href="#source-backed-architecture-guides" title="Permanent link">&para;</a></h2>
+<p>The guides above provide the requested <strong>MT-DOC-DEPLOY</strong>, <strong>MT-DOC-REALTIME</strong> and
+<strong>MT-DOC-SQL</strong> documentation. Their source inspection, diagrams and structural
+checks are separate from runtime acceptance. Each links executed evidence at its
+actual source; pending Compose, restart, rig and capacity experiments remain
+explicit. The queue owns documentation status, and release records own accepted
+application behavior.</p>
 <h2 id="historical-evidence-and-earlier-proposals">Historical evidence and earlier proposals<a class="headerlink" href="#historical-evidence-and-earlier-proposals" title="Permanent link">&para;</a></h2>
 <p>These retain distinct evidence or alternatives; they are not current work instructions.</p>
 <table>

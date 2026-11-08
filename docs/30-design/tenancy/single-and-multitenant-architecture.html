@@ -16,7 +16,7 @@
         <link rel="prev" href="postgres-tenant-clock-proof.html">
       
       
-        <link rel="next" href="tenant-config-schema-2026-10-27.html">
+        <link rel="next" href="sql-and-migration-architecture.html">
       
       
         
@@ -2569,6 +2569,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2686,6 +2692,34 @@
   
   
     <li class="md-nav__item">
+      <a href="deployment-and-rig-testing.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment scenarios and rig testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="derived-output-boundary-2026-11-07.html" class="md-nav__link">
         
   
@@ -2722,6 +2756,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evaluator-realtime-communication.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator, realtime and API communication
   
 
     
@@ -3442,6 +3504,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sql-and-migration-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, migrations and tenant recovery architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5552,7 +5642,7 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>908f8a916</code>.</em></p>
+<p><em>Living document, last changed 2026-11-07 at <code>ca7f85b0f</code>.</em></p>
 <p><em>Contributor-facing living explanation. Source inspection is </em><em>read-derived</em><em> at
 cgm-remote-monitor <code>83582e876dd193f4448f44c28e379fb5464a26c7</code>, the published head
 of draft PR #8898 on 2026-11-06, based on dev <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
@@ -5571,10 +5661,14 @@ and independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---ind
 are retained as history where this page cites them. PR #8898 is open/draft, not
 merged or released.</em></p>
 <h2 id="current-service-composition-and-restore-integration-2026-11-07">Current service composition and restore integration (2026-11-07)<a class="headerlink" href="#current-service-composition-and-restore-integration-2026-11-07" title="Permanent link">&para;</a></h2>
-<p>This amendment supersedes the older API-only runtime description below for service
-availability. The earlier source survey remains pinned to <code>83582e87</code>. Runtime
-composition at <code>f0fac99a2fccee259c9a76eba0123058bf288d96</code> is recorded in
-<a href="../remedial/rc-16.0.0-integration-record.html#r73---durable-runtime-and-bounded-operations-batch-2026-11-07">R73</a>.
+<p>This section describes the separate-service implementation by source inspection
+at <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>; the older survey below remains
+pinned to <code>83582e87</code>. <a href="../remedial/rc-16.0.0-integration-record.html#r73---durable-runtime-and-bounded-operations-batch-2026-11-07">R73</a>
+records runtime composition on its own source. The
+<a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/index.html">b029 native matrix</a>
+accepts 17 separate-process restore criteria on <code>b029f5d8</code>, not the newer startup
+implementation, Compose/browser deployment or whole M6. Pinned source links in
+the detailed guides require publication of the local <code>151de024</code> candidate.
 The maintainer <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">reaffirmed separate service processes</a>,
 including containers with shared private sockets where appropriate. Compose and
 jsonnet are packaging options; no generator is selected.</p>
@@ -5620,30 +5714,37 @@ jsonnet are packaging options; no generator is selected.</p>
   Eval --&gt; PG
   Admin --&gt; PG
   API --&gt; Keys["Scoped secret provider"]
-  Maintenance["Private restore controller"] -. "Proposed participant / invalidation control" .-&gt; API
-  Maintenance -.-&gt; RT
-  Maintenance -.-&gt; Eval
-  Maintenance -.-&gt; Admin
+  Maintenance["Private restore controller"] --&gt;|"Fixed participant / invalidation sockets"| API
+  Maintenance --&gt; RT
+  Maintenance --&gt; Eval
+  Maintenance --&gt; Admin
   Maintenance --&gt; PG</code></pre>
-<p>Solid component paths describe the reference source; dotted maintenance
-coordination is implementation work, not accepted cross-process restore.
+<p>Component paths describe the reference source, with executed acceptance bounded
+by its named record above.
 Realtime's raw record frames and evaluator-derived values are distinct products;
 see the <a href="../../../reports/tenancy/derived-output-2026-11-07/index.html">characterization</a>.
 Existing client protocols do not change when these roles move into containers.
 The default single-tenant process retains its existing composition.</p>
 <p>During tenant A restoration, each participating process must stop admitting A's
 new work, finish admitted work, and acknowledge clearing A's retained state before
-reactivation. Tenant B continues. The current local cohort prototype aggregates
-contexts inside one process; the next integration replaces that limitation with
-configured private participant endpoints. A PostgreSQL advisory lock protects
+reactivation. Tenant B has its own operation window. The implemented fixed cohort
+registers actual separate processes through configured private participant
+endpoints. A PostgreSQL advisory lock protects
 participating code. A database-enforced fence would reject bypassing operations
 in PostgreSQL itself. Process separation and that stronger fence are separate
 questions; neither a process list nor a configuration assertion proves exclusive
 credential custody. Native tests must exercise actual separate processes,
 restart/lost acknowledgement and late-connection behavior under the declared
-trust boundary.</p>
-<p>The remaining deployment/runbook and detailed communication work is queued as
-MT-DOC-DEPLOY and MT-DOC-REALTIME; this overview does not close those items.</p>
+trust boundary. The
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-startup-admission">tenant-local startup requirement</a>
+prevents a suspended tenant from blocking another tenant's shared-role restart.
+Its implementation is source-checked at <code>151de024</code>; native restart acceptance is
+pending. It does not clear claims or provide automatic uncertain-outcome recovery.</p>
+<p>See <a href="deployment-and-rig-testing.html">deployment/rig scenarios</a>,
+<a href="evaluator-realtime-communication.html">evaluator/realtime communication</a> and
+<a href="sql-and-migration-architecture.html">SQL/migration architecture</a> for runnable
+preparation, sequence diagrams and storage/recovery boundaries. Documentation
+checks do not establish an executed deployment or capacity/recovery guarantee.</p>
 <h2 id="what-the-write-seam-made-possible">What the write seam made possible<a class="headerlink" href="#what-the-write-seam-made-possible" title="Permanent link">&para;</a></h2>
 <p><strong>Shared single-tenant code did change.</strong> The storage/write seams let the
 multitenant preview reuse shipping domain rules and version-specific handlers
@@ -5944,8 +6045,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fca6459be238ff433ad6e0b6d4e63b30c66b4b06/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/fca6459be238ff433ad6e0b6d4e63b30c66b4b06/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a16e3dbf89ae6c4680393a80df0dcce0db85dc26/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a16e3dbf89ae6c4680393a80df0dcce0db85dc26/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof

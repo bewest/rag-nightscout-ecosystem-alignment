@@ -5031,10 +5031,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#run" class="md-nav__link">
+  <a href="#current-finite-custody-entrypoint-source-checked-native-pending" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Run
+        Current finite custody entrypoint (source checked; native pending)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#historical-direct-invocation-and-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Historical direct invocation and preparation
       
     </span>
   </a>
@@ -5081,7 +5092,7 @@
 
 
 <h1 id="m4-actual-client-differential-lab">M4 actual-client differential lab<a class="headerlink" href="#m4-actual-client-differential-lab" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>918fa8a91</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>2575cbbf0</code>.</em></p>
 <p><em>Contributor-facing lab manual, living. Measurements on archived CRM <code>35903069</code> live in
 <a href="../../../reports/m4-client-binaries/2026-11-06/index.html">the dated report</a>; item state lives
 in <code>queue/work-queue.yaml</code>.</em></p>
@@ -5090,7 +5101,111 @@ single-site Mongo and an explicit two-tenant PostgreSQL/Vault preview of the sam
 The synthetic cgmsim driver and oref0 profile preload provide a fixed input clock;
 client source files are unchanged. Baseline-as-source comparison, mobile binaries and a socket
 forwarder remain separate scopes. This lab promotes no milestone.</p>
-<h2 id="run">Run<a class="headerlink" href="#run" title="Permanent link">&para;</a></h2>
+<h2 id="current-finite-custody-entrypoint-source-checked-native-pending">Current finite custody entrypoint (source checked; native pending)<a class="headerlink" href="#current-finite-custody-entrypoint-source-checked-native-pending" title="Permanent link">&para;</a></h2>
+<p>The current executable profile is <strong>cgmsim + oref0 only</strong>, with three static services
+(PostgreSQL, MongoDB and Vault), at most one live client container, and at most 64 serial
+client slots. Connector opt-in runs are setup-refused by this profile; their historical
+measurements remain in their dated records. No Android binary or device runs here.</p>
+<p>A reviewed finite parent must bind the application commit, these helper files, the installed
+client/build provenance, dependency source and four exact image IDs before executing
+<code>custody-run.js</code>. Its fixed arguments are <code>--plan &lt;absolute-private-plan&gt; --out &lt;initially-absent-output&gt;
+--ref &lt;full-application-commit&gt; --repository &lt;absolute-source-repository&gt; --dependencies
+&lt;absolute-node_modules&gt;</code>. It runs the existing queue gate with <code>--clients cgmsim,oref0</code>. The wrapper sets
+<code>NS_M4_EXTERNALS</code> from the required plan field after ambient environment values; an
+ambient override or missing field cannot select another client tree. The gate retains its
+three exact head/tracked-clean and compiler/provenance checks; untracked client dependencies
+are permitted. No client-root symlink bind or supervisor environment exception is needed.
+Direct lab execution requires <code>NS_M4_CUSTODY_PLAN</code> and an independently running observer;
+absence is a setup refusal. A parent plan is custody configuration, not execution permission.</p>
+<p>The private version-1 <code>m4-cgmsim-oref0-v1</code> plan has <code>status: PARENT_BOUND</code>, a fresh v4
+<code>ownerUUID</code>, <code>applicationHead</code>, <code>pinnedClientRoot</code> (absolute normalized existing real directory),
+<code>activeSeconds: 600</code>, <code>cleanupSeconds: 120</code>,
+<code>dockerExecutable: /usr/bin/docker</code>, an absolute initially empty <code>dockerConfig</code>,
+<code>endpointProfile: network-endpoint-stable-v1</code>, <code>images</code> keyed exactly <code>postgres</code>, <code>mongo</code>,
+<code>vault</code>, <code>client</code> with full SHA256 image IDs, and <code>baseline</code> container/volume/network ID
+arrays. The independent parent captures full baseline fingerprints with
+<code>custody-observer.baselineSnapshot(invoke)</code> before resources. Inspect classes use strict
+32-ID batches, exact returned sets, full IDs, caps 256/1024/64 and a 128-KiB argv ceiling.
+The verbatim approved <code>endpoint_profile.py</code> (SHA256
+<code>a37601bee57751c0bab58afbf57bfb5de624c12ce1aa068f5dc632d023d3f4b2</code>) is called
+through a fixed stdlib Python adapter; the parent must additionally pin <code>/usr/bin/python3.12</code>
+and its exact <code>-I -B endpoint-adapter.py</code> child argv. Complete Config/HostConfig, including
+Env, are fingerprinted in Python before leaving the raw inspect parser; raw baseline Env
+is never persisted. Every network-inspect field except Containers remains exact, including
+unknown fields. Containers uses exactly the helper's five typed fields: membership, Name
+and both IP strings remain exact; only EndpointID and MacAddress observations may vary.
+Full private before/after maps and explicit fullEquality=false remain in the comparison.</p>
+<p>Container Mounts are compared by unique absolute Destination, retaining every complete mount
+object and unknown field. Mount-array presentation order can change; added/removed mounts,
+Source, Type, RW, propagation and unknown-field drift still refuse. Complete Config/HostConfig
+and other top-level static fields remain exact. This prospective instrument rule requires a
+fresh baseline; old stopped captures are not relabeled.</p>
+<p>Runtime observations retain typed state/status flags, process/exit scalars, health status/failing
+streak and restart count. Raw State.Error, health log/output bodies, timestamps, ExecIDs and
+unknown runtime fields are omitted. Inactive membership still checks raw State in memory
+before observation projection. This limits prospective persisted data; it is not a claim
+that old private captures leaked a secret.</p>
+<p>Container NetworkSettings retains Ports and every other static/unknown field exactly.
+Only per-network EndpointID/MacAddress are observations, checked against authoritative
+global network maps by NetworkID, container ID, membership, name and IP/prefix. A
+configured network absent from the live global map is admitted only for typed exited/created
+state with Running/Restarting/Paused/Dead all false, empty SandboxID/Key, empty endpoint/MAC/
+address/gateway strings and zero integer prefixes. All configured network fields remain
+exact, including NetworkID, name, aliases and unknowns; active absence or a nonempty endpoint
+refuses. A stale configured network absent from actual global inventory uses the SAME
+typed-empty inactive predicate; it stays an exact configured reference, never a fabricated
+global row, ignored field, or ownership/mutation handle. Actual global inventory remains
+complete and exact, so later network additions/removals still refuse. This distinction is supported by the retained stopped-container diagnostic, not a
+claim that every possible Docker baseline shape was measured. The retained inactive
+representative was exited; created-state support is source-derived and covered synthetically. SandboxID
+and SandboxKey are typed lifecycle observations retained before/after, with no mutation
+or ownership authority. State, RestartCount and ExecIDs remain runtime observations.
+No unrelated Sandbox transition has been reproduced by this source-only work; the
+classification is prospective. It does not claim host quiescence or unchanged full endpoints.</p>
+<p>Each container is created stopped under a fixed initially absent name, journaled by exact ID,
+validated against the typed image/argv/env/mount specification, then independently inspected.
+<code>custody/custody.jsonl</code> is fsynced before <code>custody/observer.jsonl</code> and its exclusive receipt
+under <code>custody/receipts/</code>; actual <code>start</code> consumes that receipt. Anonymous image volumes
+are captured by exact identity before start. Cleanup uses saved IDs, fresh complete identity
+checks and fresh empty volume references. Unidentified create results remain unresolved;
+names and later absence never grant cleanup authority. A receipt wait is bounded to eight
+seconds and fails closed. A saved first-start intent admits either exact identity or the isolated-engine-measured
+OomKillDisable false-to-null transition, only when projecting that one field back to false
+reproduces the complete original identity. A fsynced first-start receipt retains complete
+before/after/projected fingerprints before the owned identity advances. True/malformed
+values, any other change and later drift refuse; baseline Config/HostConfig never use this
+transition. Recovery may finish this same proof only for a previously saved exact ID and
+first-start intent, before any cleanup. This is instrument lifecycle handling, not product
+or client compatibility acceptance. Client output still comes from the attached process; its status
+comes from the completed container's actual ExitCode, preserving oref0's HTTP/exit distinction.</p>
+<p>After the reviewed host supervisor has reaped all children, the parent calls the M4-specific
+<code>normalize(entries, {owner, baseline, supervisor, run})</code> and
+<code>verifyBaseline(invoke, savedSnapshot)</code>. The supervisor phase must be explicitly
+<code>m4-clients</code>, with its actual fresh process readback/unknown-child/terminal-receipt fields;
+a full/browser result cannot be relabeled. On interrupted runs the parent may call
+<code>custody.recover({plan, directory})</code> within the <strong>same</strong> cleanup budget, using only durable
+identified resources. An unresolved create or missing journal is a failed release verdict.
+Physical normalization omits <code>run</code> for interrupted/failed work and accepts safely closed
+identified prefixes, including zero created resources. Positive scientific normalization supplies
+the actual <code>run</code> and additionally requires all three services and completed client executions.
+Uninspected or unresolved intents still refuse physical normalization. Scientific gate success
+and physical release are separate verdicts.</p>
+<p>The proposed finite envelope is 600 seconds active plus one shared 120-second cleanup
+budget, including observer and all exact-ID cleanup/verification. These are ceilings, not
+measured durations. The parent starts its deadline before all pre-resource commands and
+must reject insufficient remaining time; it must not reset cleanup or adopt unknown actors.
+The wrapper does not enforce the outer host deadline or claim host-process custody itself.
+Native M4 performance, complete baseline/container shape and physical closure remain
+unmeasured for this source until the acceptance lead binds and runs the reviewed parent.
+The separate isolated engine proof measures only its first-start field transition.</p>
+<p>Offline checks: <code>node tools/lab/m4-client-binaries/test-custody.js</code>, existing <code>test-lab.js</code>,
+<code>test-endpoint-adapter.js</code>, and <code>test-classify.py</code>. Optional private retained endpoint/engine
+inputs use NS_M4_ENDPOINT_BEFORE/AFTER and NS_M4_FIRST_START_BEFORE/AFTER; never commit
+those captures. Actual retained maps/config are replayed inside explicit synthetic inspect
+and identity envelopes; that does not create native M4 evidence. The custody checks use
+recording transports and synthetic rows;
+they do not execute Docker, a client, a server, or a listener.</p>
+<h2 id="historical-direct-invocation-and-preparation">Historical direct invocation and preparation<a class="headerlink" href="#historical-direct-invocation-and-preparation" title="Permanent link">&para;</a></h2>
 <p>Prepare private CRM dependencies and bundle in the worktree named below; installed clients
 and their dependencies must be present under <code>externals/</code> or the explicit <code>NS_M4_EXTERNALS</code> root.
 The gate requires the declared clean client heads. It archives cgmsim source, compiles it in
@@ -5101,6 +5216,8 @@ do not overwrite a shared generated artifact. The dated report records the prove
 missing dependencies/images. It starts only uniquely named owned fixtures on loopback ports,
 uses direct-alias resolution and <code>AUTH_DEFAULT_ROLES=denied</code>, and removes its own resources.
 Coordinate fixture ownership before running; never delete another lane's resources.</p>
+<p>The following invocation documents the earlier capture interface; current execution uses
+the finite custody entrypoint above and requires its bound plan/observer.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">NS_M4_GATE_DEPENDENCIES</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/externals/work/crm-m4-client-lab-20261106/node_modules"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">NS_M4_GATE_OUT</span><span class="o">=</span>/tmp/m4-client-measurement-unique<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">NS_M4_EXTERNALS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">/externals/work/m4-pinned-clients-20261106"</span><span class="w"> </span><span class="se">\</span>
@@ -5109,9 +5226,9 @@ Coordinate fixture ownership before running; never delete another lane's resourc
 <p>The gate archives the selected commit, verifies the private lockfile and passes the exact
 archived head to the runner. <code>NS_M4_GATE_REPO</code> and <code>NS_M4_EXTERNALS</code> support an isolated
 alignment worktree without relocating or editing a client checkout. The output directory
-must not exist; preserve each capture rather than overwrite it. Default gate clients are
-cgmsim and oref0. <code>--clients connect-share,connect-source,oref0,cgmsim</code> selects the broader
-lab; connector's scheduler can take several minutes. Logs contain synthetic data only;
+must not exist; preserve each capture rather than overwrite it. The historical broader selection was
+<code>--clients connect-share,connect-source,oref0,cgmsim</code>; it is outside the current finite
+custody profile. Logs contain synthetic data only;
 query values and exchange-token path segments are redacted.</p>
 <h2 id="oracle-and-classification">Oracle and classification<a class="headerlink" href="#oracle-and-classification" title="Permanent link">&para;</a></h2>
 <p>The recording proxy records HTTP status and reply shape. Independent Mongo/PostgreSQL
