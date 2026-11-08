@@ -18,7 +18,7 @@ function fixture ({mutate,append}={}){
    const id=(++serial).toString(16).padStart(64,'0'),row={Id:id,Name:'/'+args[args.indexOf('--name')+1],Image:images[kind],Created:'synthetic-created',
     Config:{...source.Config,Image:images[kind],Labels:{},Env:['PATH=/bin'],Cmd:args.slice(at+1).length?args.slice(at+1):source.Config.Cmd},
     HostConfig:{NetworkMode:kind==='client'?'host':'bridge',AutoRemove:false,Privileged:false,PublishAllPorts:false,CapAdd:null,Devices:[],SecurityOpt:null,ExtraHosts:[],PortBindings:{}},
-    Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:''},State:{Running:false,StartedAt:'0001-',FinishedAt:'0001-',ExitCode:0,Error:''}};
+    Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:''},State:{Status:'created',Running:false,StartedAt:'0001-',FinishedAt:'0001-',ExitCode:0,Error:''}};
    const env=new Map([['PATH','/bin']]);for(let i=1;i<at;i++){
     if(args[i]==='--label'){const [k,v]=args[++i].split('=');row.Config.Labels[k]=v;}
     if(args[i]==='-e'){const k=args[++i];env.set(k,'synthetic-secret');}
@@ -78,6 +78,7 @@ test('M4 observer consumes complete journal and refuses omitted start/cleanup or
   const supervisor={phase:'m4-clients',hostProcessesClosed:true,directChildrenReaped:true,processAudit:{unknownAdopted:[],freshReadbackWithinBudget:true,terminalReceiptFailures:[],lastReadback:{readbackComplete:true,knownPresent:[],unknownAdopted:[]}}};
   const input={owner,baseline:f.plan.baseline,supervisor,run:{clients:['cgmsim','oref0']}};assert.equal(observer.normalize(f.records,input).length,4);
   assert.throws(()=>observer.normalize(f.records.slice(0,-1),input),/CLEANUP/);
+  const noIntent=f.records.filter(r=>r.type!=='start-intent').map((r,i)=>({...r,sequence:i+1}));assert.throws(()=>observer.normalize(noIntent,input),/START_INTENT_REQUIRED|CLIENT_EXIT_MISSING/);
   const omitted=f.records.filter(r=>r.type!=='started').map((r,i)=>({...r,sequence:i+1}));assert.throws(()=>observer.normalize(omitted,input),/START_OR_EXIT/);
   assert.throws(()=>observer.normalize(f.records,{...input,supervisor:{...supervisor,processAudit:{...supervisor.processAudit,unknownAdopted:[{pid:123}]}}}),/HOST_CUSTODY/);
  }finally{f.close();}
@@ -126,10 +127,25 @@ test('fixed wrapper consumes parent source/budget binding and original gate argv
 test('anonymous volume deletion requires a fresh empty reference set, and recovery only verifies prior exact IDs',()=>{
  const f=fixture();try{const pg=f.api.stage('postgres',serviceSpec),mongo=f.api.stage('mongo',{}),volume=[...f.volumes.keys()][0];
  f.containers.get(mongo).Mounts.push({Type:'volume',Name:volume,Source:'/private-volume',Destination:'/held',RW:true});
- assert.throws(()=>f.api.remove(pg),/VOLUME_REFERENCED/);assert(f.volumes.has(volume));assert(!f.calls.some(a=>a[0]==='volume' && a[1]==='rm'));
+ assert.throws(()=>f.api.remove(pg),/VOLUME_REFERENCED/);assert.throws(()=>f.api.stage('client',{}),/UNRESOLVED_RESOURCE/);assert(f.volumes.has(volume));assert(!f.calls.some(a=>a[0]==='volume' && a[1]==='rm'));
  f.containers.get(mongo).Mounts.pop();f.api.close();
  const directory=path.join(f.root,'recovery');fs.mkdirSync(directory);fs.writeFileSync(path.join(directory,'custody.jsonl'),f.records.map(r=>JSON.stringify(r)).join('\n')+'\n');
  const before=f.calls.length;const result=custody.recover({plan:f.plan,directory,invoke:f.invoke});assert.equal(result.length,2);assert(f.calls.slice(before).every(a=>a[0]==='inspect'||(a[0]==='volume' && a[1]==='inspect')));
  fs.appendFileSync(path.join(directory,'custody.jsonl'),JSON.stringify({sequence:f.records.length+1,owner,type:'create-intent',value:{name:'foreign'}})+'\n');assert.throws(()=>custody.recover({plan:f.plan,directory,invoke:f.invoke}),/RECOVERY_SEQUENCE/);
  }finally{f.close();}
+});
+test('physical closed prefixes remain distinct from scientific completeness',()=>{
+ const supervisor={phase:'m4-clients',hostProcessesClosed:true,directChildrenReaped:true,processAudit:{unknownAdopted:[],freshReadbackWithinBudget:true,terminalReceiptFailures:[],lastReadback:{readbackComplete:true,knownPresent:[],unknownAdopted:[]}}};
+ for(const count of [0,1,2]){const f=fixture();try{for(const kind of ['mongo','vault'].slice(0,count))f.api.stage(kind,{});f.api.close();const input={owner,baseline:f.plan.baseline,supervisor};assert.equal(observer.normalize(f.records,input).length,count);assert.throws(()=>observer.normalize(f.records,{...input,run:{clients:['cgmsim','oref0']}}),/RUN_START_OR_EXIT/);}finally{f.close();}}
+});
+test('malformed observer IDs never reach transport',()=>{
+ const f=fixture();try{const directory=path.join(f.root,'malformed');fs.mkdirSync(directory);fs.mkdirSync(path.join(directory,'receipts'));let calls=0;
+ const entry={sequence:1,owner,type:'created-identified',value:{id:'--invalid-id',volumes:[]}};fs.writeFileSync(path.join(directory,'custody.jsonl'),JSON.stringify(entry)+'\n');const observed=observer.observe({plan:f.plan,directory,invoke:()=>{calls++;throw new Error('transport forbidden');}});assert.throws(()=>observed.scan(),/CREATED_FULL_ID/);assert.equal(calls,0);
+ }finally{f.close();}
+});
+test('initial validation rejects running or previously run containers before independent ACK admission',()=>{
+ for(const mutate of [r=>{r.State.Running=true;},r=>{r.State.StartedAt='2026-already-ran';}]){const f=fixture({mutate});try{assert.throws(()=>f.api.stage('postgres',serviceSpec),/CUSTODY_INITIAL_STOPPED/);assert(!f.records.some(r=>r.type==='created-identified'));assert(!f.calls.some(a=>a[0]==='start'));}finally{f.close();}}
+});
+test('an unresolved initial create forbids any subsequent creation',()=>{
+ let first=true;const f=fixture({mutate:r=>{if(first){first=false;r.Name='/foreign';}}});try{assert.throws(()=>f.api.stage('postgres',serviceSpec),/CUSTODY_NAME_IMAGE/);const before=f.calls.filter(a=>a[0]==='create').length;assert.throws(()=>f.api.stage('client',{}),/CUSTODY_UNRESOLVED_RESOURCE/);assert.equal(f.calls.filter(a=>a[0]==='create').length,before);}finally{f.close();}
 });

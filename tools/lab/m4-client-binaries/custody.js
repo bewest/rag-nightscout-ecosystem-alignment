@@ -39,7 +39,7 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
   assert(Object.keys(plan.images).sort().join(',') === 'client,mongo,postgres,vault' && Object.values(plan.images).every(value => /^sha256:[a-f0-9]{64}$/.test(value)), 'CUSTODY_IMAGE_PINS');
   const prefix = 'm4-' + plan.ownerUUID.replace(/-/g,'').slice(0,12);
   const names = ['postgres','mongo','vault'].map(kind => prefix+'-'+kind).concat(Array.from({length:64},(_,i)=>prefix+'-client-'+String(i).padStart(3,'0')));
-  const records = new Map(), volumes = new Map(), used = new Set(), unresolved = new Set(); let serial = 0, sequence = 0, initialized = false, fault = false, alreadyClosed = false;
+  const records = new Map(), volumes = new Map(), used = new Set(), unresolved = new Set(), removing = new Set(); let serial = 0, sequence = 0, initialized = false, fault = false, alreadyClosed = false;
   if(!recovery)fs.mkdirSync(directory, {mode:0o700});
   else assert(fs.lstatSync(directory).isDirectory(),'CUSTODY_RECOVERY_DIRECTORY');
   const receipts=path.join(directory,'receipts');if(!recovery)fs.mkdirSync(receipts,{mode:0o700});
@@ -81,6 +81,7 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
     save('namespace-absent',{profile:PROFILE,names,baseline:digest(plan.baseline),endpointProfile:plan.endpointProfile});initialized=true;
   }
   function validate (row, spec, name, kind, image) {
+    assert(row.State && row.State.Status==='created' && row.State.Running===false && row.State.StartedAt.startsWith('0001-') && row.State.FinishedAt.startsWith('0001-'),'CUSTODY_INITIAL_STOPPED');
     assert(row.Name==='/'+name && row.Image===plan.images[kind] && row.Config.Image===plan.images[kind], 'CUSTODY_NAME_IMAGE');
     assert(same(row.Config.Labels,{...(image.Config.Labels || {}),[LABEL]:plan.ownerUUID,[LABEL+'.kind']:kind}),'CUSTODY_LABEL');
     const expectedEnv=Object.fromEntries((image.Config.Env || []).map(value=>{const i=value.indexOf('=');return [value.slice(0,i),value.slice(i+1)];}));
@@ -103,6 +104,7 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
   }
   function stage (kind, spec) {
     assert(!recovery && initialized && !fault && ['postgres','mongo','vault','client'].includes(kind),'CUSTODY_NOT_READY');
+    assert(unresolved.size===0 && removing.size===0,'CUSTODY_UNRESOLVED_RESOURCE');
     assert(records.size<4 && (kind!=='client' || ![...records.values()].some(r=>r.kind==='client')),'CUSTODY_LIVE_BOUND');
     const name=kind==='client'?names[3+serial++]:prefix+'-'+kind;assert(name && serial<=64 && !used.has(name),'CUSTODY_SERIAL_BOUND');used.add(name);
     const imageRows=JSON.parse(run(['image','inspect',plan.images[kind]]));assert(imageRows.length===1 && imageRows[0].Id===plan.images[kind],'CUSTODY_PINNED_IMAGE');
@@ -140,12 +142,12 @@ function create ({ plan, directory, invoke, append, recovery = false } = {}) {
   function references (name) {const ids=run(['ps','-aq','--no-trunc']).split('\n').filter(Boolean);assert(ids.length<=260 && new Set(ids).size===ids.length && ids.every(id=>ID.test(id)),'CUSTODY_REFERENCE_IDS');
     const refs=[];for(let i=0;i<ids.length;i+=32){const batch=ids.slice(i,i+32),rows=JSON.parse(run(['inspect',...batch]));assert(rows.length===batch.length && new Set(rows.map(r=>r.Id)).size===batch.length && same(rows.map(r=>r.Id).sort(),batch.slice().sort()),'CUSTODY_REFERENCE_EXACT_BATCH');for(const row of rows)if(row.Mounts.some(m=>m.Type==='volume' && m.Name===name))refs.push(row.Id);}return refs;}
   function remove (id) {assert(!fault && records.has(id),'CUSTODY_UNKNOWN_OR_UNJOURNALED_ID');const r=records.get(id);assert(!plan.baseline.containers.includes(id),'CUSTODY_BASELINE_CONTAINER');
-    const current=raw(['inspect','--type','container',id]);
+    removing.add(id);const current=raw(['inspect','--type','container',id]);
     if(current.status===0){assert(!r.containerAbsent && same(identity(JSON.parse(current.stdout)[0]),r.identity),'CUSTODY_IDENTITY_DRIFT');save('remove-intent',{id});assert(run(['rm','--force',id])===id,'CUSTODY_REMOVE_ID');}
     else assert(/no such (object|container)/i.test(current.stderr),'CUSTODY_ABSENCE_UNCONFIRMED');
     absent(id);save('container-absent',{id});
     for(const v of r.volumes){if(!volumes.has(v.name))continue;const currentVolume=raw(['volume','inspect',v.name]);if(currentVolume.status!==0){assert(recovery && /no such volume/i.test(currentVolume.stderr),'CUSTODY_VOLUME_ABSENCE');volumes.delete(v.name);save('volume-absent',{name:v.name});continue;}const found=JSON.parse(currentVolume.stdout);assert(found.length===1 && same(volumeIdentity(found[0]),v) && !plan.baseline.volumes.includes(v.name),'CUSTODY_VOLUME_DRIFT');assert(references(v.name).length===0,'CUSTODY_VOLUME_REFERENCED');save('volume-remove-intent',{name:v.name});assert(run(['volume','rm',v.name])===v.name,'CUSTODY_VOLUME_REMOVE');const missing=raw(['volume','inspect',v.name]);assert(missing.status!==0 && /no such volume/i.test(missing.stderr),'CUSTODY_VOLUME_ABSENCE');volumes.delete(v.name);save('volume-absent',{name:v.name});}
-    records.delete(id);return {id,name:r.name,absent:true};}
+    records.delete(id);removing.delete(id);return {id,name:r.name,absent:true};}
   function close () {assert(!fault,'CUSTODY_JOURNAL_FAILED');if(alreadyClosed){for(const r of records.values()){absent(r.id);for(const v of r.volumes){const missing=raw(['volume','inspect',v.name]);assert(missing.status!==0 && /no such volume/i.test(missing.stderr),'CUSTODY_VOLUME_ABSENCE');}}return [...records.values()].map(r=>({id:r.id,name:r.name,absent:true}));}const removed=[];for(const id of [...records.keys()].reverse())removed.push(remove(id));assert(records.size===0 && volumes.size===0 && unresolved.size===0,'CUSTODY_UNCLOSED_OR_UNRESOLVED_CREATION');save('closed',{removed:removed.map(r=>r.id),clientSlots:serial});return removed;}
   if(recovery){
     const text=fs.readFileSync(ledger,'utf8');assert(text.endsWith('\n'),'CUSTODY_PARTIAL_JOURNAL');

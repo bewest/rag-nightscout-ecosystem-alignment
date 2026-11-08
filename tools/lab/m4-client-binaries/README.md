@@ -54,7 +54,11 @@ After the reviewed host supervisor has reaped all children, the parent calls the
 a full/browser result cannot be relabeled. On interrupted runs the parent may call
 `custody.recover({plan, directory})` within the **same** cleanup budget, using only durable
 identified resources. An unresolved create or missing journal is a failed release verdict.
-Scientific gate success and physical release are separate verdicts.
+Physical normalization omits `run` for interrupted/failed work and accepts safely closed
+identified prefixes, including zero created resources. Positive scientific normalization supplies
+the actual `run` and additionally requires all three services and completed client executions.
+Uninspected or unresolved intents still refuse physical normalization. Scientific gate success
+and physical release are separate verdicts.
 
 The proposed finite envelope is 600 seconds active plus one shared 120-second cleanup
 budget, including observer and all exact-ID cleanup/verification. These are ceilings, not
