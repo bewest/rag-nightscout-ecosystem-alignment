@@ -1,0 +1,103 @@
+{
+  "classification": "reproduced; complete full nonbrowser campaign",
+  "source": {
+    "head": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "tree": "761d763fbff124cdba7bcb8a87177fed7352ee25"
+  },
+  "command": "finite supervisor \u2192 durable observer \u2192 run-phase.py full \u2192 tools/lab/multitenant-rest-preview/owned.js all",
+  "tiers": [
+    {
+      "tier": "unit",
+      "passed": 2807,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "dom",
+      "passed": 205,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "dependency",
+      "passed": 368,
+      "failed": 0,
+      "pending": 2
+    },
+    {
+      "tier": "core",
+      "passed": 319,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "harness",
+      "passed": 99,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "integration",
+      "passed": 3979,
+      "failed": 0,
+      "pending": 172
+    },
+    {
+      "tier": "stress",
+      "passed": 18,
+      "failed": 0,
+      "pending": 0
+    }
+  ],
+  "runner": {
+    "phase": "full",
+    "exit": 0,
+    "elapsedSeconds": 349.8824773160741,
+    "sourceHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "final": {
+      "publishingHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+      "publishingTree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+      "verificationHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+      "verificationTree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+      "publishingClean": true,
+      "verificationClean": true
+    }
+  },
+  "observer": {
+    "phaseAccepted": true,
+    "cleanupVerified": true,
+    "commandExit": 0,
+    "problems": [],
+    "observerErrors": [],
+    "ownedContainers": 22,
+    "ownedVolumes": 32,
+    "observedBirths": 165
+  },
+  "supervisor": {
+    "phasePassed": true,
+    "hostProcessesClosed": true,
+    "directChildrenReaped": true
+  },
+  "independentRelease": {
+    "source": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "phase": "full nonbrowser",
+    "phaseAccepted": true,
+    "runtimeReleased": true,
+    "exactInventory": true,
+    "originalSelectedBaselineMetadataUnchanged": true,
+    "allObserverAndSupervisorBirthsIndependentlyAbsent": true,
+    "retainedSupervisorAndOwnerBirths": 281,
+    "ownedContainers": 22,
+    "ownedVolumes": 32,
+    "observedBirths": 165,
+    "unknownAdopted": [],
+    "scope": "Original selected staticmetadata/inventory; no fullconfig/fullendpoint/globalquiescence claim"
+  },
+  "artifactSha256": {
+    "m6-final-full-c23-20261107/phase.log": "ac272697fb5ff2eef72c3bcd3819969526e5a475ec0e74914f4a851af0027dca",
+    "m6-final-full-c23-20261107/exit.json": "d1e0471e8b6bca55355149000c7c6a5a47c53d7fed3c1cb1ff6e1f90a29ef92d",
+    "m6-final-full-c23-20261107-observer/observer-audit.json": "d0e2ad76fb4d0afcb0ce635bcd31bee835117739172e8223320de6805b20ee5f",
+    "m6-final-full-c23-20261107-supervisor/supervisor-result.json": "c95a84258f783c2f1820cb6a3d24e09966147f8bc3cd5fefc6ae210060b4a248",
+    "m6-acceptance-continuation-20261107/full-c23-physical-release.json": "a48cc431ee06fa7076e38c0240fc1af4d3e39a1f046fe492989541982cabf70d"
+  }
+}

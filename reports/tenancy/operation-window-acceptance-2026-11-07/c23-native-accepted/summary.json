@@ -1,0 +1,77 @@
+{
+  "purpose": "JOINED_SUSPENDED_RESTART_ACCEPTANCE",
+  "originalV8Actor": "UNATTRIBUTED",
+  "actorEvidenceComplete": true,
+  "proofPassed": true,
+  "completed": [
+    "c1-actual-four-role-startup",
+    "c1-actual-HTTP-body-response-lifetime-drained",
+    "c1-ordinary-logical-restore",
+    "c1-row-rollback-keeps-suspension",
+    "c1-suspended-unsafe-clock-API-startup-refuses",
+    "c1-suspended-shared-restart-isolates-B",
+    "c2-actual-four-role-startup",
+    "c2-ordinary-logical-restore",
+    "c2-preclaim-pin-incarnation-restart-refuses",
+    "c2-real-COMMIT-ACK-loss-keeps-suspension",
+    "c2-suspended-shared-restart-isolates-B",
+    "c3-actual-four-role-startup",
+    "c3-ordinary-logical-restore",
+    "c3-actual-invalidation-ACK-loss-keeps-suspension",
+    "c4-actual-four-role-startup",
+    "c4-ordinary-logical-restore",
+    "c4-actual-killed-backend-durable-orphan",
+    "c4-privileged-seeded-samePID-differentbirth-refused",
+    "c4-actual-controller-refuses-unresolved-orphan",
+    "c4-suspended-shared-restart-isolates-B",
+    "independent-final-PG-backend-release"
+  ],
+  "forbiddenEgress": 0,
+  "driverPG": {
+    "total": 199,
+    "maxActive": 3
+  },
+  "allPG": {
+    "total": 886,
+    "observedActiveSample": 0,
+    "conservativeSimultaneousCeiling": 108,
+    "classification": "individual processes enforce local ceilings; asynchronous samples do not establish a global peak"
+  },
+  "roleBirths": 27,
+  "source": {
+    "head": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "tree": "761d763fbff124cdba7bcb8a87177fed7352ee25"
+  },
+  "parent": {
+    "overallPassed": true,
+    "runtimeReleased": true,
+    "driverExit": 0,
+    "errors": [],
+    "cleanupErrors": [],
+    "childBirthAbsent": true,
+    "childProcessGroupAbsent": true,
+    "descendantsAbsent": true,
+    "exactInventory": true,
+    "baselineMetadataUnchanged": true
+  },
+  "independentRelease": {
+    "source": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "tree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+    "disposition": "COMPLETE_21_NATIVE_MATRIX_PASS",
+    "exactInventory": true,
+    "originalSelectedBaselineMetadataUnchanged": true,
+    "allDriverAndRetainedRoleBirthsAbsent": true,
+    "retainedBirths": 28,
+    "remainingPrivateSocketFiles": 0,
+    "runtimeReleased": true,
+    "scope": "Original selected identity/inventory profile; no complete endpoint equality/globalquiescence claim",
+    "closureSha256": "e2355ef7c6fd342b5a1db2620fc929dbf09efc1510aa6fb24dc0c906a881f6a3"
+  },
+  "rawArtifactSha256": {
+    "instrument-result.json": "000d719ce617d95d2220b2a3b5e92e2d42a977bfdd981372c580a8bc230331c9",
+    "closure.json": "e2355ef7c6fd342b5a1db2620fc929dbf09efc1510aa6fb24dc0c906a881f6a3",
+    "events.jsonl": "9cbbbc4141a5bcca81602450eb92d89ea47dfe167929a325625a651155b5b9a9",
+    "retained-role-births.json": "b42aee2d276a6a997b7d3da4c0eff67be6b6811ca64be82e8fd5686fecf692d3"
+  },
+  "baselineScope": "Original selected static metadata and exact inventory; complete Config/HostConfig, endpoint equality and global quiescence are not asserted"
+}

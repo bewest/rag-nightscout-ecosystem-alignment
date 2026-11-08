@@ -268,8 +268,9 @@ class Lab {
     }
     for (const ns of Object.values(allNamespaces)) await admin.query(`GRANT SELECT ON ${ns}.schema_migrations TO preview_check`);
     for (const logical of domainNames) {
-      await admin.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ${allNamespaces[logical]}.${logical} TO preview_app`);
-      await admin.query(`GRANT USAGE ON ALL SEQUENCES IN SCHEMA ${allNamespaces[logical]} TO preview_app`);
+      const grants = require('./preview-domain-grants')({ load: req, catalogue: catalogues[logical],
+        logical, namespace: allNamespaces[logical], role: 'preview_app' });
+      for (const statement of grants) await admin.query(statement);
     }
     await admin.query('GRANT SELECT ON ALL TABLES IN SCHEMA preview_auth, preview_legacy TO preview_app');
     await admin.query('GRANT SELECT, INSERT ON preview_secrets.secret_records TO preview_app');
