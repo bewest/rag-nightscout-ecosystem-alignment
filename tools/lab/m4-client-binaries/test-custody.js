@@ -101,7 +101,7 @@ test('independent observer consumes actual journal, persists before ACK, and a m
  }finally{f.close();}
 });
 test('baseline full fingerprints use strict 32-ID exact batches; missing late rows and Config drift refuse',()=>{
- const rows=Array.from({length:65},(_,i)=>({Id:(i+1).toString(16).padStart(64,'0'),Name:'/synthetic-'+i,Image:'sha256:'+'a'.repeat(64),Created:'synthetic',Config:{Env:['SECRET=synthetic-private']},HostConfig:{Privileged:false},Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:'',SandboxKey:''}}));
+ const rows=Array.from({length:65},(_,i)=>({Id:(i+1).toString(16).padStart(64,'0'),Name:'/synthetic-'+i,Image:'sha256:'+'a'.repeat(64),Created:'synthetic',Config:{Env:['SECRET=synthetic-private']},HostConfig:{Privileged:false},Mounts:[],State:{Status:'exited',Running:false},NetworkSettings:{Ports:{},Networks:{},SandboxID:'',SandboxKey:''}}));
  const calls=[];let missing=false,drift=false;
  const invoke=args=>{calls.push(args);if(args[0]==='ps')return rows.map(r=>r.Id).join('\n');if(args[1]==='ls')return '';
   assert.deepEqual(args.slice(0,3),['inspect','--type','container']);assert(args.length<=35);let selected=args.slice(3).map(id=>structuredClone(rows.find(r=>r.Id===id)));if(missing && args.length===4)selected=[];if(drift)selected[0].Config.Env.push('CHANGED=yes');return JSON.stringify(selected);};

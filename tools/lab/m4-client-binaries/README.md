@@ -48,6 +48,18 @@ unknown fields. Containers uses exactly the helper's five typed fields: membersh
 and both IP strings remain exact; only EndpointID and MacAddress observations may vary.
 Full private before/after maps and explicit fullEquality=false remain in the comparison.
 
+Container Mounts are compared by unique absolute Destination, retaining every complete mount
+object and unknown field. Mount-array presentation order can change; added/removed mounts,
+Source, Type, RW, propagation and unknown-field drift still refuse. Complete Config/HostConfig
+and other top-level static fields remain exact. This prospective instrument rule requires a
+fresh baseline; old stopped captures are not relabeled.
+
+Runtime observations retain typed state/status flags, process/exit scalars, health status/failing
+streak and restart count. Raw State.Error, health log/output bodies, timestamps, ExecIDs and
+unknown runtime fields are omitted. Inactive membership still checks raw State in memory
+before observation projection. This limits prospective persisted data; it is not a claim
+that old private captures leaked a secret.
+
 Container NetworkSettings retains Ports and every other static/unknown field exactly.
 Only per-network EndpointID/MacAddress are observations, checked against authoritative
 global network maps by NetworkID, container ID, membership, name and IP/prefix. A

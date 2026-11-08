@@ -34,6 +34,63 @@ def inactive_configured(row, endpoint, lifecycle):
     return all(type(endpoint.get(field)) is int and endpoint[field] == 0 for field in ['IPPrefixLen', 'GlobalIPv6PrefixLen'])
 
 
+def destination_ordered_mounts(mounts):
+    # Mount list presentation order is not configuration. Keep every complete
+    # object/unknown field; a unique valid Destination is the identity key.
+    if type(mounts) is not list:
+        raise ValueError('M4_CONTAINER_MOUNTS_SHAPE')
+    destinations = set()
+    for mount in mounts:
+        destination = mount.get('Destination') if type(mount) is dict else None
+        if (type(destination) is not str or not destination.startswith('/') or
+                len(destination) > 4096 or any(ord(c) < 32 for c in destination) or
+                destination in destinations):
+            raise ValueError('M4_CONTAINER_MOUNT_DESTINATION')
+        destinations.add(destination)
+    return sorted(mounts, key=lambda mount: mount['Destination'])
+
+
+def runtime_observations(row):
+    # Observations are not an admission bypass. Inactive membership is checked
+    # against raw State above; persist only typed lifecycle/health scalars.
+    state = row.get('State')
+    if type(state) is not dict:
+        raise ValueError('M4_CONTAINER_STATE_SHAPE')
+    selected = {}
+    for key in ['Running', 'Paused', 'Restarting', 'OOMKilled', 'Dead']:
+        if key in state:
+            if type(state[key]) is not bool:
+                raise ValueError('M4_CONTAINER_STATE_BOOLEAN')
+            selected[key] = state[key]
+    if 'Status' in state:
+        if state['Status'] not in ['created', 'running', 'paused', 'restarting', 'removing', 'exited', 'dead']:
+            raise ValueError('M4_CONTAINER_STATE_STATUS')
+        selected['Status'] = state['Status']
+    for key in ['Pid', 'ExitCode']:
+        if key in state:
+            if type(state[key]) is not int:
+                raise ValueError('M4_CONTAINER_STATE_INTEGER')
+            selected[key] = state[key]
+    if 'Health' in state:
+        health = state['Health']
+        if type(health) is not dict:
+            raise ValueError('M4_CONTAINER_HEALTH_SHAPE')
+        selected['Health'] = {}
+        if 'Status' in health:
+            if health['Status'] not in ['none', 'starting', 'healthy', 'unhealthy']:
+                raise ValueError('M4_CONTAINER_HEALTH_STATUS')
+            selected['Health']['Status'] = health['Status']
+        if 'FailingStreak' in health:
+            if type(health['FailingStreak']) is not int or health['FailingStreak'] < 0:
+                raise ValueError('M4_CONTAINER_HEALTH_STREAK')
+            selected['Health']['FailingStreak'] = health['FailingStreak']
+    result = {'State': selected}
+    if 'RestartCount' in row:
+        if type(row['RestartCount']) is not int or row['RestartCount'] < 0:
+            raise ValueError('M4_CONTAINER_RESTART_COUNT')
+        result['RestartCount'] = row['RestartCount']
+    return result
+
 def baseline_snapshot(raw_batches):
     rows = {kind: [row for batch in raw_batches[kind] for row in json.loads(batch)] for kind in ['containers', 'volumes', 'networks']}
     network = call({'operation': 'network-snapshot', 'rows': rows['networks']})
@@ -92,10 +149,11 @@ def baseline_snapshot(raw_batches):
         if live != {nid for nid, members in maps.items() if cid in members}:
             raise ValueError('M4_CONTAINER_GLOBAL_MEMBERSHIP')
         static = {key: value for key, value in row.items() if key not in ['Config', 'HostConfig', 'NetworkSettings', 'State', 'RestartCount', 'ExecIDs']}
+        static['Mounts'] = destination_ordered_mounts(row['Mounts'])
         static['configurationFingerprint'] = p.configuration_fingerprint(row['Config'], row['HostConfig'])
         static['NetworkSettings'] = ns
         identities['containers'][cid] = {'id': cid, 'name': row['Name'], 'staticFingerprint': fingerprint(static)}
-        observations[cid] = {'sandbox': lifecycle, 'endpoints': observed, 'runtime': {key: row[key] for key in ['State', 'RestartCount', 'ExecIDs'] if key in row}}
+        observations[cid] = {'sandbox': lifecycle, 'endpoints': observed, 'runtime': runtime_observations(row)}
     for row in rows['volumes']:
         if type(row.get('Name')) is not str or row['Name'] in identities['volumes']:
             raise ValueError('M4_VOLUME_STATIC_SHAPE')
