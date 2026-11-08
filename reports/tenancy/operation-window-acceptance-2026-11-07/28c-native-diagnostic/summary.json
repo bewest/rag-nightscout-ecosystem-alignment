@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "classification": "IMMUTABLE_SANITIZED_FAILURE_PROJECTION",
+  "status": "FAILED_RUNTIME_CLOSED",
+  "joined_acceptance": false,
+  "alignment_anchor": "af7234d5b1449db31c94d6bc7f462aa36199c553",
+  "source": {
+    "commit": "28c4cb12d80a2bb2c16022ca9adcaa9e1d49f744",
+    "tree": "c65d84ce96d928926c3bbc536a65b85cbbe83c6c",
+    "same_candidate_for_both_runs": true,
+    "projected_source_fix": false
+  },
+  "runs": {
+    "joined_native_attempt": {
+      "purpose": "JOINED_FUNCTIONAL_MATRIX_ATTEMPT",
+      "status": "FAILED",
+      "completed_groups": 7,
+      "planned_groups": 17,
+      "counts_are_groups_not_tests": true,
+      "phase_accepted": false,
+      "completed_capabilities": [
+        "Two fresh four-role CLI bootstraps",
+        "Two fresh ordinary logical restores with tenant-local history and current authority preservation checks",
+        "HTTP partial-body and response lifetime drain",
+        "Row-error rollback retains selected-tenant suspension",
+        "Preclaim evaluator incarnation restart refuses the old pin"
+      ],
+      "failure": {
+        "code": "RESTORE_COHORT_UNKNOWN_BACKEND",
+        "boundary": "Cohort census refused before the intended DATA COMMIT acknowledgement-loss fault was armed",
+        "actor_attribution": "UNATTRIBUTED",
+        "commit_ack_loss_control_reached": false
+      },
+      "egress": {
+        "driver_forbidden_egress": 0,
+        "role_forbidden_egress": 0,
+        "role_guard_records": 9
+      },
+      "closure": {
+        "runtime_released": true,
+        "independent_physical_readback": true,
+        "owned_resources_absent": true,
+        "observed_process_births_absent": true,
+        "process_groups_and_descendants_absent": true,
+        "inventory_restored": true,
+        "selected_baseline_metadata_unchanged": true,
+        "private_control_sockets_absent": true
+      },
+      "sha256": {
+        "packet_index": "219cd138c2f87bae54af54c14c71b173397908d991735064d7df8abd6d36cf2a",
+        "driver_instrument": "8e4db43cb34bc2d9e2e5b682bea8ed0b8e1208b8832ab01b3bd455b495a72279",
+        "parent_instrument": "9dea81281b9ec8e00d4ca4c6d3fa9baa6d03aeb031979fd4360173dc31592c7c",
+        "role_guard_instrument": "48ebf86b4477ac4af3fc6503d72856a97784f3a4b4e14052851fafcf3abf2848",
+        "source_anchor": "42e38dfbdfac3b355c1a1ceed8970be90d982340d1ae3c7d55d5ec9853df301d",
+        "capture_index": "1fda78904695e514d5ffa6101d392bfd2dee98e257a7d3e729c78b10c953f66d",
+        "independent_physical_release": "df228e4ba33899217134f57995a26dd1ce01d0f93e2d40ed1d25af1d1cf5a8ac",
+        "functional_result": "39e40c4f8e82078270585d655b9ae13fb6b2e8d095c243284d26790db24cb9e0",
+        "parent_closure": "93263959084f286265dd20e74ad76ae79f4576082752eb9100c8dda78e3ea9a8"
+      }
+    },
+    "focused_c2_diagnostic": {
+      "purpose": "DIAGNOSTIC_NOT_JOINED_ACCEPTANCE",
+      "status": "FAILED",
+      "completed_groups": 3,
+      "planned_groups": 5,
+      "counts_are_groups_not_tests": true,
+      "phase_accepted": false,
+      "completed_capabilities": [
+        "Fresh four-role CLI bootstrap",
+        "Fresh ordinary logical restore",
+        "Preclaim evaluator incarnation restart refuses the old pin"
+      ],
+      "failure": {
+        "code": "RESTORE_COHORT_UNKNOWN_BACKEND",
+        "boundary": "Final maintenance-claim verification during the proxied restore body, before DATA COMMIT acknowledgement-loss fault arm",
+        "actor_attribution": "REPRODUCED_FOCUSED_RUN_ONLY",
+        "observation": "Census tuples match previously witnessed tenant-admin access/writer clients whose client-end events preceded the later empty participant witness",
+        "source_guard_preserved": true,
+        "commit_ack_loss_control_reached": false
+      },
+      "diagnostic_integrity": {
+        "driver_observer_errors": 0,
+        "driver_dropped_records": 0,
+        "all_five_role_witnesses_complete": true,
+        "census_and_status_evidence_complete": true,
+        "preceding_witnesses_are_not_private_checker_state": true
+      },
+      "egress": {
+        "driver_forbidden_egress": 0,
+        "role_forbidden_egress": 0,
+        "role_guard_records": 5
+      },
+      "closure": {
+        "runtime_released": true,
+        "independent_physical_readback": true,
+        "owned_resources_absent": true,
+        "observed_process_births_absent": true,
+        "process_groups_and_descendants_absent": true,
+        "inventory_restored": true,
+        "selected_baseline_metadata_unchanged": true,
+        "private_control_sockets_absent": true
+      },
+      "sha256": {
+        "packet_index": "2e5d1b893bdcb6d4d8f28a4d4993c0e15a655554b53b8088b68d45f0e532be5f",
+        "driver_instrument": "186849e6078337aacdfa37e4f875f1b9d885f37c2fa3a951c335fe58b511acfd",
+        "parent_instrument": "8959a67b49b0cec75bee6eb45c65b1d465bcb3fe7487f40dc8e1ff11a1abb529",
+        "role_guard_instrument": "d01b6ad23809000fd38c78610aaa19cf6045d0abea23b7a69489e7e7e5341a65",
+        "source_anchor": "a6b7e08d0452beb2d913e437374a411345b61e91999dfe18a303f37cf0ffcf73",
+        "capture_index": "5d9c8d3b4b4f5324e1f8a401d28f581be6d5aa23431625b980ee88e380fd8dad",
+        "independent_physical_release": "df228e4ba33899217134f57995a26dd1ce01d0f93e2d40ed1d25af1d1cf5a8ac",
+        "functional_result": "8c85cdc59c7fc4d48137cecebcc7e429c899359f608ddd9198fc30c5c5a62cff",
+        "parent_closure": "4e662861d023c881282725d7fa85c6680d061f09057e53993177986bcaed94c4"
+      }
+    }
+  },
+  "interpretation": {
+    "do_not_sum_counts_across_runs": true,
+    "full_matrix_accepted": false,
+    "original_joined_attempt_actor_remains_unattributed": true,
+    "statistics_cache_explanation": {
+      "status": "READ_DERIVED_HYPOTHESIS",
+      "mechanism": "A transaction-local PostgreSQL statistics snapshot may disagree with newer participant connection witnesses",
+      "fresh_server_backend_absence_at_failure_observed": false,
+      "confirmed_by_this_capture": false
+    },
+    "requires_next_measurement": "Bounded source-owner PostgreSQL counterfactual before any source fix and coherent joined re-acceptance",
+    "performance_or_capacity_claim": false
+  },
+  "forensic_projection_sha256": {
+    "structured_projection": "551a991e35b10ca8c3af4bd24e8042ea1ea750425e11a76e2e13cd8ddb6c2ee6",
+    "causal_memo": "60759820d69ce9058a2f1d9ce49daae52d7dbf697c80496e368144ad8afaf9d6",
+    "projection_artifact_index": "83d9951e284ccca379b6cc2bbf4186337787660d47568fbc60d080154fdbf6ab"
+  },
+  "publication_scope": "Synthetic capability outcomes and portable hashes only; private runtime identifiers and raw evidence locations excluded",
+  "projection_activity": "Read retained bytes only; no tests, services or native experiments rerun"
+}
