@@ -91,12 +91,17 @@ From that application's root:
 ```bash
 cd deploy/multitenant
 ./demo.sh prepare
+docker compose --project-name nightscout-multitenant-demo --env-file .env -f compose.yaml pull postgres vault nginx
 node check-compose.js
 ./demo.sh build
 ./demo.sh bootstrap
 ./demo.sh up
 ./demo.sh status
 ```
+
+On a fresh host, the explicit pull fetches the digest-pinned public dependency
+images. Startup uses `--pull never`; bootstrap does not start nginx, so it cannot
+be relied on to fetch that image.
 
 These are the inspected source's commands, not commands executed by this
 documentation change. `check-compose.js` checks structural boundaries; it does
