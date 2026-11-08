@@ -65,12 +65,12 @@ sequenceDiagram
         Eval->>PG: Tenant-bound bounded current snapshot
         Eval->>PG: Persist evaluator input projection/checkpoint
         PG-->>Eval: Snapshot transaction COMMIT
-        Eval->>Eval: Compute plugins; publish eligible output revision
+        Eval->>Eval: Compute plugins, publish eligible output revision
     and Realtime recovery/refresh schedule
         RT->>PG: Tenant-bound bounded current snapshot
         RT->>PG: Persist realtime projection/checkpoint
         PG-->>RT: Snapshot transaction COMMIT
-        RT->>RT: Build browser frame; recheck current configuration
+        RT->>RT: Build browser frame, recheck current configuration
         RT-->>Browser: dataUpdate, full replacement (delta:false)
     end
 ```
@@ -115,7 +115,7 @@ sequenceDiagram
     Eval-->>Consumer: Current eligible output + configuration identity
     Consumer->>PG: Reconcile producer state and enqueue stable intents
     PG-->>Consumer: Durable request state committed
-    Consumer->>PG: Claim due attempt; commit dispatch token/deadline
+    Consumer->>PG: Claim due attempt, commit dispatch token/deadline
     Consumer->>Consumer: Recheck current eligibility and suppression
     Consumer->>RT: POST JSON /alarm over private UDS
     RT->>RT: Current tenant/socket authority checks
@@ -171,7 +171,7 @@ sequenceDiagram
     RT-->>Browser: Namespace-specific acknowledgement and admitted data
     Browser->>RT: Existing mutation or ack event
     RT->>API: /mutate (host + original tenant/credential/event envelope)
-    API->>API: Resolve tenant; authenticate transport AND client authority
+    API->>API: Resolve tenant, authenticate transport AND client authority
     API->>PG: Existing socket write handler / suppression transaction
     PG-->>API: Canonical operation completes
     API-->>RT: Existing callback arguments

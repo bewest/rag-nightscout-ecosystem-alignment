@@ -72,6 +72,20 @@ keeps `dist/mermaid.min.js` under `~/.cache/nightscout-alignment/mermaid/<versio
 the pin, change the URL in `overrides/main.html` and add the version's `npm view mermaid@<v>
 dist.integrity` to `INTEGRITY`.
 
+Publication also runs this pinned parser over `build/site-src/**/*.md`, after
+`site-check` and before touching the gh-pages worktree. That checks actual staged
+Markdown, including generated pages, and respects publication exclusions rather
+than making excluded archives a publication gate. Missing or empty staging refuses.
+Run that same check with
+`python3 tools/site/mermaid_check.py --published-dir build/site-src`.
+These are syntax checks; readable labels, crossings and viewport layout still
+need visual review.
+
+Publishing therefore needs Chrome/Chromium (`CHROME` can select its executable).
+The CI job's `ubuntu-24.04` image includes Google Chrome in its
+[browser inventory](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#browsers-and-drivers);
+local publishers use an installed browser. No browser is installed by the gate.
+
 ## Exclusions
 
 `tools/site/exclusions.yaml` lists glob patterns for tracked paths that must not
@@ -214,7 +228,8 @@ the page, move `source_commit` and push again.
 
 `make site-publish` refuses unless the working tree is clean, `HEAD` is on a
 remote branch (`git branch -r --contains HEAD`), `SITE_PSEUDONYM_KEY` is set
-and `make site-check` passes. It then fetches `origin/gh-pages`, copies
+and `make site-check` plus the staged-Markdown Mermaid syntax check pass. It then
+fetches `origin/gh-pages`, copies
 `build/site/` plus `.nojekyll` into the worktree `../rag-alignment-gh-pages`
 (created on first use), and commits it as one new commit whose parent is
 `origin/gh-pages`, with the source sha and build date in its message. It prints
