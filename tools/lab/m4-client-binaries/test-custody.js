@@ -3,14 +3,14 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const custody=require('./custody'),observer=require('./custody-observer');
 const owner='44444444-4444-4444-8444-444444444444';
-function fixture ({mutate,append,startMutate}={}){
+function fixture ({mutate,append,startMutate,defaultJournal=false}={}){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'m4-custody-source-'));const config=path.join(root,'docker');fs.mkdirSync(config);
  const kinds=['postgres','mongo','vault','client'],images=Object.fromEntries(kinds.map((k,i)=>[k,'sha256:'+String(i+1).repeat(64)]));
  const plan={version:1,profile:custody.PROFILE,status:'PARENT_BOUND',ownerUUID:owner,dockerExecutable:'/usr/bin/docker',dockerConfig:config,
   endpointProfile:'network-endpoint-stable-v1',baseline:{containers:[],volumes:[],networks:[]},images};
  const records=[],calls=[],containers=new Map(),volumes=new Map();let serial=0;
  const image=kind=>({Id:images[kind],Config:{Env:['PATH=/bin'],Labels:{},Cmd:[kind==='postgres'?'postgres':kind==='mongo'?'mongod':kind==='vault'?'server':'node'],Entrypoint:['entry'],Volumes:kind==='postgres'?{'/data':{}}:{},User:'',WorkingDir:''}});
- const transport=(args)=>{
+ const transport=(args,options={})=>{
   calls.push(args);const ok=value=>({status:0,stdout:typeof value==='string'?value:JSON.stringify(value),stderr:''});
   if(args[0]==='image')return ok([image(kinds.find(k=>images[k]===args.at(-1)))]);
   if(args[0]==='create'){
@@ -21,7 +21,7 @@ function fixture ({mutate,append,startMutate}={}){
     Mounts:[],NetworkSettings:{Ports:{},Networks:{},SandboxID:'',SandboxKey:''},State:{Status:'created',Running:false,StartedAt:'0001-',FinishedAt:'0001-',ExitCode:0,Error:''}};
    const env=new Map([['PATH','/bin']]);for(let i=1;i<at;i++){
     if(args[i]==='--label'){const [k,v]=args[++i].split('=');row.Config.Labels[k]=v;}
-    if(args[i]==='-e'){const k=args[++i];env.set(k,'synthetic-secret');}
+    if(args[i]==='-e'){const k=args[++i];env.set(k,options.env[k]);}
     if(args[i]==='-p'){const port=args[++i].split(':').at(-1)+'/tcp';row.HostConfig.PortBindings[port]=[{HostIp:'127.0.0.1',HostPort:''}];}
     if(args[i]==='--user')row.Config.User=args[++i];if(args[i]==='--workdir')row.Config.WorkingDir=args[++i];
     if(args[i]==='--add-host')row.HostConfig.ExtraHosts.push(args[++i]);
@@ -32,18 +32,20 @@ function fixture ({mutate,append,startMutate}={}){
    containers.set(id,row);if(mutate)mutate(row,args);return ok(id);
   }
   if(args[0]==='inspect'){
-   const ids=args[1]==='--type'?[args[3]]:args.slice(1);if(ids.some(id=>!containers.has(id)))return {status:1,stdout:'',stderr:'No such container'};
+   const ids=args[1]==='--type'?args.slice(3):args.slice(1);if(ids.some(id=>!containers.has(id)))return {status:1,stdout:'',stderr:'No such container'};
    return ok(ids.map(id=>containers.get(id)));
   }
   if(args[0]==='ps')return ok(args.includes('--format')?[...containers].map(([id,row])=>id+' '+row.Name.slice(1)).join('\n'):[...containers.keys()].join('\n'));
   if(args[0]==='start'){const row=containers.get(args[1]);row.HostConfig.OomKillDisable=null;row.State.Running=true;row.State.StartedAt='2026-start';if(startMutate)startMutate(row);return ok(args[1]);}
   if(args[0]==='rm'){assert.equal(args[1],'--force');containers.delete(args[2]);return ok(args[2]);}
+  if(args[0]==='network' && args[1]==='ls')return ok('');
+  if(args[0]==='volume' && args[1]==='ls')return ok([...volumes.keys()].join('\n'));
   if(args[0]==='volume' && args[1]==='inspect')return volumes.has(args[2])?ok([volumes.get(args[2])]):{status:1,stdout:'',stderr:'No such volume'};
   if(args[0]==='volume' && args[1]==='rm'){volumes.delete(args[2]);return ok(args[2]);}
   throw new Error('Unexpected recording Docker command');
  };
- const api=custody.create({plan,directory:path.join(root,'custody'),invoke:transport,append:entry=>{if(append)append(entry);records.push(structuredClone(entry));
-    if(entry.type==='created-identified'){const ack=observer.admitCreated(entry,containers.get(entry.value.id),plan.baseline);fs.writeFileSync(path.join(root,'custody','receipts',entry.value.id+'.json'),JSON.stringify(ack),{mode:0o600});}}});api.initialize();
+ const api=custody.create({plan,directory:path.join(root,'custody'),invoke:transport,...(defaultJournal?{}:{append:entry=>{if(append)append(entry);records.push(structuredClone(entry));
+    if(entry.type==='created-identified'){const ack=observer.admitCreated(entry,containers.get(entry.value.id),plan.baseline);fs.writeFileSync(path.join(root,'custody','receipts',entry.value.id+'.json'),JSON.stringify(ack),{mode:0o600});}}})});api.initialize();
  return {api,plan,records,calls,containers,volumes,root,invoke:transport,close:()=>fs.rmSync(root,{recursive:true,force:true})};
 }
 const serviceSpec={ports:['5432/tcp'],env:{POSTGRES_PASSWORD:'synthetic-secret'}};
@@ -167,5 +169,25 @@ test('interrupted owned first start recovery requires the saved intent and durab
  const f=fixture();try{const id=f.api.stage('client',{});f.api.start(id,true);const row=f.containers.get(id);row.HostConfig.OomKillDisable=null;row.State.StartedAt='2026-actual-start';
  const directory=path.join(f.root,'interrupted-recovery');fs.mkdirSync(directory);fs.writeFileSync(path.join(directory,'custody.jsonl'),f.records.map(r=>JSON.stringify(r)).join('\n')+'\n');
  assert.equal(custody.recover({plan:f.plan,directory,invoke:f.invoke})[0].id,id);const recovered=fs.readFileSync(path.join(directory,'custody.jsonl'),'utf8').trim().split('\n').map(JSON.parse);assert(recovered.some(r=>r.type==='first-start'));assert(recovered.findIndex(r=>r.type==='first-start')<recovered.findIndex(r=>r.type==='remove-intent'));
+ }finally{f.close();}
+});
+test('actual persisted created/first-start/observer/recovery/baseline outputs never contain owned Config.Env sentinels',()=>{
+ const sentinel='SYNTHETIC_OWNED_ENV_SENTINEL_20261107',f=fixture({defaultJournal:true});
+ try{
+  const directory=path.join(f.root,'custody'),read=args=>{const r=f.invoke(args);assert.equal(r.status,0);return r.stdout;},independent=observer.observe({plan:f.plan,directory,invoke:read});
+  for(const [kind,key] of [['postgres','POSTGRES_PASSWORD'],['vault','VAULT_DEV_ROOT_TOKEN_ID']]){const id=f.api.stage(kind,{env:{[key]:sentinel}});independent.scan();f.api.start(id);}
+  const client=f.api.stage('client',{env:{API_SECRET:sentinel}});independent.scan();f.api.start(client,true);
+  // Simulate death after actual engine first start but before the original
+  // caller can persist its post-start receipt. Recovery uses the real journal.
+  const row=f.containers.get(client);row.HostConfig.OomKillDisable=null;row.State.StartedAt='2026-observed-start';
+  const baseline=observer.baselineSnapshot(read);fs.writeFileSync(path.join(directory,'saved-baseline.json'),JSON.stringify(baseline));
+  custody.recover({plan:f.plan,directory,invoke:f.invoke});assert.equal(f.containers.size,0);assert.equal(f.volumes.size,0);
+  const files=[];function walk(dir){for(const name of fs.readdirSync(dir)){const file=path.join(dir,name);if(fs.lstatSync(file).isDirectory())walk(file);else files.push(file);}}walk(directory);
+  assert(files.some(file=>file.endsWith('observer.jsonl')));assert(files.some(file=>file.includes('/receipts/')));
+  const text=files.map(file=>fs.readFileSync(file,'utf8')).join('\n');
+  const capture=process.env.NS_M4_PERSISTED_ENV_CAPTURE;if(capture){assert(path.isAbsolute(capture));fs.mkdirSync(capture,{mode:0o700});fs.cpSync(directory,path.join(capture,'actual-persisted'),{recursive:true});fs.writeFileSync(path.join(capture,'proof.json'),JSON.stringify({scope:'actual M4 fsync journal/observer/recovery/baseline caller, recording Docker and synthetic Env only',files:files.map(file=>path.relative(directory,file)),sentinelFound:text.includes(sentinel),rawEnvArrayFound:text.includes('"Env"')},null,2)+'\n',{mode:0o600});}
+  assert(!text.includes(sentinel),'M4_PERSISTED_OWNED_ENV_LEAK');assert(!text.includes('"Env"'),'M4_PERSISTED_RAW_ENV_ARRAY');
+  const events=fs.readFileSync(path.join(directory,'custody.jsonl'),'utf8').trim().split('\n').map(JSON.parse);assert.equal(events.filter(e=>e.type==='first-start').length,3);
+  for(const e of events.filter(e=>e.type==='first-start'))for(const identity of [e.value.before,e.value.after,e.value.projected])assert(/^[a-f0-9]{64}$/.test(identity.config) && /^[a-f0-9]{64}$/.test(identity.hostConfig),'M4_PERSISTED_CONFIG_DIGEST_REQUIRED');
  }finally{f.close();}
 });
