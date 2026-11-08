@@ -5486,8 +5486,8 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>36fc998a8</code>.</em></p>
-<p><em>Living contributor-facing decision index, 2026-11-07. Read this before older
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Living contributor-facing decision index, 2026-11-08. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
 records no new application measurement or promotion.</em></p>
@@ -5502,9 +5502,15 @@ for source-identical evidence instead of repeating native cases for documentatio
 changes. New source behavior still needs affected checks and an appropriate joined
 verification. Do not silently add later provider, capacity or multi-node work to
 the satisfied M5 functional bar.</p>
-<p>M6 has bounded SQL operations evidence. Continue shared human identity/session
-contracts, operator-assisted ownership, full suspension and identity-bearing
-same-ID restore, key destruction and workload-based operating limits. The
+<p>M6 now includes <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">accepted native tenant-local restore/restart and cold Compose
+reference evidence</a>.
+The published ed2 candidate closes that bounded clinical restore capability;
+restoring or cloning credentials/identity is a separate contract. Shared human
+identity/session and owner source has progressed locally, while signed native
+DB/Vault/HTTPS/browser acceptance remains <strong>UNMEASURED</strong> in the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release update</a>.
+Continue that acceptance, operator-assisted ownership, retained-key destruction
+and workload-based operating limits. The
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
 owns assignments; the <a href="multitenant-delivery-roadmap.html#m5m6-acceptance-families">roadmap acceptance families</a>
 own observable completion. Prefer a minimal working base with explicit later
@@ -5528,7 +5534,7 @@ enhancements; that preference grants no production permission or criterion waive
 </tr>
 <tr>
 <td>OIDC provider outage</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">Existing valid access until existing expiry</a>, with current local authority/session checks, no new login or renewal and unchanged sensitive-action freshness. Equivalent optional single/multitenant behavior; provider-only revocation may remain unknown until expiry/recovery. Implementation and outage acceptance remain open.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">Existing valid access until existing expiry</a>, with current local authority/session checks, no new login or renewal and unchanged sensitive-action freshness. Equivalent optional single/multitenant behavior; provider-only revocation may remain unknown until expiry/recovery. Local implementation exists; signed native outage acceptance remains UNMEASURED.</td>
 </tr>
 <tr>
 <td>Alarm suppression scope and restart</td>
@@ -5548,7 +5554,7 @@ enhancements; that preference grants no production permission or criterion waive
 </tr>
 <tr>
 <td>Same-ID restore history</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-history-forward-correction">Publish ordinary forward updates and deletions</a>, preserving issued history floors and client convergence. Exact physical backup fidelity remains separate. Initial reconciliation covers identities retained live or in the artifact; prior hard purges absent both retain the existing history limitation. Actual commit publication and client acceptance remain open.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-history-forward-correction">Publish ordinary forward updates and deletions</a>, preserving issued history floors and client convergence. Exact physical backup fidelity remains separate. Initial reconciliation covers identities retained live or in the artifact; prior hard purges absent both retain the existing history limitation. Published ed2 cold Compose and client acceptance now cover the bounded forward-history behavior; see the operation-window evidence above.</td>
 </tr>
 <tr>
 <td>Restore versus cloning</td>
@@ -5560,7 +5566,7 @@ enhancements; that preference grants no production permission or criterion waive
 </tr>
 <tr>
 <td>Tenant-local restore and ordering</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-insertion-semantics">Per-tenant/collection ordering only; pursue tenant-local insertion state</a>. Preserve other tenants' current state and supported client ordering. <a href="../../../reports/tenancy/tenant-local-insertion-2026-11-07/index.html">Standalone native proof</a> passes its bounded SQL bar; migration-runner/readiness/lifecycle admission remains open. No global restore pause selected.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-insertion-semantics">Per-tenant/collection ordering only; pursue tenant-local insertion state</a>. Preserve other tenants' current state and supported client ordering. <a href="../../../reports/tenancy/tenant-local-insertion-2026-11-07/index.html">Standalone native proof</a> retains its early SQL scope; later c23 native and ed2 packaged restore evidence covers the admitted fixed-cohort reference. No global restore pause selected.</td>
 </tr>
 <tr>
 <td>First-preview owner surface</td>
@@ -5572,11 +5578,11 @@ enhancements; that preference grants no production permission or criterion waive
 </tr>
 <tr>
 <td>M6 human session effects</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-idle-scope-management-only">Idle/absolute lifetimes scoped to management sessions only; always-on displays unchanged</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-logout-local-first">local-first logout, provider optional, signal-less providers admitted with disclosure</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-renewal-fenced">fenced idempotent renewal</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-transport-cookie-default">both browser transports, HttpOnly cookie default, headless bearer unchanged</a>. Login/session implementation and acceptance remain open.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-idle-scope-management-only">Idle/absolute lifetimes scoped to management sessions only; always-on displays unchanged</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-logout-local-first">local-first logout, provider optional, signal-less providers admitted with disclosure</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-renewal-fenced">fenced idempotent renewal</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-transport-cookie-default">both browser transports, HttpOnly cookie default, headless bearer unchanged</a>. Local signed source exists; actual joined native/browser/provider acceptance remains UNMEASURED.</td>
 </tr>
 <tr>
 <td>M6 deployment and trust</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-ingress-peer-list-trust">Peer-list ingress trust, one list for tenant selection and client IP</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-secrets-ladder-vault-all-stages">Vault Transit at every stage, service-login adapter before production</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">generic OIDC adapter, Authentik intended reference subject to the Kratos proof</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">admission by trust record plus live probes</a>. Live edge, HTTPS Vault, provider proof and production deployment remain UNMEASURED.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-ingress-peer-list-trust">Peer-list ingress trust, one list for tenant selection and client IP</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-secrets-ladder-vault-all-stages">Vault Transit at every stage, service-login adapter before production</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">generic OIDC adapter, Authentik intended reference subject to the Kratos proof</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">admission by trust record plus live probes</a>. Synthetic Compose edge/TLS Vault is measured at the reference scope; provider/service-login proof and production deployment remain UNMEASURED.</td>
 </tr>
 <tr>
 <td>Legacy authority and management split</td>
@@ -5600,7 +5606,7 @@ The first-preview owner surface (settings, thresholds, credentials, integrations
 The first-preview external delivery channel (no push provider; Nightscout-to-Nightscout sync) is settled.
 M6 human session effects (idle scope, logout, renewal, transport) are settled.
 M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, generic OIDC adapter with Authentik as intended reference, probe-plus-record admission) are settled.</p>
-<p>No human-policy topic is open as of 2026-11-07. A new topic is added here as a row
+<p>The recorded policy index has no unresolved human-policy topic as of this review; implementation gaps and operating-limit proposals below remain open. A new topic is added here as a row
 (topic, decision needed, work that need not wait) when a packet is ready.</p>
 <p>The <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner lifecycle packet</a>
 retains source surveys and alternatives; its recommended grace periods, invitation

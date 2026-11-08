@@ -5574,12 +5574,11 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>36fc998a8</code>.</em></p>
-<p><em>Contributor-facing living plan. Consolidated 2026-11-06 from the delivery journal
-and the adopted release decisions, without a new application measurement or
-milestone promotion. This page owns delivery boundaries and promotion criteria.
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Contributor-facing living plan. Reconciled 2026-11-08 to the published reference and adopted release decisions,
+without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5729,7 +5728,9 @@ and synchronization do not migrate credential authority. Cloning implementation
 and native acceptance remain UNMEASURED.</p>
 <h2 id="milestones-and-continuous-integration">Milestones and continuous integration<a class="headerlink" href="#milestones-and-continuous-integration" title="Permanent link">&para;</a></h2>
 <p><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a>
-records the latest criterion verdicts; the <a href="multitenant-delivery-dashboard.html">dashboard</a>
+records M0–M4; R73 records functional M5. The later
+<a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window family</a>
+records restore/restart and packaged reference acceptance; the <a href="multitenant-delivery-dashboard.html">dashboard</a>
 displays milestone claims. The criteria below retain their adopted scope.</p>
 <p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">release promotion decisions</a>
 fix the scope of these bars. In particular, M2 is its table cell; human
@@ -5809,9 +5810,9 @@ implementation and destroy/after-window refusal evidence remain separate.</p>
 <p><a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a> accepts the functional M5 reference on one host and records its final
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
-observations, not a fresh current-HEAD campaign. M6 remains blocked despite its
-bounded SQL operations proof. Publication, remote CI and production/default
-admission are separate claims.</p>
+observations, not a fresh current-HEAD campaign. M6 remains blocked. The later accepted ed2 reference is published on draft
+PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
+is distinct from dev merge, release and production/default admission.</p>
 <table>
 <thead>
 <tr>
@@ -5830,13 +5831,23 @@ admission are separate claims.</p>
 </tr>
 <tr>
 <td><a href="../../../reports/tenancy/m6-ops-2026-11-07/postgres/index.html">M6 SQL operations</a></td>
-<td>Populated catalogue/artifact fidelity, supported upgrade/rollback, interruption and deletion ceremony under fixture quiescence. Identity-bearing same-ID tenant restore remains unsupported. Whole-deployment rollback includes other tenants; this is not a single-tenant restore or a serving/DDL/cache blackout.</td>
+<td>Populated catalogue/artifact fidelity, supported upgrade/rollback, interruption and deletion ceremony under fixture quiescence. This earlier whole-deployment restore proof does not establish tenant-local restore; later evidence is listed separately below. Whole-deployment rollback includes other tenants.</td>
+</tr>
+<tr>
+<td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">Native tenant-local restore and restart</a></td>
+<td>c23 fixed-cohort separate-role controller proof: restore with forward history, rollback/uncertainty refusal, B continuity and fresh shared-role restart while A remains suspended. Direct SQL writers and multi-host coordination remain outside this cooperative protocol.</td>
+</tr>
+<tr>
+<td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">Packaged Compose and clients</a></td>
+<td>ed2 exact image/cold UI/main+alarm sockets, tenant-local restore/client convergence, actual pinned clients and full nonbrowser acceptance. Browser/native c23 and enabled corpus39f4 retain their own attribution. This answers feasibility and bounded compatibility questions; capacity, HA and production admission remain open.</td>
 </tr>
 </tbody>
 </table>
-<p>Shared OIDC/session effects, operator-assisted ownership, full suspension,
+<p>Shared OIDC/session effects, operator-assisted ownership, full lifecycle,
 retained-key destruction/after-window refusal and measured operating budgets
-remain M6 work. The <a href="m5-m6-decision-list.html">current decision index</a> separates
+remain M6 work. Local OIDC/owner source is not native acceptance; the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> records
+the next candidate and ownership. The <a href="m5-m6-decision-list.html">current decision index</a> separates
 human choices from implementation and measurement work.</p>
 <h2 id="m5m6-acceptance-families">M5/M6 acceptance families<a class="headerlink" href="#m5m6-acceptance-families" title="Permanent link">&para;</a></h2>
 <p>These refine the milestone cells above into observable results. They are required

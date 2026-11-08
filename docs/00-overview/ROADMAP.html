@@ -2412,7 +2412,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>ca7f85b0f</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2734,11 +2734,15 @@ for architecture dependencies and parallel lanes. The generated table below give
 queue dependencies; <code>make queue-status</code> measures its claimed states. Release readiness
 is recorded separately in the
 <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.</p>
-<p>Single-tenant compatibility, tenant isolation, current authority, realtime and evaluator
-behavior each retain their acceptance gates in that roadmap. Alarms under
-<code>TENANCY_MODE=multi</code> remain off until <code>A7A-GATE</code> proves delivery through the real
-producer path to the correct tenant, with snooze state surviving a restart and
-process change (<a href="../30-design/tenancy/multitenancy-decisions.html#5-runtime-isolation-and-clinical-acceptance">execution plan §7a</a>).</p>
+<p>The <a href="../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">published one-host reference</a>
+now includes cold Compose/UI/restore/client acceptance; native shared-role restart
+and the functional M5 runtime retain their exact source scope. This evidence can
+inform component and recovery decisions. M6 identity/owner admission, operating
+bounds and deployment trust remain open; multi-host failover has no acceptance.
+Use the <a href="../30-design/tenancy/deployment-and-rig-testing.html">deployment models and fault domains</a>
+to distinguish these boundaries. Tenant-local suppression and controlled notification
+handoff are measured; live provider/device delivery remains separately gated by
+<a href="../30-design/tenancy/multitenancy-decisions.html#5-runtime-isolation-and-clinical-acceptance">runtime and clinical acceptance</a>.</p>
 <!-- BEGIN GENERATED: road-tenancy -->
 
 <table>

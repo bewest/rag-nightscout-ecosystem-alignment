@@ -2302,7 +2302,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>ca7f85b0f</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2446,7 +2446,11 @@ measures the queue's claims.</p>
 <p><a href="../30-design/remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a>
 retains the M0–M4 baseline; <a href="../30-design/remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a>
 accepts the functional M5 reference on one host at its recorded local source.
-M6 remains blocked. The <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
+The <a href="../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">published operation-window reference</a>
+adds bounded tenant-local restore, shared-role restart with another tenant suspended,
+and cold Compose/UI/client acceptance. M6 remains blocked; local shared OIDC/owner
+source still needs signed native acceptance. The <a href="../30-design/tenancy/deployment-and-rig-testing.html">deployment guide</a>
+explains deployment models and shared fault domains. The <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 own the current published head and remote verification for draft PR #8898.
 Local acceptance does not imply remote publication, dev merge or operator release. The
 <a href="../30-design/tenancy/single-and-multitenant-architecture.html">architecture comparison</a>

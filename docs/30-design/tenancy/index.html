@@ -5312,6 +5312,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-can-inform-a-decision-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What can inform a decision now
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#start-with-the-task" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5384,11 +5395,20 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>ca7f85b0f</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
 <p><em>Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the <a href="../../archive/tenancy/index.html">tenancy archive</a>; dates in a
-filename do not establish currency. Consolidated 2026-11-06.</em></p>
+filename do not establish currency. Reconciled 2026-11-08 to the published draft preview and retained acceptance records.</em></p>
+<h2 id="what-can-inform-a-decision-now">What can inform a decision now<a class="headerlink" href="#what-can-inform-a-decision-now" title="Permanent link">&para;</a></h2>
+<p>Start with the <a href="deployment-and-rig-testing.html">deployment models and fault domains</a>
+and <a href="single-and-multitenant-architecture.html">architecture comparison</a>. The published
+one-host reference answers bounded component, tenant isolation and recovery questions.
+The dashboard distinguishes accepted M0–M5 criteria from incomplete M6 admission;
+the platform map is a dependency guide, not a production readiness score.</p>
+<p>Use the <a href="m5-m6-decision-list.html">current decision list</a> to separate already adopted
+policy from implementation and evidence still needed. Keep historical journals
+for rationale and failed predictions; their “next” does not assign current work.</p>
 <h2 id="start-with-the-task">Start with the task<a class="headerlink" href="#start-with-the-task" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -5442,7 +5462,7 @@ filename do not establish currency. Consolidated 2026-11-06.</em></p>
 <tr>
 <td>Separate service processes and restore coordination</td>
 <td><a href="single-and-multitenant-architecture.html#current-service-composition-and-restore-integration-2026-11-07">Current composition diagram</a></td>
-<td>Fixed cross-process cohort and source-attributed restore evidence; newer independent-startup acceptance remains pending.</td>
+<td>Fixed cross-process cohort and source-attributed restore evidence; native tenant-local shared-role restart is accepted on c23; cold Compose restore is accepted on ed2.</td>
 </tr>
 <tr>
 <td>Deploy a synthetic prototype or connect a rig</td>
@@ -5527,8 +5547,7 @@ schedule for work state.</p>
 <p>The guides above provide the requested <strong>MT-DOC-DEPLOY</strong>, <strong>MT-DOC-REALTIME</strong> and
 <strong>MT-DOC-SQL</strong> documentation. Their source inspection, diagrams and structural
 checks are separate from runtime acceptance. Each links executed evidence at its
-actual source; pending Compose, restart, rig and capacity experiments remain
-explicit. The queue owns documentation status, and release records own accepted
+actual source; accepted cold Compose and restart proofs retain their executed sources; wider rig, identity and capacity experiments remain explicit. The queue owns documentation status, and release records own accepted
 application behavior.</p>
 <h2 id="historical-evidence-and-earlier-proposals">Historical evidence and earlier proposals<a class="headerlink" href="#historical-evidence-and-earlier-proposals" title="Permanent link">&para;</a></h2>
 <p>These retain distinct evidence or alternatives; they are not current work instructions.</p>

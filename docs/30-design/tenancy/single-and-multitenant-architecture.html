@@ -3368,6 +3368,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-the-proofs-can-inform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the proofs can inform
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#current-service-composition-and-restore-integration-2026-11-07" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3452,10 +3463,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#preview-versus-current-singlemongo-behavior" class="md-nav__link">
+  <a href="#current-bounded-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Preview versus current single/Mongo behavior
+        Current bounded compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retained-earlier-comparisons-r40r64" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retained earlier comparisons: R40–R64
       
     </span>
   </a>
@@ -5492,6 +5514,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-the-proofs-can-inform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the proofs can inform
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#current-service-composition-and-restore-integration-2026-11-07" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5576,10 +5609,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#preview-versus-current-singlemongo-behavior" class="md-nav__link">
+  <a href="#current-bounded-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Preview versus current single/Mongo behavior
+        Current bounded compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retained-earlier-comparisons-r40r64" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retained earlier comparisons: R40–R64
       
     </span>
   </a>
@@ -5642,36 +5686,90 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>ca7f85b0f</code>.</em></p>
-<p><em>Contributor-facing living explanation. Source inspection is </em><em>read-derived</em><em> at
-cgm-remote-monitor <code>83582e876dd193f4448f44c28e379fb5464a26c7</code>, the published head
-of draft PR #8898 on 2026-11-06, based on dev <code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code>
-(172 commits and 245 files over dev: 193 new, 52 modified, none deleted; read
-from <code>git</code> at the re-pin). Every source link below was re-verified to resolve at
-that head; the shared-code line anchors were re-read there. Test figures below are
-</em><em>recorded reproductions</em><em>, not new runs for this explanation. Current delivery
-and milestone claims live in the <a href="multitenant-delivery-dashboard.html">delivery dashboard</a>.
-<a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>
-accepts <code>83582e87</code>; <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>
-verifies its publication and remote CI. The earlier
-<a href="../remedial/rc-16.0.0-integration-record.html#r40---derived-rest-and-pinned-pattern-cumulative-acceptance-on-ded254b9-2026-11-04">R40</a>
-preview acceptance on <code>ded254b9</code>, <a href="../remedial/rc-16.0.0-integration-record.html#r41---subject-administration-and-cross-compatibility-on-94c57f1f-2026-11-05">R41</a>,
-<a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
-and independent <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>
-are retained as history where this page cites them. PR #8898 is open/draft, not
-merged or released.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Contributor-facing living explanation, groomed 2026-11-08. The published
+candidate is cgm-remote-monitor <code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>,
+recorded in the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
+PR #8898 remains open/draft, not merged or released. Architecture interpretation
+is </em><em>read-derived</em><em>; linked runtime results are </em><em>recorded reproductions</em><em>, not
+new executions for this document. The retained shared-code/module survey is
+explicitly pinned to <code>83582e87</code>; it does not describe every file in the current
+candidate. Current delivery and milestone claims live in the
+<a href="multitenant-delivery-dashboard.html">delivery dashboard</a>.</em></p>
+<h2 id="what-the-proofs-can-inform">What the proofs can inform<a class="headerlink" href="#what-the-proofs-can-inform" title="Permanent link">&para;</a></h2>
+<p>The useful result is an executable one-host multitenant reference with separate
+services and tenant-local restore. It gives current architecture decisions a
+measured basis. Production qualification and additional deployment models still
+need their own evidence; an accepted component is not a completed platform track.</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Recorded basis</th>
+<th>Useful for decisions now</th>
+<th>Remaining admission</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Separate API/realtime/evaluator/admin and packaged UI</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
+<td>One-host role composition, existing client/browser routes and private control channels work together.</td>
+<td>Multi-host discovery, replicas/failover, production ingress/service identity and operating limits.</td>
+</tr>
+<tr>
+<td>Tenant-local restore and shared-role restart</td>
+<td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native acceptance</a>, plus ed2 packaged ordinary restore above</td>
+<td>A can stay suspended while B progresses; forward correction/deletion history allows tested clients to converge without a global pause.</td>
+<td>Automatic orphan clearance, supported suspended-restore resume, arbitrary-writer exclusion and production recovery bounds.</td>
+</tr>
+<tr>
+<td>Functional durable evaluator/realtime reference</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a></td>
+<td>Bounded snapshots, durable suppression and stable notification-intent identities support the one-host runtime direction.</td>
+<td>Provider/device delivery, distributed producer ownership and capacity/freshness/egress budgets.</td>
+</tr>
+<tr>
+<td>Existing client compatibility</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
+<td>Use the admitted API/history/credential shapes and the named clients' stored outcomes.</td>
+<td>Wider/mobile clients, other query shapes and all-client acceptance.</td>
+</tr>
+<tr>
+<td>Derived calculation reuse</td>
+<td><a href="../../../reports/tenancy/derived-output-2026-11-07/index.html">f0 characterization</a></td>
+<td>Selected evaluator/API current properties agree; time, settings and input identity matter. Realtime raw frames remain a separate product.</td>
+<td>A shared immutable-result interface, full authorization/clinical equivalence and publication-service ownership/freshness. No service is selected by the characterization.</td>
+</tr>
+<tr>
+<td>Nonresident single-site execution or another backend</td>
+<td>Independently attributed <a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a> and later profile records in the platform plan</td>
+<td>Inform seam and acquisition research within their measured caller policies.</td>
+<td>Separate profile/backend admission; neither a computed-single default nor single-site PostgreSQL, multitenant MongoDB or SQLite/Celld follows.</td>
+</tr>
+</tbody>
+</table>
+<p>A prototype answers a bounded feasibility or semantics question. An integrated
+functional reference proves cooperating components on a named topology. A
+production server additionally needs its actual trust and identity setup,
+credential/lifecycle recovery, selected workload limits and operator procedures
+accepted together. Merge, release and default enablement are separate decisions.
+The <a href="deployment-and-rig-testing.html#deployment-choices-and-fault-domains">deployment/fault-domain guide</a>
+compares the independent tenancy, backend, computation, process and host axes.</p>
 <h2 id="current-service-composition-and-restore-integration-2026-11-07">Current service composition and restore integration (2026-11-07)<a class="headerlink" href="#current-service-composition-and-restore-integration-2026-11-07" title="Permanent link">&para;</a></h2>
-<p>This section describes the separate-service implementation by source inspection
-at <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>; the older survey below remains
-pinned to <code>83582e87</code>. <a href="../remedial/rc-16.0.0-integration-record.html#r73---durable-runtime-and-bounded-operations-batch-2026-11-07">R73</a>
-records runtime composition on its own source. The
-<a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/index.html">b029 native matrix</a>
-accepts 17 separate-process restore criteria on <code>b029f5d8</code>, not the newer startup
-implementation, Compose/browser deployment or whole M6. Pinned source links in
-the detailed guides require publication of the local <code>151de024</code> candidate.
-The maintainer <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">reaffirmed separate service processes</a>,
-including containers with shared private sockets where appropriate. Compose and
-jsonnet are packaging options; no generator is selected.</p>
+<p>The separate-service structure was inspected at
+<code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>; later executed behavior is attributed
+in the <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">acceptance family</a>.
+The c23 native matrix accepts the separate-process restore and tenant-local
+shared-role restart criteria. The ed2 cold image accepts UI/API/socket and
+ordinary restore/history/B-continuity; final ed2 full and pinned-client acceptance
+also passed. Browser regression remains attributed to c23, and enabled-corpus
+acceptance to 39f4. Input-equivalence records explain source deltas without
+transferring campaign credit. The older b029 matrix retains its narrower scope.</p>
+<p>The maintainer <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">reaffirmed separate service processes</a>,
+including containers with shared private sockets where appropriate. Compose is
+implemented and functionally accepted for the one-host synthetic preview; a
+Jsonnet generator remains an optional packaging tool.</p>
 <table>
 <thead>
 <tr>
@@ -5733,13 +5831,15 @@ endpoints. A PostgreSQL advisory lock protects
 participating code. A database-enforced fence would reject bypassing operations
 in PostgreSQL itself. Process separation and that stronger fence are separate
 questions; neither a process list nor a configuration assertion proves exclusive
-credential custody. Native tests must exercise actual separate processes,
-restart/lost acknowledgement and late-connection behavior under the declared
-trust boundary. The
+credential custody. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">native matrix</a>
+exercises the actual separate processes and uncertainty/restart cases under its
+declared fixed trusted-cohort boundary. Arbitrary direct SQL actors remain outside
+that proof. The
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-startup-admission">tenant-local startup requirement</a>
 prevents a suspended tenant from blocking another tenant's shared-role restart.
-Its implementation is source-checked at <code>151de024</code>; native restart acceptance is
-pending. It does not clear claims or provide automatic uncertain-outcome recovery.</p>
+The c23 native acceptance reproduces fresh API/realtime/evaluator startup and B
+operation while A remains suspended in the tested failure scenarios. It does not
+clear claims or provide automatic uncertain-outcome recovery.</p>
 <p>See <a href="deployment-and-rig-testing.html">deployment/rig scenarios</a>,
 <a href="evaluator-realtime-communication.html">evaluator/realtime communication</a> and
 <a href="sql-and-migration-architecture.html">SQL/migration architecture</a> for runnable
@@ -5789,9 +5889,10 @@ remain separate. Arrows show request/data flow, not milestone completion.</p>
   class SAPI,SRules,MAPI,MRules shared</code></pre>
 <p>The default single process retains its resident runtime. The preview builds
 request-local frames using the shipping loader/cache and property setters for
-v2 properties, ddata/as-of and summary. It does <strong>not</strong> thereby enable the
-multitenant evaluator, realtime or notification lifecycle, and it is not proof
-that the separate ST-VIEWS execution-profile prototype has been wired.</p>
+v2 properties, ddata/as-of and summary. Request-local
+calculation alone does not enable an evaluator or notification lifecycle. Those
+roles now have their separately accepted one-host runtime reference; this does
+not integrate the independent ST-VIEWS single-site execution-profile prototype.</p>
 <p>The preview defaults to API3 entries. Explicit domain configuration, prepared
 catalogues and safe database roles are required for the wider implemented
 surface. API3 covers entries, treatments, devicestatus, profile, food and settings;
@@ -5802,11 +5903,11 @@ receipts/egress and assistants are unfinished REST work.</p>
 for exact admission/configuration, and the <a href="multitenant-rest-api-delivery-plan-2026-11-04.html">REST inventory</a>
 for the full target surface.</p>
 <h2 id="what-actually-changed-in-shared-code">What actually changed in shared code<a class="headerlink" href="#what-actually-changed-in-shared-code" title="Permanent link">&para;</a></h2>
-<p>These are <strong>read-derived</strong> source findings, pinned to <code>83582e87</code> (first read at
+<p>This retained survey records <strong>read-derived</strong> source findings at <code>83582e87</code> (first read at
 <code>ded254b9</code>; the anchors were re-read at the new head, where only the write-clock
 entry point moved, from line 62 to 64). They refute a literal zero-code-change
-claim without alleging a single-tenant defect. Across the whole PR, 52 existing
-files are modified: the hooks below, the legacy v1 routers for activity,
+claim without alleging a single-tenant defect. At that historical checkpoint, 52 existing
+files were modified: the hooks below, the legacy v1 routers for activity,
 devicestatus, food, profile, status and treatments, the API3 generic operations
 and specific status/version/lastModified handlers, <code>lib/api2</code>, the serve roles,
 the CLI, <code>bin/nightscout.js</code>, the write-intent module, <code>package.json</code> (adds <code>pg</code>
@@ -5856,8 +5957,9 @@ registry.</p>
 <p>This is dependency injection plus explicit tenant/runtime composition. It is not
 one global backend flag that turns every existing Nightscout feature multitenant.</p>
 <h3 id="what-the-preview-holds-at-83582e87">What the preview holds at <code>83582e87</code><a class="headerlink" href="#what-the-preview-holds-at-83582e87" title="Permanent link">&para;</a></h3>
-<p>The 193 new files are dormant, opt-in modules. Each directory carries its own
-README in the PR; the alignment contract that governs it is named beside it.</p>
+<p>This historical checkpoint had 193 new opt-in files. Its source/module inventory
+is retained for the shared-code analysis; later runtime/restore composition and
+acceptance are described above. The governing contract is named beside each row.</p>
 <table>
 <thead>
 <tr>
@@ -5889,7 +5991,7 @@ README in the PR; the alignment contract that governs it is named beside it.</p>
 </tr>
 <tr>
 <td><a href="https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/tenant-settings"><code>lib/tenant-settings</code></a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-admin/README.md"><code>lib/subject-admin</code></a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/subject-policy/README.md"><code>lib/subject-policy</code></a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/operator-policy/README.md"><code>lib/operator-policy</code></a>, <code>lib/server/subject-management-app.js</code></td>
-<td>Per-tenant settings with provenance and history; subject administration; the optional subject-reader policy that clamps stored grants to the reviewed catalogue and the current operator ceiling (unselected by default)</td>
+<td>Per-tenant settings with provenance and history; subject administration; the then-optional subject-reader clamp (subsequently withdrawn; writer policy retained)</td>
 <td><a href="tenant-config-schema-2026-10-27.html">tenant config schema</a>, <a href="owner-authority.html">owner authority</a>; R53, R62, R63</td>
 </tr>
 <tr>
@@ -5909,9 +6011,10 @@ README in the PR; the alignment contract that governs it is named beside it.</p>
 </tr>
 </tbody>
 </table>
-<p>Only the <code>api</code> role starts; <code>evaluator</code>, <code>realtime</code>, <code>vcpool</code>, <code>tenant-admin</code>
-and <code>admin</code> refuse with exit 64, and missing configuration or failed readiness
-refuses with exit 78 before listening. Nothing here changes <code>nightscout single</code>.</p>
+<p>At the historical <code>83582e87</code> checkpoint only <code>api</code> started; other roles refused.
+The current separate API/realtime/evaluator/tenant-admin implementation and its
+acceptance are described above. Unimplemented roles are not admitted by a role
+name in the target design; the default remains <code>nightscout single</code>.</p>
 <h2 id="isolation-extends-beyond-the-write-boundary">Isolation extends beyond the write boundary<a class="headerlink" href="#isolation-extends-beyond-the-write-boundary" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TB
   Request["Request with Host&lt;br/&gt;and selected credential"] --&gt; Resolve["Resolve stable tenant&lt;br/&gt;verify tenant-bound credential"]
@@ -5937,8 +6040,14 @@ including secondary profile/device/activity/food snapshot arrays. Summary retain
 its wildcard read requirement. Those are inherited compatibility boundaries, not
 new declarations that every exposed field has an independent collection grant.</p>
 <h2 id="what-evidence-supports-compatibility">What evidence supports compatibility?<a class="headerlink" href="#what-evidence-supports-compatibility" title="Permanent link">&para;</a></h2>
-<h3 id="preview-versus-current-singlemongo-behavior">Preview versus current single/Mongo behavior<a class="headerlink" href="#preview-versus-current-singlemongo-behavior" title="Permanent link">&para;</a></h3>
-<p>The current accepted head is <code>83582e87</code>
+<h3 id="current-bounded-compatibility">Current bounded compatibility<a class="headerlink" href="#current-bounded-compatibility" title="Permanent link">&para;</a></h3>
+<p>The current <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">acceptance family</a>
+links ed2 nonbrowser and actual pinned-client acceptance, c23 browser/native
+acceptance and 39f4 enabled-corpus acceptance. Those sources are distinct. Use
+that ledger for current verdicts and the explicit limits of each experiment;
+the following earlier comparisons retain their historical attribution.</p>
+<h3 id="retained-earlier-comparisons-r40r64">Retained earlier comparisons: R40–R64<a class="headerlink" href="#retained-earlier-comparisons-r40r64" title="Permanent link">&para;</a></h3>
+<p>The earlier accepted head was <code>83582e87</code>
 (<a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>):
 full nonbrowser 7,226 passing / 99 pending / 0 failing, browser 684 / 0 / 0, the
 35-suite opt-in corpus 460 / 1 pending (the disabled benchmark) / 0, and the actual
@@ -5950,12 +6059,12 @@ gates went red under their semantic controls and passed restored.
 bounds the optional selected-reader mode with actual clients: three oref0
 subject-token uploads match the reference, tightening the ceiling refuses the next
 upload with no effects, and an actual cgmsim root upload gets 503 under selected
-mode against 200 unselected, so that mode stays unselected and the 503 mapping
-awaits a disposition. <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>
+mode against 200 unselected, at that checkpoint. The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion decision</a>
+withdraws reader clamping and retains writer policy. <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>
 reads back the published head: all 15 CI jobs and CodeQL passed, including the
 opt-in corpus job; three release-image jobs were skipped by condition. The
 sections below retain the earlier records they cite.</p>
-<p>Latest local <a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
+<p>Earlier <a href="../remedial/rc-16.0.0-integration-record.html#r42---storage-contracts-and-separate-management-http-on-d4570e58-2026-11-05">R42</a>
 adds real lower/preview/Mongo port characterization and a separate authenticated
 management factory, with current-head cumulative/control evidence. Independent
 R43 measures the opt-in single/nonresident prototype; it is not joined into the
@@ -6021,7 +6130,9 @@ shapes refuse, JSONB uses logical JSON equality rather than BSON key order, and
 an invalid selected credential does not silently become anonymous; carrier precedence remains version-specific. Unsupported route
 and error mappings can differ from the single application. See the pinned
 <a href="https://github.com/nightscout/cgm-remote-monitor/blob/83582e876dd193f4448f44c28e379fb5464a26c7/lib/server/tenant-app/README.md">tenant-app boundaries</a>.
-Full query/resource acceptance and populated import-order fidelity remain open.</p>
+Full query/resource acceptance remains separate. The current tenant-local
+logical-restore ordering/history proof is recorded above; it does not establish
+universal import or physical-backup fidelity.</p>
 <h3 id="new-nightscout-versus-older-releases">New Nightscout versus older releases<a class="headerlink" href="#new-nightscout-versus-older-releases" title="Permanent link">&para;</a></h3>
 <p>The <a href="../../../reports/compat-rest-next-2026-11-05/index.html">R42 final-head capture</a>
 extends the bounded direct comparison to the final REST candidate with verified
@@ -6039,14 +6150,14 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
     direction TB
     Old["Nightscout v15.0.9&lt;br/&gt;c6a0d8ed"] --&gt;|"recorded comparison"| Historic["Historical dev&lt;br/&gt;497d08c9"]
   end
-  subgraph Preview["Current HTTP / storage differential"]
+  subgraph Preview["Recorded R62 HTTP / storage differential"]
     direction TB
-    Current["Current single / Mongo handlers&lt;br/&gt;83582e87 (run on 87133959)"] &lt;--&gt;|"preview differential"| Multi["Multitenant PG preview&lt;br/&gt;83582e87 (run on 87133959)"]
+    Current["R62 single / Mongo handlers&lt;br/&gt;83582e87 (run on 87133959)"] &lt;--&gt;|"preview differential"| Multi["Multitenant PG preview&lt;br/&gt;83582e87 (run on 87133959)"]
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof
@@ -6140,21 +6251,21 @@ and runtime layers</strong>. No claim of SQLite equivalence, operational advanta
 celld adoption follows. The current REST/compatibility wave comes first; measured
 duplication can be consolidated without introducing a third backend.</p>
 <h2 id="remaining-evidence-gaps-and-next-work">Remaining evidence gaps and next work<a class="headerlink" href="#remaining-evidence-gaps-and-next-work" title="Permanent link">&para;</a></h2>
-<p>The <a href="multitenant-delivery-dashboard.html">milestone dashboard</a> deliberately does
-not promote M0–M6 on component evidence alone. Full REST administration/side
-effects, client binary execution, arbitrary extensions/localization, import and
-resource bounds, production identity/trust, lifecycle, durable events,
-realtime/evaluation, HA and operations remain unaccepted.</p>
-<p>A fresh selected queue audit also shows the historical
-<code>T30-SCHEMA-CONFIG</code> static gate fails its old <code>crm-seam</code> D15 configuration-table
-check; several broader cards are UNMEASURED when integrations are skipped. That
-old-seam predicate is distinct from R40's new-tree persisted settings/authority
-acceptance. It is an instrument/coverage boundary to keep visible, not evidence
-that the new preview has no settings table or that a full catalogue is complete.</p>
-<p>Next engineering is the bounded persisted subject mutation/known-role assignment
-packet, followed by the remaining REST side effects and wider client/operational
-acceptance. No new architecture, safety policy or milestone status is approved
-by drawing these diagrams.</p>
+<p>The <a href="multitenant-delivery-dashboard.html">dashboard</a> retains M0–M5 at their
+adopted functional scope and M6 blocked. The accepted one-host runtime,
+tenant-local restore/restart, cold Compose and pinned-client capabilities inform
+ongoing design; they do not close wider identity/lifecycle, production trust,
+workload limits, HA or whole-M6 admission. See the
+<a href="m5-m6-decision-list.html">current decision index</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> and
+<a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
+for policy, actual source acceptance and ownership rather than old survey tasks.</p>
+<p>Historical old-seam gates and unmeasured broader cards must retain their real
+instrument status. A failing old configuration-table predicate is distinct from
+accepted new-tree persisted settings/authority; neither a prototype nor this
+diagram promotes the larger configuration catalogue. Run <code>make queue-status</code>
+for current gate measurements. This documentation change runs no new application
+or deployment campaign and adopts no new architecture or safety policy.</p>
 
 
 

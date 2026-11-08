@@ -3396,6 +3396,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Where things stand">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-complete-enough-to-inform-a-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is complete enough to inform a decision?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -5711,6 +5728,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Where things stand">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-complete-enough-to-inform-a-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is complete enough to inform a decision?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -5764,15 +5798,17 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>c3cf4d1d7</code>.</em></p>
-<p><em>Contributor-facing living plan. Tenancy reconciled 2026-11-06 to
-<a href="../remedial/rc-16.0.0-integration-record.html#r62---bounded-owner-reader-replay-and-populated-recovery-batch-2026-11-06">R62</a>
-and <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>:
-draft #8898 is <code>83582e87</code>, based on dev <code>4a482627</code>, with CI and CodeQL green on
-that head. R67/R68 add bounded local component evidence. Earlier storage,
-identity and registration measurements retain their named pins. Current milestone
-claims live in the <a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a>;
-release placement lives in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Contributor-facing living plan. Reconciled 2026-11-08 to the published
+<a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>
+and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a>.
+Draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8898">#8898</a> carries
+<code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>, based on dev <code>4a482627</code>.
+Native/browser, corpus and cold-deployment campaigns retain their actual source
+heads. Current milestone claims live in the
+<a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a>; release
+placement lives in <a href="release-allocation-2026-10-27.html">release allocation</a>.
+This is a map of bounded capabilities and remaining work, not production admission.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5796,45 +5832,96 @@ use this map to see how the platform tracks meet.</p>
 </thead>
 <tbody>
 <tr>
-<td>Multitenant foundations and initial preview</td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, followed by M3/M4 on cumulative evidence.</td>
-<td>Draft #8898; source acceptance is distinct from dev merge, operator release and default/production enablement.</td>
-</tr>
-<tr>
-<td>Data, authority and clients</td>
-<td>Admitted PG ports/import and actual typed/versioned owner settings pass; reader clamping is removed, legacy own-tenant credentials and writer fences retained.</td>
-<td>M1 resource bounds deferred C. M4 actual headless/source-pattern bar, no all-client claim; Android emulator C. Human issuer/refresh, wider catalogue/lifecycle and production resolution trust remain M6.</td>
+<td>Foundations, data and tenant authority</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1–M4: admitted PG ports/import, actual typed/versioned owner settings, tenant refusal and route separation, pinned headless clients and source-pattern replay.</td>
+<td>Wider owner catalogue/lifecycle and production resolution trust; Android emulator and resource bounds in C. No all-client claim.</td>
 </tr>
 <tr>
 <td>Durable runtime</td>
-<td>R73 accepts the functional M5 reference on one host using polling, with the bounded <a href="../../../reports/tenancy/m5-runtime-2026-11-07/postgres/index.html">PostgreSQL recovery/notification record</a> and <a href="../../../reports/tenancy/m5-runtime-2026-11-07/roles/index.html">reference-role/browser record</a>, with their actual executed heads and controls.</td>
-<td>Live provider/device delivery and capacity/freshness/egress budgets retain separate gates. Acceptance is local to the recorded source; publication and remote CI are tracked separately.</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a> accepts functional M5 on one host: separate roles, polling/snapshots, durable suppression and reference notification handoff.</td>
+<td>Live provider/device delivery, multi-node ownership and capacity/freshness/egress budgets.</td>
 </tr>
 <tr>
-<td>SQL operations</td>
-<td>R73 retains bounded <a href="../../../reports/tenancy/m6-ops-2026-11-07/postgres/index.html">populated SQL recovery, upgrade/rollback and deletion proof</a>.</td>
-<td>Fixture quiescence does not establish a serving blackout. Identity-bearing same-ID tenant restore, keys/provider integration and wider M6 acceptance remain open; populated predecessor profile migration retains its refusal.</td>
+<td>Tenant-local recovery and shared-process restart</td>
+<td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">Operation-window acceptance</a> accepts same-ID logical restore with forward client history, public-ID preservation, fail-closed uncertainty and B continuity while A remains suspended, including fresh service processes. Native evidence is on c23; cold Compose/UI/socket/restore and pinned-client evidence is on ed2.</td>
+<td>Fixed trusted process cohort, private ingress and direct PG connections bound this proof. Dynamic membership, transaction pooling, multi-host coordination, arbitrary direct SQL writers and automatic orphan clearance remain outside it.</td>
 </tr>
 <tr>
-<td>Joined candidate</td>
-<td>R73 accepts comprehensive verification of the assembled candidate and the functional M5 scope. SQL operations have bounded acceptance; M6 remains blocked.</td>
-<td>Publication and remote CI belong to the release record. Source acceptance is distinct from dev merge, operator release and production/default enablement.</td>
+<td>Deployment artifact and verification</td>
+<td>The published ed2 draft has an exact-source Compose image and cold synthetic deployment acceptance. Final full-suite and pinned-client campaigns are on ed2; native/default-browser on c23 and entire enabled corpus on 39f4 retain their source attribution.</td>
+<td>Whole M6 stays blocked. Draft publication, dev merge, operator release, default enablement and production admission are distinct boundaries.</td>
+</tr>
+<tr>
+<td>Optional shared human identity</td>
+<td><a href="../../../reports/tenancy/shared-oidc-sessions-2026-11-07/index.html">Shared OIDC/session capability</a> is fixed on a separate local source branch with bounded source checks and controls.</td>
+<td>Actual signed native DB/Vault/HTTPS/browser and reference-provider acceptance are UNMEASURED. It has not joined the published Compose candidate.</td>
 </tr>
 <tr>
 <td>Independent single/nonresident profile</td>
 <td>R55 accepts private acquisition on <code>2ee8b493</code>, with caller policies and the physical subscriber retained.</td>
-<td>The computed-single branch remains separate. Shared private code does not equate its trigger, cost or admission to the multitenant reference.</td>
+<td>The computed-single branch remains separate; full writer/alarm/clinical coverage, freshness, cost and its own entry bar remain. Default single stays resident.</td>
 </tr>
 </tbody>
 </table>
-<p>The <a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73 integration record</a> owns
-executed heads, controls, source-identity reuse and criterion disposition. R73
-records the bounded proofs, final comprehensive verdict and M5 criterion
-disposition separately. It does not assert remote publication or CI. Recorded-evidence gates replay archived measurements; they
-do not run a fresh native/current-HEAD campaign. Production capacity, freshness
-and egress budgets still need declared workloads and measurements. The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a> owns
-programme disposition.</p>
+<p>The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">acceptance family</a>
+owns exact source/instrument identities and immutable failed and successful runs;
+the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a> owns
+programme disposition. This reconciliation is <strong>read-derived</strong> from those records,
+not a rerun of the application. Recorded-evidence gates replay archived captures;
+they do not execute a fresh native/current-HEAD campaign.</p>
+<h3 id="what-is-complete-enough-to-inform-a-decision">What is complete enough to inform a decision?<a class="headerlink" href="#what-is-complete-enough-to-inform-a-decision" title="Permanent link">&para;</a></h3>
+<p>Use an accepted capability to answer the question it exercised. An implementation
+can settle a bounded design question while its parent queue item remains open.
+A production decision additionally needs an operating envelope, deployment trust
+and failure recovery under the selected topology.</p>
+<table>
+<thead>
+<tr>
+<th>Decision you can make from current evidence</th>
+<th>Evidence supports</th>
+<th>Evidence still needed to unlock broader use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keep API, realtime and evaluator as explicit cooperating roles</td>
+<td>Functional one-host M5 and later cold Compose demonstrate consumed role boundaries and restart behavior.</td>
+<td>Independent replica ownership/fencing, failover and partition behavior before multi-host or HA use.</td>
+</tr>
+<tr>
+<td>Keep restore tenant-local in the reference topology</td>
+<td>Actual restore/history convergence and B continuity, including B startup while A stays suspended.</td>
+<td>Broader membership/writer topology, orphan resolution policy and production recovery objectives. A cooperative cohort is not a database fence against separately authorized SQL writers.</td>
+</tr>
+<tr>
+<td>Continue the admitted PostgreSQL backend and migration path</td>
+<td>Tenant-scoped native/HTTP/storage controls and append-only allocator migration/restore work.</td>
+<td>Supported production workloads, pool limits, noisy-neighbor behavior, capacity and restore/upgrade budgets.</td>
+</tr>
+<tr>
+<td>Scope a reusable current-property result</td>
+<td><a href="../../../reports/tenancy/derived-output-2026-11-07/index.html">Derived-output characterization</a> finds selected evaluator/API properties agree, with time/settings/identity-sensitive controls.</td>
+<td>A reusable result interface and expiry/invalidation checks. Raw realtime frames remain a different product; no publication service or distributed result store is selected.</td>
+</tr>
+<tr>
+<td>Choose resident versus computed execution for single-tenant sites</td>
+<td>The independent prototype demonstrates bounded functional behavior and failures worth guarding.</td>
+<td>Quiet steady-state cost, full caller/clinical coverage and per-profile reliability before changing placement or defaults.</td>
+</tr>
+<tr>
+<td>Select an identity/deployment reference for acceptance</td>
+<td>Adopted generic OIDC, Vault progression and per-deployment trust/probe contracts define what to build and test.</td>
+<td>Native signed/session/provider acceptance, service-login renewal and live edge/Vault probes. Source checks alone do not admit a production identity system.</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="../tenancy/deployment-and-rig-testing.html">deployment guide</a> separates tenancy,
+backend, execution profile, service placement and host topology. These are
+independent choices: more processes improve operational separation, while a
+shared host, PostgreSQL service, Vault or edge can still fail all tenants.
+The <a href="../tenancy/m5-m6-decision-list.html">current M5/M6 decision list</a> owns remaining
+policy questions; the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>
+own adopted answers. A deferred decision keeps its prototypes and benches running.</p>
 <table>
 <thead>
 <tr>
@@ -5871,168 +5958,15 @@ miss rolls to 16.1.0, or to 17.0.0 if it changes a default.
 to done. Build speed is not the limit. Time on <code>dev</code>, cohort checks and review are, so items land in
 priority order and early, and the tag is gated by the bar, not by a date.</p>
 <h2 id="1a-priority-and-merge-order-2026-10-29">1a. Priority and merge order (2026-10-29)<a class="headerlink" href="#1a-priority-and-merge-order-2026-10-29" title="Permanent link">&para;</a></h2>
-<p>Identity moved up on 2026-10-29, because most of the week's defects came from records matched by
-different rules on different paths: BF-121's socket gap, BF-209, and the chart split's shared
-identity (BF-212, where a re-send can overwrite another record's amount). D-LOOP-ID's three rules are now decided. On 2026-10-30 the maintainer put every single-tenant item into 16.0.0's scope (§1), so identity work goes
-through the entry bar before the tag, directly after <code>write(intent)</code>; ID-FIRST-MATCH slice 1 started that day.</p>
-<p><strong>Before the 16.0.0 tag</strong>, in this order:</p>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>PR</th>
-<th>risk</th>
-<th>what review should look at</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><strong>merged 2026-10-30 (<code>cf3d4b8f</code>)</strong>: #8877, BF-209 + BF-211 (BF-210 withdrawn 2026-10-29)</td>
-<td>changes which socket treatment uploads are stored as separate records. That is dosing data, for AndroidAPS 3.4.2.x v1 users and the chart-drag split</td>
-<td>the identity rule's equivalence for the exact match (559,872 inputs); the three flipped gate fixtures; the one matrix cell that moves (<code>treatments × v3 × ws</code>). Ask an AndroidAPS 3.4.2.x v1 cohort to check carbs and boluses</td>
-</tr>
-<tr>
-<td>2</td>
-<td><strong>merged 2026-10-30 (<code>991b0654</code>)</strong>: #8865, one executable and the boot split</td>
-<td>every site starts through it, so it carries the release's widest operational change</td>
-<td>the image's <code>nightscout single</code> start, <code>npm start</code>, Heroku/Docker/Azure forms, SIGTERM shutdown. Ask each hosting cohort to check it</td>
-</tr>
-<tr>
-<td>2a</td>
-<td><strong>merged 2026-10-30 (<code>d51c7a60</code>)</strong>: #8878, BF-212 first part: the chart split stops copying identity fields</td>
-<td>low; changes only what the moved half of a chart drag carries</td>
-<td>the unit test (red on dev) and the reproduction probe; the re-upload double count remains</td>
-</tr>
-<tr>
-<td>3</td>
-<td><strong>merged 2026-10-30 with #8877 (<code>cf3d4b8f</code>)</strong>: BF-211, per-collection cache flush</td>
-<td>low; changes only which caches a delete by query empties</td>
-<td>the red/green control from <code>tools/lab/cache-value</code>; v1 deletes by query and API v3 auto-prune</td>
-</tr>
-<tr>
-<td>3a</td>
-<td>#8855, Crowdin; head <code>d3edc390</code>, returned checks green (2026-11-02)</td>
-<td>low</td>
-<td>usual translation review and current-base recheck</td>
-</tr>
-<tr>
-<td>3c</td>
-<td><strong>merged 2026-10-31 (<code>2f50d944</code>)</strong>: #8883 (head <code>789d5d9d</code>): BF-219, BF-220, BF-221 (v1 treatment and entry writes) and BF-222 (API v3 autoPrune names what it deletes to the cache); #8879 took it in its <code>dev</code> merge (four-file conflict, session -4e)</td>
-<td>dosing-relevant reply and announcement fixes</td>
-<td>HTTP-level tests red on <code>dev</code>; the write-step port reviewed</td>
-</tr>
-<tr>
-<td>3d</td>
-<td><strong>merged 2026-10-31 (<code>37b2280f</code>)</strong>: #8882 (head <code>32cd90e6</code>): hygiene, the development lint popup and drawer resize. The resize handler now registers at the first open (<code>2737756d</code>), so loading <code>browser-utils</code> without a window no longer throws</td>
-<td>display only</td>
-<td>browser test red on <code>dev</code></td>
-</tr>
-<tr>
-<td>3e</td>
-<td><strong>merged 2026-10-31 (<code>604de1cb</code>)</strong>: #8885: BF-223 (a saved API secret the site refuses no longer blocks a valid <code>?token=</code> link) and BF-224 (a plain value under the date field means equality, not a 500; the defect dates from 2019); #8879 takes it in its <code>dev</code> merge (<code>2d79d30b</code>)</td>
-<td>low; client sign-in and one query form</td>
-<td>BF-224's equality test (<code>api.date-filter-equality</code>)</td>
-</tr>
-<tr>
-<td>3b</td>
-<td><strong>merged 2026-10-30 (<code>305a6533</code>, #8880)</strong>: BF-213, BF-214, BF-217: a missed URGENT pump alarm, a pump-plugin crash that hides every pump alarm, a device-status cache gap; BF-213 alarms at Loop's severity (maintainer, 2026-10-30)</td>
-<td>Loop users with pump alerts get new pump alarms</td>
-<td>each fix red then green; the release-notes line</td>
-</tr>
-<tr>
-<td>4</td>
-<td>BF-72 and BF-161 fork branches</td>
-<td>security fixes held outside the public PR list until release (<a href="../remedial/nightscout-backfix-register.html">register</a>)</td>
-<td>brought up to <code>dev</code> and merged before the tag</td>
-</tr>
-<tr>
-<td>5</td>
-<td>#8824, dev to master</td>
-<td><code>BLOCKED</code>; master requires <code>Run Tests (22, 6)</code> and <code>(24, 6)</code> plus one approving review, read 2026-11-02. The absent 4.4 requirement is removed and both retained lanes are green</td>
-<td>finish review and the decided aggregate-check policy; security/final-tree/live/cohort acceptance before tag</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Eligible for 16.0.0 through an entry bar</strong> (maintainer, 2026-10-29): rows 8 and 9 below, plus the
-re-send switch, in that order. Each joins the merge list when its matrix result is as stated, its red
-controls and ablations pass, a revert has been rehearsed, and it has had time on <code>dev</code> with its cohort
-check. Whatever has not cleared the bar at the tag rolls to 16.1.0. 16.0.0 is already a major, so identity
-rules that change outcomes may land there instead of 17.0.0.</p>
-<p><strong>Next, through the bar</strong> (2026-10-30: every single-tenant row targets 16.0.0; a miss rolls to 16.1.0, or to 17.0.0 if it changes a default):</p>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>work</th>
-<th>release</th>
-<th>risk</th>
-<th>review</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>6</td>
-<td><strong>done 2026-10-30</strong> (this repository, <code>b982fbdd8</code>): SPEC-ID-AMEND, spec and conformance only</td>
-<td>16.0.0 through the bar</td>
-<td>none for sites</td>
-<td>case-by-case conformance report</td>
-</tr>
-<tr>
-<td>7</td>
-<td>draft #8857, registration S0-S2, S5</td>
-<td>16.0.0 through the bar</td>
-<td>off by default; head <code>5f6c1275</code> is behind <code>dev</code> <code>497d08c9</code></td>
-<td>rebase/resolve, settle D-REG-FLAG (where the catalogue lives), and rerun its gates on current <code>dev</code></td>
-</tr>
-<tr>
-<td>8</td>
-<td><strong>merged 2026-10-31 (<code>368e6c23</code>)</strong>: #8874 plus slices 4 and 6, <code>write(intent)</code> release 1</td>
-<td>16.0.0 (at <code>4f9fc4cd</code> against dev <code>991b0654</code>: 0 of 1,929 cells outside <code>cache</code>, merge revert rehearsed). Its cohort check is one window with the identity work, opening when slices 3 and 4 are on <code>dev</code></td>
-<td>every write moves, behaviour-neutral by the matrix</td>
-<td>G1 at 0 cells; the slice 6 dedupe gate; per-rule ablations; review commit by commit</td>
-</tr>
-<tr>
-<td>9</td>
-<td><strong>#8879 merged</strong> with slices 1, 2, 5, 3, 4, 6 and 6a; <strong>#8890 merged</strong> compatibility A/B and the BF-225 fix; <strong>#8892 merged 2026-11-01</strong> as <code>3c773ee5</code>, adding <code>WRITE_RESEND=replace\|merge-except-treatments\|acknowledge\|refuse</code> and <code>WRITE_DELETED_RESEND=stay\|revive</code>. The default-mode matrix changed 0/4,916 cells relative to its base; <code>refuse</code> changed 813. All required #8892 checks passed.</td>
-<td>16.0.0 through the entry bar; #8894 now completes the index-dependent batch retry.</td>
-<td>Identity changes affect dosing data and delete/restore behavior.</td>
-<td>Full release compatibility matrix, cohort check, and rollback review.</td>
-</tr>
-<tr>
-<td>9b</td>
-<td><strong>#8894, ID-UNIQUE-INDEX, merged 2026-11-01</strong> as <code>497d08c9</code> (full merge commit <code>497d08c94c0a583f056fe487d172a4634fc4a1d4</code>), from head <code>cf978f4</code> onto <code>dev</code>. All required PR hosted checks passed. The completed <code>--batch --no-idf</code> matrix has 3,443 cells per off/try lane, zero invalid cells on MongoDB 5.0.32 and 8.0.34, and the same 33 expected batch differences (24 <code>batch-dupkey-mid</code>, 9 <code>batch-repeat-identifier</code>) on both versions; other differences are cache-only. #8894 includes batch race retry, so no standalone ID-BATCH branch is currently required.</td>
-<td>16.0.0 through the entry bar; post-merge CI stabilization #8896 is merged and green; release cohort verification remains.</td>
-<td>Index creation and duplicate-key races affect every write path.</td>
-<td>Complete the release compatibility matrix and prepare cohort/rollback checks for a named RC.</td>
-</tr>
-<tr>
-<td>9a</td>
-<td><strong>merged 2026-11-01 (<code>51d38f9f</code>)</strong>: #8886 (head <code>4b8adfec</code>, CI green; local re-gate against <code>5376e6a7</code> showed no difference from the <code>6b00eb9d</code> gates): <code>write(intent)</code> release 2 (filter writes resolved to ids in the step, API v3 in the same shape, autoPrune through the step, Q-A/Q-U; it fixes BF-226, autoPrune flushing the cache without a reload, which dates from #6688) and, as its last commit, the per-write event (D-EVENT)</td>
-<td>16.0.0 through the bar, after #8879</td>
-<td>the cache path, which feeds what screens and alarms show; one accepted behaviour change (a record inserted while a delete by query runs survives)</td>
-<td>client replies and stored records equal to the base on all 36 probe rows; the cache catch-up lab round 3 and the red controls re-run on the pushed head before it leaves draft; GitHub runs its tests once it targets <code>dev</code></td>
-</tr>
-<tr>
-<td>10</td>
-<td><strong>#8875 merged 2026-11-01 (<code>1fc6d8be</code>, head <code>ba69e317</code>)</strong>: ST-VIEWS (maintainer, 2026-10-30): in 16.0.0 in steps. Replay results measured at <code>7b4b724c</code> and re-checked on <code>dev</code> <code>1fc6d8be</code> after #8886 (0 differing minutes on 126,092 per view, r2 noise floor 0, controls as recorded, one count +10): with the newest treatment read within 60 h and the full resident windows (60 h treatments, 24 h device status), both views equal the resident path on 126,092 replayed minutes each. <em>Maintainer, 2026-10-31:</em> ships in 16.0.0 unwired, because <code>serve</code> has no role that runs alarms yet (only <code>api</code> starts). The wiring moves to the one-tenant computed profile prototype (ST-VIEWS-PROFILE, D-EXEC-PROFILE) and later to the multitenant roles; <code>single</code> keeps the resident path</td>
-<td>16.0.0 (unwired)</td>
-<td>alarms are safety-relevant</td>
-<td>the replay lab's per-dataset table at 0 differing minutes, its break-it controls and noise floor; alarm cohort checks (execution plan §7b)</td>
-</tr>
-<tr>
-<td>11</td>
-<td>#8810, AndroidAPS iOS push</td>
-<td>16.0.0 if its review items close, else 16.1.0</td>
-<td>device tokens are readable by read tokens</td>
-<td>its four review items, with the author</td>
-</tr>
-</tbody>
-</table>
-<p>Research that informs the order, without being in it: the cache-value lab (BF-211), the cache
-catch-up lab (rounds 1–3: release 2 resolves filter writes to ids, and API v3 takes the same write
-shape; it found BF-222), and the extended write-contract matrix (QC-MATRIX-IDF), which found BF-212. The maintainer's direction on BF-212: a lossy edit of a controller-claimed record needs a
-manual confirmation. Two records already sharing an identifier is a question for the ID-FIRST-MATCH design.</p>
+<p>The <a href="release-allocation-2026-10-27.html">release allocation</a> owns release ordering,
+the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
+own merged and tested state, and the queue owns item claims. Identity and the
+write path remain the single-tenant release priority; a multitenant prototype
+passing its own campaign does not bypass that release entry bar.</p>
+<p>The detailed October merge-order and per-commit execution table is retained in
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/docs/30-design/platform/next-gen-platform-plan.md#1a-priority-and-merge-order-2026-10-29">the captured platform revision</a>.
+It preserves the original source heads, matrix results, cohort requests and
+release hypotheses. It is historical context, not a current dispatch queue.</p>
 <h2 id="2-why-the-tracks-meet-at-the-write-step">2. Why the tracks meet at the write step<a class="headerlink" href="#2-why-the-tracks-meet-at-the-write-step" title="Permanent link">&para;</a></h2>
 <p>Every track changes what happens when a record is written:</p>
 <table>
@@ -6094,8 +6028,15 @@ manual confirmation. Two records already sharing an identifier is a question for
 <a href="../tenancy/multitenant-delivery-dashboard.html">multitenant delivery dashboard</a>.
 It owns M0-M6 prerequisites, parallel lanes, bounded slices and current
 acceptance. The <a href="../tenancy/multitenant-delivery-roadmap.html">roadmap</a>
-retains decisions, limits and detailed execution evidence; this platform
-overview intentionally summarizes rather than duplicates those tenancy gates.</p>
+defines milestone criteria and boundaries. The integration record and named reports
+retain execution evidence. This map summarizes their bounded implications.</p>
+<p>Read a node's reference and remaining scope before treating its color as a verdict.
+<strong>Done</strong> means the named item/component is complete or merged to dev; it says
+nothing by itself about an operator release. <strong>In progress/blocked</strong> can contain
+accepted useful slices with broader work remaining. Arrows show prerequisites,
+not runtime communication, fault domains or percentage complete. Milestone
+promotion belongs to the dashboard; deployment admission belongs to the selected
+deployment's trust record and measured probes.</p>
 <!-- chart: map -->
 
 <h2 id="4-the-tracks-in-detail">4. The tracks in detail<a class="headerlink" href="#4-the-tracks-in-detail" title="Permanent link">&para;</a></h2>
@@ -6143,15 +6084,15 @@ overview intentionally summarizes rather than duplicates those tenancy gates.</p
 </tr>
 <tr>
 <td>ST-VIEWS-PROFILE</td>
-<td>Published draft #8891 remains <code>744d1968</code>; independent local refresh <code>925c9527</code> / R43 contains current dev and bounded full/replay acceptance. Explicit single/nonresident launcher computes bounded alarms/properties after admitted physical writes and heartbeat, retaining the last cycle properties; default single stays resident. Logical no-op/refusal admission, full alarm/writer coverage, live stats freshness, quiet-hardware cost and placement remain open. It is not joined into #8898.</td>
+<td>R55 retains independent local acceptance on <code>2ee8b493</code>; earlier #8891 and R43 captures retain their own heads. Explicit single/nonresident launcher computes bounded alarms/properties after admitted physical writes and heartbeat, retaining the last cycle properties; default single stays resident. Logical no-op/refusal admission, full alarm/writer coverage, live stats freshness, quiet-hardware cost and placement remain open. It is not joined into #8898.</td>
 <td>ST-VIEWS</td>
 <td><a href="../remedial/rc-16.0.0-integration-record.html#r43---independent-nonresident-profile-refresh-on-925c9527-2026-11-05">R43</a>: actual trigger/timer/freshness and teardown controls; remaining entry bar is explicit</td>
 </tr>
 <tr>
 <td>ST-PG</td>
-<td>Published selected-domain PostgreSQL/RLS API preview; complete admitted backend/import acceptance remains open. Resource bounds are deferred to batch C by decision</td>
+<td>R72 accepts admitted PostgreSQL/RLS backend/DDL/import contracts; later tenant-local allocator/restore and cold Compose evidence are source-attributed in the acceptance family. Resource bounds remain in C</td>
 <td>ST-HARNESS</td>
-<td>actual HTTP/Mongo differentials and source controls; full M1 gates in the delivery dashboard</td>
+<td>actual HTTP/Mongo differentials, migration/restore controls and bounded M1 criteria in the delivery dashboard</td>
 </tr>
 </tbody>
 </table>
@@ -6202,8 +6143,8 @@ overview intentionally summarizes rather than duplicates those tenancy gates.</p
 </table>
 <p>Rules in force (maintainer, 2026-10-26 and 2026-10-27; updated 2026-10-31):</p>
 <ul>
-<li><strong>Null removes.</strong> An explicit null removes a field on a merged re-send (<code>WRITE_RESEND=merge</code>), API v3 PATCH and the socket's <code>dbUpdate</code> (RFC 7386; <a href="../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a>). It never does so on PUT or create, and devicestatus never merges.</li>
-<li><strong>Fallback.</strong> A v1 entries re-send whose identifier matches nothing still matches on <code>sysTime</code>+<code>type</code>; treatments never fall back. A devicestatus re-send whose identifier is stored replaces the stored record by default (compatibility B, 2026-10-31; it merged from ID-Q2, 2026-10-29); <code>WRITE_RESEND=merge</code> keeps that, and <code>WRITE_RESEND=acknowledge</code> the rule before it (write nothing, answer with the stored <code>_id</code>).</li>
+<li><strong>Null removes.</strong> An explicit null removes a field on a merged re-send (<code>WRITE_RESEND=merge-except-treatments</code>), API v3 PATCH and the socket's <code>dbUpdate</code> (RFC 7386; <a href="../tenancy/write-contract-spec-2026-10-07.html#61-decided-2026-10-12">write contract §6.1</a>). It never does so on PUT or create, and devicestatus never merges.</li>
+<li><strong>Fallback.</strong> A v1 entries re-send whose identifier matches nothing still matches on <code>sysTime</code>+<code>type</code>; treatments never fall back. A devicestatus re-send whose identifier is stored replaces the stored record by default (compatibility B, 2026-10-31; it merged from ID-Q2, 2026-10-29); <code>WRITE_RESEND=merge-except-treatments</code> keeps that, and <code>WRITE_RESEND=acknowledge</code> the rule before it (write nothing, answer with the stored <code>_id</code>).</li>
 <li><strong>Absent identifier.</strong> <code>identifier</code> is SHOULD for legacy writers, and the time-key fallback stays. It is MUST for registered controller instances. Revisited as adoption grows.</li>
 <li><strong>Scope.</strong> Uniqueness is per collection, with the tenant in the key under multi. Values stay globally unique by convention.</li>
 <li><strong>Re-send after delete.</strong> It is acknowledged with a 2xx naming the stored, deleted record, and the record stays deleted. <code>WRITE_DELETED_RESEND=revive</code> (default <code>stay</code>, 2026-10-31) restores 15.0.9's re-send that revives a deleted record.</li>
@@ -6213,7 +6154,7 @@ overview intentionally summarizes rather than duplicates those tenancy gates.</p
   stored record replaces it on every collection, as slice 4 does for treatments. <em>Extended the same evening:</em> every
   re-send matched by identifier replaces on every path, including the identifier-first matches for profile, food,
   activity and device status over v1, in-process and the socket; entries over v1 and in-process keep merging, as
-  on 15.0.9. Merge stays for edits: API v3 <code>PATCH</code> and the socket's <code>dbUpdate</code>. <code>WRITE_RESEND=replace|merge|acknowledge|refuse</code> (default <code>replace</code>) and
+  on 15.0.9. Merge stays for edits: API v3 <code>PATCH</code> and the socket's <code>dbUpdate</code>. <code>WRITE_RESEND=replace|merge-except-treatments|acknowledge|refuse</code> (default <code>replace</code>) and
   <code>WRITE_DELETED_RESEND=stay|revive</code> (default <code>stay</code>) are built before the tag as opt-in ways back, parsed with the
   other <code>WRITE_*</code> settings; per-client D20 quirks may select a <code>WRITE_RESEND</code> mode. Each path that changes is
   listed cell by cell.</li>
@@ -6226,7 +6167,7 @@ overview intentionally summarizes rather than duplicates those tenancy gates.</p
   writes that carry no <code>identifier</code>: socket <code>dbUpdate</code>, <code>dbUpdateUnset</code> and <code>dbRemove</code> accept an
   <code>identifier</code> when there is no <code>_id</code>, and activity creates match on <code>identifier</code>. This is conditional on
   the extended matrix showing every existing form unchanged.</li>
-<li><strong>Re-send with changed fields (2026-10-29).</strong> Merge on match stays the default, because Loop and Trio re-send changed doses, overrides and temp targets by <code>POST</code> (<a href="../../60-research/tenancy/identity-resend-survey-2026-10-29.html">client survey</a>). API v3 keeps refusing a changed date, device or event type, and <code>PUT</code> replaces. A site setting plus per-client quirks (D20) may opt a client into keep-first or refuse. A default changes only in a major: 16.0.0 if it clears the entry bar (§1a), otherwise 17.0.0.</li>
+<li><strong>Re-send with changed fields.</strong> Compatibility B/C and the selected <code>WRITE_RESEND</code> mode above govern current behavior. The <a href="../../60-research/tenancy/identity-resend-survey-2026-10-29.html">client survey</a> retains the reason changed Loop/Trio POSTs must be handled deliberately; it does not override the adopted mode.</li>
 </ul>
 <p>The rules are in the <a href="spec/identity.html">identity specification</a> and the <a href="identifier-conventions.html">identifier conventions</a>; the conversation with the Loop maintainers is in <a href="upstream-asks-loop-identifier/index.html">upstream-asks-loop-identifier</a>.</p>
 <h3 id="43-registration">4.3 Registration<a class="headerlink" href="#43-registration" title="Permanent link">&para;</a></h3>
@@ -6292,8 +6233,8 @@ preview already passes. The <a href="../tenancy/multitenant-delivery-dashboard.h
 is authoritative for milestone gates; accepted slices are not completion percentages.
 The adopted M2 bar is tenant-local config/versioned writes, unknown-tenant refusal,
 A's token failing on B by signature, no environment/root/key leakage, and separate
-owner/data/operator routes. Versioned-write re-execution and comprehensive
-listener-separation acceptance remain pending. M4's bar is executed headless clients
+owner/data/operator routes. R72 accepts that bounded versioned-write and
+route-separation bar; wider catalogue and human-session acceptance remain M6. M4's bar is executed headless clients
 plus source-pattern replay for the rest, with <strong>no all-client claim</strong>; Android
 emulator work moves to C and iOS is outside the automated lab. M4 still depends on M3.
 The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion decisions</a>
@@ -6317,7 +6258,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 <tr>
 <td>PLAT-SERVE</td>
-<td>Merged <code>multitenant</code> CLI namespace (#8899); R72 accepts bounded M1–M4 preview contracts on draft #8898. M5 runtime, M6 lifecycle and production/default enablement remain separate</td>
+<td>Merged <code>multitenant</code> CLI namespace (#8899); R72 accepts bounded M1–M4 preview contracts on draft #8898. R73 accepts functional M5, and later ed2 Compose/restore acceptance is bounded; M6 and production/default admission remain open</td>
 <td>PLAT-ENTRY, ST-READS</td>
 </tr>
 <tr>
@@ -6347,10 +6288,13 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tr>
 </tbody>
 </table>
-<p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. Which listener and role owns each API is mapped in <a href="interface-ownership-2026-10-27.html">interface ownership</a>, with its eight open questions (among them whether serving every role in one process is part of the multi target). The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D23 are in the <a href="../tenancy/multitenancy-decisions.html">execution plan</a>.</p>
-<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. R72 accepts request-local loader/cache frames at its bounded M1–M4 scope; R73 accepts the functional multitenant evaluator/realtime reference; M6 retains lifecycle and wider admission work. This does not establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the local joined candidate. R67 bounds recovered clinical constructor evidence. R73 promotes functional M5; the independent computed-single profile retains its separate entry bar. Input acquisition and clinical result persistence are not one atomic operation.</p>
-<h2 id="5-open-decisions">5. Open decisions<a class="headerlink" href="#5-open-decisions" title="Permanent link">&para;</a></h2>
-<p>Select <strong>Show on the map</strong> on a card to see which items it holds up. Release questions (the 16.0.0 quiet period, cohort requests, when dev reopens) are Q13–Q16 in the <a href="release-allocation-2026-10-27.html#5-open-decisions">release allocation</a>.</p>
+<p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. The <a href="interface-ownership-2026-10-27.html">interface ownership proposal</a> retains its original questions; current separate-process composition and restore boundaries are in the <a href="../tenancy/single-and-multitenant-architecture.html">architecture comparison</a>. The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D23 are in the <a href="../tenancy/multitenancy-decisions.html">execution plan</a>.</p>
+<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. R72 accepts request-local loader/cache frames at its bounded M1–M4 scope; R73 accepts the functional multitenant evaluator/realtime reference; M6 retains lifecycle and wider admission work. This does not establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the multitenant candidate. R67 bounds recovered clinical constructor evidence. R73 promotes functional M5; the independent computed-single profile retains its separate entry bar. Input acquisition and clinical result persistence are not one atomic operation.</p>
+<h2 id="5-decisions-and-remaining-questions">5. Decisions and remaining questions<a class="headerlink" href="#5-decisions-and-remaining-questions" title="Permanent link">&para;</a></h2>
+<p>Cards labelled decided describe adopted constraints. Other cards retain their
+question and owner; an option marked recommended is a proposal. Select <strong>Show on
+the map</strong> to see affected items. The current M5/M6 decision list linked above
+contains later tenancy policies; this map does not create a second decision log. Release questions (the 16.0.0 quiet period, cohort requests, when dev reopens) are Q13–Q16 in the <a href="release-allocation-2026-10-27.html#5-open-decisions">release allocation</a>.</p>
 <!-- chart: decisions -->
 
 <h2 id="6-how-the-work-moves">6. How the work moves<a class="headerlink" href="#6-how-the-work-moves" title="Permanent link">&para;</a></h2>
@@ -6360,12 +6304,17 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 <li><strong>Red controls.</strong> Every new test is shown failing against the code it guards before the change, with the original symptom.</li>
 <li><strong>Conformance.</strong> The registration and identity cases in <code>specs/sync/conformance/</code> run against a booted server by a harness in this repository (D12), reported case by case as passed, mapped or not applicable.</li>
 <li><strong>Agents.</strong> Agents build slices in their own worktrees, run the checks and hand back a branch, a PR body and the push commands. They never push. Maintainers push, open, review and merge.</li>
-<li><strong>Releases.</strong> #8865 (one executable, the image's start and stop, the boot split; <code>multitenant</code> is the current namespace after #8899; only the explicitly configured API preview is implemented in #8898) merged into 16.0.0 on 2026-10-30. Since 2026-10-30 every single-tenant item of this plan targets 16.0.0 through the entry bar (§1); a miss merges after the tag, one theme per minor; the 16.0.0 quiet period starts when its merge list is closed, not on a date. Components shipped before they are mature are labelled alpha; the label belongs to the multitenant bindings, not to code every single-tenant site runs.</li>
+<li><strong>Releases.</strong> #8865 (one executable, the image's start and stop, the boot split; <code>multitenant</code> is the current namespace after #8899; the explicitly configured separate-process Compose preview is implemented in #8898) merged into 16.0.0 on 2026-10-30. Since 2026-10-30 every single-tenant item of this plan targets 16.0.0 through the entry bar (§1); a miss merges after the tag, one theme per minor; the 16.0.0 quiet period starts when its merge list is closed, not on a date. Components shipped before they are mature are labelled alpha; the label belongs to the multitenant bindings, not to code every single-tenant site runs.</li>
 <li><strong>Records.</strong> Each landed slice updates its queue item (<code>queue/work-queue.yaml</code>) and this plan's data file, and the page is re-rendered.</li>
 </ul>
 <h2 id="7-sources">7. Sources<a class="headerlink" href="#7-sources" title="Permanent link">&para;</a></h2>
 <ul>
-<li>cgm-remote-monitor dev <code>604de1cb</code>; open PR heads, CI and <code>dev</code> distance read with <code>gh pr list</code>, <code>gh pr checks</code> and <code>gh api .../compare</code> on 2026-10-31 (re-read about 22:00Z). The test workflow runs only on pull requests to <code>dev</code> or <code>master</code>, so #8886 (base <code>feat/id-first-match</code>) shows only <code>auto-close</code> until it is retargeted.</li>
+<li>
+<p>Current tenancy scope: the operation-window acceptance family and release contents linked in §1; PR #8898 metadata read on 2026-11-08. Older storage, identity, registration and ecosystem figures below retain their named source baselines.</p>
+</li>
+<li>
+<p>Historical non-tenancy baseline: cgm-remote-monitor dev <code>604de1cb</code>; open PR heads, CI and <code>dev</code> distance read with <code>gh pr list</code>, <code>gh pr checks</code> and <code>gh api .../compare</code> on 2026-10-31 (re-read about 22:00Z). The test workflow runs only on pull requests to <code>dev</code> or <code>master</code>, so #8886 (base <code>feat/id-first-match</code>) shows only <code>auto-close</code> until it is retargeted.</p>
+</li>
 <li><a href="../tenancy/nightscout-storage-seam-interface-2026-09-14.html">Storage seam interface</a>, <a href="../tenancy/write-contract-spec-2026-10-07.html">write-contract spec</a>, <a href="../tenancy/multitenancy-decisions.html">execution plan</a>, <a href="../modernization/pr-8854-alignment-2026-10-26.html">#8854 alignment brief</a>.</li>
 <li><a href="spec/registration.html">Registration specification</a>, <a href="spec/identity.html">identity specification</a>, <a href="spec/records.html">records specification</a>.</li>
 <li>Nocturne <code>970031f6</code>, re-checked at <code>36d5ef4a2</code>. Tenant scope is an <code>ITenantScoped</code> marker with row-level security. It keeps a sync key (tenant, data source, sync identifier) and a single record-changed seam proposed in its issue #2130. Its API v3 serves <code>identifier</code> equal to <code>_id</code> (issue #1932).</li>

@@ -2763,6 +2763,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#deployment-choices-and-fault-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment choices and fault domains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#one-host-reference-topology" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5447,6 +5458,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#deployment-choices-and-fault-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment choices and fault domains
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#one-host-reference-topology" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5530,17 +5552,18 @@
 
 
 <h1 id="deployment-scenarios-and-rig-testing">Deployment scenarios and rig testing<a class="headerlink" href="#deployment-scenarios-and-rig-testing" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>a16e3dbf8</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
 <p><em>Contributor-facing living runbook. Deployment structure and commands are
 </em><em>read-derived</em><em> from cgm-remote-monitor
 <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>, with the nginx edge-network correction
 in <code>4935aa77049c66793669a7be940e40ed6ba5b386</code>, inspected 2026-11-07. Executed
-results retain their own source in the linked records. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold
+results retain their own source in the linked records. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold
 Compose measurement</a>
 records the later ed2 implementation, including its Host-preserving demo sender.
+Architecture/evidence grooming: 2026-11-08; no new runtime campaign was run.
 This document implements
 the documentation scope of MT-DOC-DEPLOY; current claims live in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/queue/work-queue.yaml">work queue</a> and
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/queue/work-queue.yaml">work queue</a> and
 <a href="multitenant-delivery-dashboard.html">delivery dashboard</a>.</em></p>
 <h2 id="choose-the-experiment">Choose the experiment<a class="headerlink" href="#choose-the-experiment" title="Permanent link">&para;</a></h2>
 <table>
@@ -5560,7 +5583,7 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 <tr>
 <td>One-host synthetic Compose preview</td>
 <td>Exercise separate services, browser/API/socket paths and tenant-local restore</td>
-<td>Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">Cold functional acceptance</a> passed on ed2; real-client, capacity and production admission have separate gates.</td>
+<td>Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">Cold functional acceptance</a> passed on ed2; real-client, capacity and production admission have separate gates.</td>
 </tr>
 <tr>
 <td>Headless client lab</td>
@@ -5585,6 +5608,129 @@ owns runnable packaging instructions. The
 owns the deployment requirement. Compose is implemented; a Jsonnet generator is
 an optional way to produce configuration, not another runtime component or a
 selected prerequisite.</p>
+<h2 id="deployment-choices-and-fault-domains">Deployment choices and fault domains<a class="headerlink" href="#deployment-choices-and-fault-domains" title="Permanent link">&para;</a></h2>
+<p>Tenancy, storage, execution and placement answer different questions. The
+<a href="multitenancy-decisions.html#2-storage-resolution-and-profiles">adopted profiles</a>
+are resident <code>single</code> on MongoDB and explicit multitenant roles on PostgreSQL/RLS.
+Storage ports make other combinations researchable; they do not admit a new
+supported deployment. The comparison below is <strong>read-derived architecture
+analysis</strong>; executed acceptance is linked separately.</p>
+<table>
+<thead>
+<tr>
+<th>Axis</th>
+<th>Current supported/reference choice</th>
+<th>What changing it requires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tenant scope</td>
+<td>One site for <code>single</code>; bound tenant context for multitenant roles</td>
+<td>Authorization, configuration, caches, history and lifecycle must all preserve the chosen scope.</td>
+</tr>
+<tr>
+<td>Datastore</td>
+<td>MongoDB for <code>single</code>; PostgreSQL/RLS in the multitenant preview</td>
+<td>Backend conformance, isolation, migrations, backup/recovery and operational acceptance; a new adapter alone does not qualify a server.</td>
+</tr>
+<tr>
+<td>Computation</td>
+<td>Resident single-site runtime; request-local API frames plus independent multitenant evaluator/realtime projections</td>
+<td>The separate nonresident-single prototype and reusable derived-result proposal need their own admission.</td>
+</tr>
+<tr>
+<td>Process/container</td>
+<td>Existing combined single-site server; separate API, realtime, evaluator and tenant-admin preview processes</td>
+<td>Role authority, private communication, operation lifetime and recovery must work across the actual processes. A container is packaging, not a tenant boundary.</td>
+</tr>
+<tr>
+<td>Host/replicas</td>
+<td>One-host fixed-cohort multitenant reference</td>
+<td>Multiple hosts or replicas need reviewed membership, producer fencing, transport trust, failover and recovery acceptance.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Deployment model</th>
+<th>Scope of a failure</th>
+<th>Evidence and decision use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Independent single-site servers</td>
+<td>A server process failure affects its site. Shared database/host/ingress still couple whichever sites use them.</td>
+<td>Existing compatibility baseline; inspect the operator's actual infrastructure before calling sites independent.</td>
+</tr>
+<tr>
+<td>One-host multitenant reference</td>
+<td>Tenant authority/history/restore are scoped; role processes, PostgreSQL, Vault, ingress and host remain shared.</td>
+<td>Actual cold UI/socket/restore and tenant-local restart proofs inform one-host composition and protocol design. They do not establish HA or capacity.</td>
+</tr>
+<tr>
+<td>Per-tenant database/process/host cells</td>
+<td>Isolation depends on what each cell actually owns; a shared controller, identity provider or ingress can still couple cells.</td>
+<td>An architectural alternative, with no admission from the current RLS/cohort proof. Define and test cell provisioning, migration, credentials, recovery and cross-cell operations first.</td>
+</tr>
+<tr>
+<td>Replicated or multi-host roles</td>
+<td>New partitions, split ownership, delayed messages and failover can affect tenants across hosts.</td>
+<td>Later topology research. Replicas or an orchestrator do not supply the missing application ownership/recovery contract.</td>
+</tr>
+</tbody>
+</table>
+<p>The distinction matters during failures:</p>
+<table>
+<thead>
+<tr>
+<th>Fault</th>
+<th>Boundary established by the reference</th>
+<th>Shared or unmeasured consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A's restore, uncertain DATA commit or unresolved operation</td>
+<td>A remains unavailable where required; tested B traffic and fresh shared-role startup continue.</td>
+<td>This is cooperative tenant-operation isolation, not a bound on all database locks, pool use or tenant load.</td>
+</tr>
+<tr>
+<td>A role process exits</td>
+<td>Separate roles can be restarted; incarnation checks prevent a replacement participant satisfying an old restore pin.</td>
+<td>Tenants using that role lose its service; automatic failover and recovery-time bounds are unmeasured.</td>
+</tr>
+<tr>
+<td>PostgreSQL, shared schema/privileges or pool fails</td>
+<td>Unsafe shared readiness refuses rather than serving through it.</td>
+<td>Shared tenants/roles depend on that infrastructure; RLS isolates rows, not database uptime or resource exhaustion.</td>
+</tr>
+<tr>
+<td>Vault or credential service becomes unavailable</td>
+<td>Current-authority and secret-dependent paths retain their refusal rules.</td>
+<td>Do not infer that every operation fails or survives identically; production service login, key recovery and dependency-outage acceptance remain separate.</td>
+</tr>
+<tr>
+<td>nginx or the host fails</td>
+<td>No redundant public path or host is accepted in this reference.</td>
+<td>Public reachability or all local roles can be lost together.</td>
+</tr>
+<tr>
+<td>Independently authorized direct SQL bypasses the cohort</td>
+<td>A current-session census can detect and refuse known unexpected actors.</td>
+<td>The cooperative protocol cannot exclude a new raw SQL actor; database/authentication fencing needs a separate design and proof.</td>
+</tr>
+</tbody>
+</table>
+<p>These boundaries explain why tenant-local restore can be useful before a
+production topology is qualified. The accepted experiment narrows the recovery
+mechanism; production admission additionally needs the intended edge/service
+identity, credential custody/renewal, lifecycle/key recovery, workloads and
+operating limits, monitoring and operator recovery procedures. See the
+<a href="single-and-multitenant-architecture.html#what-the-proofs-can-inform">architecture evidence guide</a>
+for which results support current decisions.</p>
 <h2 id="one-host-reference-topology">One-host reference topology<a class="headerlink" href="#one-host-reference-topology" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart LR
   Rig["Synthetic rig / API client"] --&gt; Edge["nginx: one published origin"]
@@ -5606,7 +5752,7 @@ selected prerequisite.</p>
   Operator --&gt; RT
   Operator --&gt; Eval
   Operator --&gt; Admin</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
 exercises this topology as a one-host synthetic reference. UI and nginx receive
 no database credentials. PostgreSQL, Vault,
 tenant-admin and maintenance endpoints have no public port in this reference.
@@ -5624,7 +5770,7 @@ An external TLS ingress requires its own declared trust configuration and test.<
 <p>nginx alone attaches to both the internal <code>backend</code> network and the <code>edge</code>
 bridge. The edge bridge permits host publication; every application, database,
 Vault and maintenance service stays on the internal backend network. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
 reproduces reachable UI/API/socket paths and A restore with B committing work;
 it retains exact source/image and independent cleanup attribution.</p>
 <h2 id="prepare-a-disposable-synthetic-instance">Prepare a disposable synthetic instance<a class="headerlink" href="#prepare-a-disposable-synthetic-instance" title="Permanent link">&para;</a></h2>
@@ -5729,7 +5875,7 @@ its explicitly authored new writes are expected differences.</p>
 <tr>
 <td>Shared-role restart with A suspended</td>
 <td>Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged</td>
-<td>Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a> reproduces the bounded shared-role restart criterion; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a> supplies the separate packaged ordinary-restore proof.</td>
+<td>Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a> reproduces the bounded shared-role restart criterion; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a> supplies the separate packaged ordinary-restore proof.</td>
 </tr>
 <tr>
 <td>Missing/restarted participant</td>
@@ -5789,9 +5935,9 @@ B progress while A remains unavailable, with independent physical closure. Its
 fixed trusted cooperative cohort and private credential/ingress boundary remain
 load-bearing. The earlier <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/index.html">b029 record</a>
 retains its own narrower scope. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>
-keeps their source-specific verdicts separate. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a>
+keeps their source-specific verdicts separate. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a>
 adds actual UI/socket and ordinary restore/history/B-continuity acceptance.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/8792fc7a3d62f59629ed94bac168dcad5d9aa3c7/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client record</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5c17d1fe2715fb593edb2132f99912b7ef983cf/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client record</a>
 adds actual cgmsim/oref0 execution with matching stored outcomes and independent
 physical closure. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-full-accepted/index.html">final ed2 regression</a>
 passed all seven nonbrowser tiers. Other clients and rigs, capacity, HA,
