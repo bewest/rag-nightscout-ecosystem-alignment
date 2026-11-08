@@ -1998,3 +1998,11 @@ Local lane handoff: `externals/work/HANDOFF-alignment-groom-20261108.md`.
 | Evidence | Existing ed2/c23/39f4 acceptance keeps its executed source attribution; current PR metadata was independently re-read as the same open draft. Coherent documentation review found no material sequencing or scope mismatch. | No application/native/full/browser/client campaign was run for this analysis. Documentation/link/diagram validation is separate from application readiness. |
 
 Local lane handoff: `externals/work/HANDOFF-production-path-20261108.md`.
+
+
+### Update — portable topology and public-name policy clarification (2026-11-08)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| Deployment and public access target | Maintainer clarified ordinary Kubernetes portability, logical ingress, public/private name lifetimes, explicit OIDC/anonymous/group-policy controls, potential schedule semantics and load-herd measurement. The [public requirements and proposed bindings](../../docs/30-design/tenancy/deployment-bindings-and-public-names.md) separate packaging from distributed application ownership. | One-Pod/private-IPC composition is a candidate to measure, not an adopted resource layout. Public-name/group/schedule contracts need explicit semantics and accepted feature scope. No cluster, new provider, policy engine, application role or milestone was admitted. |
+| Evidence | **Read-derived:** existing fixed-cohort source and official Kubernetes resource semantics inform the design and equivalence tests. Public requirements are recorded in [release decisions](decisions.md#deployment-portability-and-public-name-requirements-2026-11-08). | No application or cluster campaign was run. Operating limits and mitigations require workload-based measurement. |

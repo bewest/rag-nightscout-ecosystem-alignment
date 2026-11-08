@@ -30,6 +30,11 @@ owns the deployment requirement. Compose is implemented; a Jsonnet generator is
 an optional way to produce configuration, not another runtime component or a
 selected prerequisite.
 
+The [binding and public-name contract](deployment-bindings-and-public-names.md)
+maps ordinary Kubernetes resources onto these logical roles without assuming
+multi-host membership or a particular Ingress controller. Its candidate resource
+layout and access-policy extensions need their own acceptance.
+
 ## Deployment choices and fault domains
 
 Tenancy, storage, execution and placement answer different questions. The

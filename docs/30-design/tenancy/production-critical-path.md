@@ -9,6 +9,10 @@ The [dashboard](multitenant-delivery-dashboard.md) owns milestone claims; releas
 contents and named reports own execution/publication. No application campaign
 was run for this guide.*
 
+The [deployment binding and public-name contract](deployment-bindings-and-public-names.md)
+records the clarified portability, public-access and emergent-load target.
+Kubernetes packaging is distinct from adding distributed application ownership.
+
 ## The proposed first production boundary
 
 **Recommendation for review:** qualify a bounded deployment with one fixed
@@ -112,16 +116,18 @@ capabilities, not prerequisites invented for the fixed one-host reference.
 
 | Work | Can wait when | Required before widening the topology |
 |---|---|---|
-| Kubernetes/Jsonnet adoption and autoscaling | A fixed deployment meets placement, restart and operating limits. Packaging generator choice does not close authority or recovery gates. | Explicit resource ownership, drift/reconciliation, supported upgrades and safe scale-down; actual configuration generation and dependency contracts. |
+| Autoscaling/dynamic application membership | A fixed deployment meets placement, restart and operating limits. Kubernetes/Jsonnet may already package that fixed deployment. | Explicit membership, producer fencing, resource ownership and safe scale-down. See the [binding contract](deployment-bindings-and-public-names.md#what-a-kubernetes-binding-must-preserve) for packaging equivalence. |
 | Multiple API/realtime/evaluator replicas | One cohort meets workload and outage objectives. | Per-tenant producer ownership/fencing, current authority across replicas, reconnect/routing behavior and duplicate/missed work controls. A checkpoint lock is not a distributed producer lease. |
 | Cross-host restore and dynamic participant discovery | The complete trusted roster and private same-host transport remain fixed. | Authenticated cross-host transport, complete membership/incarnation agreement, partition/late-join refusal, draining and invalidation acknowledgements across all actual participants. |
 | Automatic host failover or regional failover | Operator-led recovery fits accepted recovery time/data-loss limits. | Split-ownership exclusion, dependency failover/commit uncertainty, restored key custody, stale routing/producer refusal and measured recovery. Backups and restoration practice remain required now. |
 | Transaction-pooling proxies | Direct database connections fit the admitted envelope. | Re-prove backend identity, transaction binding, RLS, operation lifetime and recovery under the proxy; the reference currently refuses this topology. |
 | Alternative secrets providers, universal result-publication service and every-transition event recovery | The adopted Vault/polling/snapshot reference meets the declared feature and operating scope. | Their own interface/compatibility/recovery proofs; no current requirement selects them to achieve HA. |
 
-Live push providers, self-service ownership transfer, a new first-party owner UI
-and richer scheduled/group delegation remain separately scoped features under
-existing decisions. Deferring HA does not defer signed human/owner acceptance,
+Live push providers, self-service ownership transfer and a new first-party owner UI
+remain separately scoped under existing decisions. The clarified public-name target
+includes explicit anonymous/authenticated access and group policy; schedule-specific
+semantics and their first-production scope require a bounded decision and acceptance
+in the [public-name contract](deployment-bindings-and-public-names.md#authenticated-sharing-and-group-policies). Deferring HA does not defer signed human/owner acceptance,
 key custody, safe upgrades/recovery, current authority or an operating envelope.
 
 Growing through several independently admitted deployments is another possible

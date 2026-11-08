@@ -104,10 +104,13 @@ production use, and admit a deployment by trust record plus live probes.
 
 ## Tenant identity, migrations and import
 
-Keep disposable public aliases, durable DNS-friendly internal names and stable
+Keep permanent or disposable public aliases, durable DNS-friendly internal names and stable
 tenant IDs distinct. Deployment-owned mapping binds internal name to ID; alias
 rotation does not recreate a tenant or transfer credentials/data. DNS discovery
-is not authority. Preserve direct-alias mode and make canonical ingress explicit:
+is not authority. The [public-name binding contract](deployment-bindings-and-public-names.md#public-name-tenant-identity-and-access-policy)
+adds explicit authentication/anonymous/group-policy requirements for shareable
+addresses; their concrete policy and schedule semantics still need acceptance.
+Preserve direct-alias mode and make canonical ingress explicit:
 only trusted transport may supply the configured internal selector; forwarded
 public aliases cannot override it. Conflicting/spoofed selectors and trust loss
 refuse. Durable allocation, collision, rename/reassignment/deletion and mapping

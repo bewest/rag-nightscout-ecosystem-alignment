@@ -401,3 +401,11 @@ deployment has run.
 ---
 
 *Draft, 2026-10-26; rows added 2026-10-30 and 2026-10-31. Requires maintainer review before it is relied upon.*
+
+
+## Deployment portability and public-name requirements (2026-11-08)
+
+| decision / requirement | who, when | scope | as it stands |
+|---|---|---|---|
+| **The bounded deployment should be expressible with ordinary Kubernetes resources, without requiring a particular Ingress or discovery implementation.** Kubernetes packaging and potential Jsonnet bindings are distinct from distributed application ownership or HA. | maintainer, 2026-11-08, deployment-target clarification | Multitenant topology and production preparation | Preserve the accepted cohort, transport, authority and recovery semantics. A public address can lead to the deployment's HTTP edge. Concrete Pod/resource layout and its restart/replacement behavior require qualification; no Kubernetes execution or HA acceptance is inferred. [Binding contract](../../docs/30-design/tenancy/deployment-bindings-and-public-names.md#what-a-kubernetes-binding-must-preserve). |
+| **Separate permanent and ephemeral public names from private tenant identity; a shareable public address needs explicit strong human authentication and access policy.** The target includes controls for anonymous allow/block, authenticated-group authorizations and potential scheduled permissions. | maintainer, 2026-11-08, public-name/access clarification | Public browser/access-policy surface | Keep current owner/data/device boundaries. Exact alias-policy defaults, group mapping, schedule precedence/time semantics and admitted feature scope remain design/acceptance work; no policy engine or implementation is selected. Load-bearing metrics and synchronized-work/recovery experiments must address herd behavior. [Public-name and load contract](../../docs/30-design/tenancy/deployment-bindings-and-public-names.md#public-name-tenant-identity-and-access-policy). |
