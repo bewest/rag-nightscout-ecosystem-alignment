@@ -22,6 +22,12 @@ For the path beyond the accepted preview, read the
 conditional HA deferrals and prior art from node-multienv and the gateway projects.
 Its initial topology and operating envelope are proposals for review.
 
+The [grid topology guide](runtime-topology.md) shows public/DMZ through backing
+stores, accepted one-host structure and the proposed fixed-roster API target.
+The [endpoint/API implementation plan](selectable-endpoints-and-api-scaling-plan.md)
+defines the queued capabilities and planned gates; Kubernetes proof and Jsonnet
+are deferred.
+
 ## Start with the task
 
 | You need | Read | What stays current |

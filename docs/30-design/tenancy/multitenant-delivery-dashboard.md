@@ -68,7 +68,9 @@ flowchart LR
   ARCH-SEAM-CONTRACT["ARCH-SEAM-CONTRACT<br/>in-progress"]
   MIG-RUNNER["MIG-RUNNER<br/>in-progress"]
   MIG-VV["MIG-VV<br/>done"]
+  MT-API-FIXED-ROSTER["MT-API-FIXED-ROSTER<br/>not-started"]
   MT-CONFIG-MIN["MT-CONFIG-MIN<br/>in-progress"]
+  MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>not-started"]
   MT-RUNTIME-PLAN["MT-RUNTIME-PLAN<br/>in-progress"]
   MT-SECRETS-CONTRACT["MT-SECRETS-CONTRACT<br/>in-progress"]
   PLAT-SERVE["PLAT-SERVE<br/>merged-upstream"]
@@ -85,6 +87,7 @@ flowchart LR
   ARCH-SEAM-CONTRACT --> ARCH-SEAM-CONSOLIDATE
   ARCH-SEAM-COMPOSE --> ARCH-SEAM-CONSOLIDATE
   MIG-VV --> MIG-RUNNER
+  MT-ENDPOINT-TRANSPORT --> MT-API-FIXED-ROSTER
   ST-WRITES --> ST-VIEWS-PROFILE
   T30-WIRING --> T30-TENANT-ADMIN
   TEN-RESOLVE --> T30-WIRING
@@ -103,6 +106,8 @@ External prerequisites are shown one level deep; the full queue owns their furth
 
 | Work item / queue claim | Lane | Queue prerequisites (claimed state) | Next bounded action |
 |---|---|---|---|
+| <a id="mt-endpoint-transport"></a>**MT-ENDPOINT-TRANSPORT**: not-started | Queued / no runtime implementation | None recorded | Settle normalized private endpoint/trust contract, implement actual UDS/HTTP(S) consuming paths and native parity/restore controls. Plan is selectable-endpoints-and-api-scaling-plan.md; runtime gates UNMEASURED. No Kubernetes proof/Jsonnet or new discovery service. |
+| <a id="mt-api-fixed-roster"></a>**MT-API-FIXED-ROSTER**: not-started | Queued / consumes endpoint capability | MT-ENDPOINT-TRANSPORT (not-started) | Prove two declared APIs behind a service destination while restore directly drains/invalidates every actual instance. Consume platform/config inventory; evaluator remains singleton. Native concurrency/replacement/client gates UNMEASURED; platform bindings and dynamic membership deferred. |
 | <a id="mt-config-min"></a>**MT-CONFIG-MIN**: in-progress | R72 preview criteria accepted / wider scope retained | None recorded | R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts. |
 | <a id="st-pg"></a>**ST-PG**: in-progress | R72 preview criteria accepted / wider scope retained | None recorded | R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts. |
 | <a id="ten-lab"></a>**TEN-LAB**: done | R72 preview criteria accepted / wider scope retained | ST-PG (in-progress), T30-WIRING (in-progress), MIG-RUNNER (in-progress) | R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts. |

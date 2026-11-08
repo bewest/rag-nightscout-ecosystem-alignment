@@ -12,6 +12,14 @@ acceptance is claimed. This analysis is **read-derived** from the accepted
 existing [tenant decisions](multitenancy-decisions.md) and Kubernetes documentation.
 No cluster or provider deployment was inspected or exercised.*
 
+The [grid topology plates](runtime-topology.md) show public-to-backing-store
+zones without crossing connection arms. The
+[endpoint/API implementation plan](selectable-endpoints-and-api-scaling-plan.md)
+is queued as MT-ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER. Current work proves
+component contracts using native processes; Kubernetes deployment proof and
+Jsonnet are deferred. Existing platform lifecycle/discovery/identity primitives
+are inputs to the architecture, not products to reimplement.
+
 ## Portability is distinct from distributed application ownership
 
 The target is a deployment contract with Compose and Kubernetes bindings.

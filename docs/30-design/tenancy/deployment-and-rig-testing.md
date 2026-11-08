@@ -78,6 +78,10 @@ operating limits, monitoring and operator recovery procedures. See the
 [architecture evidence guide](single-and-multitenant-architecture.md#what-the-proofs-can-inform)
 for which results support current decisions.
 
+For aligned top-to-bottom zones and explicit communication planes, use the
+[current and proposed grid topology plates](runtime-topology.md). The compact
+flowchart below retains the accepted reference's connection summary.
+
 ## One-host reference topology
 
 ```mermaid
