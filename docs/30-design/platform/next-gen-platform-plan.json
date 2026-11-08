@@ -228,8 +228,8 @@
    "track": "storage",
    "phase": "dev",
    "state": "done",
-   "short": "v3 on its own",
-   "title": "API v3 runs without API v1's modules, the socket and the in-memory cache: its reads and writes reach storage only through the interface, so `serve api` serves API v3 on its own (historical headless-API stage, not multitenant M3)",
+   "short": "v3 dependency decoupling",
+   "title": "Historical dependency decoupling: API v3 reached storage through the interface without API v1's modules, socket or resident cache, enabling the measured headless API stage. This is not selected per-version deployment; the current logical stateless REST/API component composes configured admitted v1/v2/v3 adapters, retaining route-coverage limits.",
    "where": "lib/api3 (the cached collection and its cache hooks), bootevent's factory chain; about the fixtures the API v3 suites share with v1 and the socket",
    "check": "`serve api` passes the API v3 suites, with suites whose subject is single-only pending; `single` unchanged",
    "depends": [
