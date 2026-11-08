@@ -16,6 +16,10 @@ This guide explains their SQL implementation and does not promote M6.*
 
 ## Scope and evidence
 
+For diagram-first review, open the [database and component ownership visual
+review](../../../site/pages/multitenant-database-design.html). It renders the
+tables and diagrams below from this guide, with the source revision recorded.
+
 The explicit multitenant PostgreSQL deployment shares physical tables among tenants.
 It maps each selected catalogue to an operator-configured schema; a schema is a
 component/domain namespace, not a new schema for each tenant. Single-tenant and
@@ -73,36 +77,43 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.
 | Credentials, owner configuration and current policy | Management/authority components own mutation checks, audit and invalidation. Consumers use their admitted authority/settings interfaces; data-plane requests retain their own current authorization. | Separate management audience and component interfaces exist. Cross-process consumers should invoke owned commands rather than edit these tables; this is not a claim that every authority operation has a new network endpoint. |
 | Suspension, restore, deletion and activation | Lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants. | Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony. |
 
-**Read-derived responsibility diagram.** Solid arrows are application commands;
-dotted arrows are admitted SQL access, not foreign keys. Storage groups below
-are logical families within the selected namespaces, not separate databases.
+### Application command paths
+
+**Read-derived command diagram.** These are private application calls, not SQL
+relationships. The alarm handoff and socket mutation have separate authorization
+and acknowledgement contracts; the arrows do not imply one chained transaction.
 
 ```mermaid
-flowchart TB
-  RT["Realtime"] -->|"authorize / mutate / ack"| API["API: canonical clinical writes"]
-  EV["Evaluator / notification component"] -->|"alarm handoff"| RT
-  Admin["Management / authority components"]
+flowchart LR
+  EV["Evaluator notification consumer"] -->|"alarm handoff"| RT["Realtime"]
+  RT -->|"authorize / mutate / ack"| API["API"]
+```
+
+### Component storage ownership
+
+**Read-derived ownership matrix.** Each row is an admitted component's storage
+responsibility, not a separate physical database. Realtime and evaluator read the
+same clinical tables, but own distinct checkpoint namespaces. Privilege checks
+remain specific to the selected catalogue and operation.
+
+| Component | Admitted reads | Owned persistence / controlled writes |
+|---|---|---|
+| API | Clinical records; current authority and configuration | Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression |
+| Realtime | Clinical records; current configuration and admitted authority | Realtime projection and checkpoint namespace |
+| Evaluator / notification component | Clinical records; current configuration and suppression | Evaluator projection and checkpoint namespace; notification producer state, requests and attempts |
+| Management / authority components | Current authority, policy, owner configuration and secret references | Admitted credential, session, policy, owner-settings and secret mutations with audit |
+| Lifecycle controller | Current authority, durable operations and pinned participant identities | Lifecycle windows, claims and audit; controlled clinical restore and forward history |
+
+### Lifecycle control boundary
+
+**Read-derived control diagram.** The participant group means every declared
+instance, including replicas. A load-balanced endpoint reaching just one instance
+cannot replace this control boundary. The restore sequence below gives the
+ordering and uncertainty rules.
+
+```mermaid
+flowchart LR
   LC["Lifecycle controller"] -->|"pin / drain / invalidate each instance"| Roles["API / realtime / evaluator / admin"]
-  subgraph PG["Application-owned PostgreSQL namespaces"]
-    Clinical["Clinical documents + insertion counters + history clock"]
-    Checkpoints["Separate realtime and evaluator projections / checkpoints"]
-    Notifications["Notification state / requests / attempts"]
-    Suppression["Alarm suppression"]
-    Authority["Current authority / sessions / policy / owner settings / secrets"]
-    Windows["Lifecycle windows / operations / authority / audit"]
-  end
-  API -. "canonical writes" .-> Clinical
-  API -. "authorized acknowledgement" .-> Suppression
-  API -. "current authority" .-> Authority
-  RT -. "clinical reads" .-> Clinical
-  EV -. "clinical reads" .-> Clinical
-  RT -. "own checkpoint" .-> Checkpoints
-  EV -. "own checkpoint" .-> Checkpoints
-  EV -. "owned producer persistence" .-> Notifications
-  EV -. "current suppression" .-> Suppression
-  Admin -. "owned mutations" .-> Authority
-  LC -. "controlled clinical restore" .-> Clinical
-  LC -. "maintenance protocol" .-> Windows
 ```
 
 Application APIs preserve existing client payloads, authority and reply behavior.
@@ -169,39 +180,47 @@ found in PostgreSQL is not automatically exported, restored or deleted. Exact
 outbox, suppression and control DDL lives in the [notification candidate][outbox-schema],
 [suppression candidate][alarm-schema] and [lifecycle candidate][control-schema].
 
-**Read-derived table map.** Solid arrows below are declared foreign keys in the
-named candidates; dotted arrows are logical bindings/protocol use, not SQL foreign
-keys. Tenant labels and schema names represent roles in the architecture, not
-physical deployment identifiers.
+### Clinical ordering and history
+
+**Read-derived logical bindings.** Dotted arrows describe allocation or history
+protocol use, not SQL foreign keys. Namespace ledgers govern catalogue admission;
+consumer checkpoints materialize each consumer's input separately.
+
+```mermaid
+flowchart TB
+  ordinal["tenant_insertion_ordinal<br/>per tenant / collection"] -. "insert allocation" .-> doc["Clinical documents<br/>tenant_id / typed identity / JSONB"]
+  clock["tenant_write_clock<br/>per tenant"] -. "history stamps" .-> doc
+```
+
+### Authentication foreign keys
+
+**Read-derived declared foreign keys.** These are a bounded relationship view;
+the table inventory above includes additional authorization and secret families.
 
 ```mermaid
 flowchart LR
-  subgraph domains[Selected domain namespaces]
-    doc["Clinical documents<br/>tenant_id / typed identity / doc"]
-    ordinal["tenant_insertion_ordinal<br/>tenant_id / last_ordinal"]
-    ledger["schema_migrations<br/>name / checksum"]
-    ordinal -. "BEFORE INSERT allocation" .-> doc
-    ledger -. "catalogue admission" .-> doc
-  end
-  clock["tenant_write_clock<br/>tenant_id / last_stamp"] -. "history stamps" .-> doc
-  checkpoint["tenant_consumer_checkpoint<br/>tenant_id / consumer"] -. "replay / reconciliation" .-> doc
-  checkpoint -. "acquisition input" .-> evaluated["Current evaluator runtime output"]
-  evaluated -. "eligible current cycle" .-> producer["notification state / heads / requests"]
-  suppression["tenant_alarm_suppression"] -. "current eligibility" .-> producer
-  subgraph control[Operation-control namespace]
-    window[tenant_lifecycle_windows]
-    operation[tenant_lifecycle_operations]
-    authority[tenant_lifecycle_restore_authority]
-    audit[tenant_lifecycle_restore_audit]
-    operation -->|tenant_id FK| window
-    authority -->|tenant_id FK| window
-    audit -->|tenant_id FK| window
-    ceremony[tenant_lifecycle_ceremony] -->|request_id and tenant_id FK| request[tenant_lifecycle_requests]
-  end
-  window -. "tenant admission / suspension" .-> doc
-  access[access_sessions] -->|credential and subject FK| credential[access_credentials]
-  credential -->|tenant_id FK| tenant[access_tenants]
-  keys[access_keys] -->|tenant_id FK| tenant
+  sessions["access_sessions"] -->|"credential + subject FK"| credentials["access_credentials"]
+  credentials -->|"tenant_id FK"| tenants["access_tenants"]
+  keys["access_keys"] -->|"tenant_id FK"| tenants
+```
+
+### Lifecycle foreign keys
+
+**Read-derived declared foreign keys.** Operation, authority and audit rows bind
+to their tenant's window. The deletion ceremony has its own request relationship;
+a restore claim does not authorize deletion. These diagrams do not specify phase
+transitions; the restore sequence below describes the admitted protocol.
+
+```mermaid
+flowchart BT
+  operation["tenant_lifecycle_operations"] -->|"tenant_id FK"| window["tenant_lifecycle_windows"]
+  authority["tenant_lifecycle_restore_authority"] -->|"tenant_id FK"| window
+  audit["tenant_lifecycle_restore_audit"] -->|"tenant_id FK"| window
+```
+
+```mermaid
+flowchart LR
+  ceremony["tenant_lifecycle_ceremony"] -->|"request_id + tenant_id FK"| request["tenant_lifecycle_requests"]
 ```
 
 ## Binding, forced RLS and privileges
