@@ -403,6 +403,12 @@ deployment has run.
 *Draft, 2026-10-26; rows added 2026-10-30 and 2026-10-31. Requires maintainer review before it is relied upon.*
 
 
+## Exclusive application ownership of PostgreSQL (2026-11-08)
+
+| decision | who, when | scope | as it stands |
+|---|---|---|---|
+| <a id="exclusive-application-postgres-ownership"></a>**Nightscout has exclusive application ownership of its selected PostgreSQL namespaces. Supported writers are its declared internal components and explicit provisioning, migration and lifecycle tools using their admitted contracts. Other direct database writers are unsupported; their effects are undefined behavior.** | maintainer, 2026-11-08, explicit ownership-contract instruction | Multitenant PostgreSQL; consistent with single-tenant Nightscout's unsupported external MongoDB writers | Ownership is collective across the application, not a single process or database connection. Internal components must preserve tenant binding/RLS, current authority, canonical write semantics, operation admission/drain and restore invalidation. Use application interfaces for commands across component ownership boundaries; direct storage access remains appropriate for admitted reads and component-owned persistence. Maintain scoped roles, private credentials and explicit maintenance authority. The cooperative protocol need not exclude an independently authorized raw SQL writer outside this supported contract. No stronger arbitrary-writer fence, new storage privilege or runtime acceptance follows. [Component ownership and internal APIs](../../docs/30-design/tenancy/sql-and-migration-architecture.md#component-ownership-and-internal-application-apis) describe the design direction and existing implementation boundaries. |
+
 ## Deployment portability and public-name requirements (2026-11-08)
 
 | decision / requirement | who, when | scope | as it stands |

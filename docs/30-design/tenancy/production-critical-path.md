@@ -95,10 +95,14 @@ pending case remains UNMEASURED.
 | **Measured operating behavior** — after envelope declaration, on representative inputs | No production capacity/freshness/recovery budget follows from existing functional campaigns. Shared roles/pool/database create interference paths. | Quiet steady-state and burst/soak evidence with independent stored-state oracle: hot tenant alongside healthy tenants, large history, evaluator backlog, reconnect flood, slow/down dependencies, restores/upgrades, disk/backup growth and egress refusal. Measure latency tails, freshness, pool/lock/memory costs and recovery against agreed bounds. Verify limits shed/refuse work while preserving other tenants and authorized effects. | [Experiment contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments); operations/measurement owner and acceptance coordinator. |
 | **Coherent release and deployment admission** — join the preceding rows | A collection of source slices, or the old ed2 campaign, cannot qualify a changed production candidate. M6 promotion, release and deployment trust are separate decisions. | Frozen joined candidate with applicable full/default-browser/enabled-corpus/client/native acceptance and final prcheck; exact pending/unsupported inventory and controls. Then actual deployment trust record plus live spoof/conflict/outage probes, backup restore/recovery rehearsal, observable service failures and operator response. Reviewed release/rollback and explicit real-data/identity/role admission precede the production cohort. | [Batching rules](multitenant-integration-batching-plan-2026-11-06.md#3-batch-rules), [deployment admission](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-admission-probes-and-trust-record), release records; coordinator, maintainer and deployment operator. |
 
-The production deployment must either establish custody/private ingress and the
-trusted cooperative writer roster, or provide stronger exclusion when separately
-authorized raw SQL writers are part of its topology. A current-session census is
-only diagnostic; it cannot exclude a new raw writer. The existing
+The production deployment must establish custody/private ingress and the
+declared cooperative application roster under the
+[exclusive application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership).
+External direct SQL writers are unsupported and their effects are undefined
+behavior; arbitrary-writer exclusion is not an admission gate for this supported
+topology. Every supported internal participant must still follow its authority,
+write and lifecycle contracts. A current-session census is diagnostic, not proof
+of credential custody or complete participant registration. The existing
 [separate-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes)
 does not require inventing a stronger database fence merely to keep processes
 separate. Transaction pooling is outside the accepted reference.

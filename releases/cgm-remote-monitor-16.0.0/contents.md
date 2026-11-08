@@ -2007,6 +2007,17 @@ Local lane handoff: `externals/work/HANDOFF-production-path-20261108.md`.
 | Deployment and public access target | Maintainer clarified ordinary Kubernetes portability, logical ingress, public/private name lifetimes, explicit OIDC/anonymous/group-policy controls, potential schedule semantics and load-herd measurement. The [public requirements and proposed bindings](../../docs/30-design/tenancy/deployment-bindings-and-public-names.md) separate packaging from distributed application ownership. | One-Pod/private-IPC composition is a candidate to measure, not an adopted resource layout. Public-name/group/schedule contracts need explicit semantics and accepted feature scope. No cluster, new provider, policy engine, application role or milestone was admitted. |
 | Evidence | **Read-derived:** existing fixed-cohort source and official Kubernetes resource semantics inform the design and equivalence tests. Public requirements are recorded in [release decisions](decisions.md#deployment-portability-and-public-name-requirements-2026-11-08). | No application or cluster campaign was run. Operating limits and mitigations require workload-based measurement. |
 
+### Update — PostgreSQL ownership and component API boundaries (2026-11-08)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| Supported writers | Maintainer adopted [exclusive application ownership of PostgreSQL](decisions.md#exclusive-application-postgres-ownership). The supported roster includes internal components and controlled maintenance tools; external direct writers have undefined behavior. Current architecture and production guidance link that contract. | Supported internal participants retain authorization, tenant isolation, canonical write and lifecycle obligations. No new application behavior, privilege or runtime acceptance. |
+| Database design | **Read-derived:** the [SQL/database page](../../docs/30-design/tenancy/sql-and-migration-architecture.md#component-ownership-and-internal-application-apis) adds a component ownership table and command-versus-storage diagram. Cross-owner commands use application interfaces; admitted reads and owned transactional persistence retain direct storage access. | Existing socket/notification/control protocols keep their evidence attribution. Further internal APIs require their own implementation and acceptance. |
+| Kubernetes smell test | **Read-derived:** request-scoped API and static serving are replaceable-replica candidates; realtime, evaluator/notification and lifecycle roles retain connection, producer or maintenance ownership. The database guide links the existing transport/replica assessment. | Kubernetes execution/autoscaling and performance remain UNMEASURED. Every serving replica must participate in restore; generic load balancing does not implement complete-cohort control or browser fanout. |
+| Documentation verification | **Reproduced:** queue-check, docs-links and the focused MT-DOC-SQL queue-status gate pass; all four SQL-page Mermaid blocks parse with the pinned parser after correcting existing sequence-label semicolons. | Broad queue-status exits with FAIL, skipped and UNMEASURED items in the isolated worktree/sandbox; it is not a programme acceptance verdict. No application campaign, rich-site build or cluster execution was run. |
+
+Local lane handoff: `externals/work/HANDOFF-postgres-ownership-20261108.md`.
+
 
 ### Update — API scaling and endpoint mechanism assessment (2026-11-08)
 
