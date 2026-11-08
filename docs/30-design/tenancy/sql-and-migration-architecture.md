@@ -3,10 +3,10 @@
 *Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor `151de0248a1e4301c85b5c638185eec3ca8c38e6`
 (tree `3bb46431a19e604dc028768f0e72e6ad29616c26`). Mechanisms and diagrams below are
-**read-derived** unless a linked record says reproduced. This is a local source
-proposal, not a released operator feature. Commit-pinned application links name
-that exact local revision; they become publicly resolvable when the maintainer
-publishes it. Decisions live in the [tenancy contracts](multitenancy-decisions.md)
+**read-derived** unless a linked record says reproduced. These are branch
+implementation mechanisms, not a released operator feature. Commit-pinned
+application links identify that inspected revision; executed measurements retain
+their own source. Decisions live in the [tenancy contracts](multitenancy-decisions.md)
 and [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md);
 acceptance lives in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
 This guide explains their SQL implementation and does not promote M6.*
@@ -26,6 +26,7 @@ own admitted port behavior.
 |---|---|---|
 | [b029 native acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md) | **Reproduced:** all 17 stated native operation-window criteria on `b029f5d81f539a4846e51ab88e540cb4511910fa`, including separate roles, forward-history restore, running B progress and fault refusals. | Different source from this guide. It does not measure the new tenant-local startup admission or whole M6. |
 | [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) | **Reproduced:** separate-role restore and fresh shared-role restarts with B progress while A remained unavailable in the recorded failure cases; unsafe-clock API startup refused; independent physical closure. | Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound. |
+| [ed2 cold Compose measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) | **Reproduced:** packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure. | Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate. |
 | [Application startup source guide][cohort-guide] and [startup controls][startup-controls] | The `151de024` source defers genuinely suspended tenants while retaining shared readiness failures and later full initialization. | Source/protocol reading; actual runtime measurements retain their c23 attribution above. |
 | [Counter analysis](counter-and-restore-options.md) and [clock proof plan](postgres-tenant-clock-proof.md) | Rationale, alternatives and invariants, with individually scoped experiments. | Their earlier source anchors and feasibility results do not replace current catalogue/readiness verification. |
 
@@ -306,10 +307,11 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the [application cohort guide][cohort-guide].
-Neither this architecture reading nor the c23 native matrix establishes HA,
-multihost membership, capacity acceptance, cold Compose restore completion or all
-M6. The [current acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
-owns the distinct browser, cold Compose, client and corpus verdicts.
+The [ed2 cold measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
+adds the packaged ordinary-restore/UI/B-continuity scope. HA, multihost
+membership, capacity and whole M6 retain separate admission criteria. The
+[current acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
+owns the distinct browser, cold Compose, client, regression and corpus verdicts.
 
 [deployment-catalogues]: https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/config.js#L14
 [deployment-lifecycle]: https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/config.js#L131

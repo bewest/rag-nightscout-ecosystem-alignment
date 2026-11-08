@@ -4,7 +4,10 @@
 **read-derived** from cgm-remote-monitor
 `151de0248a1e4301c85b5c638185eec3ca8c38e6`, with the nginx edge-network correction
 in `4935aa77049c66793669a7be940e40ed6ba5b386`, inspected 2026-11-07. Executed
-results retain their own source in the linked records. This document implements
+results retain their own source in the linked records. The [accepted cold
+Compose measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
+records the later ed2 implementation, including its Host-preserving demo sender.
+This document implements
 the documentation scope of MT-DOC-DEPLOY; current claims live in the
 [work queue](../../../queue/work-queue.yaml) and
 [delivery dashboard](multitenant-delivery-dashboard.md).*
@@ -14,12 +17,12 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 | Scenario | Purpose | Boundary |
 |---|---|---|
 | Existing single-tenant installation | Compatibility baseline for a selected rig/client | Existing MongoDB deployment and client configuration; `nightscout single` remains the default. |
-| One-host synthetic Compose preview | Exercise separate services, browser/API/socket paths and tenant-local restore | Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. Actual cold Compose/browser/restore acceptance is still pending. |
+| One-host synthetic Compose preview | Exercise separate services, browser/API/socket paths and tenant-local restore | Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. [Cold functional acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) passed on ed2; real-client, capacity and production admission have separate gates. |
 | Headless client lab | Compare pinned clients against the admitted API surface | Follow the [binary client lab](../../../tools/lab/m4-client-binaries/README.md); its evidence does not establish every mobile device or every new source head. |
 | Physical mobile or pump/CGM rig | Verify the chosen client, network path, upload/history and reconnect behavior | A separately recorded experiment using synthetic input. Device execution is not implied by source-pattern replay. |
 | Multi-host, orchestrated replicas or failover | Explore later deployment design | Proposed topology: the current private socket roster is a one-host contract, not distributed discovery or HA. |
 
-The [application Compose guide](https://github.com/nightscout/cgm-remote-monitor/blob/4935aa77049c66793669a7be940e40ed6ba5b386/deploy/multitenant/README.md)
+The [application Compose guide](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/README.md)
 owns runnable packaging instructions. The
 [service-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes)
 owns the deployment requirement. Compose is implemented; a Jsonnet generator is
@@ -51,14 +54,15 @@ flowchart LR
   Operator --> Admin
 ```
 
-These are source paths, not an assertion that this entire deployment has passed
-acceptance. UI and nginx receive no database credentials. PostgreSQL, Vault,
+The [accepted cold measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
+exercises this topology as a one-host synthetic reference. UI and nginx receive
+no database credentials. PostgreSQL, Vault,
 tenant-admin and maintenance endpoints have no public port in this reference.
 The UI renders the shipping templates/assets; API and realtime decide data
 authority. See the [communication architecture](evaluator-realtime-communication.md)
 for the two distinct record-frame and evaluator-output paths.
 
-The [Compose file](https://github.com/nightscout/cgm-remote-monitor/blob/4935aa77049c66793669a7be940e40ed6ba5b386/deploy/multitenant/compose.yaml#L1)
+The [Compose file](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/compose.yaml#L1)
 declares internal service ports: API 1337, realtime 1339, UI 1340 and tenant-admin
 1341. Only nginx's 8080 is published, by default at `127.0.0.1:18080`.
 The [nginx route map](https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/nginx.conf#L14)
@@ -69,9 +73,10 @@ An external TLS ingress requires its own declared trust configuration and test.
 
 nginx alone attaches to both the internal `backend` network and the `edge`
 bridge. The edge bridge permits host publication; every application, database,
-Vault and maintenance service stays on the internal backend network. A healthy
-container does not establish a reachable browser origin: actual cold Compose
-UI/API and restore acceptance on the joined candidate remain pending.
+Vault and maintenance service stays on the internal backend network. The
+[accepted cold measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
+reproduces reachable UI/API/socket paths and A restore with B committing work;
+it retains exact source/image and independent cleanup attribution.
 
 ## Prepare a disposable synthetic instance
 
@@ -174,7 +179,7 @@ its explicitly authored new writes are expected differences.
 | Ordinary A restore | A's clinical values/public identity and relative ordering; normal forward history updates and deletions; B read/write progress | No global pause or indiscriminate rewind of current authority/consumer state. |
 | Interruption before activation | Durable claim, audit, unfinished operations and actual data outcome | Keep A unavailable; no blind replay, timeout-based reopening or orphan clearance. |
 | Activation acknowledgement lost | Actual persisted phase and the recorded uncertain result | Activation may already have committed after its prerequisites succeeded; inspect the outcome rather than assuming suspension or blindly repeating activation. |
-| Shared-role restart with A suspended | Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged | Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) reproduces the bounded shared-role restart criterion; cold Compose acceptance remains separate. |
+| Shared-role restart with A suspended | Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged | Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) reproduces the bounded shared-role restart criterion; the [ed2 cold record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) supplies the separate packaged ordinary-restore proof. |
 | Missing/restarted participant | Changed incarnation, missing acknowledgement or unresolved operation | Old restore pins cannot activate using replacement processes. |
 | Database/Vault/shared-host outage | Which shared dependency failed and what each tenant can still do | Tenant-local restore does not promise tenant-local infrastructure failures or HA. |
 
@@ -235,7 +240,9 @@ B progress while A remains unavailable, with independent physical closure. Its
 fixed trusted cooperative cohort and private credential/ingress boundary remain
 load-bearing. The earlier [b029 record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md)
 retains its own narrower scope. The [current acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
-keeps cold Compose/UI/restore, client and corpus verdicts separate; native success
-does not establish all rigs, capacity, HA, production recovery or M6.
+keeps their source-specific verdicts separate. The [ed2 cold record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
+adds actual UI/socket and ordinary restore/history/B-continuity acceptance.
+Actual clients and final regression remain separate gates; all rigs, capacity,
+HA, production recovery and M6 retain their own admission criteria.
 The [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
 own the latest executed acceptance and remaining blockers.
