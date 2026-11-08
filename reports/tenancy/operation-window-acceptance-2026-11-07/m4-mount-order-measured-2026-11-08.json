@@ -1,0 +1,20 @@
+{
+  "scope": "NEW_READONLY_REPEATED_INSPECT_HASH_MEASUREMENT_WITH_SEPARATE_LATE_PHYSICAL_READBACK",
+  "state": "MEASURED_WITH_TERMINAL_DEADLINE_REFUSAL",
+  "selectedContainers": 31,
+  "inspectCalls": 3,
+  "pairedOrderOnlyChanges": 22,
+  "containersWithOrderOnlyChange": 11,
+  "allOtherTopFieldsAndCompleteConfigHostHashesUnchanged": true,
+  "completeMountObjectsByDestinationUnchanged": true,
+  "originalCleanup": true,
+  "allRetainedAndOwnerBirthsAbsent": true,
+  "retainedAndOwnerCount": 4,
+  "verifiedWithinOriginalProbeCleanup": false,
+  "originalDeadlineCheck": "REFUSED before readback because deadline already expired",
+  "runtimeReleased": true,
+  "originalM4FailureCause": "UNMEASURED",
+  "receiptSha256": "6500d853f4c2b1d4f6b9d47ca3618097cb21a0c905a530cbbb59643d511705ae",
+  "clientCompatibility": "UNMEASURED",
+  "evidenceBasis": "reproduced new read-only event; original failure attribution unmeasured"
+}

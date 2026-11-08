@@ -1,0 +1,39 @@
+{
+  "source": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+  "state": "STOPPED",
+  "scientificCompatible": false,
+  "actualMainPostIndependentReceiptsVerified": true,
+  "sameOriginalAbsoluteBudget": true,
+  "outerOwnerAndAllThreeFamiliesRetainedBirthsAbsent": true,
+  "retainedAndOwnerBirthCount": 87,
+  "freshCompleteBaselinePassed": true,
+  "explicitSavedResourceAbsencePassed": true,
+  "runtimeReleased": true,
+  "mainReceiptSha256": "f7cca7923f87320007a1d6bf81764a64deabea2c66c33eb64351787d489687d7",
+  "postReceiptSha256": "8b68cf3b3a0dad05c12a8ec1c48d6ba5ad7e8019f60e33919168e72272598547",
+  "independentReceiptSha256": "a1c00c8faa05a9b7022c511c06078489f6e0158a302eabeabb799e6330cf1ec1",
+  "savedContainersAbsent": 54,
+  "savedVolumesAbsent": 5,
+  "originalCleanupDeadline": 3686954.156483997,
+  "verifiedAtMonotonic": 3686838.79086811,
+  "remainingOriginalCleanupSeconds": 115.36561553832144,
+  "evidenceBasis": "reproduced",
+  "actualClients": [
+    "cgmsim",
+    "oref0"
+  ],
+  "actualRunCounts": {
+    "checks": 83,
+    "passed": 82,
+    "failed": 1,
+    "cellsBaseline": 19,
+    "cellsPreview": 19,
+    "requestsBaseline": 24,
+    "requestsPreview": 40
+  },
+  "rawUnexplainedMarker": -1,
+  "classification": "UNMEASURED: classifier failed before completing",
+  "failureMechanism": "Tracked instrument bundle omitted tools/qc/compat/classify_compat.py required by the actual isolated classifier CLI",
+  "instrumentOriginal": "2575cbbf035df9d1553a0a1bb6ee93799ba2e1f4",
+  "sourceClosureFix": "PENDING; no old receipt or run record relabelled"
+}

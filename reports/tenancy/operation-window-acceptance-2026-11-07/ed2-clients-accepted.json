@@ -1,0 +1,49 @@
+{
+  "source": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+  "state": "PASS",
+  "scientificCompatible": true,
+  "actualMainPostIndependentReceiptsVerified": true,
+  "sameOriginalAbsoluteBudget": true,
+  "outerOwnerAndAllThreeFamiliesRetainedBirthsAbsent": true,
+  "retainedAndOwnerBirthCount": 89,
+  "freshCompleteBaselinePassed": true,
+  "explicitSavedResourceAbsencePassed": true,
+  "runtimeReleased": true,
+  "mainReceiptSha256": "9ddaf98bcba057ddfc9c8a9446a5a2e8e9168353a1d6d42ea621f9f82dc31a1e",
+  "postReceiptSha256": "f19a60550a886ef039e517ce050311a2946d730853e90116a3ba75db1adf029b",
+  "independentReceiptSha256": "74c680446b805d5a3c5f93c55948a584d1a445d2baa7068482e9bd115929a025",
+  "savedContainersAbsent": 54,
+  "savedVolumesAbsent": 5,
+  "originalCleanupDeadline": 3688536.235566688,
+  "verifiedAtMonotonic": 3688421.019437721,
+  "remainingOriginalCleanupSeconds": 115.21612868085504,
+  "evidenceBasis": "reproduced in one complete actual client campaign",
+  "actualClients": [
+    "cgmsim",
+    "oref0"
+  ],
+  "actualRunCounts": {
+    "checks": 82,
+    "passed": 82,
+    "failed": 0,
+    "cellsBaseline": 19,
+    "cellsPreview": 19,
+    "requestsBaseline": 24,
+    "requestsPreview": 40
+  },
+  "classification": {
+    "differing": 0,
+    "unexplained": 0,
+    "unexplained_cells": [],
+    "missing_in_preview": [],
+    "missing_in_baseline": []
+  },
+  "allChecksPositive": true,
+  "instrumentOriginal": "2575cbbf035df9d1553a0a1bb6ee93799ba2e1f4",
+  "repositorySourceContract": "m4-client-bundle-v2",
+  "exactRepositorySourcePins": 26,
+  "exactClassifierPackagePins": 35,
+  "beforeGrantRequiredSetsAndInterpreterAliasVerified": true,
+  "baselineEvidenceScope": "Actual fixed independent Family full-baseline capture hash-bound to automatic after-entry-reap terminal birth read; no extra post-reap Docker query",
+  "scope": "Actual pinned cgmsim/oref0 synthetic compatibility only; no connector polling, Android/device or milestone/production admission."
+}
