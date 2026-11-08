@@ -2579,6 +2579,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -3504,6 +3510,62 @@
   
   
     <li class="md-nav__item">
+      <a href="runtime-topology.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime topology: zones, components and coordination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selectable private endpoints and fixed-roster API scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="single-and-multitenant-architecture.html" class="md-nav__link">
         
   
@@ -3632,6 +3694,64 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -5614,7 +5734,7 @@
 
 
 <h1 id="deployment-bindings-public-names-and-load-behavior">Deployment bindings, public names and load behavior<a class="headerlink" href="#deployment-bindings-public-names-and-load-behavior" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>30ab0bc4e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>58b2b864c</code>.</em></p>
 <p><em>Living contributor-facing requirements and decision-preparation guide, 2026-11-08.
 The maintainer clarified the target: ordinary Kubernetes resources should be able
 to express the bounded deployment, public-name lifetime must be distinct from
@@ -5626,6 +5746,13 @@ acceptance is claimed. This analysis is </em><em>read-derived</em><em> from the 
 <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/docs/tenant-operation-cohort.md">application cohort contract</a>,
 existing <a href="multitenancy-decisions.html">tenant decisions</a> and Kubernetes documentation.
 No cluster or provider deployment was inspected or exercised.</em></p>
+<p>The <a href="runtime-topology.html">grid topology plates</a> show public-to-backing-store
+zones without crossing connection arms. The
+<a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API implementation plan</a>
+is queued as MT-ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER. Current work proves
+component contracts using native processes; Kubernetes deployment proof and
+Jsonnet are deferred. Existing platform lifecycle/discovery/identity primitives
+are inputs to the architecture, not products to reimplement.</p>
 <h2 id="portability-is-distinct-from-distributed-application-ownership">Portability is distinct from distributed application ownership<a class="headerlink" href="#portability-is-distinct-from-distributed-application-ownership" title="Permanent link">&para;</a></h2>
 <p>The target is a deployment contract with Compose and Kubernetes bindings.
 Kubernetes may schedule and expose one bounded application cohort without

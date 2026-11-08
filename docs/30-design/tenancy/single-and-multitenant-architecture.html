@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/single-and-multitenant-architecture.html">
       
       
-        <link rel="prev" href="production-critical-path.html">
+        <link rel="prev" href="selectable-endpoints-and-api-scaling-plan.html">
       
       
         <link rel="next" href="sql-and-migration-architecture.html">
@@ -2579,6 +2579,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -3365,6 +3371,62 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="runtime-topology.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime topology: zones, components and coordination
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="selectable-endpoints-and-api-scaling-plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selectable private endpoints and fixed-roster API scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -3698,6 +3760,64 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
     </li>
   
 
@@ -5749,7 +5869,7 @@
 <p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
 <p><em>Contributor-facing living explanation, groomed 2026-11-08. The published
 candidate is cgm-remote-monitor <code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>,
-recorded in the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
+recorded in the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
 PR #8898 remains open/draft, not merged or released. Architecture interpretation
 is </em><em>read-derived</em><em>; linked runtime results are </em><em>recorded reproductions</em><em>, not
 new executions for this document. The retained shared-code/module survey is
@@ -5773,7 +5893,7 @@ need their own evidence; an accepted component is not a completed platform track
 <tbody>
 <tr>
 <td>Separate API/realtime/evaluator/admin and packaged UI</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
 <td>One-host role composition, existing client/browser routes and private control channels work together.</td>
 <td>Multi-host discovery, replicas/failover, production ingress/service identity and operating limits.</td>
 </tr>
@@ -5791,7 +5911,7 @@ need their own evidence; an accepted component is not a completed platform track
 </tr>
 <tr>
 <td>Existing client compatibility</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
 <td>Use the admitted API/history/credential shapes and the named clients' stored outcomes.</td>
 <td>Wider/mobile clients, other query shapes and all-client acceptance.</td>
 </tr>
@@ -6220,8 +6340,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6c9758f531459392729e620314d0ec76ac370f99/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof
