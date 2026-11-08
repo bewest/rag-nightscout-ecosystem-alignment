@@ -242,7 +242,10 @@ load-bearing. The earlier [b029 record](../../../reports/tenancy/operation-windo
 retains its own narrower scope. The [current acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
 keeps their source-specific verdicts separate. The [ed2 cold record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
 adds actual UI/socket and ordinary restore/history/B-continuity acceptance.
-Actual clients and final regression remain separate gates; all rigs, capacity,
-HA, production recovery and M6 retain their own admission criteria.
+The [ed2 pinned-client record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json)
+adds actual cgmsim/oref0 execution with matching stored outcomes and independent
+physical closure. The [final ed2 regression](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-full-accepted/README.md)
+passed all seven nonbrowser tiers. Other clients and rigs, capacity, HA,
+production recovery and M6 retain their own admission criteria.
 The [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
 own the latest executed acceptance and remaining blockers.
