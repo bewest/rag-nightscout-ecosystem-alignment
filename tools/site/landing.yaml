@@ -45,6 +45,24 @@ sections:
 # them). Same form as `pages`: page names in order, a trailing '/' places a
 # subfolder; anything unlisted follows, pages alphabetically, then subfolders.
 orders:
+  # Current tenancy review path first; distinct older proposals and evidence
+  # stay available afterward without relocation or rewritten captures.
+  docs/30-design/tenancy:
+    - runtime-topology.md
+    - sql-and-migration-architecture.md
+    - tenant-admission-and-activity.md
+    - single-and-multitenant-architecture.md
+    - deployment-and-rig-testing.md
+    - evaluator-realtime-communication.md
+    - owner-authority.md
+    - m5-m6-decision-list.md
+    - multitenancy-decisions.md
+    - multitenant-delivery-dashboard.md
+    - multitenant-delivery-roadmap.md
+    - multitenant-integration-batching-plan-2026-11-06.md
+    - production-critical-path.md
+    - selectable-endpoints-and-api-scaling-plan.md
+    - deployment-bindings-and-public-names.md
   docs/00-overview/observations:
     - HISTORY.md
     - GOVERNANCE-TODAY.md
