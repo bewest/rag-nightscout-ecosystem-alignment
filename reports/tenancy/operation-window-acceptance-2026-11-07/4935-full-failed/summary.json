@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-07",
+  "classification": "IMMUTABLE_SANITIZED_ACTUAL_FULL_NONBROWSER_FAILURE",
+  "measurement_basis": "reproduced",
+  "status": "FAILED_PHYSICALLY_CLOSED",
+  "source": {
+    "commit": "4935aa77049c66793669a7be940e40ed6ba5b386",
+    "tree": "5271a0f21ec07c30fc45532bcf761ac8215c4e1a"
+  },
+  "command": "CRM_REST_WORKTREE=<private exact-source verification> node tools/lab/multitenant-rest-preview/owned.js all",
+  "runner_exit": 2,
+  "elapsed_seconds": 351.9036331656389,
+  "tiers": {
+    "unit": {
+      "passing": 2801,
+      "failing": 2
+    },
+    "dom": {
+      "passing": 205
+    },
+    "dependency": {
+      "passing": 368,
+      "pending": 2
+    },
+    "core": {
+      "passing": 319
+    },
+    "harness": {
+      "passing": 99
+    },
+    "integration": {
+      "passing": 3977,
+      "pending": 172,
+      "failing": 2
+    },
+    "stress": {
+      "passing": 18
+    }
+  },
+  "failures": [
+    {
+      "tier": "unit",
+      "file": "tests/evaluator-control-readiness.test.js",
+      "observed": "NOTIFICATION_SCHEMA_UNSAFE during the selected suppression read-scope protocol; one positive and one expected readiness refusal fail",
+      "count": 2
+    },
+    {
+      "tier": "integration",
+      "file": "tests/multitenant-preview-process.integration.test.js",
+      "observed": "unknown tenant host returned HTTP500 instead of HTTP404; an untrusted immediate peer returned HTTP500 instead of HTTP400",
+      "count": 2
+    }
+  ],
+  "closure": {
+    "observer_cleanup_verified": true,
+    "observer_errors": 0,
+    "owned_containers": 22,
+    "owned_volumes": 32,
+    "observed_births": 166,
+    "supervisor_processes_closed": true,
+    "direct_children_reaped": true,
+    "independent_checks": {
+      "exactInventory": true,
+      "baselineMetadataUnchanged": true,
+      "observedProcessBirthsAbsent": true
+    }
+  },
+  "source_clean_at_exit": true,
+  "limits": [
+    "No source cause is inferred from failing assertions alone.",
+    "No default-browser, entire enabled corpus, suspended-tenant restart, Compose UI/restore, client or whole-M6 acceptance follows.",
+    "Earlier b029 native acceptance retains its own source attribution."
+  ],
+  "artifact_sha256": {
+    "phase_log": "19c1d5c4449517862eb60a8c5dda79bacc37589e0c6d07e34f95afce71a976fe",
+    "runner_exit": "0f830314433aaf2a16f311204e9c253a60f1d18b0647b2a0cab9c21e03f7eed8",
+    "observer_audit": "62f15180967c15adc9f4208fcab75155c15a60a5dc867f4843cf62a44a16f22a",
+    "supervisor_result": "9eacf0ada11c3d93a2317a03faaf1e649fe865198f4975fc383c339d432a176d",
+    "independent_baseline_after": "71d5d52d2042fada34f47006cad9617595b153e2c076bc1cec5cbc4f04c01f2c",
+    "independent_physical_release": "465dc4582e0e255616ebdefec51e6d1b2984eecc94f44593f187ce4487cdb542"
+  }
+}
