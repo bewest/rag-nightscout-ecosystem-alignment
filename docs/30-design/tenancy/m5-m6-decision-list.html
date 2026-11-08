@@ -5568,7 +5568,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>301f92777</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-08. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5606,6 +5606,10 @@ enhancements; that preference grants no production permission or criterion waive
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Supported PostgreSQL writers</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">Exclusive application ownership</a>: declared internal components and admitted maintenance tools cooperate on write/lifecycle contracts; external direct writers are unsupported with undefined behavior. The <a href="sql-and-migration-architecture.html#component-ownership-and-internal-application-apis">database ownership map</a> defines command and persistence boundaries. Cooperating replicas remain possible; Kubernetes scale-out acceptance is separate.</td>
+</tr>
 <tr>
 <td>Current-state recovery</td>
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m5-bounded-snapshot-reconciliation">Bounded full snapshot reconciliation first</a>; preserve producer deletes/timestamps/replies. Cadence/capacity is measurement work. No every-transition promise.</td>

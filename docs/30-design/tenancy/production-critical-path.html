@@ -5568,7 +5568,7 @@
 
 
 <h1 id="from-accepted-one-host-preview-to-production">From accepted one-host preview to production<a class="headerlink" href="#from-accepted-one-host-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>30ab0bc4e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
 <p><em>Living contributor-facing decision-preparation guide, 2026-11-08. This is a
 </em><em>read-derived</em><em> dependency analysis and prior-art survey, not production
 acceptance or an adopted topology/SLO decision. Existing requirements retain their
@@ -5693,10 +5693,14 @@ pending case remains UNMEASURED.</p>
 </tr>
 </tbody>
 </table>
-<p>The production deployment must either establish custody/private ingress and the
-trusted cooperative writer roster, or provide stronger exclusion when separately
-authorized raw SQL writers are part of its topology. A current-session census is
-only diagnostic; it cannot exclude a new raw writer. The existing
+<p>The production deployment must establish custody/private ingress and the
+declared cooperative application roster under the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
+External direct SQL writers are unsupported and their effects are undefined
+behavior; arbitrary-writer exclusion is not an admission gate for this supported
+topology. Every supported internal participant must still follow its authority,
+write and lifecycle contracts. A current-session census is diagnostic, not proof
+of credential custody or complete participant registration. The existing
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">separate-process decision</a>
 does not require inventing a stronger database fence merely to keep processes
 separate. Transaction pooling is outside the accepted reference.</p>

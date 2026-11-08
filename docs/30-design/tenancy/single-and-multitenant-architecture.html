@@ -5746,10 +5746,10 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
 <p><em>Contributor-facing living explanation, groomed 2026-11-08. The published
 candidate is cgm-remote-monitor <code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>,
-recorded in the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/30ab0bc4e236a7367eb041b4229c177045daefa6/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
+recorded in the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
 PR #8898 remains open/draft, not merged or released. Architecture interpretation
 is </em><em>read-derived</em><em>; linked runtime results are </em><em>recorded reproductions</em><em>, not
 new executions for this document. The retained shared-code/module survey is
@@ -5773,7 +5773,7 @@ need their own evidence; an accepted component is not a completed platform track
 <tbody>
 <tr>
 <td>Separate API/realtime/evaluator/admin and packaged UI</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/30ab0bc4e236a7367eb041b4229c177045daefa6/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
 <td>One-host role composition, existing client/browser routes and private control channels work together.</td>
 <td>Multi-host discovery, replicas/failover, production ingress/service identity and operating limits.</td>
 </tr>
@@ -5781,7 +5781,7 @@ need their own evidence; an accepted component is not a completed platform track
 <td>Tenant-local restore and shared-role restart</td>
 <td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native acceptance</a>, plus ed2 packaged ordinary restore above</td>
 <td>A can stay suspended while B progresses; forward correction/deletion history allows tested clients to converge without a global pause.</td>
-<td>Automatic orphan clearance, supported suspended-restore resume, arbitrary-writer exclusion and production recovery bounds.</td>
+<td>Automatic orphan clearance, supported suspended-restore resume and production recovery bounds under the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">application ownership contract</a>.</td>
 </tr>
 <tr>
 <td>Functional durable evaluator/realtime reference</td>
@@ -5791,7 +5791,7 @@ need their own evidence; an accepted component is not a completed platform track
 </tr>
 <tr>
 <td>Existing client compatibility</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/30ab0bc4e236a7367eb041b4229c177045daefa6/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
 <td>Use the admitted API/history/credential shapes and the named clients' stored outcomes.</td>
 <td>Wider/mobile clients, other query shapes and all-client acceptance.</td>
 </tr>
@@ -5894,7 +5894,11 @@ questions; neither a process list nor a configuration assertion proves exclusive
 credential custody. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">native matrix</a>
 exercises the actual separate processes and uncertainty/restart cases under its
 declared fixed trusted-cohort boundary. Arbitrary direct SQL actors remain outside
-that proof. The
+that proof and are unsupported under the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
+The <a href="sql-and-migration-architecture.html#component-ownership-and-internal-application-apis">database ownership map</a>
+distinguishes cross-component commands from admitted reads and owned persistence.
+The
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-startup-admission">tenant-local startup requirement</a>
 prevents a suspended tenant from blocking another tenant's shared-role restart.
 The c23 native acceptance reproduces fresh API/realtime/evaluator startup and B
@@ -6216,8 +6220,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/30ab0bc4e236a7367eb041b4229c177045daefa6/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/30ab0bc4e236a7367eb041b4229c177045daefa6/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof

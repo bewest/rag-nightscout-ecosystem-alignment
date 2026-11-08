@@ -3467,6 +3467,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#supported-database-ownership-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported database ownership contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-ownership-and-internal-application-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component ownership and internal application APIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component ownership and internal application APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-scalability-smell-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes scalability smell test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tables-and-their-ownership" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5507,6 +5546,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#supported-database-ownership-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported database ownership contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-ownership-and-internal-application-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component ownership and internal application APIs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component ownership and internal application APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-scalability-smell-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes scalability smell test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tables-and-their-ownership" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5590,7 +5668,7 @@
 
 
 <h1 id="sql-migrations-and-tenant-recovery-architecture">SQL, migrations and tenant recovery architecture<a class="headerlink" href="#sql-migrations-and-tenant-recovery-architecture" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>35f59c70a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
 <p><em>Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>
 (tree <code>3bb46431a19e604dc028768f0e72e6ad29616c26</code>). Mechanisms and diagrams below are
@@ -5600,6 +5678,9 @@ application links identify that inspected revision; executed measurements retain
 their own source. Decisions live in the <a href="multitenancy-decisions.html">tenancy contracts</a>
 and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>;
 acceptance lives in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.
+Ownership/API guidance updated 2026-11-08 under the maintainer's exclusive
+application ownership decision. Design recommendations and Kubernetes scale-out
+assessment are </em><em>read-derived</em><em>; no new runtime or cluster campaign was run.
 This guide explains their SQL implementation and does not promote M6.</em></p>
 <h2 id="scope-and-evidence">Scope and evidence<a class="headerlink" href="#scope-and-evidence" title="Permanent link">&para;</a></h2>
 <p>The explicit multitenant PostgreSQL deployment shares physical tables among tenants.
@@ -5630,7 +5711,7 @@ own admitted port behavior.</p>
 <td>Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound.</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/30ab0bc4e236a7367eb041b4229c177045daefa6/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td><strong>Reproduced:</strong> packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure.</td>
 <td>Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate.</td>
 </tr>
@@ -5646,6 +5727,159 @@ own admitted port behavior.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="supported-database-ownership-contract">Supported database ownership contract<a class="headerlink" href="#supported-database-ownership-contract" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">exclusive application ownership decision</a>
+defines supported writers. Nightscout collectively owns its selected namespaces:
+multiple internal processes and controlled maintenance tools may use PostgreSQL,
+but every supported participant follows the relevant application contract.
+External direct writers are unsupported and their effects are undefined behavior,
+consistent with single-tenant Nightscout's external MongoDB writer boundary.
+Other applications may own unrelated namespaces; this does not require exclusive
+ownership of an entire PostgreSQL server.</p>
+<p>Exclusive application ownership does not confer unrestricted SQL rights on each
+component. Retain effective privilege/readiness checks, tenant-bound transactions,
+forced RLS, current authorization and narrowly scoped credentials. Internal
+clinical writes must use the canonical write path; lifecycle participants must
+honor admission, drain and invalidation. The advisory-lock protocol coordinates
+these supported participants. A direct writer ignoring it is outside the contract,
+not a reason to require a stronger database fence for the supported topology.
+PostgreSQL documents <a href="https://www.postgresql.org/docs/current/explicit-locking.html#ADVISORY-LOCKS">advisory locks</a>
+as application-coordinated locks.</p>
+<h2 id="component-ownership-and-internal-application-apis">Component ownership and internal application APIs<a class="headerlink" href="#component-ownership-and-internal-application-apis" title="Permanent link">&para;</a></h2>
+<p><strong>Read-derived architecture direction:</strong> place commands at the component that
+owns their semantics, and let that component persist its state. An internal API
+can be a module interface within a process or a private application protocol
+between processes. The reference's process transport is private HTTP/JSON over
+Unix sockets; network endpoint selection requires the separately described
+<a href="deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">transport binding</a>.
+The following ownership map does not introduce a generic SQL-over-HTTP service.</p>
+<table>
+<thead>
+<tr>
+<th>Operation / state</th>
+<th>Owner and internal boundary</th>
+<th>Existing reference or recommended direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clinical documents, public write outcomes and history stamps</td>
+<td>API executes canonical writes, including a writer's current authority. Socket/connector/other component commands enter the same application write boundary. Document, clock and insertion changes retain their transaction coupling.</td>
+<td>API clinical writes and D23 socket forwarding exist. Additional internal command producers must use the admitted path; their implementation/acceptance remains separately scoped.</td>
+</tr>
+<tr>
+<td>Alarm acknowledgement / snooze</td>
+<td>Realtime forwards the original client authorization and event to API; API persists suppression through its acknowledgement admission. Evaluator reads current suppression.</td>
+<td>Existing <a href="evaluator-realtime-communication.html#browser-authorization-and-mutations">private authorization and mutation protocol</a>; realtime must not edit suppression rows as a substitute.</td>
+</tr>
+<tr>
+<td>Clinical acquisition and consumer recovery state</td>
+<td>Evaluator and realtime each read through tenant-bound storage interfaces and own separate projection/checkpoint namespaces.</td>
+<td>Existing bounded snapshot acquisition. Direct admitted reads and atomic projection/checkpoint persistence remain appropriate; sending every read through API would add dependency and transport cost without establishing stronger semantics.</td>
+</tr>
+<tr>
+<td>Notification intent, attempts and handoff</td>
+<td>Evaluator's notification component owns durable producer/request/attempt state; realtime owns connected-browser fanout. Deliver an application handoff with stable request identity and durable retry outcome.</td>
+<td>Existing <a href="evaluator-realtime-communication.html#notification-intents-retries-and-alarm-handoff">notification handoff</a>. Other components should not insert producer requests or edit attempt rows to impersonate its protocol.</td>
+</tr>
+<tr>
+<td>Credentials, owner configuration and current policy</td>
+<td>Management/authority components own mutation checks, audit and invalidation. Consumers use their admitted authority/settings interfaces; data-plane requests retain their own current authorization.</td>
+<td>Separate management audience and component interfaces exist. Cross-process consumers should invoke owned commands rather than edit these tables; this is not a claim that every authority operation has a new network endpoint.</td>
+</tr>
+<tr>
+<td>Suspension, restore, deletion and activation</td>
+<td>Lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants.</td>
+<td>Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Read-derived responsibility diagram.</strong> Solid arrows are application commands;
+dotted arrows are admitted SQL access, not foreign keys. Storage groups below
+are logical families within the selected namespaces, not separate databases.</p>
+<pre class="mermaid"><code>flowchart TB
+  RT["Realtime"] --&gt;|"authorize / mutate / ack"| API["API: canonical clinical writes"]
+  EV["Evaluator / notification component"] --&gt;|"alarm handoff"| RT
+  Admin["Management / authority components"]
+  LC["Lifecycle controller"] --&gt;|"pin / drain / invalidate each instance"| Roles["API / realtime / evaluator / admin"]
+  subgraph PG["Application-owned PostgreSQL namespaces"]
+    Clinical["Clinical documents + insertion counters + history clock"]
+    Checkpoints["Separate realtime and evaluator projections / checkpoints"]
+    Notifications["Notification state / requests / attempts"]
+    Suppression["Alarm suppression"]
+    Authority["Current authority / sessions / policy / owner settings / secrets"]
+    Windows["Lifecycle windows / operations / authority / audit"]
+  end
+  API -. "canonical writes" .-&gt; Clinical
+  API -. "authorized acknowledgement" .-&gt; Suppression
+  API -. "current authority" .-&gt; Authority
+  RT -. "clinical reads" .-&gt; Clinical
+  EV -. "clinical reads" .-&gt; Clinical
+  RT -. "own checkpoint" .-&gt; Checkpoints
+  EV -. "own checkpoint" .-&gt; Checkpoints
+  EV -. "owned producer persistence" .-&gt; Notifications
+  EV -. "current suppression" .-&gt; Suppression
+  Admin -. "owned mutations" .-&gt; Authority
+  LC -. "controlled clinical restore" .-&gt; Clinical
+  LC -. "maintenance protocol" .-&gt; Windows</code></pre>
+<p>Application APIs preserve existing client payloads, authority and reply behavior.
+Ambiguous mutation completion must preserve the existing no-acknowledgement/error
+contract rather than trigger a transparent new retry. Database-backed transaction
+and idempotency semantics remain explicit. The <a href="evaluator-realtime-communication.html">communication guide</a>
+owns actual runtime sequences; no RPC consolidation has been benchmarked here.</p>
+<h3 id="kubernetes-scalability-smell-test">Kubernetes scalability smell test<a class="headerlink" href="#kubernetes-scalability-smell-test" title="Permanent link">&para;</a></h3>
+<p><strong>Yes, as an architecture smell test:</strong> a replaceable request-serving instance
+with durable authority outside the process is a natural candidate for a
+Kubernetes <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Deployment</a>.
+Exclusive application database ownership permits multiple cooperating replicas;
+it does not mean a single API process. An internal API boundary helps separate
+those replicas from consumers, but does not itself make either end stateless.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Scale-out implication</th>
+<th>Required boundary before claiming it works</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static UI serving</td>
+<td>Replaceable replica candidate.</td>
+<td>Consistent assets/configuration and edge behavior.</td>
+</tr>
+<tr>
+<td>Request-scoped API and management handlers</td>
+<td>Natural replica candidates when local state is reconstructible and durable authority/transactions remain shared.</td>
+<td>Current authority/config consistency, safe concurrent writes, graceful drain, bounded aggregate pools and actual participation of every replica in restore. Existing canonical serialization still bounds same-tenant write throughput.</td>
+</tr>
+<tr>
+<td>Realtime</td>
+<td>Connection-owning service with retained frames and subscriptions.</td>
+<td>Admitted session routing, cross-instance fanout and reconnect/recovery; a load-balanced alarm call does not reach every viewer by itself.</td>
+</tr>
+<tr>
+<td>Evaluator / notification producer</td>
+<td>Recoverable workers with logical producer and checkpoint ownership.</td>
+<td>Explicit partition/claim ownership, exclusion of stale producers and durable retry/deduplication under replacement. External persistence alone does not make duplicate active workers safe.</td>
+</tr>
+<tr>
+<td>Lifecycle controller / migrations</td>
+<td>Controlled operations with exclusive authority.</td>
+<td>Maintenance claims, every participant's incarnation and uncertain-outcome handling; Kubernetes placement or Job completion cannot substitute for application ownership.</td>
+</tr>
+</tbody>
+</table>
+<p>The current fixed cohort needs a declared roster containing every serving replica.
+A load-balanced API endpoint can route an ordinary command to any equivalent
+admitted API, whereas restore control must address every instance. Dynamic HPA
+membership and cross-Pod authenticated transport need qualification. Deployments
+can overlap old/new Pods during rolling updates, so replica count is not an
+exclusion guarantee. A StatefulSet's stable identity/storage does not supply the
+application's producer or restore protocol either. See the <a href="deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">deployment binding
+and replica assessment</a>
+for endpoint semantics and acceptance cases. Kubernetes execution, autoscaling,
+throughput and failover remain <strong>UNMEASURED</strong> by this documentation update.</p>
 <h2 id="tables-and-their-ownership">Tables and their ownership<a class="headerlink" href="#tables-and-their-ownership" title="Permanent link">&para;</a></h2>
 <p>Every selected namespace has its own <code>schema_migrations(name,checksum,applied_at)</code>
 ledger. Tenant tables carry <code>tenant_id</code>; ledgers describe a whole namespace and
@@ -5851,10 +6085,10 @@ physical trigger/function, grants and tenant floors before admission.</p>
   Runner-&gt;&gt;DB: Acquire namespace advisory lock
   Runner-&gt;&gt;DB: Inspect exact applied prefix
   loop Pending migrations
-    Runner-&gt;&gt;DB: BEGIN; reviewed DDL/data conversion
-    Runner-&gt;&gt;DB: INSERT schema_migrations row; COMMIT
+    Runner-&gt;&gt;DB: BEGIN, reviewed DDL/data conversion
+    Runner-&gt;&gt;DB: INSERT schema_migrations row, COMMIT
   end
-  Runner-&gt;&gt;DB: Release lock; close client
+  Runner-&gt;&gt;DB: Release lock, close client
   Role-&gt;&gt;DB: Read-only catalogue and physical metadata checks
   Role-&gt;&gt;DB: Check effective ACL / RLS / datastore / binding
   loop Every configured tenant remains in roster
@@ -5862,7 +6096,7 @@ physical trigger/function, grants and tenant floors before admission.</p>
     alt Active tenant
       Role-&gt;&gt;DB: Floors, provisioning and tenant warmup
     else Genuine suspension
-      Role-&gt;&gt;Role: Defer tenant warmup; keep tenant unavailable
+      Role-&gt;&gt;Role: Defer tenant warmup, keep tenant unavailable
     end
   end
   Note over Role: Shared readiness errors still refuse process startup</code></pre>
@@ -5896,18 +6130,18 @@ an earlier pin's authority.</p>
   participant Cohort as Fixed separate service processes
   participant Data as A clinical rows / clock / counters
   Op-&gt;&gt;Cohort: Pin current incarnations and actual datastore identities
-  Op-&gt;&gt;Control: Verify authority; COMMIT suspension and claim
-  Op-&gt;&gt;Control: Drain unfinished operations; acquire A exclusive lock
+  Op-&gt;&gt;Control: Verify authority, COMMIT suspension and claim
+  Op-&gt;&gt;Control: Drain unfinished operations, acquire A exclusive lock
   Op-&gt;&gt;Cohort: Exact actor census and pinned status checks
-  Op-&gt;&gt;Data: BEGIN DATA; lock live history floor
+  Op-&gt;&gt;Data: BEGIN DATA, lock live history floor
   Op-&gt;&gt;Data: Plan current plus captured identities
   Op-&gt;&gt;Data: Rebuild A rows with forward history and tenant-local allocation
-  Op-&gt;&gt;Data: Verify rows, floors and held claim; COMMIT DATA
+  Op-&gt;&gt;Data: Verify rows, floors and held claim, COMMIT DATA
   Op-&gt;&gt;Op: Publish acknowledged post-commit effects
-  Op-&gt;&gt;Cohort: Fresh A invalidation request; await every pinned ACK
-  Op-&gt;&gt;Control: Recheck authority / claim / audit; COMMIT activation
+  Op-&gt;&gt;Cohort: Fresh A invalidation request, await every pinned ACK
+  Op-&gt;&gt;Control: Recheck authority / claim / audit, COMMIT activation
   Note over Control,Cohort: Before activation, failure retains suspension
-  Note over Op,Control: Activation ACK loss may leave active state; inspect, do not auto-retry</code></pre>
+  Note over Op,Control: Activation ACK loss may leave active state, inspect, do not auto-retry</code></pre>
 <p>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/tenant-lifecycle/logical-restore.js#L72">logical planner</a> preserves public/typed identities and sorts
 captured ordered rows using BigInt ordinals. It replays them through ordinary
 allocation, preserving relative order without preserving private numeric ordinal
@@ -5952,7 +6186,7 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#L74">application cohort guide</a>.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/30ab0bc4e236a7367eb041b4229c177045daefa6/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/f99c3922a8f38b6485f6f0eae203ba4f725356a3/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
 adds the packaged ordinary-restore/UI/B-continuity scope. HA, multihost
 membership, capacity and whole M6 retain separate admission criteria. The
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>
