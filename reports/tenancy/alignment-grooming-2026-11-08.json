@@ -22,13 +22,15 @@
     "platform_execution_table": "October priority/per-commit table retained through public source-commit URL in platform plan; current release allocation and queue remain successors."
   },
   "checks": {
-    "queue_status": "Executed before edits in main checkout; FAIL with existing unrelated gate failures and multiple skipped/UNMEASURED tenancy gates. No claimed global gate acceptance.",
+    "queue_status": "Executed before edits in main checkout; reported FAIL and multiple skipped/UNMEASURED tenancy gates. Underlying failures were not diagnosed in this documentation lane; no claimed global gate acceptance.",
     "queue_check": "PASS on groomed worktree with read-only link to existing nc-jitter cwd; manifest unchanged.",
     "docs_links": "PASS",
     "dead_link_control": "PASS: appended missing-groom-control-target.md link to tenancy README; gate exit 1, exact BAD md-link symptom; restored original bytes and reran green.",
     "dashboard_staleness_control": "PASS: extra generated-view newline produced exit 1/dashboard stale; restored original bytes and reran green.",
-    "site_check": "Pending plan commit and render",
-    "whitespace": "PASS"
+    "site_check": "PASS: rendered source b9d62a7e936ff4ef6d01a53a633a6af42bc6e03e, matching pages.yaml source_commit; MkDocs exit 0/no warnings, unresolved links 0, output/privacy checks pass.",
+    "whitespace": "PASS",
+    "diagrams": "PASS: seven Mermaid blocks in the requested topology/architecture/dashboard/archive paths parse with pinned Mermaid 11.17.2. Initial sandbox browser socket refusal resolved by documentation-only escalated retry.",
+    "review": "Independent coherent documentation review found no material source-attribution, currency or admission-boundary mismatch."
   },
   "environment": "Initial sandbox Node child Git inventory failed spawnSync git EPERM; read-only escalated rerun passed. No failed semantic assertion was counted as a control. Worktree uses existing site Python runtime and existing nc-jitter cwd via untracked local symlinks.",
   "runtime": "No new native/full/browser/client/Compose campaign. ed2 image/cold/client/full, c23 native/browser and 39f4 corpus retain their own executed source/instrument attribution.",
