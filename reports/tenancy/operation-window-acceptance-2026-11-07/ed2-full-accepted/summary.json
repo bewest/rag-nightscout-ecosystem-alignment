@@ -1,0 +1,130 @@
+{
+  "classification": "reproduced; complete final ed2 full nonbrowser campaign",
+  "source": {
+    "head": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+    "tree": "3956ed7771378e47feb8efca38cb8141d8ecf0b6"
+  },
+  "command": "finite unchanged708 supervisor \u2192 durable observer \u2192 actual run-phase.py full \u2192 tools/lab/multitenant-rest-preview/owned.js all",
+  "tiers": [
+    {
+      "tier": "unit",
+      "passed": 2818,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "dom",
+      "passed": 205,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "dependency",
+      "passed": 368,
+      "failed": 0,
+      "pending": 2
+    },
+    {
+      "tier": "core",
+      "passed": 319,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "harness",
+      "passed": 99,
+      "failed": 0,
+      "pending": 0
+    },
+    {
+      "tier": "integration",
+      "passed": 3979,
+      "failed": 0,
+      "pending": 172
+    },
+    {
+      "tier": "stress",
+      "passed": 18,
+      "failed": 0,
+      "pending": 0
+    }
+  ],
+  "totals": {
+    "passed": 7806,
+    "failed": 0,
+    "pending": 174
+  },
+  "runner": {
+    "phase": "full",
+    "exit": 0,
+    "elapsedSeconds": 346.54229620471597,
+    "sourceHead": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+    "final": {
+      "publishingHead": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+      "publishingTree": "3956ed7771378e47feb8efca38cb8141d8ecf0b6",
+      "verificationHead": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+      "verificationTree": "3956ed7771378e47feb8efca38cb8141d8ecf0b6",
+      "publishingClean": true,
+      "verificationClean": true
+    }
+  },
+  "observer": {
+    "phaseAccepted": true,
+    "cleanupVerified": true,
+    "commandExit": 0,
+    "problems": [],
+    "observerErrors": [],
+    "ownedContainers": 22,
+    "ownedVolumes": 32,
+    "observedBirths": 162
+  },
+  "supervisor": {
+    "phasePassed": true,
+    "hostProcessesClosed": true,
+    "directChildrenReaped": true
+  },
+  "terminal": {
+    "scope": "FULL_NONBROWSER_AFTER_ACTUAL_SUPERVISOR_REAP",
+    "state": "PASS",
+    "sourceHead": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+    "sourceTree": "3956ed7771378e47feb8efca38cb8141d8ecf0b6",
+    "supervisorExit": 0,
+    "supervisorReceiptSha256": "7a013d73d110b547efe8d17004ea6879bbdef03067a637b4c46bf6520d2cd8de",
+    "specSha256": "c8ab7f84d56ea0fa3ee48cc363d73154f4eb173529ddb846680134ff1ecd0ca1",
+    "grantSha256": "0b58f0577419279d5d5b648a7a4aa3f84374a2f65881e2c74ff5b725db2c39d1",
+    "captureSha256": {
+      "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/m6-final-full-ed2-20261108/exit.json": "2340cdc0c43088bbd72668407169d7630fcb94e4c6b7dd66dca650af7f981462",
+      "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/m6-final-full-ed2-20261108/phase-owned-resources.json": "176d3fe2afb6bd6bf9b6fb692dbb936741bdb89929bdf61afd9f91f898735293",
+      "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/m6-final-full-ed2-20261108-observer/observer-audit.json": "bae9fd7ce02f2199bee93303c63f1435104c454d043e383d29a81cac035a481e",
+      "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/m6-final-full-ed2-20261108-supervisor/baseline-after.json": "b4e7d4533e5263f0d966ae629f8d3259286caa78b0fda25cc1a8f1d8db09c128"
+    },
+    "baselineEvidence": "HASH_BOUND_ACTUAL_THIRD_STEP_CAPTURE_NO_POST_REAP_DOCKER_QUERY",
+    "freshTerminalBirthRead": true,
+    "supervisorOwnerAndRetainedBirthsAbsent": true,
+    "birthCount": 279,
+    "sameOriginal7200AndSingle120": true,
+    "originalCleanupDeadline": 3689814.139091086,
+    "verifiedAtMonotonic": 3689694.492310519,
+    "remainingOriginalCleanupSeconds": 119.64677658118308,
+    "globalQuiescenceClaim": false
+  },
+  "assets": {
+    "actualBuildHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "newHostBuild": false,
+    "inputEquivalence": "Fresh selected798 Git mode/type/blob union equality; all16 actual copied asset hashes; private real dependency copy26925 files/59 links verified before grant"
+  },
+  "baselineScope": "Exact inventory and original selected static metadata; actual third-step capture hashbound before supervisor reap. Fresh owner/retained process births after actual CLI reap within same original cleanup deadline. No post-reap Docker query, full Config/HostConfig, full endpoint equality or global quiescence claim.",
+  "artifactSha256": {
+    "m6-final-full-ed2-20261108/phase.log": "28b3d1d134faef3f6bb632de26483f1f053ffc555ea0a34809e63fd0a2e0891f",
+    "m6-final-full-ed2-20261108/exit.json": "2340cdc0c43088bbd72668407169d7630fcb94e4c6b7dd66dca650af7f981462",
+    "m6-final-full-ed2-20261108-observer/observer-audit.json": "bae9fd7ce02f2199bee93303c63f1435104c454d043e383d29a81cac035a481e",
+    "m6-final-full-ed2-20261108-supervisor/supervisor-result.json": "7a013d73d110b547efe8d17004ea6879bbdef03067a637b4c46bf6520d2cd8de",
+    "m6-final-full-ed2-20261108-supervisor/baseline-after.json": "b4e7d4533e5263f0d966ae629f8d3259286caa78b0fda25cc1a8f1d8db09c128",
+    "m6-final-full-ed2-addon-20261108/terminal-result.json": "841ea6ff0f27a016a9a04f2734da8f826d0a091b180b6bb451cad9c94652c53a",
+    "m6-final-full-ed2-addon-20261108/full-spec.json": "c8ab7f84d56ea0fa3ee48cc363d73154f4eb173529ddb846680134ff1ecd0ca1",
+    "m6-final-full-ed2-addon-20261108/grant.json": "0b58f0577419279d5d5b648a7a4aa3f84374a2f65881e2c74ff5b725db2c39d1",
+    "m6-final-full-ed2-prep-20261108/artifact-index.json": "d087dcb90850717d64e7fea799e7e83821eb0dba68fcc2314ad1a60ba32e17a5",
+    "m6-final-full-ed2-addon-20261108/artifact-index.json": "98cc62e9786e7fb0f97f564311c5f6afc6d5741bcda8969d1075ea2fc7866ab9",
+    "m6-final-full-ed2-root-admission-20261108/final-binding-review.json": "70fceb9b14e7151f3cfe0134d4155815178043c0a0818326c5db947a81206d1a"
+  }
+}
