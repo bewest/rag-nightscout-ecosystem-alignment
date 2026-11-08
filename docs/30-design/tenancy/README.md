@@ -17,7 +17,10 @@ filename do not establish currency. Consolidated 2026-11-06.*
 | Owner, delegation and token rules; shared optional OIDC | [Owner authority](owner-authority.md), [shared integration](owner-authority.md#shared-oidc-integration) | Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters; implementation acceptance is separate. |
 | What needs a maintainer decision | [Current M5/M6 decision list](m5-m6-decision-list.md) | Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; older packets supply background only. |
 | Durable consumers and recovery | [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | Adopted B7 direction; runtime evidence retains its actual tree and limits. |
-| Separate service processes and restore coordination | [Current composition diagram](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07) | API/realtime/evaluator/tenant-admin responsibilities; cross-process restore coordination remains implementation and native acceptance work. |
+| Separate service processes and restore coordination | [Current composition diagram](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07) | Fixed cross-process cohort and source-attributed restore evidence; newer independent-startup acceptance remains pending. |
+| Deploy a synthetic prototype or connect a rig | [Deployment and rig testing](deployment-and-rig-testing.md) | Runnable Compose preparation, ingress/credential boundaries, client setup, restore/restart scenarios and evidence limits. |
+| Follow evaluator and socket messages | [Evaluator/realtime communication](evaluator-realtime-communication.md) | Independent clinical projections, durable notification handoff, private API forwarding, current authority and operation lifetimes. |
+| Understand SQL and recovery | [SQL/migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, catalogue migration/readiness and restore inclusion/exclusion. |
 | A picture of the system | [Platform map](../platform/next-gen-platform-plan.md#3-the-map), then [architecture comparison](single-and-multitenant-architecture.md) | Map summarizes bounded components. Architecture diagrams retain their named source scope. Neither promotes a milestone. |
 | What ran and on which tree | [Integration record](../remedial/rc-16.0.0-integration-record.md), then the named capture | Executed heads, failed predictions, red/restored controls and reuse limits. A prior green campaign is not a new-head execution. |
 | Release or publication status | [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) | Dated programme updates. Local acceptance, merge and release are distinct. |
@@ -45,15 +48,14 @@ schedule for work state.
 | [Clock proof plan](postgres-tenant-clock-proof.md) | Invariants and experiment design. Correctness, descriptive timing and capacity acceptance retain separate records. |
 | [Deployable components](nightscout-deployable-components-2026-09-14.md) | Original decomposition/rationale; apply current tenancy decisions, CLI amendments and B7. |
 
-## Queued documentation additions
+## Source-backed architecture guides
 
-The work queue tracks three requested additions: **MT-DOC-DEPLOY** for practical
-preview deployments, rig tests and topology diagrams; **MT-DOC-REALTIME** for
-evaluator/realtime/socket communication and sequence diagrams; **MT-DOC-SQL** for
-tables, SQL, migrations and recovery architecture. These are pending documentation,
-with acceptance criteria in the queue. Integrate them into the current references
-above as the joined implementation settles; proposed topologies and executed
-scenarios must retain distinct labels and evidence.
+The guides above provide the requested **MT-DOC-DEPLOY**, **MT-DOC-REALTIME** and
+**MT-DOC-SQL** documentation. Their source inspection, diagrams and structural
+checks are separate from runtime acceptance. Each links executed evidence at its
+actual source; pending Compose, restart, rig and capacity experiments remain
+explicit. The queue owns documentation status, and release records own accepted
+application behavior.
 
 ## Historical evidence and earlier proposals
 

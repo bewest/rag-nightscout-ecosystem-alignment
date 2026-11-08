@@ -20,10 +20,14 @@ merged or released.*
 
 ## Current service composition and restore integration (2026-11-07)
 
-This amendment supersedes the older API-only runtime description below for service
-availability. The earlier source survey remains pinned to `83582e87`. Runtime
-composition at `f0fac99a2fccee259c9a76eba0123058bf288d96` is recorded in
-[R73](../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07).
+This section describes the separate-service implementation by source inspection
+at `151de0248a1e4301c85b5c638185eec3ca8c38e6`; the older survey below remains
+pinned to `83582e87`. [R73](../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07)
+records runtime composition on its own source. The
+[b029 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/README.md)
+accepts 17 separate-process restore criteria on `b029f5d8`, not the newer startup
+implementation, Compose/browser deployment or whole M6. Pinned source links in
+the detailed guides require publication of the local `151de024` candidate.
 The maintainer [reaffirmed separate service processes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes),
 including containers with shared private sockets where appropriate. Compose and
 jsonnet are packaging options; no generator is selected.
@@ -47,15 +51,15 @@ flowchart LR
   Eval --> PG
   Admin --> PG
   API --> Keys["Scoped secret provider"]
-  Maintenance["Private restore controller"] -. "Proposed participant / invalidation control" .-> API
-  Maintenance -.-> RT
-  Maintenance -.-> Eval
-  Maintenance -.-> Admin
+  Maintenance["Private restore controller"] -->|"Fixed participant / invalidation sockets"| API
+  Maintenance --> RT
+  Maintenance --> Eval
+  Maintenance --> Admin
   Maintenance --> PG
 ```
 
-Solid component paths describe the reference source; dotted maintenance
-coordination is implementation work, not accepted cross-process restore.
+Component paths describe the reference source, with executed acceptance bounded
+by its named record above.
 Realtime's raw record frames and evaluator-derived values are distinct products;
 see the [characterization](../../../reports/tenancy/derived-output-2026-11-07/README.md).
 Existing client protocols do not change when these roles move into containers.
@@ -63,18 +67,25 @@ The default single-tenant process retains its existing composition.
 
 During tenant A restoration, each participating process must stop admitting A's
 new work, finish admitted work, and acknowledge clearing A's retained state before
-reactivation. Tenant B continues. The current local cohort prototype aggregates
-contexts inside one process; the next integration replaces that limitation with
-configured private participant endpoints. A PostgreSQL advisory lock protects
+reactivation. Tenant B has its own operation window. The implemented fixed cohort
+registers actual separate processes through configured private participant
+endpoints. A PostgreSQL advisory lock protects
 participating code. A database-enforced fence would reject bypassing operations
 in PostgreSQL itself. Process separation and that stronger fence are separate
 questions; neither a process list nor a configuration assertion proves exclusive
 credential custody. Native tests must exercise actual separate processes,
 restart/lost acknowledgement and late-connection behavior under the declared
-trust boundary.
+trust boundary. The
+[tenant-local startup requirement](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission)
+prevents a suspended tenant from blocking another tenant's shared-role restart.
+Its implementation is source-checked at `151de024`; native restart acceptance is
+pending. It does not clear claims or provide automatic uncertain-outcome recovery.
 
-The remaining deployment/runbook and detailed communication work is queued as
-MT-DOC-DEPLOY and MT-DOC-REALTIME; this overview does not close those items.
+See [deployment/rig scenarios](deployment-and-rig-testing.md),
+[evaluator/realtime communication](evaluator-realtime-communication.md) and
+[SQL/migration architecture](sql-and-migration-architecture.md) for runnable
+preparation, sequence diagrams and storage/recovery boundaries. Documentation
+checks do not establish an executed deployment or capacity/recovery guarantee.
 
 ## What the write seam made possible
 

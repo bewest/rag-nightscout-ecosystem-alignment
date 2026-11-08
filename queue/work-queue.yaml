@@ -25569,9 +25569,9 @@ items:
     title: 'Deployment scenarios, rig testing and topology diagrams'
     parcel: tenancy
     repo: rag-nightscout-ecosystem-alignment
-    branch: codex/session-restore-policy-20261107
-    base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
-    state: in-progress
+    branch: codex/m6-deployment-docs-20261107
+    base: main@fca6459be238ff433ad6e0b6d4e63b30c66b4b06
+    state: done
     blast_radius: >
       Alignment documentation and diagrams. Single-site compatibility baseline; bounded one-host multitenant preview; split API/evaluator/realtime roles; restart and tenant-local restore scenarios.
     review: maintainer; tenancy, compatibility and operations review
@@ -25580,30 +25580,33 @@ items:
     semver_reason: Documentation backlog; no shipped application behavior changes.
     register: []
     gates:
-      - no-gate: >
-          Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED.
-          Document runnable preparation, credential boundaries, ports/TLS, synthetic rig data, client configuration, teardown and failure observations. Distinguish measured scenarios from proposed multi-host topologies; link diagrams and evidence to exact source heads.
-          Run queue-check and docs-links after authoring; link executed scenario
-          evidence separately from structural documentation checks.
+      - run: node tools/queue/gates/doc-links.js
+        kind: static
+        describe: >
+          Programme documentation references resolve. This structural gate does
+          not measure deployment, client, restore, capacity or M6 acceptance.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/deployment-and-rig-testing.md
       - docs/30-design/tenancy/README.md
       - docs/30-design/tenancy/single-and-multitenant-architecture.md
     notes: >
-      Current composition overview/diagram added 2026-11-07; detailed runbooks,
-      rig execution and communication sequence acceptance remain pending.
-      Integrate into existing current contract homes after the joined migration,
-      readiness and lifecycle candidate settles. Preserve one home per fact and
-      source/instrument attribution. This item does not block implementation or
-      claim deployment, capacity or recovery acceptance.
+      Runnable synthetic Compose preparation, fixed-project isolation, credential and ingress boundaries, rig/client configuration, restore/restart scenarios and teardown; source-backed topology diagram.
+      Independently source-reviewed against cgm-remote-monitor 151de024 on
+      2026-11-07; recorded native b029 evidence remains scoped to that source.
+      Documentation checks and a broken-link red/restored control are separate
+      from executed deployment or rig acceptance. New source startup, actual
+      Compose/browser and broader runtime acceptance remain with their delivery
+      items. Pinned source links require application-source publication before
+      this documentation branch is published. No application behavior changed.
 
   - id: MT-DOC-REALTIME
     title: 'Evaluator and realtime communication architecture'
     parcel: tenancy
     repo: rag-nightscout-ecosystem-alignment
-    branch: codex/session-restore-policy-20261107
-    base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
-    state: in-progress
+    branch: codex/m6-deployment-docs-20261107
+    base: main@fca6459be238ff433ad6e0b6d4e63b30c66b4b06
+    state: done
     blast_radius: >
       Alignment documentation and diagrams. Evaluator output, durable checkpoints and notifications; realtime acquisition, browser sockets, private API forwarding and alarm acknowledgement.
     review: maintainer; tenancy, compatibility and operations review
@@ -25612,30 +25615,33 @@ items:
     semver_reason: Documentation backlog; no shipped application behavior changes.
     register: []
     gates:
-      - no-gate: >
-          Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED.
-          Trace producer, transport, consumer, tenant binding, authority checks, retry/replay and invalidation through source anchors and sequence diagrams. Explain disconnect, restart, stale output and restore behavior with existing client compatibility and measured limitations.
-          Run queue-check and docs-links after authoring; link executed scenario
-          evidence separately from structural documentation checks.
+      - run: node tools/queue/gates/doc-links.js
+        kind: static
+        describe: >
+          Programme documentation references resolve. This structural gate does
+          not measure deployment, client, restore, capacity or M6 acceptance.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/evaluator-realtime-communication.md
       - docs/30-design/tenancy/README.md
       - docs/30-design/tenancy/single-and-multitenant-architecture.md
     notes: >
-      Current composition overview/diagram added 2026-11-07; detailed runbooks,
-      rig execution and communication sequence acceptance remain pending.
-      Integrate into existing current contract homes after the joined migration,
-      readiness and lifecycle candidate settles. Preserve one home per fact and
-      source/instrument attribution. This item does not block implementation or
-      claim deployment, capacity or recovery acceptance.
+      Independent evaluator and realtime SQL projections, durable intent/retry/alarm handoff, private API forwarding, tenant authority, operation lifetimes and invalidation; three source-backed sequence diagrams.
+      Independently source-reviewed against cgm-remote-monitor 151de024 on
+      2026-11-07; recorded native b029 evidence remains scoped to that source.
+      Documentation checks and a broken-link red/restored control are separate
+      from executed deployment or rig acceptance. New source startup, actual
+      Compose/browser and broader runtime acceptance remain with their delivery
+      items. Pinned source links require application-source publication before
+      this documentation branch is published. No application behavior changed.
 
   - id: MT-DOC-SQL
     title: 'SQL tables, migrations and recovery architecture'
     parcel: tenancy
     repo: rag-nightscout-ecosystem-alignment
-    branch: codex/session-restore-policy-20261107
-    base: main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f
-    state: not-started
+    branch: codex/m6-deployment-docs-20261107
+    base: main@fca6459be238ff433ad6e0b6d4e63b30c66b4b06
+    state: done
     blast_radius: >
       Alignment documentation and diagrams. Domain schemas, tenant binding/RLS, role grants, tenant write clock, insertion ordering, catalogue/ledger and lifecycle control state.
     review: maintainer; tenancy, compatibility and operations review
@@ -25644,16 +25650,22 @@ items:
     semver_reason: Documentation backlog; no shipped application behavior changes.
     register: []
     gates:
-      - no-gate: >
-          Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED.
-          Publish table relationships and migration sequences, immutable-prefix upgrade and readiness rules, transactional ordering and rollback, backup/restore inclusion and exclusions. Separate tenant-local counters from shared resources; document public history convergence and retained-state requirements when settled.
-          Run queue-check and docs-links after authoring; link executed scenario
-          evidence separately from structural documentation checks.
+      - run: node tools/queue/gates/doc-links.js
+        kind: static
+        describe: >
+          Programme documentation references resolve. This structural gate does
+          not measure deployment, client, restore, capacity or M6 acceptance.
     blocks_on: []
     evidence:
+      - docs/30-design/tenancy/sql-and-migration-architecture.md
       - docs/30-design/tenancy/README.md
+      - docs/30-design/tenancy/single-and-multitenant-architecture.md
     notes: >
-      Integrate into existing current contract homes after the joined migration,
-      readiness and lifecycle candidate settles. Preserve one home per fact and
-      source/instrument attribution. This item does not block implementation or
-      claim deployment, capacity or recovery acceptance.
+      Table families and relationships, RLS/effective grants, tenant history and insertion state, catalogue/runner/readiness sequences, logical versus physical restore and retained current authority/consumer/control state; three source-backed diagrams.
+      Independently source-reviewed against cgm-remote-monitor 151de024 on
+      2026-11-07; recorded native b029 evidence remains scoped to that source.
+      Documentation checks and a broken-link red/restored control are separate
+      from executed deployment or rig acceptance. New source startup, actual
+      Compose/browser and broader runtime acceptance remain with their delivery
+      items. Pinned source links require application-source publication before
+      this documentation branch is published. No application behavior changed.

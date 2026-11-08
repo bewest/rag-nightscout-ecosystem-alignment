@@ -32,17 +32,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 368 |
-| runnable gates | 428 |
-| explicit `no-gate:` markers | 389 |
+| runnable gates | 431 |
+| explicit `no-gate:` markers | 386 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 389 of the 817 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 817 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 75 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-DOC-SQL |
-| `in-progress` | 25 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-DOC-DEPLOY, MT-DOC-REALTIME |
+| `not-started` | 74 | MT-IDENTITY-PLAN, RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE |
+| `in-progress` | 23 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | T30-AUTH, WS-LAB |
 | `blocked` | 13 | TEN-RESOLVE, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -50,7 +50,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
-| `done` | 44 | TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB |
+| `done` | 47 | TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 6 | SEAM-REFRESH, BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
 | `answered` | 10 | RT-D3, RT-VERSION, RT-PROPAGATION, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION |
@@ -8442,9 +8442,9 @@ alarm-readiness items, and the seam branch refresh.
 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `codex/serial-integration-20261106` | n/a | 2 run + 1 no-gate |
 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `M4-CLIENT-LAB` | M4 client-binary lab: real pinned clients against the multitenant preview and single-site Mongo | `done` | `main` | n/a | 1 run + 1 no-gate |
-| `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `in-progress` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
-| `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `in-progress` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
-| `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `not-started` | `codex/session-restore-policy-20261107` | n/a | 0 run + 1 no-gate |
+| `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
+| `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
+| `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -10523,10 +10523,10 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `codex/session-restore-policy-20261107` |
-| base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
+| branch | `codex/m6-deployment-docs-20261107` |
+| base | `main@fca6459be238ff433ad6e0b6d4e63b30c66b4b06` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer; tenancy, compatibility and operations review |
@@ -10539,23 +10539,25 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED. Document runnable preparation, credential boundaries, ports/TLS, synthetic rig data, client configuration, teardown and failure observations. Distinguish measured scenarios from proposed multi-host topologies; link diagrams and evidence to exact source heads. Run queue-check and docs-links after authoring; link executed scenario evidence separately from structural documentation checks.
+- `[static]` `node tools/queue/gates/doc-links.js`
+  - Programme documentation references resolve. This structural gate does not measure deployment, client, restore, capacity or M6 acceptance.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/deployment-and-rig-testing.md`
 - `docs/30-design/tenancy/README.md`
 - `docs/30-design/tenancy/single-and-multitenant-architecture.md`
 
-**Notes.** Current composition overview/diagram added 2026-11-07; detailed runbooks, rig execution and communication sequence acceptance remain pending. Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
+**Notes.** Runnable synthetic Compose preparation, fixed-project isolation, credential and ingress boundaries, rig/client configuration, restore/restart scenarios and teardown; source-backed topology diagram. Independently source-reviewed against cgm-remote-monitor 151de024 on 2026-11-07; recorded native b029 evidence remains scoped to that source. Documentation checks and a broken-link red/restored control are separate from executed deployment or rig acceptance. New source startup, actual Compose/browser and broader runtime acceptance remain with their delivery items. Pinned source links require application- source publication before this documentation branch is published. No application behavior changed.
 
 ### `MT-DOC-REALTIME` &mdash; Evaluator and realtime communication architecture
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `codex/session-restore-policy-20261107` |
-| base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
+| branch | `codex/m6-deployment-docs-20261107` |
+| base | `main@fca6459be238ff433ad6e0b6d4e63b30c66b4b06` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer; tenancy, compatibility and operations review |
@@ -10568,23 +10570,25 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED. Trace producer, transport, consumer, tenant binding, authority checks, retry/replay and invalidation through source anchors and sequence diagrams. Explain disconnect, restart, stale output and restore behavior with existing client compatibility and measured limitations. Run queue-check and docs-links after authoring; link executed scenario evidence separately from structural documentation checks.
+- `[static]` `node tools/queue/gates/doc-links.js`
+  - Programme documentation references resolve. This structural gate does not measure deployment, client, restore, capacity or M6 acceptance.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/evaluator-realtime-communication.md`
 - `docs/30-design/tenancy/README.md`
 - `docs/30-design/tenancy/single-and-multitenant-architecture.md`
 
-**Notes.** Current composition overview/diagram added 2026-11-07; detailed runbooks, rig execution and communication sequence acceptance remain pending. Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
+**Notes.** Independent evaluator and realtime SQL projections, durable intent/retry/alarm handoff, private API forwarding, tenant authority, operation lifetimes and invalidation; three source-backed sequence diagrams. Independently source- reviewed against cgm-remote-monitor 151de024 on 2026-11-07; recorded native b029 evidence remains scoped to that source. Documentation checks and a broken-link red/restored control are separate from executed deployment or rig acceptance. New source startup, actual Compose/browser and broader runtime acceptance remain with their delivery items. Pinned source links require application-source publication before this documentation branch is published. No application behavior changed.
 
 ### `MT-DOC-SQL` &mdash; SQL tables, migrations and recovery architecture
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `rag-nightscout-ecosystem-alignment` |
-| branch | `codex/session-restore-policy-20261107` |
-| base | `main@a5aef2b149d84f4a5ab65da814004b7067bfbf7f` |
+| branch | `codex/m6-deployment-docs-20261107` |
+| base | `main@fca6459be238ff433ad6e0b6d4e63b30c66b4b06` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer; tenancy, compatibility and operations review |
@@ -10597,13 +10601,16 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Queued by maintainer 2026-11-07; documentation acceptance is UNMEASURED. Publish table relationships and migration sequences, immutable-prefix upgrade and readiness rules, transactional ordering and rollback, backup/restore inclusion and exclusions. Separate tenant-local counters from shared resources; document public history convergence and retained-state requirements when settled. Run queue-check and docs-links after authoring; link executed scenario evidence separately from structural documentation checks.
+- `[static]` `node tools/queue/gates/doc-links.js`
+  - Programme documentation references resolve. This structural gate does not measure deployment, client, restore, capacity or M6 acceptance.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/sql-and-migration-architecture.md`
 - `docs/30-design/tenancy/README.md`
+- `docs/30-design/tenancy/single-and-multitenant-architecture.md`
 
-**Notes.** Integrate into existing current contract homes after the joined migration, readiness and lifecycle candidate settles. Preserve one home per fact and source/instrument attribution. This item does not block implementation or claim deployment, capacity or recovery acceptance.
+**Notes.** Table families and relationships, RLS/effective grants, tenant history and insertion state, catalogue/runner/readiness sequences, logical versus physical restore and retained current authority/consumer/control state; three source- backed diagrams. Independently source-reviewed against cgm-remote-monitor 151de024 on 2026-11-07; recorded native b029 evidence remains scoped to that source. Documentation checks and a broken-link red/restored control are separate from executed deployment or rig acceptance. New source startup, actual Compose/browser and broader runtime acceptance remain with their delivery items. Pinned source links require application-source publication before this documentation branch is published. No application behavior changed.
 
 ---
 
