@@ -118,9 +118,11 @@ Provider-backed renewal obtains new short-lived Nightscout management access fro
 valid provider authentication and current Nightscout authority. It does not require
 Nightscout-owned rotating refresh credentials initially. The provider's login
 cookie/session, any Nightscout browser-session cookie, the current server-side
-Nightscout session and access bearer token are distinct. Cookie scope/transport,
-local and provider logout propagation, idle activity and concurrent renewal need
-explicit contracts before acceptance. The [adopted provider-outage policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#oidc-provider-outage-existing-access)
+Nightscout session and access bearer token are distinct. The [adopted session
+contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-human-session-effects-2026-11-07)
+scope idle/absolute lifetimes to management sessions, order logout local-first with
+an optional provider call, fence concurrent renewal and default browsers to an
+HttpOnly cookie with direct-token mode retained. The [adopted provider-outage policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#oidc-provider-outage-existing-access)
 allows existing valid access only until existing expiry under current local
 checks, with no new login/renewal or relaxed freshness. Adopted lifetimes below
 remain; provider activity alone cannot bypass current Nightscout authority.
@@ -132,7 +134,7 @@ provider outage and ordinary legacy data-client compatibility. Multitenant adds
 foreign-tenant/selector refusal and isolated current authority; single-tenant must
 not require multitenant PostgreSQL, a cohort identity service or extra role listeners.
 Record unsupported provider capabilities rather than silently weakening guarantees.
-Choose browser cookie versus direct-token transport through its own bounded review.
+Both browser transports are adopted, cookie default; each needs its own acceptance.
 
 ## Management authentication and lifetime policy
 
@@ -202,7 +204,7 @@ renewal refuses. Local logout/revocation takes effect on the next protected
 operation across workers; unavailable current authority refuses even with an
 unexpired token. No grace extension or Nightscout-owned refresh system is added.
 Provider logout propagation, qualifying idle activity, concurrent renewal and
-browser transport still require explicit implementation/acceptance. Upstream
+browser transport have adopted contracts and still require implementation/acceptance. Upstream
 logout cannot take immediate local effect until it is known locally. Human
 login/session implementation remains UNIMPLEMENTED/UNMEASURED.
 
