@@ -1,0 +1,116 @@
+{
+  "classification": "reproduced; complete enabled corpus failed, physical release passed",
+  "source": {
+    "head": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "tree": "761d763fbff124cdba7bcb8a87177fed7352ee25"
+  },
+  "inventory": 47,
+  "tests": {
+    "passing": 531,
+    "pending": 1,
+    "failing": 6
+  },
+  "runner": {
+    "phase": "corpus",
+    "exit": 1,
+    "elapsedSeconds": 269.90837290976197,
+    "sourceHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "final": {
+      "publishingHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+      "publishingTree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+      "verificationHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+      "verificationTree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+      "publishingClean": true,
+      "verificationClean": true
+    }
+  },
+  "observer": {
+    "phaseAccepted": false,
+    "cleanupVerified": true,
+    "commandExit": 1,
+    "problems": [
+      "CORPUS_STATUS_REFUSED",
+      "CORPUS_TEST_RESULT_REFUSED"
+    ],
+    "observerErrors": [],
+    "ownedContainers": 41,
+    "ownedVolumes": 58,
+    "observedBirths": 129,
+    "phaseVerdicts": {
+      "knownResiduals": {
+        "accepted": true,
+        "problems": [],
+        "knownHistoricalCount": 0,
+        "presentBefore": [],
+        "presentAfter": [],
+        "disposition": "historical residual records preserved; no cleanup or adoption"
+      },
+      "corpus": {
+        "accepted": false,
+        "problems": [
+          "CORPUS_STATUS_REFUSED",
+          "CORPUS_TEST_RESULT_REFUSED"
+        ],
+        "summary": {
+          "passing": 531,
+          "pending": 1,
+          "failing": 6
+        },
+        "inventoryCount": 47
+      }
+    }
+  },
+  "independentRelease": {
+    "source": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "phase": "entire enabled47 corpus",
+    "phaseAccepted": false,
+    "runtimeReleased": true,
+    "exactInventory": true,
+    "originalSelectedBaselineMetadataUnchanged": true,
+    "allObserverAndSupervisorBirthsIndependentlyAbsent": true,
+    "retainedSupervisorAndOwnerBirths": 266,
+    "ownedContainers": 41,
+    "ownedVolumes": 58,
+    "observedBirths": 129,
+    "problems": [
+      "CORPUS_STATUS_REFUSED",
+      "CORPUS_TEST_RESULT_REFUSED"
+    ],
+    "unknownAdopted": [],
+    "scope": "Original selected staticmetadata/inventory; no fullconfig/fullendpoint/globalquiescence claim"
+  },
+  "failures": [
+    {
+      "family": "clinical projection producer-death recovery",
+      "count": 1,
+      "file": "tests/tenant-projection-evaluator.integration.test.js",
+      "line": 144,
+      "symptom": "committed synthetic reading missing after producer death",
+      "classification": "UNCLASSIFIED; product versus fixture causal diagnosis pending"
+    },
+    {
+      "family": "tenant operations",
+      "count": 4,
+      "file": "tests/tenant-operations.integration.test.js",
+      "line": 50,
+      "symptom": "TENANT_ORDINAL_BINDING_REQUIRED during fixture source insertion",
+      "classification": "Reproduced guard refusal; valid fixture/product contract diagnosis pending"
+    },
+    {
+      "family": "tenant operations upgrade/rollback",
+      "count": 1,
+      "file": "tests/tenant-operations.integration.test.js",
+      "line": 179,
+      "symptom": "LIFECYCLE_COUNTER_INVENTORY_INCOMPLETE: entries",
+      "classification": "Reproduced inventory refusal; valid fixture/product contract diagnosis pending"
+    }
+  ],
+  "artifactSha256": {
+    "m6-final-corpus-c23-20261107/phase.log": "9d48548e8e10f665c9097fd27adc9fa791966c88887da85240f145ec5d23be75",
+    "m6-final-corpus-c23-20261107/corpus-record.json": "e28961ddcaeba1c24a5b943d585abe25a0553e27e727100f04f1cdea4c7e9ad8",
+    "m6-final-corpus-c23-20261107/exit.json": "74f5f606061fb6de0f0338dc2e59880db17f2494a47a31e02591886c1b4004a7",
+    "m6-final-corpus-c23-20261107-observer/observer-audit.json": "726fd5f4e1e90e6d776338532767f2f3339269b2c29db26e8c5a47c8507c1411",
+    "m6-final-corpus-c23-20261107-supervisor/supervisor-result.json": "74d23179db21df642ecaf0d9011b913991fcd2cd5663988d14ef4fc9977c30ea",
+    "m6-acceptance-continuation-20261107/corpus-c23-physical-release.json": "5dab94505d2975c120d448627720434d5b7e10001c997e70ec6dcc5e9f9d9a7a"
+  }
+}

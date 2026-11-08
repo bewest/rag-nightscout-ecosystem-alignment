@@ -1,0 +1,64 @@
+{
+  "classification": "reproduced; bounded mechanism and isolated browser closure only",
+  "source": {
+    "head": "a1e1472800d41555dd76b453c3beefe33cf1c7e2",
+    "tree": "0875402cb6038617ef0f275b1b7bd5ec897d2c56"
+  },
+  "postgres": {
+    "proofPassed": true,
+    "classification": "A1_SQL_FK_CAUSALITY_AND_PREDECLARED_LOCK_PROJECTION_ONLY",
+    "completed": [
+      "actual-catalogue-role-admission",
+      "no-insert-source-claim-positive",
+      "held-source-insert-source-claim-55P03",
+      "independent-B-source-claim-positive",
+      "holder-release-source-A-restored",
+      "restored-insert-source-claim-55P03",
+      "no-key-projection-with-FK-positive",
+      "shared-advisory-exclusion-preserved",
+      "competing-maintenance-no-key-refused",
+      "exact-state-unchanged",
+      "owned-schema-role-cleanup",
+      "independent-backend-release"
+    ],
+    "postgresVersionNumber": "160015",
+    "totalPGClients": 8,
+    "maxPGClients": 3,
+    "activePGClients": 0,
+    "queries": 193,
+    "forbiddenEgress": 0,
+    "oldBackendBirthsIndependentlyAbsent": 7,
+    "rootPhysicalReleaseVerified": true
+  },
+  "browser": {
+    "state": "PASS",
+    "cleanup": true,
+    "nodeExit": 0,
+    "observations": {
+      "page": "about:blank",
+      "syntheticDom": true,
+      "attemptedPageNetworkRequests": 0,
+      "browserRoots": 1,
+      "processClosure": {
+        "actualChromeRoots": 1,
+        "observedDescendants": 6,
+        "remaining": 0
+      }
+    },
+    "scope": "ISOLATED_STOCK_DEFAULT_BROWSER_CLOSURE_ONLY",
+    "retainedBirthsIndependentlyAbsent": 8
+  },
+  "limits": [
+    "Original incomplete native run blocker remains unidentified.",
+    "No full application controller, clinical restore, Compose or client acceptance.",
+    "No production, default, real identity, provider or device admission."
+  ],
+  "artifactSha256": {
+    "tenant-window-lock-causal-prep-20261107/capture-d5d614030249/instrument-result.json": "bbc77374fd2195d81ded25fb6979376bee63e9747207109671384681704a5d01",
+    "tenant-window-lock-causal-prep-20261107/capture-d5d614030249/closure.json": "c3b59743bba4dfb63eadae35cffd7acc54602f08b83c696f85f5c85af03cd676",
+    "compose-default-browser-closure-primitive-20261107/receipt.json": "b209d003e319f72f0b24de2e97804d705b8816645c999bf1b0e7fb6a3d7169a6",
+    "compose-default-browser-closure-primitive-20261107/browser-receipt.json": "c15a459545d260e01ed78b8932bfbccf2d8537fabebbd08ddeaef5a534d8051c",
+    "m6-acceptance-continuation-20261107/pg-window-lock-causal-independent-release.json": "6e23aa63c454a3ffc461eb83a9a3ae3d167e472fb36a4bf030e96521c1588c54",
+    "m6-acceptance-continuation-20261107/default-browser-independent-release.json": "12e2bb368f9b06907391740bb6dfa714b1dd70caca58e4198a1fbab66eb41677"
+  }
+}

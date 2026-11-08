@@ -1,0 +1,9 @@
+# c23 cold Compose acceptance
+
+**Current verdict: incomplete.** The exact-source image built successfully, but its first cold run stopped during bootstrap before UI/restore acceptance. [Sanitized stopped measurement](bootstrap-config-stopped.json) retains the failed predicate and separate physical recovery; the original stopped/cleanup-false verdict remains unchanged.
+
+The whole saved/current configuration fingerprint of the exact owned bootstrap container differed. Replacing only current `HostConfig.OomKillDisable` null with false reproduced the entire saved Config/HostConfig digest; ID, name, image, labels and mounts matched. At capture this is a measured difference and a read-derived first-start hypothesis, awaiting a small independent engine transition control. Bootstrap was observed exited 143 after interruption of its known attach client. No product bootstrap, UI, socket or restore pass is inferred.
+
+A separate 60-second recovery required original saved IDs and positive creation identity. Its only bootstrap exception was the exact measured projection plus current diagnostic digest; the other two containers and every volume/network required their full retained identities. It removed only three owned containers, three volumes and one empty owned network. The lead independently found all original/recovery process births absent and verified exact global inventory, complete non-target configuration fingerprints and the declared stable endpoint profile. Full endpoint equality remained false; typed volatile changes were retained privately and global quiescence was not claimed.
+
+The prospective caller repair must be evaluated against a measured owned first-start transition, reject true/malformed/other-field changes and preserve exact non-target fingerprints. No product source or full/browser/native accepted result changed. A new cold result and final source-owner prcheck remain pending.

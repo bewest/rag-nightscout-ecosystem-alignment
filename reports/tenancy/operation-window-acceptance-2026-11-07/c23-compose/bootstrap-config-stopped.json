@@ -1,0 +1,61 @@
+{
+  "classification": "reproduced cold configuration-equality stop; first-start causation remains read-derived pending separate engine control",
+  "source": "c23cf1f35d819738842041babc0aef2dbde96c21",
+  "tree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+  "imageId": "sha256:1b82fb9549c02239a7bcbcf758ea0c8a06b1e37caacc8ceb145324a6caf7396f",
+  "originalReceipt": {
+    "source": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "project": "ns-compose-smoke-c23cf1f3",
+    "state": "STOPPED",
+    "cleanup": false,
+    "privateDiagnostic": {
+      "exceptionClass": "RuntimeError",
+      "stage": "bootstrap",
+      "errno": null
+    },
+    "failure": "COMPOSE_STEP_REFUSED",
+    "failureDiagnosticsIncomplete": true,
+    "cleanupError": "OWNED_RESOURCE_IDENTITY_CHANGED",
+    "budget": {
+      "activeStartMonotonic": 3672313.770802741,
+      "activeDeadlineMonotonic": 3673213.770802741,
+      "cleanupStartMonotonic": 3672343.40257278,
+      "cleanupDeadlineMonotonic": 3672433.40257278,
+      "remainingSeconds": 86.67773831170052
+    }
+  },
+  "diagnostic": {
+    "scope": "READ_ONLY_SINGLE_FIELD_DEFAULT_OR_ABSENT_PROJECTIONS_NO_RAW_CONFIG",
+    "matchingCandidates": [
+      {
+        "field": "HostConfig.OomKillDisable",
+        "retainedValue": false,
+        "currentType": "NoneType"
+      }
+    ],
+    "configFields": 16,
+    "hostConfigFields": 65
+  },
+  "independentSeparatePhysicalRelease": {
+    "runtimeReleased": true,
+    "originalColdVerdict": "STOPPED_CLEANUP_FALSE",
+    "separateRecoveryAccepted": true,
+    "allExactOwnedResourceIdsAbsent": true,
+    "exactInventory": true,
+    "completeNonTargetConfigAndHostConfigFingerprintsPreserved": true,
+    "allOriginalAndRecoveryBirthsIndependentlyAbsent": true,
+    "retainedBirthsVerified": 193,
+    "globalQuiescence": false,
+    "baselineEndpointProfile": "network-endpoint-stable-v1",
+    "baselineNetworkStableEquality": true,
+    "baselineNetworkFullEquality": false,
+    "baselineNetworkVolatileObservationsChanged": true
+  },
+  "uiRestoreVerdict": "NOT_REACHED",
+  "artifactSha256": {
+    "compose-deployment-20261107/coherent-smoke-c23cf1f3/smoke-receipt.json": "51101ecac3406c03684f9eaf055fe8d32758114046d7e769535b311c12bfb3fe",
+    "compose-deployment-20261107/coherent-smoke-c23cf1f3/step-results.json": "95b58c5483eb4d29a4f85d687d66ce3690809eb2f2fca1fcd78de4ec40b9a12b",
+    "m6-acceptance-continuation-20261107/cold-c23-exact-recovery/receipt.json": "c7bf0753d12c582cca13de141ef5543e9c6490bac79db9c9514125d222e46560",
+    "m6-acceptance-continuation-20261107/cold-c23-independent-physical-release.json": "b965086f0c60a97fd0ed71a012e7aaf63d28a60ca52f96e81be3cd8a085baeb9"
+  }
+}

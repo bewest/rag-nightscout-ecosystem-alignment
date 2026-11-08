@@ -1,0 +1,84 @@
+{
+  "classification": "reproduced; actual installed default-browser suite",
+  "source": {
+    "head": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "tree": "761d763fbff124cdba7bcb8a87177fed7352ee25"
+  },
+  "tests": {
+    "passed": 684,
+    "failed": 0,
+    "pending": 0
+  },
+  "runner": {
+    "phase": "browser",
+    "exit": 0,
+    "elapsedSeconds": 242.7220823150128,
+    "sourceHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "final": {
+      "publishingHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+      "publishingTree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+      "verificationHead": "c23cf1f35d819738842041babc0aef2dbde96c21",
+      "verificationTree": "761d763fbff124cdba7bcb8a87177fed7352ee25",
+      "publishingClean": true,
+      "verificationClean": true
+    }
+  },
+  "observer": {
+    "phaseAccepted": true,
+    "cleanupVerified": true,
+    "commandExit": 0,
+    "problems": [],
+    "observerErrors": [],
+    "ownedContainers": 3,
+    "ownedVolumes": 5,
+    "observedBirths": 289,
+    "phaseVerdicts": {
+      "knownResiduals": {
+        "accepted": true,
+        "problems": [],
+        "knownHistoricalCount": 0,
+        "presentBefore": [],
+        "presentAfter": [],
+        "disposition": "historical residual records preserved; no cleanup or adoption"
+      },
+      "defaultBrowser": {
+        "accepted": true,
+        "problems": []
+      }
+    }
+  },
+  "supervisor": {
+    "phasePassed": true,
+    "hostProcessesClosed": true,
+    "directChildrenReaped": true
+  },
+  "independentRelease": {
+    "source": "c23cf1f35d819738842041babc0aef2dbde96c21",
+    "phase": "actual stock default browser",
+    "phaseAccepted": true,
+    "runtimeReleased": true,
+    "exactInventory": true,
+    "originalSelectedBaselineMetadataUnchanged": true,
+    "allObserverAndSupervisorBirthsIndependentlyAbsent": true,
+    "retainedSupervisorAndOwnerBirths": 369,
+    "ownedContainers": 3,
+    "ownedVolumes": 5,
+    "observedBirths": 289,
+    "defaultBrowserVerdict": {
+      "accepted": true,
+      "problems": []
+    },
+    "unknownAdopted": [],
+    "scope": "Original selected staticmetadata/inventory; no fullconfig/fullendpoint/globalquiescence claim"
+  },
+  "priorAttempt": "PRE_COMMAND_UNREVIEWED_COMMAND; no browser/service phase reached; independently released; corrected exact command composition before fresh attempt",
+  "artifactSha256": {
+    "m6-final-browser-c23-v2-20261107/phase.log": "99fd5c60235923be597b672e2a1d132ed121c3f906e66062110e49376a1b5f71",
+    "m6-final-browser-c23-v2-20261107/exit.json": "c4a000a8f07138d27df851da73fc2efad7f2e1b46501634a872a0c721cc93dff",
+    "m6-final-browser-c23-v2-20261107/default-browser-runtime.json": "d879f1aa330e630a89cd530837cc674b91538998f227422904f62c0da154f07d",
+    "m6-final-browser-c23-v2-20261107-observer/observer-audit.json": "02bb0d100e86c2863985a3f99cf18710facb63db8e7154dd9eb5bd78c4767a22",
+    "m6-final-browser-c23-v2-20261107-supervisor/supervisor-result.json": "1575c901ee1630ac2f3912d26a784e67f28082167cad10525a28fa784a0cb523",
+    "m6-acceptance-continuation-20261107/browser-c23-prefail-independent-release.json": "28bb08d9ec079aa33a81440a39ea750a7886107e41c300f694b9556622d1f3f6",
+    "m6-acceptance-continuation-20261107/browser-c23-v2-command-composition-controls.json": "784051161153f24891dc72065df8aad7bac0637a7ddbe42689482a64f7f1906c"
+  }
+}
