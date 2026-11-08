@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 368 |
+| items | 370 |
 | runnable gates | 431 |
-| explicit `no-gate:` markers | 386 |
+| explicit `no-gate:` markers | 390 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 386 of the 817 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 390 of the 821 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 73 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE |
+| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER |
 | `in-progress` | 24 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, MT-IDENTITY-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | T30-AUTH, WS-LAB |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 68 items
+`parcel: tenancy` &mdash; 70 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8445,6 +8445,8 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
+| `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | `codex/selectable-private-endpoints` | minor | 0 run + 2 no-gate |
+| `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -10612,6 +10614,71 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/single-and-multitenant-architecture.md`
 
 **Notes.** Table families and relationships, RLS/effective grants, tenant history and insertion state, catalogue/runner/readiness sequences, logical versus physical restore and retained current authority/consumer/control state; three source- backed diagrams. Independently source-reviewed against cgm-remote-monitor 151de024 on 2026-11-07; recorded native b029 evidence remains scoped to that source. Documentation checks and a broken-link red/restored control are separate from executed deployment or rig acceptance. New source startup, actual Compose/browser and broader runtime acceptance remain with their delivery items. Pinned source links require application-source publication before this documentation branch is published. No application behavior changed.
+
+### `MT-ENDPOINT-TRANSPORT` &mdash; Selectable private UDS/HTTP(S) component endpoints
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/selectable-private-endpoints` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; security, compatibility and operations review |
+
+**Blast radius.** Private IPC client/listener/config adapters for API authorization and mutation, realtime alarm handoff and per-instance restore control; effective service trust and bounded transport behavior. No public client protocol change.
+
+**What an operator sees.** Planned optional private service connections over Unix sockets or HTTP(S). Existing clients keep their current protocol. A failed or uncertain write must not be reported as successful.
+
+**Why `minor`.** Opt-in deployment configuration and private endpoint adapters; existing UDS configuration and single-site defaults retain compatibility.
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED implementation acceptance. Endpoint normalization/listener adapters and authored parity instruments do not yet exist. The plan specifies UDS/HTTP(S) ordinary and semantic red/restored cases for fixed operations, service identity, current tenant authority, CA/caller refusal, byte/deadline/cancellation limits, no redirects/fallback and ambiguous mutation no-ack/no-transparent-retry behavior.
+- **NO GATE** &mdash; UNMEASURED native remote-control acceptance. Actual per-instance status/incarnation binding, operation/HTTP-response drain, tenant-local invalidation and commit/ack uncertainty must preserve suspension and B progress over the selected transport before endpoint admission.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
+- `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
+- `docs/30-design/tenancy/sql-and-migration-architecture.md`
+- `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
+
+**Notes.** Source implementation is not started; branch name is proposed, not created. Confirm actual current joined source and ownership with coordinator before dispatch, then preserve original history. The accepted ed2 reference is a bounded baseline, not a new-head runtime result. Kubernetes deployment proof, manifests and Jsonnet are deferred; topology diagrams audit coupling and cohesion only. No default, production admission or new 16.0.0 tag gate.
+
+### `MT-API-FIXED-ROSTER` &mdash; Independent API scaling with a fixed restore participant roster
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/fixed-roster-api` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; compatibility, isolation and operations review |
+| blocks on | `MT-ENDPOINT-TRANSPORT` |
+
+**Blast radius.** Explicit API replica composition and service-vs-instance addressing; current authority, per-instance admission, drain and invalidation; native two-API concurrency and restore/replacement compatibility evidence.
+
+**What an operator sees.** Planned independent API instances behind a private service endpoint. Restoring one tenant must still reach every relevant instance and preserve other tenants' work. Existing client requests and acknowledgements stay compatible.
+
+**Why `minor`.** Explicit fixed-roster deployment capability with no coordinated client upgrade; runtime and client compatibility require measured acceptance.
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED native fixed-roster acceptance. Exercise two actual APIs with one realtime and one evaluator using current authority and independent stored-state outcomes. Prove concurrent requests/revocation, aggregate pool bounds, complete per-instance drain/invalidation, lost acknowledgements, replica death/replacement and B continuity; missing, stale, wrong or service-aliased control participants must refuse.
+- **NO GATE** &mdash; UNMEASURED coherent-candidate compatibility. Join complete capability changes before final applicable full/default-browser/enabled-corpus, pinned-client/native acceptance and final prcheck. Preserve source and instrument attribution, original failures and named pending cases. A plan or a component transport pass does not close this capability.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
+- `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
+- `docs/30-design/tenancy/sql-and-migration-architecture.md`
+- `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
+
+**Notes.** Source implementation is not started; branch name is proposed, not created. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.
 
 ---
 

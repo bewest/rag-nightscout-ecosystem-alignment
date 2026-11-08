@@ -25672,3 +25672,103 @@ items:
       Compose/browser and broader runtime acceptance remain with their delivery
       items. Pinned source links require application-source publication before
       this documentation branch is published. No application behavior changed.
+
+
+  - id: MT-ENDPOINT-TRANSPORT
+    title: "Selectable private UDS/HTTP(S) component endpoints"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/selectable-private-endpoints
+    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
+    state: not-started
+    blast_radius: >
+      Private IPC client/listener/config adapters for API authorization and mutation,
+      realtime alarm handoff and per-instance restore control; effective service
+      trust and bounded transport behavior. No public client protocol change.
+    review: maintainer; security, compatibility and operations review
+    operator_visible: >
+      Planned optional private service connections over Unix sockets or HTTP(S).
+      Existing clients keep their current protocol. A failed or uncertain write
+      must not be reported as successful.
+    semver: minor
+    semver_reason: >
+      Opt-in deployment configuration and private endpoint adapters; existing UDS
+      configuration and single-site defaults retain compatibility.
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED implementation acceptance. Endpoint normalization/listener
+          adapters and authored parity instruments do not yet exist. The plan
+          specifies UDS/HTTP(S) ordinary and semantic red/restored cases for
+          fixed operations, service identity, current tenant authority, CA/caller
+          refusal, byte/deadline/cancellation limits, no redirects/fallback and
+          ambiguous mutation no-ack/no-transparent-retry behavior.
+      - no-gate: >
+          UNMEASURED native remote-control acceptance. Actual per-instance
+          status/incarnation binding, operation/HTTP-response drain, tenant-local
+          invalidation and commit/ack uncertainty must preserve suspension and
+          B progress over the selected transport before endpoint admission.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
+      - docs/30-design/tenancy/deployment-bindings-and-public-names.md
+      - docs/30-design/tenancy/sql-and-migration-architecture.md
+      - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
+    notes: >
+      Source implementation is not started; branch name is proposed, not created.
+      Confirm actual current joined source and ownership with coordinator before
+      dispatch, then preserve original history. The accepted ed2 reference is a
+      bounded baseline, not a new-head runtime result. Kubernetes deployment proof,
+      manifests and Jsonnet are deferred; topology diagrams audit coupling and
+      cohesion only. No default, production admission or new 16.0.0 tag gate.
+
+  - id: MT-API-FIXED-ROSTER
+    title: "Independent API scaling with a fixed restore participant roster"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/fixed-roster-api
+    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
+    state: not-started
+    blast_radius: >
+      Explicit API replica composition and service-vs-instance addressing;
+      current authority, per-instance admission, drain and invalidation; native
+      two-API concurrency and restore/replacement compatibility evidence.
+    review: maintainer; compatibility, isolation and operations review
+    operator_visible: >
+      Planned independent API instances behind a private service endpoint.
+      Restoring one tenant must still reach every relevant instance and preserve
+      other tenants' work. Existing client requests and acknowledgements stay compatible.
+    semver: minor
+    semver_reason: >
+      Explicit fixed-roster deployment capability with no coordinated client upgrade;
+      runtime and client compatibility require measured acceptance.
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED native fixed-roster acceptance. Exercise two actual APIs
+          with one realtime and one evaluator using current authority and
+          independent stored-state outcomes. Prove concurrent requests/revocation,
+          aggregate pool bounds, complete per-instance drain/invalidation,
+          lost acknowledgements, replica death/replacement and B continuity;
+          missing, stale, wrong or service-aliased control participants must refuse.
+      - no-gate: >
+          UNMEASURED coherent-candidate compatibility. Join complete capability
+          changes before final applicable full/default-browser/enabled-corpus,
+          pinned-client/native acceptance and final prcheck. Preserve source and
+          instrument attribution, original failures and named pending cases.
+          A plan or a component transport pass does not close this capability.
+    blocks_on: [MT-ENDPOINT-TRANSPORT]
+    evidence:
+      - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
+      - docs/30-design/tenancy/deployment-bindings-and-public-names.md
+      - docs/30-design/tenancy/sql-and-migration-architecture.md
+      - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
+    notes: >
+      Source implementation is not started; branch name is proposed, not created.
+      One complete API capability owner integrates with the endpoint lane and
+      existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config
+      inventory as a supplied roster; do not build a parallel membership service
+      or custom evaluator scheduler.
+      Evaluator remains one active owner; partitioning/replication, realtime
+      replication, dynamic membership/autoscaling, transaction poolers, Kubernetes
+      proof and Jsonnet are outside this capability. No parent milestone promotion.

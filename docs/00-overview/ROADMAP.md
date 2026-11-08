@@ -186,6 +186,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
 | 1 | `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and Mongo | `in-progress` | &mdash; |
 | 1 | `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | &mdash; |
+| 1 | `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | &mdash; |
 | 1 | `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `in-progress` | &mdash; |
 | 1 | `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | &mdash; |
 | 1 | `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | &mdash; |
@@ -206,6 +207,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
 | 2 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `in-progress` | `ARCH-SEAM-CONTRACT` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
+| 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `T30-RESEARCH` |
 | 2 | `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `MT-CONFIG-MIN`, `MIG-RUNNER` |
 | 3 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `in-progress` | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
