@@ -9,6 +9,9 @@ application links identify that inspected revision; executed measurements retain
 their own source. Decisions live in the [tenancy contracts](multitenancy-decisions.md)
 and [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md);
 acceptance lives in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+Ownership/API guidance updated 2026-11-08 under the maintainer's exclusive
+application ownership decision. Design recommendations and Kubernetes scale-out
+assessment are **read-derived**; no new runtime or cluster campaign was run.
 This guide explains their SQL implementation and does not promote M6.*
 
 ## Scope and evidence
@@ -29,6 +32,112 @@ own admitted port behavior.
 | [ed2 cold Compose measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) | **Reproduced:** packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure. | Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate. |
 | [Application startup source guide][cohort-guide] and [startup controls][startup-controls] | The `151de024` source defers genuinely suspended tenants while retaining shared readiness failures and later full initialization. | Source/protocol reading; actual runtime measurements retain their c23 attribution above. |
 | [Counter analysis](counter-and-restore-options.md) and [clock proof plan](postgres-tenant-clock-proof.md) | Rationale, alternatives and invariants, with individually scoped experiments. | Their earlier source anchors and feasibility results do not replace current catalogue/readiness verification. |
+
+## Supported database ownership contract
+
+The [exclusive application ownership decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership)
+defines supported writers. Nightscout collectively owns its selected namespaces:
+multiple internal processes and controlled maintenance tools may use PostgreSQL,
+but every supported participant follows the relevant application contract.
+External direct writers are unsupported and their effects are undefined behavior,
+consistent with single-tenant Nightscout's external MongoDB writer boundary.
+Other applications may own unrelated namespaces; this does not require exclusive
+ownership of an entire PostgreSQL server.
+
+Exclusive application ownership does not confer unrestricted SQL rights on each
+component. Retain effective privilege/readiness checks, tenant-bound transactions,
+forced RLS, current authorization and narrowly scoped credentials. Internal
+clinical writes must use the canonical write path; lifecycle participants must
+honor admission, drain and invalidation. The advisory-lock protocol coordinates
+these supported participants. A direct writer ignoring it is outside the contract,
+not a reason to require a stronger database fence for the supported topology.
+PostgreSQL documents [advisory locks](https://www.postgresql.org/docs/current/explicit-locking.html#ADVISORY-LOCKS)
+as application-coordinated locks.
+
+## Component ownership and internal application APIs
+
+**Read-derived architecture direction:** place commands at the component that
+owns their semantics, and let that component persist its state. An internal API
+can be a module interface within a process or a private application protocol
+between processes. The reference's process transport is private HTTP/JSON over
+Unix sockets; network endpoint selection requires the separately described
+[transport binding](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api).
+The following ownership map does not introduce a generic SQL-over-HTTP service.
+
+| Operation / state | Owner and internal boundary | Existing reference or recommended direction |
+|---|---|---|
+| Clinical documents, public write outcomes and history stamps | API executes canonical writes, including a writer's current authority. Socket/connector/other component commands enter the same application write boundary. Document, clock and insertion changes retain their transaction coupling. | API clinical writes and D23 socket forwarding exist. Additional internal command producers must use the admitted path; their implementation/acceptance remains separately scoped. |
+| Alarm acknowledgement / snooze | Realtime forwards the original client authorization and event to API; API persists suppression through its acknowledgement admission. Evaluator reads current suppression. | Existing [private authorization and mutation protocol](evaluator-realtime-communication.md#browser-authorization-and-mutations); realtime must not edit suppression rows as a substitute. |
+| Clinical acquisition and consumer recovery state | Evaluator and realtime each read through tenant-bound storage interfaces and own separate projection/checkpoint namespaces. | Existing bounded snapshot acquisition. Direct admitted reads and atomic projection/checkpoint persistence remain appropriate; sending every read through API would add dependency and transport cost without establishing stronger semantics. |
+| Notification intent, attempts and handoff | Evaluator's notification component owns durable producer/request/attempt state; realtime owns connected-browser fanout. Deliver an application handoff with stable request identity and durable retry outcome. | Existing [notification handoff](evaluator-realtime-communication.md#notification-intents-retries-and-alarm-handoff). Other components should not insert producer requests or edit attempt rows to impersonate its protocol. |
+| Credentials, owner configuration and current policy | Management/authority components own mutation checks, audit and invalidation. Consumers use their admitted authority/settings interfaces; data-plane requests retain their own current authorization. | Separate management audience and component interfaces exist. Cross-process consumers should invoke owned commands rather than edit these tables; this is not a claim that every authority operation has a new network endpoint. |
+| Suspension, restore, deletion and activation | Lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants. | Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony. |
+
+**Read-derived responsibility diagram.** Solid arrows are application commands;
+dotted arrows are admitted SQL access, not foreign keys. Storage groups below
+are logical families within the selected namespaces, not separate databases.
+
+```mermaid
+flowchart TB
+  RT["Realtime"] -->|"authorize / mutate / ack"| API["API: canonical clinical writes"]
+  EV["Evaluator / notification component"] -->|"alarm handoff"| RT
+  Admin["Management / authority components"]
+  LC["Lifecycle controller"] -->|"pin / drain / invalidate each instance"| Roles["API / realtime / evaluator / admin"]
+  subgraph PG["Application-owned PostgreSQL namespaces"]
+    Clinical["Clinical documents + insertion counters + history clock"]
+    Checkpoints["Separate realtime and evaluator projections / checkpoints"]
+    Notifications["Notification state / requests / attempts"]
+    Suppression["Alarm suppression"]
+    Authority["Current authority / sessions / policy / owner settings / secrets"]
+    Windows["Lifecycle windows / operations / authority / audit"]
+  end
+  API -. "canonical writes" .-> Clinical
+  API -. "authorized acknowledgement" .-> Suppression
+  API -. "current authority" .-> Authority
+  RT -. "clinical reads" .-> Clinical
+  EV -. "clinical reads" .-> Clinical
+  RT -. "own checkpoint" .-> Checkpoints
+  EV -. "own checkpoint" .-> Checkpoints
+  EV -. "owned producer persistence" .-> Notifications
+  EV -. "current suppression" .-> Suppression
+  Admin -. "owned mutations" .-> Authority
+  LC -. "controlled clinical restore" .-> Clinical
+  LC -. "maintenance protocol" .-> Windows
+```
+
+Application APIs preserve existing client payloads, authority and reply behavior.
+Ambiguous mutation completion must preserve the existing no-acknowledgement/error
+contract rather than trigger a transparent new retry. Database-backed transaction
+and idempotency semantics remain explicit. The [communication guide](evaluator-realtime-communication.md)
+owns actual runtime sequences; no RPC consolidation has been benchmarked here.
+
+### Kubernetes scalability smell test
+
+**Yes, as an architecture smell test:** a replaceable request-serving instance
+with durable authority outside the process is a natural candidate for a
+Kubernetes [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/).
+Exclusive application database ownership permits multiple cooperating replicas;
+it does not mean a single API process. An internal API boundary helps separate
+those replicas from consumers, but does not itself make either end stateless.
+
+| Component | Scale-out implication | Required boundary before claiming it works |
+|---|---|---|
+| Static UI serving | Replaceable replica candidate. | Consistent assets/configuration and edge behavior. |
+| Request-scoped API and management handlers | Natural replica candidates when local state is reconstructible and durable authority/transactions remain shared. | Current authority/config consistency, safe concurrent writes, graceful drain, bounded aggregate pools and actual participation of every replica in restore. Existing canonical serialization still bounds same-tenant write throughput. |
+| Realtime | Connection-owning service with retained frames and subscriptions. | Admitted session routing, cross-instance fanout and reconnect/recovery; a load-balanced alarm call does not reach every viewer by itself. |
+| Evaluator / notification producer | Recoverable workers with logical producer and checkpoint ownership. | Explicit partition/claim ownership, exclusion of stale producers and durable retry/deduplication under replacement. External persistence alone does not make duplicate active workers safe. |
+| Lifecycle controller / migrations | Controlled operations with exclusive authority. | Maintenance claims, every participant's incarnation and uncertain-outcome handling; Kubernetes placement or Job completion cannot substitute for application ownership. |
+
+The current fixed cohort needs a declared roster containing every serving replica.
+A load-balanced API endpoint can route an ordinary command to any equivalent
+admitted API, whereas restore control must address every instance. Dynamic HPA
+membership and cross-Pod authenticated transport need qualification. Deployments
+can overlap old/new Pods during rolling updates, so replica count is not an
+exclusion guarantee. A StatefulSet's stable identity/storage does not supply the
+application's producer or restore protocol either. See the [deployment binding
+and replica assessment](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
+for endpoint semantics and acceptance cases. Kubernetes execution, autoscaling,
+throughput and failover remain **UNMEASURED** by this documentation update.
 
 ## Tables and their ownership
 
@@ -191,10 +300,10 @@ sequenceDiagram
   Runner->>DB: Acquire namespace advisory lock
   Runner->>DB: Inspect exact applied prefix
   loop Pending migrations
-    Runner->>DB: BEGIN; reviewed DDL/data conversion
-    Runner->>DB: INSERT schema_migrations row; COMMIT
+    Runner->>DB: BEGIN, reviewed DDL/data conversion
+    Runner->>DB: INSERT schema_migrations row, COMMIT
   end
-  Runner->>DB: Release lock; close client
+  Runner->>DB: Release lock, close client
   Role->>DB: Read-only catalogue and physical metadata checks
   Role->>DB: Check effective ACL / RLS / datastore / binding
   loop Every configured tenant remains in roster
@@ -202,7 +311,7 @@ sequenceDiagram
     alt Active tenant
       Role->>DB: Floors, provisioning and tenant warmup
     else Genuine suspension
-      Role->>Role: Defer tenant warmup; keep tenant unavailable
+      Role->>Role: Defer tenant warmup, keep tenant unavailable
     end
   end
   Note over Role: Shared readiness errors still refuse process startup
@@ -244,18 +353,18 @@ sequenceDiagram
   participant Cohort as Fixed separate service processes
   participant Data as A clinical rows / clock / counters
   Op->>Cohort: Pin current incarnations and actual datastore identities
-  Op->>Control: Verify authority; COMMIT suspension and claim
-  Op->>Control: Drain unfinished operations; acquire A exclusive lock
+  Op->>Control: Verify authority, COMMIT suspension and claim
+  Op->>Control: Drain unfinished operations, acquire A exclusive lock
   Op->>Cohort: Exact actor census and pinned status checks
-  Op->>Data: BEGIN DATA; lock live history floor
+  Op->>Data: BEGIN DATA, lock live history floor
   Op->>Data: Plan current plus captured identities
   Op->>Data: Rebuild A rows with forward history and tenant-local allocation
-  Op->>Data: Verify rows, floors and held claim; COMMIT DATA
+  Op->>Data: Verify rows, floors and held claim, COMMIT DATA
   Op->>Op: Publish acknowledged post-commit effects
-  Op->>Cohort: Fresh A invalidation request; await every pinned ACK
-  Op->>Control: Recheck authority / claim / audit; COMMIT activation
+  Op->>Cohort: Fresh A invalidation request, await every pinned ACK
+  Op->>Control: Recheck authority / claim / audit, COMMIT activation
   Note over Control,Cohort: Before activation, failure retains suspension
-  Note over Op,Control: Activation ACK loss may leave active state; inspect, do not auto-retry
+  Note over Op,Control: Activation ACK loss may leave active state, inspect, do not auto-retry
 ```
 
 The [logical planner][logical-plan] preserves public/typed identities and sorts

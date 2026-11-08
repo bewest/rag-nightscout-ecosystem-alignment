@@ -20,7 +20,7 @@ need their own evidence; an accepted component is not a completed platform track
 | Capability | Recorded basis | Useful for decisions now | Remaining admission |
 |---|---|---|---|
 | Separate API/realtime/evaluator/admin and packaged UI | [ed2 cold Compose acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) | One-host role composition, existing client/browser routes and private control channels work together. | Multi-host discovery, replicas/failover, production ingress/service identity and operating limits. |
-| Tenant-local restore and shared-role restart | [c23 native acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md), plus ed2 packaged ordinary restore above | A can stay suspended while B progresses; forward correction/deletion history allows tested clients to converge without a global pause. | Automatic orphan clearance, supported suspended-restore resume, arbitrary-writer exclusion and production recovery bounds. |
+| Tenant-local restore and shared-role restart | [c23 native acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md), plus ed2 packaged ordinary restore above | A can stay suspended while B progresses; forward correction/deletion history allows tested clients to converge without a global pause. | Automatic orphan clearance, supported suspended-restore resume and production recovery bounds under the [application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership). |
 | Functional durable evaluator/realtime reference | [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) | Bounded snapshots, durable suppression and stable notification-intent identities support the one-host runtime direction. | Provider/device delivery, distributed producer ownership and capacity/freshness/egress budgets. |
 | Existing client compatibility | [ed2 actual pinned clients](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json); [39f4 enabled corpus](../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/README.md) | Use the admitted API/history/credential shapes and the named clients' stored outcomes. | Wider/mobile clients, other query shapes and all-client acceptance. |
 | Derived calculation reuse | [f0 characterization](../../../reports/tenancy/derived-output-2026-11-07/README.md) | Selected evaluator/API current properties agree; time, settings and input identity matter. Realtime raw frames remain a separate product. | A shared immutable-result interface, full authorization/clinical equivalence and publication-service ownership/freshness. No service is selected by the characterization. |
@@ -95,7 +95,11 @@ questions; neither a process list nor a configuration assertion proves exclusive
 credential custody. The [native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
 exercises the actual separate processes and uncertainty/restart cases under its
 declared fixed trusted-cohort boundary. Arbitrary direct SQL actors remain outside
-that proof. The
+that proof and are unsupported under the
+[exclusive application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership).
+The [database ownership map](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis)
+distinguishes cross-component commands from admitted reads and owned persistence.
+The
 [tenant-local startup requirement](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission)
 prevents a suspended tenant from blocking another tenant's shared-role restart.
 The c23 native acceptance reproduces fresh API/realtime/evaluator startup and B
