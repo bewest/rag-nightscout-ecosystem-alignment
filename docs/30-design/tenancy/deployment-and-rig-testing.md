@@ -41,7 +41,8 @@ flowchart LR
   Eval --> PG
   Admin["Tenant-admin process"] --> PG
   API --> Vault["Vault Transit over TLS"]
-  Admin --> Vault
+  Bootstrap["One-shot bootstrap"] --> Vault
+  Bootstrap --> PG
   Operator["Private maintenance operator"] --> PG
   Operator -->|"private participant control sockets"| API
   Operator --> RT
@@ -165,7 +166,8 @@ its explicitly authored new writes are expected differences.
 | Experiment | Observe | Required failure behavior |
 |---|---|---|
 | Ordinary A restore | A's clinical values/public identity and relative ordering; normal forward history updates and deletions; B read/write progress | No global pause or indiscriminate rewind of current authority/consumer state. |
-| Interrupted/uncertain restore | Durable claim, audit, unfinished operations and actual data outcome | Keep A unavailable; no blind replay, timeout-based reopening or orphan clearance. |
+| Interruption before activation | Durable claim, audit, unfinished operations and actual data outcome | Keep A unavailable; no blind replay, timeout-based reopening or orphan clearance. |
+| Activation acknowledgement lost | Actual persisted phase and the recorded uncertain result | Activation may already have committed after its prerequisites succeeded; inspect the outcome rather than assuming suspension or blindly repeating activation. |
 | Shared-role restart with A suspended | Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged | Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. Native acceptance on the new source is pending. |
 | Missing/restarted participant | Changed incarnation, missing acknowledgement or unresolved operation | Old restore pins cannot activate using replacement processes. |
 | Database/Vault/shared-host outage | Which shared dependency failed and what each tenant can still do | Tenant-local restore does not promise tenant-local infrastructure failures or HA. |
