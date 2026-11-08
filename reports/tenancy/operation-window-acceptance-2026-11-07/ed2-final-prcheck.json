@@ -1,0 +1,26 @@
+{
+  "classification": "reproduced; source-owner final prcheck after accepted final full",
+  "state": "PASS",
+  "source": {
+    "head": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
+    "tree": "3956ed7771378e47feb8efca38cb8141d8ecf0b6",
+    "clean": true
+  },
+  "officialDev": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "ordering": "Actual final seven-tier full accepted and physically closed before this source-owner last prcheck",
+  "command": "tools/review/prcheck/prcheck.sh /tmp/crm-tenant-order-integration-20261107",
+  "actualExit": 0,
+  "successfulLogSha256": "7eb62cd3068d768250b6166e2c2853983bd20cd7782b124e08753f5d73f0ece2",
+  "initialSandboxDnsFailure": {
+    "state": "STOPPED",
+    "actualExit": 128,
+    "logSha256": "0b9c519653971a101a7a96ffdfd4d7e91a87b76776b218af6ced7fce7b7f19e3",
+    "disposition": "Preserved; approved network retry ran the same check and passed, no source change"
+  },
+  "rootReadback": {
+    "successfulLogEndsOK": true,
+    "freshOfficialFetchRecorded": true,
+    "sourceHeadTreeAndCleanIndependentlyRead": true
+  },
+  "scope": "Local branch acceptance. No push, PR metadata mutation, merge to dev, release or whole-M6 admission by this acceptance lane."
+}
