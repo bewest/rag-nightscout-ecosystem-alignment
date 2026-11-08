@@ -2577,6 +2577,8 @@
       
         
       
+        
+      
     
     
     
@@ -2702,6 +2704,34 @@
     
   
     Deployment scenarios and rig testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment bindings, public names and load behavior
   
 
     
@@ -5425,7 +5455,7 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>301f92777</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>07dc68438</code>.</em></p>
 <p><em>Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the <a href="../../archive/tenancy/index.html">tenancy archive</a>; dates in a
@@ -5497,6 +5527,11 @@ Its initial topology and operating envelope are proposals for review.</p>
 <td>Separate service processes and restore coordination</td>
 <td><a href="single-and-multitenant-architecture.html#current-service-composition-and-restore-integration-2026-11-07">Current composition diagram</a></td>
 <td>Fixed cross-process cohort and source-attributed restore evidence; native tenant-local shared-role restart is accepted on c23; cold Compose restore is accepted on ed2.</td>
+</tr>
+<tr>
+<td>Express the same deployment with Kubernetes/Jsonnet, public aliases and group policy</td>
+<td><a href="deployment-bindings-and-public-names.html">Deployment bindings and public names</a></td>
+<td>Public requirements, candidate resource translation, transport/replacement boundaries and load-herd experiments; implementation and policy defaults remain unmeasured.</td>
 </tr>
 <tr>
 <td>Deploy a synthetic prototype or connect a rig</td>

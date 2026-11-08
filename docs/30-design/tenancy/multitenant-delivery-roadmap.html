@@ -2577,6 +2577,8 @@
       
         
       
+        
+      
     
     
     
@@ -2702,6 +2704,34 @@
     
   
     Deployment scenarios and rig testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment bindings, public names and load behavior
   
 
     
@@ -5604,11 +5634,11 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>b9d62a7e9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>07dc68438</code>.</em></p>
 <p><em>Contributor-facing living plan. Reconciled 2026-11-08 to the published reference and adopted release decisions,
 without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/301f92777917d1ef73c4776764d395d6b8ea68dd/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/07dc68438dae4134709957d20222e68fe3e77c9e/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5725,10 +5755,13 @@ The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deplo
 keep Vault Transit at every stage, with a service-login adapter required before
 production use, and admit a deployment by trust record plus live probes.</p>
 <h2 id="tenant-identity-migrations-and-import">Tenant identity, migrations and import<a class="headerlink" href="#tenant-identity-migrations-and-import" title="Permanent link">&para;</a></h2>
-<p>Keep disposable public aliases, durable DNS-friendly internal names and stable
+<p>Keep permanent or disposable public aliases, durable DNS-friendly internal names and stable
 tenant IDs distinct. Deployment-owned mapping binds internal name to ID; alias
 rotation does not recreate a tenant or transfer credentials/data. DNS discovery
-is not authority. Preserve direct-alias mode and make canonical ingress explicit:
+is not authority. The <a href="deployment-bindings-and-public-names.html#public-name-tenant-identity-and-access-policy">public-name binding contract</a>
+adds explicit authentication/anonymous/group-policy requirements for shareable
+addresses; their concrete policy and schedule semantics still need acceptance.
+Preserve direct-alias mode and make canonical ingress explicit:
 only trusted transport may supply the configured internal selector; forwarded
 public aliases cannot override it. Conflicting/spoofed selectors and trust loss
 refuse. Durable allocation, collision, rename/reassignment/deletion and mapping
@@ -5841,7 +5874,7 @@ implementation and destroy/after-window refusal evidence remain separate.</p>
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
 observations, not a fresh current-HEAD campaign. M6 remains blocked. The later accepted ed2 reference is published on draft
-PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/301f92777917d1ef73c4776764d395d6b8ea68dd/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
+PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/07dc68438dae4134709957d20222e68fe3e77c9e/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
 is distinct from dev merge, release and production/default admission.</p>
 <table>
 <thead>

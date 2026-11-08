@@ -2577,6 +2577,8 @@
       
         
       
+        
+      
     
     
     
@@ -2702,6 +2704,34 @@
     
   
     Deployment scenarios and rig testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deployment-bindings-and-public-names.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment bindings, public names and load behavior
   
 
     
@@ -5538,7 +5568,7 @@
 
 
 <h1 id="from-accepted-one-host-preview-to-production">From accepted one-host preview to production<a class="headerlink" href="#from-accepted-one-host-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>301f92777</code>.</em></p>
+<p><em>Living document, last changed 2026-11-08 at <code>07dc68438</code>.</em></p>
 <p><em>Living contributor-facing decision-preparation guide, 2026-11-08. This is a
 </em><em>read-derived</em><em> dependency analysis and prior-art survey, not production
 acceptance or an adopted topology/SLO decision. Existing requirements retain their
@@ -5547,6 +5577,9 @@ canonical homes in the <a href="../../../releases/cgm-remote-monitor-16.0.0/deci
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns milestone claims; release
 contents and named reports own execution/publication. No application campaign
 was run for this guide.</em></p>
+<p>The <a href="deployment-bindings-and-public-names.html">deployment binding and public-name contract</a>
+records the clarified portability, public-access and emergent-load target.
+Kubernetes packaging is distinct from adding distributed application ownership.</p>
 <h2 id="the-proposed-first-production-boundary">The proposed first production boundary<a class="headerlink" href="#the-proposed-first-production-boundary" title="Permanent link">&para;</a></h2>
 <p><strong>Recommendation for review:</strong> qualify a bounded deployment with one fixed
 cooperating application cohort first, if its declared availability and recovery
@@ -5685,9 +5718,9 @@ capabilities, not prerequisites invented for the fixed one-host reference.</p>
 </thead>
 <tbody>
 <tr>
-<td>Kubernetes/Jsonnet adoption and autoscaling</td>
-<td>A fixed deployment meets placement, restart and operating limits. Packaging generator choice does not close authority or recovery gates.</td>
-<td>Explicit resource ownership, drift/reconciliation, supported upgrades and safe scale-down; actual configuration generation and dependency contracts.</td>
+<td>Autoscaling/dynamic application membership</td>
+<td>A fixed deployment meets placement, restart and operating limits. Kubernetes/Jsonnet may already package that fixed deployment.</td>
+<td>Explicit membership, producer fencing, resource ownership and safe scale-down. See the <a href="deployment-bindings-and-public-names.html#what-a-kubernetes-binding-must-preserve">binding contract</a> for packaging equivalence.</td>
 </tr>
 <tr>
 <td>Multiple API/realtime/evaluator replicas</td>
@@ -5716,9 +5749,11 @@ capabilities, not prerequisites invented for the fixed one-host reference.</p>
 </tr>
 </tbody>
 </table>
-<p>Live push providers, self-service ownership transfer, a new first-party owner UI
-and richer scheduled/group delegation remain separately scoped features under
-existing decisions. Deferring HA does not defer signed human/owner acceptance,
+<p>Live push providers, self-service ownership transfer and a new first-party owner UI
+remain separately scoped under existing decisions. The clarified public-name target
+includes explicit anonymous/authenticated access and group policy; schedule-specific
+semantics and their first-production scope require a bounded decision and acceptance
+in the <a href="deployment-bindings-and-public-names.html#authenticated-sharing-and-group-policies">public-name contract</a>. Deferring HA does not defer signed human/owner acceptance,
 key custody, safe upgrades/recovery, current authority or an operating envelope.</p>
 <p>Growing through several independently admitted deployments is another possible
 step before distributing one cohort. It needs durable tenant-to-deployment routing
