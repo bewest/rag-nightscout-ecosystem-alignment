@@ -187,7 +187,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
 | 1 | `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | &mdash; |
 | 1 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `ready-to-push` | &mdash; |
-| 1 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `not-started` | &mdash; |
+| 1 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `ready-to-push` | &mdash; |
 | 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | &mdash; |
 | 1 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | &mdash; |
 | 1 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | &mdash; |
@@ -207,7 +207,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
 | 2 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `in-progress` | `ARCH-SEAM-CONTRACT` |
 | 2 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T31-REM` |
-| 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `not-started` | `MT-VAULT-TOKEN-FILE` |
+| 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `MT-VAULT-TOKEN-FILE` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
 | 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `not-started` | `MT-OIDC-NATIVE` |

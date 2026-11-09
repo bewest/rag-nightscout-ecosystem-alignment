@@ -2088,3 +2088,13 @@ Local lane handoffs: `externals/work/HANDOFF-unified-rest-component-20261108.md`
 
 Local lane handoff: `externals/work/HANDOFF-oidc-native-harness-20261109.md`.
 
+
+### Update — M6c Vault Agent sidecar and core tokenFile (2026-11-09)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| MT-VAULT-TOKEN-FILE | **Reproduced:** `codex/vault-token-file-20261109` head `0c547958` on ed2: `tenant.vault` takes exactly one of `tokenEnv` or `tokenFile`; sink read per call, trimmed, bounded; any failure is SECRETS_PROVIDER_UNAVAILABLE with no env fallback. Unit family 5 passing; ablations load-time cache 2 failing, env fallback 1 failing, restored 5; `test:affected` on mongo:7 unit 191 / harness 27 / integration 24 passing, 0 failing. | Only one `getToken` site exists at ed2; the three on the owner/OIDC branch get the same shape at `MT-M6A-JOIN`. Branch local. |
+| DEPLOY-VAULT-AGENT | **Reproduced:** nightscout-deploy `cda38265`, overlay `bindings/compose/vault-agent/` (Agent at the imported Vault digest, AppRole auto-auth, sink `/run/ns-vault/token` read-only into the four roles, bootstrap step, wrapper). Compose smoke on port 18090 with a 2-minute TTL: renewal observed twice past TTL; Agent stopped with env tokens still present gives 503 on both tenants (fails closed, no fallback); secret-id reissue recovers in 4 s; imported restore demo passes through the overlay. Imported tree byte-identical to ed2. [Report](../../reports/tenancy/vault-agent-2026-11-09/README.md). | Finding: without `renew-self` the Agent silently re-authenticates each TTL instead of renewing; the role now grants `renew-self` and `lookup-self`. UNMEASURED: re-auth after `token_max_ttl`, seal/unseal, Kubernetes auth method. Open for the maintainer: one AppRole for the cohort vs one Agent per tenant ([decision index](../../docs/30-design/tenancy/m5-m6-decision-list.md#human-policy-review)). |
+
+Local lane handoff: `externals/work/HANDOFF-vault-agent-20261109.md`.
+

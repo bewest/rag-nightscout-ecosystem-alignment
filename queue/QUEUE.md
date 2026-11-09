@@ -32,19 +32,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 385 |
-| runnable gates | 432 |
-| explicit `no-gate:` markers | 405 |
+| runnable gates | 434 |
+| explicit `no-gate:` markers | 403 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 405 of the 837 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 403 of the 837 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 89 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `not-started` | 87 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
 | `in-progress` | 15 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 2 | WS-LAB, MT-OIDC-NATIVE |
+| `ready-to-push` | 4 | WS-LAB, MT-OIDC-NATIVE, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 4 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
@@ -8451,8 +8451,8 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `not-started` | `workspace/multitenant-20261102` | minor | 0 run + 1 no-gate |
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `not-started` | `codex/ownership-ops` | minor | 0 run + 1 no-gate |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `not-started` | `codex/key-retention` | minor | 0 run + 1 no-gate |
-| `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `not-started` | `codex/vault-token-file` | minor | 0 run + 1 no-gate |
-| `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `ready-to-push` | `codex/vault-token-file-20261109` | minor | 1 run |
+| `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `main` | n/a | 1 run |
 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-TRUST-PROBES` | M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -10758,7 +10758,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** Owns the coherent join that closes M6a. Taking the PR out of draft, review and merge remain the maintainer's actions.
+**Notes.** Owns the coherent join that closes M6a. Taking the PR out of draft, review and merge remain the maintainer's actions. Also joins codex/vault-token- file-20261109 and gives the three OIDC-branch getToken sites (human- session/access-config.js, serve/owner-credential-config.js, secrets/vault- access-signing.js) the same tokenFile shape.
 
 ### `MT-OWNERSHIP-OPS` &mdash; M6b: operator-assisted ownership add, transfer and recovery
 
@@ -10822,11 +10822,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/vault-token-file` |
+| branch | `codex/vault-token-file-20261109` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
-| worktree | `-` |
+| worktree | `externals/work/crm-vault-token-file-20261109` |
 | semver | `minor` |
 | review | maintainer |
 
@@ -10838,19 +10838,20 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED: unit test that a rewritten sink file is picked up by the next call, that both-set and neither-set refuse at config load, and that an unreadable file fails the operation without falling back to an env token (control).
+- `[unit]` _(cwd: `externals/work/crm-vault-token-file-20261109`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 5000 --require ./tests/hooks.js --exit tests/preview-vault-token-file.test.js`
+  - tokenFile unit family on branch head 0c547958: per-call sink read picked up after rewrite; both-set and neither-set refuse at load; unreadable or empty sink fails SECRETS_PROVIDER_UNAVAILABLE with no env fallback. 5 passing on 2026-11-09. Ablations recorded in the report: load-time cache 2 failing, env fallback 1 failing, restored 5 passing.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Decision vault-agent-sidecar (2026-11-09). Small core change; the sidecar is DEPLOY-VAULT-AGENT.
+**Notes.** Decision vault-agent-sidecar (2026-11-09). Small core change; the sidecar is DEPLOY-VAULT-AGENT. 2026-11-09 (reproduced): implemented at the one getToken site that exists at ed2 (lib/server/serve/preview-config.js); the other three sites named in the brief live on the owner/OIDC candidate branch and get the same shape at MT-M6A-JOIN. test:affected on mongo:7: unit 191 / harness 27 / integration 24 passing, 0 failing. Report reports/tenancy/vault- agent-2026-11-09/.
 
 ### `DEPLOY-VAULT-AGENT` &mdash; M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `ready-to-push` |
 | repo | `nightscout-deploy` |
 | branch | `main` |
 | base | `main@75f0f61` |
@@ -10867,13 +10868,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED: `npm test` in nightscout-deploy plus the Compose smoke with a short token TTL showing renewal, and a control that stops the agent and shows the next Transit call fail closed.
+- `[static]` `cd /home/bewest/src/nightscout-deploy && npm test >/dev/null && test -f bindings/compose/vault-agent/compose.vault-agent.yaml && grep -q renew-self bindings/compose/vault-agent/vault-agent-bootstrap.js && tools/compose-identity-check.sh /tmp/crm-tenant-order-integration-20261107 >/dev/null`
+  - nightscout-deploy main cda38265: overlay present, Agent role grants renew-self/lookup-self (the first run showed re-auth each TTL instead of renewal without it), imported tree still byte-identical to ed2. The measured Compose smoke (renewal past a 2-minute TTL, stopped Agent fails closed with env tokens present, recovery after secret-id reissue, restore demo through the overlay) is recorded in reports/tenancy/vault-agent-2026-11-09/README.md; re-running vault-agent.sh is the measured gate.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md`
 
-**Notes.** Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no service-login adapter is written in core.
+**Notes.** Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no service-login adapter is written in core. Open sub-question for the maintainer (m5-m6-decision-list): one AppRole whose policy is the union of tenant policies (tenant separation at Vault moves to application authority + RLS) versus one Agent and sink per tenant (core tokenFile already allows a path per tenant). UNMEASURED: re-auth after token_max_ttl, seal/unseal, tokenFile in roles that make no Vault calls at ed2.
 
 ### `DEPLOY-IDP-PROFILE` &mdash; M6c: Authentik identity-provider profile over HTTPS with synthetic people
 

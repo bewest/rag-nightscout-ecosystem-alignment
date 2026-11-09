@@ -25898,7 +25898,10 @@ items:
       - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
     notes: >
       Owns the coherent join that closes M6a. Taking the PR out of draft, review and
-      merge remain the maintainer's actions.
+      merge remain the maintainer's actions. Also joins codex/vault-token-file-20261109
+      and gives the three OIDC-branch getToken sites (human-session/access-config.js,
+      serve/owner-credential-config.js, secrets/vault-access-signing.js) the same
+      tokenFile shape.
 
   - id: MT-OWNERSHIP-OPS
     title: "M6b: operator-assisted ownership add, transfer and recovery"
@@ -25961,9 +25964,10 @@ items:
     title: "M6c: read the Vault token from a sink file per call (Vault Agent compatibility)"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/vault-token-file
+    branch: codex/vault-token-file-20261109
+    worktree: externals/work/crm-vault-token-file-20261109
     base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
-    state: not-started
+    state: ready-to-push
     blast_radius: >
       Three getToken call sites (lib/server/serve/preview-config.js,
       lib/human-session/access-config.js, lib/server/serve/owner-credential-config.js)
@@ -25975,16 +25979,25 @@ items:
     semver_reason: additive configuration on the preview
     register: []
     gates:
-      - no-gate: >
-          UNMEASURED: unit test that a rewritten sink file is picked up by the next call,
-          that both-set and neither-set refuse at config load, and that an unreadable
-          file fails the operation without falling back to an env token (control).
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 5000 --require ./tests/hooks.js --exit tests/preview-vault-token-file.test.js
+        cwd: externals/work/crm-vault-token-file-20261109
+        kind: unit
+        describe: >
+          tokenFile unit family on branch head 0c547958: per-call sink read picked up
+          after rewrite; both-set and neither-set refuse at load; unreadable or empty
+          sink fails SECRETS_PROVIDER_UNAVAILABLE with no env fallback. 5 passing on
+          2026-11-09. Ablations recorded in the report: load-time cache 2 failing,
+          env fallback 1 failing, restored 5 passing.
     blocks_on: []
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       Decision vault-agent-sidecar (2026-11-09). Small core change; the sidecar is
-      DEPLOY-VAULT-AGENT.
+      DEPLOY-VAULT-AGENT. 2026-11-09 (reproduced): implemented at the one getToken
+      site that exists at ed2 (lib/server/serve/preview-config.js); the other three
+      sites named in the brief live on the owner/OIDC candidate branch and get the
+      same shape at MT-M6A-JOIN. test:affected on mongo:7: unit 191 / harness 27 /
+      integration 24 passing, 0 failing. Report reports/tenancy/vault-agent-2026-11-09/.
 
   - id: DEPLOY-VAULT-AGENT
     title: "M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)"
@@ -25992,7 +26005,7 @@ items:
     repo: nightscout-deploy
     branch: main
     base: main@75f0f61
-    state: not-started
+    state: ready-to-push
     blast_radius: >
       bindings/compose: a `vault-agent` service with AppRole auto-auth, a token sink on
       a shared read-only volume mounted into api/realtime/evaluator/tenant-admin, a
@@ -26004,17 +26017,28 @@ items:
     semver_reason: deployment repository
     register: []
     gates:
-      - no-gate: >
-          UNMEASURED: `npm test` in nightscout-deploy plus the Compose smoke with a short
-          token TTL showing renewal, and a control that stops the agent and shows the
-          next Transit call fail closed.
+      - run: cd /home/bewest/src/nightscout-deploy && npm test >/dev/null && test -f bindings/compose/vault-agent/compose.vault-agent.yaml && grep -q renew-self bindings/compose/vault-agent/vault-agent-bootstrap.js && tools/compose-identity-check.sh /tmp/crm-tenant-order-integration-20261107 >/dev/null
+        kind: static
+        describe: >
+          nightscout-deploy main cda38265: overlay present, Agent role grants
+          renew-self/lookup-self (the first run showed re-auth each TTL instead of
+          renewal without it), imported tree still byte-identical to ed2. The measured
+          Compose smoke (renewal past a 2-minute TTL, stopped Agent fails closed with
+          env tokens present, recovery after secret-id reissue, restore demo through
+          the overlay) is recorded in reports/tenancy/vault-agent-2026-11-09/README.md;
+          re-running vault-agent.sh is the measured gate.
     blocks_on:
       - MT-VAULT-TOKEN-FILE
     evidence:
       - docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md
     notes: >
       Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no
-      service-login adapter is written in core.
+      service-login adapter is written in core. Open sub-question for the maintainer
+      (m5-m6-decision-list): one AppRole whose policy is the union of tenant policies
+      (tenant separation at Vault moves to application authority + RLS) versus one
+      Agent and sink per tenant (core tokenFile already allows a path per tenant).
+      UNMEASURED: re-auth after token_max_ttl, seal/unseal, tokenFile in roles that
+      make no Vault calls at ed2.
 
   - id: DEPLOY-IDP-PROFILE
     title: "M6c: Authentik identity-provider profile over HTTPS with synthetic people"

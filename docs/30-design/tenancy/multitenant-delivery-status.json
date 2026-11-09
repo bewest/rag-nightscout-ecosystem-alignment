@@ -108,7 +108,7 @@
     {
       "id": "M6c",
       "title": "Deployment trust (nightscout-deploy)",
-      "state": "not-started",
+      "state": "in-progress",
       "requires": [
         "M6a"
       ],
@@ -258,13 +258,13 @@
     },
     {
       "id": "MT-VAULT-TOKEN-FILE",
-      "lane": "M6c / core",
-      "next": "Add a tokenFile alternative to the per-tenant tokenEnv in the three getToken call sites; read per call so Agent renewal is picked up; refuse when both or neither are set."
+      "lane": "M6c / core: fixed on local branch (5 unit, 2 ablations red)",
+      "next": "Join with MT-M6A-JOIN; apply the same shape to the three OIDC-branch getToken sites."
     },
     {
       "id": "DEPLOY-VAULT-AGENT",
-      "lane": "M6c / nightscout-deploy",
-      "next": "Vault Agent sidecar in the Compose binding: AppRole auto-auth, sink file mounted read-only into api/realtime/evaluator/tenant-admin, Transit policy per tenant key; renewal, seal and rotation probes."
+      "lane": "M6c / nightscout-deploy main cda38265: overlay landed, smoke measured",
+      "next": "Maintainer decides one AppRole vs per-tenant Agent; measure re-auth after token_max_ttl and seal/unseal."
     },
     {
       "id": "DEPLOY-IDP-PROFILE",
@@ -728,6 +728,14 @@
       "commit": "3b09131e",
       "evidence": "../../../reports/tenancy/oidc-native-2026-11-09/README.md#per-stage-verdicts",
       "result": "Reproduced 2026-11-09: all nine stages PASS (vault single/multi, mongo/pg sessions, mongo HTTPS, owner consumer/authority/browser/compatibility), zero leftovers, three mutant controls red then green, images by digest. Harness replaces the grant driver. Branch is local; full/browser/corpus/prcheck and the join to #8898 are MT-M6A-JOIN."
+    },
+    {
+      "title": "Vault Agent sidecar overlay and core tokenFile read",
+      "work": "DEPLOY-VAULT-AGENT",
+      "stage": "local-accepted",
+      "commit": "cda38265",
+      "evidence": "../../../reports/tenancy/vault-agent-2026-11-09/README.md#measured-compose-run",
+      "result": "Reproduced 2026-11-09: renewal past a 2-minute TTL, stopped Agent fails closed with env tokens still present (no fallback), recovery after secret-id reissue, restore demo through the overlay. Core tokenFile on codex/vault-token-file-20261109 (0c547958). Imported tree unchanged."
     }
   ],
   "deferred": [

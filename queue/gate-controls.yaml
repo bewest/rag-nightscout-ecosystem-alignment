@@ -3226,3 +3226,18 @@ controls:
       with the owner-browser stage removed fails "owner-browser: 0 records". Reads a
       file; no fresh native execution, so it measures the record, not today's tree.
 
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 5000 --require ./tests/hooks.js --exit tests/preview-vault-token-file.test.js
+    control-exempt: >
+      The meaningful controls are source ablations (replace the per-call reader with a
+      load-time readFileSync: 2 failing; allow env fallback: 1 failing; restored 5
+      passing), executed and recorded in reports/tenancy/vault-agent-2026-11-09/README.md.
+      Automating them would write into the lane worktree, which a gate may not do.
+
+  - gate: cd /home/bewest/src/nightscout-deploy && npm test >/dev/null && test -f bindings/compose/vault-agent/compose.vault-agent.yaml && grep -q renew-self bindings/compose/vault-agent/vault-agent-bootstrap.js && tools/compose-identity-check.sh /tmp/crm-tenant-order-integration-20261107 >/dev/null
+    control: cd /home/bewest/src/nightscout-deploy && grep -q renew-self bindings/compose/multitenant/bootstrap.js
+    positive-control: cd /home/bewest/src/nightscout-deploy && grep -q renew-self bindings/compose/vault-agent/vault-agent-bootstrap.js
+    control-kind: static
+    proves: >
+      The renew-self grant is what the measured run showed was missing; the imported
+      per-tenant bootstrap (which the overlay must not edit) lacks it and the grep exits 1.
+
