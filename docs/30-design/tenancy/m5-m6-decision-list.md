@@ -78,12 +78,13 @@ The first-preview owner surface (settings, thresholds, credentials, integrations
 The first-preview external delivery channel (no push provider; Nightscout-to-Nightscout sync) is settled.
 M6 human session effects (idle scope, logout, renewal, transport) are settled.
 M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, generic OIDC adapter with Authentik as intended reference, probe-plus-record admission) are settled.
+Vault Agent scope is settled: [one AppRole per deployment](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-one-approle-per-deployment); tenant separation at Vault is not a goal.
+Evaluator partitioning is settled in direction: [member count and ordinal flag with a pool-membership table](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition).
 
-The following topics are open; they do not reopen the settled choices above.
+The following topic is open; it does not reopen the settled choices above.
 
 | Topic | Decision needed / source mechanism | Work that need not wait |
 |---|---|---|
-| Vault Agent scope: one AppRole for the cohort or one Agent per tenant | The [measured overlay](../../../reports/tenancy/vault-agent-2026-11-09/README.md) uses one Agent whose AppRole policy is the union of the imported per-tenant policies, so every serving process can reach every tenant's Transit keys and tenant separation at Vault moves to application authority and RLS. The alternative keeps Vault-side separation with one Agent and sink per tenant (core `tokenFile` already allows a path per tenant) at one container per tenant. Recommendation: one AppRole for the first preview, revisit at M7 with the measured tenant counts. | Core `tokenFile` and the overlay are complete either way; only the bootstrap policy and sink layout change. |
 | Operator activity/resource policy vs recovery admission (multitenant) | [Tenant-admission review](tenant-admission-and-activity.md) records the proposed separation of desired activity, claim-bound maintenance state and observed health. Decide inactive behavior per serving/ingest/evaluator/connector capability, transition authority and how it composes with existing pause/suspend semantics. Source `operation-window.js:87–91` checks maintenance phase; `evaluator-runtime.js:101,152–154` iterates configured tenants. The proposal is read-derived; no new policy/schema or full inactive-resource behavior is accepted. | Endpoint transport and fixed-roster APIs preserve existing admission/drain/invalidation. Existing owner/OIDC and lifecycle work can proceed within adopted contracts. Policy-specific consumer/schema changes wait for a bounded decision. |
 
 The [owner lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md)

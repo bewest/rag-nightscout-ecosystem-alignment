@@ -8459,7 +8459,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
-| `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a per-tenant fenced lease | `not-started` | `codex/evaluator-partition` | minor | 0 run + 1 no-gate |
+| `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table | `not-started` | `codex/evaluator-partition` | minor | 0 run + 1 no-gate |
 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
@@ -10875,7 +10875,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md`
 
-**Notes.** Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no service-login adapter is written in core. Open sub-question for the maintainer (m5-m6-decision-list): one AppRole whose policy is the union of tenant policies (tenant separation at Vault moves to application authority + RLS) versus one Agent and sink per tenant (core tokenFile already allows a path per tenant). UNMEASURED: re-auth after token_max_ttl, seal/unseal, tokenFile in roles that make no Vault calls at ed2.
+**Notes.** Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no service-login adapter is written in core. Decided 2026-11-09 (vault-one- approle-per-deployment): one AppRole per deployment; tenant separation at Vault is not a goal. Follow-up: replace the bootstrap's policy union with a path glob over tenant key names. UNMEASURED: re-auth after token_max_ttl, seal/unseal, tokenFile in roles that make no Vault calls at ed2.
 
 ### `DEPLOY-IDP-PROFILE` &mdash; M6c: Authentik identity-provider profile over HTTPS with synthetic people
 
@@ -11053,7 +11053,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers.
 
-### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a per-tenant fenced lease
+### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a pool-membership table
 
 | | |
 |---|---|
@@ -11066,7 +11066,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer; architecture and clinical-path review |
 | blocks on | `MT-BENCH-BASELINE` |
 
-**Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A per-tenant lease row in PostgreSQL with an incarnation is claimed per cycle and checked at every evaluator commit (computed view, alarm state, notification request); a moved lease refuses the commit. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index.
+**Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A pool-membership table in PostgreSQL holds one heartbeat row per member (ordinal, expected members, ring slice, lease expiry). A member evaluates its slice only while every live row agrees on the member count and no two live rows share an ordinal; otherwise it stops its own cycle and alerts. No per-tenant lock; duplicate evaluation is bounded to one heartbeat interval after a membership change and the evaluator's outputs are idempotent by contract. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index.
 
 **What an operator sees.** Optional setting for very large multitenant deployments to run more than one evaluator process. Off by default. Misconfiguration causes a visible alert and a refused computation, never two conflicting results.
 
@@ -11074,14 +11074,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED until implemented. Gate: scale-event control under the baseline workload. Run with members=2, then change to members=3 mid-cycle with a rolling restart; show no tenant produces two committed results in the window and none misses more than one lease TTL of alarm ticks; control: start two workers with the same ordinal and show the second's commits are refused with the lease symptom.
+- **NO GATE** &mdash; UNMEASURED until implemented. Gate: scale-event control under the baseline workload. Run with members=2, then change to members=3 mid-cycle with a rolling restart; show no tenant produces two committed results in the window and none misses more than one lease TTL of alarm ticks; control: start two workers with the same ordinal and show the second's commits are refused with the membership-conflict symptom and an alert is raised.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** Decision evaluator-static-partition (2026-11-09). Open design choices inside the item: stealing of expired leases by quiet workers; SKIP LOCKED due-queue as the measured alternative; modulo vs consistent hashing. The lease is the prerequisite in every variant.
+**Notes.** Decision evaluator-static-partition (2026-11-09, revised the same day): pool membership table, not a per-tenant lease; the maintainer judged the per-tenant fence unnecessary overhead given idempotent outputs. Open design choices inside the item: whether a member with a stale peer row may take over that slice after the lease expires; modulo vs consistent hashing. MT-SCALE-UNBOUND measures the overlap window for any duplicate external effect.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 

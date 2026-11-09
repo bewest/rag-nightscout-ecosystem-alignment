@@ -66,12 +66,11 @@ vault-agent.sh is the measured gate.
 ## Notes carried on the item
 
 Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no
-service-login adapter is written in core. Open sub-question for the maintainer
-(m5-m6-decision-list): one AppRole whose policy is the union of tenant
-policies (tenant separation at Vault moves to application authority + RLS)
-versus one Agent and sink per tenant (core tokenFile already allows a path per
-tenant). UNMEASURED: re-auth after token_max_ttl, seal/unseal, tokenFile in
-roles that make no Vault calls at ed2.
+service-login adapter is written in core. Decided 2026-11-09 (vault-one-
+approle-per-deployment): one AppRole per deployment; tenant separation at
+Vault is not a goal. Follow-up: replace the bootstrap's policy union with a
+path glob over tenant key names. UNMEASURED: re-auth after token_max_ttl,
+seal/unseal, tokenFile in roles that make no Vault calls at ed2.
 
 ---
 

@@ -152,7 +152,7 @@
         "MT-API-FIXED-ROSTER",
         "DEPLOY-K8S-BINDING"
       ],
-      "gate": "Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Evaluator partitioning by member count and ordinal with a per-tenant fenced lease (decision 2026-11-09); Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha."
+      "gate": "Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Evaluator partitioning by member count and ordinal with a pool-membership table (decision 2026-11-09); Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha."
     }
   ],
   "work": [
@@ -264,7 +264,7 @@
     {
       "id": "DEPLOY-VAULT-AGENT",
       "lane": "M6c / nightscout-deploy main cda38265: overlay landed, smoke measured",
-      "next": "Maintainer decides one AppRole vs per-tenant Agent; measure re-auth after token_max_ttl and seal/unseal."
+      "next": "Decided: one AppRole per deployment. Replace the policy union with a path glob; measure re-auth after token_max_ttl and seal/unseal."
     },
     {
       "id": "DEPLOY-IDP-PROFILE",
@@ -309,7 +309,7 @@
     {
       "id": "MT-EVALUATOR-PARTITION",
       "lane": "M7 / evaluator scaling",
-      "next": "Flag with member count and ordinal env vars; per-tenant fenced lease in PG checked at every commit; scale-event control 2->3 mid-cycle and duplicate-ordinal control."
+      "next": "Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control."
     }
   ],
   "slices": [
