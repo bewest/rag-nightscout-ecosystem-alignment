@@ -26206,6 +26206,48 @@ items:
       horizontally or vertically as planned, without binding. This item is the proof;
       findings become BF- entries or design changes, not waivers.
 
+  - id: MT-EVALUATOR-PARTITION
+    title: "M7: evaluator partitioning by member count and ordinal, with a per-tenant fenced lease"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/evaluator-partition
+    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
+    state: not-started
+    blast_radius: >
+      Evaluator role only. Two environment variables (member count, this worker's
+      ordinal) behind a feature flag select the tenant slice by hash; flag off keeps
+      the single owner. A per-tenant lease row in PostgreSQL with an incarnation is
+      claimed per cycle and checked at every evaluator commit (computed view, alarm
+      state, notification request); a moved lease refuses the commit. Compose and
+      Kubernetes bindings set the variables; a StatefulSet ordinal supplies the
+      worker index.
+    review: maintainer; architecture and clinical-path review
+    operator_visible: >
+      Optional setting for very large multitenant deployments to run more than one
+      evaluator process. Off by default. Misconfiguration causes a visible alert and
+      a refused computation, never two conflicting results.
+    semver: minor
+    semver_reason: opt-in flag; default behaviour unchanged
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED until implemented. Gate: scale-event control under the baseline
+          workload. Run with members=2, then change to members=3 mid-cycle with a
+          rolling restart; show no tenant produces two committed results in the
+          window and none misses more than one lease TTL of alarm ticks; control:
+          start two workers with the same ordinal and show the second's commits are
+          refused with the lease symptom.
+    blocks_on:
+      - MT-BENCH-BASELINE
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+      - docs/30-design/tenancy/runtime-topology.md
+    notes: >
+      Decision evaluator-static-partition (2026-11-09). Open design choices inside
+      the item: stealing of expired leases by quiet workers; SKIP LOCKED due-queue as
+      the measured alternative; modulo vs consistent hashing. The lease is the
+      prerequisite in every variant.
+
   - id: MT-ANDROID-LAB
     title: "M7: Android emulator acceptance for the pinned uploader and follower shapes"
     parcel: tenancy

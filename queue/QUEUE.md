@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 384 |
+| items | 385 |
 | runnable gates | 432 |
-| explicit `no-gate:` markers | 404 |
+| explicit `no-gate:` markers | 405 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 404 of the 836 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 405 of the 837 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 88 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `not-started` | 89 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
 | `in-progress` | 15 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | WS-LAB, MT-OIDC-NATIVE |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 84 items
+`parcel: tenancy` &mdash; 85 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8459,6 +8459,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a per-tenant fenced lease | `not-started` | `codex/evaluator-partition` | minor | 0 run + 1 no-gate |
 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
@@ -11049,6 +11050,36 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
 **Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers.
+
+### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a per-tenant fenced lease
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/evaluator-partition` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; architecture and clinical-path review |
+| blocks on | `MT-BENCH-BASELINE` |
+
+**Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A per-tenant lease row in PostgreSQL with an incarnation is claimed per cycle and checked at every evaluator commit (computed view, alarm state, notification request); a moved lease refuses the commit. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index.
+
+**What an operator sees.** Optional setting for very large multitenant deployments to run more than one evaluator process. Off by default. Misconfiguration causes a visible alert and a refused computation, never two conflicting results.
+
+**Why `minor`.** opt-in flag; default behaviour unchanged
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until implemented. Gate: scale-event control under the baseline workload. Run with members=2, then change to members=3 mid-cycle with a rolling restart; show no tenant produces two committed results in the window and none misses more than one lease TTL of alarm ticks; control: start two workers with the same ordinal and show the second's commits are refused with the lease symptom.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+- `docs/30-design/tenancy/runtime-topology.md`
+
+**Notes.** Decision evaluator-static-partition (2026-11-09). Open design choices inside the item: stealing of expired leases by quiet workers; SKIP LOCKED due-queue as the measured alternative; modulo vs consistent hashing. The lease is the prerequisite in every variant.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 

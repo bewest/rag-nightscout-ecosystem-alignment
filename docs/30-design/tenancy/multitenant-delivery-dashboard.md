@@ -70,7 +70,7 @@ flowchart LR
 | **M6b: Lifecycle and keys** | not-started | M6a, [MT-OWNERSHIP-OPS](#mt-ownership-ops), [MT-KEY-RETENTION](#mt-key-retention) | Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Export/delete source exists (2026-11-06); ownership operations and key destruction are not implemented. |
 | **M6c: Deployment trust (nightscout-deploy)** | not-started | M6a, [MT-VAULT-TOKEN-FILE](#mt-vault-token-file), [DEPLOY-VAULT-AGENT](#deploy-vault-agent), [DEPLOY-IDP-PROFILE](#deploy-idp-profile), [DEPLOY-TRUST-PROBES](#deploy-trust-probes) | Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Compose tree imported to nightscout-deploy 2026-11-09; everything else not started. |
 | **M6d: Connector sync** | not-started | M6a, [MT-CONNECTOR-SYNC](#mt-connector-sync) | nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. No recorded acceptance. |
-| **M7: Production readiness** | not-started | M6a, M6b, M6c, M6d, [MT-BENCH-BASELINE](#mt-bench-baseline), [MT-BENCH-CONTRAST](#mt-bench-contrast), [MT-SCALE-UNBOUND](#mt-scale-unbound), [MT-ANDROID-LAB](#mt-android-lab), [MT-ENDPOINT-TRANSPORT](#mt-endpoint-transport), [MT-API-FIXED-ROSTER](#mt-api-fixed-roster), [DEPLOY-K8S-BINDING](#deploy-k8s-binding) | Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha. |
+| **M7: Production readiness** | not-started | M6a, M6b, M6c, M6d, [MT-BENCH-BASELINE](#mt-bench-baseline), [MT-BENCH-CONTRAST](#mt-bench-contrast), [MT-SCALE-UNBOUND](#mt-scale-unbound), [MT-EVALUATOR-PARTITION](#mt-evaluator-partition), [MT-ANDROID-LAB](#mt-android-lab), [MT-ENDPOINT-TRANSPORT](#mt-endpoint-transport), [MT-API-FIXED-ROSTER](#mt-api-fixed-roster), [DEPLOY-K8S-BINDING](#deploy-k8s-binding) | Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Evaluator partitioning by member count and ordinal with a per-tenant fenced lease (decision 2026-11-09); Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha. |
 
 ## Parallel lanes and next gates
 
@@ -98,6 +98,7 @@ flowchart LR
   MT-CONFIG-MIN["MT-CONFIG-MIN<br/>closed"]
   MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>not-started"]
   MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>not-started"]
+  MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>not-started"]
   MT-KEY-RETENTION["MT-KEY-RETENTION<br/>not-started"]
   MT-M6A-JOIN["MT-M6A-JOIN<br/>not-started"]
   MT-OIDC-NATIVE["MT-OIDC-NATIVE<br/>ready-to-push"]
@@ -129,6 +130,7 @@ flowchart LR
   MT-M6A-JOIN --> MT-BENCH-BASELINE
   MT-BENCH-BASELINE --> MT-BENCH-CONTRAST
   MT-M6A-JOIN --> MT-CONNECTOR-SYNC
+  MT-BENCH-BASELINE --> MT-EVALUATOR-PARTITION
   MT-M6A-JOIN --> MT-KEY-RETENTION
   MT-OIDC-NATIVE --> MT-M6A-JOIN
   MT-M6A-JOIN --> MT-OWNERSHIP-OPS
@@ -182,6 +184,7 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="mt-bench-baseline"></a>**MT-BENCH-BASELINE**: not-started | M7 / measurement | MT-M6A-JOIN (not-started) | k6 or autocannon driving pinned client shapes at 1/10/50/200 tenants with one hot tenant on the Compose reference; p50/p95/p99, socket fanout, evaluator cycle, pool/lock waits, CPU/RSS per role, disk per tenant-day, reconnect recovery. Independent stored-count oracle. Numbers are the deliverable. |
 | <a id="mt-bench-contrast"></a>**MT-BENCH-CONTRAST**: not-started | M7 / measurement | MT-BENCH-BASELINE (not-started) | Same workload against N single-tenant Mongo processes and the per-site process model; resource per tenant, latency, startup/restore time, operator steps per tenant, side by side. |
 | <a id="mt-scale-unbound"></a>**MT-SCALE-UNBOUND**: not-started | M7 / architecture proof | MT-BENCH-BASELINE (not-started), MT-API-FIXED-ROSTER (not-started) | API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; consumes endpoint transport and fixed roster. |
+| <a id="mt-evaluator-partition"></a>**MT-EVALUATOR-PARTITION**: not-started | M7 / evaluator scaling | MT-BENCH-BASELINE (not-started) | Flag with member count and ordinal env vars; per-tenant fenced lease in PG checked at every commit; scale-event control 2->3 mid-cycle and duplicate-ordinal control. |
 
 ## Accepted slices and integration handoff
 
