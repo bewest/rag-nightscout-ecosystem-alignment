@@ -5720,7 +5720,7 @@
 
 
 <h1 id="from-accepted-one-host-preview-to-production">From accepted one-host preview to production<a class="headerlink" href="#from-accepted-one-host-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f99c3922a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-09 at <code>335c55900</code>.</em></p>
 <p><em>Living contributor-facing decision-preparation guide, 2026-11-08. This is a
 </em><em>read-derived</em><em> dependency analysis and prior-art survey, not production
 acceptance or an adopted topology/SLO decision. Existing requirements retain their
@@ -5802,10 +5802,10 @@ pending case remains UNMEASURED.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Production envelope</strong> — before selecting limits or deferring HA</td>
-<td>No approved workload, availability, freshness or recovery target in these records. A synthetic pass does not define tenant capacity.</td>
-<td>Operator-agreed active/idle tenants, rows/bytes, ingestion/reconnect bursts, retention, egress and support assumptions; explicit recovery time and acceptable data loss. Include dependency/host outage and planned maintenance. Then use these as acceptance thresholds.</td>
-<td><a href="m5-m6-decision-list.html#measure-before-setting-limits">Measurement prerequisites</a>; operator proposes, coordinator schedules measurement.</td>
+<td><strong>Production envelope</strong> — measured before limits are set</td>
+<td>No measured workload, availability, freshness or recovery figures exist yet. A synthetic functional pass does not define tenant capacity.</td>
+<td>Benchmark the reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove component-wise horizontal/vertical scaling with a binding inventory. Then agree recovery time and acceptable loss from the measurements and use them as thresholds (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-envelope-measured-not-declared">decision 2026-11-09</a>).</td>
+<td><code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code>, <code>MT-SCALE-UNBOUND</code>; measurement owner, coordinator schedules the windows.</td>
 </tr>
 <tr>
 <td><strong>Human identity and owner authority</strong> — current M6 criterion</td>

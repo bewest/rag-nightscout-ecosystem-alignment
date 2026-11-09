@@ -5720,12 +5720,19 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
-<p><em>Living contributor-facing decision index, 2026-11-08. Read this before older
+<p><em>Living document, last changed 2026-11-09 at <code>b8de4e15c</code>.</em></p>
+<p><em>Living contributor-facing decision index, 2026-11-09. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
 records no new application measurement or promotion.</em></p>
 <h2 id="execute-now">Execute now<a class="headerlink" href="#execute-now" title="Permanent link">&para;</a></h2>
+<p><strong>2026-11-09 restructure.</strong> M6 is now M6a identity and owner API, M6b lifecycle and keys,
+M6c deployment trust (in <code>nightscout-deploy</code>), M6d connector sync, and M7 production
+readiness (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-split-and-queue-collapse">decision</a>).
+The owner/OIDC native matrix runs through a disposable harness (<code>MT-OIDC-NATIVE</code>); the
+grant/reservation ceremony is retired. Vault connectivity is a Vault Agent sidecar
+(<code>DEPLOY-VAULT-AGENT</code>) plus a <code>tokenFile</code> read in core (<code>MT-VAULT-TOKEN-FILE</code>). The
+umbrella queue items are closed as superseded; one capability item per remaining gap.</p>
 <p>The functional M5 reference on one host is accepted in <a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a>. It includes
 bounded current-state/evaluator recovery, durable alarm/request state and actual
 reference-role/browser consumers, with accepted final comprehensive verification.
@@ -5843,7 +5850,9 @@ bounded proofs do not resolve live-provider admission or wider M6 identity/trust
 The first-preview owner surface (settings, thresholds, credentials, integrations) is settled.
 The first-preview external delivery channel (no push provider; Nightscout-to-Nightscout sync) is settled.
 M6 human session effects (idle scope, logout, renewal, transport) are settled.
-M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, generic OIDC adapter with Authentik as intended reference, probe-plus-record admission) are settled.</p>
+M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, generic OIDC adapter with Authentik as intended reference, probe-plus-record admission) are settled.
+Vault Agent scope is settled: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-one-approle-per-deployment">one AppRole per deployment</a>; tenant separation at Vault is not a goal.
+Evaluator partitioning is settled in direction: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">member count and ordinal flag with a pool-membership table</a>.</p>
 <p>The following topic is open; it does not reopen the settled choices above.</p>
 <table>
 <thead>
@@ -5877,14 +5886,19 @@ requirements to closing evidence and conditional topology choices. It separates
 M6 completion, a coherent released candidate and per-deployment production
 admission. Its proposed one-cohort scope and HA deferrals are not adopted policy.</p>
 <h2 id="measure-before-setting-limits">Measure before setting limits<a class="headerlink" href="#measure-before-setting-limits" title="Permanent link">&para;</a></h2>
-<p>Operations owners first propose representative active/idle tenant counts, stored
-rows/bytes, ingestion bursts, reconnect backlog and a hot tenant sharing the pool.
-Agree freshness and recovery expectations, then measure scan/lock/pool costs,
-p50/p95/p99 latency, retained bytes, failure behavior and bounded egress. Use the
-<a href="durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">experiment contract</a>.
-Do not invent numeric capacity, polling cadence or a replay horizon from functional
-passes. The coordinator assigns one controlled benchmark window after the workload
-and candidate are stable; it is not a prerequisite to current correctness work.</p>
+<p>Decision 2026-11-09 (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-envelope-measured-not-declared">row</a>):
+the envelope is measured first, not declared. <code>MT-BENCH-BASELINE</code> benchmarks the
+one-host reference at stepped synthetic tenant counts with a hot tenant and
+publishes p50/p95/p99 latency, socket fanout, evaluator cycle time, pool/lock
+waits, CPU and memory per role, disk per tenant-day and reconnect recovery.
+<code>MT-BENCH-CONTRAST</code> runs the same workload against the shapes operators run today
+(N single-tenant Mongo processes; the per-site process model) and reports the
+comparison side by side. <code>MT-SCALE-UNBOUND</code> proves each component scales
+horizontally or vertically as intended and itemises any binding with <code>file:line</code>.
+Limits, polling cadence and replay horizons are then set from those numbers.
+Use the <a href="durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">experiment contract</a>
+for oracle and control design. Nothing here is a prerequisite to current
+correctness work, and no number is invented from functional passes.</p>
 <h2 id="reviewing-and-closing-a-topic">Reviewing and closing a topic<a class="headerlink" href="#reviewing-and-closing-a-topic" title="Permanent link">&para;</a></h2>
 <p>Bring one topic with current code anchors, user/operator effect, compatibility,
 recommendation, alternatives, reproduced evidence and named unknowns. Record the

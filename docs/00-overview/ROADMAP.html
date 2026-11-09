@@ -2414,7 +2414,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>58b2b864c</code>.</em></p>
+<p><em>Living document, last changed 2026-11-09 at <code>b8de4e15c</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2774,6 +2774,13 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>BFQ-CAP02</code></td>
+<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>DISPLAY-MEAL-GROUP</code></td>
 <td>Show a bolus and its carbs as one meal in the display layer; storage de-duplicat</td>
 <td><code>not-started</code></td>
@@ -2823,20 +2830,6 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>MIG-RUNNER</code></td>
-<td><code>nightscout migrate</code>: one runner (umzug) with the project's PostgreSQL and Mongo</td>
-<td><code>in-progress</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>MT-CONFIG-MIN</code></td>
-<td>Reviewed initial tenant configuration and headless owner API contract</td>
-<td><code>in-progress</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
 <td><code>MT-ENDPOINT-TRANSPORT</code></td>
 <td>Selectable private UDS/HTTP(S) component endpoints</td>
 <td><code>not-started</code></td>
@@ -2844,30 +2837,16 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>MT-IDENTITY-PLAN</code></td>
-<td>Human identity, tenant access grants and delegated consent plan</td>
-<td><code>in-progress</code></td>
+<td><code>MT-OIDC-NATIVE</code></td>
+<td>M6a: run the nine-stage owner/OIDC native matrix through a disposable harness</td>
+<td><code>ready-to-push</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>MT-RUNTIME-PLAN</code></td>
-<td>Continuous v1/v3, realtime and evaluator integration contracts</td>
-<td><code>in-progress</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>MT-SECRETS-CONTRACT</code></td>
-<td>Tenant-bound secrets contract and early Vault Transit integration proof</td>
-<td><code>in-progress</code></td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td style="text-align: right;">1</td>
-<td><code>ST-PG</code></td>
-<td>Current-dev PostgreSQL entries adapter and real RLS proof</td>
-<td><code>in-progress</code></td>
+<td><code>MT-VAULT-TOKEN-FILE</code></td>
+<td>M6c: read the Vault token from a sink file per call (Vault Agent compatibility)</td>
+<td><code>ready-to-push</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2879,22 +2858,29 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>T30-AUTH</code></td>
-<td>The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i</td>
-<td><code>ready-to-push</code></td>
+<td><code>T31-REM</code></td>
+<td>T3.1 remainder - per-tenant signing key replaces the install-wide one</td>
+<td><code>blocked</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
-<td><code>T30-RESEARCH</code></td>
-<td>T3.0 part 1 - enumerate the per-tenant configuration surface</td>
-<td><code>needs-decision</code></td>
+<td><code>T33-REM</code></td>
+<td>T3.3 remainder - the shared enclave, and language/levels per tenant</td>
+<td><code>blocked</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
 <td><code>T43</code></td>
 <td>T4.3 - ns-realtime, LISTEN per served tenant</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>T44</code></td>
+<td>T4.4 - ns-evaluator, the per-tenant evaluation loop</td>
 <td><code>not-started</code></td>
 <td>&mdash;</td>
 </tr>
@@ -2963,6 +2949,20 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>A7A-3</code></td>
+<td>§7a item 3 - a per-tenant error boundary</td>
+<td><code>not-started</code></td>
+<td><code>T44</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>A7A-4</code></td>
+<td>§7a item 4 - a health signal for a silent per-tenant outage</td>
+<td><code>not-started</code></td>
+<td><code>T44</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>ARCH-DERIVED-FRAME</code></td>
 <td>Next join: shared bounded frames and derived calculations</td>
 <td><code>in-progress</code></td>
@@ -2974,6 +2974,20 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td>First: separate domain definitions from backend and HTTP bindings</td>
 <td><code>in-progress</code></td>
 <td><code>ARCH-SEAM-CONTRACT</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>BFQ-66</code></td>
+<td>BF-66 - the deployment's own tokens fail its own tenant check</td>
+<td><code>blocked</code></td>
+<td><code>T31-REM</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>DEPLOY-VAULT-AGENT</code></td>
+<td>M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)</td>
+<td><code>ready-to-push</code></td>
+<td><code>MT-VAULT-TOKEN-FILE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
@@ -2991,17 +3005,17 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
-<td><code>T30-SCHEMA-CONFIG</code></td>
-<td>T3.0 part 2b - per-tenant configuration table, and where human identity lives</td>
-<td><code>in-progress</code></td>
-<td><code>T30-RESEARCH</code></td>
+<td><code>MT-M6A-JOIN</code></td>
+<td>M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign</td>
+<td><code>not-started</code></td>
+<td><code>MT-OIDC-NATIVE</code></td>
 </tr>
 <tr>
-<td style="text-align: right;">2</td>
-<td><code>TEN-RESOLVE</code></td>
-<td>Current-dev tenant resolution and private operator lifecycle</td>
+<td style="text-align: right;">3</td>
+<td><code>A7A-GATE</code></td>
+<td>The alarms-on gate itself - nothing here may be marked done by inference</td>
 <td><code>blocked</code></td>
-<td><code>MT-CONFIG-MIN</code>, <code>MIG-RUNNER</code></td>
+<td><code>T44</code>, <code>A7A-3</code>, <code>A7A-4</code>, <code>A7A-7</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
@@ -3012,24 +3026,52 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>BFQ-CAP02</code></td>
-<td>CAP-02 - no importer, and no Mongo to PostgreSQL loader</td>
+<td><code>DEPLOY-IDP-PROFILE</code></td>
+<td>M6c: Authentik identity-provider profile over HTTPS with synthetic people</td>
 <td><code>not-started</code></td>
-<td><code>T30-SCHEMA-CONFIG</code></td>
+<td><code>MT-M6A-JOIN</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>T30-WIRING</code></td>
-<td>T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT</td>
-<td><code>in-progress</code></td>
-<td><code>TEN-RESOLVE</code>, <code>MT-SECRETS-CONTRACT</code></td>
+<td><code>DEPLOY-TRUST-PROBES</code></td>
+<td>M6c: live spoof, conflict and outage probes against the Compose edge and Vault;</td>
+<td><code>not-started</code></td>
+<td><code>DEPLOY-VAULT-AGENT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">3</td>
-<td><code>T32-REM</code></td>
-<td>T3.2 remainder - platform.sql carries no config, secret or signing key</td>
-<td><code>blocked</code></td>
-<td><code>T30-SCHEMA-CONFIG</code></td>
+<td><code>MT-ANDROID-LAB</code></td>
+<td>M7: Android emulator acceptance for the pinned uploader and follower shapes</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6A-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>MT-BENCH-BASELINE</code></td>
+<td>M7: benchmark the one-host reference and publish the numbers</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6A-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>MT-CONNECTOR-SYNC</code></td>
+<td>M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6A-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>MT-KEY-RETENTION</code></td>
+<td>M6b: 30-day retained-key destruction and after-window refusal</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6A-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>MT-OWNERSHIP-OPS</code></td>
+<td>M6b: operator-assisted ownership add, transfer and recovery</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6A-JOIN</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
@@ -3040,59 +3082,31 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
-<td><code>T30-TENANT-ADMIN</code></td>
-<td>cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside n</td>
-<td><code>in-progress</code></td>
-<td><code>T30-WIRING</code></td>
+<td><code>DEPLOY-K8S-BINDING</code></td>
+<td>M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up</td>
+<td><code>not-started</code></td>
+<td><code>DEPLOY-TRUST-PROBES</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
-<td><code>T31-REM</code></td>
-<td>T3.1 remainder - per-tenant signing key replaces the install-wide one</td>
-<td><code>blocked</code></td>
-<td><code>T30-WIRING</code></td>
+<td><code>MT-BENCH-CONTRAST</code></td>
+<td>M7: contrast the multitenant cohort with existing deployment shapes at equal loa</td>
+<td><code>not-started</code></td>
+<td><code>MT-BENCH-BASELINE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
-<td><code>T33-REM</code></td>
-<td>T3.3 remainder - the shared enclave, and language/levels per tenant</td>
-<td><code>blocked</code></td>
-<td><code>T30-WIRING</code></td>
+<td><code>MT-EVALUATOR-PARTITION</code></td>
+<td>M7: evaluator partitioning by member count and ordinal, with a pool-membership t</td>
+<td><code>not-started</code></td>
+<td><code>MT-BENCH-BASELINE</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
-<td><code>T44</code></td>
-<td>T4.4 - ns-evaluator, the per-tenant evaluation loop</td>
+<td><code>MT-SCALE-UNBOUND</code></td>
+<td>M7: prove each component scales horizontally or vertically as intended, with no</td>
 <td><code>not-started</code></td>
-<td><code>T30-WIRING</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>A7A-3</code></td>
-<td>§7a item 3 - a per-tenant error boundary</td>
-<td><code>not-started</code></td>
-<td><code>T44</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>A7A-4</code></td>
-<td>§7a item 4 - a health signal for a silent per-tenant outage</td>
-<td><code>not-started</code></td>
-<td><code>T44</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">5</td>
-<td><code>BFQ-66</code></td>
-<td>BF-66 - the deployment's own tokens fail its own tenant check</td>
-<td><code>blocked</code></td>
-<td><code>T30-WIRING</code>, <code>T31-REM</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">6</td>
-<td><code>A7A-GATE</code></td>
-<td>The alarms-on gate itself - nothing here may be marked done by inference</td>
-<td><code>blocked</code></td>
-<td><code>T44</code>, <code>A7A-3</code>, <code>A7A-4</code>, <code>A7A-7</code></td>
+<td><code>MT-BENCH-BASELINE</code>, <code>MT-API-FIXED-ROSTER</code></td>
 </tr>
 </tbody>
 </table>

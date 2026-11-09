@@ -5786,11 +5786,11 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>07dc68438</code>.</em></p>
+<p><em>Living document, last changed 2026-11-09 at <code>b8de4e15c</code>.</em></p>
 <p><em>Contributor-facing living plan. Reconciled 2026-11-08 to the published reference and adopted release decisions,
 without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9029fb6dd82b277fb92419bdc1ef9bbed7a21749/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b8de4e15cbbea6ca8e14e2f616cfda4eb95d5563/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5993,12 +5993,33 @@ an intentional PG-only difference. No threshold is invented by a passing lab.</p
 <td>Socket authorization/reconnect/write compatibility, tenant-local rooms/caches, replay-equivalent views, durable ack/snooze and restart/double-delivery checks. Live notification acceptance is separate.</td>
 </tr>
 <tr>
-<td>M6: multitenant preview</td>
-<td>M4 + M5 + chosen owner capabilities and operations</td>
-<td>Human issuer/refresh, compatible current-authority/lifecycle completion and production-resolution trust; export/deletion/import fidelity, recoverable keys/ciphertext, backup/restore, upgrade/rollback, approved resource/egress bounds and final-tree review. Real-data/identity acceptance and role enablement require explicit approval.</td>
+<td>M6a: identity and owner API</td>
+<td>M4 + M5; combined owner/OIDC candidate joined to #8898</td>
+<td>Nine-stage native matrix passes on the frozen candidate through the disposable harness (Vault single/multi, Mongo and PG sessions, Mongo HTTPS, owner consumer, authority, browser, compatibility) with its red controls; then the joined candidate passes full, default-browser, enabled-corpus, pinned-client and prcheck. Enabled/disabled parity and legacy-client controls per the M6 bounded owner API family.</td>
+</tr>
+<tr>
+<td>M6b: lifecycle and keys</td>
+<td>M6a</td>
+<td>Operator-assisted ownership add/transfer/recovery (tenant-bound, audited, no orphan, no silent replacement); retained-key destruction after the 30-day window and after-window refusal; export/delete ceremony as adopted. One SQL/HTTP family each, each with a red control.</td>
+</tr>
+<tr>
+<td>M6c: deployment trust (nightscout-deploy)</td>
+<td>M6a; core <code>tokenFile</code> change</td>
+<td>Vault Agent sidecar with auto-auth, sink and renewal; Authentik profile over HTTPS with synthetic people; live spoof, host/selector conflict and outage probes against the Compose edge and Vault; written trust record from the template. Admission is per deployment by record plus probes.</td>
+</tr>
+<tr>
+<td>M6d: connector sync</td>
+<td>M6a</td>
+<td>nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. Outbound first; inbound tenant-side connector is a later contract.</td>
+</tr>
+<tr>
+<td>M7: production readiness</td>
+<td>M6a–M6d</td>
+<td>Measured, not declared (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-envelope-measured-not-declared">decision</a>): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove each component scales horizontally or vertically as intended with a binding inventory (any binding is a <code>file:line</code> finding); evaluator partitioning by member count and ordinal with a pool-membership table (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">decision</a>). Android emulator lab; selectable endpoints and fixed-roster API scaling; Kubernetes binding equivalence. Limits follow the measurements. Required before a production cohort, not before the dormant alpha release.</td>
 </tr>
 </tbody>
 </table>
+<p>M6 was split into M6a–M6d and M7 on 2026-11-09 (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-split-and-queue-collapse">decision</a>). The acceptance families below keep their text; the family-to-milestone mapping is: bounded owner API → M6a; operator-assisted ownership, lifecycle and trust (keys, deletion) → M6b; deployment trust rows → M6c; operations and clients → M7 (Android) with populated backup/restore retained in M6b; operating envelope and final review → M7.</p>
 <p>CI is cumulative: keep default single/Mongo tests green and run explicit PG suites
 as they become applicable. Publish pending/unsupported inventory. Each isolation
 property needs positive own-tenant behavior and a meaningful red control against
@@ -6026,7 +6047,7 @@ implementation and destroy/after-window refusal evidence remain separate.</p>
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
 observations, not a fresh current-HEAD campaign. M6 remains blocked. The later accepted ed2 reference is published on draft
-PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/9029fb6dd82b277fb92419bdc1ef9bbed7a21749/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
+PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b8de4e15cbbea6ca8e14e2f616cfda4eb95d5563/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
 is distinct from dev merge, release and production/default admission.</p>
 <table>
 <thead>

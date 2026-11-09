@@ -5607,11 +5607,11 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f4b36b200</code>.</em></p>
+<p><em>Living document, last changed 2026-11-09 at <code>2ea470f16</code>.</em></p>
 <p><em>Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the <a href="../../archive/tenancy/index.html">tenancy archive</a>; dates in a
-filename do not establish currency. Reconciled 2026-11-08 to the published draft preview and retained acceptance records.</em></p>
+filename do not establish currency. Reconciled 2026-11-09: M6 split into M6a–M6d and M7, deployment tree in <code>nightscout-deploy</code>, disposable native harness (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#plan-restructuring-and-process-simplification-2026-11-09">decisions</a>).</em></p>
 <h2 id="what-can-inform-a-decision-now">What can inform a decision now<a class="headerlink" href="#what-can-inform-a-decision-now" title="Permanent link">&para;</a></h2>
 <p>For a diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">multitenant database and component ownership
 page</a>. Its grid and static
@@ -5662,7 +5662,12 @@ inactive-tenant feature.</p>
 <tr>
 <td>What a milestone must prove</td>
 <td><a href="multitenant-delivery-roadmap.html#milestones-and-continuous-integration">Delivery roadmap</a></td>
-<td>Delivery boundaries and M0–M6 criteria, including later promotion-bar decisions. Claims remain in the dashboard.</td>
+<td>Delivery boundaries and M0–M5, M6a–M6d and M7 criteria, including later promotion-bar decisions. Claims remain in the dashboard.</td>
+</tr>
+<tr>
+<td>Deployment packaging, edge, identity-provider profiles, Vault Agent</td>
+<td><code>nightscout-deploy</code> (sibling repository; local <code>/home/bewest/src/nightscout-deploy</code>), <a href="claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private">scope split</a></td>
+<td>The Compose tree moved there with history on 2026-11-09. Core keeps application code and the Dockerfile.</td>
 </tr>
 <tr>
 <td>Why the architecture is this way</td>

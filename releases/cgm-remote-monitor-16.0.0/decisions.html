@@ -2188,7 +2188,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>3f736c118</code>.</em></p>
+<p><em>Living document, last changed 2026-11-09 at <code>b8de4e15c</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3583,6 +3583,61 @@ deployment has run.</p>
 <td>Keep v1/v2/v3 REST routers/adapters together in one stateless request-serving <code>api</code> component. Replicas repeat the same configured admitted route set; replica count and Compose/Kubernetes placement are separate from API versioning.</td>
 <td>Maintainer requested this clarification after the source assessment; <a href="../../docs/30-design/tenancy/tenant-admission-and-activity.html#one-logical-api-does-not-require-one-listener-or-process">component contract</a> links read-derived ed2 composition. Owner versus DATA audience/listener/credential boundaries remain; evaluator, realtime, connectors and private maintenance retain their responsibilities.</td>
 <td>Architecture clarification, no runtime change. Stateless instances still drain actual responses and invalidate reconstructible state during maintenance. No extra route/client coverage, API replication, Kubernetes, production or HA acceptance.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="plan-restructuring-and-process-simplification-2026-11-09">Plan restructuring and process simplification (2026-11-09)<a class="headerlink" href="#plan-restructuring-and-process-simplification-2026-11-09" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>scope</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="deploy-tree-lives-in-nightscout-deploy"></a><strong>The deployment tree (<code>deploy/multitenant</code>: Compose, nginx, bootstrap, restore, UI) lives in the sibling repository <code>nightscout-deploy</code>. Core keeps application code, the Dockerfile and a pointer. The move is not gated on re-running acceptance; the ed2 evidence keeps its attribution because the files are relocated, not changed.</strong></td>
+<td>maintainer, 2026-11-09 (confirms item 1 of the <a href="../../docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md#4-questions-for-the-maintainer-one-topic-each">deploy-companion note</a>)</td>
+<td>Deployment packaging, edge, identity-provider profiles, secrets sidecars, operator CLI</td>
+<td>Imported with history on 2026-11-09 (<code>bindings/compose/multitenant</code>, byte-identity check against ed2). Deployment-trust work items carry <code>repo: nightscout-deploy</code> in the queue. Core's copy is removed when the Compose binding renders from a plan (deploy roadmap wave 2).</td>
+</tr>
+<tr>
+<td><a id="vault-agent-sidecar"></a><strong>Vault connectivity uses Vault Agent as a sidecar: auto-auth (AppRole in Compose, Kubernetes auth in that binding), token sink file, renewal and templating belong to the Agent. The application reads the token from the sink at call time and keeps its small Transit client.</strong></td>
+<td>maintainer, 2026-11-09, "use established dependencies"</td>
+<td>Secrets ladder (supersedes "service-login adapter before production" as application work)</td>
+<td>Today every <code>getToken</code> callback reads a per-tenant environment variable set at bootstrap (<code>lib/server/serve/preview-config.js</code>, <code>lib/human-session/access-config.js</code>, <code>lib/server/serve/owner-credential-config.js</code>). Core needs one small change: a <code>tokenFile</code> alternative read per call (<code>MT-VAULT-TOKEN-FILE</code>). The sidecar, its policy and the renewal, seal and rotation probes are deploy-repo work (<code>DEPLOY-VAULT-AGENT</code>). No hand-rolled login or renewal in core.</td>
+</tr>
+<tr>
+<td><a id="disposable-native-harness"></a><strong>Native acceptance runs through a disposable harness, not a grant ceremony. Containers (PostgreSQL, Mongo, Vault) are started per run by digest and removed by the reaper; the run records the source commit it executed, its commands and its red controls. Lead reservations, grant JSON, chat-ID attestations and freshness windows are retired.</strong></td>
+<td>maintainer, 2026-11-09, process-drag review</td>
+<td>Every native campaign from here on, starting with the owner/OIDC nine-stage matrix</td>
+<td>The prepared nine stages, their oracles and mutant controls are kept; the driver's grant/reservation preconditions are removed. Cleanup is a container lifetime, not a custody attestation. First application: <code>MT-OIDC-NATIVE</code>.</td>
+</tr>
+<tr>
+<td><a id="m6-split-and-queue-collapse"></a><strong>M6 is split into four bounded milestones and a production milestone: M6a identity and owner API, M6b lifecycle and keys, M6c deployment trust (deploy repo), M6d connector sync; M7 production readiness holds the operating envelope, the Android lab, endpoint transport and API scaling, and the Kubernetes binding. Umbrella queue items whose accepted scope is on draft #8898 are closed as superseded; their remaining scope moves to one capability item each with one gate.</strong></td>
+<td>maintainer, 2026-11-09</td>
+<td>Roadmap milestone table, dashboard, queue</td>
+<td>Preview release needs M6a to M6d. M7 is required before any production cohort, not before the dormant alpha. Closed items keep their gates and evidence; <code>MT-M6A-JOIN</code> owns the coherent join and final campaign on #8898.</td>
+</tr>
+<tr>
+<td><a id="m7-envelope-measured-not-declared"></a><strong>The M7 operating envelope is measured, not declared. Benchmark the one-host reference at stepped tenant counts and publish the numbers; contrast the cohort against the deployment shapes operators run today at equal synthetic load; prove that API, realtime, evaluator, PostgreSQL and the Vault Agent each scale horizontally or vertically as intended, with no hidden binding. Limits are set from the measurements afterwards.</strong></td>
+<td>maintainer, 2026-11-09 ("we just need to benchmark what the numbers are")</td>
+<td>M7 (<code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code>, <code>MT-SCALE-UNBOUND</code>)</td>
+<td>Supersedes the "operator proposes workload first" ordering in the decision index and the production critical path. Workloads stay synthetic and pinned (cgmsim, oref0 replay, browser polling, reconnect floods); established load tooling; an independent stored-count oracle; the disposable-harness pattern. Any component whose scaling is capped by a shared singleton, lock, cache or file is a <code>file:line</code> finding, handled as a defect or design change, never a waiver. Prior provider tenant counts or incident figures are not imported.</td>
+</tr>
+<tr>
+<td><a id="evaluator-static-partition"></a><strong>Evaluator scaling: a feature flag with two environment variables, the member count and this worker's ordinal, partitions tenants by hash onto a fixed slice; each evaluator works only its slice. Flag off means one evaluator owns every tenant, as today. Operator-configured, in the Consul <code>bootstrap-expect</code> style; a StatefulSet supplies the ordinal, the renderer sets the count. Exclusivity comes from a pool-membership table, not a per-tenant lock.</strong></td>
+<td>maintainer, 2026-11-09 (discussion of ring/ordinal partitioning; per-tenant lease rejected as unnecessary overhead)</td>
+<td>Evaluator role, Compose and Kubernetes bindings; M7 <code>MT-EVALUATOR-PARTITION</code></td>
+<td>Each member keeps one heartbeat row: ordinal, expected member count, assigned ring slice, lease expiry. Before each cycle a member reads the table; it evaluates its slice only while every live row agrees on the member count and no two live rows share an ordinal, and otherwise stops its own cycle and raises an alert. Cost is one row update per member per heartbeat instead of one claim per tenant per cycle. Duplicate evaluation is then bounded to one heartbeat interval after a membership change, and the evaluator's outputs are idempotent by contract (computed view keyed per tenant; notification intent with stable identity and suppression), so a brief overlap produces no duplicate clinical effect. A per-tenant commit fence is not required; if <code>MT-SCALE-UNBOUND</code> measures a duplicate external effect in the overlap window, that measurement reopens the question. Plain modulo is adequate; consistent hashing is an optimisation to measure.</td>
+</tr>
+<tr>
+<td><a id="vault-one-approle-per-deployment"></a><strong>One AppRole per deployment for the Vault Agent, not one per tenant. Tenant separation at Vault is not a goal; it is provided by application authority and row-level security. The Agent's policy is a path pattern over the Transit mount, not a union of per-tenant policies.</strong></td>
+<td>maintainer, 2026-11-09 ("if we are expecting potentially thousands of tenants, it needs to scale against one AppRole for the deployment")</td>
+<td>M6c <code>DEPLOY-VAULT-AGENT</code>; closes the open question in the decision index</td>
+<td>At thousands of tenants a per-tenant Agent or per-tenant token means thousands of containers or renewing leases; neither scales. Follow-up inside the item: replace the measured bootstrap's policy union with a glob over tenant key names, and name the key-count expectation for Transit (two keys per tenant) in the M7 benchmark.</td>
 </tr>
 </tbody>
 </table>
