@@ -237,13 +237,13 @@
     },
     {
       "id": "MT-OIDC-NATIVE",
-      "lane": "M6a / harness lane",
-      "next": "Build the disposable harness (containers by digest, reaper cleanup, source commit recorded) and run the nine-stage matrix on c0a67b69. Record under reports/tenancy/oidc-native-<date>/ with red controls. Result UNMEASURED until run."
+      "lane": "M6a / harness lane: RUN, all nine PASS (local branch)",
+      "next": "Hand the harness branch codex/oidc-native-harness-20261109 (c0a67b69 + probe fix + harness) to MT-M6A-JOIN. Rerun with tests/native/oidc-matrix/run.sh on the joined head."
     },
     {
       "id": "MT-M6A-JOIN",
       "lane": "M6a / source owner",
-      "next": "After MT-OIDC-NATIVE passes: join codex/owner-oidc-combined-20261107 to #8898, clear CodeQL alert on the private IPC dispatch, run full/default-browser/enabled-corpus/pinned-client/prcheck on the new frozen head."
+      "next": "Join codex/oidc-native-harness-20261109 (carries the combined owner/OIDC candidate, the Vault probe status fix and the harness) to #8898; clear the CodeQL alert on the private IPC dispatch; rerun the nine stages plus full/default-browser/enabled-corpus/pinned-client/prcheck on the new frozen head."
     },
     {
       "id": "MT-OWNERSHIP-OPS",
@@ -714,6 +714,14 @@
       "commit": "ed2ced00",
       "evidence": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md#coherent-operation-window-acceptance-family",
       "result": "Reproduced remote head/PR readback and published alignment CI. Draft remains open; publication is distinct from dev merge, release and production admission."
+    },
+    {
+      "title": "Nine-stage owner/OIDC native matrix through the disposable harness",
+      "work": "MT-OIDC-NATIVE",
+      "stage": "local-accepted",
+      "commit": "3b09131e",
+      "evidence": "../../../reports/tenancy/oidc-native-2026-11-09/README.md#per-stage-verdicts",
+      "result": "Reproduced 2026-11-09: all nine stages PASS (vault single/multi, mongo/pg sessions, mongo HTTPS, owner consumer/authority/browser/compatibility), zero leftovers, three mutant controls red then green, images by digest. Harness replaces the grant driver. Branch is local; full/browser/corpus/prcheck and the join to #8898 are MT-M6A-JOIN."
     }
   ],
   "deferred": [

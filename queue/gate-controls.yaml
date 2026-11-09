@@ -3216,3 +3216,13 @@ controls:
       Offline rehashed final restored entry value222 contradicts the independently
       captured source rows and fails WHOLE_C_PHYSICAL_ROWS entries.entries. The
       unchanged37/31-table record validates before and after, without a database run.
+
+  - gate: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/oidc-native-2026-11-09/summary.json
+    control: node tools/queue/gates/oidc-native-recorded.js tools/queue/gates/_oidc-native-recorded/missing-stage.json
+    positive-control: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/oidc-native-2026-11-09/summary.json
+    control-kind: static
+    proves: >
+      The recorded nine-PASS summary validates (13 checked, 0 failing). The same record
+      with the owner-browser stage removed fails "owner-browser: 0 records". Reads a
+      file; no fresh native execution, so it measures the record, not today's tree.
+

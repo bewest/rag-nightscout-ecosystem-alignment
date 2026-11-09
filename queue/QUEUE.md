@@ -32,19 +32,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 384 |
-| runnable gates | 431 |
-| explicit `no-gate:` markers | 405 |
+| runnable gates | 432 |
+| explicit `no-gate:` markers | 404 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 405 of the 836 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 404 of the 836 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 88 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 16 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-OIDC-NATIVE |
+| `in-progress` | 15 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 1 | WS-LAB |
+| `ready-to-push` | 2 | WS-LAB, MT-OIDC-NATIVE |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 4 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
@@ -8447,7 +8447,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | `codex/selectable-private-endpoints` | minor | 0 run + 2 no-gate |
 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
-| `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-progress` | `codex/owner-oidc-combined-20261107` | n/a | 0 run + 1 no-gate |
+| `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `ready-to-push` | `codex/oidc-native-harness-20261109` | n/a | 1 run |
 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `not-started` | `workspace/multitenant-20261102` | minor | 0 run + 1 no-gate |
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `not-started` | `codex/ownership-ops` | minor | 0 run + 1 no-gate |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `not-started` | `codex/key-retention` | minor | 0 run + 1 no-gate |
@@ -10703,11 +10703,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/owner-oidc-combined-20261107` |
+| branch | `codex/oidc-native-harness-20261109` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
-| worktree | `/tmp/crm-owner-oidc-combined-20261107` |
+| worktree | `externals/work/crm-oidc-harness-20261109` |
 | semver | `n/a` |
 | review | maintainer |
 
@@ -10719,14 +10719,16 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED until the harness lands. It replaces the grant/reservation driver in externals/work/owner-oidc-combined-native-prep-20261107 (run.cjs) while keeping its stage oracles, probe-checks.json and mutant controls. The gate becomes `node tools/queue/gates/oidc-native-recorded.js <report>` reading reports/tenancy/oidc-native-<date>/summary.json, with a control that feeds it a summary with one family missing.
+- `[static]` `node tools/queue/gates/oidc-native-recorded.js reports/tenancy/oidc-native-2026-11-09/summary.json`
+  - RECORDED-EVIDENCE only: the 2026-11-09 nine-stage run on harness head 3b09131e (c0a67b69 + vault probe status fix + harness) has every stage PASS with its families complete, three mutant controls red then green, and postgres/mongo/vault recorded by digest. Reads the committed summary; no fresh native execution. Rerun on any later head with `tests/native/oidc-matrix/run.sh --out <dir>` in the harness worktree.
 
 **Evidence.**
 
+- `reports/tenancy/oidc-native-2026-11-09/README.md`
 - `reports/tenancy/shared-oidc-sessions-2026-11-07/README.md`
 - `docs/30-design/tenancy/owner-authority.md`
 
-**Notes.** Decision 2026-11-09: disposable harness, not a grant ceremony. Source is complete and frozen (194 explicit-file checks, independent crypto audit). The nine stages declare 960s active + 135s teardown. Local resources present on 2026-11-09: Docker 29.1.3, postgres 16-alpine and hashicorp/vault images at the compose.yaml digests, mongo 7/8 images, Google Chrome, Node 22, oref0 at the pinned commit.
+**Notes.** Decision 2026-11-09: disposable harness, not a grant ceremony. Source is complete and frozen (194 explicit-file checks, independent crypto audit). The nine stages declare 960s active + 135s teardown. Local resources present on 2026-11-09: Docker 29.1.3, postgres 16-alpine and hashicorp/vault images at the compose.yaml digests, mongo 7/8 images, Google Chrome, Node 22, oref0 at the pinned commit. 2026-11-09 RUN (reproduced): all nine stages PASS on postgres 16.15, mongo 7.0.43, Vault 2.2.1; zero leftover schemas/collections/mounts; three authored mutants executed red then restored green. Infrastructure findings: Vault 2.x answers 200 with metadata on Transit key creation where the probe expected 204 (test instrument fixed in 2151cc5b on the candidate branch, source-owner review); the retired driver never passed the consume callback the sixth vault check needs, so the prepared matrix could not have gone green as written; the settings-reader fixture lacked SELECT on schema_migrations (fixture fixed). UNMEASURED: full/browser/corpus/prcheck on the branch (MT-M6A-JOIN), real provider interop, 17 of 20 authored mutants (runnable via run.sh --control). Next step is the join; `ready-to-push` here means the gate passes and the branch is local.
 
 ### `MT-M6A-JOIN` &mdash; M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign
 
