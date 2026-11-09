@@ -26,7 +26,7 @@ flowchart LR
   M5["M5: Realtime and evaluator<br/>promoted"]
   M6a["M6a: Identity and owner API<br/>in-progress"]
   M6b["M6b: Lifecycle and keys<br/>not-started"]
-  M6c["M6c: Deployment trust (nightscout-deploy)<br/>not-started"]
+  M6c["M6c: Deployment trust (nightscout-deploy)<br/>in-progress"]
   M6d["M6d: Connector sync<br/>not-started"]
   M7["M7: Production readiness<br/>not-started"]
   M0 --> M1
@@ -53,7 +53,7 @@ flowchart LR
   class M5 active
   class M6a active
   class M6b planned
-  class M6c planned
+  class M6c active
   class M6d planned
   class M7 planned
 ```
@@ -68,7 +68,7 @@ flowchart LR
 | **M5: Realtime and evaluator** | promoted | [MT-RUNTIME-PLAN](#mt-runtime-plan) | R73 accepts the functional separate-role reference on one host: bounded consistent current-state/evaluator recovery, current socket authority/DATA compatibility, durable original suppression and actual stable-request consumer handoff, controls/restorations and complete final-tree verification. Current polling/snapshot reference makes no LISTEN/latency or evaluator-to-device claim. Provider/device, multi-node ownership and operating envelope remain separate; published through draft #8898, not merged or released. |
 | **M6a: Identity and owner API** | in-progress | M4, M5, [MT-OIDC-NATIVE](#mt-oidc-native), [MT-M6A-JOIN](#mt-m6a-join) | Nine-stage native matrix (Vault single/multi, Mongo/PG sessions, Mongo HTTPS, owner consumer/authority/browser/compatibility) passes on the frozen combined candidate c0a67b69 through the disposable harness with red controls; then the joined candidate passes full, default-browser, enabled-corpus, pinned-client and prcheck on #8898. Source complete; native result UNMEASURED. |
 | **M6b: Lifecycle and keys** | not-started | M6a, [MT-OWNERSHIP-OPS](#mt-ownership-ops), [MT-KEY-RETENTION](#mt-key-retention) | Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Export/delete source exists (2026-11-06); ownership operations and key destruction are not implemented. |
-| **M6c: Deployment trust (nightscout-deploy)** | not-started | M6a, [MT-VAULT-TOKEN-FILE](#mt-vault-token-file), [DEPLOY-VAULT-AGENT](#deploy-vault-agent), [DEPLOY-IDP-PROFILE](#deploy-idp-profile), [DEPLOY-TRUST-PROBES](#deploy-trust-probes) | Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Compose tree imported to nightscout-deploy 2026-11-09; everything else not started. |
+| **M6c: Deployment trust (nightscout-deploy)** | in-progress | M6a, [MT-VAULT-TOKEN-FILE](#mt-vault-token-file), [DEPLOY-VAULT-AGENT](#deploy-vault-agent), [DEPLOY-IDP-PROFILE](#deploy-idp-profile), [DEPLOY-TRUST-PROBES](#deploy-trust-probes) | Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Compose tree imported to nightscout-deploy 2026-11-09; everything else not started. |
 | **M6d: Connector sync** | not-started | M6a, [MT-CONNECTOR-SYNC](#mt-connector-sync) | nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. No recorded acceptance. |
 | **M7: Production readiness** | not-started | M6a, M6b, M6c, M6d, [MT-BENCH-BASELINE](#mt-bench-baseline), [MT-BENCH-CONTRAST](#mt-bench-contrast), [MT-SCALE-UNBOUND](#mt-scale-unbound), [MT-EVALUATOR-PARTITION](#mt-evaluator-partition), [MT-ANDROID-LAB](#mt-android-lab), [MT-ENDPOINT-TRANSPORT](#mt-endpoint-transport), [MT-API-FIXED-ROSTER](#mt-api-fixed-roster), [DEPLOY-K8S-BINDING](#deploy-k8s-binding) | Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Evaluator partitioning by member count and ordinal with a per-tenant fenced lease (decision 2026-11-09); Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha. |
 
@@ -88,7 +88,7 @@ flowchart LR
   DEPLOY-IDP-PROFILE["DEPLOY-IDP-PROFILE<br/>not-started"]
   DEPLOY-K8S-BINDING["DEPLOY-K8S-BINDING<br/>not-started"]
   DEPLOY-TRUST-PROBES["DEPLOY-TRUST-PROBES<br/>not-started"]
-  DEPLOY-VAULT-AGENT["DEPLOY-VAULT-AGENT<br/>not-started"]
+  DEPLOY-VAULT-AGENT["DEPLOY-VAULT-AGENT<br/>ready-to-push"]
   MIG-RUNNER["MIG-RUNNER<br/>closed"]
   MIG-VV["MIG-VV<br/>done"]
   MT-ANDROID-LAB["MT-ANDROID-LAB<br/>not-started"]
@@ -106,7 +106,7 @@ flowchart LR
   MT-RUNTIME-PLAN["MT-RUNTIME-PLAN<br/>closed"]
   MT-SCALE-UNBOUND["MT-SCALE-UNBOUND<br/>not-started"]
   MT-SECRETS-CONTRACT["MT-SECRETS-CONTRACT<br/>closed"]
-  MT-VAULT-TOKEN-FILE["MT-VAULT-TOKEN-FILE<br/>not-started"]
+  MT-VAULT-TOKEN-FILE["MT-VAULT-TOKEN-FILE<br/>ready-to-push"]
   PLAT-SERVE["PLAT-SERVE<br/>merged-upstream"]
   ST-PG["ST-PG<br/>closed"]
   ST-VIEWS-PROFILE["ST-VIEWS-PROFILE<br/>in-progress"]
@@ -174,10 +174,10 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="mt-m6a-join"></a>**MT-M6A-JOIN**: not-started | M6a / source owner | MT-OIDC-NATIVE (ready-to-push) | Join codex/oidc-native-harness-20261109 (carries the combined owner/OIDC candidate, the Vault probe status fix and the harness) to #8898; clear the CodeQL alert on the private IPC dispatch; rerun the nine stages plus full/default-browser/enabled-corpus/pinned-client/prcheck on the new frozen head. |
 | <a id="mt-ownership-ops"></a>**MT-OWNERSHIP-OPS**: not-started | M6b | MT-M6A-JOIN (not-started) | Operator-assisted add/transfer/recovery on the headless operator API; concurrent-change and unauthorized controls; audit rows. |
 | <a id="mt-key-retention"></a>**MT-KEY-RETENTION**: not-started | M6b | MT-M6A-JOIN (not-started) | 30-day retention after delete; operator destroy; after-window refusal; artifact holds every ciphertext/key reference before secret/audit rows are removed. |
-| <a id="mt-vault-token-file"></a>**MT-VAULT-TOKEN-FILE**: not-started | M6c / core | None recorded | Add a tokenFile alternative to the per-tenant tokenEnv in the three getToken call sites; read per call so Agent renewal is picked up; refuse when both or neither are set. |
-| <a id="deploy-vault-agent"></a>**DEPLOY-VAULT-AGENT**: not-started | M6c / nightscout-deploy | MT-VAULT-TOKEN-FILE (not-started) | Vault Agent sidecar in the Compose binding: AppRole auto-auth, sink file mounted read-only into api/realtime/evaluator/tenant-admin, Transit policy per tenant key; renewal, seal and rotation probes. |
+| <a id="mt-vault-token-file"></a>**MT-VAULT-TOKEN-FILE**: ready-to-push | M6c / core: fixed on local branch (5 unit, 2 ablations red) | None recorded | Join with MT-M6A-JOIN; apply the same shape to the three OIDC-branch getToken sites. |
+| <a id="deploy-vault-agent"></a>**DEPLOY-VAULT-AGENT**: ready-to-push | M6c / nightscout-deploy main cda38265: overlay landed, smoke measured | MT-VAULT-TOKEN-FILE (ready-to-push) | Maintainer decides one AppRole vs per-tenant Agent; measure re-auth after token_max_ttl and seal/unseal. |
 | <a id="deploy-idp-profile"></a>**DEPLOY-IDP-PROFILE**: not-started | M6c / nightscout-deploy | MT-M6A-JOIN (not-started) | Authentik provider profile over HTTPS with synthetic people; login/renewal/logout/outage against the owner HTTP routes; Kratos fallback profile only if the Authentik proof fails. |
-| <a id="deploy-trust-probes"></a>**DEPLOY-TRUST-PROBES**: not-started | M6c / nightscout-deploy | DEPLOY-VAULT-AGENT (not-started) | Spoof, host/selector conflict, unknown tenant, socket and outage probes against the live Compose edge and Vault; trust record from edge/trust-record.template.md. |
+| <a id="deploy-trust-probes"></a>**DEPLOY-TRUST-PROBES**: not-started | M6c / nightscout-deploy | DEPLOY-VAULT-AGENT (ready-to-push) | Spoof, host/selector conflict, unknown tenant, socket and outage probes against the live Compose edge and Vault; trust record from edge/trust-record.template.md. |
 | <a id="mt-connector-sync"></a>**MT-CONNECTOR-SYNC**: not-started | M6d | MT-M6A-JOIN (not-started) | nightscout-connect outbound pull from a tenant with a pre-issued reader; stored/history oracle; revocation control. |
 | <a id="mt-android-lab"></a>**MT-ANDROID-LAB**: not-started | M7 | MT-M6A-JOIN (not-started) | Android emulator acceptance for the pinned uploader/follower shapes; iOS stays outside the automated lab. |
 | <a id="deploy-k8s-binding"></a>**DEPLOY-K8S-BINDING**: not-started | M7 / nightscout-deploy | DEPLOY-TRUST-PROBES (not-started) | One Pod per cohort, private socket volume, no-overlap update; binding equivalence table. |
@@ -244,6 +244,7 @@ This ledger retains source-scoped checkpoints in chronological order; later acce
 | Cold Compose UI/restore, pinned clients and final regression / [MT-RUNTIME-PLAN](#mt-runtime-plan) | **Integrated acceptance recorded** | [`ed2ced00`](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md#coherent-operation-window-acceptance-family) | Reproduced exact image and complete cold UI/socket/restore/client-convergence reference; actual cgmsim/oref0 and final nonbrowser acceptance. Native/browser c23 and corpus39f4 retain actual attribution. No counts summed or M6 promotion. |
 | Draft PR publication and alignment CI / [MT-RUNTIME-PLAN](#mt-runtime-plan) | **Integrated acceptance recorded** | [`ed2ced00`](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md#coherent-operation-window-acceptance-family) | Reproduced remote head/PR readback and published alignment CI. Draft remains open; publication is distinct from dev merge, release and production admission. |
 | Nine-stage owner/OIDC native matrix through the disposable harness / [MT-OIDC-NATIVE](#mt-oidc-native) | **Locally accepted** | [`3b09131e`](../../../reports/tenancy/oidc-native-2026-11-09/README.md#per-stage-verdicts) | Reproduced 2026-11-09: all nine stages PASS (vault single/multi, mongo/pg sessions, mongo HTTPS, owner consumer/authority/browser/compatibility), zero leftovers, three mutant controls red then green, images by digest. Harness replaces the grant driver. Branch is local; full/browser/corpus/prcheck and the join to #8898 are MT-M6A-JOIN. |
+| Vault Agent sidecar overlay and core tokenFile read / [DEPLOY-VAULT-AGENT](#deploy-vault-agent) | **Locally accepted** | [`cda38265`](../../../reports/tenancy/vault-agent-2026-11-09/README.md#measured-run) | Reproduced 2026-11-09: renewal past a 2-minute TTL, stopped Agent fails closed with env tokens still present (no fallback), recovery after secret-id reissue, restore demo through the overlay. Core tokenFile on codex/vault-token-file-20261109 (0c547958). Imported tree unchanged. |
 
 ## Deferred and separate lanes
 

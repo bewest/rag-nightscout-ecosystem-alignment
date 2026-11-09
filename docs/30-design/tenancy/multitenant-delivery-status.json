@@ -734,7 +734,7 @@
       "work": "DEPLOY-VAULT-AGENT",
       "stage": "local-accepted",
       "commit": "cda38265",
-      "evidence": "../../../reports/tenancy/vault-agent-2026-11-09/README.md#measured-compose-run",
+      "evidence": "../../../reports/tenancy/vault-agent-2026-11-09/README.md#measured-run",
       "result": "Reproduced 2026-11-09: renewal past a 2-minute TTL, stopped Agent fails closed with env tokens still present (no fallback), recovery after secret-id reissue, restore demo through the overlay. Core tokenFile on codex/vault-token-file-20261109 (0c547958). Imported tree unchanged."
     }
   ],
