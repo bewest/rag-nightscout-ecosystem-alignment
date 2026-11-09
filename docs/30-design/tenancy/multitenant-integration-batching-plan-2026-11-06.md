@@ -120,6 +120,15 @@ list. The schedule below governs further work.
 | **C — synthetic operational preview (M6)** | [Operation-window acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md) records separate-process tenant-local restore, ordinary forward history/client convergence and B continuity, plus cold Compose/UI/restore acceptance. Earlier SQL backup/upgrade/deletion evidence retains its captured scope. | **M6 remains blocked.** Join the complete chosen owner/human-session capability, lifecycle/key destruction/recovery, trusted deployment and approved workload/resource/egress evidence; retain Android and final criterion review. Accepted one-host recovery is not multi-host/HA admission. |
 | **Next owner/OIDC capability** | [Shared OIDC source evidence](../../../reports/tenancy/shared-oidc-sessions-2026-11-07/README.md) establishes focused source behavior on its actual branch. | Signed native database/Vault/HTTPS/browser acceptance on the coherent owner/OIDC candidate remains **UNMEASURED**. The combined source owner and next-capability acceptance lead are identified in the latest release update/local handoff. Do not infer this capability from the published Compose candidate or redispatch archived chats. |
 
+### 2026-11-09: M6 split and capability items
+
+Stage C above is now four milestones and a production milestone, M6a–M6d and M7
+([roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration),
+[decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)).
+Each has one to four queue items with one gate each; the dashboard lists them. The
+"next owner/OIDC capability" row is `MT-OIDC-NATIVE` then `MT-M6A-JOIN`; its acceptance
+runs through a disposable harness, and no lead reservation or grant is required.
+
 ### Criterion matrix for the next frozen candidate
 
 The coordinator records actual source, instrument, command/selector, artifact,

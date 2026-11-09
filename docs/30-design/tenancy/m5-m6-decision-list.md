@@ -1,11 +1,20 @@
 # M5/M6: current decisions and next review
 
-*Living contributor-facing decision index, 2026-11-08. Read this before older
+*Living contributor-facing decision index, 2026-11-09. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
 records no new application measurement or promotion.*
 
 ## Execute now
+
+**2026-11-09 restructure.** M6 is now M6a identity and owner API, M6b lifecycle and keys,
+M6c deployment trust (in `nightscout-deploy`), M6d connector sync, and M7 production
+readiness ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)).
+The owner/OIDC native matrix runs through a disposable harness (`MT-OIDC-NATIVE`); the
+grant/reservation ceremony is retired. Vault connectivity is a Vault Agent sidecar
+(`DEPLOY-VAULT-AGENT`) plus a `tokenFile` read in core (`MT-VAULT-TOKEN-FILE`). The
+umbrella queue items are closed as superseded; one capability item per remaining gap.
+
 
 The functional M5 reference on one host is accepted in [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch). It includes
 bounded current-state/evaluator recovery, durable alarm/request state and actual

@@ -3,7 +3,7 @@
 *Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the [tenancy archive](../../archive/tenancy/README.md); dates in a
-filename do not establish currency. Reconciled 2026-11-08 to the published draft preview and retained acceptance records.*
+filename do not establish currency. Reconciled 2026-11-09: M6 split into M6a–M6d and M7, deployment tree in `nightscout-deploy`, disposable native harness ([decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09)).*
 
 ## What can inform a decision now
 
@@ -45,7 +45,8 @@ inactive-tenant feature.
 |---|---|---|
 | What is accepted, blocked, or next | [Delivery dashboard](multitenant-delivery-dashboard.md) | Generated queue claims and dated acceptance metadata; not live branch monitoring. Edit the queue/status sources, then `make queue`. |
 | What to implement and how to join it | [Completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) | A–C sequence, ownership and verification boundaries. Its sections 1 and 4 retain the original dispatch. |
-| What a milestone must prove | [Delivery roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration) | Delivery boundaries and M0–M6 criteria, including later promotion-bar decisions. Claims remain in the dashboard. |
+| What a milestone must prove | [Delivery roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration) | Delivery boundaries and M0–M5, M6a–M6d and M7 criteria, including later promotion-bar decisions. Claims remain in the dashboard. |
+| Deployment packaging, edge, identity-provider profiles, Vault Agent | `nightscout-deploy` (sibling repository; local `/home/bewest/src/nightscout-deploy`), [scope split](claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private) | The Compose tree moved there with history on 2026-11-09. Core keeps application code and the Dockerfile. |
 | Why the architecture is this way | [Tenancy decisions](multitenancy-decisions.md#1-decisions) | D1–D23, hard qualifications and links to detailed contracts. Old per-commit tasks belong to the archive. |
 | Current promotion bars and compatibility direction | [Promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06) | Reader mode withdrawn; writer policy retained. M2 cell/M6 lifecycle and deferred M1 budgets/Android lab retain their adopted scope. No new promotion. |
 | Owner, delegation and token rules; shared optional OIDC | [Owner authority](owner-authority.md), [shared integration](owner-authority.md#shared-oidc-integration) | Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters; implementation acceptance is separate. |

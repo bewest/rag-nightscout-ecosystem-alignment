@@ -33,8 +33,9 @@ def anchor(value):
 
 def validate(data, items):
     ids = [m["id"] for m in data["milestones"]]
-    if len(set(ids)) != len(ids) or set(ids) != {f"M{i}" for i in range(7)}:
-        raise ValueError("milestones must uniquely cover M0 through M6")
+    required = {f"M{i}" for i in range(6)} | {"M6a", "M6b", "M6c", "M6d", "M7"}
+    if len(set(ids)) != len(ids) or set(ids) != required:
+        raise ValueError("milestones must uniquely cover M0-M5, M6a-M6d and M7 (split 2026-11-09)")
     work = [w["id"] for w in data["work"]]
     if len(work) != len(set(work)) or any(w not in items for w in work):
         raise ValueError("dashboard work must uniquely reference existing queue IDs")
@@ -144,7 +145,7 @@ def render(data, queue):
         lines.append(f'| <a id="{anchor(w["id"])}"></a>**{w["id"]}**: {cell(item["state"])} | '
                      f'{cell(w["lane"])} | {cell(deps)} | {cell(w["next"])} |')
     lines.extend(["", "## Accepted slices and integration handoff", "",
-                  "This ledger retains source-scoped checkpoints in chronological order; later acceptance can supersede an earlier pending boundary. Use the milestone table and next-action table for current work. A bounded slice does **not** close its parent queue card or M0-M6.", "",
+                  "This ledger retains source-scoped checkpoints in chronological order; later acceptance can supersede an earlier pending boundary. Use the milestone table and next-action table for current work. A bounded slice does **not** close its parent queue card or a milestone.", "",
                   "| Slice / parent | Acceptance stage | Commit / evidence | Recorded result and boundary |",
                   "|---|---|---|---|"])
     for s in data["slices"]:

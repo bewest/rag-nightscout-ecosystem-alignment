@@ -31,28 +31,28 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 370 |
+| items | 382 |
 | runnable gates | 431 |
-| explicit `no-gate:` markers | 391 |
+| explicit `no-gate:` markers | 403 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 391 of the 822 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 403 of the 834 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 75 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER |
-| `in-progress` | 24 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, MT-RUNTIME-PLAN, MT-NEXTGEN-PLAN, MT-IDENTITY-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
+| `not-started` | 85 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `in-progress` | 16 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-OIDC-NATIVE |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 2 | T30-AUTH, WS-LAB |
-| `blocked` | 13 | TEN-RESOLVE, T31-REM, T32-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
+| `ready-to-push` | 1 | WS-LAB |
+| `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 4 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 8 | T30-RESEARCH, BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
+| `needs-decision` | 8 | BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL, MT-ENVELOPE |
 | `done` | 47 | TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL |
 | `unsettled` | 1 | A7A-7 |
-| `closed` | 6 | SEAM-REFRESH, BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
+| `closed` | 19 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, TEN-RESOLVE, MT-RUNTIME-PLAN, MT-IDENTITY-PLAN, T30-RESEARCH, T30-AUTH, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T32-REM, SEAM-REFRESH, BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
 | `answered` | 10 | RT-D3, RT-VERSION, RT-PROPAGATION, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION |
 
 ### Reaches an operator on today's release
@@ -8370,31 +8370,31 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 70 items
+`parcel: tenancy` &mdash; 82 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
 
 | id | title | state | branch | semver | gates |
 |---|---|---|---|---|---|
-| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 6 run + 1 no-gate |
-| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `in-progress` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
-| `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `in-progress` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
-| `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `blocked` | `workspace/multitenant-20261102` | n/a | 1 run + 2 no-gate |
+| `ST-PG` | Current-dev PostgreSQL entries adapter and real RLS proof | `closed` | `workspace/multitenant-20261102` | n/a | 6 run + 1 no-gate |
+| `MT-CONFIG-MIN` | Reviewed initial tenant configuration and headless owner API contract | `closed` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
+| `MT-SECRETS-CONTRACT` | Tenant-bound secrets contract and early Vault Transit integration proof | `closed` | `workspace/multitenant-20261102` | n/a | 2 run + 1 no-gate |
+| `TEN-RESOLVE` | Current-dev tenant resolution and private operator lifecycle | `closed` | `workspace/multitenant-20261102` | n/a | 1 run + 2 no-gate |
 | `TEN-LAB` | Two-tenant entries HTTP lab on PostgreSQL | `done` | `records/multitenant-roadmap-20261102` | n/a | 2 run + 1 no-gate |
-| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `in-progress` | `codex/m5-m6-completion-acceptance-20261107` | n/a | 2 run + 1 no-gate |
-| `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `in-progress` | `codex/shared-oidc-sessions-20261107` | n/a | 0 run + 1 no-gate |
-| `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `needs-decision` | `-` | n/a | 2 run + 3 no-gate |
-| `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `ready-to-push` | `main` | n/a | 2 run + 4 no-gate |
+| `MT-RUNTIME-PLAN` | Continuous v1/v3, realtime and evaluator integration contracts | `closed` | `codex/m5-m6-completion-acceptance-20261107` | n/a | 2 run + 1 no-gate |
+| `MT-IDENTITY-PLAN` | Human identity, tenant access grants and delegated consent plan | `closed` | `codex/shared-oidc-sessions-20261107` | n/a | 0 run + 1 no-gate |
+| `T30-RESEARCH` | T3.0 part 1 - enumerate the per-tenant configuration surface | `closed` | `-` | n/a | 2 run + 3 no-gate |
+| `T30-AUTH` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split | `closed` | `main` | n/a | 2 run + 4 no-gate |
 | `T30-SCHEMA-CRED` | T3.0 part 2a - device and data-path credential storage in platform.sql | `done` | `seam/t30-schema-cred` | n/a | 2 run + 2 no-gate |
-| `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `in-progress` | `-` | n/a | 1 run + 2 no-gate |
+| `T30-SCHEMA-CONFIG` | T3.0 part 2b - per-tenant configuration table, and where human identity lives | `closed` | `-` | n/a | 1 run + 2 no-gate |
 | `MIG-VV` | Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB | `done` | `-` | n/a | 0 run + 1 no-gate |
-| `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `in-progress` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
+| `MIG-RUNNER` | `nightscout migrate`: one runner (umzug) with the project's PostgreSQL and MongoDB adapters | `closed` | `workspace/multitenant-20261102` | minor | 2 run + 1 no-gate |
 | `T30-ORY-PROOF` | Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants | `done` | `ory/proof-2026-10-07` | n/a | 1 run + 3 no-gate |
-| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `in-progress` | `codex/rest-integration-20261105` | n/a | 2 run + 1 no-gate |
-| `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `in-progress` | `codex/owner-subject-http-20261105` | minor | 2 run + 1 no-gate |
+| `T30-WIRING` | T3.0 part 3 - deriveEnv overrides, tenant-scoped isApiKey/verifyJWT | `closed` | `codex/rest-integration-20261105` | n/a | 2 run + 1 no-gate |
+| `T30-TENANT-ADMIN` | cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16) | `closed` | `codex/owner-subject-http-20261105` | minor | 2 run + 1 no-gate |
 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
-| `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
+| `T32-REM` | T3.2 remainder - platform.sql carries no config, secret or signing key | `closed` | `seam/t1-2-storage-interface` | n/a | 0 run + 1 no-gate |
 | `T33-REM` | T3.3 remainder - the shared enclave, and language/levels per tenant | `blocked` | `seam/t1-2-storage-interface` | n/a | 0 run + 2 no-gate |
 | `T43` | T4.3 - ns-realtime, LISTEN per served tenant | `not-started` | `-` | n/a | 1 run + 2 no-gate |
 | `T44` | T4.4 - ns-evaluator, the per-tenant evaluation loop | `not-started` | `-` | n/a | 1 run + 2 no-gate |
@@ -8447,12 +8447,24 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | `codex/selectable-private-endpoints` | minor | 0 run + 2 no-gate |
 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
+| `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-progress` | `codex/owner-oidc-combined-20261107` | n/a | 0 run + 1 no-gate |
+| `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `not-started` | `workspace/multitenant-20261102` | minor | 0 run + 1 no-gate |
+| `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `not-started` | `codex/ownership-ops` | minor | 0 run + 1 no-gate |
+| `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `not-started` | `codex/key-retention` | minor | 0 run + 1 no-gate |
+| `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `not-started` | `codex/vault-token-file` | minor | 0 run + 1 no-gate |
+| `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `DEPLOY-TRUST-PROBES` | M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-ENVELOPE` | M7: declare the operating envelope, then measure it | `needs-decision` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `workspace/multitenant-20261102` |
 | base | `official/dev@61eb3733` |
@@ -8488,13 +8500,13 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/postgres-foundation/README.md`
 - `tools/lab/postgres-foundation/results.json`
 
-**Notes.** 2026-11-06 (R62/R64): published #8898 head 83582e87 (172 commits, 245 files over dev 4a482627) is the accepted cumulative batch; R62 ran full 7226/99/0, browser 684, the 35-suite corpus 460/1/0 and the actual cgmsim/oref0 gate (82 checks, zero differences) on source-identical 87133959; CI and CodeQL green on 83582e87. The settings gate keeps its native pin 33870764; frozen-head replay UNMEASURED. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R51 2026-11-06:33870764 bounded settings accepted and exact root FF; full7089/80pending/0failure/browser684/prcheckOK. Archived12 and semantic sortcap/predicate/projection controls restored12. Broader ST-PG remains open. Current 2026-11-04: R38/R39 capture executable entries CRUD/history and selected legacy/API3 domains; R40 adds derived reads and pinned client patterns at published draft ded254b9. Import, complete compatibility and resource criteria remain open. No M1-M6 promotion follows from these bounded slices. Roadmap completion checkpoints scope each next slice and its controls. Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session- scoped made the pooled-cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim. Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods: 158 passing, no pending across 11 focused files, with 8 real differential write checks and 1 refusal check. Actual two-backend lock contention guards disjoint patches and same- field restoration. Identity-kind, no-op-count and stale-snapshot mutations fail; restored implementation passes. ESLint, 462-file tier classification and existing write-boundary check pass. No full write-intent/event integration or backend promotion. Parallel session owns MIG-RUNNER, settings/subject policy and secrets. Integrated secrets commits through fec19ba5 via merge 6943dccb: 230 passing, no pending across 17 files; 465 test files classify. Existing unit/DOM/core/harness tiers pass after building local bundles. Dependency tier has 368 passing, 1 pending, 1 failure from unchanged har-validator resolving ancestor-installed AJV 6.12.6. No full-suite pass. Continuation 14ae16db plus a8dd162d pruning acceptance: 878 passing, no pending across 31 files including all shared write-intent suites and real PG/MongoDB/Vault. Changed entries/transaction checks pass 28/28 against MongoDB 5.0.32 and 8.3.9. Measured merge upsert/batch/every-form and changing replacement subsets; dormant v3 shared rules retain POST replacement and PATCH merge, with events only after an owned COMMIT. Actual unique-index wait/rematch and three implementation mutations pass their controls. JSON-equal replacements owing exact counts refuse without BSON field-order metadata. No catalogue change, upstream push or backend promotion. Recovery 78b915ab integrated via 0de90852; same combined command now passes 879 tests without pending, including all 34 secrets checks. Current local acceptance: the user-approved contract is JSONB logical equality; the inspected client corpus uses named fields and no known client depends on BSON key order. Order-only replacements may report modifiedCount 0 in PostgreSQL where Mongo reports 1; the API3 update response does not expose that count. M1 entries schema candidate passes 13 MIG-RUNNER integration checks; entries read/write/filter/identity/ connection suites pass 45. Import, full API/runtime compatibility and promotion remain open.
+**Notes.** 2026-11-06 (R62/R64): published #8898 head 83582e87 (172 commits, 245 files over dev 4a482627) is the accepted cumulative batch; R62 ran full 7226/99/0, browser 684, the 35-suite corpus 460/1/0 and the actual cgmsim/oref0 gate (82 checks, zero differences) on source-identical 87133959; CI and CodeQL green on 83582e87. The settings gate keeps its native pin 33870764; frozen-head replay UNMEASURED. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R51 2026-11-06:33870764 bounded settings accepted and exact root FF; full7089/80pending/0failure/browser684/prcheckOK. Archived12 and semantic sortcap/predicate/projection controls restored12. Broader ST-PG remains open. Current 2026-11-04: R38/R39 capture executable entries CRUD/history and selected legacy/API3 domains; R40 adds derived reads and pinned client patterns at published draft ded254b9. Import, complete compatibility and resource criteria remain open. No M1-M6 promotion follows from these bounded slices. Roadmap completion checkpoints scope each next slice and its controls. Maintainer 2026-11-02: storage first, one integration branch, no upstream push. ST-HARNESS is already merged as #8881; the September seam is reference, not a bulk-merge prerequisite. Preserve default MongoDB. Local 27f085c9 plus ce14d637: transaction connection foundation with explicit connection URI required, not registered as a backend; 43 focused checks pass across 4 files, including 9 PG checks, with PostgreSQL 16.15 and isolated MongoDB 8.0. ESLint passes. Changing the actual set_config call to session- scoped made the pooled-cleanup test fail; restored transaction-local version passes. No upstream push. Continuation at 6b1bf889: preserve ObjectId/string kinds from the first slice (maintainer); 65 focused upstream checks and ESLint/tier check pass. Real PG 16.15/PgBouncer 1.25.2 lab: 9 pooler/DDL plus 4 identity checks, with a single measured backend and controls. Emitter's typed-key option is experimental; default generated DDL unchanged. Complete adapter open. Continuation at 7d4f3872 adds findFiltered/count/findOne for a measured bounded AST subset. Combined read/migration/existing regressions: 145 passing, no pending, across 12 files with owned disposable PG/MongoDB. Regex/v1/projection/dotted paths/unsupported types/array-sort refuse; no cursor/batch cap. Six differential and four unit checks, ESLint/tier checks pass. No registration/writes/events or full M1 claim. Continuation at 7bcfc8b0 adds dormant scalar insert/patch/delete methods: 158 passing, no pending across 11 focused files, with 8 real differential write checks and 1 refusal check. Actual two-backend lock contention guards disjoint patches and same- field restoration. Identity-kind, no-op-count and stale-snapshot mutations fail; restored implementation passes. ESLint, 462-file tier classification and existing write-boundary check pass. No full write-intent/event integration or backend promotion. Parallel session owns MIG-RUNNER, settings/subject policy and secrets. Integrated secrets commits through fec19ba5 via merge 6943dccb: 230 passing, no pending across 17 files; 465 test files classify. Existing unit/DOM/core/harness tiers pass after building local bundles. Dependency tier has 368 passing, 1 pending, 1 failure from unchanged har-validator resolving ancestor-installed AJV 6.12.6. No full-suite pass. Continuation 14ae16db plus a8dd162d pruning acceptance: 878 passing, no pending across 31 files including all shared write-intent suites and real PG/MongoDB/Vault. Changed entries/transaction checks pass 28/28 against MongoDB 5.0.32 and 8.3.9. Measured merge upsert/batch/every-form and changing replacement subsets; dormant v3 shared rules retain POST replacement and PATCH merge, with events only after an owned COMMIT. Actual unique-index wait/rematch and three implementation mutations pass their controls. JSON-equal replacements owing exact counts refuse without BSON field-order metadata. No catalogue change, upstream push or backend promotion. Recovery 78b915ab integrated via 0de90852; same combined command now passes 879 tests without pending, including all 34 secrets checks. Current local acceptance: the user-approved contract is JSONB logical equality; the inspected client corpus uses named fields and no known client depends on BSON key order. Order-only replacements may report modifiedCount 0 in PostgreSQL where Mongo reports 1; the API3 update response does not expose that count. M1 entries schema candidate passes 13 MIG-RUNNER integration checks; entries read/write/filter/identity/ connection suites pass 45. Import, full API/runtime compatibility and promotion remain open. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN (REST/backend parity on the joined head) and BFQ-CAP02 (loader). Gates and evidence retained.
 
 ### `MT-CONFIG-MIN` &mdash; Reviewed initial tenant configuration and headless owner API contract
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `records/multitenant-roadmap-20261102` |
 | base | `main@28671cb4a` |
@@ -8526,13 +8538,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** R63 measures three actual oref0 subject-token upload summary/value pairs and next-operation tightening401/noeffects; source-ablation red/restored. Maintainer withdrew the reader-clamping mode on2026-11-06: own-tenant API_SECRET compatibility is retained. R62/R63 remain historical captures; reader selection and its active gate/lab are retired, not default behavior. R62 accepts optional current subject-reader clamping on83582e87 with actual871 native12/intersection semantic red/restored12; comprehensive full7226/99pending/0failure/browser684/corpus460/1benchmarkpending/0failure. Runner-only descendant identity preserves actual execution attribution. Selected root/anonymous/wildcard cases refuse; no default enablement, delegator lineage, complete owner catalogue or production lifecycle claim. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK; parent archived22/four semantic guards/restored22. R53 native17f scope is retained in cumulativeR54. T30-TENANT-ADMIN uses this canonical bounded gate; full owner lifecycle/listener/issuer remain open. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement.
+**Notes.** R63 measures three actual oref0 subject-token upload summary/value pairs and next-operation tightening401/noeffects; source-ablation red/restored. Maintainer withdrew the reader-clamping mode on2026-11-06: own-tenant API_SECRET compatibility is retained. R62/R63 remain historical captures; reader selection and its active gate/lab are retired, not default behavior. R62 accepts optional current subject-reader clamping on83582e87 with actual871 native12/intersection semantic red/restored12; comprehensive full7226/99pending/0failure/browser684/corpus460/1benchmarkpending/0failure. Runner-only descendant identity preserves actual execution attribution. Selected root/anonymous/wildcard cases refuse; no default enablement, delegator lineage, complete owner catalogue or production lifecycle claim. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 native17f9a457 accepted full7127/80pending/0failure/browser684/prcheckOK; parent archived22/four semantic guards/restored22. R53 native17f scope is retained in cumulativeR54. T30-TENANT-ADMIN uses this canonical bounded gate; full owner lifecycle/listener/issuer remain open. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer D22 minimum catalogue remains: unsupported names refuse; alarms/integrations wait for consuming runtimes. Current grants and revocation apply at the next protected operation; unavailable authority refuses. JWT expiry or cached exchange is not authority. R41 accepts local 94c57f1f subject update/delete and known-role assignment with separately authorized writer, stable identity/metadata, rollback and current-credential controls. Archived gate PASS/NON-VACUOUS is bounded; public owner HTTP, grant ceilings, stable role IDs/full role CRUD and complete configuration/runtime invalidation remain open. Published preview is still ded254b9. No owner/data/socket listener enablement. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN (owner API joined) and MT-OWNERSHIP-OPS. Gates and evidence retained.
 
 ### `MT-SECRETS-CONTRACT` &mdash; Tenant-bound secrets contract and early Vault Transit integration proof
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `workspace/multitenant-20261102` |
 | base | `official/dev@61eb3733` |
@@ -8562,13 +8574,13 @@ alarm-readiness items, and the seam branch refresh.
 - `tools/lab/vault-transit/README.md`
 - `tools/lab/vault-transit/results.json`
 
-**Notes.** 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex. Continuation recommendation in response to maintainer: Vault-facing adapter next behind the provider-neutral contract; built-in remains an option. No comparative efficiency or production readiness claim. Parallel a3888080/cbbe9179/fec19ba5 integrated in local merge 6943dccb. Dormant component, PG ciphertext/audit and maintenance-only rewrap/CAS pass 33 focused secrets checks and the 230-test combined regression. Tiers reconciled to 465 files; entries write tier entry preserved. Separate secrets worktree may fast-forward to the integrated baseline, then pursue synthetic backup/restore and actual process-crash acceptance. Keep catalogue history immutable and do not enable runtime consumers. Recovery 78b915ab merged with entries a8dd162d at 0de90852: 879 passing with zero pending, including all 34 secrets checks. Real PG dump/restore and non-dev single-node Vault snapshots preserve references/audit/key versions; missing/newer keys and provider outages refuse. Actual worker SIGKILL before CAS and after commit preserves audit/value semantics across process retries. No production recovery claim. Fast-forward the isolated worktree before the next bounded MT-CONFIG- MIN/current-authority slice; keep entries/runtime untouched.
+**Notes.** 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. Synthetic prototype evidence is bounded; no production wiring, full ceiling/session implementation or milestone promotion. Maintainer 2026-11-02: try Vault early if feasible; measure integration before deciding whether it is more efficient than the built-in signer. Never export signing keys or fall back silently on provider failure. Feasibility now demonstrated, not efficiency or production acceptance: next design output is the tenant/consumer-authorized Vault adapter and ciphertext/JWT-version/audit contract, not building a local signer first by assumption. Measured HMAC response is versioned base64, not hex. Continuation recommendation in response to maintainer: Vault-facing adapter next behind the provider-neutral contract; built-in remains an option. No comparative efficiency or production readiness claim. Parallel a3888080/cbbe9179/fec19ba5 integrated in local merge 6943dccb. Dormant component, PG ciphertext/audit and maintenance-only rewrap/CAS pass 33 focused secrets checks and the 230-test combined regression. Tiers reconciled to 465 files; entries write tier entry preserved. Separate secrets worktree may fast-forward to the integrated baseline, then pursue synthetic backup/restore and actual process-crash acceptance. Keep catalogue history immutable and do not enable runtime consumers. Recovery 78b915ab merged with entries a8dd162d at 0de90852: 879 passing with zero pending, including all 34 secrets checks. Real PG dump/restore and non-dev single-node Vault snapshots preserve references/audit/key versions; missing/newer keys and provider outages refuse. Actual worker SIGKILL before CAS and after commit preserves audit/value semantics across process retries. No production recovery claim. Fast-forward the isolated worktree before the next bounded MT-CONFIG- MIN/current-authority slice; keep entries/runtime untouched. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT and MT-KEY-RETENTION. Gates and evidence retained.
 
 ### `TEN-RESOLVE` &mdash; Current-dev tenant resolution and private operator lifecycle
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `workspace/multitenant-20261102` |
 | base | `official/dev@61eb3733` |
@@ -8598,7 +8610,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** R72 accepts the declared headless M2 preview; this broader parent remains blocked on production/lifecycle contracts. R73's actual9298 SQL core keeps OLD a7f5 and subsequent source-only ec0f collector correction distinct. Same-ID clinical restore is boundedly accepted in the later operation-window family; identity/credential import remains OPEN/UNSUPPORTED. Operator activity vs maintenance state is an unresolved design boundary; full resource eligibility is not accepted. SQL artifact/row fidelity, current synthetic authority and cancellation/execution controls do not establish provider/real identity/client or production availability acceptance.
+**Notes.** R72 accepts the declared headless M2 preview; this broader parent remains blocked on production/lifecycle contracts. R73's actual9298 SQL core keeps OLD a7f5 and subsequent source-only ec0f collector correction distinct. Same-ID clinical restore is boundedly accepted in the later operation-window family; identity/credential import remains OPEN/UNSUPPORTED. Operator activity vs maintenance state is an unresolved design boundary; full resource eligibility is not accepted. SQL artifact/row fidelity, current synthetic authority and cancellation/execution controls do not establish provider/real identity/client or production availability acceptance. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT- OWNERSHIP-OPS and DEPLOY-TRUST-PROBES; the operator activity/resource policy stays an open decision in m5-m6-decision-list.md. Gates and evidence retained.
 
 ### `TEN-LAB` &mdash; Two-tenant entries HTTP lab on PostgreSQL
 
@@ -8639,7 +8651,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `codex/m5-m6-completion-acceptance-20261107` |
 | base | `main@53cda1759` |
@@ -8670,13 +8682,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/architecture-seams-execution-plan-2026-11-05.md`
 - `docs/30-design/tenancy/multitenant-delivery-roadmap.md`
 
-**Notes.** R73 keeps actual PostgreSQL f4e3/353 and joined-role b6bb executions distinct. Durable same-identity retry, original suppression expiry, private plugin ACK, current recipient/config authority, cold committed control clears and unchanged client behavior are measured under the declared synthetic reference boundary. A failed clinical cycle cannot create an ordinary clinical request; independently authorized committed controls can still create clear requests. Native six-domain DATA comparisons preserve producer identity/time/reply semantics. Recorded gates replace old leaf reruns; R62/R67/R68 retain their original historical attribution. The joined R73 criterion disposition promotes the functional one-host M5 reference, not a component gate alone. This broader parent remains in progress; default role/provider enablement, clinical/device delivery, capacity and M6 are separate.
+**Notes.** R73 keeps actual PostgreSQL f4e3/353 and joined-role b6bb executions distinct. Durable same-identity retry, original suppression expiry, private plugin ACK, current recipient/config authority, cold committed control clears and unchanged client behavior are measured under the declared synthetic reference boundary. A failed clinical cycle cannot create an ordinary clinical request; independently authorized committed controls can still create clear requests. Native six-domain DATA comparisons preserve producer identity/time/reply semantics. Recorded gates replace old leaf reruns; R62/R67/R68 retain their original historical attribution. The joined R73 criterion disposition promotes the functional one-host M5 reference, not a component gate alone. This broader parent remains in progress; default role/provider enablement, clinical/device delivery, capacity and M6 are separate. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN; provider/device delivery stays out of the preview (first-channel decision). Gates and evidence retained.
 
 ### `MT-IDENTITY-PLAN` &mdash; Human identity, tenant access grants and delegated consent plan
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `codex/shared-oidc-sessions-20261107` |
 | base | `main@28671cb4a` |
@@ -8701,13 +8713,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/owner-authority-local-verification-2026-11-05.md`
 - `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** 2026-11-07 next-batch original local branch codex/shared-oidc- sessions-20261107 is frozen at eadf41f889e48ab6762724e62d4e6c85d50fb654. Common OIDC/session, asymmetric access/current-key conformance, single aggregate CAS and PostgreSQL/RLS adapters, browser cookie/bearer and current stream consumers pass 194 explicit-file source checks. This is source- double/actual-crypto evidence, not native persistence or browser acceptance. Historical opaque 275c238c HTTPS18 remains nonconforming prototype transport evidence only. Actual signed DB/Vault/HTTPS/browser acceptance remains UNMEASURED pending the sole lead's finite reservation; current Compose candidate is unchanged. Full joined acceptance, real provider and production admission remain open.
+**Notes.** 2026-11-07 next-batch original local branch codex/shared-oidc- sessions-20261107 is frozen at eadf41f889e48ab6762724e62d4e6c85d50fb654. Common OIDC/session, asymmetric access/current-key conformance, single aggregate CAS and PostgreSQL/RLS adapters, browser cookie/bearer and current stream consumers pass 194 explicit-file source checks. This is source- double/actual-crypto evidence, not native persistence or browser acceptance. Historical opaque 275c238c HTTPS18 remains nonconforming prototype transport evidence only. Actual signed DB/Vault/HTTPS/browser acceptance remains UNMEASURED pending the sole lead's finite reservation; current Compose candidate is unchanged. Full joined acceptance, real provider and production admission remain open. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-OIDC-NATIVE (native acceptance of the frozen combined candidate) and DEPLOY-IDP-PROFILE. Gates and evidence retained.
 
 ### `T30-RESEARCH` &mdash; T3.0 part 1 - enumerate the per-tenant configuration surface
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
@@ -8739,13 +8751,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 - `docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md`
 
-**Notes.** 2026-10-27 (maintainer, recorded by session -4f): D22 decided. Tenant configuration is a per-setting operator policy (default, mode open / bounded / pinned, constraint) over owner values, under project floors enforced in code under multi (four groups: no deployment secrets, no anonymous writes, network safety, data and log safety). Secrets are a component: encrypted at rest, decrypted only by the consuming process, a logged reveal operation (initial policy: an owner session; target: re-authentication). Policy by plan or cohort and the complete settings catalogue remain open; the call-path and owner- authority decisions below supersede the earlier lab-only state. The twelve contested settings are re-stated under D22. Execution plan §2.13; census §3. Second round, same day: integrations (connectors, webhooks, push) are typed records with a credential reference and status; a change takes effect live, versioned with rollback, at the tenant's next request or loop cycle; operator policy varies per tenant by operator override, floors over all. Call path decided (maintainer, same day): owner token end to end to ns-tenant-admin, provisioning and suspension through an orchestrator on the operator plane only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and §F.1 / D17 wording contradictions the lab found are noted in place. T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it includes the remaining catalogue and per-plan policy decisions plus their acceptance harnesses. The maintainer adopted the owner authority and D22 local-public-key verification contract in owner-authority.md: separate management authentication/listener and the private operator plane are the direction. R48 accepts optional new- format data-token wiring and current authority in the actual API preview. Full human issuer/refresh-session integration, the complete settings/role catalogue, explicit delegation-ceiling enforcement and production provider enforcement remain incomplete; adopted policy does not imply those implementations or milestone completion. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).
+**Notes.** 2026-10-27 (maintainer, recorded by session -4f): D22 decided. Tenant configuration is a per-setting operator policy (default, mode open / bounded / pinned, constraint) over owner values, under project floors enforced in code under multi (four groups: no deployment secrets, no anonymous writes, network safety, data and log safety). Secrets are a component: encrypted at rest, decrypted only by the consuming process, a logged reveal operation (initial policy: an owner session; target: re-authentication). Policy by plan or cohort and the complete settings catalogue remain open; the call-path and owner- authority decisions below supersede the earlier lab-only state. The twelve contested settings are re-stated under D22. Execution plan §2.13; census §3. Second round, same day: integrations (connectors, webhooks, push) are typed records with a credential reference and status; a change takes effect live, versioned with rollback, at the tenant's next request or loop cycle; operator policy varies per tenant by operator override, floors over all. Call path decided (maintainer, same day): owner token end to end to ns-tenant-admin, provisioning and suspension through an orchestrator on the operator plane only; evidence tools/lab/tenant-config-callpath (3dd28ddaf). The D7 / D16 and §F.1 / D17 wording contradictions the lab found are noted in place. T3.0 is the largest correction owed in the programme. It does not block T3.3, which landed first; it AMENDS T3.1, T3.2 and T3.3, all marked DONE-EXCEPT. The enumeration was written and adversarially reviewed on 2026-09-15; the surface total is 277. What remains is not enumeration: it includes the remaining catalogue and per-plan policy decisions plus their acceptance harnesses. The maintainer adopted the owner authority and D22 local-public-key verification contract in owner-authority.md: separate management authentication/listener and the private operator plane are the direction. R48 accepts optional new- format data-token wiring and current authority in the actual API preview. Full human issuer/refresh-session integration, the complete settings/role catalogue, explicit delegation-ceiling enforcement and production provider enforcement remain incomplete; adopted policy does not imply those implementations or milestone completion. 2026-10-07 (session -69's T30 agent, docs/60-research/tenancy/t30-census-gate-and-schema-cred-2026-10-07.md): the census is now a gate, and 247 against 277 is measured: 247 is the union the settings layer, env.js and the README can see; 277 adds 30 names found only by parsing code (3 AWS, CI, 10 API v3, 4 WEBHOOK, 12 ADMIN/FEED). The first no- gate's differential exists; gaps (1) to (4) and J14 are covered by parsing. Gap (5) stays partly open: the gate checks PREFIX_* counts and class totals but not subgroup headings, and the T-plugin subgroup headed (97) lists 98; the spec's TREATMENTS_AUTH reconciliation sentence contradicts its own list. Not in B.2: CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in lib/server/bridge-connect-compat.js:6 on dev (gone on the seam). Closed 2026-11-09: answered by the first-preview owner surface decisions (2026-11-07) and D22; no further enumeration planned.
 
 ### `T30-AUTH` &mdash; The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `closed` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@671bc88d` |
@@ -8775,7 +8787,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 
-**Notes.** Decided 2026-09-16 (maintainer). D16 adopted whole, including the prerequisite: tenant resolution and credential verification extract to one module BEFORE the third listener exists, which lands on T30-WIRING. D17 adopted in three rows of four: devices and the data path keep a native per- tenant credential permanently (forced by D1 - an uploader cannot run an OAuth flow); Hydra deferred; D7 unchanged. Row 2 - Ory Kratos as one cohort-wide pool for human identity - is direction of travel, NOT adopted, because every Ory claim behind it is read-derived and a shared identity pool is irreversible once identities exist. It is gated on T30-ORY-PROOF. The deployment shape is settled: ONE Kratos and ONE Hydra for the whole cohort, unified auth for Nightscout tenants, not a Kratos tenant per Nightscout tenant - so Ory OSS being single-tenant (its multi-tenancy is the paid boundary) does not bind us. Other findings: Nocturne uses no Ory and built identity in-house; this project shipped an Ory integration once and stopped one component short of finishing it; and, measured after the decision (research document section 3.5), Nocturne's identity plane is deployment-scoped too, arrived at independently - the nearest thing to corroboration this decision has.
+**Notes.** Decided 2026-09-16 (maintainer). D16 adopted whole, including the prerequisite: tenant resolution and credential verification extract to one module BEFORE the third listener exists, which lands on T30-WIRING. D17 adopted in three rows of four: devices and the data path keep a native per- tenant credential permanently (forced by D1 - an uploader cannot run an OAuth flow); Hydra deferred; D7 unchanged. Row 2 - Ory Kratos as one cohort-wide pool for human identity - is direction of travel, NOT adopted, because every Ory claim behind it is read-derived and a shared identity pool is irreversible once identities exist. It is gated on T30-ORY-PROOF. The deployment shape is settled: ONE Kratos and ONE Hydra for the whole cohort, unified auth for Nightscout tenants, not a Kratos tenant per Nightscout tenant - so Ory OSS being single-tenant (its multi-tenancy is the paid boundary) does not bind us. Other findings: Nocturne uses no Ory and built identity in-house; this project shipped an Ory integration once and stopped one component short of finishing it; and, measured after the decision (research document section 3.5), Nocturne's identity plane is deployment-scoped too, arrived at independently - the nearest thing to corroboration this decision has. Closed 2026-11-09: decided by the shared optional OIDC direction (generic adapter, Authentik intended reference, Kratos fallback). The Ory proof stays as evidence; nothing to push.
 
 ### `T30-SCHEMA-CRED` &mdash; T3.0 part 2a - device and data-path credential storage in platform.sql
 
@@ -8816,7 +8828,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `-` |
 | base | `seam/t1-2-storage-interface@81a1f6ce` |
@@ -8843,7 +8855,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md`
 - `docs/60-research/tenancy/auth-plane-ory-vs-inhouse-2026-09-16.md`
 
-**Notes.** 2026-10-27 (session -4f's agent; scope and secrets re-checked by -4f): built as a spec plus PostgreSQL lab in this repository, to port to dev with ST- PG/TEN-RESOLVE (maintainer: this repo or the seam line). Spec docs/30-design/tenancy/tenant-config-schema-2026-10-27.md; lab tools/lab/tenant-config-schema/ (migrations 0001-0007, 0001 = the seam's platform.sql at 81a1f6ce unchanged); 57 tests green, 72 of 72 controls red, PostgreSQL 16.15, as a non-superuser application role. The §A.2 partial-mmol hazard reproduced on the old shape and is refused by the new one. Migration tooling plan (both stores): docs/60-research/tenancy/migration-tooling- plan-2026-10-27.md, umzug measured (needs one transaction per migration plus ledger row, and an advisory lock). Eight mismatches (spec §10b; M1 fixed) and 17 open questions (spec §11) for the maintainer. Two different blockers. T30-RESEARCH blocks the configuration table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY-PROOF blocks the human- identity columns, because D17 row 2 is direction of travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here; if it does not, these tables carry credentials, recovery and MFA. Those are different schemas. If this item is claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns. 2026-10-07: T30-ORY-PROOF is done and its condition held. The identity half still waits on two maintainer decisions: adopting D17 row 2, and the cookie scope (apex cookie, or a per-tenant OAuth client, which adds tenants.oauth_client_id). Under row 2, tenant_members.subject_id holds the Kratos identity UUID with no foreign key, and no credential, recovery or MFA columns are ours (docs/60-research/tenancy/ory-proof-2026-10-07.md §7). D17 row 2 adopted in principle, gated, and its cookie scope decided (maintainer, 2026-10-12): E, the apex cookie behind a hardened edge (docs/60-research/tenancy/ory-cookie-variants-2026-10-12.md). Hydra stays deferred, so the identity half needs no per-tenant OAuth client column. The edge passes a short-lived assertion bound to the tenant, which the exchange verifies. Before real identities exist, four things must be measured over https behind the production edge: the cookie strip, the origin check on writes and WebSocket upgrades, every path to a tenant going through the edge, and the compliance question having an owner.
+**Notes.** 2026-10-27 (session -4f's agent; scope and secrets re-checked by -4f): built as a spec plus PostgreSQL lab in this repository, to port to dev with ST- PG/TEN-RESOLVE (maintainer: this repo or the seam line). Spec docs/30-design/tenancy/tenant-config-schema-2026-10-27.md; lab tools/lab/tenant-config-schema/ (migrations 0001-0007, 0001 = the seam's platform.sql at 81a1f6ce unchanged); 57 tests green, 72 of 72 controls red, PostgreSQL 16.15, as a non-superuser application role. The §A.2 partial-mmol hazard reproduced on the old shape and is refused by the new one. Migration tooling plan (both stores): docs/60-research/tenancy/migration-tooling- plan-2026-10-27.md, umzug measured (needs one transaction per migration plus ledger row, and an advisory lock). Eight mismatches (spec §10b; M1 fixed) and 17 open questions (spec §11) for the maintainer. Two different blockers. T30-RESEARCH blocks the configuration table, because the settings surface is what that item enumerates and what a tenant may override versus what the hoster pins is a decision it still defers. T30-ORY-PROOF blocks the human- identity columns, because D17 row 2 is direction of travel and not adopted: if one cohort-wide Kratos pool lands, human identity lives in Kratos with only a subject reference here; if it does not, these tables carry credentials, recovery and MFA. Those are different schemas. If this item is claimed before T30-ORY-PROOF resolves, do the configuration table and stop at the identity columns. 2026-10-07: T30-ORY-PROOF is done and its condition held. The identity half still waits on two maintainer decisions: adopting D17 row 2, and the cookie scope (apex cookie, or a per-tenant OAuth client, which adds tenants.oauth_client_id). Under row 2, tenant_members.subject_id holds the Kratos identity UUID with no foreign key, and no credential, recovery or MFA columns are ours (docs/60-research/tenancy/ory-proof-2026-10-07.md §7). D17 row 2 adopted in principle, gated, and its cookie scope decided (maintainer, 2026-10-12): E, the apex cookie behind a hardened edge (docs/60-research/tenancy/ory-cookie-variants-2026-10-12.md). Hydra stays deferred, so the identity half needs no per-tenant OAuth client column. The edge passes a short-lived assertion bound to the tenant, which the exchange verifies. Before real identities exist, four things must be measured over https behind the production edge: the cookie strip, the origin check on writes and WebSocket upgrades, every path to a tenant going through the edge, and the compliance question having an owner. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN (tenant-local typed settings accepted in R72). Gates and evidence retained.
 
 ### `MIG-VV` &mdash; Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB
 
@@ -8877,7 +8889,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `workspace/multitenant-20261102` |
 | base | `official/dev@61eb3733` |
@@ -8906,7 +8918,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/60-research/tenancy/migration-tooling-plan-2026-10-27.md`
 - `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Parallel 562f6206 adds replica-set-only transactional scalar-set steps with an atomic shared fence and renewable server-time lease. Data and ledger commit together. Mutations removing the fence/data session fail; restored checks pass. 466 files classify; lint has zero errors/two path warnings. Ready to integrate, not full MIG-RUNNER or standalone support. No entries, serving, dependencies or existing migration checksum changes. Follow-up 436ef543 is tests/fixture/README only: expired renewal after actual database pause refuses without data or reacquisition; primary SIGKILL/restart rolls back uncommitted state or preserves exact committed ledger, followed by new-process retry. 56 combined/15 MongoDB checks pass; expiry-removal and split-data-session mutations fail. Both runner commits are now incorporated at peer tip 436ef543; integrated acceptance remains pending in these records. No HA/host/power recovery claim. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
+**Notes.** 2026-10-27: confirmed by the maintainer after MIG-VV, with the transaction rule (transactional: true migrations use a transaction where the server supports one; every MongoDB step stays safe to re-run). Buildable now that MIG-VV is done. Maintainer continuation 2026-11-02: explicit operator migration command for hosted deployments; serving roles check compatibility only. This does not introduce or change default single-site boot behavior in v16. Local 68828b8d implements explicit PG operator up/status/check with Umzug 3.8.3; no production catalogue. Direct endpoint is operator-attested, not automatically detected. 39 checks pass; ESLint has zero errors and two filesystem-path warnings. MongoDB/serving integration remains open. Parallel 562f6206 adds replica-set-only transactional scalar-set steps with an atomic shared fence and renewable server-time lease. Data and ledger commit together. Mutations removing the fence/data session fail; restored checks pass. 466 files classify; lint has zero errors/two path warnings. Ready to integrate, not full MIG-RUNNER or standalone support. No entries, serving, dependencies or existing migration checksum changes. Follow-up 436ef543 is tests/fixture/README only: expired renewal after actual database pause refuses without data or reacquisition; primary SIGKILL/restart rolls back uncommitted state or preserves exact committed ledger, followed by new-process retry. 56 combined/15 MongoDB checks pass; expiry-removal and split-data-session mutations fail. Both runner commits are now incorporated at peer tip 436ef543; integrated acceptance remains pending in these records. No HA/host/power recovery claim. Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to BFQ-CAP02 (populated loader) and MT-KEY-RETENTION (destroy/after-window on the migration surface). Gates and evidence retained.
 
 ### `T30-ORY-PROOF` &mdash; Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
 
@@ -8945,7 +8957,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/rest-integration-20261105` |
 | base | `official/dev@4a482627` |
@@ -8978,13 +8990,13 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/remedial/rc-16.0.0-integration-record.md`
 - `docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md`
 
-**Notes.** 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts optional current subject-reader clamping in one SQL snapshot per selected operation; R63 measured three actual oref0 subject-token uploads matching reference and ceiling tightening refusing with no effects; the selected mode stays unselected. The rest-authority and owner-local-token gates keep their native pins (d4570e58, 3d5eac19); frozen-head replay UNMEASURED. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. R48 accepts actual optional new-format data-token wiring through the configured API executable with local public-key verification and current PostgreSQL authority. This is local application acceptance, not complete human/refresh-session issuance, management listener admission, full settings/role catalogue, delegation-ceiling or production provider enforcement, nor milestone promotion. Current 2026-11-04: R40 accepts derived reads and source-pinned client patterns with parent-run cumulative evidence at published ded254b9; PR title/description read back correctly; current-head CI and CodeQL succeeded at the visualization read-back. Archived authority probe is a bounded PASS with NON-VACUOUS control; complete production runtime is open. Test-only credential fidelity is incorporated; no supported credential importer or atomic tenant activation is implied. This in-progress claim does not complete TEN-RESOLVE dependencies or promote M2/M3; production provisioning, runtime identity and listeners remain open. No OIDC, client protocol or role enablement is inferred. 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS-CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current-dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144.
+**Notes.** 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts optional current subject-reader clamping in one SQL snapshot per selected operation; R63 measured three actual oref0 subject-token uploads matching reference and ceiling tightening refusing with no effects; the selected mode stays unselected. The rest-authority and owner-local-token gates keep their native pins (d4570e58, 3d5eac19); frozen-head replay UNMEASURED. 2026-11-05 maintainer adopted owner authority and the D22 local-public-key verification amendment; owner-authority.md owns permission/delegation ceilings, separate management authentication, human token/session limits and failure semantics. R48 accepts actual optional new-format data-token wiring through the configured API executable with local public-key verification and current PostgreSQL authority. This is local application acceptance, not complete human/refresh-session issuance, management listener admission, full settings/role catalogue, delegation-ceiling or production provider enforcement, nor milestone promotion. Current 2026-11-04: R40 accepts derived reads and source-pinned client patterns with parent-run cumulative evidence at published ded254b9; PR title/description read back correctly; current-head CI and CodeQL succeeded at the visualization read-back. Archived authority probe is a bounded PASS with NON-VACUOUS control; complete production runtime is open. Test-only credential fidelity is incorporated; no supported credential importer or atomic tenant activation is implied. This in-progress claim does not complete TEN-RESOLVE dependencies or promote M2/M3; production provisioning, runtime identity and listeners remain open. No OIDC, client protocol or role enablement is inferred. 2026-11-02: current-dev initial slice follows TEN-RESOLVE's reviewed minimum config and MT-SECRETS-CONTRACT, not completion of the full historical catalogue. Port T30-SCHEMA-CRED's evidence without exporting signing keys; preserve per-tenant legacy root/subject/socket forms. Human login/access grants are separately planned. Old seam references below are historical implementation guidance, not current-dev line refs. Line references for the implementer (GT3, crm-seam): the plan's amendment table cites tenant-context.js:137 as T3.3's site, but L137 is a comment stating the rejected reasoning; the mechanism is PER_TENANT_ENV_KEYS at L143 and the copy loop at L278 (`if (PER_TENANT_ENV_KEYS.includes(key)) continue;`). enclave.js's key read is at line 30. tenant-middleware.js's tenantClaim opens at L139 with verifyJWT at L144, so the range to change is 139-144. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN. Gates and evidence retained.
 
 ### `T30-TENANT-ADMIN` &mdash; cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/owner-subject-http-20261105` |
 | base | `CRM-R41@94c57f1f` |
@@ -9015,7 +9027,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`
 
-**Notes.** Current documentation separates logical REST modules, listeners and deployed processes. Owner REST may co-locate with API under D16 audience/bind rules; operator restore execution remains a private CLI/job/worker boundary. Operator activity/resource policy is under review, not an implemented owner lifecycle flag. Earlier dated checkpoints below retain their captured scope. R70 accepts bounded actual4cd native owner9 and two physical semantic controls, with the first lifecycle-classifier failure preserved. The optional reader-clamp mode is withdrawn by maintainer decision; writer ownerPolicy fences remain. New e2 candidate is in comprehensive verification; no M2 promotion or human lifecycle acceptance. 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts the bounded proposed-grant policy and optional subject-reader clamping; an actual cgmsim root upload gets 503 under selected mode (R63) and awaits a disposition; DELETE policy, human issuer/refresh and production owner composition remain open. The management gate keeps its native pin d4570e58; frozen-head replay UNMEASURED. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 selected ownerPolicy accepted native17f9a457; canonical bounded owner-policy runtime gate and four controls live on MT-CONFIG-MIN. R54 cumulative acceptance adds no complete owner/listener admission. Current 2026-11-06: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. R53 adds explicitly selected ownerPolicy proposed-grant enforcement for REST37. CLI binding, new identity provider and production owner listener remain unimplemented; selected store/factory acceptance is not full D16 completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns- api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
+**Notes.** Current documentation separates logical REST modules, listeners and deployed processes. Owner REST may co-locate with API under D16 audience/bind rules; operator restore execution remains a private CLI/job/worker boundary. Operator activity/resource policy is under review, not an implemented owner lifecycle flag. Earlier dated checkpoints below retain their captured scope. R70 accepts bounded actual4cd native owner9 and two physical semantic controls, with the first lifecycle-classifier failure preserved. The optional reader-clamp mode is withdrawn by maintainer decision; writer ownerPolicy fences remain. New e2 candidate is in comprehensive verification; no M2 promotion or human lifecycle acceptance. 2026-11-06 (R62/R64): published #8898 head 83582e87 accepts the bounded proposed-grant policy and optional subject-reader clamping; an actual cgmsim root upload gets 503 under selected mode (R63) and awaits a disposition; DELETE policy, human issuer/refresh and production owner composition remain open. The management gate keeps its native pin d4570e58; frozen-head replay UNMEASURED. R54 local cumulative35903069 B338+A e5+C17f accepted full7144/80pending/0failure, browser684/settings12/freshprcheckOK; native gate captures retain their pins. No clock/profile2ee join, milestone promotion or expanded production scope. R53 selected ownerPolicy accepted native17f9a457; canonical bounded owner-policy runtime gate and four controls live on MT-CONFIG-MIN. R54 cumulative acceptance adds no complete owner/listener admission. Current 2026-11-06: R42 accepts the separately authenticated standalone subject facade and real persistence/current-authority HTTP tests. R53 adds explicitly selected ownerPolicy proposed-grant enforcement for REST37. CLI binding, new identity provider and production owner listener remain unimplemented; selected store/factory acceptance is not full D16 completion. D16 (maintainer, 2026-09-16) set three listeners; the topology was decided 2026-10-16 (maintainer): a second bound socket inside ns- api, movable to its own process later without changing the contract (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it. Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN and MT-OWNERSHIP-OPS. Gates and evidence retained.
 
 ### `T31-REM` &mdash; T3.1 remainder - per-tenant signing key replaces the install-wide one
 
@@ -9051,7 +9063,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `closed` |
 | repo | `cgm-remote-monitor` |
 | branch | `seam/t1-2-storage-interface` |
 | base | `origin/chore/nightscout-modernization@0a4109f6` |
@@ -9074,7 +9086,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/60-research/remedial/gt3-register-truth-2026-09-15.md`
 
-**Notes.** Also still open from T3.2's own "not done" list: two-role deployments are untested; logical-slot lag arithmetic has no producer until Phase 4; the admin plane is PostgreSQL-only by construction with no export for a single-tenant MongoDB deployment; reserved labels (www, api, admin) and xn-- prefixes are flagged, not enforced. 2026-10-07: the credential half is on seam/t30-schema- cred 65ce54b9 (T30-SCHEMA-CRED); the config half remains with T30-SCHEMA- CONFIG.
+**Notes.** Also still open from T3.2's own "not done" list: two-role deployments are untested; logical-slot lag arithmetic has no producer until Phase 4; the admin plane is PostgreSQL-only by construction with no export for a single-tenant MongoDB deployment; reserved labels (www, api, admin) and xn-- prefixes are flagged, not enforced. 2026-10-07: the credential half is on seam/t30-schema- cred 65ce54b9 (T30-SCHEMA-CRED); the config half remains with T30-SCHEMA- CONFIG. Closed 2026-11-09 as superseded: signing keys and secrets live in the secrets component (R30/R48); a platform.sql surface check can return as a static gate on MT-M6A-JOIN if wanted.
 
 ### `T33-REM` &mdash; T3.3 remainder - the shared enclave, and language/levels per tenant
 
@@ -10684,6 +10696,352 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
 **Notes.** Source implementation is not started; branch name is proposed, not created. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.
+
+### `MT-OIDC-NATIVE` &mdash; M6a: run the nine-stage owner/OIDC native matrix through a disposable harness
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/owner-oidc-combined-20261107` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `/tmp/crm-owner-oidc-combined-20261107` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Test infrastructure only: a harness that starts PostgreSQL, Mongo and Vault containers by digest, provisions the fixture identities, runs the nine prepared stages (vault-single, vault-multi, mongo-sessions, pg-sessions, mongo-http, owner-consumer, owner-authority, owner-browser, owner- compatibility) against the frozen candidate c0a67b69, and removes the containers. No serving, policy, migration or client change.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** test infrastructure
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until the harness lands. It replaces the grant/reservation driver in externals/work/owner-oidc-combined-native-prep-20261107 (run.cjs) while keeping its stage oracles, probe-checks.json and mutant controls. The gate becomes `node tools/queue/gates/oidc-native-recorded.js <report>` reading reports/tenancy/oidc-native-<date>/summary.json, with a control that feeds it a summary with one family missing.
+
+**Evidence.**
+
+- `reports/tenancy/shared-oidc-sessions-2026-11-07/README.md`
+- `docs/30-design/tenancy/owner-authority.md`
+
+**Notes.** Decision 2026-11-09: disposable harness, not a grant ceremony. Source is complete and frozen (194 explicit-file checks, independent crypto audit). The nine stages declare 960s active + 135s teardown. Local resources present on 2026-11-09: Docker 29.1.3, postgres 16-alpine and hashicorp/vault images at the compose.yaml digests, mongo 7/8 images, Google Chrome, Node 22, oref0 at the pinned commit.
+
+### `MT-M6A-JOIN` &mdash; M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/dev@4a482627bfdafb1fef8dcbe0ac6c484811cae563` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; security review of the identity surface |
+| blocks on | `MT-OIDC-NATIVE` |
+
+**Blast radius.** Draft PR #8898 head moves from ed2ced00 to the joined candidate. Full seven- tier, default-browser, enabled-corpus, pinned-client and prcheck must be re- run on the new frozen head; the ed2 campaign does not transfer. Also clears the CodeQL alert on the private IPC dispatch (lib/server/realtime/ipc.js, bounded own-property lookup; restructure to a Map or dismiss with justification). The second CodeQL alert is on code identical to official/dev and is not this PR's.
+
+**What an operator sees.** Optional sign-in with an identity provider for people managing a Nightscout site, in both single-site and multitenant modes. Off unless enabled. Uploaders and followers keep their existing credentials.
+
+**Why `minor`.** opt-in feature on a dormant preview branch
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until MT-OIDC-NATIVE passes. Then: full/default-browser/enabled-corpus/ pinned-client on the joined head and tools/review/prcheck/prcheck.sh last.
+
+**Evidence.**
+
+- `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
+
+**Notes.** Owns the coherent join that closes M6a. Taking the PR out of draft, review and merge remain the maintainer's actions.
+
+### `MT-OWNERSHIP-OPS` &mdash; M6b: operator-assisted ownership add, transfer and recovery
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/ownership-ops` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| blocks on | `MT-M6A-JOIN` |
+
+**Blast radius.** Headless operator API on the private plane: add co-owner, transfer, recover. Tenant-bound, audited; concurrent changes cannot orphan a tenant or silently replace an owner; unauthorized operations have no effect; recovery reveals no secret.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** new private operator operations on the preview
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: SQL/HTTP family with a race control (two transfers, one wins, audit shows both attempts) and a foreign-authority control (no effect).
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Adopted policy: preview-operator-assisted-ownership (2026-11-07). Self-service co-owner/transfer is not a preview gate.
+
+### `MT-KEY-RETENTION` &mdash; M6b: 30-day retained-key destruction and after-window refusal
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/key-retention` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+| blocks on | `MT-M6A-JOIN` |
+
+**Blast radius.** Deletion ceremony tail: the export artifact must hold every ciphertext/key reference before secret/audit rows are removed; keys retained 30 days; an operator destroy; restore refused after the window.
+
+**What an operator sees.** After a site is deleted its encrypted data can be restored by the operator for 30 days; after that the keys are destroyed and the data cannot be recovered.
+
+**Why `minor`.** lifecycle completion on the preview
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: destroy then restore refuses; restore inside the window succeeds; artifact missing one key reference refuses deletion (control).
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Builds on the export/delete work recorded 2026-11-06 (HANDOFF-tenant-export- delete).
+
+### `MT-VAULT-TOKEN-FILE` &mdash; M6c: read the Vault token from a sink file per call (Vault Agent compatibility)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/vault-token-file` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer |
+
+**Blast radius.** Three getToken call sites (lib/server/serve/preview-config.js, lib/human- session/access-config.js, lib/server/serve/owner-credential-config.js) gain a `tokenFile` alternative to `tokenEnv`, read at call time. Exactly one of the two must be configured. No Transit client change.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `minor`.** additive configuration on the preview
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: unit test that a rewritten sink file is picked up by the next call, that both-set and neither-set refuse at config load, and that an unreadable file fails the operation without falling back to an env token (control).
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decision vault-agent-sidecar (2026-11-09). Small core change; the sidecar is DEPLOY-VAULT-AGENT.
+
+### `DEPLOY-VAULT-AGENT` &mdash; M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-deploy` |
+| branch | `main` |
+| base | `main@75f0f61` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-VAULT-TOKEN-FILE` |
+
+**Blast radius.** bindings/compose: a `vault-agent` service with AppRole auto-auth, a token sink on a shared read-only volume mounted into api/realtime/evaluator/tenant-admin, a Transit policy per tenant key; bootstrap issues the AppRole, not per-tenant root tokens. Probes: renewal after TTL, seal and unseal, AppRole secret rotation.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** deployment repository
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: `npm test` in nightscout-deploy plus the Compose smoke with a short token TTL showing renewal, and a control that stops the agent and shows the next Transit call fail closed.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md`
+
+**Notes.** Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no service-login adapter is written in core.
+
+### `DEPLOY-IDP-PROFILE` &mdash; M6c: Authentik identity-provider profile over HTTPS with synthetic people
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-deploy` |
+| branch | `main` |
+| base | `main@75f0f61` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-M6A-JOIN` |
+
+**Blast radius.** providers/: an Authentik profile for the Compose binding (image by digest, TLS, synthetic users), wired to the owner HTTP routes; login, renewal, logout and provider-outage cases. Kratos fallback profile only if the Authentik proof fails.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** deployment repository
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: browser login/renewal/logout against the Compose edge; provider stopped mid-session keeps existing access until expiry and refuses new login (adopted outage decision); control: wrong issuer refuses.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decision deployment-identity-generic-adapter-authentik-reference (2026-11-07).
+
+### `DEPLOY-TRUST-PROBES` &mdash; M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-deploy` |
+| branch | `main` |
+| base | `main@75f0f61` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; security review |
+| blocks on | `DEPLOY-VAULT-AGENT` |
+
+**Blast radius.** edge/: probes for forged X-Resolved-Tenant from an untrusted peer, host/selector conflict, unknown tenant, socket upgrade through the edge, client IP, and Vault or edge outage; a trust record filled from edge/trust- record.template.md.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** deployment repository
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: every probe refuses as specified against the live binding; control: add the probe host to the trusted-peer list and the spoof is accepted.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decision deployment-admission-probes-and-trust-record (2026-11-07): admission is per deployment by record plus probes.
+
+### `MT-CONNECTOR-SYNC` &mdash; M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-connect` |
+| branch | `main` |
+| base | `main@HEAD` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-M6A-JOIN` |
+
+**Blast radius.** No connector code change expected: an existing single-site connector configured against a tenant alias with a reader credential; independent stored/history oracle on the destination; revocation stops the pull.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** lab
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: pull succeeds and matches the tenant's entries; control: revoke the reader and the next pull is refused with no new rows.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decision first-preview-no-push-provider (2026-11-07): outbound first. Inbound tenant-side connector is a later contract.
+
+### `MT-ENVELOPE` &mdash; M7: declare the operating envelope, then measure it
+
+| | |
+|---|---|
+| state (claimed) | `needs-decision` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@9029fb6dd` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Human input first: active/idle tenant counts, rows/bytes, ingestion and reconnect bursts, retention, freshness and recovery targets. Then one benchmark window with an independent stored-count oracle.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** measurement
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED by design until the envelope is declared; no number is invented from functional passes.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/m5-m6-decision-list.md`
+
+**Notes.** Was part of M6; moved to M7 on 2026-11-09. Required before a production cohort, not before the dormant alpha.
+
+### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@9029fb6dd` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-M6A-JOIN` |
+
+**Blast radius.** Emulator rig running the pinned Android uploader/follower against a tenant alias; iOS stays outside the automated lab.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** lab
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: upload and follow against tenant A, refused against tenant B with A's credential (control).
+
+**Evidence.**
+
+- `docs/30-design/tenancy/m4-client-binary-lab-packet-2026-11-06.md`
+
+**Notes.** Retained from batch C; moved to M7 on 2026-11-09.
+
+### `DEPLOY-K8S-BINDING` &mdash; M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-deploy` |
+| branch | `main` |
+| base | `main@75f0f61` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `DEPLOY-TRUST-PROBES` |
+
+**Blast radius.** bindings/kubernetes: ordinary resources only; equivalence table against the public-name contract; no autoscaling or dynamic membership.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** deployment repository
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: binding equivalence table satisfied on a kind/k3s cluster; control: two Pods of one cohort refuse to both serve.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
+
+**Notes.** Deploy roadmap wave 4.
 
 ---
 

@@ -144,7 +144,7 @@ items:
     branch: workspace/multitenant-20261102
     base: official/dev@61eb3733
     worktree: externals/work/crm-multitenant-20261102
-    state: in-progress
+    state: closed
     blast_radius: >
       PG connection/transaction binding, entries adapter, emitted DDL and
       backend-selectable tests. M0 foundation is not full M1 adapter acceptance.
@@ -296,13 +296,14 @@ items:
       connection suites pass 45. Import, full API/runtime compatibility and
       promotion remain open.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN (REST/backend parity on the joined head) and BFQ-CAP02 (loader). Gates and evidence retained.
   - id: MT-CONFIG-MIN
     title: "Reviewed initial tenant configuration and headless owner API contract"
     parcel: tenancy
     repo: rag-nightscout-ecosystem-alignment
     branch: records/multitenant-roadmap-20261102
     base: main@28671cb4a
-    state: in-progress
+    state: closed
     blast_radius: >
       Reviewed catalogue for units/timezone/display/authorization policy;
       effective-value provenance, typed/versioned writes, invalidation,
@@ -373,6 +374,7 @@ items:
       complete configuration/runtime invalidation remain open. Published
       preview is still ded254b9. No owner/data/socket listener enablement.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN (owner API joined) and MT-OWNERSHIP-OPS. Gates and evidence retained.
   - id: MT-SECRETS-CONTRACT
     title: "Tenant-bound secrets contract and early Vault Transit integration proof"
     parcel: tenancy
@@ -380,7 +382,7 @@ items:
     branch: workspace/multitenant-20261102
     base: official/dev@61eb3733
     worktree: externals/work/crm-multitenant-20261102
-    state: in-progress
+    state: closed
     blast_radius: >
       Synthetic Vault API/ACL/key-lifecycle lab; sign/verify/encrypt/decrypt
       contract, tenant-bound references, named consumers, rotation, outage
@@ -457,6 +459,7 @@ items:
       claim. Fast-forward the isolated worktree before the next bounded
       MT-CONFIG-MIN/current-authority slice; keep entries/runtime untouched.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT and MT-KEY-RETENTION. Gates and evidence retained.
   - id: TEN-RESOLVE
     title: "Current-dev tenant resolution and private operator lifecycle"
     parcel: tenancy
@@ -464,7 +467,7 @@ items:
     branch: workspace/multitenant-20261102
     base: official/dev@61eb3733
     worktree: externals/work/crm-multitenant-20261102
-    state: blocked
+    state: closed
     blast_radius: >
       Host-to-tenant resolution, scoped configuration and private operator
       provision/suspend/export/delete. No public signup or human IdP required.
@@ -513,6 +516,7 @@ items:
       current synthetic authority and cancellation/execution controls do not
       establish provider/real identity/client or production availability acceptance.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-OWNERSHIP-OPS and DEPLOY-TRUST-PROBES; the operator activity/resource policy stays an open decision in m5-m6-decision-list.md. Gates and evidence retained.
   - id: TEN-LAB
     title: "Two-tenant entries HTTP lab on PostgreSQL"
     parcel: tenancy
@@ -566,7 +570,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: codex/m5-m6-completion-acceptance-20261107
     base: main@53cda1759
-    state: in-progress
+    state: closed
     blast_radius: >
       R73 recorded bounded current-state/evaluator/alarm/request and joined
       API/realtime/consumer/browser evidence; broader operating contracts remain.
@@ -619,6 +623,7 @@ items:
       not a component gate alone. This broader parent remains in progress; default
       role/provider enablement, clinical/device delivery, capacity and M6 are separate.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN; provider/device delivery stays out of the preview (first-channel decision). Gates and evidence retained.
   - id: MT-NEXTGEN-PLAN
     title: "Parallel registration, intent/command execution and delegation roadmap"
     parcel: platform
@@ -652,7 +657,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: codex/shared-oidc-sessions-20261107
     base: main@28671cb4a
-    state: in-progress
+    state: closed
     blast_radius: >
       Interchangeable identity-provider assertion/session validation, provider
       and subject binding, access grants, tenant-bound token exchange,
@@ -685,6 +690,7 @@ items:
       the sole lead's finite reservation; current Compose candidate is unchanged.
       Full joined acceptance, real provider and production admission remain open.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-OIDC-NATIVE (native acceptance of the frozen combined candidate) and DEPLOY-IDP-PROFILE. Gates and evidence retained.
 # ---------------------------------------------------------------------------
 # PARCEL: phase0
 # ---------------------------------------------------------------------------
@@ -6296,7 +6302,7 @@ items:
     branch: ""
     base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: needs-decision
+    state: closed
     blast_radius: >
       A design report. Every SETTINGS_* variable, every plugin credential, which
       are secrets and which are not, what a tenant may override versus what the
@@ -6413,6 +6419,7 @@ items:
       CUSTOMCONNSTR_DEXCOM_BRIDGE_USE_LEGACY, a direct read in
       lib/server/bridge-connect-compat.js:6 on dev (gone on the seam).
 
+      Closed 2026-11-09: answered by the first-preview owner surface decisions (2026-11-07) and D22; no further enumeration planned.
   - id: T30-AUTH
     title: "The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-interface split"
     parcel: tenancy
@@ -6420,7 +6427,7 @@ items:
     branch: main
     base: main@671bc88d
     worktree: .
-    state: ready-to-push
+    state: closed
     blast_radius: >
       No code; the deliverable is a document in this repository. Decided
       2026-09-16: D16 adopted whole, D17 adopted in three rows of four. Recorded
@@ -6498,6 +6505,7 @@ items:
       deployment-scoped too, arrived at independently - the nearest thing to
       corroboration this decision has.
 
+      Closed 2026-11-09: decided by the shared optional OIDC direction (generic adapter, Authentik intended reference, Kratos fallback). The Ory proof stays as evidence; nothing to push.
   - id: T30-SCHEMA-CRED
     title: T3.0 part 2a - device and data-path credential storage in platform.sql
     parcel: tenancy
@@ -6590,7 +6598,7 @@ items:
     branch: ""
     base: seam/t1-2-storage-interface@81a1f6ce
     worktree: externals/work/crm-seam
-    state: in-progress
+    state: closed
     blast_radius: >
       lib/admin/platform.sql. D15's per-tenant configuration table, which hosted
       entrypoints read instead of the process environment, over the 277-name
@@ -6670,6 +6678,7 @@ items:
       origin check on writes and WebSocket upgrades, every path to a tenant
       going through the edge, and the compliance question having an owner.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN (tenant-local typed settings accepted in R72). Gates and evidence retained.
   - id: MIG-VV
     title: "Verify the migration runner choice: umzug's MongoDB adapter on a replica set and on dev's oldest supported MongoDB"
     parcel: tenancy
@@ -6728,7 +6737,7 @@ items:
     branch: workspace/multitenant-20261102
     base: official/dev@61eb3733
     worktree: externals/work/crm-multitenant-20261102
-    state: in-progress
+    state: closed
     pr: []
     blast_radius: >
       A new `migrate` subcommand of bin/nightscout.js (D21), lib/storage
@@ -6809,6 +6818,7 @@ items:
 
       Adopted provisionally by the maintainer, 2026-10-27, pending MIG-VV.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to BFQ-CAP02 (populated loader) and MT-KEY-RETENTION (destroy/after-window on the migration surface). Gates and evidence retained.
   - id: T30-ORY-PROOF
     title: Stand up Kratos 1.x and Hydra 2.x and try to make one pool serve two tenants
     parcel: tenancy
@@ -6900,7 +6910,7 @@ items:
     branch: codex/rest-integration-20261105
     base: official/dev@4a482627
     worktree: externals/work/crm-codex-rest-integration-20261105
-    state: in-progress
+    state: closed
     blast_radius: >
       Explicit API preview credential/exchange composition, version-aware
       authentication, secrets legacy verification, persisted current
@@ -6985,6 +6995,7 @@ items:
       tenantClaim opens at L139 with verifyJWT at L144, so the range to change
       is 139-144.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN. Gates and evidence retained.
   - id: T30-TENANT-ADMIN
     title: "cgm-remote-monitor: the ns-tenant-admin listener, a second bound socket inside ns-api (D16)"
     parcel: tenancy
@@ -6992,7 +7003,7 @@ items:
     branch: codex/owner-subject-http-20261105
     base: CRM-R41@94c57f1f
     worktree: externals/work/crm-codex-owner-http-20261105
-    state: in-progress
+    state: closed
     pr: []
     blast_radius: >
       First bounded step: a dormant standalone subject-management HTTP factory
@@ -7066,6 +7077,7 @@ items:
       movable to its own process later without changing the contract
       (execution plan §2.9). HUB-REG-CRM-ADMIN depends on it.
 
+      Closed 2026-11-09 as superseded (release decisions, "Plan restructuring"): the accepted scope is carried by draft #8898 and the coherent join is MT-M6A-JOIN; remaining scope moved to MT-M6A-JOIN and MT-OWNERSHIP-OPS. Gates and evidence retained.
   - id: T31-REM
     title: T3.1 remainder - per-tenant signing key replaces the install-wide one
     parcel: tenancy
@@ -7102,7 +7114,7 @@ items:
     branch: seam/t1-2-storage-interface
     base: origin/chore/nightscout-modernization@0a4109f6
     worktree: externals/work/crm-seam
-    state: blocked
+    state: closed
     blast_radius: lib/admin/platform.sql; tenant_members.subject_id references
       nothing.
     review: maintainer
@@ -7130,6 +7142,7 @@ items:
       2026-10-07: the credential half is on seam/t30-schema-cred 65ce54b9
       (T30-SCHEMA-CRED); the config half remains with T30-SCHEMA-CONFIG.
 
+      Closed 2026-11-09 as superseded: signing keys and secrets live in the secrets component (R30/R48); a platform.sql surface check can return as a static gate on MT-M6A-JOIN if wanted.
   - id: T33-REM
     title: T3.3 remainder - the shared enclave, and language/levels per tenant
     parcel: tenancy
@@ -25795,3 +25808,358 @@ items:
       Evaluator remains one active owner; partitioning/replication, realtime
       replication, dynamic membership/autoscaling, transaction poolers, Kubernetes
       proof and Jsonnet are outside this capability. No parent milestone promotion.
+
+  # ---- 2026-11-09 restructure: M6 split into M6a-M6d and M7; one capability per item, one gate each.
+  # Release decisions "Plan restructuring and process simplification (2026-11-09)".
+
+  - id: MT-OIDC-NATIVE
+    title: "M6a: run the nine-stage owner/OIDC native matrix through a disposable harness"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/owner-oidc-combined-20261107
+    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
+    worktree: /tmp/crm-owner-oidc-combined-20261107
+    state: in-progress
+    blast_radius: >
+      Test infrastructure only: a harness that starts PostgreSQL, Mongo and Vault
+      containers by digest, provisions the fixture identities, runs the nine prepared
+      stages (vault-single, vault-multi, mongo-sessions, pg-sessions, mongo-http,
+      owner-consumer, owner-authority, owner-browser, owner-compatibility) against
+      the frozen candidate c0a67b69, and removes the containers. No serving, policy,
+      migration or client change.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: test infrastructure
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED until the harness lands. It replaces the grant/reservation driver
+          in externals/work/owner-oidc-combined-native-prep-20261107 (run.cjs) while
+          keeping its stage oracles, probe-checks.json and mutant controls. The gate
+          becomes `node tools/queue/gates/oidc-native-recorded.js <report>` reading
+          reports/tenancy/oidc-native-<date>/summary.json, with a control that feeds
+          it a summary with one family missing.
+    blocks_on: []
+    evidence:
+      - reports/tenancy/shared-oidc-sessions-2026-11-07/README.md
+      - docs/30-design/tenancy/owner-authority.md
+    notes: >
+      Decision 2026-11-09: disposable harness, not a grant ceremony. Source is complete
+      and frozen (194 explicit-file checks, independent crypto audit). The nine stages
+      declare 960s active + 135s teardown. Local resources present on 2026-11-09:
+      Docker 29.1.3, postgres 16-alpine and hashicorp/vault images at the compose.yaml
+      digests, mongo 7/8 images, Google Chrome, Node 22, oref0 at the pinned commit.
+
+  - id: MT-M6A-JOIN
+    title: "M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/dev@4a482627bfdafb1fef8dcbe0ac6c484811cae563
+    state: not-started
+    blast_radius: >
+      Draft PR #8898 head moves from ed2ced00 to the joined candidate. Full seven-tier,
+      default-browser, enabled-corpus, pinned-client and prcheck must be re-run on the
+      new frozen head; the ed2 campaign does not transfer. Also clears the CodeQL
+      alert on the private IPC dispatch (lib/server/realtime/ipc.js, bounded own-property
+      lookup; restructure to a Map or dismiss with justification). The second CodeQL
+      alert is on code identical to official/dev and is not this PR's.
+    review: maintainer; security review of the identity surface
+    operator_visible: >
+      Optional sign-in with an identity provider for people managing a Nightscout
+      site, in both single-site and multitenant modes. Off unless enabled. Uploaders
+      and followers keep their existing credentials.
+    semver: minor
+    semver_reason: opt-in feature on a dormant preview branch
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED until MT-OIDC-NATIVE passes. Then: full/default-browser/enabled-corpus/
+          pinned-client on the joined head and tools/review/prcheck/prcheck.sh last.
+    blocks_on:
+      - MT-OIDC-NATIVE
+    evidence:
+      - reports/tenancy/operation-window-acceptance-2026-11-07/README.md
+    notes: >
+      Owns the coherent join that closes M6a. Taking the PR out of draft, review and
+      merge remain the maintainer's actions.
+
+  - id: MT-OWNERSHIP-OPS
+    title: "M6b: operator-assisted ownership add, transfer and recovery"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/ownership-ops
+    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
+    state: not-started
+    blast_radius: >
+      Headless operator API on the private plane: add co-owner, transfer, recover.
+      Tenant-bound, audited; concurrent changes cannot orphan a tenant or silently
+      replace an owner; unauthorized operations have no effect; recovery reveals no secret.
+    review: maintainer
+    operator_visible: ''
+    semver: minor
+    semver_reason: new private operator operations on the preview
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: SQL/HTTP family with a race control (two transfers, one wins,
+          audit shows both attempts) and a foreign-authority control (no effect).
+    blocks_on:
+      - MT-M6A-JOIN
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Adopted policy: preview-operator-assisted-ownership (2026-11-07). Self-service
+      co-owner/transfer is not a preview gate.
+
+  - id: MT-KEY-RETENTION
+    title: "M6b: 30-day retained-key destruction and after-window refusal"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/key-retention
+    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
+    state: not-started
+    blast_radius: >
+      Deletion ceremony tail: the export artifact must hold every ciphertext/key
+      reference before secret/audit rows are removed; keys retained 30 days; an
+      operator destroy; restore refused after the window.
+    review: maintainer
+    operator_visible: >
+      After a site is deleted its encrypted data can be restored by the operator for
+      30 days; after that the keys are destroyed and the data cannot be recovered.
+    semver: minor
+    semver_reason: lifecycle completion on the preview
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: destroy then restore refuses; restore inside the window succeeds;
+          artifact missing one key reference refuses deletion (control).
+    blocks_on:
+      - MT-M6A-JOIN
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Builds on the export/delete work recorded 2026-11-06 (HANDOFF-tenant-export-delete).
+
+  - id: MT-VAULT-TOKEN-FILE
+    title: "M6c: read the Vault token from a sink file per call (Vault Agent compatibility)"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/vault-token-file
+    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
+    state: not-started
+    blast_radius: >
+      Three getToken call sites (lib/server/serve/preview-config.js,
+      lib/human-session/access-config.js, lib/server/serve/owner-credential-config.js)
+      gain a `tokenFile` alternative to `tokenEnv`, read at call time. Exactly one of
+      the two must be configured. No Transit client change.
+    review: maintainer
+    operator_visible: ''
+    semver: minor
+    semver_reason: additive configuration on the preview
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: unit test that a rewritten sink file is picked up by the next call,
+          that both-set and neither-set refuse at config load, and that an unreadable
+          file fails the operation without falling back to an env token (control).
+    blocks_on: []
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decision vault-agent-sidecar (2026-11-09). Small core change; the sidecar is
+      DEPLOY-VAULT-AGENT.
+
+  - id: DEPLOY-VAULT-AGENT
+    title: "M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)"
+    parcel: tenancy
+    repo: nightscout-deploy
+    branch: main
+    base: main@75f0f61
+    state: not-started
+    blast_radius: >
+      bindings/compose: a `vault-agent` service with AppRole auto-auth, a token sink on
+      a shared read-only volume mounted into api/realtime/evaluator/tenant-admin, a
+      Transit policy per tenant key; bootstrap issues the AppRole, not per-tenant root
+      tokens. Probes: renewal after TTL, seal and unseal, AppRole secret rotation.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: deployment repository
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: `npm test` in nightscout-deploy plus the Compose smoke with a short
+          token TTL showing renewal, and a control that stops the agent and shows the
+          next Transit call fail closed.
+    blocks_on:
+      - MT-VAULT-TOKEN-FILE
+    evidence:
+      - docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md
+    notes: >
+      Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no
+      service-login adapter is written in core.
+
+  - id: DEPLOY-IDP-PROFILE
+    title: "M6c: Authentik identity-provider profile over HTTPS with synthetic people"
+    parcel: tenancy
+    repo: nightscout-deploy
+    branch: main
+    base: main@75f0f61
+    state: not-started
+    blast_radius: >
+      providers/: an Authentik profile for the Compose binding (image by digest, TLS,
+      synthetic users), wired to the owner HTTP routes; login, renewal, logout and
+      provider-outage cases. Kratos fallback profile only if the Authentik proof fails.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: deployment repository
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: browser login/renewal/logout against the Compose edge; provider
+          stopped mid-session keeps existing access until expiry and refuses new login
+          (adopted outage decision); control: wrong issuer refuses.
+    blocks_on:
+      - MT-M6A-JOIN
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decision deployment-identity-generic-adapter-authentik-reference (2026-11-07).
+
+  - id: DEPLOY-TRUST-PROBES
+    title: "M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record"
+    parcel: tenancy
+    repo: nightscout-deploy
+    branch: main
+    base: main@75f0f61
+    state: not-started
+    blast_radius: >
+      edge/: probes for forged X-Resolved-Tenant from an untrusted peer, host/selector
+      conflict, unknown tenant, socket upgrade through the edge, client IP, and Vault
+      or edge outage; a trust record filled from edge/trust-record.template.md.
+    review: maintainer; security review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: deployment repository
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: every probe refuses as specified against the live binding; control:
+          add the probe host to the trusted-peer list and the spoof is accepted.
+    blocks_on:
+      - DEPLOY-VAULT-AGENT
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decision deployment-admission-probes-and-trust-record (2026-11-07): admission is
+      per deployment by record plus probes.
+
+  - id: MT-CONNECTOR-SYNC
+    title: "M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential"
+    parcel: tenancy
+    repo: nightscout-connect
+    branch: main
+    base: main@HEAD
+    state: not-started
+    blast_radius: >
+      No connector code change expected: an existing single-site connector configured
+      against a tenant alias with a reader credential; independent stored/history
+      oracle on the destination; revocation stops the pull.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: lab
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: pull succeeds and matches the tenant's entries; control: revoke
+          the reader and the next pull is refused with no new rows.
+    blocks_on:
+      - MT-M6A-JOIN
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decision first-preview-no-push-provider (2026-11-07): outbound first. Inbound
+      tenant-side connector is a later contract.
+
+  - id: MT-ENVELOPE
+    title: "M7: declare the operating envelope, then measure it"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@9029fb6dd
+    state: needs-decision
+    blast_radius: >
+      Human input first: active/idle tenant counts, rows/bytes, ingestion and reconnect
+      bursts, retention, freshness and recovery targets. Then one benchmark window with
+      an independent stored-count oracle.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: measurement
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED by design until the envelope is declared; no number is invented from
+          functional passes.
+    blocks_on: []
+    evidence:
+      - docs/30-design/tenancy/m5-m6-decision-list.md
+    notes: >
+      Was part of M6; moved to M7 on 2026-11-09. Required before a production cohort,
+      not before the dormant alpha.
+
+  - id: MT-ANDROID-LAB
+    title: "M7: Android emulator acceptance for the pinned uploader and follower shapes"
+    parcel: tenancy
+    repo: rag-nightscout-ecosystem-alignment
+    branch: main
+    base: main@9029fb6dd
+    state: not-started
+    blast_radius: >
+      Emulator rig running the pinned Android uploader/follower against a tenant
+      alias; iOS stays outside the automated lab.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: lab
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: upload and follow against tenant A, refused against tenant B with
+          A's credential (control).
+    blocks_on:
+      - MT-M6A-JOIN
+    evidence:
+      - docs/30-design/tenancy/m4-client-binary-lab-packet-2026-11-06.md
+    notes: >
+      Retained from batch C; moved to M7 on 2026-11-09.
+
+  - id: DEPLOY-K8S-BINDING
+    title: "M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update)"
+    parcel: tenancy
+    repo: nightscout-deploy
+    branch: main
+    base: main@75f0f61
+    state: not-started
+    blast_radius: >
+      bindings/kubernetes: ordinary resources only; equivalence table against the
+      public-name contract; no autoscaling or dynamic membership.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: deployment repository
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: binding equivalence table satisfied on a kind/k3s cluster; control:
+          two Pods of one cohort refuse to both serve.
+    blocks_on:
+      - DEPLOY-TRUST-PROBES
+    evidence:
+      - docs/30-design/tenancy/deployment-bindings-and-public-names.md
+    notes: >
+      Deploy roadmap wave 4.

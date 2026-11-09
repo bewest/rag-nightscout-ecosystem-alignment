@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 14 items
+### Maintainer &mdash; 13 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -45,8 +45,7 @@ every item that was `merged-upstream` then is `released`.
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
-| `T30-RESEARCH` | `needs-decision` | T3.0 part 1 - enumerate the per-tenant configuration surface | &mdash; |
-| `T30-AUTH` | `ready-to-push` | The auth plane - Ory Kratos/Hydra against building it ourselves, and the three-i | &mdash; |
+| `MT-ENVELOPE` | `needs-decision` | M7: declare the operating envelope, then measure it | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item
@@ -136,34 +135,30 @@ BF-72: an unauthenticated query can occupy the database for minutes. It is live 
 disposition; the details are held outside this public repository while the defect is live on the
 shipping release, under the disclosure rule ([DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
 
-### `MT-CONFIG-MIN`, `MT-RUNTIME-PLAN`, `TEN-LAB` — the multitenant preview on #8898
+### `MT-OIDC-NATIVE`, `MT-M6A-JOIN`, `MT-ENVELOPE` — the multitenant preview on #8898
 
-Draft #8898 is `83582e87` on 2026-11-06, open and mergeable, with all 15 CI jobs
-and CodeQL green on that head ([R64](../30-design/remedial/rc-16.0.0-integration-record.md#r64---published-control-recovery-batch-remote-verification-2026-11-06)).
-It is not in the generated table above because its items are `in-progress`: the
-preview is dormant and opt-in, placement was decided on 2026-10-30 (it may ship
-dormant and labelled alpha behind `nightscout multitenant`, or be deferred; it is
-not a single-tenant release gate), and taking it out of draft, review and merge are
-the maintainer's actions when the completion batches reach them. The five
-decisions on the critical path are written up, one topic per section with a
-recommendation each, in the
-[open decisions note](../30-design/tenancy/multitenant-open-decisions-2026-11-06.md);
-each answer becomes one row in the release decisions file. In brief:
+Draft #8898 is `ed2ced00` (read 2026-11-09), open and mergeable; checks on that head are
+16 success, 3 skipped and 1 failure (CodeQL). The CodeQL failure is one new alert on the
+private IPC dispatch, a bounded own-property lookup that `MT-M6A-JOIN` restructures or
+dismisses with justification; a second alert is on code identical to `official/dev`.
+The preview is dormant and opt-in; taking it out of draft, review and merge are the
+maintainer's actions once M6a closes.
 
-- **What a root credential gets under the selected-reader mode.** An actual cgmsim
-  root upload gets 503 where the unselected mode returns 200
-  ([R63](../30-design/remedial/rc-16.0.0-integration-record.md#r63---selected-subject-actual-client-compatibility-boundary-2026-11-06)).
-  Until decided the mode stays unselected and nothing changes for any client.
-- **What M2 is held to**: the roadmap cell or the dashboard's additions.
-- **Numeric bounds and performance budgets** before they become pass thresholds;
-  R65's workload is descriptive and sets no budget.
-- **What "actual client execution" means for M4**, given that the mobile clients
-  are outside the headless lab.
-- **Who owns the rest of batch C.** The owner session/issuer lifecycle decision
-  packet is assigned (session -8c); the wider operational implementation is not.
+On 2026-11-09 the maintainer split M6 into M6a–M6d and M7, moved the deployment tree to
+`nightscout-deploy`, chose a Vault Agent sidecar over a hand-written service-login
+adapter, and retired the agent-invented grant ceremony in favour of a disposable harness
+([decisions](../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09)).
 
-Closed on 2026-11-06, for the record: the per-write event's `stamp` is the
-transaction's final clock floor (decisions file, B7 section).
+What still needs a person:
+
+- **Nothing for the OIDC native run.** `MT-OIDC-NATIVE` runs when the harness lands; no
+  grant, reservation or attestation is required from the maintainer.
+- **The operating envelope** (`MT-ENVELOPE`): active/idle tenant counts, rows/bytes,
+  burst shapes, freshness and recovery targets. Until declared, no capacity number
+  exists by design. Required for M7, not for the dormant alpha.
+- **The operator activity/resource policy** question stays open in the
+  [decision index](../30-design/tenancy/m5-m6-decision-list.md#human-policy-review).
+- **Repository home and licence** for `nightscout-deploy` (deploy-companion note, item 8).
 
 ### `BFQ-09`, `A7A-7` — `unsettled`, which is not the same as open
 

@@ -1,96 +1,749 @@
 {
-  "as_of": "2026-11-08",
+  "as_of": "2026-11-09",
   "integration": "workspace/multitenant-20261102 (draft PR #8898)",
   "observed_tip": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
-  "integration_note": "Published draft #8898 now carries the accepted ed2 one-host Compose reference: cold bootstrap/UI/sockets, tenant-local restore with forward history and B continuity, pinned clients and final full regression. Native controller/restart and default-browser evidence retains c23 attribution; enabled-corpus evidence retains 39f4 attribution. R72 M0–M4 and R73 functional M5 scope is retained; M6 remains blocked. Shared OIDC/owner source is a separate local next candidate with native acceptance UNMEASURED. No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
+  "integration_note": "Published draft #8898 carries the accepted ed2 one-host reference (cold bootstrap/UI/sockets, tenant-local restore with forward history and B continuity, pinned clients, full regression). On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moves to a Vault Agent sidecar, and native acceptance runs through a disposable harness instead of a grant ceremony (release decisions, 2026-11-09). PR #8898 head ed2ced00 CI: 16 success, 3 skipped, 1 CodeQL failure (one new alert in the private IPC dispatch; a second alert is on code identical to official/dev). Shared OIDC/owner native acceptance remains UNMEASURED. No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
   "milestones": [
-    {"id": "M0", "title": "Foundations", "state": "promoted", "requires": [], "work": ["ST-PG", "MIG-RUNNER"], "gate": "Promoted by R60: current restricted-role/RLS, isolation, rollback, pool reuse and paired controls plus migration/startup refusal. Explicit lab preview only; no default or production role enablement."},
-    {"id": "M1", "title": "Entries adapter", "state": "promoted", "requires": ["M0"], "work": ["ST-PG"], "gate": "R72 accepts the admitted Mongo/PG backend, typed JSON/query/history/batch and reviewed DDL/import contract. Resource bounds: deferred, measured in C; no numeric threshold approved. PG-only sort cap stays5."},
-    {"id": "M2", "title": "Tenant control plane", "state": "promoted", "requires": [], "work": ["MT-CONFIG-MIN", "MT-SECRETS-CONTRACT", "MIG-RUNNER", "TEN-RESOLVE", "T30-WIRING", "T30-TENANT-ADMIN"], "gate": "R72 accepts actual tenant-local typed/versioned settings, CAS/history/rollback, current configure/operator fences, unknown-tenant and cross-tenant signature refusal, no private-context leakage and OWNER/DATA/operator route separation. Two display names; human issuer/refresh, broader catalogue/lifecycle and production trust remain M6."},
-    {"id": "M3", "title": "Two-tenant HTTP lab", "state": "promoted", "requires": ["M1", "M2"], "work": ["TEN-LAB"], "gate": "R72 accepts actual authorized A/B entries-v3 requests, independent stored outcomes/restart, foreign credential refusal and stale/unsafe startup refusal after M1/M2 criteria pass."},
-    {"id": "M4", "title": "Existing-client surface", "state": "promoted", "requires": ["M3"], "work": ["ST-PG", "TEN-LAB"], "gate": "R72 accepts actual pinned cgmsim/oref0 and source-pattern replay, tenant-local identity/history/batch/retry/refusal/exchange. No all-client claim. Android emulator C; iOS outside automated lab."},
-    {"id": "M5", "title": "Realtime and evaluator", "state": "promoted", "requires": [], "work": ["MT-RUNTIME-PLAN"], "gate": "R73 accepts the functional separate-role reference on one host: bounded consistent current-state/evaluator recovery, current socket authority/DATA compatibility, durable original suppression and actual stable-request consumer handoff, controls/restorations and complete final-tree verification. Current polling/snapshot reference makes no LISTEN/latency or evaluator-to-device claim. Provider/device, multi-node ownership and operating envelope remain separate; published through draft #8898, not merged or released."},
-    {"id": "M6", "title": "Multitenant preview", "state": "blocked", "requires": ["M4", "M5"], "work": [], "gate": "Published ed2 reference adds cold Compose/UI/sockets and same-ID logical clinical restore with forward history/client convergence; c23 proves cooperative fixed-cohort native recovery and tenant-local shared-role restart. Human OIDC/session and owner acceptance, retained-key destruction/recovery, deployment trust/service login, connector sync, approved operating bounds, Android emulator and final preview admission remain. Identity/credential cloning and whole-deployment rollback are separate contracts."}
+    {
+      "id": "M0",
+      "title": "Foundations",
+      "state": "promoted",
+      "requires": [],
+      "work": [
+        "ST-PG",
+        "MIG-RUNNER"
+      ],
+      "gate": "Promoted by R60: current restricted-role/RLS, isolation, rollback, pool reuse and paired controls plus migration/startup refusal. Explicit lab preview only; no default or production role enablement."
+    },
+    {
+      "id": "M1",
+      "title": "Entries adapter",
+      "state": "promoted",
+      "requires": [
+        "M0"
+      ],
+      "work": [
+        "ST-PG"
+      ],
+      "gate": "R72 accepts the admitted Mongo/PG backend, typed JSON/query/history/batch and reviewed DDL/import contract. Resource bounds: deferred, measured in C; no numeric threshold approved. PG-only sort cap stays5."
+    },
+    {
+      "id": "M2",
+      "title": "Tenant control plane",
+      "state": "promoted",
+      "requires": [],
+      "work": [
+        "MT-CONFIG-MIN",
+        "MT-SECRETS-CONTRACT",
+        "MIG-RUNNER",
+        "TEN-RESOLVE",
+        "T30-WIRING",
+        "T30-TENANT-ADMIN"
+      ],
+      "gate": "R72 accepts actual tenant-local typed/versioned settings, CAS/history/rollback, current configure/operator fences, unknown-tenant and cross-tenant signature refusal, no private-context leakage and OWNER/DATA/operator route separation. Two display names; human issuer/refresh, broader catalogue/lifecycle and production trust remain M6."
+    },
+    {
+      "id": "M3",
+      "title": "Two-tenant HTTP lab",
+      "state": "promoted",
+      "requires": [
+        "M1",
+        "M2"
+      ],
+      "work": [
+        "TEN-LAB"
+      ],
+      "gate": "R72 accepts actual authorized A/B entries-v3 requests, independent stored outcomes/restart, foreign credential refusal and stale/unsafe startup refusal after M1/M2 criteria pass."
+    },
+    {
+      "id": "M4",
+      "title": "Existing-client surface",
+      "state": "promoted",
+      "requires": [
+        "M3"
+      ],
+      "work": [
+        "ST-PG",
+        "TEN-LAB"
+      ],
+      "gate": "R72 accepts actual pinned cgmsim/oref0 and source-pattern replay, tenant-local identity/history/batch/retry/refusal/exchange. No all-client claim. Android emulator C; iOS outside automated lab."
+    },
+    {
+      "id": "M5",
+      "title": "Realtime and evaluator",
+      "state": "promoted",
+      "requires": [],
+      "work": [
+        "MT-RUNTIME-PLAN"
+      ],
+      "gate": "R73 accepts the functional separate-role reference on one host: bounded consistent current-state/evaluator recovery, current socket authority/DATA compatibility, durable original suppression and actual stable-request consumer handoff, controls/restorations and complete final-tree verification. Current polling/snapshot reference makes no LISTEN/latency or evaluator-to-device claim. Provider/device, multi-node ownership and operating envelope remain separate; published through draft #8898, not merged or released."
+    },
+    {
+      "id": "M6a",
+      "title": "Identity and owner API",
+      "state": "in-progress",
+      "requires": [
+        "M4",
+        "M5"
+      ],
+      "work": [
+        "MT-OIDC-NATIVE",
+        "MT-M6A-JOIN"
+      ],
+      "gate": "Nine-stage native matrix (Vault single/multi, Mongo/PG sessions, Mongo HTTPS, owner consumer/authority/browser/compatibility) passes on the frozen combined candidate c0a67b69 through the disposable harness with red controls; then the joined candidate passes full, default-browser, enabled-corpus, pinned-client and prcheck on #8898. Source complete; native result UNMEASURED."
+    },
+    {
+      "id": "M6b",
+      "title": "Lifecycle and keys",
+      "state": "not-started",
+      "requires": [
+        "M6a"
+      ],
+      "work": [
+        "MT-OWNERSHIP-OPS",
+        "MT-KEY-RETENTION"
+      ],
+      "gate": "Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Export/delete source exists (2026-11-06); ownership operations and key destruction are not implemented."
+    },
+    {
+      "id": "M6c",
+      "title": "Deployment trust (nightscout-deploy)",
+      "state": "not-started",
+      "requires": [
+        "M6a"
+      ],
+      "work": [
+        "MT-VAULT-TOKEN-FILE",
+        "DEPLOY-VAULT-AGENT",
+        "DEPLOY-IDP-PROFILE",
+        "DEPLOY-TRUST-PROBES"
+      ],
+      "gate": "Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Compose tree imported to nightscout-deploy 2026-11-09; everything else not started."
+    },
+    {
+      "id": "M6d",
+      "title": "Connector sync",
+      "state": "not-started",
+      "requires": [
+        "M6a"
+      ],
+      "work": [
+        "MT-CONNECTOR-SYNC"
+      ],
+      "gate": "nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. No recorded acceptance."
+    },
+    {
+      "id": "M7",
+      "title": "Production readiness",
+      "state": "not-started",
+      "requires": [
+        "M6a",
+        "M6b",
+        "M6c",
+        "M6d"
+      ],
+      "work": [
+        "MT-ENVELOPE",
+        "MT-ANDROID-LAB",
+        "MT-ENDPOINT-TRANSPORT",
+        "MT-API-FIXED-ROSTER",
+        "DEPLOY-K8S-BINDING"
+      ],
+      "gate": "Operator-declared workload and recovery objectives, then measured envelope; Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Required before a production cohort, not before the dormant alpha."
+    }
   ],
   "work": [
-    {"id": "MT-ENDPOINT-TRANSPORT", "lane": "Queued / no runtime implementation", "next": "Settle normalized private endpoint/trust contract, implement actual UDS/HTTP(S) consuming paths and native parity/restore controls. Plan is selectable-endpoints-and-api-scaling-plan.md; runtime gates UNMEASURED. No Kubernetes proof/Jsonnet or new discovery service."},
-    {"id": "MT-API-FIXED-ROSTER", "lane": "Queued / consumes endpoint capability", "next": "Prove two declared APIs behind a service destination while restore directly drains/invalidates every actual instance. Consume platform/config inventory; evaluator remains singleton. Native concurrency/replacement/client gates UNMEASURED; platform bindings and dynamic membership deferred."},
-    {"id": "MT-CONFIG-MIN", "lane": "R72 preview criteria accepted / wider scope retained", "next": "R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts."},
-    {"id": "ST-PG", "lane": "R72 preview criteria accepted / wider scope retained", "next": "R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts."},
-    {"id": "TEN-LAB", "lane": "R72 preview criteria accepted / wider scope retained", "next": "R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts."},
-    {"id": "T30-WIRING", "lane": "R72 preview criteria accepted / wider scope retained", "next": "R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts."},
-    {"id": "MIG-RUNNER", "lane": "Operator migration / readiness", "next": "R39 retains independently enabled migration/HTTP acceptance and prebind read-only selected-domain readiness. Full two-store runner acceptance, standalone/index fencing, chunking and populated-data import/resource guarantees remain open."},
-    {"id": "MT-SECRETS-CONTRACT", "lane": "Adopted local verification / provider acceptance", "next": "The owner-authority amendment keeps private signing keys in the secrets component and permits local asymmetric verification for optional new-format data tokens, with current PG session/key/grants per operation. R48 accepts bounded local data-token verification; production format/provider interoperability, human management issuance, TLS/unseal/HA, renewal and recovery remain open."},
-    {"id": "TEN-RESOLVE", "lane": "M2 refusal / M6 durable lifecycle and trust", "next": "M2 unknown-tenant refusal and route scope retain their recorded acceptance; later c23/ed2 clinical restore/restart proof is bounded. Wider operator lifecycle, activity/resource policy, durable allocation and production trust remain open. See tenant-admission-and-activity.md for the unresolved policy vs maintenance distinction."},
-    {"id": "MT-RUNTIME-PLAN", "lane": "Functional one-host reference accepted and published", "next": "Retain R73 M5 plus c23 native/browser, 39f4 corpus and ed2 cold/client/full evidence at their executed sources. Broader provider/device, capacity/retention and multi-host ownership remain separate; next OIDC/owner candidate needs its own bounded acceptance. No default enablement."},
-    {"id": "ARCH-SEAM-CONTRACT", "lane": "Measured ports / remaining capabilities", "next": "R42 real Mongo/PG lower and preview contracts remain the basis; R44 preserves them during composition. Broader schema/query/error/retry/import capabilities remain open; consolidation consumes measured differences."},
-    {"id": "T30-TENANT-ADMIN", "lane": "R72 preview criteria accepted / wider scope retained", "next": "R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts."},
-    {"id": "ST-VIEWS-PROFILE", "lane": "R55 independent helper integration accepted", "next": "Independent2ee8b493 full6690/3pending/0failure/browser684/finalprcheckOK; canonical archive38, actual-trigger(http)/clinical/retention controls each0/1semantic/restored38. Helper matches REST and evaluateCycle retained; no REST359 merge, runtime-role/subscriber/notification policy change. Wider writer/alarms/live stats/cost and durable recovery open. Notification-close v1-closed stays declared at2ee but new-head runtime UNMEASURED; prior517 measurement historical, not a fourth measuredR55 control."},
-    {"id": "ARCH-SEAM-COMPOSE", "lane": "Accepted current-domain extraction", "next": "R44 current-head CLI/startup/refusal and failure/HTTP controls pass. Domain metadata and explicit PG backend composition are separate; preserve read-only startup, current Mongo default and independent binding/transaction semantics. Wider stable portability and consolidation remain separate."},
-    {"id": "ARCH-SEAM-CONSOLIDATE", "lane": "Accepted bounded shared PG mechanics", "next": "R46 real-port baseline/candidate, full/browser-on-identical-app and meaningful ordering/projection/precommit controls accept the small extraction. Source-specific translation, natural order and write policy are explicit; broader portable helper relocation and capability review continue."},
-    {"id": "ARCH-DERIVED-FRAME", "lane": "Separate frames / bounded characterization accepted", "next": "REST and independent computed-single profile retain separate policies. The derived-output characterization records selected current evaluator/API agreement under tested contexts; checkpoint alone is not result identity. No publication service, universal computed profile or distributed evaluator admission is selected."}
+    {
+      "id": "MT-ENDPOINT-TRANSPORT",
+      "lane": "Queued / no runtime implementation",
+      "next": "Settle normalized private endpoint/trust contract, implement actual UDS/HTTP(S) consuming paths and native parity/restore controls. Plan is selectable-endpoints-and-api-scaling-plan.md; runtime gates UNMEASURED. No Kubernetes proof/Jsonnet or new discovery service."
+    },
+    {
+      "id": "MT-API-FIXED-ROSTER",
+      "lane": "Queued / consumes endpoint capability",
+      "next": "Prove two declared APIs behind a service destination while restore directly drains/invalidates every actual instance. Consume platform/config inventory; evaluator remains singleton. Native concurrency/replacement/client gates UNMEASURED; platform bindings and dynamic membership deferred."
+    },
+    {
+      "id": "TEN-LAB",
+      "lane": "R72 preview criteria accepted / wider scope retained",
+      "next": "R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts."
+    },
+    {
+      "id": "ARCH-SEAM-CONTRACT",
+      "lane": "Measured ports / remaining capabilities",
+      "next": "R42 real Mongo/PG lower and preview contracts remain the basis; R44 preserves them during composition. Broader schema/query/error/retry/import capabilities remain open; consolidation consumes measured differences."
+    },
+    {
+      "id": "ST-VIEWS-PROFILE",
+      "lane": "R55 independent helper integration accepted",
+      "next": "Independent2ee8b493 full6690/3pending/0failure/browser684/finalprcheckOK; canonical archive38, actual-trigger(http)/clinical/retention controls each0/1semantic/restored38. Helper matches REST and evaluateCycle retained; no REST359 merge, runtime-role/subscriber/notification policy change. Wider writer/alarms/live stats/cost and durable recovery open. Notification-close v1-closed stays declared at2ee but new-head runtime UNMEASURED; prior517 measurement historical, not a fourth measuredR55 control."
+    },
+    {
+      "id": "ARCH-SEAM-COMPOSE",
+      "lane": "Accepted current-domain extraction",
+      "next": "R44 current-head CLI/startup/refusal and failure/HTTP controls pass. Domain metadata and explicit PG backend composition are separate; preserve read-only startup, current Mongo default and independent binding/transaction semantics. Wider stable portability and consolidation remain separate."
+    },
+    {
+      "id": "ARCH-SEAM-CONSOLIDATE",
+      "lane": "Accepted bounded shared PG mechanics",
+      "next": "R46 real-port baseline/candidate, full/browser-on-identical-app and meaningful ordering/projection/precommit controls accept the small extraction. Source-specific translation, natural order and write policy are explicit; broader portable helper relocation and capability review continue."
+    },
+    {
+      "id": "ARCH-DERIVED-FRAME",
+      "lane": "Separate frames / bounded characterization accepted",
+      "next": "REST and independent computed-single profile retain separate policies. The derived-output characterization records selected current evaluator/API agreement under tested contexts; checkpoint alone is not result identity. No publication service, universal computed profile or distributed evaluator admission is selected."
+    },
+    {
+      "id": "MT-CONFIG-MIN",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "ST-PG",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "T30-WIRING",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "MIG-RUNNER",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "MT-SECRETS-CONTRACT",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "TEN-RESOLVE",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "MT-RUNTIME-PLAN",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "T30-TENANT-ADMIN",
+      "lane": "Closed 2026-11-09 as superseded; accepted scope on draft #8898",
+      "next": "Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item."
+    },
+    {
+      "id": "MT-OIDC-NATIVE",
+      "lane": "M6a / harness lane",
+      "next": "Build the disposable harness (containers by digest, reaper cleanup, source commit recorded) and run the nine-stage matrix on c0a67b69. Record under reports/tenancy/oidc-native-<date>/ with red controls. Result UNMEASURED until run."
+    },
+    {
+      "id": "MT-M6A-JOIN",
+      "lane": "M6a / source owner",
+      "next": "After MT-OIDC-NATIVE passes: join codex/owner-oidc-combined-20261107 to #8898, clear CodeQL alert on the private IPC dispatch, run full/default-browser/enabled-corpus/pinned-client/prcheck on the new frozen head."
+    },
+    {
+      "id": "MT-OWNERSHIP-OPS",
+      "lane": "M6b",
+      "next": "Operator-assisted add/transfer/recovery on the headless operator API; concurrent-change and unauthorized controls; audit rows."
+    },
+    {
+      "id": "MT-KEY-RETENTION",
+      "lane": "M6b",
+      "next": "30-day retention after delete; operator destroy; after-window refusal; artifact holds every ciphertext/key reference before secret/audit rows are removed."
+    },
+    {
+      "id": "MT-VAULT-TOKEN-FILE",
+      "lane": "M6c / core",
+      "next": "Add a tokenFile alternative to the per-tenant tokenEnv in the three getToken call sites; read per call so Agent renewal is picked up; refuse when both or neither are set."
+    },
+    {
+      "id": "DEPLOY-VAULT-AGENT",
+      "lane": "M6c / nightscout-deploy",
+      "next": "Vault Agent sidecar in the Compose binding: AppRole auto-auth, sink file mounted read-only into api/realtime/evaluator/tenant-admin, Transit policy per tenant key; renewal, seal and rotation probes."
+    },
+    {
+      "id": "DEPLOY-IDP-PROFILE",
+      "lane": "M6c / nightscout-deploy",
+      "next": "Authentik provider profile over HTTPS with synthetic people; login/renewal/logout/outage against the owner HTTP routes; Kratos fallback profile only if the Authentik proof fails."
+    },
+    {
+      "id": "DEPLOY-TRUST-PROBES",
+      "lane": "M6c / nightscout-deploy",
+      "next": "Spoof, host/selector conflict, unknown tenant, socket and outage probes against the live Compose edge and Vault; trust record from edge/trust-record.template.md."
+    },
+    {
+      "id": "MT-CONNECTOR-SYNC",
+      "lane": "M6d",
+      "next": "nightscout-connect outbound pull from a tenant with a pre-issued reader; stored/history oracle; revocation control."
+    },
+    {
+      "id": "MT-ENVELOPE",
+      "lane": "M7",
+      "next": "Operator declares active/idle tenants, rows/bytes, bursts, recovery targets; then one benchmark window with independent stored-count oracle."
+    },
+    {
+      "id": "MT-ANDROID-LAB",
+      "lane": "M7",
+      "next": "Android emulator acceptance for the pinned uploader/follower shapes; iOS stays outside the automated lab."
+    },
+    {
+      "id": "DEPLOY-K8S-BINDING",
+      "lane": "M7 / nightscout-deploy",
+      "next": "One Pod per cohort, private socket volume, no-overlap update; binding equivalence table."
+    }
   ],
   "slices": [
-    {"title": "Secrets component, Vault adapter, PG persistence and rewrap", "work": "MT-SECRETS-CONTRACT", "stage": "integrated-accepted", "commit": "6943dccb", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02", "result": "230 focused combined checks at the integration record; dormant only."},
-    {"title": "Synthetic secrets recovery and worker crash/retry", "work": "MT-SECRETS-CONTRACT", "stage": "integrated-accepted", "commit": "0de90852", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02", "result": "879 broad / 34 secrets checks; production recovery remains open."},
-    {"title": "Persistent current subject authority", "work": "MT-CONFIG-MIN", "stage": "incorporated-pending", "commit": "1dd8990b", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02", "result": "Local combined 36 checks with scalar settings; integrated gate pending."},
-    {"title": "Units/seconds, provenance, history and rollback", "work": "MT-CONFIG-MIN", "stage": "incorporated-pending", "commit": "011802ba", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02", "result": "Local combined 36 checks; injected policy is not atomic policy/write fencing."},
-    {"title": "MongoDB replica-set transactional operator runner", "work": "MIG-RUNNER", "stage": "incorporated-pending", "commit": "562f6206", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-transactional-mongodb-slice-2026-11-02", "result": "Local 53 combined / 12 MongoDB checks; standalone/index steps refuse."},
-    {"title": "Primary crash/restart and expired-renewal refusal", "work": "MIG-RUNNER", "stage": "incorporated-pending", "commit": "436ef543", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02", "result": "Local 56 combined / 15 MongoDB checks at floor and ceiling; not HA."},
-    {"title": "Tenant-bound JWT HTTP authorization proof", "work": "T30-WIRING", "stage": "integrated-accepted", "commit": "dc2c5fbf", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#tenant-jwt-proof-integration-and-http-gate", "result": "2 HTTP tests pass for cross-tenant signature refusal, current grants and authority outage; production runtime wiring remains open."},
-    {"title": "One-time API entries importer and PostgreSQL target", "work": "ST-PG", "stage": "integrated-accepted", "commit": "327cbb1f", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02", "result": "Importer unit/CLI tests and disposable-PostgreSQL tenant-bound replay test pass; one-time best-effort import, not snapshot or ongoing sync."},
-    {"title": "Entries candidate schema and forced-RLS acceptance", "work": "ST-PG", "stage": "integrated-accepted", "commit": "025704cd", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02", "result": "Disposable-Docker migration suite passes 13 checks, including generated fields, typed identity, unique identifier constraint and forced RLS."},
-    {"title": "Provider-neutral tenant policy and HTTP boundaries", "work": "MT-CONFIG-MIN", "stage": "integrated-accepted", "commit": "c496d009", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02", "result": "19 resolver/app/JWT HTTP checks pass; integrated secrets/Vault/PostgreSQL gate passes 37, including persisted current grants and atomic settings/grant fencing. No deployment adapter or serving role."},
-    {"title": "Two-tenant entries HTTP lab", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "a19b549c", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02", "result": "10 disposable-PostgreSQL HTTP lab cases pass for tenant isolation, writes, revocation, startup refusal and data-plane separation; M3 promotion remains blocked."},
-    {"title": "Combined projection/current authority (R24)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "8b193e18", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04", "result": "Agent-run nonbrowser 6713 passing/108 pending/0 failing, browser 684/0/0; explicit PG/HTTP/Vault campaigns and controls. Dormant bounded integration, not M1/M2 completion."},
-    {"title": "Legacy credential to actual entries GET (R25)", "work": "T30-WIRING", "stage": "integrated-accepted", "commit": "7eb76c71", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04", "result": "Agent-run focused 72/0/0, nonbrowser 6718 passing/118 pending/0 failing, browser 684/0/0. Current persisted authority; synthetic HTTP crypto, real Vault separately measured."},
-    {"title": "Compatible exchange to current-authority GET (R26)", "work": "T30-WIRING", "stage": "integrated-accepted", "commit": "81bc71e6", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04", "result": "Published PR checkpoint. Agent-run focused 85/0/0, nonbrowser 6725 passing/124 pending/0 failing, browser 684/0/0; exact names, eight-hour policy and four source controls. Pinned clients inspected, not replayed."},
-    {"title": "Actual entries list/search (R27)", "work": "ST-PG", "stage": "integrated-accepted", "commit": "c10290d2", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04", "result": "Local cumulative slice: agent-run nonbrowser 6764 passing/88 pending/0 failing, browser 684/0/0; reader differential 8, HTTP search 2, three controls. Counts overlap; pending change reflects enabled PG cases. History/mutations, production runtime and client replay remain open."},
-    {"title": "Actual entries POST/create/resend (R29)", "work": "ST-PG", "stage": "integrated-accepted", "commit": "6cad7a42", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04", "result": "Agent-reproduced nonbrowser 6807/73 pending/0 failing, browser684, focused78 and six red controls; current grants/attribution, configured pruning and legitimate extension keys. Now included in cumulative R34; remaining mutations/history/import/resources open."},
-    {"title": "Real Vault/PG HTTP lab (R30)", "work": "MT-SECRETS-CONTRACT", "stage": "integrated-accepted", "commit": "e410b163", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04", "result": "Enabled44 including new runtime5; nonbrowser6725/132 pending/0 failing, browser684; tenant-binding red control. Test-only provider composition, now included in R34; production service identity/TLS/HA not established."},
-    {"title": "Real-provider POST composition (R32)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "4621d5c4", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04", "result": "Enabled62, nonbrowser6807/79 pending/0 failing, browser684; three actual POST controls red. Real-provider write/read/isolation/current-grant/outage behavior, now included in R34. Counts overlap, not milestone completion."},
-    {"title": "Explicit canonical ingress (R33)", "work": "TEN-RESOLVE", "stage": "integrated-accepted", "commit": "468c41dc", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04", "result": "Focused25, nonbrowser6815/73 pending/0 failing, browser684; four resolver/app controls red. Direct mode preserved, canonical Host requires per-request explicit trust. Now in R34; no durable registry/production trust adapter."},
-    {"title": "Cumulative canonical/provider/POST (R34)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "c527fb7e", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04", "result": "Historical cumulative checkpoint, superseded by R38/R39. Enabled63, nonbrowser6815/80 pending/0 failing, browser684; composed forwarded-precedence, trust-loss and alias-conflict controls red. Synthetic loopback provenance only; no full M1/M2/M3, client, realtime or operations acceptance."},
-    {"title": "Executable entries CRUD/history (R38)", "work": "T30-WIRING", "stage": "integrated-accepted", "commit": "21145d0d", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04", "result": "Recorded integration-agent reproduced acceptance through the actual PG/Vault executable, current authority, rollback and restart. See R38 for nonadditive campaign figures and controls; full REST and production lifecycle remain open."},
-    {"title": "Explicitly selected REST domains (R39)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "ae471ac7", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04", "result": "Recorded integration-agent reproduced legacy v1/inherited-v2 data handlers, API3 collections and safe context. Now published on draft PR #8898 with successful head CI/CodeQL. Remaining route/client replay and M0-M6 criteria are incomplete; new Codex lane results remain UNMEASURED."},
-    {"title": "Derived REST and pinned-pattern cumulative acceptance (R40)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "ded254b9", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04", "result": "Parent-reproduced actual v2 derived handlers, synthetic source-pinned client replay and independent authority probes, including real CLI/PG/Vault derived/current-authority/restart composition. R40 owns exact campaign figures and controls. Published on OPEN/draft #8898; current-head CI and CodeQL successful at read-back; full REST, client binaries and production M0-M6 criteria remain incomplete."},
-    {"title": "Persisted subject administration and cumulative compatibility (R41)", "work": "MT-CONFIG-MIN", "stage": "integrated-accepted", "commit": "94c57f1f", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-subject-administration-and-compatibility-continuation-2026-11-05", "result": "Local full/browser/provider/compatibility acceptance with archived current-grants/tenant/atomic controls. No management HTTP, owner ceilings or milestone promotion."},
-    {"title": "Repeated bounded release/dev/PR-single refresh", "work": "TEN-LAB", "stage": "local-accepted", "commit": "ded254b9", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-subject-administration-and-compatibility-continuation-2026-11-05", "result": "Repeated common corpus and hardened auditor controls; current dev/PR-single match. Old full-corpus residuals are diagnostic; identity/settings families and final R41 tree are not measured by this historical comparison."},
-    {"title": "Storage-port contract and management HTTP (R42)", "work": "ARCH-SEAM-CONTRACT", "stage": "integrated-accepted", "commit": "d4570e58", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-contract-management-and-independent-profile-wave-2026-11-05", "result": "Local cumulative acceptance, real lower/preview/Mongo ports and standalone management HTTP with semantic controls; source contracts reconciled. No full portable runtime or owner listener."},
-    {"title": "Independent nonresident single refresh (R43)", "work": "ST-VIEWS-PROFILE", "stage": "local-accepted", "commit": "925c9527", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-contract-management-and-independent-profile-wave-2026-11-05", "result": "Separate current-dev refresh with full/default-browser and selected replay/controls. Not joined into #8898; physical subscriber unchanged and logical no-op policy remains open."},
-    {"title": "Current-domain composition and direct imported identity (R44)", "work": "ARCH-SEAM-COMPOSE", "stage": "integrated-accepted", "commit": "bc4ee1a9", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-composition-and-direct-identity-continuation-2026-11-05", "result": "Parent-reproduced complete nonbrowser/default-browser, real CLI/HTTP contracts and direct Mongo/PG typed identity mutations with semantic controls and independent review. No new backend/write policy, helper consolidation or milestone promotion."},
-    {"title": "Independent actual HTTP profile writers and live handoff (R45)", "work": "ST-VIEWS-PROFILE", "stage": "local-accepted", "commit": "dff9a8d4", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-http-profile-continuation-2026-11-05", "result": "Independent test-only replay adds API3 mutations/resends and live-service ownership assertions; parent archived replay/trigger/closed-service controls and independent review. R45 owns exact regression figures and limits. Physical subscriber retained; no REST join or multitenant evaluator acceptance."},
-    {"title": "Bounded PG mechanics and direct indexed races (R46)", "work": "ARCH-SEAM-CONSOLIDATE", "stage": "integrated-accepted", "commit": "44331668", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-adapter-consolidation-and-index-race-continuation-2026-11-05", "result": "Parent full/final common-port and indexed-race acceptance, browser on identical application source and semantic order/projection/precommit/retry controls. Baseline/current UTC fixtures and diagnostic corrections explicit; broader portable helpers and milestones remain open."},
-    {"title": "Independent test-composed v1 evaluator writers (R47)", "work": "ST-VIEWS-PROFILE", "stage": "local-accepted", "commit": "0c98ad06", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-v1-evaluator-continuation-2026-11-05", "result": "Agent full/default-browser plus parent archived36 and v1 trigger/closed-service controls. Test-only v1 configurators preserve reply/delete/no-op differences and live handoff; production routes/subscriber unchanged. Shared-frame inventory is read-derived, not runtime acceptance."},
-    {"title": "Optional local data-token authority (R48)", "work": "T30-WIRING", "stage": "integrated-accepted", "commit": "3d5eac19", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-optional-local-data-token-authority-2026-11-05", "result": "Adopted owner-authority contract; actual API local Ed25519 verification checks current PostgreSQL session/key/grants per operation. R48 owns full/browser and semantic controls; human issuer/refresh, full catalogue, proposed-grant ceilings and production provider/key operations remain incomplete."},
-    {"title": "Actual frame acquisition and concurrent REST reads (R49)", "work": "ARCH-DERIVED-FRAME", "stage": "integrated-accepted", "commit": "1c55098a", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05", "result": "Actual Mongo/PG views, tenant snapshot and resident acquisition retain measured bounds/future/statistics/typed-union/private-cache differences. Held HTTP reads return old entries/new treatments despite an atomic independent writer commit; semantic controls cover clinical values, tenant/partial-read refusal and no read egress. Final cumulative full7076/80pending/0failure and browser684 pass; no shared implementation, atomic revision or milestone promotion."},
-    {"title": "Independent evaluator acquisition, failure retention and recovery (R50)", "work": "ST-VIEWS-PROFILE", "stage": "local-accepted", "commit": "5173864d", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05", "result": "Agent full6690/3pending/0failure and default-browser684; parent archived38 and independently repeated clinical/retention semantic controls. Actual held rows yield A/B, then real trigger B/B; failed materialization retains previous time/properties and recovers. Teardown proves no late fake-provider delivery only, not cancellation/internal handoff absence. Runtime/subscriber unchanged; no REST join."},
-    {"title": "Bounded settings differential after serial recovery (R51)", "work": "ST-PG", "stage": "integrated-accepted", "commit": "33870764", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-settings-differential-and-serial-recovery-2026-11-06", "result": "Root FF exact tested tree; full7089/80pending/0failure, browser684 and final prcheckOK. Archived12, sortcap/predicate/projection semantic failures and restored12. Global PG sort cap4→5 only; regex/dotted refusal and resource/client/replica limits explicit. A/C/D/clock not joined; no milestone promotion."},
-    {"title": "Private acquisition allocation extraction (R52)", "work": "ARCH-DERIVED-FRAME", "stage": "local-accepted", "commit": "e5fe0b5e", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06", "result": "Native fresh full7080/80pending/0failure; same-head prior browser684, final prcheckOK. Acquisition14/concurrency4 and six semantic controls/restored14/4; caller4/reused-target2fail/restored4. RootB+A c7778436 incorporated, combined full PENDING. No atomic revision or independent profile runtime acceptance."},
-    {"title": "Selected owner proposed-grant policy (R53)", "work": "MT-CONFIG-MIN", "stage": "local-accepted", "commit": "17f9a457", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-selected-owner-policy-and-pending-composition-2026-11-06", "result": "Native full7127/80pending/0failure/browser684/finalprcheckOK; static32 positive, actualDB22 and four guard controls, parent archived22/four0-1semantic/restored22. Explicit ownerPolicy transaction REST37 subset only. RootB+A+C4a15802c incorporated, combined fullPENDING; no listener, complete owner lifecycle or milestone promotion."},
-    {"title": "Cumulative settings, private acquisition and selected owner policy (R54)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "35903069", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06", "result": "Local cumulative B338+A e5+C17f full7144/80pending/0failure/browser684/settings12/finalprcheckOK; test-only normalization final fix. Successful captured cleanup verified absent/219preserved. Native R51-R53 unchanged; no clock/profile2ee join, production owner/listener enablement, stronger snapshot or milestone promotion."},
-    {"title": "Independent private acquisition profile integration (R55)", "work": "ST-VIEWS-PROFILE", "stage": "local-accepted", "commit": "2ee8b493", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-private-acquisition-profile-2026-11-06", "result": "Independent full6690/3pending/0failure/browser684, archive38/three semantic trigger-clinical-retention controls/restored38, finalprcheckOK. Helper matches accepted REST; evaluateCycle/physical subscriber retained. REST359/profile2ee not merged, no runtime-role/notification policy or milestone promotion."},
-    {"title": "Coherent CI/client compatibility and M0 foundations (R60)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "d89a44e1", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06", "result": "R60 owns the exact-head corpus/prcheck and product-identical ancestor regression/client/pooler captures. M0 promoted; bounded client lab complete. Failed provisioner capture and original safety guard preserved. M1–M6 remain open; no release or default enablement."},
-    {"title": "Bounded owner reader and recovery batch (R62)", "work": "MT-RUNTIME-PLAN", "stage": "integrated-accepted", "commit": "83582e87", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-bounded-owner-reader-and-recovery-batch-2026-11-06", "result": "Fresh871 full7226/99pending/0failure, browser684, corpus460/1benchmarkpending/0failure, defaultclients82/82 and pooler9+4. Archived owner12 and replay7 semantic red/restored. Source-runner-only835 preserves product/test identity and passes finalprcheck. No activation or M1–M6 promotion. Historical reader-mode acceptance retained; maintainer subsequently withdrew the option for backward incompatibility. Removed in local candidate; comprehensive verification pending."},
-    {"title": "Recovered clinical projection native controls (R67)", "work": "MT-RUNTIME-PLAN", "stage": "local-accepted", "commit": "1990f453", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-bounded-clinical-projection-controls-2026-11-06", "result": "Native identity111vs222 and missing123 assertions fail after independent physical inputs; fresh restoration7/0/0. Dormant constructor only; R66 socket failure retained. No whole1990/full-batch, live role, notification/ack or M5 promotion."},
-    {"title": "Fresh-schema socket DATA native controls (R68)", "work": "MT-RUNTIME-PLAN", "stage": "local-accepted", "commit": "12919f55", "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#measured-fresh-schema-socket-data-controls-2026-11-06", "result": "Canonical actual Mongo/PG pattern parity, reverse-lexical multiple match and reached commit/abort markers; early-ack and role physical controls red/restored4. Matrix3 at identical-product0d628 remains attributed there. Dormant fresh-schema prototype; no populated/import/downgrade, production transport/rollout or milestone promotion."},
-    {"title": "Admitted entries and owner configuration completion (R72)", "work": "TEN-LAB", "stage": "integrated-accepted", "commit": "74d7b3fc", "evidence": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06", "result": "Coherent full/browser/all40 enabled corpus/finalprcheck acceptance, current actor/policy/presentation native controls and real client/pooler proofs. M1–M4 promoted at adopted scope; exact74d7/7015 attribution preserved. M5/M6 remain open."},
-    {"title": "R73 durable PostgreSQL runtime, alarm and request record", "work": "MT-RUNTIME-PLAN", "stage": "integrated-accepted", "commit": "353bb444", "evidence": "../../../reports/tenancy/m5-runtime-2026-11-07/postgres/README.md#m5-bounded-postgresql-recorded-evidence", "result": "Recorded23 ordinary/19 distinct physical controls/fresh23 restoration, with actual f4e3/353 attribution and original stops/regrades retained. Component record alone does not promote M5; no fresh native or provider/device claim."},
-    {"title": "R73 joined runtime and actual notification/socket/browser consumers", "work": "MT-RUNTIME-PLAN", "stage": "integrated-accepted", "commit": "b6bb39fd", "evidence": "../../../reports/tenancy/m5-runtime-2026-11-07/roles/README.md#joined-m5-roles-recorded-evidence", "result": "Six fresh ordinary, six physical semantic reds and six fresh restored cohorts; actual evaluator/realtime handoff and separate unchanged-browser presentation. Current recipient/config authority, suppression/plugin/cold clear and DATA parity measured. No evaluator-to-device journey or universal offline-cache claim."},
-    {"title": "R73 populated SQL operations and synthetic lifecycle", "work": "TEN-RESOLVE", "stage": "integrated-accepted", "commit": "9298d793", "evidence": "../../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md#m6-operations-bounded-postgresql-recorded-evidence", "result": "Initial five SQL cases/11 physical controls/11 targeted restorations/fresh final five;37 CURRENT/31 OLD tables. Exact nine terminal-Z audit reconciliation and independent release preserve original false closure. Same-ID tenant restore and whole M6 remain open."},
-    {"title": "R73 coherent final-tree verification and M5 reference promotion", "work": "MT-RUNTIME-PLAN", "stage": "integrated-accepted", "commit": "f0fac99a", "evidence": "../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07", "result": "Complete full suite, entire default browser and all45 enabled corpus suites pass; only declared pending cases, final prcheck unchanged. Explicit family disposition promotes M5 reference; M6 blocked. Later publication/CI is recorded below; this checkpoint retains its executed scope. Earlier failure/cleanup receipts remain attributed to their captures."},
-    {"title": "Tenant-local restore and shared-role restart", "work": "T30-TENANT-ADMIN", "stage": "integrated-accepted", "commit": "c23cf1f3", "evidence": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md#c23-complete-native-operation-window-acceptance", "result": "Reproduced native fixed-cohort controller matrix, forward history and B progress after fresh API/realtime/evaluator restart while A remains unavailable. Earlier b029 scope is retained separately. No arbitrary SQL writer fence or multi-host recovery."},
-    {"title": "Cold Compose UI/restore, pinned clients and final regression", "work": "MT-RUNTIME-PLAN", "stage": "integrated-accepted", "commit": "ed2ced00", "evidence": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md#coherent-operation-window-acceptance-family", "result": "Reproduced exact image and complete cold UI/socket/restore/client-convergence reference; actual cgmsim/oref0 and final nonbrowser acceptance. Native/browser c23 and corpus39f4 retain actual attribution. No counts summed or M6 promotion."},
-    {"title": "Draft PR publication and alignment CI", "work": "MT-RUNTIME-PLAN", "stage": "integrated-accepted", "commit": "ed2ced00", "evidence": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md#coherent-operation-window-acceptance-family", "result": "Reproduced remote head/PR readback and published alignment CI. Draft remains open; publication is distinct from dev merge, release and production admission."}
+    {
+      "title": "Secrets component, Vault adapter, PG persistence and rewrap",
+      "work": "MT-SECRETS-CONTRACT",
+      "stage": "integrated-accepted",
+      "commit": "6943dccb",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-entries-and-vault-facing-secrets-2026-11-02",
+      "result": "230 focused combined checks at the integration record; dormant only."
+    },
+    {
+      "title": "Synthetic secrets recovery and worker crash/retry",
+      "work": "MT-SECRETS-CONTRACT",
+      "stage": "integrated-accepted",
+      "commit": "0de90852",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#integration-secrets-recovery-acceptance-and-next-control-plane-slice-2026-11-02",
+      "result": "879 broad / 34 secrets checks; production recovery remains open."
+    },
+    {
+      "title": "Persistent current subject authority",
+      "work": "MT-CONFIG-MIN",
+      "stage": "incorporated-pending",
+      "commit": "1dd8990b",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02",
+      "result": "Local combined 36 checks with scalar settings; integrated gate pending."
+    },
+    {
+      "title": "Units/seconds, provenance, history and rollback",
+      "work": "MT-CONFIG-MIN",
+      "stage": "incorporated-pending",
+      "commit": "011802ba",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-control-plane-acceptance-and-next-handoff-2026-11-02",
+      "result": "Local combined 36 checks; injected policy is not atomic policy/write fencing."
+    },
+    {
+      "title": "MongoDB replica-set transactional operator runner",
+      "work": "MIG-RUNNER",
+      "stage": "incorporated-pending",
+      "commit": "562f6206",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-transactional-mongodb-slice-2026-11-02",
+      "result": "Local 53 combined / 12 MongoDB checks; standalone/index steps refuse."
+    },
+    {
+      "title": "Primary crash/restart and expired-renewal refusal",
+      "work": "MIG-RUNNER",
+      "stage": "incorporated-pending",
+      "commit": "436ef543",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#parallel-mig-runner-primary-recovery-and-renewal-loss-2026-11-02",
+      "result": "Local 56 combined / 15 MongoDB checks at floor and ceiling; not HA."
+    },
+    {
+      "title": "Tenant-bound JWT HTTP authorization proof",
+      "work": "T30-WIRING",
+      "stage": "integrated-accepted",
+      "commit": "dc2c5fbf",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#tenant-jwt-proof-integration-and-http-gate",
+      "result": "2 HTTP tests pass for cross-tenant signature refusal, current grants and authority outage; production runtime wiring remains open."
+    },
+    {
+      "title": "One-time API entries importer and PostgreSQL target",
+      "work": "ST-PG",
+      "stage": "integrated-accepted",
+      "commit": "327cbb1f",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02",
+      "result": "Importer unit/CLI tests and disposable-PostgreSQL tenant-bound replay test pass; one-time best-effort import, not snapshot or ongoing sync."
+    },
+    {
+      "title": "Entries candidate schema and forced-RLS acceptance",
+      "work": "ST-PG",
+      "stage": "integrated-accepted",
+      "commit": "025704cd",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02",
+      "result": "Disposable-Docker migration suite passes 13 checks, including generated fields, typed identity, unique identifier constraint and forced RLS."
+    },
+    {
+      "title": "Provider-neutral tenant policy and HTTP boundaries",
+      "work": "MT-CONFIG-MIN",
+      "stage": "integrated-accepted",
+      "commit": "c496d009",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02",
+      "result": "19 resolver/app/JWT HTTP checks pass; integrated secrets/Vault/PostgreSQL gate passes 37, including persisted current grants and atomic settings/grant fencing. No deployment adapter or serving role."
+    },
+    {
+      "title": "Two-tenant entries HTTP lab",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "a19b549c",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#m1-m2-code-slices-and-acceptance-2026-11-02",
+      "result": "10 disposable-PostgreSQL HTTP lab cases pass for tenant isolation, writes, revocation, startup refusal and data-plane separation; M3 promotion remains blocked."
+    },
+    {
+      "title": "Combined projection/current authority (R24)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "8b193e18",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04",
+      "result": "Agent-run nonbrowser 6713 passing/108 pending/0 failing, browser 684/0/0; explicit PG/HTTP/Vault campaigns and controls. Dormant bounded integration, not M1/M2 completion."
+    },
+    {
+      "title": "Legacy credential to actual entries GET (R25)",
+      "work": "T30-WIRING",
+      "stage": "integrated-accepted",
+      "commit": "7eb76c71",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04",
+      "result": "Agent-run focused 72/0/0, nonbrowser 6718 passing/118 pending/0 failing, browser 684/0/0. Current persisted authority; synthetic HTTP crypto, real Vault separately measured."
+    },
+    {
+      "title": "Compatible exchange to current-authority GET (R26)",
+      "work": "T30-WIRING",
+      "stage": "integrated-accepted",
+      "commit": "81bc71e6",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04",
+      "result": "Published PR checkpoint. Agent-run focused 85/0/0, nonbrowser 6725 passing/124 pending/0 failing, browser 684/0/0; exact names, eight-hour policy and four source controls. Pinned clients inspected, not replayed."
+    },
+    {
+      "title": "Actual entries list/search (R27)",
+      "work": "ST-PG",
+      "stage": "integrated-accepted",
+      "commit": "c10290d2",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-read-and-authority-continuations-2026-11-04",
+      "result": "Local cumulative slice: agent-run nonbrowser 6764 passing/88 pending/0 failing, browser 684/0/0; reader differential 8, HTTP search 2, three controls. Counts overlap; pending change reflects enabled PG cases. History/mutations, production runtime and client replay remain open."
+    },
+    {
+      "title": "Actual entries POST/create/resend (R29)",
+      "work": "ST-PG",
+      "stage": "integrated-accepted",
+      "commit": "6cad7a42",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04",
+      "result": "Agent-reproduced nonbrowser 6807/73 pending/0 failing, browser684, focused78 and six red controls; current grants/attribution, configured pruning and legitimate extension keys. Now included in cumulative R34; remaining mutations/history/import/resources open."
+    },
+    {
+      "title": "Real Vault/PG HTTP lab (R30)",
+      "work": "MT-SECRETS-CONTRACT",
+      "stage": "integrated-accepted",
+      "commit": "e410b163",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04",
+      "result": "Enabled44 including new runtime5; nonbrowser6725/132 pending/0 failing, browser684; tenant-binding red control. Test-only provider composition, now included in R34; production service identity/TLS/HA not established."
+    },
+    {
+      "title": "Real-provider POST composition (R32)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "4621d5c4",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04",
+      "result": "Enabled62, nonbrowser6807/79 pending/0 failing, browser684; three actual POST controls red. Real-provider write/read/isolation/current-grant/outage behavior, now included in R34. Counts overlap, not milestone completion."
+    },
+    {
+      "title": "Explicit canonical ingress (R33)",
+      "work": "TEN-RESOLVE",
+      "stage": "integrated-accepted",
+      "commit": "468c41dc",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04",
+      "result": "Focused25, nonbrowser6815/73 pending/0 failing, browser684; four resolver/app controls red. Direct mode preserved, canonical Host requires per-request explicit trust. Now in R34; no durable registry/production trust adapter."
+    },
+    {
+      "title": "Cumulative canonical/provider/POST (R34)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "c527fb7e",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-post-provider-and-canonical-continuations-2026-11-04",
+      "result": "Historical cumulative checkpoint, superseded by R38/R39. Enabled63, nonbrowser6815/80 pending/0 failing, browser684; composed forwarded-precedence, trust-loss and alias-conflict controls red. Synthetic loopback provenance only; no full M1/M2/M3, client, realtime or operations acceptance."
+    },
+    {
+      "title": "Executable entries CRUD/history (R38)",
+      "work": "T30-WIRING",
+      "stage": "integrated-accepted",
+      "commit": "21145d0d",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04",
+      "result": "Recorded integration-agent reproduced acceptance through the actual PG/Vault executable, current authority, rollback and restart. See R38 for nonadditive campaign figures and controls; full REST and production lifecycle remain open."
+    },
+    {
+      "title": "Explicitly selected REST domains (R39)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "ae471ac7",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04",
+      "result": "Recorded integration-agent reproduced legacy v1/inherited-v2 data handlers, API3 collections and safe context. Now published on draft PR #8898 with successful head CI/CodeQL. Remaining route/client replay and M0-M6 criteria are incomplete; new Codex lane results remain UNMEASURED."
+    },
+    {
+      "title": "Derived REST and pinned-pattern cumulative acceptance (R40)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "ded254b9",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#rest-continuation-and-qms-reconciliation-2026-11-04",
+      "result": "Parent-reproduced actual v2 derived handlers, synthetic source-pinned client replay and independent authority probes, including real CLI/PG/Vault derived/current-authority/restart composition. R40 owns exact campaign figures and controls. Published on OPEN/draft #8898; current-head CI and CodeQL successful at read-back; full REST, client binaries and production M0-M6 criteria remain incomplete."
+    },
+    {
+      "title": "Persisted subject administration and cumulative compatibility (R41)",
+      "work": "MT-CONFIG-MIN",
+      "stage": "integrated-accepted",
+      "commit": "94c57f1f",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-subject-administration-and-compatibility-continuation-2026-11-05",
+      "result": "Local full/browser/provider/compatibility acceptance with archived current-grants/tenant/atomic controls. No management HTTP, owner ceilings or milestone promotion."
+    },
+    {
+      "title": "Repeated bounded release/dev/PR-single refresh",
+      "work": "TEN-LAB",
+      "stage": "local-accepted",
+      "commit": "ded254b9",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-subject-administration-and-compatibility-continuation-2026-11-05",
+      "result": "Repeated common corpus and hardened auditor controls; current dev/PR-single match. Old full-corpus residuals are diagnostic; identity/settings families and final R41 tree are not measured by this historical comparison."
+    },
+    {
+      "title": "Storage-port contract and management HTTP (R42)",
+      "work": "ARCH-SEAM-CONTRACT",
+      "stage": "integrated-accepted",
+      "commit": "d4570e58",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-contract-management-and-independent-profile-wave-2026-11-05",
+      "result": "Local cumulative acceptance, real lower/preview/Mongo ports and standalone management HTTP with semantic controls; source contracts reconciled. No full portable runtime or owner listener."
+    },
+    {
+      "title": "Independent nonresident single refresh (R43)",
+      "work": "ST-VIEWS-PROFILE",
+      "stage": "local-accepted",
+      "commit": "925c9527",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-contract-management-and-independent-profile-wave-2026-11-05",
+      "result": "Separate current-dev refresh with full/default-browser and selected replay/controls. Not joined into #8898; physical subscriber unchanged and logical no-op policy remains open."
+    },
+    {
+      "title": "Current-domain composition and direct imported identity (R44)",
+      "work": "ARCH-SEAM-COMPOSE",
+      "stage": "integrated-accepted",
+      "commit": "bc4ee1a9",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-composition-and-direct-identity-continuation-2026-11-05",
+      "result": "Parent-reproduced complete nonbrowser/default-browser, real CLI/HTTP contracts and direct Mongo/PG typed identity mutations with semantic controls and independent review. No new backend/write policy, helper consolidation or milestone promotion."
+    },
+    {
+      "title": "Independent actual HTTP profile writers and live handoff (R45)",
+      "work": "ST-VIEWS-PROFILE",
+      "stage": "local-accepted",
+      "commit": "dff9a8d4",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-http-profile-continuation-2026-11-05",
+      "result": "Independent test-only replay adds API3 mutations/resends and live-service ownership assertions; parent archived replay/trigger/closed-service controls and independent review. R45 owns exact regression figures and limits. Physical subscriber retained; no REST join or multitenant evaluator acceptance."
+    },
+    {
+      "title": "Bounded PG mechanics and direct indexed races (R46)",
+      "work": "ARCH-SEAM-CONSOLIDATE",
+      "stage": "integrated-accepted",
+      "commit": "44331668",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-adapter-consolidation-and-index-race-continuation-2026-11-05",
+      "result": "Parent full/final common-port and indexed-race acceptance, browser on identical application source and semantic order/projection/precommit/retry controls. Baseline/current UTC fixtures and diagnostic corrections explicit; broader portable helpers and milestones remain open."
+    },
+    {
+      "title": "Independent test-composed v1 evaluator writers (R47)",
+      "work": "ST-VIEWS-PROFILE",
+      "stage": "local-accepted",
+      "commit": "0c98ad06",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-v1-evaluator-continuation-2026-11-05",
+      "result": "Agent full/default-browser plus parent archived36 and v1 trigger/closed-service controls. Test-only v1 configurators preserve reply/delete/no-op differences and live handoff; production routes/subscriber unchanged. Shared-frame inventory is read-derived, not runtime acceptance."
+    },
+    {
+      "title": "Optional local data-token authority (R48)",
+      "work": "T30-WIRING",
+      "stage": "integrated-accepted",
+      "commit": "3d5eac19",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-optional-local-data-token-authority-2026-11-05",
+      "result": "Adopted owner-authority contract; actual API local Ed25519 verification checks current PostgreSQL session/key/grants per operation. R48 owns full/browser and semantic controls; human issuer/refresh, full catalogue, proposed-grant ceilings and production provider/key operations remain incomplete."
+    },
+    {
+      "title": "Actual frame acquisition and concurrent REST reads (R49)",
+      "work": "ARCH-DERIVED-FRAME",
+      "stage": "integrated-accepted",
+      "commit": "1c55098a",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-frame-acquisition-and-concurrent-read-characterization-2026-11-05",
+      "result": "Actual Mongo/PG views, tenant snapshot and resident acquisition retain measured bounds/future/statistics/typed-union/private-cache differences. Held HTTP reads return old entries/new treatments despite an atomic independent writer commit; semantic controls cover clinical values, tenant/partial-read refusal and no read egress. Final cumulative full7076/80pending/0failure and browser684 pass; no shared implementation, atomic revision or milestone promotion."
+    },
+    {
+      "title": "Independent evaluator acquisition, failure retention and recovery (R50)",
+      "work": "ST-VIEWS-PROFILE",
+      "stage": "local-accepted",
+      "commit": "5173864d",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-evaluator-frame-characterization-2026-11-05",
+      "result": "Agent full6690/3pending/0failure and default-browser684; parent archived38 and independently repeated clinical/retention semantic controls. Actual held rows yield A/B, then real trigger B/B; failed materialization retains previous time/properties and recovers. Teardown proves no late fake-provider delivery only, not cancellation/internal handoff absence. Runtime/subscriber unchanged; no REST join."
+    },
+    {
+      "title": "Bounded settings differential after serial recovery (R51)",
+      "work": "ST-PG",
+      "stage": "integrated-accepted",
+      "commit": "33870764",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-settings-differential-and-serial-recovery-2026-11-06",
+      "result": "Root FF exact tested tree; full7089/80pending/0failure, browser684 and final prcheckOK. Archived12, sortcap/predicate/projection semantic failures and restored12. Global PG sort cap4→5 only; regex/dotted refusal and resource/client/replica limits explicit. A/C/D/clock not joined; no milestone promotion."
+    },
+    {
+      "title": "Private acquisition allocation extraction (R52)",
+      "work": "ARCH-DERIVED-FRAME",
+      "stage": "local-accepted",
+      "commit": "e5fe0b5e",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-private-acquisition-and-pending-composition-2026-11-06",
+      "result": "Native fresh full7080/80pending/0failure; same-head prior browser684, final prcheckOK. Acquisition14/concurrency4 and six semantic controls/restored14/4; caller4/reused-target2fail/restored4. RootB+A c7778436 incorporated, combined full PENDING. No atomic revision or independent profile runtime acceptance."
+    },
+    {
+      "title": "Selected owner proposed-grant policy (R53)",
+      "work": "MT-CONFIG-MIN",
+      "stage": "local-accepted",
+      "commit": "17f9a457",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-selected-owner-policy-and-pending-composition-2026-11-06",
+      "result": "Native full7127/80pending/0failure/browser684/finalprcheckOK; static32 positive, actualDB22 and four guard controls, parent archived22/four0-1semantic/restored22. Explicit ownerPolicy transaction REST37 subset only. RootB+A+C4a15802c incorporated, combined fullPENDING; no listener, complete owner lifecycle or milestone promotion."
+    },
+    {
+      "title": "Cumulative settings, private acquisition and selected owner policy (R54)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "35903069",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-cumulative-settings-acquisition-and-owner-policy-2026-11-06",
+      "result": "Local cumulative B338+A e5+C17f full7144/80pending/0failure/browser684/settings12/finalprcheckOK; test-only normalization final fix. Successful captured cleanup verified absent/219preserved. Native R51-R53 unchanged; no clock/profile2ee join, production owner/listener enablement, stronger snapshot or milestone promotion."
+    },
+    {
+      "title": "Independent private acquisition profile integration (R55)",
+      "work": "ST-VIEWS-PROFILE",
+      "stage": "local-accepted",
+      "commit": "2ee8b493",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-independent-private-acquisition-profile-2026-11-06",
+      "result": "Independent full6690/3pending/0failure/browser684, archive38/three semantic trigger-clinical-retention controls/restored38, finalprcheckOK. Helper matches accepted REST; evaluateCycle/physical subscriber retained. REST359/profile2ee not merged, no runtime-role/notification policy or milestone promotion."
+    },
+    {
+      "title": "Coherent CI/client compatibility and M0 foundations (R60)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "d89a44e1",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06",
+      "result": "R60 owns the exact-head corpus/prcheck and product-identical ancestor regression/client/pooler captures. M0 promoted; bounded client lab complete. Failed provisioner capture and original safety guard preserved. M1–M6 remain open; no release or default enablement."
+    },
+    {
+      "title": "Bounded owner reader and recovery batch (R62)",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "integrated-accepted",
+      "commit": "83582e87",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-bounded-owner-reader-and-recovery-batch-2026-11-06",
+      "result": "Fresh871 full7226/99pending/0failure, browser684, corpus460/1benchmarkpending/0failure, defaultclients82/82 and pooler9+4. Archived owner12 and replay7 semantic red/restored. Source-runner-only835 preserves product/test identity and passes finalprcheck. No activation or M1–M6 promotion. Historical reader-mode acceptance retained; maintainer subsequently withdrew the option for backward incompatibility. Removed in local candidate; comprehensive verification pending."
+    },
+    {
+      "title": "Recovered clinical projection native controls (R67)",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "local-accepted",
+      "commit": "1990f453",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-bounded-clinical-projection-controls-2026-11-06",
+      "result": "Native identity111vs222 and missing123 assertions fail after independent physical inputs; fresh restoration7/0/0. Dormant constructor only; R66 socket failure retained. No whole1990/full-batch, live role, notification/ack or M5 promotion."
+    },
+    {
+      "title": "Fresh-schema socket DATA native controls (R68)",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "local-accepted",
+      "commit": "12919f55",
+      "evidence": "../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#measured-fresh-schema-socket-data-controls-2026-11-06",
+      "result": "Canonical actual Mongo/PG pattern parity, reverse-lexical multiple match and reached commit/abort markers; early-ack and role physical controls red/restored4. Matrix3 at identical-product0d628 remains attributed there. Dormant fresh-schema prototype; no populated/import/downgrade, production transport/rollout or milestone promotion."
+    },
+    {
+      "title": "Admitted entries and owner configuration completion (R72)",
+      "work": "TEN-LAB",
+      "stage": "integrated-accepted",
+      "commit": "74d7b3fc",
+      "evidence": "../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06",
+      "result": "Coherent full/browser/all40 enabled corpus/finalprcheck acceptance, current actor/policy/presentation native controls and real client/pooler proofs. M1–M4 promoted at adopted scope; exact74d7/7015 attribution preserved. M5/M6 remain open."
+    },
+    {
+      "title": "R73 durable PostgreSQL runtime, alarm and request record",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "integrated-accepted",
+      "commit": "353bb444",
+      "evidence": "../../../reports/tenancy/m5-runtime-2026-11-07/postgres/README.md#m5-bounded-postgresql-recorded-evidence",
+      "result": "Recorded23 ordinary/19 distinct physical controls/fresh23 restoration, with actual f4e3/353 attribution and original stops/regrades retained. Component record alone does not promote M5; no fresh native or provider/device claim."
+    },
+    {
+      "title": "R73 joined runtime and actual notification/socket/browser consumers",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "integrated-accepted",
+      "commit": "b6bb39fd",
+      "evidence": "../../../reports/tenancy/m5-runtime-2026-11-07/roles/README.md#joined-m5-roles-recorded-evidence",
+      "result": "Six fresh ordinary, six physical semantic reds and six fresh restored cohorts; actual evaluator/realtime handoff and separate unchanged-browser presentation. Current recipient/config authority, suppression/plugin/cold clear and DATA parity measured. No evaluator-to-device journey or universal offline-cache claim."
+    },
+    {
+      "title": "R73 populated SQL operations and synthetic lifecycle",
+      "work": "TEN-RESOLVE",
+      "stage": "integrated-accepted",
+      "commit": "9298d793",
+      "evidence": "../../../reports/tenancy/m6-ops-2026-11-07/postgres/README.md#m6-operations-bounded-postgresql-recorded-evidence",
+      "result": "Initial five SQL cases/11 physical controls/11 targeted restorations/fresh final five;37 CURRENT/31 OLD tables. Exact nine terminal-Z audit reconciliation and independent release preserve original false closure. Same-ID tenant restore and whole M6 remain open."
+    },
+    {
+      "title": "R73 coherent final-tree verification and M5 reference promotion",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "integrated-accepted",
+      "commit": "f0fac99a",
+      "evidence": "../remedial/rc-16.0.0-integration-record.md#r73---durable-runtime-and-bounded-operations-batch-2026-11-07",
+      "result": "Complete full suite, entire default browser and all45 enabled corpus suites pass; only declared pending cases, final prcheck unchanged. Explicit family disposition promotes M5 reference; M6 blocked. Later publication/CI is recorded below; this checkpoint retains its executed scope. Earlier failure/cleanup receipts remain attributed to their captures."
+    },
+    {
+      "title": "Tenant-local restore and shared-role restart",
+      "work": "T30-TENANT-ADMIN",
+      "stage": "integrated-accepted",
+      "commit": "c23cf1f3",
+      "evidence": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md#c23-complete-native-operation-window-acceptance",
+      "result": "Reproduced native fixed-cohort controller matrix, forward history and B progress after fresh API/realtime/evaluator restart while A remains unavailable. Earlier b029 scope is retained separately. No arbitrary SQL writer fence or multi-host recovery."
+    },
+    {
+      "title": "Cold Compose UI/restore, pinned clients and final regression",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "integrated-accepted",
+      "commit": "ed2ced00",
+      "evidence": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md#coherent-operation-window-acceptance-family",
+      "result": "Reproduced exact image and complete cold UI/socket/restore/client-convergence reference; actual cgmsim/oref0 and final nonbrowser acceptance. Native/browser c23 and corpus39f4 retain actual attribution. No counts summed or M6 promotion."
+    },
+    {
+      "title": "Draft PR publication and alignment CI",
+      "work": "MT-RUNTIME-PLAN",
+      "stage": "integrated-accepted",
+      "commit": "ed2ced00",
+      "evidence": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md#coherent-operation-window-acceptance-family",
+      "result": "Reproduced remote head/PR readback and published alignment CI. Draft remains open; publication is distinct from dev merge, release and production admission."
+    }
   ],
   "deferred": [
-    {"title": "Historical anonymous resource ownership", "lane": "Historical captures and later closure receipts", "reason": "Original failures and their ownership limits remain immutable. Later campaign/publication records retain their actual cleanup receipts. Do not turn an earlier residual inventory into a current live count or infer global leak freedom."},
-    {"title": "Stronger consistency and broader evaluator/runtime acceptance", "lane": "R73 functional one-host M5 accepted", "reason": "R73 joins bounded current-state/evaluator, durable alarm/request and actual consumer proofs with complete final-tree verification. Broader clinical workloads, operating envelope, selected providers, multi-node ownership and production/default admission remain separate; historical R54/R55 source attribution is unchanged."},
-    {"title": "Broader settings/client and resource acceptance", "lane": "R51 bounded settings accepted", "reason": "33870764 accepted for bounded settings; full7089/80pending/0failure/browser684/prcheckOK and archived controls. Regex/dotted predicates refusePG500, performance unmeasured; no all-query/client parity."},
-    {"title": "Wider owner catalogue and lifecycle", "lane": "M6 lifecycle scope / reader option withdrawn", "reason": "Optional subject-reader mode is withdrawn after R63 legacy-root incompatibility. Existing-grant clamping, if reconsidered in M6, must preserve existing credentials. Human issuer/refresh, durable lifecycle, production resolution trust and wider catalogue remain M6 work. Operator inactivity/resource eligibility is a separate open policy topic, not inferred from restore suspension. Writer config.ownerPolicy is retained."},
-    {"title": "Replica history outside the selected clock contract", "lane": "Clock correctness accepted in R60; wider replica contract open", "reason": "The original unclocked timestamp characterization remains a failed exclusive-history guarantee. Joined commit-coupled clock paths have bounded correctness acceptance; clock default enablement, performance and general replica interchangeability are not inferred."},
-    {"title": "Read existing Nightscout data through its API", "lane": "Entries / import", "reason": "This is a one-time database population, not ongoing NS-to-NS synchronization; no durable checkpoint is required. Use bounded pagination, duplicate-safe reruns and best-effort srvModified reconciliation. Physical hard deletes may be undetectable, so do not claim exact deletion reconciliation or raw-backup fidelity; nightscout-connect remains the separate ongoing sync pipeline."},
-    {"title": "Human identity and next-generation execution", "lane": "Separate source and acceptance boundaries", "reason": "Shared optional OIDC/owner implementation is local source work; actual signed native DB/Vault/HTTPS/browser acceptance remains UNMEASURED. Independent computed-single and derived-output characterization do not select a universal profile or publication service. See current release contents for ownership."},
-    {"title": "Resource/performance budgets and Android emulator lab", "lane": "Batch C by maintainer decision", "reason": "M1 resource bounds deferred, measured in C; no approved numeric threshold. Controlled quiet steady-state benchmark needs independent stored-count oracle. M4 uses headless actual/source-pattern coverage with no all-client claim; Android emulator belongs to C."}
+    {
+      "title": "Historical anonymous resource ownership",
+      "lane": "Historical captures and later closure receipts",
+      "reason": "Original failures and their ownership limits remain immutable. Later campaign/publication records retain their actual cleanup receipts. Do not turn an earlier residual inventory into a current live count or infer global leak freedom."
+    },
+    {
+      "title": "Stronger consistency and broader evaluator/runtime acceptance",
+      "lane": "R73 functional one-host M5 accepted",
+      "reason": "R73 joins bounded current-state/evaluator, durable alarm/request and actual consumer proofs with complete final-tree verification. Broader clinical workloads, operating envelope, selected providers, multi-node ownership and production/default admission remain separate; historical R54/R55 source attribution is unchanged."
+    },
+    {
+      "title": "Broader settings/client and resource acceptance",
+      "lane": "R51 bounded settings accepted",
+      "reason": "33870764 accepted for bounded settings; full7089/80pending/0failure/browser684/prcheckOK and archived controls. Regex/dotted predicates refusePG500, performance unmeasured; no all-query/client parity."
+    },
+    {
+      "title": "Wider owner catalogue and lifecycle",
+      "lane": "M6 lifecycle scope / reader option withdrawn",
+      "reason": "Optional subject-reader mode is withdrawn after R63 legacy-root incompatibility. Existing-grant clamping, if reconsidered in M6, must preserve existing credentials. Human issuer/refresh, durable lifecycle, production resolution trust and wider catalogue remain M6 work. Operator inactivity/resource eligibility is a separate open policy topic, not inferred from restore suspension. Writer config.ownerPolicy is retained."
+    },
+    {
+      "title": "Replica history outside the selected clock contract",
+      "lane": "Clock correctness accepted in R60; wider replica contract open",
+      "reason": "The original unclocked timestamp characterization remains a failed exclusive-history guarantee. Joined commit-coupled clock paths have bounded correctness acceptance; clock default enablement, performance and general replica interchangeability are not inferred."
+    },
+    {
+      "title": "Read existing Nightscout data through its API",
+      "lane": "Entries / import",
+      "reason": "This is a one-time database population, not ongoing NS-to-NS synchronization; no durable checkpoint is required. Use bounded pagination, duplicate-safe reruns and best-effort srvModified reconciliation. Physical hard deletes may be undetectable, so do not claim exact deletion reconciliation or raw-backup fidelity; nightscout-connect remains the separate ongoing sync pipeline."
+    },
+    {
+      "title": "Human identity and next-generation execution",
+      "lane": "Separate source and acceptance boundaries",
+      "reason": "Shared optional OIDC/owner implementation is local source work; actual signed native DB/Vault/HTTPS/browser acceptance remains UNMEASURED. Independent computed-single and derived-output characterization do not select a universal profile or publication service. See current release contents for ownership."
+    },
+    {
+      "title": "Resource/performance budgets and Android emulator lab",
+      "lane": "Batch C by maintainer decision",
+      "reason": "M1 resource bounds deferred, measured in C; no approved numeric threshold. Controlled quiet steady-state benchmark needs independent stored-count oracle. M4 uses headless actual/source-pattern coverage with no all-client claim; Android emulator belongs to C."
+    }
   ]
 }
