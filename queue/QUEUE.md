@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 382 |
+| items | 384 |
 | runnable gates | 431 |
-| explicit `no-gate:` markers | 403 |
+| explicit `no-gate:` markers | 405 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 403 of the 834 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 405 of the 836 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 85 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `not-started` | 88 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-M6A-JOIN, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
 | `in-progress` | 16 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-OIDC-NATIVE |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 1 | WS-LAB |
@@ -49,7 +49,7 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | `in-flight-upstream` | 4 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
-| `needs-decision` | 8 | BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL, MT-ENVELOPE |
+| `needs-decision` | 7 | BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
 | `done` | 47 | TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 19 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, TEN-RESOLVE, MT-RUNTIME-PLAN, MT-IDENTITY-PLAN, T30-RESEARCH, T30-AUTH, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T32-REM, SEAM-REFRESH, BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 82 items
+`parcel: tenancy` &mdash; 84 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8456,7 +8456,9 @@ alarm-readiness items, and the seam branch refresh.
 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-TRUST-PROBES` | M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `MT-ENVELOPE` | M7: declare the operating envelope, then measure it | `needs-decision` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 
@@ -10957,19 +10959,20 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** Decision first-preview-no-push-provider (2026-11-07): outbound first. Inbound tenant-side connector is a later contract.
 
-### `MT-ENVELOPE` &mdash; M7: declare the operating envelope, then measure it
+### `MT-BENCH-BASELINE` &mdash; M7: benchmark the one-host reference and publish the numbers
 
 | | |
 |---|---|
-| state (claimed) | `needs-decision` |
+| state (claimed) | `not-started` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
-| base | `main@9029fb6dd` |
+| base | `main@2ea470f16` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
+| blocks on | `MT-M6A-JOIN` |
 
-**Blast radius.** Human input first: active/idle tenant counts, rows/bytes, ingestion and reconnect bursts, retention, freshness and recovery targets. Then one benchmark window with an independent stored-count oracle.
+**Blast radius.** Measurement only, on the accepted Compose reference with synthetic tenants. Established load tooling (k6 or autocannon) drives pinned uploader/follower shapes (cgmsim, oref0 replay, browser polling) at tenant counts stepping 1, 10, 50, 200 with one hot tenant; reports p50/p95/p99 latency per route class, socket fanout latency, evaluator cycle time, PG pool/lock waits, CPU and RSS per role, disk growth per tenant-day, reconnect-flood recovery time. Independent stored-count oracle. No threshold is invented; the numbers are the deliverable.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -10977,13 +10980,73 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED by design until the envelope is declared; no number is invented from functional passes.
+- **NO GATE** &mdash; UNMEASURED until the bench runs. Gate becomes a recorded-evidence check of reports/tenancy/bench-baseline-<date>/summary.json (every cell present, oracle match, image digests and source commit recorded); control: a summary with one tenant-count step missing fails.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md`
 - `docs/30-design/tenancy/m5-m6-decision-list.md`
 
-**Notes.** Was part of M6; moved to M7 on 2026-11-09. Required before a production cohort, not before the dormant alpha.
+**Notes.** Maintainer 2026-11-09: for M7 we benchmark what the numbers are rather than declare them first; limits are set from measurement afterwards. Uses the disposable-harness pattern (containers by digest, reaper cleanup).
+
+### `MT-BENCH-CONTRAST` &mdash; M7: contrast the multitenant cohort with existing deployment shapes at equal load
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `rag-nightscout-ecosystem-alignment` |
+| branch | `main` |
+| base | `main@2ea470f16` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-BENCH-BASELINE` |
+
+**Blast radius.** Same synthetic workload as MT-BENCH-BASELINE run against (a) N single-tenant `nightscout single` processes on MongoDB in Compose on the same host, the shape every operator runs today, and (b) the per-site process model of node- multienv (read-derived from its tracked source; no private deployment data). Reports resource per tenant, latency, startup and restore time, and operational steps per tenant for each shape side by side.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** measurement
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until run. Gate: recorded-evidence check that every shape has the same workload descriptor hash and every comparison cell is filled; control: mismatched workload hash fails.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/production-critical-path.md`
+
+**Notes.** The contrast is the argument for the deployment model; keep it numeric and synthetic. Never import a prior provider's tenant counts or incident figures.
+
+### `MT-SCALE-UNBOUND` &mdash; M7: prove each component scales horizontally or vertically as intended, with no hidden binding
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture review |
+| blocks on | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER` |
+
+**Blast radius.** Under the baseline workload: API replicas 1 -> 2 -> 4 behind the edge (throughput must rise near-linearly until PG saturates; restore still addresses every instance), realtime vertical then horizontal with connection affinity measured, evaluator vertical (single owner by design: show cycle time scales with CPU and record where partitioning would be needed), PostgreSQL vertical and connection pool bounds, Vault Agent per host. Any shared singleton, lock, cache or file that caps a component's scaling is a finding with file:line. Consumes MT-ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** measurement with possible follow-up defects
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until run. Gate: recorded-evidence check with a scaling table per component and a binding inventory (empty or itemised); control: a table missing the 4-replica API row fails.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/runtime-topology.md`
+- `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
+
+**Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 

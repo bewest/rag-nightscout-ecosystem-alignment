@@ -186,7 +186,6 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
 | 1 | `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | &mdash; |
-| 1 | `MT-ENVELOPE` | M7: declare the operating envelope, then measure it | `needs-decision` | &mdash; |
 | 1 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-progress` | &mdash; |
 | 1 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `not-started` | &mdash; |
 | 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | &mdash; |
@@ -217,11 +216,14 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 3 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `MT-M6A-JOIN` |
 | 3 | `DEPLOY-TRUST-PROBES` | M6c: live spoof, conflict and outage probes against the Compose edge and Vault;  | `not-started` | `DEPLOY-VAULT-AGENT` |
 | 3 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `MT-M6A-JOIN` |
+| 3 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `not-started` | `MT-M6A-JOIN` |
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
 | 4 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up | `not-started` | `DEPLOY-TRUST-PROBES` |
+| 4 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal loa | `not-started` | `MT-BENCH-BASELINE` |
+| 4 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no  | `not-started` | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER` |
 
 <!-- END GENERATED: road-tenancy -->
 

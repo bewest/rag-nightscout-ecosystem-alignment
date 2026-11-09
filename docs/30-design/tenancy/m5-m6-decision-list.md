@@ -106,14 +106,19 @@ admission. Its proposed one-cohort scope and HA deferrals are not adopted policy
 
 ## Measure before setting limits
 
-Operations owners first propose representative active/idle tenant counts, stored
-rows/bytes, ingestion bursts, reconnect backlog and a hot tenant sharing the pool.
-Agree freshness and recovery expectations, then measure scan/lock/pool costs,
-p50/p95/p99 latency, retained bytes, failure behavior and bounded egress. Use the
-[experiment contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments).
-Do not invent numeric capacity, polling cadence or a replay horizon from functional
-passes. The coordinator assigns one controlled benchmark window after the workload
-and candidate are stable; it is not a prerequisite to current correctness work.
+Decision 2026-11-09 ([row](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-envelope-measured-not-declared)):
+the envelope is measured first, not declared. `MT-BENCH-BASELINE` benchmarks the
+one-host reference at stepped synthetic tenant counts with a hot tenant and
+publishes p50/p95/p99 latency, socket fanout, evaluator cycle time, pool/lock
+waits, CPU and memory per role, disk per tenant-day and reconnect recovery.
+`MT-BENCH-CONTRAST` runs the same workload against the shapes operators run today
+(N single-tenant Mongo processes; the per-site process model) and reports the
+comparison side by side. `MT-SCALE-UNBOUND` proves each component scales
+horizontally or vertically as intended and itemises any binding with `file:line`.
+Limits, polling cadence and replay horizons are then set from those numbers.
+Use the [experiment contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments)
+for oracle and control design. Nothing here is a prerequisite to current
+correctness work, and no number is invented from functional passes.
 
 ## Reviewing and closing a topic
 

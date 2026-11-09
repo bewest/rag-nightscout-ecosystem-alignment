@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 13 items
+### Maintainer &mdash; 12 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -45,7 +45,6 @@ every item that was `merged-upstream` then is `released`.
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
-| `MT-ENVELOPE` | `needs-decision` | M7: declare the operating envelope, then measure it | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item
@@ -135,7 +134,7 @@ BF-72: an unauthenticated query can occupy the database for minutes. It is live 
 disposition; the details are held outside this public repository while the defect is live on the
 shipping release, under the disclosure rule ([DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
 
-### `MT-OIDC-NATIVE`, `MT-M6A-JOIN`, `MT-ENVELOPE` — the multitenant preview on #8898
+### `MT-OIDC-NATIVE`, `MT-M6A-JOIN`, `MT-BENCH-BASELINE` — the multitenant preview on #8898
 
 Draft #8898 is `ed2ced00` (read 2026-11-09), open and mergeable; checks on that head are
 16 success, 3 skipped and 1 failure (CodeQL). The CodeQL failure is one new alert on the
@@ -153,9 +152,9 @@ What still needs a person:
 
 - **Nothing for the OIDC native run.** `MT-OIDC-NATIVE` runs when the harness lands; no
   grant, reservation or attestation is required from the maintainer.
-- **The operating envelope** (`MT-ENVELOPE`): active/idle tenant counts, rows/bytes,
-  burst shapes, freshness and recovery targets. Until declared, no capacity number
-  exists by design. Required for M7, not for the dormant alpha.
+- **Nothing for the operating envelope either.** On 2026-11-09 the maintainer made M7
+  measured, not declared: `MT-BENCH-BASELINE`, `MT-BENCH-CONTRAST` and `MT-SCALE-UNBOUND`
+  produce the numbers; limits follow.
 - **The operator activity/resource policy** question stays open in the
   [decision index](../30-design/tenancy/m5-m6-decision-list.md#human-policy-review).
 - **Repository home and licence** for `nightscout-deploy` (deploy-companion note, item 8).
