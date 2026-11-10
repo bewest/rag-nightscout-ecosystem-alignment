@@ -185,7 +185,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or r | `not-started` | &mdash; |
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
-| 1 | `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | &mdash; |
+| 1 | `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | &mdash; |
 | 1 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | &mdash; |
 | 1 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `ready-to-push` | &mdash; |
 | 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | &mdash; |

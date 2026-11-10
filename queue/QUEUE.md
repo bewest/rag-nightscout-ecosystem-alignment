@@ -41,8 +41,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 87 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 15 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
+| `not-started` | 86 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `in-progress` | 16 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | WS-LAB, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8445,7 +8445,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
-| `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | `codex/selectable-private-endpoints` | minor | 0 run + 2 no-gate |
+| `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | `codex/internal-service-api-20261109` | minor | 0 run + 2 no-gate |
 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | `codex/oidc-native-harness-20261109` | n/a | 1 run |
 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `codex/m6a-join-20261109` | minor | 1 run |
@@ -10635,37 +10635,38 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** Table families and relationships, RLS/effective grants, tenant history and insertion state, catalogue/runner/readiness sequences, logical versus physical restore and retained current authority/consumer/control state; three source- backed diagrams. Independently source-reviewed against cgm-remote-monitor 151de024 on 2026-11-07; recorded native b029 evidence remains scoped to that source. Documentation checks and a broken-link red/restored control are separate from executed deployment or rig acceptance. New source startup, actual Compose/browser and broader runtime acceptance remain with their delivery items. Pinned source links require application-source publication before this documentation branch is published. No application behavior changed.
 
-### `MT-ENDPOINT-TRANSPORT` &mdash; Selectable private UDS/HTTP(S) component endpoints
+### `MT-ENDPOINT-TRANSPORT` &mdash; Component-private UDS/HTTP API composition and deployment acceptance
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/selectable-private-endpoints` |
-| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
+| branch | `codex/internal-service-api-20261109` |
+| base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
 | worktree | `-` |
 | semver | `minor` |
-| review | maintainer; security, compatibility and operations review |
+| review | maintainer; compatibility, architecture and deployment operations review |
 
-**Blast radius.** Private IPC client/listener/config adapters for API authorization and mutation, realtime alarm handoff and per-instance restore control; effective service trust and bounded transport behavior. No public client protocol change.
+**Blast radius.** Shared internal service transport, schemas, named clients and consuming-role UDS/HTTP endpoint configuration exist in joined dc795bd1. Remaining scope: compose explicitly registered application/lifecycle/operational modules on component-private listeners; per-operation lifetime and response-format rules; qualify a selected private network binding. Public/management APIs remain separate.
 
-**What an operator sees.** Planned optional private service connections over Unix sockets or HTTP(S). Existing clients keep their current protocol. A failed or uncertain write must not be reported as successful.
+**What an operator sees.** Optional private component connections over Unix sockets or HTTP. Existing public clients keep their protocol; communicating internal peers require a coordinated service/version upgrade. Private listener composition and remote deployment qualification remain in progress.
 
-**Why `minor`.** Opt-in deployment configuration and private endpoint adapters; existing UDS configuration and single-site defaults retain compatibility.
+**Why `minor`.** Opt-in private API/listener configuration. Preserve existing UDS settings and public protocol, and specify any internal header/path migration explicitly.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED implementation acceptance. Endpoint normalization/listener adapters and authored parity instruments do not yet exist. The plan specifies UDS/HTTP(S) ordinary and semantic red/restored cases for fixed operations, service identity, current tenant authority, CA/caller refusal, byte/deadline/cancellation limits, no redirects/fallback and ambiguous mutation no-ack/no-transparent-retry behavior.
-- **NO GATE** &mdash; UNMEASURED native remote-control acceptance. Actual per-instance status/incarnation binding, operation/HTTP-response drain, tenant-local invalidation and commit/ack uncertainty must preserve suspension and B progress over the selected transport before endpoint admission.
+- **NO GATE** &mdash; UNMEASURED remaining listener-composition and operational-API acceptance. Joined dc795bd1 already carries transport/schema/client/parser and loopback UDS/HTTP evidence; it is not this remaining gate. Define fixed method/path registration, collision/foreign-service refusal, request/response and content-type rules, public-port refusal and per-operation lifetimes. Lifecycle status/invalidation must remain callable during suspended A while application work refuses and B progresses. GET metrics/readiness are not implemented by the current JSON POST dispatcher.
+- **NO GATE** &mdash; UNMEASURED native deployment/network acceptance beyond loopback. Actual separated processes must preserve current authority, per-instance pins, response drain, tenant-local invalidation and commit/ack uncertainty over the selected UDS or HTTP binding. Deployment owns reachability and any selected standard TLS/proxy/mesh profile; direct HTTPS is not implemented and no new bearer credential protocol is required. A reachable URL or service/version header is not process identity or lifecycle acceptance.
 
 **Evidence.**
 
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
+- `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
-- `docs/30-design/tenancy/sql-and-migration-architecture.md`
-- `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
+- `reports/tenancy/internal-service-api-2026-11-09/README.md`
+- `reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/test-all-and-browser.txt`
 
-**Notes.** Source implementation is not started; branch name is proposed, not created. Confirm actual current joined source and ownership with coordinator before dispatch, then preserve original history. The accepted ed2 reference is a bounded baseline, not a new-head runtime result. Kubernetes deployment proof, manifests and Jsonnet are deferred; topology diagrams audit coupling and cohesion only. No default, production admission or new 16.0.0 tag gate.
+**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion.
 
 ### `MT-API-FIXED-ROSTER` &mdash; Independent API scaling with a fixed restore participant roster
 
@@ -10699,7 +10700,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** Source implementation is not started; branch name is proposed, not created. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.
+**Notes.** Fixed-roster replica implementation is not started; its branch name is proposed, not created. It consumes the incorporated dc795bd1 transport/schema foundation and remaining endpoint/composition/deployment acceptance. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Application service routing and exact per-instance lifecycle addressing stay distinct even when contracts share a component-private port. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.
 
 ### `MT-OIDC-NATIVE` &mdash; M6a: run the nine-stage owner/OIDC native matrix through a disposable harness
 
@@ -11082,7 +11083,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
-**Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers.
+**Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read-derived at dc795bd1: realtime protocol current-authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
 
 ### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a pool-membership table
 
@@ -11097,7 +11098,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer; architecture and clinical-path review |
 | blocks on | `MT-BENCH-BASELINE` |
 
-**Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A pool-membership table in PostgreSQL holds one heartbeat row per member (ordinal, expected members, ring slice, lease expiry). A member evaluates its slice only while every live row agrees on the member count and no two live rows share an ordinal; otherwise it stops its own cycle and alerts. No per-tenant lock; duplicate evaluation is bounded to one heartbeat interval after a membership change and the evaluator's outputs are idempotent by contract. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index.
+**Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A pool-membership table in PostgreSQL holds one heartbeat row per member (ordinal, expected members, ring slice, lease expiry). A member evaluates its slice only while every live row agrees on the member count and no two live rows share an ordinal; otherwise it stops its own cycle and alerts. No per-tenant lock; duplicate evaluation is bounded to one heartbeat interval after a membership change and the evaluator's outputs are idempotent by contract. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index. A read-only private operational module must expose configured mode/count/ordinal/rule/slice separately from observed membership, heartbeat freshness/conflicts, eligibility and actual workload progress. Standalone reports all configured tenants without fabricating a membership lease. The endpoint-composition lane owns shared listener plumbing; this lane owns evaluator payload/schema and observed-state semantics.
 
 **What an operator sees.** Optional setting for very large multitenant deployments to run more than one evaluator process. Off by default. Misconfiguration causes a visible alert and a refused computation, never two conflicting results.
 
@@ -11105,14 +11106,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED until implemented. Gate: scale-event control under the baseline workload. Run with members=2, then change to members=3 mid-cycle with a rolling restart; show no tenant produces two committed results in the window and none misses more than one lease TTL of alarm ticks; control: start two workers with the same ordinal and show the second's commits are refused with the membership-conflict symptom and an alert is raised.
+- **NO GATE** &mdash; UNMEASURED until implemented. Gate: scale-event control under the baseline workload. Run with members=2, then change to members=3 mid-cycle with a rolling restart; independently observe that bounded overlapping evaluation produces no duplicate logical durable/external effect, measure the overlap window, and show none misses more than one lease TTL of alarm ticks; control: start two workers with the same ordinal and show the second's commits are refused with the membership-conflict symptom and an alert is raised. Inspect the actual private operational API during standalone, healthy multi-member and conflicted/stale states; configuration-only false health is a separate red control. Inspection remains callable while evaluation is blocked and must not schedule work or acquire ownership.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** Decision evaluator-static-partition (2026-11-09, revised the same day): pool membership table, not a per-tenant lease; the maintainer judged the per-tenant fence unnecessary overhead given idempotent outputs. Open design choices inside the item: whether a member with a stale peer row may take over that slice after the lease expires; modulo vs consistent hashing. MT-SCALE-UNBOUND measures the overlap window for any duplicate external effect.
+**Notes.** Decision evaluator-static-partition (2026-11-09, revised the same day): pool membership table, not a per-tenant lease; the maintainer judged the per-tenant fence unnecessary overhead given idempotent outputs. Open design choices inside the item: whether a member with a stale peer row may take over that slice after the lease expires; modulo vs consistent hashing. MT-SCALE-UNBOUND measures the overlap window for any duplicate external effect. The operational API is planned, not provided by current lifecycle status/in-process health. See the runtime-topology ownership inventory: notification attempts, future connector actors, realtime checkpoint/fanout and maintenance claims need their own ownership semantics; the evaluator ring is not imposed on every component.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 

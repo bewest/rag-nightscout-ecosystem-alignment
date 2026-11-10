@@ -1,6 +1,6 @@
 # Deployment bindings, public names and load behavior
 
-*Living contributor-facing requirements and decision-preparation guide, 2026-11-08.
+*Living contributor-facing requirements and decision-preparation guide, refreshed 2026-11-10.
 The maintainer clarified the target: ordinary Kubernetes resources should be able
 to express the bounded deployment, public-name lifetime must be distinct from
 private tenant identity, and shareable names need explicit authentication and
@@ -111,35 +111,38 @@ state. Stateless request handling means durable authority is external and local
 state can be reconstructed; it does not mean an instance has no connections,
 caches, in-flight responses or restore obligations.
 
-The current [private transport](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/realtime/ipc.js#L107)
-already carries bounded HTTP POST/JSON over Unix sockets. Configuration resolves
-an environment reference into `socketPath`; the parser currently accepts only
-that transport. Node supports HTTP over a Unix `socketPath` or a TCP host/port,
-and a [separate HTTPS request adapter](https://nodejs.org/api/https.html#httpsrequestoptions-callback).
-See [HTTP request options](https://nodejs.org/api/http.html#httprequestoptions-callback).
-Adding a network transport is feasible without changing operation payloads or
-requiring realtime to share API memory. It needs an admitted client/listener and
-trust profile, not merely a new value in the current socket-only field.
+The current joined `dc795bd1` implementation has a shared HTTP/JSON transport,
+service schemas and named clients with selectable UDS or explicit TCP/HTTP
+endpoints. The [implementation record](../../../reports/tenancy/internal-service-api-2026-11-09/README.md)
+and [joined acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
+retain their actual source and tested scope. The reference Compose binding still
+uses UDS; remote HTTP beyond loopback and replicated API behavior are not qualified
+by those records.
 
-**Proposed configuration boundary:** operator environment or mounted config
-selects an endpoint kind and address; the normalized adapter implements the same
-bounded invoke/response contract. A name such as `NS_PRIVATE_API_ENDPOINT` with
-`unix:/run/ns-ipc/api.sock` or `https://api.internal:8443` illustrates that design;
-**this variable and URL syntax are proposals, not shipping options**. Keep listen
-binding distinct from the client's service destination. CA/client identity and
-other credentials use separate private file/secret references, not ConfigMap
-plaintext or credentials embedded in the URL. An HTTP endpoint needs an explicitly
-admitted private trust profile; HTTPS still needs caller authorization. Verify
-service identity before granting the internal transport capability, in addition
-to the unchanged tenant/client credential checks. Refuse unsupported schemes,
-redirects or trust failures; do not fall back silently between transports.
+Use the actual environment-reference descriptors in the
+[endpoint contract](selectable-endpoints-and-api-scaling-plan.md#endpoint-and-compatibility-contract):
+legacy socket references remain valid, or an explicit `urlEnv` with `trust: network`
+and optional `bindHostEnv` selects HTTP. A dial service name can differ from the
+listener's bind interface. Public/management listeners remain separate from the
+private contracts. The current transport binds one contract per listener; shared
+component-private module composition is a remaining code adjustment, not a reason
+to multiply mandatory deployment services.
+
+The current adapter supports `http:`, not direct `https:`. The deployment owns
+network reachability and any selected standard TLS proxy/mesh boundary; contract
+and version headers are not credentials or proof of process identity. No new
+bearer credential protocol is required. Preserve UDS ownership/inode protections,
+exact operation registration, schemas, deadlines, cancellation, no redirects or
+silent fallback, and current tenant/client authority across either binding.
+Internal peers require coordinated upgrade for the mandatory service/version
+headers. A proposed endpoint string or generic HTTPS URL is not a shipping option.
 
 The calls have different addressing semantics:
 
 | Call / component | Appropriate destination | What changes with replicas |
 |---|---|---|
 | Realtime to API authorization/mutation | A trusted service endpoint may select any equivalently configured, admitted API replica. | Each request still resolves the tenant and checks current authority, RLS and operation lifetime. No inherent affinity to one API is needed for these request-scoped calls; joined concurrency/compatibility acceptance remains required. |
-| Restore controller to each participant | A separately addressable instance endpoint, with authenticated identity and pinned boot incarnation. | The controller must reach every relevant instance for status/drain/invalidation. A single load-balanced endpoint cannot stand in for the complete roster: repeated calls could reach the same replica while missing another. |
+| Restore controller to each participant | A separately addressable instance endpoint under the selected deployment access boundary, with pinned actual boot incarnation. | The controller must reach every relevant instance for status/drain/invalidation. A single load-balanced endpoint cannot stand in for the complete roster: repeated calls could reach the same replica while missing another. |
 | Evaluator notification to realtime | A destination whose receipt/fanout contract reaches the intended connected viewers. | Load-balancing one handoff to one realtime replica does not broadcast it to sockets on other replicas. Qualify fanout or explicit delivery ownership and durable retry/deduplication. |
 | Browser to realtime | A connection-owning realtime instance. | Socket connections, rooms and local projections are retained state. Current polling plus WebSocket compatibility needs session affinity for polling, and correct cross-instance delivery. A generic URL alone does not solve that. See [Socket.IO multiple-node guidance](https://socket.io/docs/v4/using-multiple-nodes/). |
 

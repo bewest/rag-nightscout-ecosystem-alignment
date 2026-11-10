@@ -3251,3 +3251,14 @@ controls:
       lane also recorded the gate failing on this record before its controls were
       merged ("0 of 0" controls).
 
+
+  # Routine queue-check artifact gate, not application/runtime acceptance.
+  - gate: python3 tools/site/render_tenancy_topologies.py --check
+    control: python3 tools/site/render_tenancy_topologies.py --check --output-dir tools/site/fixtures/stale-topology
+    positive-control: python3 tools/site/render_tenancy_topologies.py --check
+    control-kind: static
+    proves: >
+      The same read-only renderer reports STALE topology SVG and exits 1 for
+      existing deliberately stale fixture artifacts. Current generated SVGs
+      compare equal and exit 0. The control measures content drift, not just a
+      missing-file/setup error; it never writes a checkout or fixture.

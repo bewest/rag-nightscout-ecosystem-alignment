@@ -97,7 +97,7 @@ flowchart LR
   MT-BENCH-CONTRAST["MT-BENCH-CONTRAST<br/>not-started"]
   MT-CONFIG-MIN["MT-CONFIG-MIN<br/>closed"]
   MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>not-started"]
-  MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>not-started"]
+  MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>in-progress"]
   MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>not-started"]
   MT-KEY-RETENTION["MT-KEY-RETENTION<br/>not-started"]
   MT-M6A-JOIN["MT-M6A-JOIN<br/>in-flight-upstream"]
@@ -154,8 +154,8 @@ External prerequisites are shown one level deep; the full queue owns their furth
 
 | Work item / queue claim | Lane | Queue prerequisites (claimed state) | Next bounded action |
 |---|---|---|---|
-| <a id="mt-endpoint-transport"></a>**MT-ENDPOINT-TRANSPORT**: not-started | Queued / no runtime implementation | None recorded | Settle normalized private endpoint/trust contract, implement actual UDS/HTTP(S) consuming paths and native parity/restore controls. Plan is selectable-endpoints-and-api-scaling-plan.md; runtime gates UNMEASURED. No Kubernetes proof/Jsonnet or new discovery service. |
-| <a id="mt-api-fixed-roster"></a>**MT-API-FIXED-ROSTER**: not-started | Queued / consumes endpoint capability | MT-ENDPOINT-TRANSPORT (not-started) | Prove two declared APIs behind a service destination while restore directly drains/invalidates every actual instance. Consume platform/config inventory; evaluator remains singleton. Native concurrency/replacement/client gates UNMEASURED; platform bindings and dynamic membership deferred. |
+| <a id="mt-endpoint-transport"></a>**MT-ENDPOINT-TRANSPORT**: in-progress | Queued / no runtime implementation | None recorded | Settle normalized private endpoint/trust contract, implement actual UDS/HTTP(S) consuming paths and native parity/restore controls. Plan is selectable-endpoints-and-api-scaling-plan.md; runtime gates UNMEASURED. No Kubernetes proof/Jsonnet or new discovery service. |
+| <a id="mt-api-fixed-roster"></a>**MT-API-FIXED-ROSTER**: not-started | Queued / consumes endpoint capability | MT-ENDPOINT-TRANSPORT (in-progress) | Prove two declared APIs behind a service destination while restore directly drains/invalidates every actual instance. Consume platform/config inventory; evaluator remains singleton. Native concurrency/replacement/client gates UNMEASURED; platform bindings and dynamic membership deferred. |
 | <a id="ten-lab"></a>**TEN-LAB**: done | R72 preview criteria accepted / wider scope retained | ST-PG (closed), T30-WIRING (closed), MIG-RUNNER (closed) | R72 M0–M4 reference scope is retained; R73 promotes functional M5. Wider owner catalogue, human identity/lifecycle, production trust, provider/device and operating envelope retain M6 or separately selected adapter contracts. |
 | <a id="arch-seam-contract"></a>**ARCH-SEAM-CONTRACT**: in-progress | Measured ports / remaining capabilities | None recorded | R42 real Mongo/PG lower and preview contracts remain the basis; R44 preserves them during composition. Broader schema/query/error/retry/import capabilities remain open; consolidation consumes measured differences. |
 | <a id="st-views-profile"></a>**ST-VIEWS-PROFILE**: in-progress | R55 independent helper integration accepted | ST-WRITES (merged-upstream) | Independent2ee8b493 full6690/3pending/0failure/browser684/finalprcheckOK; canonical archive38, actual-trigger(http)/clinical/retention controls each0/1semantic/restored38. Helper matches REST and evaluateCycle retained; no REST359 merge, runtime-role/subscriber/notification policy change. Wider writer/alarms/live stats/cost and durable recovery open. Notification-close v1-closed stays declared at2ee but new-head runtime UNMEASURED; prior517 measurement historical, not a fourth measuredR55 control. |
