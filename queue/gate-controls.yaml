@@ -3340,3 +3340,10 @@ controls:
       revoke skipped), each red with its recorded symptom and restored clean, are in
       reports/tenancy/ownership-role-2026-11-10/README.md. They need native PostgreSQL and write the lane worktree.
 
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-lifecycle.test.js
+    cwd: externals/work/crm-export-expiry-20261110
+    control-exempt: >
+      2026-11-10, export-expiry lane on 701eba6f: two source ablations (removal skipped: unit 4 failing, native 1;
+      removal before the window check: unit 2 failing, native 1), each restored cmp-identical, are in
+      reports/tenancy/export-expiry-2026-11-10/README.md. Automating them would write into the lane worktree.
+

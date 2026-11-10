@@ -26222,9 +26222,10 @@ items:
     title: "Key destruction removes the export artifact file in the same audited step"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/multitenant-20261102
+    branch: codex/export-expiry-20261110
+    worktree: externals/work/crm-export-expiry-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: not-started
+    state: in-progress
     blast_radius: >
       Tenant lifecycle key destruction (key-retention custodian) also deletes tenant-artifact-<digest>; one audit entry.
     review: maintainer
@@ -26233,12 +26234,24 @@ items:
     semver_reason: unreleased preview
     register: []
     gates:
-      - no-gate: "not started; gate is a native run: destroy after window removes the file and audits it; controls: file left behind, removal before window"
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-lifecycle.test.js
+        cwd: externals/work/crm-export-expiry-20261110
+        kind: unit
+        describe: >
+          Lifecycle unit tests including five export-expiry cases: 36 passing on 701eba6f. Native
+          tests/tenant-key-retention.integration.test.js 6 passing; controls in reports/tenancy/export-expiry-2026-11-10/README.md.
     blocks_on: [MT-M6B-JOIN]
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
+      - reports/tenancy/export-expiry-2026-11-10/README.md
     notes: >
       Decision key-destruction-removes-export (2026-11-10).
+      2026-11-10 (reproduced in lane): 701eba6f on b70ad83f. Migration 0006 adds artifact_removal (removed/absent/failed)
+      and its code; destroy refuses without a remover. Partial failure: keys always destroyable, file outcome audited.
+      Open: retry a failed removal on repeat destroy (built: no); interrupted-after-removal records absent.
+      Join note: production wiring must pass removeArtifact; operator role needs UPDATE on the two new columns;
+      other lifecycle migrations renumber after 0006.
+
   - id: MT-ADMIN-LIFECYCLE-FIT
     title: "Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port"
     parcel: tenancy
@@ -26264,9 +26277,10 @@ items:
     title: "Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README"
     parcel: tenancy
     repo: nightscout-deploy
-    branch: main
+    branch: docs/operator-readme-20261110
+    worktree: ../nightscout-deploy-readme-wt
     base: main@cda3826
-    state: not-started
+    state: in-progress
     blast_radius: >
       nightscout-deploy README rewritten for operators (what runs, how, pinned core commit; stubs say not started); #8898 drops or shrinks deploy/multitenant to the fixture its tests boot; port e6f6e248 grants as an overlay.
     review: maintainer
@@ -26281,6 +26295,15 @@ items:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       Decisions deploy-tree-home-now and deploy-repo-readme (2026-11-10).
+      2026-11-10 (deploy-repo half, measured in lane): branch docs/operator-readme-20261110 9387428 on cda3826, unpushed.
+      Operator README, shorter roadmap, tightened placeholders; ownership-admin Compose overlay (one-shot step after
+      the imported bootstrap creates <prefix>_ownership_operator with the six grant statements of core e6f6e248;
+      admin service on a private address, no published port). Grant statements identical to core (6/6); Compose run
+      showed the exact privilege set and listOwners listed; dropping the audit INSERT made admin exit 1. Mismatch:
+      the imported tree is core ed2ced00 while core is 61 commits newer; its health.js requires a removed module and
+      tenant-admin exits 1 on the mixed base (read-derived cause). Fix is one final re-import from the joined #8898
+      candidate, after which the deploy repo is canonical and core keeps the fixture (core half, at the join).
+
   - id: MT-OWNER-LAST-GUARD
     title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
     parcel: tenancy
