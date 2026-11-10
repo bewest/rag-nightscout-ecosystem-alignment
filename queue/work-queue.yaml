@@ -26121,6 +26121,40 @@ items:
       subject-admin remove() can delete the last owner subject; legacy subject-admin writers without
       ownerPolicy do not serialize with ownership changes. Joined into MT-M6B-JOIN.
       2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
+  - id: MT-OWNER-LAST-GUARD
+    title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/m6b-followups-20261110
+    worktree: externals/work/crm-m6b-followups-20261110
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: in-progress
+    blast_radius: >
+      Owner-plane subject revocation in lib/subject-admin/postgres.js remove(); multitenant preview only.
+      Refuses with SUBJECT_ADMIN_LAST_OWNER (409) when the target is the last usable owner; legacy
+      writer unchanged.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: fix to an unreleased preview behaviour
+    register: [BF-229]
+    gates:
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/owner-subject-store-source.test.js
+        cwd: externals/work/crm-m6b-followups-20261110
+        kind: unit
+        describe: >
+          Source-shape test of the owner subject store, updated to model the usable-owner lock query: 3 passing
+          on 65657a62. The PostgreSQL family (tests/owner-subject-policy.integration.test.js, opt-in native) is
+          25 passing with the fix and 23/2 on b70ad83f; ablations in reports/tenancy/m6b-followups-2026-11-10/README.md.
+    blocks_on:
+      - MT-M6B-JOIN
+    evidence:
+      - reports/tenancy/m6b-followups-2026-11-10/README.md
+    notes: >
+      2026-11-10 (reproduced in lane): 65657a62 on b70ad83f. Joins the next #8898 candidate with the
+      internal-listener reshape, deploy-tree move and ownership-in-admin-role lane. Two related decision
+      questions from the same lane (legacy multi-mode writer without ownerPolicy; export-artifact expiry)
+      are with the maintainer.
   - id: MT-KEY-RETENTION
     title: "M6b: 30-day retained-key destruction and after-window refusal"
     parcel: tenancy

@@ -3322,3 +3322,13 @@ controls:
     proves: >
       The record shows the scenario passing and the blanket-window control failing as
       required; the fixture in which the control run passed (a vacuous control) exits 1.
+
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/owner-subject-store-source.test.js
+    cwd: externals/work/crm-m6b-followups-20261110
+    control-exempt: >
+      2026-11-10, M6b follow-ups lane on 65657a62: four ablations of lib/subject-admin/postgres.js (guard
+      removed; owner lock removed; policy-row FOR SHARE removed; policy and actor-row FOR SHARE removed),
+      each red or explained with its recorded symptom and restored cmp-identical, are in
+      reports/tenancy/m6b-followups-2026-11-10/README.md. They run against native PostgreSQL; automating them
+      would write into the lane worktree.
+

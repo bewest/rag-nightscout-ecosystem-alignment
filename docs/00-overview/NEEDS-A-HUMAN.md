@@ -157,15 +157,11 @@ On 2026-11-09 the maintainer split M6 into M6a–M6d and M7, moved the deploymen
 adapter, and retired the agent-invented grant ceremony in favour of a disposable harness
 ([decisions](../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09)).
 
+Settled 2026-11-10 ([decisions](../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-companion-internal-listener-activity-policy-and-8898-timing-2026-11-10)): the internal listener shape (Ory pattern, socket default, graceful shutdown), the operator activity policy (pause/suspend; owner may pause), the `nightscout-deploy` home (pushed to the nightscout organisation; it owns the Compose tree) and #8898 timing (draft until the next batch joins).
+
 What still needs a person:
 
-- **A configuration shape for a shared component listener.** Listener composition is
-  reproduced and joined; production wiring of several contracts on one listener needs the
-  maintainer to choose how it is configured (`MT-ENDPOINT-TRANSPORT`,
-  [plan](../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md)).
-- **The operator activity/resource policy** question stays open in the
-  [decision index](../30-design/tenancy/m5-m6-decision-list.md#human-policy-review).
-- **Repository home and licence** for `nightscout-deploy` (deploy-companion note, item 8).
+- **Taking #8898 out of draft** after the next batch's acceptance, and posting the early design-feedback comment if wanted.
 - **Nothing for the operating envelope.** On 2026-11-09 the maintainer made M7
   measured, not declared: `MT-BENCH-BASELINE`, `MT-BENCH-CONTRAST` and `MT-SCALE-UNBOUND`
   produce the numbers; limits follow.

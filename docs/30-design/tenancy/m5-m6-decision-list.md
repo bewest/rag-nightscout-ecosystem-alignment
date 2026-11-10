@@ -83,11 +83,7 @@ M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, g
 Vault Agent scope is settled: [one AppRole per deployment](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-one-approle-per-deployment); tenant separation at Vault is not a goal.
 Evaluator partitioning is settled in direction: [member count and ordinal flag with a pool-membership table](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition).
 
-The following topic is open; it does not reopen the settled choices above.
-
-| Topic | Decision needed / source mechanism | Work that need not wait |
-|---|---|---|
-| Operator activity/resource policy vs recovery admission (multitenant) | [Tenant-admission review](tenant-admission-and-activity.md) records the proposed separation of desired activity, claim-bound maintenance state and observed health. Decide inactive behavior per serving/ingest/evaluator/connector capability, transition authority and how it composes with existing pause/suspend semantics. Source `operation-window.js:87–91` checks maintenance phase; `evaluator-runtime.js:101,152–154` iterates configured tenants. The proposal is read-derived; no new policy/schema or full inactive-resource behavior is accepted. | Endpoint transport and fixed-roster APIs preserve existing admission/drain/invalidation. Existing owner/OIDC and lifecycle work can proceed within adopted contracts. Policy-specific consumer/schema changes wait for a bounded decision. |
+Operator activity policy is settled (2026-11-10): [pause and suspend are the activity policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend), workers skip ineligible tenants, the evaluator stops while paused, and [an owner may pause](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-pause). The internal listener shape is settled the same day ([Ory pattern](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern), [graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)). No human-policy topic is open.
 
 The [owner lifecycle packet](../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.md)
 retains source surveys and alternatives; its recommended grace periods, invitation
